@@ -177,7 +177,7 @@ gauge_file *save_u1_lattice(int flag,char *filename)
     node0_printf("Saved lattice to ascii file %s!\n",gf->filename);
     node0_printf("Time to save = %e\n",dtime);
   }
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
   node0_printf("\nCHECK U(1) PLAQ: %e %e\n\n",g_splaq,g_tplaq);
 #else
   node0_printf("\nCHECK U(1) PLAQ: %.16e %.16e\n\n",g_splaq,g_tplaq);
@@ -498,7 +498,7 @@ gauge_file *reload_u1_lattice(int flag, char *filename)
     node0_printf("Time to reload gauge configuration = %e\n",dtime);
   u1plaq(&g_splaq,&g_tplaq);
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
   node0_printf("\nCHECK U(1) PLAQ: %e %e\n\n",g_splaq,g_tplaq);
   fflush(stdout);
 #else

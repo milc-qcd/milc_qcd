@@ -243,7 +243,7 @@ exit(0);
 
         /* compute M^-1 * quark_source */
         cgn += mat_invert( F_OFFSET(quark_source), F_OFFSET(quark_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
 	/*if(t_source==0)test_converge(t_source);*/ /*TEMP*/
 	/* TEMP: test inversion, */
 	check_invert( F_OFFSET(quark_prop), F_OFFSET(quark_source), mass, tol );
@@ -259,7 +259,7 @@ exit(0);
         /**
         mult_pion( F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_pion( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -286,7 +286,7 @@ exit(0);
 	/* now the pion2 source */
         mult_pion2( F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_pion( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -308,7 +308,7 @@ exit(0);
         /* The 0-+ hybrid source.  */
         mult_zero_mp( F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_pion( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -331,7 +331,7 @@ exit(0);
         /* Now the rho source */
         mult_rho( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_rho( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -353,7 +353,7 @@ exit(0);
         /* Now the rho2 source */
         mult_rho2( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_rho( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -376,7 +376,7 @@ exit(0);
 		For the moment, Z component only */
         mult_one_mm( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_rho( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -399,7 +399,7 @@ exit(0);
         /* Now the a1 source (1++, gamma_5 gamma_z) */
         mult_a1( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_a1( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -421,7 +421,7 @@ exit(0);
         /* The a1P source (1++, epsilon_ijk gamma_j deriv_k ) */
         mult_a1_P( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_a1( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -443,7 +443,7 @@ exit(0);
         /* the 1++  hybrid source.  For the moment, Z component only */
         mult_one_pp( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_a1( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -466,7 +466,7 @@ exit(0);
         /* Now the 0+-_0+- propagator */
         mult_zero_pm( F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_zero_pm( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -488,7 +488,7 @@ exit(0);
         /* The 0+-P exotic hybrid P wave source */
         mult_zero_pm_P( F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_zero_pm( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -510,7 +510,7 @@ exit(0);
         /* The 0+- exotic quark bilinear source */
         mult_zero_pm_B( F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_zero_pm( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -533,7 +533,7 @@ exit(0);
         /* Now do the 0--_0-- propagator */
         mult_zero_mm( F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_zero_mm( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -550,7 +550,7 @@ exit(0);
         /* The 0--P_0--P exotic hybrid P wave propagator */
         mult_zero_mm_P( F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_zero_mm( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -568,7 +568,7 @@ exit(0);
         /* Now do the 1-+_1-+ source.  For the moment, Z component only */
         mult_one_mp( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_one_mp( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	/* Take both 1mp and 1mp2 sinks */
         FORALLSITES(i,s){
@@ -586,7 +586,7 @@ exit(0);
         /* Now the 1-+2_1+-2 source.  For the moment, Z component only */
         mult_one_mp2( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
         mult_one_mp2( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -604,7 +604,7 @@ exit(0);
         mult_qqqq1mp( t_source,  ZUP,
 	    F_OFFSET(quark_source), F_OFFSET(g_rand), F_OFFSET(anti_prop), temp, mass1 );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+	    temp, mass, MILC_PRECISION );
 
         mult_one_mp2( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
@@ -1128,7 +1128,7 @@ exit(0);
     FORALLSITES(i,s){
 	/* two (-1)^(x+y+z+t)'s = 1 */
     }
-    mat_invert( dest, work, temp, mass, PRECISION );
+    mat_invert( dest, work, temp, mass, MILC_PRECISION );
     FORALLSITES(i,s){
 	if(s->t== src_t ){
 	    /* really three (-1)^(x+y+z+t)'s - both propagators have one end here */

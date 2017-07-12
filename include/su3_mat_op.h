@@ -11,7 +11,7 @@
 #include "../include/complex.h"
 #include "../include/su3.h"
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 #define U3_UNIT_ANALYTIC_EPS 1.0e-6
 #define U3_ROOT_INV_NORM_EPS 1.0e-6
 #else

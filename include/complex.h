@@ -82,7 +82,7 @@ typedef struct {
    double imag;
 } double_complex;
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 #define complex fcomplex
 #else
 #define complex dcomplex

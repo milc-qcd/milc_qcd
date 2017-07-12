@@ -2,11 +2,11 @@
 #define _PRECISION_H
 
 /* generic floating point type.  Defaults to single precision. */
-#ifndef PRECISION
-#define PRECISION 1
+#ifndef MILC_PRECISION
+#define MILC_PRECISION 1
 #endif
 
-#if (PRECISION == 2)
+#if (MILC_PRECISION == 2)
 typedef double Real;
 #else
 typedef float Real;

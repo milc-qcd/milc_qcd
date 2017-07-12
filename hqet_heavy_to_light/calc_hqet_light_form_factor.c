@@ -134,7 +134,7 @@ void calc_hqet_light_form(void)
 	    else MinCG = 0;
 
 	    /* Load inversion control structure */
-	    qic_spectator.prec = PRECISION;
+	    qic_spectator.prec = MILC_PRECISION;
 	    qic_spectator.min = MinCG;
 	    qic_spectator.max = niter_spectator;
 	    qic_spectator.nrestart = nrestart_spectator;
@@ -187,7 +187,7 @@ void calc_hqet_light_form(void)
 	    else MinCG = 0;
 
 	    /* Load inversion control structure */
-	    qic_zonked_light.prec = PRECISION;
+	    qic_zonked_light.prec = MILC_PRECISION;
 	    qic_zonked_light.min = MinCG;
 	    qic_zonked_light.max = niter_zonked;
 	    qic_zonked_light.nrestart = nrestart_zonked;
