@@ -7,9 +7,9 @@
 .SUFFIXES: .1.o .2.o
 
 .c.1.o:
-	${CC} -c ${CFLAGS} -DPRECISION=1 $*.c -o $*.1.o
+	${CC} -c ${CFLAGS} -DMILC_PRECISION=1 $*.c -o $*.1.o
 .c.2.o:
-	${CC} -c ${CFLAGS} -DPRECISION=2 $*.c -o $*.2.o
+	${CC} -c ${CFLAGS} -DMILC_PRECISION=2 $*.c -o $*.2.o
 
 # List of headers currently used by some or all library routines
 # or by inheritance from their header files
