@@ -1,9 +1,9 @@
 /******* ks_multicg_offset_grid_P.c - multi-mass CG for SU3/fermions ****/
 /* MIMD version 7 */
 
-/* This is the MILC wrapper for the SciDAC Level 3 GRID inverter */
+/* This is the MILC wrapper for the multishift GRID inverter */
 
-/* C. DeTar 12/26/15 created */
+/* C. DeTar 7/10/17 created */
 
 /* NOTE: This code is actually an include file for ks_multicg_grid_F.c
    and ks_multicg_grid_D.c, so any edits should be consistent with this
@@ -144,7 +144,7 @@ KS_MULTICG_OFFSET_FIELD(
   GRID_FermionLinksAsqtad  *links;    
 
   /* Initialize GRID if not already done */
-  if(initialize_grid(GRID_PrecisionInt) != GRID_SUCCESS){
+  if(initialize_grid() != GRID_SUCCESS){
     node0_printf("%s: Error initializing GRID\n",myname);
     terminate(1);
   }
@@ -163,10 +163,6 @@ KS_MULTICG_OFFSET_FIELD(
 
   if( nmass==0 )return 0;
 
-#ifdef VTUNE
-  node0_printf("Starting VTune\n");
-  __itt_resume();
-#endif
   double dtimet = -dclock();
   /* Set grid_invert_arg */
   set_grid_invert_arg( & grid_invert_arg, qic+0, nmass );
@@ -181,32 +177,35 @@ KS_MULTICG_OFFSET_FIELD(
 
   /* Map the input and output fields */
   dtimet = -dclock();
-  grid_src = create_grid_V_from_field( src, qic[0].parity);
-  node0_printf("create_grid_V_from_field: time = %.6e sec\n", dclock()+dtimet);
+  grid_src = GRID_create_V_from_vec( src, qic[0].parity);
+  node0_printf("GRID_create_V_from_vec: time = %.6e sec\n", dclock()+dtimet);
   fflush(stdout);
   
   dtimet = -dclock();
   for(i = 0; i < nmass; i++){
     grid_sol[i] = 
-      create_grid_V_from_field( psim[i], qic[0].parity);
+      GRID_create_V_from_vec( psim[i], qic[0].parity);
   }
-  node0_printf("create_grid_V_from_field x %d: time = %.6e sec\n", 
+  node0_printf("GRID_create_V_from_field x %d: time = %.6e sec\n", 
 	       nmass, dclock()+dtimet);
   fflush(stdout);
 
   dtimet = -dclock();
-  links = create_grid_L_from_fn_links( fn, EVENANDODD );
-  node0_printf("create_grid_L_from_fn_links: time = %.6e sec\n", dclock()+dtimet);
+  links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), EVENANDODD );
+  node0_printf("GRID_asqtad_create_L_from_fn_links: time = %.6e sec\n", dclock()+dtimet);
   fflush(stdout);
 
 #ifdef CG_DEBUG
-  node0_printf("Calling GRID_ks_multicg_offset\n");fflush(stdout);
+  node0_printf("Faking GRID_ks_multicg_offset\n");fflush(stdout);
 #endif
 
-  num_iters = GRID_asqtad_invert_multi( &info, links, &grid_invert_arg, grid_resid_arg, 
-					 mass, nmass, grid_sol, grid_src );
+  for(int i = 0; i < nmass; i++){
+    GRID_asqtad_invert( &info, links, &grid_invert_arg, grid_resid_arg[i], 
+			mass[i], grid_sol[i], grid_src );
+    get_grid_resid_arg( qic+i, grid_resid_arg, nmass, num_iters);
 
-  get_grid_resid_arg( qic, grid_resid_arg, nmass, num_iters);
+  }
+
 
   /* Free the structure */
   destroy_grid_resid_arg(grid_resid_arg, nmass);
@@ -219,8 +218,8 @@ KS_MULTICG_OFFSET_FIELD(
   dtimet = -dclock();
   for(i=0; i<nmass; ++i)
     /* Copy results back to su3_vector */
-    unload_grid_V_to_field( psim[i], grid_sol[i], qic->parity);
-  node0_printf("unload_grid_V_to_field x %d: time = %.6e sec\n", 
+    GRID_extract_V_to_vec( psim[i], grid_sol[i], qic->parity);
+  node0_printf("GRID_extract_V_to_vec x %d: time = %.6e sec\n", 
 	       nmass, dclock()+dtimet);
   fflush(stdout);
   
@@ -232,11 +231,6 @@ KS_MULTICG_OFFSET_FIELD(
 
   GRID_asqtad_destroy_L(links);
   
-#ifdef VTUNE
-  __itt_pause();
-  node0_printf("Ending VTune\n");
-#endif
-
 #ifdef CGTIME
   dtimec += dclock();
   if(this_node==0){

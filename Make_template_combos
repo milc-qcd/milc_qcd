@@ -45,7 +45,7 @@ GAUGE_OBJECTS = \
   show_scidac_opts.o
 
 ifeq ($(strip ${WANTGRID}),true)
-  GAUGE_OBJECTS += map_milc_to_grid.o milc_to_grid_utilities.o
+  GAUGE_OBJECTS += gridMap.o milc_to_grid_utilities.o
 endif
 
 ifeq ($(strip ${HAVEQOP}),true)
@@ -235,7 +235,7 @@ endif
   
   CONGRAD_FN_GRID = d_congrad5_two_src.o d_congrad5_fn_grid.o \
      d_congrad5_fn_grid_D.o d_congrad5_fn_grid_F.o d_congrad5_fn_milc.o \
-     ${CONGRAD_FN_BASE}
+     gridStaggInvert.o ${CONGRAD_FN_BASE}
 
 # GPU support
 

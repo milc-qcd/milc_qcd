@@ -91,6 +91,7 @@ G_KS_ALL = \
   fn_links_milc.o \
   fn_links_qop.o \
   gauss_smear_ks.o \
+  gridStaggInvert.o \
   grsource.o \
   hisq_links_qop.o \
   hypisq_links_qop.o \
@@ -118,6 +119,9 @@ G_KS_ALL = \
   ks_multicg_offset_qop.o \
   ks_multicg_offset_qop_D.o \
   ks_multicg_offset_qop_F.o \
+  ks_multicg_offset_grid.o \
+  ks_multicg_offset_grid_D.o \
+  ks_multicg_offset_grid_F.o \
   ks_multicg_offset_qphix.o \
   ks_multicg_qop_milc_D.o \
   ks_multicg_qop_milc_F.o \
@@ -349,6 +353,8 @@ ff_opt.o: ../generic_ks/ff_opt.c
 	${CC} -c ${CFLAGS} $<
 gauss_smear_ks.o: ../generic_ks/gauss_smear_ks.c
 	${CC} -c ${CFLAGS} $<
+gridStaggInvert.o: ../generic_ks/gridStaggInvert.cc
+	${CXX} -c ${CXXFLAGS} $<
 grsource.o: ../generic_ks/grsource.c
 	${CC} -c ${CFLAGS} $<
 grsource_imp.o: ../generic_ks/grsource_imp.c
@@ -398,6 +404,12 @@ ks_multicg.o: ../generic_ks/ks_multicg.c
 ks_multicg_offset.o: ../generic_ks/ks_multicg_offset.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_offset_gpu.o: ../generic_ks/ks_multicg_offset_gpu.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_offset_grid.o: ../generic_ks/ks_multicg_offset_grid.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_offset_grid_D.o: ../generic_ks/ks_multicg_offset_grid_D.c ../generic_ks/ks_multicg_offset_grid_P.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_offset_grid_F.o: ../generic_ks/ks_multicg_offset_grid_F.c ../generic_ks/ks_multicg_offset_grid_P.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_offset_qop.o: ../generic_ks/ks_multicg_offset_qop.c
 	${CC} -c ${CFLAGS} $<

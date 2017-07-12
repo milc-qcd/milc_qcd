@@ -35,6 +35,7 @@ G_ALL = \
  gauge_utilities.o \
  general_staple.o \
  glueball_op.o \
+ gridMap.o \
  hvy_pot.o \
  io_ansi.o \
  io_dcap.o \
@@ -59,7 +60,6 @@ G_ALL = \
  layout_squares.o \
  layout_hyper_sl32.o \
  layout_qcdoc.o \
- map_milc_to_grid.o \
  map_milc_to_qopmilc.o \
  map_milc_to_qphix.o \
  map_milc_to_qopqdp.o \
@@ -175,6 +175,8 @@ general_staple.o: ../generic/general_staple.c
 	${CC} -c ${CFLAGS} $<
 glueball_op.o: ../generic/glueball_op.c
 	${CC} -c ${CFLAGS} $<
+gridMap.o: ../generic/gridMap.cc ../generic/gridMap.h
+	${CXX} -c ${CXXFLAGS} $<
 hvy_pot.o: ../generic/hvy_pot.c
 	${CC} -c ${CFLAGS} $<
 io_ansi.o: ../generic/io_ansi.c
@@ -234,12 +236,10 @@ map_milc_to_qopqdp.o: ../generic/map_milc_to_qopqdp.c ../generic/map_milc_to_qop
 	${CC} -c ${CFLAGS} $<
 milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
 	${CC} -c ${CFLAGS} $<
-map_milc_to_grid.o: ../generic/map_milc_to_grid.c ../generic/map_milc_to_grid_all.c
-	${CC} -c ${CFLAGS} $<
 map_milc_to_qphix.o: ../generic/map_milc_to_qphix.c ../generic/map_milc_to_qphix_all.c
 	${CC} -c ${CFLAGS} $<
-milc_to_grid_utilities.o: ../generic/milc_to_grid_utilities.c
-	${CC} -c ${CFLAGS} $<
+milc_to_grid_utilities.o: ../generic/milc_to_grid_utilities.cc
+	${CXX} -c ${CXXFLAGS} $<
 milc_to_qphix_utilities.o: ../generic/milc_to_qphix_utilities.c
 	${CC} -c ${CFLAGS} $<
 milc_to_quda_utilities.o: ../generic/milc_to_quda_utilities.c
