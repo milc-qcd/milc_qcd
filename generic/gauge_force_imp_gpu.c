@@ -50,7 +50,7 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
     } // dir
   } END_LOOP_OMP
 
-  qudaGaugeForce(PRECISION,num_loop_types,quda_loop_coeff,eb3,links,momentum);
+  qudaGaugeForce(MILC_PRECISION,num_loop_types,quda_loop_coeff,eb3,links,momentum);
 
   FORALLSITES_OMP(i,st,private(dir,j)){
     for(dir=XUP; dir<TUP; ++dir){

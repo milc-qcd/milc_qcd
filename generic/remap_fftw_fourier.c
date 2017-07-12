@@ -16,7 +16,7 @@
 #include "generic_includes.h"
 #include <fftw3.h>
 
-#if PRECISION==1
+#if MILC_PRECISION==1
 #define FFTWP(x) fftwf_##x
 #else
 #define FFTWP(x) fftw_##x

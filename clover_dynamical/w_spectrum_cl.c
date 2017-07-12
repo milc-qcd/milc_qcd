@@ -51,7 +51,7 @@ FORALLSITES(i,s){
 
   /* Load inversion control structure */
   qic.start_flag = 0;   /* Use zero initial guess for psi */
-  qic.prec = PRECISION;
+  qic.prec = MILC_PRECISION;
   
   /* Load Dirac matrix parameters */
   

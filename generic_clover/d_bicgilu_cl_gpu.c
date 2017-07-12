@@ -99,10 +99,10 @@ void map_milc_clov_to_quda_raw_##P(MILCFLOAT *raw_clov, clover *milc_clov){\
 }
 // make_map_clov_to_quda_raw
 
-#if ( PRECISION == 1 )
+#if ( MILC_PRECISION == 1 )
 make_map_milc_clov_to_quda_raw(F, float)
 #define map_milc_clov_to_quda_raw map_milc_clov_to_quda_raw_F
-#else // PRECISION == 2
+#else // MILC_PRECISION == 2
 make_map_milc_clov_to_quda_raw(D, double)
 #define map_milc_clov_to_quda_raw map_milc_clov_to_quda_raw_D
 #endif
@@ -195,7 +195,7 @@ int bicgilu_cl_field_gpu ( // Return value is number of iterations taken
     mult_w_by_gamma_mat_l(&(src[i]), &(quda_src[i]), &g5);
   }
 
-  qudaCloverInvert(PRECISION, 
+  qudaCloverInvert(MILC_PRECISION, 
 		   quda_precision,
 		   kappa,
 		   CKU0,

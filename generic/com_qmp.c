@@ -150,7 +150,7 @@ u_int32type crc32(u_int32type crc, const unsigned char *buf, size_t len);
 #endif
 
 /* Precision */
-#if PRECISION == 1
+#if MILC_PRECISION == 1
 #define QMP_sum_Real QMP_sum_float
 #define QMP_sum_Real_array QMP_sum_float_array
 #define QMP_max_Real QMP_max_float

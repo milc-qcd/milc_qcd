@@ -72,7 +72,7 @@ int main( int argc, char **argv )  {
             grsource(EVEN);
 	    load_ferm_links(&fn_links);
 	    ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-		       niter, rsqmin, PRECISION, EVEN, &rsq, &fn_links);
+		       niter, rsqmin, MILC_PRECISION, EVEN, &rsq, &fn_links);
 	    f_measure();
 	    rephase( OFF );
 #endif

@@ -319,7 +319,7 @@ void g_measure( ){
 
     /* KS and BC minus signs should be out for this routine */
     d_plaquette( &ss_plaquette, &st_plaquette );
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
     if(this_node==0)printf("PLAQ:\t%f\t%f\n", ss_plaquette, st_plaquette );
 #else
     if(this_node==0)printf("PLAQ:\t%.16f\t%.16f\n", ss_plaquette, st_plaquette );
@@ -353,7 +353,7 @@ void g_measure( ){
 	    g_vecdoublesum( average, NREPS );
 	    /* dump the loop */
 	    node0_printf("G_LOOP:  %d  %d  %d   ",iloop,ln,length);
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 	    for(rep=0;rep<NREPS;rep++)node0_printf("\t%e",average[rep]/volume);
 #else
 	    for(rep=0;rep<NREPS;rep++)node0_printf("\t%.16e",average[rep]/volume);

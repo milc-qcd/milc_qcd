@@ -7,7 +7,7 @@
 
 void show_generic_opts( void ){
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
   node0_printf("Generic single precision\n");
 #else
   node0_printf("Generic double precision\n");

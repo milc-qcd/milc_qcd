@@ -194,7 +194,7 @@ int readin(int prompt) {
   strcpy(savefile,par_buf.savefile);
 
   /* Load part of inversion control structure for generic inverters */
-  qic.prec = PRECISION;
+  qic.prec = MILC_PRECISION;
   qic.min = 0;
   qic.max = niter;
   qic.nrestart = nrestart;
