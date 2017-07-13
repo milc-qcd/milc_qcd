@@ -5,37 +5,51 @@ PK_CC=$2
 PK_CXX=$3
 GIT_BRANCH=feature/block-cg
 
+if [ -z ${PK_CXX} ]
+then
+  echo "Usage $0 <scalar|avx512|avx2> <CC> <CXX>"
+  exit 1
+fi
+
 MAKE="make -j4"
 
-TOPDIR=`pwd` 
-dir=Grid
-SRCDIR=${TOPDIR}/${dir}
+TOPDIR=`pwd`
+SRCDIR=${TOPDIR}/Grid
+BUILDDIR=${TOPDIR}/build-${ARCH}
+INSTALLDIR=${TOPDIR}/install-${ARCH}
 
 MAKE="make -j4"
 
-if [ ! -d ${dir} ]
+if [ ! -d ${SRCDIR} ]
 then
   echo "Fetching ${GIT_BRANCH} branch of package from github"
   git clone https://github.com/paboyle/Grid -b ${GIT_BRANCH}
-  rm -f ${dir}/Makefile  # (Will be rebuilt)                                   
+fi
 
-  cd ${dir}
+if [ ! -f ${SRCDIR}/configure ]
+then
+  pushd ${SRCDIR}
   autoreconf -vif
-  cd ..
+  popd
 fi
 
 # Configure only if not already configured                                          
-pushd ${dir}
+mkdir -p ${BUILDDIR}
+pushd ${BUILDDIR}
 if [ ! -f Makefile ]
 then
+  echo "Configuring Grid for ${ARCH} in ${BUILDDIR}"
 
   case ${ARCH} in
 
     scalar)
 
        ${SRCDIR}/configure \
-            --prefix=`pwd` \
+            --prefix=${INSTALLDIR} \
             --disable-openmp \
+            --enable-precision=double \
+            --enable-simd=GEN \
+            --enable-comms=none \
             CXX="${PK_CXX}" \
             CC="${PK_CC}" \
              ;;
@@ -43,23 +57,37 @@ then
     avx2)
 
        ${SRCDIR}/configure \
-            --prefix=`pwd` \
+            --prefix=${INSTALLDIR} \
             --enable-mkl=yes \
+            --enable-precision=double \
+            --enable-simd=GEN \
+            --enable-comms=mpi \
             CXX="${PK_CXX}" \
-            CC="${PK_CC}" \
+            CXXFLAGS="-std=c++11 -xMIC-AVX512" \
+
              ;;
     avx512)
 
        ${SRCDIR}/configure \
-            --prefix=`pwd` \
+            --prefix=${INSTALLDIR} \
             --enable-mkl=yes \
+            --enable-precision=double \
+            --enable-simd=GEN \
+            --enable-comms=mpi \
             CXX="${PK_CXX}" \
-            CC="${PK_CC}" \
+            CXXFLAGS="-std=c++11 -xMIC-AVX512" \
+
              ;;
     *)
     echo "Unsupported ARCH ${ARCH}"
           exit 1;
   esac
+
+  echo "Building in ${BUILDDIR}"
+  ${MAKE}
+
+  echo "Installing in ${INSTALLDIR}"
+  ${MAKE} install
 
 fi     
 popd
