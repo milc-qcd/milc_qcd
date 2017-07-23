@@ -450,6 +450,17 @@ int readin(int prompt) {
     startlat_p = reload_lattice( param.startflag, param.startfile );
   }
 
+#if 0
+  su3_matrix *G = create_random_m_field();
+  gauge_transform_links(G);
+  d_plaquette(&g_ssplaq,&g_stplaq);
+  d_linktrsum(&linktrsum);
+  nersc_checksum = nersc_cksum();
+  node0_printf("CHECK PLAQ: %.16e %.16e\n",g_ssplaq,g_stplaq);
+  node0_printf("CHECK NERSC LINKTR: %.16e CKSUM: %x\n",
+	       linktrsum.real/3.,nersc_checksum);
+#endif
+
   /* if a lattice was read in, put in KS phases and AP boundary condition */
   phases_in = OFF;
   rephase( ON );
@@ -524,6 +535,13 @@ int readin(int prompt) {
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &param.Nvecs, eigVal, eigVec, 1);
   if(status != 0)terminate(1);
+
+#if 0
+  for(int j = 0; j < param.Nvecs; j++){
+    gauge_transform_v_field(eigVec[j], G);
+  }
+  destroy_m_field(G);
+#endif
 #endif
 
   ENDTIME("readin");
