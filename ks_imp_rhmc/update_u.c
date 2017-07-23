@@ -12,6 +12,7 @@
  */
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "../include/openmp_defs.h"
 
 #ifdef USE_GF_GPU
 
@@ -30,32 +31,45 @@ void update_u(Real eps){
 #endif
 
   initialize_quda();
-  Real *momentum = (Real*)malloc(sites_on_node*4*sizeof(anti_hermitmat));
-  Real *gauge = (Real*)malloc(sites_on_node*4*sizeof(su3_matrix));
+
+#ifdef GFTIME
+  double dtime, dclock();
+  dtime = -dclock();
+#endif
+
+  anti_hermitmat *momentum = qudaAllocatePinned(sites_on_node*4*sizeof(anti_hermitmat));
+  su3_matrix *gauge = qudaAllocatePinned(sites_on_node*4*sizeof(su3_matrix));
+
   // Populate gauge and momentum fields
-  FORALLSITES(i,s){
-    for(dir=XUP; dir<=TUP; ++dir){
-      for(j=0; j<18; ++j){
-        gauge[(4*i + dir)*18 + j] = ((Real*)(&(s->link[dir])))[j];
-      }
-      for(j=0; j<10; ++j){
-        momentum[(4*i + dir)*10 + j] = ((Real*)(&(s->mom[dir])))[j];
-      }
+  FORALLSITES_OMP(i,s,private(dir)){
+    for(dir=XUP; dir<=TUP; ++dir) {
+      gauge[4*i + dir] = s->link[dir];
     } // dir
-  }
+    for(dir=XUP; dir<=TUP; ++dir) {
+      momentum[4*i + dir] = s->mom[dir];
+    } // dir
+  } END_LOOP_OMP
 
   qudaUpdateU(PRECISION, eps, momentum, gauge);
 
   // Copy updated gauge field back to site structure
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(dir)){
     for(dir=XUP; dir<=TUP; ++dir){
       for(j=0; j<18; ++j){
-        ((Real*)(&(s->link[dir])))[j] = gauge[(4*i + dir)*18 + j];
+	s->link[dir] = gauge[4*i + dir];
       }
     }
-  }
-  free(momentum);
-  free(gauge);
+  } END_LOOP_OMP
+
+  qudaFreePinned(momentum);
+  qudaFreePinned(gauge);
+
+#ifdef GFTIME
+  dtime += dclock();
+  node0_printf("LINK_UPDATE: time = %e mflops = %e\n",
+	       dtime, (double)(5616.0*volume/(1.0e6*dtime*numnodes())) );
+#endif
+
   return;
 }
 
@@ -74,8 +88,10 @@ void update_u( Real eps ){
     int gf_i,gf_j;
    **END TEMP **/
 
-  /**double dtime,dtime2,dclock();**/
-  /**dtime = -dclock();**/
+#ifdef GFTIME
+  double dtime, dclock();
+  dtime = -dclock();
+#endif
 
   /* Take divisions out of site loop (can't be done by compiler) */
   t2 = eps/2.0;
@@ -93,7 +109,7 @@ void update_u( Real eps ){
   invalidate_fermion_links(fn_links);
 #endif
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(dir,link,temp1,temp2,htemp)) {
     for(dir=XUP; dir <=TUP; dir++){
       uncompress_anti_hermitian( &(s->mom[dir]) , &htemp );
       link = &(s->link[dir]);
@@ -115,11 +131,14 @@ void update_u( Real eps ){
       scalar_mult_add_su3_matrix(link,&temp1,eps    ,&temp2); 
       su3mat_copy(&temp2,link);
     }
-  }
+  } END_LOOP_OMP
 
-  /**dtime += dclock();
-    node0_printf("LINK_UPDATE: time = %e  mflops = %e\n",
-    dtime, (double)(5616.0*volume/(1.0e6*dtime*numnodes())) );**/
+#ifdef GFTIME
+  dtime += dclock();
+  node0_printf("LINK_UPDATE: time = %e  mflops = %e\n",
+	       dtime, (double)(5616.0*volume/(1.0e6*dtime*numnodes())) );
+#endif
+
 } /* update_u */
 
 #endif

@@ -212,6 +212,18 @@ eigVal[7] = 7.770508e-02 ( resid = 4.216121e-04 , ||eigVec[7]|| = 1.000000e+00 )
 eigVal[8] = 8.072846e-02 ( resid = 4.213329e-04 , ||eigVec[8]|| = 1.000000e+00 )
 eigVal[9] = 8.521673e-02 ( resid = 4.395156e-04 , ||eigVec[9]|| = 1.000000e+00 )
 End of eigensolutions
+Checking eigensolutions
+eigVal[0] = 3.620608e-02 ( resid = 3.988273e-03 , ||eigVec[0]|-1| = 6.661338e-16 )
+eigVal[1] = 4.162786e-02 ( resid = 5.297411e-03 , ||eigVec[1]|-1| = 0.000000e+00 )
+eigVal[2] = 5.182235e-02 ( resid = 4.259917e-03 , ||eigVec[2]|-1| = 8.881784e-16 )
+eigVal[3] = 5.560793e-02 ( resid = 3.336776e-03 , ||eigVec[3]|-1| = 1.332268e-15 )
+eigVal[4] = 5.729621e-02 ( resid = 3.530050e-03 , ||eigVec[4]|-1| = -1.554312e-15 )
+eigVal[5] = 6.375558e-02 ( resid = 4.066911e-03 , ||eigVec[5]|-1| = -6.661338e-16 )
+eigVal[6] = 6.854934e-02 ( resid = 4.173509e-03 , ||eigVec[6]|-1| = 0.000000e+00 )
+eigVal[7] = 7.770508e-02 ( resid = 4.088480e-03 , ||eigVec[7]|-1| = 1.554312e-15 )
+eigVal[8] = 8.072846e-02 ( resid = 3.965488e-03 , ||eigVec[8]|-1| = -5.551115e-16 )
+eigVal[9] = 8.521673e-02 ( resid = 4.089198e-03 , ||eigVec[9]|-1| = 2.220446e-16 )
+End of eigensolutions
 The above were eigenvalues of -Dslash^2 in MILC normalization
 Here we also list eigenvalues of iDslash in continuum normalization
 eigenval(0):  0.0951395
@@ -493,12 +505,21 @@ Record info
 Checksums 5a12f01f 6d8d7a58
 Time to reload 5 eigenvectors = 1.902986e-02
 Aggregate time to readin 1.258872e-01
+Even site residuals
 Checking eigensolutions
 eigVal[0] = 3.620608e-02 ( resid = 7.753150e+00 , ||eigVec[0]|| = 1.000000e+00 )
 eigVal[1] = 4.162786e-02 ( resid = 7.729221e+00 , ||eigVec[1]|| = 1.000000e+00 )
 eigVal[2] = 5.182235e-02 ( resid = 7.778034e+00 , ||eigVec[2]|| = 1.000000e+00 )
 eigVal[3] = 5.560793e-02 ( resid = 7.776594e+00 , ||eigVec[3]|| = 1.000000e+00 )
 eigVal[4] = 5.729621e-02 ( resid = 7.758484e+00 , ||eigVec[4]|| = 1.000000e+00 )
+End of eigensolutions
+Odd site residuals
+Checking eigensolutions
+eigVal[0] = 3.620608e-02 ( resid = 7.870659e+00 , ||eigVec[0]|-1| = 6.661338e-16 )
+eigVal[1] = 4.162786e-02 ( resid = 7.910498e+00 , ||eigVec[1]|-1| = 0.000000e+00 )
+eigVal[2] = 5.182235e-02 ( resid = 7.745570e+00 , ||eigVec[2]|-1| = 8.881784e-16 )
+eigVal[3] = 5.560793e-02 ( resid = 7.859981e+00 , ||eigVec[3]|-1| = 1.332268e-15 )
+eigVal[4] = 5.729621e-02 ( resid = 7.770675e+00 , ||eigVec[4]|-1| = -1.554312e-15 )
 End of eigensolutions
 The above were eigenvalues of -Dslash^2 in MILC normalization
 Here we also list eigenvalues of iDslash in continuum normalization

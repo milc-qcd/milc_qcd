@@ -14,7 +14,7 @@ MAKEFILE = Makefile
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH = # knl knc hsw
+ARCH = # knl knc hsw pow8
 
 #----------------------------------------------------------------------
 # 2. Compiler family
@@ -64,7 +64,7 @@ else ifeq ($(strip ${COMPILER}),gnu)
     CXX = mpiCC
   else
     CC  = gcc
-    CXX = CC
+    CXX = g++
   endif
 
 endif
@@ -101,7 +101,10 @@ ifeq ($(strip ${COMPILER}),gnu)
 
   OCFLAGS += -std=c99
 
- 
+  ifeq ($(strip ${ARCH}),pow8)
+    ARCH_FLAG = -mcpu=power8
+  endif
+
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -fopenmp
     LDFLAGS = -fopenmp
@@ -321,17 +324,12 @@ endif
 
 WANTPRIMME = #true
 
-# PRIMME version 1.1
+# PRIMME version 2.0
 
 ifeq ($(strip ${WANTPRIMME}),true)
-  LIBPRIMME = -L${HOME}/milc/install/PRIMME -lzprimme
+  INCPRIMME = -I${HOME}/PRIMME/include
+  LIBPRIMME = -L${HOME}/PRIMME/lib -lprimme
 endif
-
-# PRIMME version 1.2
-
-# ifeq ($(strip ${WANTPRIMME}),true)
-#   LIBPRIMME = -L${HOME}/milc/install/PRIMME -lprimme
-# endif
 
 #----------------------------------------------------------------------
 # 15. GPU/QUDA Options
@@ -346,6 +344,7 @@ WANT_GF_GPU = #true
 ifeq ($(strip ${WANTQUDA}),true)
 
   QUDA_HOME = ${HOME}/quda
+  QUDA_HEADERS = ${QUDA_HOME}/include
 
   INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
   LIBQUDA = -L${QUDA_HOME}/lib -lquda
@@ -353,7 +352,7 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   CUDA_HOME = /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart
+  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
 
@@ -395,6 +394,8 @@ endif
 # 16. QPhiX Options
 
 WANTQPHIX = #true
+WANT_FN_CG_QPHIX = true
+WANT_GF_QPHIX = true
 
 QPHIX_HOME = ${HOME}/QPhiX/mbench
 
@@ -430,6 +431,19 @@ ifeq ($(strip ${WANTQPHIX}), true)
   else
   endif
 
+  endif
+
+  QPHIX_HEADERS   = ${QPHIX_HOME}
+  QPHIX_LIBRARIES = ${QPHIX_HOME}
+
+  ifeq ($(strip ${WANT_FN_CG_QPHIX}),true)
+    HAVE_FN_CG_QPHIX = true
+    CPHI += -DUSE_CG_QPHIX
+  endif
+
+  ifeq ($(strip ${WANT_GF_QPHIX}),true)
+    HAVE_GF_QPHIX = true
+    CPHI += -DUSE_GF_QPHIX
   endif
 
 endif
@@ -652,7 +666,7 @@ CPREFETCH = #
 # NO_REFINE          No refinements except for masses with nonzero Naik eps
 # CPU_REFINE         Refine on CPU only (if at all), not GPU
 
-KSCGMULTI = -DKS_MULTICG=HYBRID # -DHALF_MIXED # -DNO_REFINE
+KSCGMULTI = -DKS_MULTICG=HYBRID -DNO_REFINE # -DHALF_MIXED
 
 #------------------------------
 # Multifermion force routines
@@ -734,7 +748,7 @@ CLMEM = #-DCLOV_LEAN
 #----------------------------------------------------------------------
 # Extra include paths
 
-INCADD = ${INCFFTW} ${INCQUDA} ${INCQPHIX} ${INCVTUNE}
+INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCVTUNE}
 
 #----------------------------------------------------------------------
 #  Extra libraries

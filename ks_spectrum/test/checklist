@@ -29,9 +29,9 @@ exec ks_spectrum_asqtad   2      -         periodic  PLAQ: NERSC
      extra-output      ks_spectrum_asqtad.periodic.2.corrfile_t0  --- EOF
 exec ks_spectrum_hisq_mu_eos     1      -         -   PB_DMDEPS_P RUNNING
 
-exec ks_spectrum_deflate_asqtad   2      -          -    Checking End  Checking End
+exec ks_spectrum_deflate_asqtad   2      -          -    Checking End  Checking End Checking End  Checking End
      extra-output      ks_spectrum_deflate_asqtad.2.corrfile  --- EOF
-exec ks_spectrum_eigcg_asqtad   2      -            -    Checking End  Checking end
+exec ks_spectrum_eigcg_asqtad   2      -            -    Checking End  Checking End
      extra-output      ks_spectrum_eigcg_asqtad.2.corrfile  --- EOF
 
 exec ks_spectrum_hisq     1      -         fpi        PLAQ: NERSC     
@@ -62,7 +62,7 @@ exec ks_spectrum_hisq     2      -         periodic  PLAQ: NERSC
      extra-output      ks_spectrum_hisq.periodic.2.corrfile_t0  --- EOF
 exec ks_spectrum_hisq_mu_eos     2      -         -    PB_DMDEPS_P RUNNING
 
-exec ks_spectrum_deflate_hisq   2      -          -    Checking End  Checking End
+exec ks_spectrum_deflate_hisq   2      -          -    Checking End  Checking End Checking End  Checking End
      extra-output      ks_spectrum_deflate_hisq.2.corrfile  --- EOF
 exec ks_spectrum_eigcg_hisq   2      -            -    Checking End  Checking End
      extra-output      ks_spectrum_eigcg_hisq.2.corrfile  --- EOF

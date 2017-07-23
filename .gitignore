@@ -4,5 +4,8 @@
 *#*
 .lastmake.*
 localmake
+*.sample-tmp
+*.test-diff
+*.test-tmp
 
 

@@ -32,7 +32,10 @@ main( int argc, char **argv )
   int i,meascount,traj_done, naik_index;
   int prompt;
   int s_iters, avs_iters, avbcorr_iters;
-  double dtime, dclock();
+  double starttime, endtime;
+#ifdef PRTIME
+  double dtime;
+#endif
   
   initialize_machine(&argc,&argv);
 
@@ -40,9 +43,14 @@ main( int argc, char **argv )
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
   g_sync();
-  /* set up */
-  prompt = setup();
 
+  starttime = dclock();
+
+  /* set up */
+  STARTTIME;
+  prompt = setup();
+  ENDTIME("setup");
+  
   /* loop over input sets */
   while( readin(prompt) == 0) {
     
@@ -50,8 +58,7 @@ main( int argc, char **argv )
 #ifdef MILC_GLOBAL_DEBUG
     global_current_time_step = 0;
 #endif /* MILC_GLOBAL_DEBUG */
-
-    dtime = -dclock();
+    
     for( traj_done=0; traj_done < warms; traj_done++ ){
       update();
     }
@@ -60,33 +67,37 @@ main( int argc, char **argv )
     /* perform measuring trajectories, reunitarizing and measuring 	*/
     meascount=0;		/* number of measurements 		*/
     avs_iters = avbcorr_iters = 0;
-
+    
     for( traj_done=0; traj_done < trajecs; traj_done++ ){ 
 #ifdef MILC_GLOBAL_DEBUG
 #ifdef HISQ_REUNITARIZATION_DEBUG
-  {
-  int isite, idir;
-  site *s;
-  FORALLSITES(isite,s) {
-    for( idir=XUP;idir<=TUP;idir++ ) {
-      lattice[isite].on_step_Y[idir] = 0;
-      lattice[isite].on_step_W[idir] = 0;
-      lattice[isite].on_step_V[idir] = 0;
-    }
-  }
-  }
+      {
+	int isite, idir;
+	site *s;
+	FORALLSITES(isite,s) {
+	  for( idir=XUP;idir<=TUP;idir++ ) {
+	    lattice[isite].on_step_Y[idir] = 0;
+	    lattice[isite].on_step_W[idir] = 0;
+	    lattice[isite].on_step_V[idir] = 0;
+	  }
+	}
+      }
 #endif /* HISQ_REUNITARIZATION_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
       /* do the trajectories */
+      STARTTIME;
       s_iters=update();
-
+      ENDTIME("do one trajectory");
+      
       /* measure every "propinterval" trajectories */
       if( (traj_done%propinterval)==(propinterval-1) ){
 	
 	/* call gauge_variable fermion_variable measuring routines */
 	/* results are printed in output file */
 	rephase(OFF);
+	STARTTIME;
 	g_measure( );
+	ENDTIME("do gauge measurement");
 	rephase(ON);
 #ifdef MILC_GLOBAL_DEBUG
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
@@ -96,13 +107,14 @@ main( int argc, char **argv )
         g_measure_tune( );
 #endif /* MEASURE_AND_TUNE_HISQ */
 #endif /* MILC_GLOBAL_DEBUG */
-
-
+	
+	
 	/**************************************************************/
 	/* Compute chiral condensate and related quantities           */
 	
 	/* Make fermion links if not already done */
 	
+	STARTTIME;
 	restore_fermion_links_from_site(fn_links, par_buf.prec_pbp);
 	for(i = 0; i < par_buf.num_pbp_masses; i++){
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
@@ -112,13 +124,13 @@ main( int argc, char **argv )
 #endif
  	  f_meas_imp_field( par_buf.npbp_reps, &par_buf.qic_pbp[i], 
  			    par_buf.ksp_pbp[i].mass, naik_index, fn_links);
-
+	  
 #ifdef D_CHEM_POT
 	  Deriv_O6_field( par_buf.npbp_reps, &par_buf.qic_pbp[i],
 			  par_buf.ksp_pbp[i].mass, naik_index, fn_links);
 #endif
 	}
-
+	ENDTIME("do pbp measurements");
 	avs_iters += s_iters;
 	++meascount;
 	fflush(stdout);
@@ -131,9 +143,9 @@ main( int argc, char **argv )
 		   (double)avs_iters/meascount);
     }
     
-    dtime += dclock();
+    endtime = dclock();
     if(this_node==0){
-      printf("Time = %e seconds\n",dtime);
+      printf("Time = %e seconds\n",(double)(endtime-starttime));
       printf("total_iters = %d\n",total_iters);
 #ifdef HISQ_SVD_COUNTER
       printf("hisq_svd_counter = %d\n",hisq_svd_counter);
@@ -150,6 +162,7 @@ main( int argc, char **argv )
 #endif
     }
     fflush(stdout);
+    starttime = endtime;
     
     /* save lattice if requested */
     if( saveflag != FORGET ){

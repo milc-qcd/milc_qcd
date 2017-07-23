@@ -231,6 +231,12 @@ ks_measure_current_deflate_hisq::
 	-DEIGMODE=DEFLATION -DEIGEN_QIO" \
 	"EXTRA_OBJECTS += f_meas_current.o rand_gauge2.o ${DEFLATE_OBJECTS}"
 
+ks_measure_current_block_deflate_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
+	-DEIGMODE=DEFLATION -DEIGEN_QIO -DBLOCKCG" \
+	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
+
 ks_measure_current_eigcg_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \

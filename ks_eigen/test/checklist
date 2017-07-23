@@ -1,6 +1,6 @@
-exec su3_eigen_asqtad   1 "WANTPRIMME=true"  PRIMME  BEGIN RUNNING
-exec su3_eigen_asqtad   1 "WANTPRIMME=false" Ritz    BEGIN RUNNING
-exec su3_eigen_hisq     1 "WANTPRIMME=true"  PRIMME  BEGIN RUNNING
-exec su3_eigen_hisq     1 "WANTPRIMME=false" Ritz    BEGIN RUNNING
-#exec su3_eigen_p4fat3   1 "WANTPRIMME=true"  PRIMME  BEGIN RUNNING
-#exec su3_eigen_p4fat3   1 "WANTPRIMME=false" Ritz    BEGIN RUNNING
+exec su3_eigen_asqtad   2 "WANTPRIMME=true"  PRIMME  BEGIN RUNNING
+exec su3_eigen_asqtad   2 "WANTPRIMME=false" Ritz    BEGIN RUNNING
+exec su3_eigen_hisq     2 "WANTPRIMME=true"  PRIMME  BEGIN RUNNING
+exec su3_eigen_hisq     2 "WANTPRIMME=false" Ritz    BEGIN RUNNING
+#exec su3_eigen_p4fat3   2 "WANTPRIMME=true"  PRIMME  BEGIN RUNNING
+#exec su3_eigen_p4fat3   2 "WANTPRIMME=false" Ritz    BEGIN RUNNING

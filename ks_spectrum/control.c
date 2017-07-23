@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
       int total_R_iters;
       total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
 			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters, 1);
-      construct_eigen_odd(eigVec, eigVal, Nvecs_curr);
+      construct_eigen_odd(eigVec, eigVal, Nvecs_curr, fn[0]);
       node0_printf("total Rayleigh iters = %d\n", total_R_iters);
 
 #if 0 /* If needed for debugging */

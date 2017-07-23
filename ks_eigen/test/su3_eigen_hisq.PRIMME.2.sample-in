@@ -25,7 +25,7 @@ error_for_propagator .000002
 Number_of_eigenvals 32
 
 # CG for Rayleigh-Ritz minimization
-Max_Rayleigh_iters 100
+Max_Rayleigh_iters 2000
 Restart_Rayleigh 10
 
 # Outer loop iterations
@@ -41,4 +41,3 @@ error_decrease .3
 reload_serial ../../binary_samples/lat.sample.inst
 staple_weight 0
 ape_iter 0
-
