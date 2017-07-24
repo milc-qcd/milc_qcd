@@ -5,6 +5,7 @@
 #include <Grid/Grid.h>
 #include <vector>
 #include <iostream>
+#include <qmp.h>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -24,6 +25,8 @@ using namespace Grid::QCD;
 
 GridCartesian *CGrid;
 GridRedBlackCartesian *RBGrid;
+
+static int is_grid_env_setup = 0;
 
 GRID_evenodd_t milc2grid_parity(int milc_parity){
   switch(milc_parity){
@@ -61,11 +64,13 @@ initialize_grid(void){
   
   int  argc = 3;
   char **argv;
-  
+
+  if(is_grid_env_setup)
+    return GRID_SUCCESS;
+
   /* We simulate the command line parameters to initialize Grid, and
    * call the standard routine. This doesn't look very elegant, but
-   * this way we let Grid handle the parameters. Upon future
-   * modifications most likely the interface will still work        */
+   * this way we let Grid handle the parameters. */
   
   GRID_ASSERT((argv = (char **) malloc(sizeof(char *)*3)) != NULL, GRID_MEM_ERROR);
   
@@ -83,6 +88,7 @@ initialize_grid(void){
   sprintf (argv[1], "--mpi %d.%d.%d.%d\0",  mpiX,   mpiY,   mpiZ,   mpiT);
 
   Grid_init(&argc, &argv);
+  printf("finished Grid_init\n"); fflush(stdout);
 
   std::vector<int> latt_size   = GridDefaultLatt();
   std::vector<int> simd_layout = GridDefaultSimd(Nd,vComplex::Nsimd());
@@ -92,6 +98,7 @@ initialize_grid(void){
 
   node0_printf("milc_to_grid_utilities: Initialized Grid\n");
   node0_printf("Grid threads %d\n", Grid::GridThread::GetThreads());
+  fflush(stdout);
 
   free (argv[2]);
   free (argv[1]);
@@ -100,4 +107,30 @@ initialize_grid(void){
   
   return GRID_SUCCESS;
 
+}
+
+// Return the coordinate as assigned by Grid
+// Code from CPS via Chulwoo Jung
+
+int *query_grid_node_mapping(int peGrid[]){
+
+  if(is_grid_env_setup){
+    printf("query_grid_node_mapping: Grid must first be initialized\n");
+    terminate(1);
+  }
+
+  // Hack to reset node mapping for Grid (from Chulwoo Jung)
+  static int pePos[4];  /*!< Position of this process in the grid.*/
+  static QMP_comm_t qmp_comm;
+
+  std::vector<int> processors;
+  printf("setting up CartesianCommunicator with %d %d %d %d\n", 
+	 peGrid[0], peGrid[1], peGrid[2], peGrid[3]); fflush(stdout);
+  for(int i=0;i<4;i++) processors.push_back(peGrid[i]);
+  Grid::CartesianCommunicator grid_cart(processors);
+  printf("done with CartesianCommunicator\n"); fflush(stdout);
+  for(int i=3;i>=0;i--){
+    pePos[i] = grid_cart._processor_coor[i];
+  }
+  return pePos;
 }
