@@ -58,6 +58,9 @@
      each site on the node.)
 */
 #include "generic_includes.h"
+#ifdef HAVE_GRID
+#include "../include/generic_grid.h"
+#endif
 #ifdef HAVE_QMP
 #include <qmp.h>
 #endif
@@ -284,9 +287,10 @@ static void init_io_node(){
 #endif
 
 /*------------------------------------------------------------------*/
-/* Initialization entry point */
+/* Sets nsquares, squaresize */
+/* For QMP, declares logical topology */
 
-void setup_layout(){
+static void set_topology(){
   int k = mynode();
   int nd = 0;
   int const *geom;
@@ -373,14 +377,56 @@ void setup_layout(){
   }
   
 #endif
+
+}
   
+/*------------------------------------------------------------------*/
+/* Initialization entry point */
+
+void setup_layout(){
+  int nd = 0;
+  int const *geom;
+
+  /* Set topology: nsquares, squaresize */
+
+  set_topology();
+
+#ifdef HAVE_GRID
+
+  /* Initlalize Grid */
+  initialize_grid();
+
+  /* Grid assigns its own machine coordinates */
+
+  /* Find my rank, according to Grid */
+  int *pePos = query_grid_node_mapping(nsquares);
+  int peRank = (int)lex_rank(pePos, 4, nsquares);
+
+  printf("setup_layout(%d) query returns %d\n", mynode(), peRank);
+  fflush(stdout);
+
+  /* Reassign my rank with the communicator */
+  reset_machine_rank(peRank);
+
+  printf("setup_layout(%d) is %d after reset\n", mynode(), peRank);
+  fflush(stdout);
+
+#endif
+
   /* Initialize I/O node function */
 #ifdef FIX_IONODE_GEOM
   init_io_node();
 #endif
   
   /* Compute machine coordinates for this node */
-  lex_coords(machine_coordinates, 4, nsquares, k);
+  lex_coords(machine_coordinates, 4, nsquares, mynode());
+
+#ifdef HAVE_GRID
+  printf("setup_layout(%d) pePos %d,%d,%d,%d machine %d,%d,%d,%d\n", 
+	 mynode(), pePos[0], pePos[1], pePos[2], pePos[3],
+	 machine_coordinates[0],  machine_coordinates[1],  
+	 machine_coordinates[2],  machine_coordinates[3]);
+#endif
 
   /* Number of sites on node */
   sites_on_node =
@@ -400,6 +446,9 @@ void setup_layout(){
     even_sites_on_node++;
 
   odd_sites_on_node = sites_on_node - even_sites_on_node;
+
+  printf("sites on node %d; even_sites_on_node %d, odd_sites_on_node %d\n",
+	 sites_on_node, even_sites_on_node, odd_sites_on_node);
 }
 
 /*------------------------------------------------------------------*/
