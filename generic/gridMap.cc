@@ -66,7 +66,8 @@ create_V_from_vec( su3_vector *src, int milc_parity){
   GRID_ASSERT(out->cv != NULL, GRID_FAIL);
 
   int idx;
-  FORSOMEFIELDPARITY_OMP(idx, milc_parity, private(cVec, x))
+  //  FORSOMEFIELDPARITY_OMP(idx, milc_parity, private(cVec, x))
+  FORSOMEFIELDPARITY_OMP(idx, milc_parity,)
     {
 
       std::vector<int> x = indexToCoords(idx);
@@ -90,7 +91,8 @@ static void extract_V_to_vec( su3_vector *dest,
 			      struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *src, 
 			      int milc_parity ){
   int idx;
-  FORSOMEFIELDPARITY_OMP(idx, milc_parity, private(cVec, x))
+  //  FORSOMEFIELDPARITY_OMP(idx, milc_parity, private(cVec, x))
+  FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
     {
       std::vector<int> x = indexToCoords(idx);
       ColourVector cVec;
@@ -165,7 +167,8 @@ asqtad_create_L_from_MILC( su3_matrix *thn, su3_matrix *fat,
   for (int mu=0; mu<4; mu++)
     {
       int idx;
-      FORSOMEFIELDPARITY_OMP(idx, milc_parity, private(tmpU, tmpUft, tmpUUU, i, j, x))
+      //FORSOMEFIELDPARITY_OMP(idx, milc_parity, private(tmpU, tmpUft, tmpUUU, i, j, x))
+      FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
 	{
 	  std::vector<int> x = indexToCoords(idx);
 	    
