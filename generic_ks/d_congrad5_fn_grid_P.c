@@ -121,11 +121,11 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   tot_cg_time = -dclock();
 #endif   
   
-  /* Initialize GRID if not already done */
-  if(initialize_grid() != GRID_SUCCESS){
-    node0_printf("%s: Error initializing GRID\n",myname);
+  if(! grid_initialized()){
+    node0_printf("%s: FATAL Grid has not been initialized\n", myname);
     terminate(1);
   }
+
 #ifdef CG_DEBUG
   dctime = -dclock();
 #endif
@@ -160,7 +160,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   /* For now we are taking the thin links from the site structure, so the first parameter is NULL */
   links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), EVENANDODD );
   
-#if CG_DEBUG
+#ifdef REMAP
   t_l   += dclock(); 
 #endif       
   
