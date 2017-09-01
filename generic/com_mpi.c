@@ -462,7 +462,7 @@ initialize_machine(int *argc, char ***argv)
   required = MPI_THREAD_SINGLE;
 #endif
   
-  flag = MPI_Init_thread(argc, argv, required &provided);
+  flag = MPI_Init_thread(argc, argv, required, &provided);
   if(flag != MPI_SUCCESS) err_func(&comm, &flag);
   if(provided != required){
     printf("com_mpi: required thread-safety level %d can't be provided %d.\n", required, provided);
@@ -618,7 +618,7 @@ initialize_machine(int *argc, char ***argv)
 void
 reset_machine_rank(int peRank){
   MPI_Comm comm;
-  MPI_comm_split(MPI_COMM_THISJOB,jobid,peRank,&comm);
+  MPI_Comm_split(MPI_COMM_THISJOB,jobid,peRank,&comm);
   MPI_COMM_THISJOB = comm;
 }
 
