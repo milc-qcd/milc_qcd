@@ -51,14 +51,18 @@ then
 
     scalar)
 
+       module swap craype-mic-knl craype-haswell 
+
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
-            --disable-openmp \
             --enable-precision=double \
             --enable-simd=GEN \
             --enable-comms=none \
+	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
+	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc/lib \
             CXX="${PK_CXX}" \
-            CC="${PK_CC}" \
+            CXXFLAGS="-std=c++11 -xCORE-AVX2" \
+
              ;;
 
     avx2)
@@ -69,6 +73,8 @@ then
             --enable-precision=double \
             --enable-simd=GEN \
             --enable-comms=mpi \
+	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
+	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc/lib \
             CXX="${PK_CXX}" \
             CXXFLAGS="-std=c++11 -xMIC-AVX512" \
 
