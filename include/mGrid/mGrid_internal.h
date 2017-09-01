@@ -8,21 +8,21 @@ using namespace Grid::QCD;
 
 // The color-vector and gauge field objects used in the interface
 
-template<typename ImprovedStaggeredFermion>
+template<typename ISF>
 struct GRID_ColorVector_struct {
-  typename ImprovedStaggeredFermion::FermionField *cv;
+  typename ISF::FermionField *cv;
 };
 
-template<typename ImprovedStaggeredFermion5D>
+template<typename ISF5D>
 struct GRID_ColorVector5D_struct {
-  typename ImprovedStaggeredFermion5D::FermionField *cv;
+  typename ISF5D::FermionField *cv;
 };
 
-template<typename LatticeGaugeField>
+template<typename LGF>
 struct GRID_FermionLinksAsqtad_struct {
-  LatticeGaugeField *thnlinks;
-  LatticeGaugeField *fatlinks;
-  LatticeGaugeField *lnglinks;
+  LGF *thnlinks;
+  LGF *fatlinks;
+  LGF *lnglinks;
 };
 
 typedef struct GRID_ColorVector_struct<ImprovedStaggeredFermionF>  GRID_F3_ColorVector_struct;
