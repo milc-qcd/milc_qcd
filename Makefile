@@ -100,6 +100,7 @@ OMP = #true
 ifeq ($(strip ${COMPILER}),gnu)
 
   OCFLAGS += -std=c99
+  OCXXFLAGS += -std=c++11
 
   ifeq ($(strip ${ARCH}),pow8)
     ARCH_FLAG = -mcpu=power8
@@ -107,6 +108,7 @@ ifeq ($(strip ${COMPILER}),gnu)
 
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -fopenmp
+    OCXXFLAGS += -fopenmp
     LDFLAGS = -fopenmp
   endif
 
@@ -121,6 +123,7 @@ endif
 ifeq ($(strip ${COMPILER}),ibm)
 
   OCFLAGS = -qarch=450 -qlanglvl=stdc99 # BG/P BG/Q
+  OCXXFLAGS += -qarch=450 -qlanglvl=stdc++11
 
 endif
 
@@ -129,6 +132,7 @@ endif
 ifeq ($(strip ${COMPILER}),intel)
 
   OCFLAGS += -std=c99
+  OCXXFLAGS += -std=c++11
 
   ifeq ($(strip ${ARCH}),knl)
   ARCH_FLAG = -xMIC-AVX512
@@ -145,11 +149,14 @@ ifeq ($(strip ${COMPILER}),intel)
   endif
 
   OCFLAGS += ${ARCH_FLAG}
+  OCXXFLAGS += ${ARCH_FLAG}
   LDFLAGS += ${ARCH_FLAG}
   OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
 
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
+    OCXXFLAGS += -qopenmp
     LDFLAGS = -qopenmp
   endif
 
@@ -160,6 +167,7 @@ endif
 ifeq ($(strip ${COMPILER}),cray-intel)
 
   OCFLAGS += -std=c99
+  OCXXFLAGS += -std=c++11
 
   ifeq ($(strip ${ARCH}),knl)
   ARCH_FLAG = -xMIC-AVX512
@@ -176,11 +184,14 @@ ifeq ($(strip ${COMPILER}),cray-intel)
   endif
 
   OCFLAGS += ${ARCH_FLAG}
+  OCXXFLAGS += ${ARCH_FLAG}
   LDFLAGS += ${ARCH_FLAG}
   OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
 
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
+    OCXXFLAGS += -qopenmp
     LDFLAGS = -qopenmp
   endif
 
@@ -287,14 +298,17 @@ ifeq ($(strip ${WANTFFTW}),true)
 FFTW=/usr/local/fftw
 
 ifeq ($(strip ${PRECISION}),1)
-  INCFFTW = -I${FFTW}/float-mvapich2/include
+  FFTW_HEADERS = ${FFTW}/float-mvapich2/include
+  INCFFTW = -I${FFTW_HEADERS}
   LIBFFTW = -L${FFTW}/float-mvapich2/lib
   LIBFFTW += -lfftw3f
 else
-  INCFFTW = -I${FFTW}/double-mvapich2/include
+  FFTW_HEADERS = ${FFTW}/double-mvapich2/include
+  INCFFTW = -I${FFTW_HEADERS}
   LIBFFTW = -L${FFTW}/double-mvapich2/lib
   LIBFFTW += -lfftw3
 endif
+  PACKAGE_HEADERS += ${FFTW_HEADERS}
 endif
 
 #----------------------------------------------------------------------
@@ -313,8 +327,11 @@ endif
 #LDFLAGS = -Wl,-rpath,"/usr/local/atlas-3.10-lapack-3.4.2/lib" -L/usr/local/atlas-3.10-lapack-3.4.2/lib
 #LIBS = $(LDFLAGS) -lprimme -lm  -llapack -lptf77blas -lptcblas -latlas -lgfortran -lpthread
 
-# NERSC Cori
+# NERSC Cori Haswell
 # LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/haswell/lib -lsci_intel
+
+# NERSC Cori KNL
+#LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/mic_knl/lib -lsci_intel
 
 # NERSC Edison
 # LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/ivybridge/lib -lsci_intel
@@ -327,8 +344,10 @@ WANTPRIMME = #true
 # PRIMME version 2.0
 
 ifeq ($(strip ${WANTPRIMME}),true)
-  INCPRIMME = -I${HOME}/milc/install/PRIMME/include
-  LIBPRIMME = -L${HOME}/milc/install/PRIMME/lib -lprimme
+  PRIMME_HEADERS = ${HOME}/PRIMME/include
+  INCPRIMME = -I${PRIMME_HEADERS}
+  PACKAGE_HEADERS += ${PRIMME_HEADERS}
+  LIBPRIMME = -L${HOME}/PRIMME/lib -lprimme
 endif
 
 #----------------------------------------------------------------------
@@ -344,6 +363,8 @@ WANT_GF_GPU = #true
 ifeq ($(strip ${WANTQUDA}),true)
 
   QUDA_HOME = ${HOME}/quda
+  QUDA_HEADERS = ${QUDA_HOME}/include
+  PACKAGE_HEADERS += ${QUDA_HEADERS}
 
   INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
   LIBQUDA = -L${QUDA_HOME}/lib -lquda
@@ -351,8 +372,8 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   CUDA_HOME = /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
+  PACKAGE_HEADERS += ${CUDA_HOME}/include
   LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
-  QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
 
@@ -394,12 +415,15 @@ endif
 # 16. QPhiX Options
 
 WANTQPHIX = #true
+WANT_FN_CG_QPHIX = true
+WANT_GF_QPHIX = true
 
-QPHIX_HOME = ${HOME}/QPhiX/mbench
+QPHIX_HOME = ../QPhiX_MILC/milc-qphix
 
 ifeq ($(strip ${WANTQPHIX}), true)
 
   INCQPHIX = -I${QPHIX_HOME}
+  PACKAGE_HEADERS += ${QPHIX_HOME}
   HAVE_QPHIX = true
   CPHI = -DHAVE_QPHIX
 
@@ -431,6 +455,20 @@ ifeq ($(strip ${WANTQPHIX}), true)
 
   endif
 
+  QPHIX_HEADERS   = ${QPHIX_HOME}
+  PACKAGE_HEADERS += ${QPHIX_HEADERS}
+  QPHIX_LIBRARIES = ${QPHIX_HOME}
+
+  ifeq ($(strip ${WANT_FN_CG_QPHIX}),true)
+    HAVE_FN_CG_QPHIX = true
+    CPHI += -DUSE_CG_QPHIX
+  endif
+
+  ifeq ($(strip ${WANT_GF_QPHIX}),true)
+    HAVE_GF_QPHIX = true
+    CPHI += -DUSE_GF_QPHIX
+  endif
+
 endif
 
 #----------------------------------------------------------------------
@@ -438,42 +476,75 @@ endif
 
 WANTGRID = #true
 
-GRID_HOME = ${HOME}/grid/mbench
-
 ifeq ($(strip ${WANTGRID}), true)
 
-  INCGRID = -I${GRID_HOME}
   HAVE_GRID = true
   CPHI = -DHAVE_GRID
-  GRID_HEADERS = ${GRID_HOME}
+
+  ifeq ($(strip ${MPP}),true)
+    ifeq ($(strip ${ARCH}),knl)
+      GRID_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),hsw)
+      GRID_ARCH = avx2
+    endif
+  else
+    # Scalar version                                                                
+
+    GRID_ARCH = scalar
+
+  endif
+
+  GRID_HOME = ../Grid/install-${GRID_ARCH}
+  GRID_LIBRARIES = ${GRID_HOME}/lib
+  LIBGRID = -L${GRID_LIBRARIES} -lGrid
+  GRID_HEADERS = ${GRID_HOME}/include
+  INCGRID = -I${GRID_HEADERS}
+
+  PACKAGE_HEADERS += ${GRID_HEADERS}
+  PACKAGE_DEPS += Grid
+
+endif
+
+#----------------------------------------------------------------------
+# 16. QPhiXJ (JLab) Options
+
+WANTQPHIXJ = #true
+
+# Choose vectorization parameters.
+# Choices 4, 8 (or 1 for scalar)
+QPHIXJ_SOALEN=4
+
+ifeq ($(strip ${WANTQPHIXJ}), true)
+
+  HAVE_QPHIXJ = true
+  CPHI += -DHAVE_QPHIXJ
 
   ifeq ($(strip ${MPP}),true)
 
-  # MPI versions of GRID
+  # QMP versions of QPHIXJ
 
-  ifeq ($(strip ${ARCH}),knl)
-    LIBGRID = -L${GRID_HOME} -lgridmilc_avx512 -lrt
-  else ifeq ($(strip ${ARCH}),knc)
-    LIBGRID = -L${GRID_HOME} -lgridmilc_mic -lrt
-  else ifeq ($(strip ${ARCH}),hsw)
-    LIBGRID = -L${GRID_HOME} -lgridmilc_avx2 -lrt
+  QPHIXJ_HOME = ../QPhiX_JLab/install
+
+    ifeq ($(strip ${ARCH}),knl)
+      QPHIXJ_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),hsw)
+      QPHIXJ_ARCH = avx2
+    endif
   else
+    # Scalar version
+    QPHIXJ_ARCH = scalar
+    QPHIXJ_SOALEN = 1
   endif
 
-  else
+  # NOTE: These are QMP versions of QPHIXJ so requires QMP
 
-  # Non-MPI versions
+  QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/dslash-${QPHIXJ_ARCH}-s${QPHIXJ_SOALEN}/lib
+  LIBQPHIXJ = -L${QPHIXJ_LIBRARIES} -lqphix_solver 
+  QPHIXJ_HEADERS = ${QPHIXJ_HOME}/dslash-${QPHIXJ_ARCH}-s${QPHIXJ_SOALEN}/include
+  INCQPHIXJ = -I${QPHIXJ_HEADERS}
 
-  ifeq ($(strip ${ARCH}),knl)
-    LIBGRID = -L${GRID_HOME} -lgridmilc_avx512_single -lrt
-  else ifeq ($(strip ${ARCH}),knc)
-    LIBGRID = -L${GRID_HOME} -lgridmilc_mic_single -lrt
-  else ifeq ($(strip ${ARCH}),hsw)
-    LIBGRID = -L${GRID_HOME} -lgridmilc_avx2_single -lrt
-  else
-  endif
-
-  endif
+  PACKAGE_HEADERS += ${QPHIXJ_HEADERS}
+  PACKAGE_DEPS += QPhiX_JLab
 
 endif
 
@@ -486,6 +557,8 @@ ifeq ($(strip ${LDLAPACK}),)
   else ifeq ($(strip ${WANTQPHIX}),true)
     LD  = ${CXX}
   else ifeq ($(strip ${WANTGRID}),true)
+    LD  = ${CXX}
+  else ifeq ($(strip ${WANTQPHIXJ}),true)
     LD  = ${CXX}
   else
     LD  = ${CC}
@@ -538,6 +611,12 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 # To get them, uncomment the next line
 
 #INLINEOPT += -DSSEOPTERON
+
+# At present inlining and threading do not mix
+
+ifeq ($(strip ${OMP}),true)
+  INLINEOPT =
+endif
 
 #----------------------------------------------------------------------
 # 20. Miscellaneous macros for performance control and metric
@@ -696,6 +775,8 @@ CPREFETCH = #
 #                    and single-mass refinements in double
 # NO_REFINE          No refinements except for masses with nonzero Naik eps
 # CPU_REFINE         Refine on CPU only (if at all), not GPU
+# MATVEC_PRECOND     If running PRIMME with internal preconditioning
+# CHEBYSHEV_EIGEN    If running PRIMME with Chebyshev preconditioning
 
 KSCGMULTI = -DKS_MULTICG=HYBRID -DNO_REFINE # -DHALF_MIXED
 
@@ -779,16 +860,12 @@ CLMEM = #-DCLOV_LEAN
 #----------------------------------------------------------------------
 # Extra include paths
 
-INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCGRID} ${INCVTUNE}
+INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCGRID} ${INCQPHIXJ} ${INCVTUNE}
 
 #----------------------------------------------------------------------
 #  Extra libraries
 
-LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBGRID} ${LIBVTUNE}
-
-#ifeq ($(strip ${WANTQPHIX}), true)
-#  LIBADD += ${LIBQPHIX}
-#endif
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBGRID} ${LIBQPHIXJ} ${LIBQPHIX} ${LIBVTUNE}
 
 #------------------------------
 # Summary
@@ -809,6 +886,7 @@ MAKELIBRARIES = Make_vanilla
 
 ifeq ($(strip ${OMP}),true)
   OCFLAGS += -DOMP
+  OCXXFLAGS += -DOMP
 endif
 
 ifeq ($(strip ${MPP}),true)
@@ -845,6 +923,10 @@ ifeq ($(strip ${WANTGRID}),true)
   GRIDPREC = -DGRID_PrecisionInt=${PRECISION}
 endif
 
+ifeq ($(strip ${WANTQPHIXJ}),true)
+  QPHIXPREC = -DQPHIXJ_PrecisionInt=${PRECISION}
+endif
+
 ifeq ($(strip ${WANTDCAP}),true)
    MACHINE_DEP_IO = io_dcap.o
    OCFLAGS += -I${DCAP_DIR}/include
@@ -864,11 +946,14 @@ endif
 
 include ../Make_template_combos
 
-CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} ${QPHIXPREC} ${GRIDPREC}
+CPREC = -DMILC_PRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} ${QPHIXPREC} ${GRIDPREC}
 DARCH = ${CSCIDAC} ${CGPU} ${CPHI}
 
 # Complete set of compiler flags - do not change
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
+	${CPREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DARCH} \
+	${DEFINES} ${ADDDEFINES} ${IMPI} ${INCADD}
+CXXFLAGS = ${OPT} ${OCXXFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
 	${CPREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DARCH} \
 	${DEFINES} ${ADDDEFINES} ${IMPI} ${INCADD}
 
