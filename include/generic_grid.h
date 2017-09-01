@@ -16,6 +16,11 @@ GRID_evenodd_t milc2grid_parity(int milc_parity);
 int grid2milc_parity(GRID_evenodd_t grid_parity);
 GRID_status_t initialize_grid(void);
 void finalize_grid(void);
-int *query_grid_node_mapping(int peGrid[]);
+int grid_initialized(void);
+void setup_grid_communicator(int peGrid[]);
+int *query_grid_node_mapping(void);
+int grid_lexicographic_to_worldrank(int lexrank);
+int grid_rank_from_processor_coor(int x, int y, int z, int t);
+void grid_coor_from_processor_rank(int coords[], int worldrank);
 
 #endif // _GENERIC_GRID_H
