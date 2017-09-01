@@ -3,9 +3,10 @@
 /* MIMD version 7 */
 
 #include <Grid/Grid.h>
+#include <Grid/communicator/Communicator.h>
 #include <vector>
 #include <iostream>
-#include <qmp.h>
+//#include <qmp.h>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -26,7 +27,9 @@ using namespace Grid::QCD;
 GridCartesian *CGrid;
 GridRedBlackCartesian *RBGrid;
 
-static int is_grid_env_setup = 0;
+std::vector<int> squaresize;
+
+static int grid_is_initialized = 0;
 
 GRID_evenodd_t milc2grid_parity(int milc_parity){
   switch(milc_parity){
@@ -58,37 +61,49 @@ void finalize_grid(void)
   Grid_unquiesce_nodes();
 }
 
- 
+int grid_initialized(void){
+  return grid_is_initialized;
+}
+
+#define MAXARG 6
+#define MAXARGSTR 32
+
 GRID_status_t 
 initialize_grid(void){
   
-  int  argc = 3;
-  char **argv;
-
-  if(is_grid_env_setup)
+  if(grid_is_initialized)
     return GRID_SUCCESS;
 
   /* We simulate the command line parameters to initialize Grid, and
    * call the standard routine. This doesn't look very elegant, but
    * this way we let Grid handle the parameters. */
   
-  GRID_ASSERT((argv = (char **) malloc(sizeof(char *)*3)) != NULL, GRID_MEM_ERROR);
-  
-  GRID_ASSERT((argv[0] = (char *) malloc(sizeof(char)*32)) != NULL, GRID_MEM_ERROR);
-  GRID_ASSERT((argv[1] = (char *) malloc(sizeof(char)*32)) != NULL, GRID_MEM_ERROR);
-  GRID_ASSERT((argv[2] = (char *) malloc(sizeof(char)*32)) != NULL, GRID_MEM_ERROR);
-  
   const int *machsize = get_logical_dimensions(); // dimensions of the array of MPI ranks
-  int mpiX = nx/machsize[0];
-  int mpiY = ny/machsize[1];
-  int mpiZ = nz/machsize[2];
-  int mpiT = nt/machsize[3];
+  squaresize.resize(4);
+  squaresize[0] = nx/machsize[0];
+  squaresize[1] = ny/machsize[1];
+  squaresize[2] = nz/machsize[2];
+  squaresize[3] = nt/machsize[3];
 
-  sprintf (argv[0], "--grid %d.%d.%d.%d\0", nx, ny, nz, nt);
-  sprintf (argv[1], "--mpi %d.%d.%d.%d\0",  mpiX,   mpiY,   mpiZ,   mpiT);
+  int mpiX = machsize[0];
+  int mpiY = machsize[1];
+  int mpiZ = machsize[2];
+  int mpiT = machsize[3];
 
+  int  argc = MAXARG;
+  char tag_grid[] = "--grid";
+  char val_grid[MAXARGSTR];
+  char tag_mpi[] = "--mpi";
+  char val_mpi[MAXARGSTR];
+  char tag_foo[] = "";
+  char val_foo[MAXARGSTR];
+  snprintf (val_grid, MAXARGSTR, "%d.%d.%d.%d\0", nx, ny, nz, nt);
+  snprintf (val_mpi, MAXARGSTR, "%d.%d.%d.%d\0",  mpiX,   mpiY,   mpiZ,   mpiT);
+  char **argv = (char **)malloc(MAXARG*sizeof(char *));
+  argv[0] = tag_grid; argv[1] = val_grid;
+  argv[2] = tag_mpi;  argv[3] = val_mpi;
+  argv[4] = tag_foo;  argv[5] = val_foo;
   Grid_init(&argc, &argv);
-  printf("finished Grid_init\n"); fflush(stdout);
 
   std::vector<int> latt_size   = GridDefaultLatt();
   std::vector<int> simd_layout = GridDefaultSimd(Nd,vComplex::Nsimd());
@@ -96,41 +111,110 @@ initialize_grid(void){
   CGrid  = new GridCartesian(latt_size,simd_layout,mpi_layout);
   RBGrid = new GridRedBlackCartesian(latt_size,simd_layout,mpi_layout);
 
-  node0_printf("milc_to_grid_utilities: Initialized Grid\n");
+  node0_printf("milc_to_grid_utilities: Initialized Grid with args\n%s %s\n%s %s\n%s %s\n",
+	       argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+  node0_printf("latt_size: %d %d %d %d\n", latt_size[0], latt_size[1], latt_size[2], latt_size[3]);
+  node0_printf("mpi_layout: %d %d %d %d\n", mpi_layout[0], mpi_layout[1], mpi_layout[2], mpi_layout[3]);
   node0_printf("Grid threads %d\n", Grid::GridThread::GetThreads());
   fflush(stdout);
 
-  free (argv[2]);
-  free (argv[1]);
-  free (argv[0]);
-  free (argv);
-  
+  free(argv);
+
+  grid_is_initialized = 1;
   return GRID_SUCCESS;
 
+}
+
+static Grid::CartesianCommunicator *grid_cart = NULL;
+
+// Set up communicator for quick access to the rank mapping
+
+void setup_grid_communicator(int peGrid[]){
+  if(! grid_is_initialized){
+    printf("setup_grid_communicator: Grid must first be initialized\n");
+    terminate(1);
+  }
+
+  printf("setting up CartesianCommunicator with %d %d %d %d\n", 
+	 peGrid[0], peGrid[1], peGrid[2], peGrid[3]); fflush(stdout);
+  std::vector<int> processors;
+  for(int i=0;i<4;i++) processors.push_back(peGrid[i]);
+  grid_cart = new Grid::CartesianCommunicator(processors);
+  printf("done with CartesianCommunicator\n"); fflush(stdout);
 }
 
 // Return the coordinate as assigned by Grid
 // Code from CPS via Chulwoo Jung
 
-int *query_grid_node_mapping(int peGrid[]){
+int *query_grid_node_mapping(void){
 
-  if(is_grid_env_setup){
+  if(! grid_is_initialized){
     printf("query_grid_node_mapping: Grid must first be initialized\n");
     terminate(1);
   }
 
-  // Hack to reset node mapping for Grid (from Chulwoo Jung)
-  static int pePos[4];  /*!< Position of this process in the grid.*/
-  static QMP_comm_t qmp_comm;
+  if(grid_cart == NULL){
+    printf("query_grid_node_mapping: Must call setup_grid_communicator first\n");
+    terminate(1);
+  }
 
-  std::vector<int> processors;
-  printf("setting up CartesianCommunicator with %d %d %d %d\n", 
-	 peGrid[0], peGrid[1], peGrid[2], peGrid[3]); fflush(stdout);
-  for(int i=0;i<4;i++) processors.push_back(peGrid[i]);
-  Grid::CartesianCommunicator grid_cart(processors);
-  printf("done with CartesianCommunicator\n"); fflush(stdout);
-  for(int i=3;i>=0;i--){
-    pePos[i] = grid_cart._processor_coor[i];
+  static int pePos[4];  /* Position of this process in the grid.*/
+
+  for(int i=0;i<4;i++){
+    pePos[i] = grid_cart->_processor_coor[i];
   }
   return pePos;
 }
+
+// The MPI rank that has the processor defined by lexrank
+// COULD USE THIS WHEN GRIDS_COMMS_MPI3 IS DEFINED
+// int grid_lexicographic_to_worldrank(int lexrank){
+//   if(! grid_is_initialized){
+//     printf("grid_lexicographic_to_worldrank: Grid must first be initialized\n");
+//     terminate(1);
+//   }
+// 
+//   if(grid_cart == NULL){
+//     printf("grid_lexicographic_to_worldrank: Must call setup_grid_communicator first\n");
+//     terminate(1);
+//   }
+// 
+//   int worldrank = grid_cart->LexicographicToWorldRank[lexrank];
+//   return worldrank;
+// }
+
+int grid_rank_from_processor_coor(int x, int y, int z, int t){
+  if(! grid_is_initialized){
+    printf("grid_lexicographic_to_worldrank: Grid must first be initialized\n");
+    terminate(1);
+  }
+
+  if(grid_cart == NULL){
+    printf("grid_lexicographic_to_worldrank: Must call setup_grid_communicator first\n");
+    terminate(1);
+  }
+
+  std::vector<int> coor = {x, y, z, t};
+  int worldrank = grid_cart->RankFromProcessorCoor(coor);
+  return worldrank;
+}
+
+void grid_coor_from_processor_rank(int coords[], int worldrank){
+  if(! grid_is_initialized){
+    printf("grid_coor_from_processor_rank: Grid must first be initialized\n");
+    terminate(1);
+  }
+
+  if(grid_cart == NULL){
+    printf("grid_coor_from_processor_rank: Must call setup_grid_communicator first\n");
+    terminate(1);
+  }
+
+  std::vector<int> coor;
+  grid_cart->ProcessorCoorFromRank(worldrank, coor);
+
+  for(int i = 0; i < 4; i++)
+    coords[i] = coor[i];
+
+}
+
