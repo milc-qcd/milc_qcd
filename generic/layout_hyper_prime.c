@@ -399,8 +399,10 @@ void setup_layout(){
   /* Grid assigns its own machine coordinates */
 
   /* Find my rank, according to Grid */
-  int *pePos = query_grid_node_mapping(nsquares);
-  int peRank = (int)lex_rank(pePos, 4, nsquares);
+  setup_grid_communicator(nsquares);
+  int *pePos = query_grid_node_mapping();
+  //  int peRank = (int)lex_rank(pePos, 4, nsquares);
+  int peRank = grid_rank_from_processor_coor(pePos[0], pePos[1], pePos[2], pePos[3]);
 
   printf("setup_layout(%d) query returns %d\n", mynode(), peRank);
   fflush(stdout);
@@ -419,13 +421,14 @@ void setup_layout(){
 #endif
   
   /* Compute machine coordinates for this node */
-  lex_coords(machine_coordinates, 4, nsquares, mynode());
-
 #ifdef HAVE_GRID
+  grid_coor_from_processor_rank(machine_coordinates, mynode());
   printf("setup_layout(%d) pePos %d,%d,%d,%d machine %d,%d,%d,%d\n", 
 	 mynode(), pePos[0], pePos[1], pePos[2], pePos[3],
 	 machine_coordinates[0],  machine_coordinates[1],  
 	 machine_coordinates[2],  machine_coordinates[3]);
+#else
+  lex_coords(machine_coordinates, 4, nsquares, mynode());
 #endif
 
   /* Number of sites on node */
@@ -453,11 +456,15 @@ void setup_layout(){
 
 /*------------------------------------------------------------------*/
 int node_number(int x, int y, int z, int t) {
-register int i;
-    x /= squaresize[XUP]; y /= squaresize[YUP];
-    z /= squaresize[ZUP]; t /= squaresize[TUP];
-    i = x + nsquares[XUP]*( y + nsquares[YUP]*( z + nsquares[ZUP]*( t )));
-    return( i );
+  register int i;
+  x /= squaresize[XUP]; y /= squaresize[YUP];
+  z /= squaresize[ZUP]; t /= squaresize[TUP];
+#ifdef HAVE_GRID
+  i = grid_rank_from_processor_coor(x, y, z, t);
+#else
+  i = x + nsquares[XUP]*( y + nsquares[YUP]*( z + nsquares[ZUP]*( t )));
+#endif
+  return i;
 }
 
 /*------------------------------------------------------------------*/
@@ -502,7 +509,11 @@ void get_coords(int coords[], int node, int index){
   int k = node;
 
   /* mc = the machine coordinates for node k */
+#ifdef HAVE_GRID
+  grid_coor_from_processor_rank(mc, k);
+#else
   lex_coords(mc, 4, nsquares, k);
+#endif
 
   /* meo = the parity of the machine coordinate */
   meo = coord_parity(mc);
@@ -579,7 +590,11 @@ int io_node(const int node){
     return node;
 
   /* Get the machine coordinates for the specified node */
+#ifdef HAVE_GRID
+  grid_coor_from_processor_rank(io_node_coords, node);
+#else
   lex_coords(io_node_coords, 4, nsquares, node);
+#endif
 
   /* Round the node coordinates down to get the io_node coordinate */
   for(i = 0; i < 4; i++)
@@ -587,7 +602,12 @@ int io_node(const int node){
       (io_node_coords[i]/nodes_per_ionode[i]);
   
   /* Return the linearized machine coordinates of the I/O node */
+#ifdef HAVE_GRID
+  return grid_rank_from_processor_coor(io_node_coords[0], 
+	     io_node_coords[1], io_node_coords[2], io_node_coords[3]);
+#else
   return (int)lex_rank(io_node_coords, 4, nsquares);
+#endif
 }
 
 
