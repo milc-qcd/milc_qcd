@@ -59,6 +59,9 @@ typedef struct {
   int Kiters ; /* Kalkreuter iterations */
   Real eigenval_tol ; /* Tolerance for the eigenvalue computation */
   Real error_decr ; /* error decrease per Rayleigh minimization */
+  int cheb_p ; /* Order of the Chebyshev preconditioning polynomial */
+  double minE ; /* Lower end of eigenvalue exclusion window */
+  double maxE ; /* Upper end of eigenvalue exclusion window */
   char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
   char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
 #endif

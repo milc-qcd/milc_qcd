@@ -210,6 +210,7 @@ int readin(int prompt) {
 #endif
 
 #if EIGMODE == DEFLATION
+#warning "With DEFLATION"
     /*------------------------------------------------------------*/
     /* Dirac eigenpair calculation                                */
     /*------------------------------------------------------------*/
@@ -231,6 +232,13 @@ int readin(int prompt) {
 
      /* error decrease per Rayleigh minimization */
     IF_OK status += get_f(stdin, prompt,"error_decrease", &param.error_decr);
+
+#ifdef CHEBYSHEV_EIGEN
+	/* Chebyshev preconditioner */
+	IF_OK status += get_i(stdin, prompt,"chebyshev_order", &param.cheb_p);
+	IF_OK status += get_f(stdin, prompt,"chebyshev_minE", &param.minE);
+	IF_OK status += get_f(stdin, prompt,"chebyshev_maxE", &param.maxE);
+#endif
 
     /* eigenvector input */
     IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
@@ -380,7 +388,11 @@ int readin(int prompt) {
 	param.qic_pbp[npbp_masses].resid = error_for_propagator;
 	param.qic_pbp[npbp_masses].relresid = rel_error_for_propagator;
 
+#ifdef CURRENT_DISC
+	param.qic_pbp[npbp_masses].parity = EVEN;
+#else
 	param.qic_pbp[npbp_masses].parity = EVENANDODD;
+#endif
 	param.qic_pbp[npbp_masses].min = 0;
 	param.qic_pbp[npbp_masses].start_flag = 0;
 	param.qic_pbp[npbp_masses].nsrc = 1;
@@ -426,6 +438,13 @@ int readin(int prompt) {
   if( param.stopflag != 0 )return param.stopflag;
 
   if(prompt==2)return 0;
+
+#if EIGMODE == DEFLATION && defined(CHEBYSHEV_EIGEN)
+  /* Parameters for Chebyshev preconditioning */
+    cheb_p = param.cheb_p;
+    minE = param.minE;
+    maxE = param.maxE;
+#endif
 
   /* Construct the eps_naik table of unique Naik epsilon
      coefficients.  Also build the hash table for mapping a mass term to

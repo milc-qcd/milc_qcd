@@ -136,6 +136,9 @@ EXTERN  int MaxIter ; /* max  Rayleigh iterations */
 EXTERN  int Restart ; /* Restart  Rayleigh every so many iterations */
 EXTERN  int Kiters ; /* Kalkreuter iterations */
 EXTERN  int active_parity ; /* parity used in eigenvalue calculation */
+EXTERN  int cheb_p ; /* Order of the Chebyshev preconditioning polynomial */
+EXTERN  double minE ; /* Lower end of eigenvalue exclusion window */
+EXTERN  double maxE ; /* Upper end of eigenvalue exclusion window */
 /*******/
 
 /* Some of these global variables are node dependent */
