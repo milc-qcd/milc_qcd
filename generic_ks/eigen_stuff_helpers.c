@@ -1,3 +1,4 @@
+
 /****** eigen_stuff_linalg.c  ******************/
 /* Linear algebra for eigenvalue and eigevector computation routines.
    These routines work with color vectors
@@ -366,7 +367,7 @@ void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
   for(i = 0; i < Nvecs; i++){
     resid[i] = sqrt(resid[i]/norm[i]);
     norm[i] = sqrt(norm[i]);
-    node0_printf("eigVal[%d] = %e ( resid = %e , ||eigVec[%d]|-1| = %e )\n",
+    node0_printf("eigVal[%d] = %e ( resid = %e , |eigVec[%d]|-1 = %e )\n",
 		 i, eigVal[i], resid[i], i, norm[i]-1);
   }
   node0_printf("End of eigensolutions\n");
