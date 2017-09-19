@@ -32,6 +32,7 @@ MY_HEADERS = \
   quark_action.h
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
+HEADERS += ${QUDA_HEADERS} ${QPHIX_HEADERS} ${QPHIXJ_HEADERS}
 
 # All required object files
 # Basic set from current directory
@@ -76,6 +77,7 @@ P = $(strip ${PRECISION})
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
 
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
+LIBRARIES += ${QPHIX_LIBRARIES} ${QPHIXJ_LIBRARIES}
 
 # Default rule for C compilation
 .c.o: ; ${CC} -c ${CFLAGS} $<
@@ -166,7 +168,8 @@ include ../generic_clover/Make_template
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
 	cd ${LIBDIR} ;\
-	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" \
+	"PRECISION=${PRECISION}" "COMPILER=${COMPILER}" "ARCH=${ARCH}" all
 
 localmake: ${OBJECTS} ${LIBRARIES}
 	${LD} -o ${MYTARGET} ${LDFLAGS} \

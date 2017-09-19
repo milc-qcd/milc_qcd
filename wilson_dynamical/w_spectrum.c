@@ -56,7 +56,7 @@ FORALLSITES(i,s)scalar_mult_add_wvec( &(s->psi), &(s->mp), -kappa, &(s->mp) );
 printf("DUMP!!\n");
 FORALLSITES(i,s){
     printf("i = %d,  coords %d %d %d %d\n",i,s->x,s->y,s->z,s->t);
-    dump_wvec( &(s->mp) );
+    dump_wilson_vec( &(s->mp) );
 }
 **/
 	/* copy result to quark_propagator - KLUDGE- FIX CONGRAD! */

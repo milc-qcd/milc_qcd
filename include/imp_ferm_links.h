@@ -53,6 +53,10 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
 		      quark_invert_control *qic, Real mass,
 		      imp_ferm_links_t *fn);
 
+int ks_congrad_block_field( int nsrc, su3_vector **src, su3_vector **dest, 
+			    quark_invert_control *qic, Real mass,
+			    imp_ferm_links_t *fn);
+
 int ks_congrad_field_cpu( su3_vector *src, su3_vector *dest, 
 			  quark_invert_control *qic, Real mass,
 			  imp_ferm_links_t *fn);
@@ -67,16 +71,29 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 
 
 #ifdef USE_CG_GPU
+
 #define ks_congrad_parity ks_congrad_parity_gpu
-#elif HAVE_QPHIX
+#define ks_congrad_block_parity ks_congrad_block_parity_gpu
+
+#elif USE_CG_QPHIX
+
 #define ks_congrad_parity ks_congrad_parity_qphix
+#define ks_congrad_block_parity ks_congrad_block_parity_qphix
+
 #else
+
 #define ks_congrad_parity ks_congrad_parity_cpu
+#define ks_congrad_block_parity ks_congrad_block_parity_cpu
+
 #endif
 
 int ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest, 
 		       quark_invert_control *qic, Real mass,
 		       imp_ferm_links_t *fn);
+
+int ks_congrad_block_parity( int nsrc, su3_vector **t_src, su3_vector **t_dest, 
+			     quark_invert_control *qic, Real mass,
+			     imp_ferm_links_t *fn);
 
 int ks_congrad_two_src(	/* Return value is number of iterations taken */
     field_offset src1,    /* source vector (type su3_vector) */
@@ -206,7 +223,7 @@ int ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken
 
 #ifdef USE_CG_GPU
 #define ks_multicg_offset_field ks_multicg_offset_field_gpu
-#elif HAVE_QPHIX
+#elif USE_CG_QPHIX
 #define ks_multicg_offset_field ks_multicg_offset_field_qphix
 #else
 #define ks_multicg_offset_field ks_multicg_offset_field_cpu
@@ -269,10 +286,14 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
 		      int Restart, int Kiters, int init );
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
 		     imp_ferm_links_t *fn );
+void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
+			     imp_ferm_links_t *fn );
 void cleanup_Matrix();
 void measure_chirality(su3_vector *src, double *chirality, int parity);
 void print_densities(su3_vector *src, char *tag, int y,int z,int t, 
 		     int parity);
+void reset_eigenvalues(su3_vector *eigVec[], double *eigVal,
+		       int Nvecs, int parity, imp_ferm_links_t *fn);
 void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
 		  int Nvecs, int parity, imp_ferm_links_t *fn);
 void construct_eigen_odd(su3_vector **eigVec, double *eigVal, int Nvecs, imp_ferm_links_t *fn);
@@ -376,6 +397,9 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 int mat_invert_uml_field(su3_vector *src, su3_vector *dst, 
 			 quark_invert_control *qic,
 			 Real mass, imp_ferm_links_t *fn );
+int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst, 
+			       quark_invert_control *qic,
+			       Real mass, imp_ferm_links_t *fn );
 void check_invert( field_offset src, field_offset dest, Real mass,
 		   Real tol, imp_ferm_links_t *fn );
 void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,

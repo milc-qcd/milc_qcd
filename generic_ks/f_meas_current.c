@@ -436,6 +436,501 @@ static void project_out(su3_vector *vec, su3_vector **vector, int Num, int parit
   node0_printf("Time to project out low modes %g sec\n", ptime);
 }
 
+#ifdef BLOCKCG
+
+// Block CG version with deflation
+
+/************************************************************************/
+/* Entry point for multiple masses with deflation and iterated single-mass inverter.
+   This variant does two solves from the same source -- sloppy and precise --
+   and calculates the average of the difference between the resulting current
+   densities.  Designed for use with deflation or eigcg. 
+   Requires a set of accurate low-mode eigenpairs */
+
+void 
+f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning,
+			       quark_invert_control *qic_precise,
+			       quark_invert_control *qic_sloppy, 
+			       su3_vector **eigVec, double *eigVal, int Nvecs,
+			       ks_param *ksp, fermion_links_t *fl, 
+			       char filenames[][MAXFILENAME]){
+  
+  char myname[] = "f_meas_current_multi_diff_eig";
+
+  int i, j, is, jr, jrand, mu;
+
+  /* Offset for staggered phases in the current definition */
+  int r_offset[4] = {0, 0, 0, 0};
+
+  /* Current spin-taste list */
+  int *spin_taste = get_spin_taste();
+
+  su3_vector *gr0 = create_v_field();
+  su3_vector *gr_mu = create_v_field();
+  int ex, ey, ez, et, d = thinning;
+
+  Real mass[n_masses];
+  Real *j_mu[n_masses];
+  imp_ferm_links_t *fn_multi[n_masses];
+  QIO_Writer *outfile[n_masses];
+  imp_ferm_links_t **fn = get_fm_links(fl);
+  double wtime = 0.;
+  
+  /* Block solver parameters -- temporary */
+  int nr = 2;  /* Number of random sources to block */
+  su3_vector **gr;  /* Storage for sources */
+  su3_vector **M_inv_gr; /* Storage for solutions */
+
+  node0_printf("Entered %s\n", myname); fflush(stdout);
+ 
+  /* Create fields for current densities, one for each mass */
+  for(j = 0; j < n_masses; j++)
+    j_mu[j] = create_r_array_field(NMU);
+
+  /* Open files for writing */
+  for(j = 0; j < n_masses; j++){
+    outfile[j] = open_vector_current_file(filenames[j]);
+    if(outfile[j] == NULL){
+      node0_printf("%s: Failed to open %s\n", myname, filenames[j]);
+      exit(1);
+    }
+  }
+
+  /* Load masses from ks_param */
+  for(j = 0; j < n_masses; j++)
+    mass[j] = ksp[j].mass;
+  
+  /* Load pointers for fermion links, based on Naik epsilon indices */
+  for(j = 0; j < n_masses; j++)
+    fn_multi[j] = fn[ksp[j].naik_term_epsilon_index];
+
+  /* Allocate source vectors */
+  int evol = d*d*d*d/2;
+  int nsrc = evol*nr;
+  gr = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  M_inv_gr = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  for(is = 0; is < nsrc; is++){
+    gr[is] = create_v_field();
+    M_inv_gr[is] = create_v_field();
+  }
+  
+  /* Loop over random sources in groups of nr */
+  for(jrand = 0; jrand < nrand; jrand += nr){
+    
+    /* Block of random sources */
+    for(jr = 0; jr < nr; jr++){
+      /* Make random source, and do inversion */
+#ifndef Z2RSOURCE
+      grsource_plain_field( gr0, EVENANDODD );
+#else
+      z2rsource_plain_field( gr0, EVENANDODD );
+#endif
+      /* Iterate over displacements within a d^4 cube. Use even displacements only */
+      for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)
+	if((ex+ey+ez+et)%2==0){
+	  is = (et + d*(ez + d*(ey + d*ex)))/2 + evol*jr;
+	  /* Apply source thinning */
+	  copy_v_field( gr[is], gr0 );
+	  thin_source( gr[is], d, ex, ey, ez, et );
+	  
+	  /* Project out the low mode part, based on the given eigenvectors */
+	  project_out(gr[is], eigVec, Nvecs, EVEN);
+	}
+    } /* jr */
+      
+    for(j = 0; j < n_masses; j++){
+      
+      /* First, the sloppy high-mode solution */
+      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
+      node0_printf("Solving sloppily\n");
+      
+      for(is = 0; is < nsrc; is++)
+	clear_v_field(M_inv_gr[is]);
+      
+      mat_invert_block_uml_field( nsrc, gr, M_inv_gr, qic_sloppy + j, mass[j], fn_multi[j]);
+      
+      /* For each source, apply current in various directions at the sink */
+      for(is = 0; is < nsrc; is++)
+	for(mu = 0; mu < NMU; mu++){
+	  
+	  /* Apply the appropriate spin_taste operator for
+	     a nearly conserved current.  */
+	  spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, M_inv_gr[is]);
+	  spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+	  
+	  /* J_mu = imag[gr.M_inv_gr] */
+	  /* SUBTRACT the sloppy result */
+	  FORALLFIELDSITES(i){
+	    complex cc = su3_dot( gr[is]+i, gr_mu+i );
+	    j_mu[j][NMU*i + mu] -= cc.imag;
+	  }
+	} /* is, mu */
+      
+      /* Next, continue to a "precise" solution from the same source */
+      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
+      node0_printf("Solving precisely\n");
+      mat_invert_block_uml_field( nsrc, gr, M_inv_gr, qic_precise + j, mass[j], fn_multi[j]);
+      
+      /* For each source, apply current in various directions at the sink */
+      for(is = 0; is < nsrc; is++)
+	for(mu = 0; mu < NMU; mu++){
+	  
+	  /* Apply the appropriate spin_taste operator for
+	     a nearly conserved current.  */
+	  spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, M_inv_gr[is]);
+	  spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+	  
+	  /* J_mu = imag[gr.M_inv_gr] */
+	  /* ADD the precise result, which then gives the difference */
+	  FORALLFIELDSITES(i){
+	    complex cc = su3_dot( gr[is]+i, gr_mu+i );
+	    j_mu[j][NMU*i + mu] += cc.imag;
+	  }
+	} /* is, mu */
+    } /* j */
+    
+    if((jrand+1) % nwrite == 0){
+      wtime -= dclock();
+      for(j = 0; j < n_masses; j++){
+#if 0      
+	/* DEBUG */
+	FOREVENFIELDSITES(i){
+	  printf("%d %d %d %d ",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t);
+	  for(mu = 0; mu < NMU; mu++)
+	    printf("%d %g ",mu, j_mu[j][NMU*i + mu]);
+	  printf("\n");
+	}
+#endif
+	node0_printf("For rand %d and mass %g\n", jrand, mass[j]);
+	average_vector_current(nwrite, j_mu[j]);
+	int status = write_vector_current_record(outfile[j], jrand, nwrite, mass[j], j_mu[j]);
+	clear_r_array_field(j_mu[j], NMU);
+	wtime += dclock();
+	if(status != QIO_SUCCESS){
+	  node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
+	} 
+      } /* j */
+    } /* if write */
+  } /* jrand */
+  
+  for(j = 0; j < n_masses; j++){
+    close_vector_current_file(outfile[j]);
+    destroy_r_array_field(j_mu[j], NMU);
+  }
+  
+  node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
+  
+  for(is = 0; is < nsrc; is++){
+    destroy_v_field(M_inv_gr[is]);
+    destroy_v_field(gr[is]);
+  }
+  free(M_inv_gr); M_inv_gr = NULL; 
+  free(gr); gr = NULL;
+  destroy_v_field(gr_mu); gr_mu = NULL;
+  destroy_v_field(gr0); gr0 = NULL;
+
+} /* f_meas_current_multi_diff_eig  -- BLOCKCG version */
+
+/* Entry point for multiple masses with iterated single-mass inverter.
+   Designed for use with deflation or eigcg.
+   Does deflation, so requires a set of accurate low-mode eigenpairs */
+
+void 
+f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
+			  quark_invert_control *qic,
+			  su3_vector **eigVec, double *eigVal, int Nvecs,
+			  ks_param *ksp, fermion_links_t *fl, 
+			  char filenames[][MAXFILENAME]){
+  
+  char myname[] = "f_meas_current_multi_eig";
+
+  int i, j, is, jr, jrand, mu, n;
+
+  /* Offset for staggered phases in the current definition */
+  int r_offset[4] = {0, 0, 0, 0};
+
+  /* Current spin-taste list */
+  int *spin_taste = get_spin_taste();
+
+  su3_vector *gr0 = create_v_field();
+  su3_vector *gr_mu = create_v_field();
+  int ex, ey, ez, et, d = thinning;
+
+  Real mass[n_masses];
+  Real *j_mu[n_masses];
+  Real *jlow_mu[n_masses];
+  imp_ferm_links_t *fn_multi[n_masses];
+  QIO_Writer *outfile[n_masses];
+  imp_ferm_links_t **fn = get_fm_links(fl);
+  double wtime = 0.;
+
+  /* Block solver parameters -- temporary */
+  int nr = 2;  /* Number of random sources to block */
+  su3_vector **gr;  /* Storage for sources */
+  su3_vector **M_inv_gr; /* Storage for solutions */
+
+  node0_printf("Entered %s\n", myname); fflush(stdout);
+
+#if 1
+  /* DEBUG */
+  /* Check orthonormality of a few eigenvectors */
+  for(j = 0; j < Nvecs; j += 8)
+    for(i = j; i < Nvecs; i += 8){
+      double_complex cc ;
+      dot_product(eigVec[i], eigVec[j], &cc, EVEN) ;
+      if(i == j && fabs(cc.real - 1) > 1e-8 || i != j && fabs(cc.real) > 1e-8)
+	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
+    }
+#endif
+
+  /* Create fields for current densities, one for each mass */
+  for(j = 0; j < n_masses; j++){
+    j_mu[j] = create_r_array_field(NMU);
+    jlow_mu[j] = create_r_array_field(NMU);
+  }
+
+  /* Open files for writing */
+  for(j = 0; j < n_masses; j++){
+    outfile[j] = open_vector_current_file(filenames[j]);
+    if(outfile[j] == NULL){
+      node0_printf("%s: Failed to open %s\n", myname, filenames[j]);
+      exit(1);
+    }
+  }
+
+  /* Load masses from ks_param */
+  for(j = 0; j < n_masses; j++)
+    mass[j] = ksp[j].mass;
+  
+  /* Load pointers for fermion links, based on Naik epsilon indices */
+  for(j = 0; j < n_masses; j++)
+    fn_multi[j] = fn[ksp[j].naik_term_epsilon_index];
+  
+  /* Compute exact low-mode current density */
+  double dtime = -dclock();
+  for(n = 0; n < Nvecs; n++){
+    for(j = 0; j < n_masses; j++){
+      dslash_fn_field(eigVec[n], gr0, ODD, fn_multi[j]);
+      for(mu = 0; mu < NMU; mu++){
+	/* Add in the exact low-mode solution */
+        spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, gr0);
+        spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+	
+        FOREVENFIELDSITES(i){
+          complex z;
+          z = su3_dot( eigVec[n] + i, gr_mu + i);
+	  jlow_mu[j][NMU*i + mu] += -z.imag/(eigVal[n]+4.0*mass[j]*mass[j]);
+        } /* i */
+      } /* mu */
+    } /* j */
+  } /* n */
+
+#if 1
+  for(j = 0; j < n_masses; j++){
+    for(mu = 0; mu < NMU; mu++){
+      node0_printf("For mass %g\n", mass[j]);
+      FOREVENFIELDSITES(i){
+	node0_printf("j_mu_low  %d %d %d %d %d %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, jlow_mu[j][NMU*i+mu]);
+      }
+    }
+  }
+#endif
+
+  dtime += dclock();
+  node0_printf("Time for exact low modes %g sec\n", dtime);
+
+  /* HACK to get only result from low modes  */
+  if(nrand == 0){
+    for(j = 0; j < n_masses; j++){
+      average_vector_current_and_sum(1, j_mu[j], jlow_mu[j]);
+      int status = write_vector_current_record(outfile[j], 0, 1, mass[j], j_mu[j]);
+      if(status != QIO_SUCCESS){
+	node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
+      } 
+      clear_r_array_field(j_mu[j], NMU);
+    }
+  }
+
+
+  /* Allocate source vectors */
+  int evol = d*d*d*d/2;
+  int nsrc = evol*nr;
+  gr = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  M_inv_gr = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  for(is = 0; is < nsrc; is++){
+    gr[is] = create_v_field();
+    M_inv_gr[is] = create_v_field();
+  }
+  
+  /* Loop over random sources in groups of nr */
+  for(jrand = 0; jrand < nrand; jrand += nr){
+    
+    /* Block of random sources */
+    for(jr = 0; jr < nr; jr++){
+      /* Make random source, and do inversion */
+#ifndef Z2RSOURCE
+      grsource_plain_field( gr0, EVENANDODD );
+#else
+      z2rsource_plain_field( gr0, EVENANDODD );
+#endif
+      
+      /* DEBUG */
+      //    clear_v_field(gr0);
+      //    FOREVENFIELDSITES(i){
+      //      gr0[i].c[jrand].real = 1.0;
+      //    }
+      
+      /* Iterate over displacements within a d^4 cube. Use even displacements only */
+      for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)
+	if((ex+ey+ez+et)%2==0){
+	  is = (et + d*(ez + d*(ey + d*ex)))/2 + evol*jr;
+	  /* Apply source thinning */
+	  copy_v_field( gr[is], gr0 );
+	  thin_source( gr[is], d, ex, ey, ez, et );
+	  
+	  /* Project out the low mode part, based on the given eigenvectors */
+	  project_out(gr[is], eigVec, Nvecs, EVEN);
+	  
+#if 1
+	  /* DEBUG */
+	  /* Check the norm of the reduced source */
+	  double_complex dd;
+	  dot_product(gr[is], gr[is], &dd, EVEN);
+	  node0_printf("Deflated source norm %g\n", dd.real);
+#endif
+	}
+    } /* jr */
+    
+    for(j = 0; j < n_masses; j++){
+      
+      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
+      node0_printf("Solving for %d %d %d %d mass %g\n", ex, ey, ez, et, mass[j]);
+      
+      for(is = 0; is < nsrc; is++)
+	clear_v_field(M_inv_gr[is]);
+      
+      mat_invert_block_uml_field( nsrc, gr, M_inv_gr, qic + j, mass[j], fn_multi[j]);
+      
+      /* For each source, apply current in various directions at the sink */
+      for(is = 0; is < nsrc; is++){
+#if 0
+	/* DEBUG */
+	su3_vector *M_inv_gr_test = create_v_field();
+	for(n = 0; n < Nvecs; n++){
+	  complex cc = {0., 0.};
+	  FOREVENFIELDSITES(i){
+	    complex z;
+	    z = su3_dot(eigVec[n] + i, gr[is] + i);
+	    CSUM(cc, z);
+	  }
+	  CMULREAL(cc, 2*mass[j]/(eigVal[n] + 4*mass[j]*mass[j]), cc);
+	  FOREVENFIELDSITES(i){
+	    for(int c = 0; c < 3; c++){
+	      complex z;
+	      CMUL(cc, eigVec[n][i].c[c], z);
+	      CSUM(M_inv_gr_test[i].c[c], z);
+	    }
+	  }
+	}
+	destroy_v_field(M_inv_gr_test);
+#endif
+	
+	/* Apply current in various directions at the sink */
+	for(mu = 0; mu < NMU; mu++){
+	  
+	  /* Apply the appropriate spin_taste operator for
+	     a nearly conserved current.  */
+	  spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, M_inv_gr[is]);
+	  spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+	  
+	  /* J_mu = imag[gr.M_inv_gr] */
+	  FORALLFIELDSITES(i){
+	    complex cc = su3_dot( gr[is]+i, gr_mu+i );
+	    j_mu[j][NMU*i + mu] += cc.imag;
+	    //		  printf("j_mu %d %d %d %d %d %g %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, cc.real, cc.imag);
+	  }
+	  
+#if 0
+	  /* DEBUG */
+	  su3_vector *gr_mu_test = create_v_field();
+	  su3_vector *grp = create_v_field();
+	  su3_vector *grpp = create_v_field();
+	  
+	  for(n = 0; n < Nvecs; n++){
+	    dslash_fn_field(eigVec[n], grp, ODD, fn_multi[j]);
+	    spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, grpp, grp);
+	    spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, grpp, grpp);
+	    
+	    complex cc = {0., 0.};
+	    FOREVENFIELDSITES(i){
+	      complex z;
+	      z = su3_dot(eigVec[n] + i, gr[is] + i);
+	      CSUM(cc, z);
+	    }
+	    CMULREAL(cc, -1./(eigVal[n] + 4*mass[j]*mass[j]), cc);
+	    FOREVENFIELDSITES(i){
+	      for(int c = 0; c < 3; c++){
+		complex z;
+		CMUL(cc, grpp[i].c[c], z);
+		CSUM(gr_mu_test[i].c[c], z);
+	      } /* c */
+	    } /* i */
+	  } /* n */
+	  
+	  destroy_v_field(grpp);
+	  destroy_v_field(grp);
+	  destroy_v_field(gr_mu_test);
+#endif
+	} /* mu */
+      } /* is */	    
+    } /* j */
+
+    if((jrand+1) % nwrite == 0){
+      wtime -= dclock();
+      for(j = 0; j < n_masses; j++){
+#if 0
+	/* DEBUG */
+	FOREVENFIELDSITES(i){
+	  printf("%d %d %d %d ",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t);
+	  for(mu = 0; mu < NMU; mu++)
+	    printf("%d %g %g ",mu,j_mu[j][NMU*i + mu],jlow_mu[j][NMU*i + mu]);
+	  printf("\n");
+	}
+#endif
+	node0_printf("For rand %d and mass %g\n", jrand, mass[j]);
+	average_vector_current_and_sum(nwrite, j_mu[j], jlow_mu[j]);
+	int status = write_vector_current_record(outfile[j], jrand, nwrite, mass[j], j_mu[j]);
+	clear_r_array_field(j_mu[j], NMU);
+	wtime += dclock();
+	if(status != QIO_SUCCESS){
+	  node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
+	} 
+      } /* j */
+    } /* if write */
+  } /* jrand */
+  
+  for(j = 0; j < n_masses; j++){
+    close_vector_current_file(outfile[j]);
+    destroy_r_array_field(j_mu[j], NMU);
+    destroy_r_array_field(jlow_mu[j], NMU);
+  }
+  
+  node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
+  
+  for(is = 0; is < nsrc; is++){
+    destroy_v_field(M_inv_gr[is]);
+    destroy_v_field(gr[is]);
+  }
+  free(M_inv_gr); M_inv_gr = NULL; 
+  free(gr); gr = NULL;
+  destroy_v_field(gr_mu); gr_mu = NULL;
+  destroy_v_field(gr0); gr0 = NULL;
+
+} /* f_meas_current_multi_eig - BLOCKCG version */
+
+
+#else
+
 /************************************************************************/
 /* Entry point for multiple masses with deflation and iterated single-mass inverter.
    This variant does two solves from the same source -- sloppy and precise --
@@ -528,7 +1023,13 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving sloppily for %d %d %d %d\n", ex, ey, ez, et);
 	      clear_v_field(M_inv_gr);
+#if 0
 	      mat_invert_uml_field( gr, M_inv_gr, qic_sloppy + j, mass[j], fn_multi[j]);
+#else
+	      qic_sloppy[j].parity = EVEN;
+	      ks_congrad_field( gr, M_inv_gr, qic_sloppy + j, mass[j], fn_multi[j]);
+	      dslash_fn_field( M_inv_gr, M_inv_gr, ODD, fn_multi[j]);
+#endif
 	      
 	      /* Apply current in various directions at the sink */
 	      for(mu = 0; mu < NMU; mu++){
@@ -540,9 +1041,10 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 		
 		/* J_mu = imag[gr.M_inv_gr] */
 		/* SUBTRACT the sloppy result */
-		FORALLFIELDSITES(i){
+		FOREVENFIELDSITES(i){
 		  complex cc = su3_dot( gr+i, gr_mu+i );
-		  j_mu[j][NMU*i + mu] -= cc.imag;
+		  //		  j_mu[j][NMU*i + mu] -= cc.imag;
+		  j_mu[j][NMU*i + mu] += cc.imag;
 		}
 
 	      } /* mu */
@@ -550,7 +1052,13 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	      /* Next, continue to a "precise" solution from the same source */
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving precisely for %d %d %d %d\n", ex, ey, ez, et);
+#if 0
 	      mat_invert_uml_field( gr, M_inv_gr, qic_precise + j, mass[j], fn_multi[j]);
+#else
+	      qic_precise[j].parity = EVEN;
+	      ks_congrad_field( gr, M_inv_gr, qic_precise + j, mass[j], fn_multi[j]);
+	      dslash_fn_field( M_inv_gr, M_inv_gr, ODD, fn_multi[j]);
+#endif
 	      
 	      /* Apply current in various directions at the sink */
 	      for(mu = 0; mu < NMU; mu++){
@@ -560,11 +1068,13 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 		spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, M_inv_gr);
 		spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
 		
-		/* J_mu = imag[gr.M_inv_gr] */
+		/* J_mu = imag[gr * gr_mu] */
 		/* ADD the precise result, which then gives the difference */
-		FORALLFIELDSITES(i){
+		FOREVENFIELDSITES(i){
 		  complex cc = su3_dot( gr+i, gr_mu+i );
-		  j_mu[j][NMU*i + mu] += cc.imag;
+		  //		  j_mu[j][NMU*i + mu] += cc.imag;
+		  j_mu[j][NMU*i + mu] -= cc.imag;
+		  printf("j_mu %d %d %d %d %d %g %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, -cc.real, -cc.imag);
 		}
 	      } /* mu */
      
@@ -606,7 +1116,293 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
   destroy_v_field(gr_mu); gr_mu = NULL;
   destroy_v_field(gr); gr = NULL;
   destroy_v_field(gr0); gr0 = NULL;
-} /* f_meas_current_multi_diff_eig */
+
+} /* f_meas_current_multi_diff_eig  - single-source version */
+
+/* Entry point for multiple masses with iterated single-mass inverter.
+   Designed for use with deflation or eigcg.
+   Does deflation, so requires a set of accurate low-mode eigenpairs */
+
+void 
+f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
+			  quark_invert_control *qic,
+			  su3_vector **eigVec, double *eigVal, int Nvecs,
+			  ks_param *ksp, fermion_links_t *fl, 
+			  char filenames[][MAXFILENAME]){
+  
+  char myname[] = "f_meas_current_multi_eig";
+
+  int i, j, n, jrand, mu;
+
+  /* Offset for staggered phases in the current definition */
+  int r_offset[4] = {0, 0, 0, 0};
+
+  /* Current spin-taste list */
+  int *spin_taste = get_spin_taste();
+
+  su3_vector *gr0 = create_v_field();
+  su3_vector *gr = create_v_field();
+  su3_vector *gr_mu = create_v_field();
+  su3_vector *M_inv_gr = create_v_field();
+  int ex, ey, ez, et, d = thinning;
+
+  Real mass[n_masses];
+  Real *j_mu[n_masses];
+  Real *jlow_mu[n_masses];
+  imp_ferm_links_t *fn_multi[n_masses];
+  QIO_Writer *outfile[n_masses];
+  imp_ferm_links_t **fn = get_fm_links(fl);
+  double wtime = 0.;
+ 
+  node0_printf("Entered %s\n", myname); fflush(stdout);
+
+#if 1
+  /* DEBUG */
+  /* Check orthonormality of a few eigenvectors */
+  for(j = 0; j < Nvecs; j += 8)
+    for(i = j; i < Nvecs; i += 8){
+      double_complex cc ;
+      dot_product(eigVec[i], eigVec[j], &cc, EVEN) ;
+      if(i == j && fabs(cc.real - 1) > 1e-8 || i != j && fabs(cc.real) > 1e-8)
+	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
+    }
+#endif
+
+  /* Create fields for current densities, one for each mass */
+  for(j = 0; j < n_masses; j++){
+    j_mu[j] = create_r_array_field(NMU);
+    jlow_mu[j] = create_r_array_field(NMU);
+  }
+
+  /* Open files for writing */
+  for(j = 0; j < n_masses; j++){
+    outfile[j] = open_vector_current_file(filenames[j]);
+    if(outfile[j] == NULL){
+      node0_printf("%s: Failed to open %s\n", myname, filenames[j]);
+      exit(1);
+    }
+  }
+
+  /* Load masses from ks_param */
+  for(j = 0; j < n_masses; j++)
+    mass[j] = ksp[j].mass;
+  
+  /* Load pointers for fermion links, based on Naik epsilon indices */
+  for(j = 0; j < n_masses; j++)
+    fn_multi[j] = fn[ksp[j].naik_term_epsilon_index];
+  
+  /* Compute exact low-mode current density */
+  double dtime = -dclock();
+  for(n = 0; n < Nvecs; n++){
+    for(j = 0; j < n_masses; j++){
+      dslash_fn_field(eigVec[n], gr, ODD, fn_multi[j]);
+      for(mu = 0; mu < NMU; mu++){
+	/* Add in the exact low-mode solution */
+        spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, gr);
+        spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+	
+        FOREVENFIELDSITES(i){
+          complex z;
+          z = su3_dot( eigVec[n] + i, gr_mu + i);
+	  jlow_mu[j][NMU*i + mu] += -z.imag/(eigVal[n]+4.0*mass[j]*mass[j]);
+        } /* i */
+      } /* mu */
+    } /* j */
+  } /* n */
+
+#if 0
+  for(j = 0; j < n_masses; j++){
+    for(mu = 0; mu < NMU; mu++){
+      node0_printf("For mass %g\n", mass[j]);
+      FOREVENFIELDSITES(i){
+	node0_printf("j_mu_low  %d %d %d %d %d %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, jlow_mu[j][NMU*i+mu]);
+      }
+    }
+  }
+#endif
+
+  dtime += dclock();
+  node0_printf("Time for exact low modes %g sec\n", dtime);
+
+  /* HACK to get only result from low modes  */
+  if(nrand == 0){
+    for(j = 0; j < n_masses; j++){
+      average_vector_current_and_sum(1, j_mu[j], jlow_mu[j]);
+      int status = write_vector_current_record(outfile[j], 0, 1, mass[j], j_mu[j]);
+      if(status != QIO_SUCCESS){
+	node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
+      } 
+      clear_r_array_field(j_mu[j], NMU);
+    }
+  }
+
+
+  /* Loop over random sources */
+  for(jrand = 0; jrand < nrand; jrand++){
+    
+    /* Make random source, and do inversion */
+#ifndef Z2RSOURCE
+    grsource_plain_field( gr0, EVENANDODD );
+#else
+    z2rsource_plain_field( gr0, EVENANDODD );
+#endif
+
+    /* DEBUG */
+    //    clear_v_field(gr0);
+    //    FOREVENFIELDSITES(i){
+    //      gr0[i].c[jrand].real = 1.0;
+    //    }
+    
+    /* Iterate over displacements within a d^4 cube. Use even displacements only */
+    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
+
+      // Can't do this now that we are doing deflation.
+      // We would need to rephase the eigenvectors
+      //	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
+
+	    /* Apply source thinning */
+	    copy_v_field(gr, gr0);
+	    thin_source( gr, d, ex, ey, ez, et );
+
+	    /* Project out the low mode part, based on the given eigenvectors */
+	    project_out(gr, eigVec, Nvecs, EVEN);
+	    
+#if 1
+	    /* DEBUG */
+	    /* Check the norm of the reduced source */
+	    double_complex dd;
+	    dot_product(gr, gr, &dd, EVEN);
+	    node0_printf("Deflated source norm %g\n", dd.real);
+#endif
+	    
+	    for(j = 0; j < n_masses; j++){
+	      
+	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
+	      node0_printf("Solving for %d %d %d %d mass %g\n", ex, ey, ez, et, mass[j]);
+	      clear_v_field(M_inv_gr);
+#if 0
+	      mat_invert_uml_field( gr, M_inv_gr, qic + j, mass[j], fn_multi[j]);
+#else
+	      qic[j].parity = EVEN;
+	      ks_congrad_field( gr, M_inv_gr, qic + j, mass[j], fn_multi[j]);
+	      dslash_fn_field( M_inv_gr, M_inv_gr, ODD, fn_multi[j]);
+#endif
+	      
+#if 0
+	      /* DEBUG */
+	      su3_vector *M_inv_gr_test = create_v_field();
+	      for(n = 0; n < Nvecs; n++){
+		complex cc = {0., 0.};
+		FOREVENFIELDSITES(i){
+		  complex z;
+		  z = su3_dot(eigVec[n] + i, gr + i);
+		  CSUM(cc, z);
+		}
+		CMULREAL(cc, 2*mass[j]/(eigVal[n] + 4*mass[j]*mass[j]), cc);
+		FOREVENFIELDSITES(i){
+		  for(int c = 0; c < 3; c++){
+		    complex z;
+		    CMUL(cc, eigVec[n][i].c[c], z);
+		    CSUM(M_inv_gr_test[i].c[c], z);
+		  }
+		}
+	      }
+	      destroy_v_field(M_inv_gr_test);
+#endif
+
+	      /* Apply current in various directions at the sink */
+	      for(mu = 0; mu < NMU; mu++){
+		
+		/* Apply the appropriate spin_taste operator for
+		   a nearly conserved current.  */
+		spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, M_inv_gr);
+		spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+		
+		/* J_mu = -imag[gr * gr_mu] */
+		FORALLFIELDSITES(i){
+		  complex cc = su3_dot( gr+i, gr_mu+i );
+		  //		  j_mu[j][NMU*i + mu] += cc.imag;
+		  j_mu[j][NMU*i + mu] -= cc.imag;
+		  //		  printf("j_mu %d %d %d %d %d %g %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, cc.real, cc.imag);
+		  printf("j_mu %d %d %d %d %d %g %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, -cc.real, -cc.imag);
+		}
+
+#if 0
+		/* DEBUG */
+		su3_vector *gr_mu_test = create_v_field();
+		su3_vector *grp = create_v_field();
+		su3_vector *grpp = create_v_field();
+
+		for(n = 0; n < Nvecs; n++){
+		  dslash_fn_field(eigVec[n], grp, ODD, fn_multi[j]);
+		  spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, grpp, grp);
+		  spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, grpp, grpp);
+		  
+		  complex cc = {0., 0.};
+		  FOREVENFIELDSITES(i){
+		    complex z;
+		    z = su3_dot(eigVec[n] + i, gr + i);
+		    CSUM(cc, z);
+		  }
+		  CMULREAL(cc, -1./(eigVal[n] + 4*mass[j]*mass[j]), cc);
+		  FOREVENFIELDSITES(i){
+		    for(int c = 0; c < 3; c++){
+		      complex z;
+		      CMUL(cc, grpp[i].c[c], z);
+		      CSUM(gr_mu_test[i].c[c], z);
+		    } /* c */
+		  } /* i */
+		} /* n */
+		
+		destroy_v_field(grpp);
+		destroy_v_field(grp);
+		destroy_v_field(gr_mu_test);
+#endif
+	      } /* mu */
+	      
+	    } /* j */
+	  } /* ex, ey, ez, et */
+
+    if((jrand+1) % nwrite == 0){
+      wtime -= dclock();
+      for(j = 0; j < n_masses; j++){
+#if 0
+	/* DEBUG */
+	FOREVENFIELDSITES(i){
+	  printf("%d %d %d %d ",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t);
+	  for(mu = 0; mu < NMU; mu++)
+	    printf("%d %g %g ",mu,j_mu[j][NMU*i + mu],jlow_mu[j][NMU*i + mu]);
+	  printf("\n");
+	}
+#endif
+	node0_printf("For rand %d and mass %g\n", jrand, mass[j]);
+	average_vector_current_and_sum(nwrite, j_mu[j], jlow_mu[j]);
+	int status = write_vector_current_record(outfile[j], jrand, nwrite, mass[j], j_mu[j]);
+	clear_r_array_field(j_mu[j], NMU);
+	wtime += dclock();
+	if(status != QIO_SUCCESS){
+	  node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
+	} 
+      } /* j */
+    } /* if write */
+  } /* jrand */
+  
+  for(j = 0; j < n_masses; j++){
+    close_vector_current_file(outfile[j]);
+    destroy_r_array_field(j_mu[j], NMU);
+    destroy_r_array_field(jlow_mu[j], NMU);
+  }
+  
+  node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
+  
+  destroy_v_field(M_inv_gr); M_inv_gr = NULL;
+  destroy_v_field(gr_mu); gr_mu = NULL;
+  destroy_v_field(gr); gr = NULL;
+  destroy_v_field(gr0); gr0 = NULL;
+
+} /* f_meas_current_multi_eig --single-source version */
+
+#endif
 
 /************************************************************************/
 /* Entry point for multiple masses with iterated single-mass inverter.
@@ -770,280 +1566,6 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
   destroy_v_field(gr0); gr0 = NULL;
 } /* f_meas_current_multi_diff */
 
-
-/* Entry point for multiple masses with iterated single-mass inverter.
-   Designed for use with deflation or eigcg.
-   Does deflation, so requires a set of accurate low-mode eigenpairs */
-
-void 
-f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
-			  quark_invert_control *qic,
-			  su3_vector **eigVec, double *eigVal, int Nvecs,
-			  ks_param *ksp, fermion_links_t *fl, 
-			  char filenames[][MAXFILENAME]){
-  
-  char myname[] = "f_meas_current_multi_eig";
-
-  int i, j, n, jrand, mu;
-
-  /* Offset for staggered phases in the current definition */
-  int r_offset[4] = {0, 0, 0, 0};
-
-  /* Current spin-taste list */
-  int *spin_taste = get_spin_taste();
-
-  su3_vector *gr0 = create_v_field();
-  su3_vector *gr = create_v_field();
-  su3_vector *gr_mu = create_v_field();
-  su3_vector *M_inv_gr = create_v_field();
-  int ex, ey, ez, et, d = thinning;
-
-  Real mass[n_masses];
-  Real *j_mu[n_masses];
-  Real *jlow_mu[n_masses];
-  imp_ferm_links_t *fn_multi[n_masses];
-  QIO_Writer *outfile[n_masses];
-  imp_ferm_links_t **fn = get_fm_links(fl);
-  double wtime = 0.;
- 
-  node0_printf("Entered %s\n", myname); fflush(stdout);
-
-#if 1
-  /* DEBUG */
-  /* Check orthonormality of a few eigenvectors */
-  for(j = 0; j < Nvecs; j += 8)
-    for(i = j; i < Nvecs; i += 8){
-      double_complex cc ;
-      dot_product(eigVec[i], eigVec[j], &cc, EVEN) ;
-      if(i == j && fabs(cc.real - 1) > 1e-8 || i != j && fabs(cc.real) > 1e-8)
-	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
-    }
-#endif
-
-  /* Create fields for current densities, one for each mass */
-  for(j = 0; j < n_masses; j++){
-    j_mu[j] = create_r_array_field(NMU);
-    jlow_mu[j] = create_r_array_field(NMU);
-  }
-
-  /* Open files for writing */
-  for(j = 0; j < n_masses; j++){
-    outfile[j] = open_vector_current_file(filenames[j]);
-    if(outfile[j] == NULL){
-      node0_printf("%s: Failed to open %s\n", myname, filenames[j]);
-      exit(1);
-    }
-  }
-
-  /* Load masses from ks_param */
-  for(j = 0; j < n_masses; j++)
-    mass[j] = ksp[j].mass;
-  
-  /* Load pointers for fermion links, based on Naik epsilon indices */
-  for(j = 0; j < n_masses; j++)
-    fn_multi[j] = fn[ksp[j].naik_term_epsilon_index];
-  
-  /* Compute exact low-mode current density */
-  double dtime = -dclock();
-  for(n = 0; n < Nvecs; n++){
-    for(j = 0; j < n_masses; j++){
-      dslash_fn_field(eigVec[n], gr, ODD, fn_multi[j]);
-      for(mu = 0; mu < NMU; mu++){
-	/* Add in the exact low-mode solution */
-        spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, gr);
-        spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
-	
-        FOREVENFIELDSITES(i){
-          complex z;
-          z = su3_dot( eigVec[n] + i, gr_mu + i);
-	  jlow_mu[j][NMU*i + mu] += -z.imag/(eigVal[n]+4.0*mass[j]*mass[j]);
-        } /* i */
-      } /* mu */
-    } /* j */
-  } /* n */
-
-#if 1
-  for(j = 0; j < n_masses; j++){
-    for(mu = 0; mu < NMU; mu++){
-      node0_printf("For mass %g\n", mass[j]);
-      FOREVENFIELDSITES(i){
-	node0_printf("j_mu_low  %d %d %d %d %d %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, jlow_mu[j][NMU*i+mu]);
-      }
-    }
-  }
-#endif
-
-  dtime += dclock();
-  node0_printf("Time for exact low modes %g sec\n", dtime);
-
-  /* HACK to get only result from low modes  */
-  if(nrand == 0){
-    for(j = 0; j < n_masses; j++){
-      average_vector_current_and_sum(1, j_mu[j], jlow_mu[j]);
-      int status = write_vector_current_record(outfile[j], 0, 1, mass[j], j_mu[j]);
-      if(status != QIO_SUCCESS){
-	node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
-      } 
-      clear_r_array_field(j_mu[j], NMU);
-    }
-  }
-
-
-  /* Loop over random sources */
-  for(jrand = 0; jrand < nrand; jrand++){
-    
-    /* Make random source, and do inversion */
-#ifndef Z2RSOURCE
-    grsource_plain_field( gr0, EVENANDODD );
-#else
-    z2rsource_plain_field( gr0, EVENANDODD );
-#endif
-
-    /* DEBUG */
-    //    clear_v_field(gr0);
-    //    FOREVENFIELDSITES(i){
-    //      gr0[i].c[jrand].real = 1.0;
-    //    }
-    
-    /* Iterate over displacements within a d^4 cube. Use even displacements only */
-    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
-
-      // Can't do this now that we are doing deflation.
-      // We would need to rephase the eigenvectors
-      //	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
-
-	    /* Apply source thinning */
-	    copy_v_field(gr, gr0);
-	    thin_source( gr, d, ex, ey, ez, et );
-
-	    /* Project out the low mode part, based on the given eigenvectors */
-	    project_out(gr, eigVec, Nvecs, EVEN);
-	    
-#if 1
-	    /* DEBUG */
-	    /* Check the norm of the reduced source */
-	    double_complex dd;
-	    dot_product(gr, gr, &dd, EVEN);
-	    node0_printf("Deflated source norm %g\n", dd.real);
-#endif
-	    
-	    for(j = 0; j < n_masses; j++){
-	      
-	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
-	      node0_printf("Solving for %d %d %d %d mass %g\n", ex, ey, ez, et, mass[j]);
-	      clear_v_field(M_inv_gr);
-	      mat_invert_uml_field( gr, M_inv_gr, qic + j, mass[j], fn_multi[j]);
-	      
-#if 0
-	      /* DEBUG */
-	      su3_vector *M_inv_gr_test = create_v_field();
-	      for(n = 0; n < Nvecs; n++){
-		complex cc = {0., 0.};
-		FOREVENFIELDSITES(i){
-		  complex z;
-		  z = su3_dot(eigVec[n] + i, gr + i);
-		  CSUM(cc, z);
-		}
-		CMULREAL(cc, 2*mass[j]/(eigVal[n] + 4*mass[j]*mass[j]), cc);
-		FOREVENFIELDSITES(i){
-		  for(int c = 0; c < 3; c++){
-		    complex z;
-		    CMUL(cc, eigVec[n][i].c[c], z);
-		    CSUM(M_inv_gr_test[i].c[c], z);
-		  }
-		}
-	      }
-	      destroy_v_field(M_inv_gr_test);
-#endif
-
-	      /* Apply current in various directions at the sink */
-	      for(mu = 0; mu < NMU; mu++){
-		
-		/* Apply the appropriate spin_taste operator for
-		   a nearly conserved current.  */
-		spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, M_inv_gr);
-		spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
-		
-		/* J_mu = imag[gr.M_inv_gr] */
-		FORALLFIELDSITES(i){
-		  complex cc = su3_dot( gr+i, gr_mu+i );
-		  j_mu[j][NMU*i + mu] += cc.imag;
-		  //		  printf("j_mu %d %d %d %d %d %g %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, cc.real, cc.imag);
-		}
-
-#if 0
-		/* DEBUG */
-		su3_vector *gr_mu_test = create_v_field();
-		su3_vector *grp = create_v_field();
-		su3_vector *grpp = create_v_field();
-
-		for(n = 0; n < Nvecs; n++){
-		  dslash_fn_field(eigVec[n], grp, ODD, fn_multi[j]);
-		  spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, grpp, grp);
-		  spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, grpp, grpp);
-		  
-		  complex cc = {0., 0.};
-		  FOREVENFIELDSITES(i){
-		    complex z;
-		    z = su3_dot(eigVec[n] + i, gr + i);
-		    CSUM(cc, z);
-		  }
-		  CMULREAL(cc, -1./(eigVal[n] + 4*mass[j]*mass[j]), cc);
-		  FOREVENFIELDSITES(i){
-		    for(int c = 0; c < 3; c++){
-		      complex z;
-		      CMUL(cc, grpp[i].c[c], z);
-		      CSUM(gr_mu_test[i].c[c], z);
-		    } /* c */
-		  } /* i */
-		} /* n */
-		
-		destroy_v_field(grpp);
-		destroy_v_field(grp);
-		destroy_v_field(gr_mu_test);
-#endif
-	      } /* mu */
-	      
-	    } /* j */
-	  } /* ex, ey, ez, et */
-
-    if((jrand+1) % nwrite == 0){
-      wtime -= dclock();
-      for(j = 0; j < n_masses; j++){
-#if 0
-	/* DEBUG */
-	FOREVENFIELDSITES(i){
-	  printf("%d %d %d %d ",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t);
-	  for(mu = 0; mu < NMU; mu++)
-	    printf("%d %g %g ",mu,j_mu[j][NMU*i + mu],jlow_mu[j][NMU*i + mu]);
-	  printf("\n");
-	}
-#endif
-	node0_printf("For rand %d and mass %g\n", jrand, mass[j]);
-	average_vector_current_and_sum(nwrite, j_mu[j], jlow_mu[j]);
-	int status = write_vector_current_record(outfile[j], jrand, nwrite, mass[j], j_mu[j]);
-	clear_r_array_field(j_mu[j], NMU);
-	wtime += dclock();
-	if(status != QIO_SUCCESS){
-	  node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
-	} 
-      } /* j */
-    } /* if write */
-  } /* jrand */
-  
-  for(j = 0; j < n_masses; j++){
-    close_vector_current_file(outfile[j]);
-    destroy_r_array_field(j_mu[j], NMU);
-    destroy_r_array_field(jlow_mu[j], NMU);
-  }
-  
-  node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
-  
-  destroy_v_field(M_inv_gr); M_inv_gr = NULL;
-  destroy_v_field(gr_mu); gr_mu = NULL;
-  destroy_v_field(gr); gr = NULL;
-  destroy_v_field(gr0); gr0 = NULL;
-} /* f_meas_current_multi_eig */
 
 /************************************************************************/
 /* Entry point for multiple masses with iterated single-mass inverter.

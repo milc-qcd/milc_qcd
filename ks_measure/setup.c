@@ -210,6 +210,7 @@ int readin(int prompt) {
 #endif
 
 #if EIGMODE == DEFLATION
+#warning "With DEFLATION"
     /*------------------------------------------------------------*/
     /* Dirac eigenpair calculation                                */
     /*------------------------------------------------------------*/
@@ -231,6 +232,13 @@ int readin(int prompt) {
 
      /* error decrease per Rayleigh minimization */
     IF_OK status += get_f(stdin, prompt,"error_decrease", &param.error_decr);
+
+#ifdef CHEBYSHEV_EIGEN
+	/* Chebyshev preconditioner */
+	IF_OK status += get_i(stdin, prompt,"chebyshev_order", &param.cheb_p);
+	IF_OK status += get_f(stdin, prompt,"chebyshev_minE", &param.minE);
+	IF_OK status += get_f(stdin, prompt,"chebyshev_maxE", &param.maxE);
+#endif
 
     /* eigenvector input */
     IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
@@ -380,7 +388,11 @@ int readin(int prompt) {
 	param.qic_pbp[npbp_masses].resid = error_for_propagator;
 	param.qic_pbp[npbp_masses].relresid = rel_error_for_propagator;
 
+#ifdef CURRENT_DISC
+	param.qic_pbp[npbp_masses].parity = EVEN;
+#else
 	param.qic_pbp[npbp_masses].parity = EVENANDODD;
+#endif
 	param.qic_pbp[npbp_masses].min = 0;
 	param.qic_pbp[npbp_masses].start_flag = 0;
 	param.qic_pbp[npbp_masses].nsrc = 1;
@@ -427,6 +439,13 @@ int readin(int prompt) {
 
   if(prompt==2)return 0;
 
+#if EIGMODE == DEFLATION && defined(CHEBYSHEV_EIGEN)
+  /* Parameters for Chebyshev preconditioning */
+    cheb_p = param.cheb_p;
+    minE = param.minE;
+    maxE = param.maxE;
+#endif
+
   /* Construct the eps_naik table of unique Naik epsilon
      coefficients.  Also build the hash table for mapping a mass term to
      its Naik epsilon index */
@@ -449,6 +468,17 @@ int readin(int prompt) {
   if( param.startflag != CONTINUE ){
     startlat_p = reload_lattice( param.startflag, param.startfile );
   }
+
+#if 0
+  su3_matrix *G = create_random_m_field();
+  gauge_transform_links(G);
+  d_plaquette(&g_ssplaq,&g_stplaq);
+  d_linktrsum(&linktrsum);
+  nersc_checksum = nersc_cksum();
+  node0_printf("CHECK PLAQ: %.16e %.16e\n",g_ssplaq,g_stplaq);
+  node0_printf("CHECK NERSC LINKTR: %.16e CKSUM: %x\n",
+	       linktrsum.real/3.,nersc_checksum);
+#endif
 
   /* if a lattice was read in, put in KS phases and AP boundary condition */
   phases_in = OFF;
@@ -524,6 +554,13 @@ int readin(int prompt) {
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &param.Nvecs, eigVal, eigVec, 1);
   if(status != 0)terminate(1);
+
+#if 0
+  for(int j = 0; j < param.Nvecs; j++){
+    gauge_transform_v_field(eigVec[j], G);
+  }
+  destroy_m_field(G);
+#endif
 #endif
 
   ENDTIME("readin");

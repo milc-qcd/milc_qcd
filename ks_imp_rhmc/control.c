@@ -162,6 +162,7 @@ main( int argc, char **argv )
 #endif
     }
     fflush(stdout);
+    starttime = endtime;
     
     /* save lattice if requested */
     if( saveflag != FORGET ){

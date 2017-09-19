@@ -56,7 +56,7 @@ void build_hr0( int flag, int precflag )/*  0, fresh start, 1--restart with stor
      FORALLSITES(i,s){
        if(s->x ==0 && s ->y==0 && s->z==0){
          node0_printf("DT %d %d %d %d\n",s->x,s->y,s->z,s->t);
-         dump_wvec(&(eigVec0[1][i]));
+         dump_wilson_vec(&(eigVec0[1][i]));
        }
      }
       */

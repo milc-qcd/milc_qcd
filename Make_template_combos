@@ -365,7 +365,7 @@ endif
 
 ifeq ($(strip ${HAVE_CL_GPU}),true)
   CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_GPU}
-elif ($(strip ${HAVE_CL_QPHIXJ}),true)
+else ifeq ($(strip ${HAVE_CL_QPHIXJ}),true)
   CONGRAD_CL_MILC = ${CONGRAD_CL_QPHIXJ}
 else
   CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_CPU}
@@ -388,10 +388,19 @@ endif
 
   GAUGE_FORCE_QOP = gauge_force_symzk1_qop.o  gauge_stuff.o ranmom.o
 
+# Standard QPhiX combinations
+
+  GAUGE_FORCE_QPHIX = gauge_force_symzk1_qphix.o gauge_stuff.o ranmom.o \
+    gauge_force_symzk1_qphix_D.o gauge_force_symzk1_qphix_F.o
+
 ifeq ($(strip ${HAVE_GF_GPU}),true)
   GAUGE_FORCE_MILC = ${GAUGE_FORCE_MILC_GPU}
 else
-  GAUGE_FORCE_MILC = ${GAUGE_FORCE_MILC_CPU}
+  ifeq ($(strip ${HAVE_GF_QPHIX}),true)
+    GAUGE_FORCE_MILC = ${GAUGE_FORCE_QPHIX}
+  else
+    GAUGE_FORCE_MILC = ${GAUGE_FORCE_MILC_CPU}
+  endif
 endif
 
 ######################################################################

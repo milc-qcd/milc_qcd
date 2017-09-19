@@ -342,9 +342,6 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
     
     qic->size_r        = (Real)rsq/source_norm;
     qic->size_relr     = relrsq;
-    qic->final_iters   = iteration;
-    qic->final_restart = nrestart;
-    qic->converged     = 1;
 
 #ifdef CG_DEBUG
     if(mynode()==0){printf("iter=%d, rsq/src= %e, relrsq= %e, pkp=%e\n",
@@ -360,6 +357,9 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
     } END_LOOP_OMP
   }
 
+  qic->final_iters   = iteration;
+  qic->final_restart = nrestart;
+  qic->converged     = 1;
   if(nrestart == max_restarts || iteration == max_cg){
     qic->converged = 0;
 //    node0_printf("%s: CG not converged after %d iterations and %d restarts, \n",
@@ -388,3 +388,11 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
   return iteration;
 }
 
+int ks_congrad_block_parity_cpu(int nsrc, su3_vector **t_src, su3_vector **t_dest, 
+				quark_invert_control *qic, Real mass,
+				imp_ferm_links_t *fn)
+{
+
+  node0_printf("ks_congrad_block_parity_cpu: NOT IMPLEMENTED\n");
+  terminate(1);
+}

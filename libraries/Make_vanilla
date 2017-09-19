@@ -56,7 +56,7 @@ ifeq ($(strip ${COMPILER}),ibm)
 endif
 
 #-------------- Intel icc/ecc -----------------------------------
-ifeq ($(strip ${COMPILER}),intel)
+ifeq ($(strip ${COMPILER}),cray-intel)
   
   # Architecture choices: knl, knc, hsw
   ifeq ($(strip ${ARCH}),knl)
@@ -71,6 +71,23 @@ ifeq ($(strip ${COMPILER}),intel)
   
   # Debugging and optimization
   OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+
+else ifeq ($(strip ${COMPILER}),intel)
+  
+  # Architecture choices: knl, knc, hsw
+  ifeq ($(strip ${ARCH}),knl)
+    OCFLAGS +=  -xMIC-AVX512 
+  else ifeq ($(strip ${ARCH}),knc)
+    OCFLAGS +=  -mmic
+  else ifeq ($(strip ${ARCH}),hsw)
+    OCFLAGS += -xCORE-AVX2
+  else
+    OCFLAGS += -xavx
+  endif
+  
+  # Debugging and optimization
+  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+
 endif
 
 #-------------- Portland Group ----------------------------

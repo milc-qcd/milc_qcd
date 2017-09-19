@@ -36,6 +36,7 @@
 #endif
 
 #include "../include/generic_qphix.h"
+#include "../include/generic_qphixmilc.h"
 #include "../include/generic_ks_qphix.h"
 #include "../include/generic.h"
 #include <lattice.h>

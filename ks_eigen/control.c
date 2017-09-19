@@ -55,7 +55,7 @@ int main( int argc, char **argv ){
     total_R_iters=Kalkreuter(eigVec, eigVal, eigenval_tol, 
 			     error_decr, Nvecs, MaxIter, Restart, 
 			     Kiters, 1);
-    construct_eigen_odd(eigVec, eigVal, Nvecs);
+    construct_eigen_odd(eigVec, eigVal, Nvecs, fn[0]);
 
     /* Calculate and print the residues and norms of the eigenvectors */
     resid = (double *)malloc(Nvecs*sizeof(double));
