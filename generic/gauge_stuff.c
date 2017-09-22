@@ -8,16 +8,19 @@
 
 /**#define GFTIME**/ /* For timing gauge force calculation */
 #include "generic_includes.h"	/* definitions files and prototypes */
+#include "../include/openmp_defs.h"
 
-#ifdef LOOPEND
-#undef FORALLSITES
-#define FORALLSITES(i,s) \
-{ register int loopend; loopend=sites_on_node; \
-for( i=0,  s=lattice ; i<loopend; i++,s++ )
-#define END_LOOP }
-#else
-#define END_LOOP        /* define it to be nothing */
-#endif
+/* I don't understand the advantage of following SG 5/25/17 will comment out */
+//#ifdef LOOPEND
+//#undef FORALLSITES
+//#define FORALLSITES(i,s) \
+//{ register int loopend; loopend=sites_on_node; \
+//for( i=0,  s=lattice ; i<loopend; i++,s++ )
+//#define END_LOOP }
+//#else
+//#define END_LOOP        /* define it to be nothing */
+//#endif
+/* I don't understand the advantage of preceeding SG 5/25/17 will comment out */
 
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
@@ -267,7 +270,7 @@ double imp_gauge_action() {
 
 	    path_product_fields(links, loop_table[iloop][ln] , length, tempmat1 );
 
-	    FORALLSITES(i,s){
+	    FORALLSITES_OMP(i,s,private(trace,action,total_action,act2,rep) reduction(+:g_action)){
 		trace=trace_su3( &tempmat1[i] );
 		action =  3.0 - (double)trace.real;
 		/* need the "3 -" for higher characters */
@@ -280,7 +283,7 @@ double imp_gauge_action() {
 
         	g_action  += total_action;
 
-	    } END_LOOP /* sites */
+	    } END_LOOP_OMP /* sites */
 	} /* ln */
     } /* iloop */
 
@@ -304,6 +307,7 @@ void g_measure( ){
     register site *s;
     complex trace;
     double average[NREPS],action,act2,total_action;
+    double this_total_action; /* need for loop over sitest */
     int length;
     su3_matrix *tempmat1;
     su3_matrix *links;
@@ -337,20 +341,22 @@ void g_measure( ){
 	    path_product_fields(links, loop_table[iloop][ln] , length, tempmat1 );
 
 	    for(rep=0;rep<NREPS;rep++)average[rep] = 0.0;
-	    FORALLSITES(i,s){
+    	    this_total_action=0.;
+	    FORALLSITES_OMP(i,s,private(trace,action,act2,rep) reduction(+:this_total_action,average)){
 		trace=trace_su3( &tempmat1[i] );
 		average[0] += (double)trace.real;
 		action =  3.0 - (double)trace.real;
-		total_action += (double)loop_coeff[iloop][0]*action;
+		this_total_action += (double)loop_coeff[iloop][0]*action;
 		/* need the "3 -" for higher characters */
         	act2=action;
 		for(rep=1;rep<NREPS;rep++){
 		    act2 *= action;
 		    average[rep] += act2;
-		    total_action += (double)loop_coeff[iloop][rep]*act2;
+		    this_total_action += (double)loop_coeff[iloop][rep]*act2;
 		} /* reps */
-	    } END_LOOP /* sites */
+	    } END_LOOP_OMP /* sites */
 	    g_vecdoublesum( average, NREPS );
+	    total_action += this_total_action;
 	    /* dump the loop */
 	    node0_printf("G_LOOP:  %d  %d  %d   ",iloop,ln,length);
 #if (PRECISION==1)
@@ -411,9 +417,9 @@ int fsubl;
    terminate(1);
  }
 
-    FORSOMESUBLATTICE(i,st,subl) {
+    FORSOMESUBLATTICE_OMP(i,st,subl,default(shared)) {
 	clear_su3mat(&(st->staple));
-    }
+    } END_LOOP_OMP
 
     for(iloop=0;iloop<NLOOP;iloop++){
 	length=loop_length[iloop];
@@ -449,11 +455,11 @@ int fsubl;
 		/* We took the path in the other direction from our old
 		   convention in order to get it to end up "at our site".
 		   So now take adjoint */
-		FORSOMESUBLATTICE(i,st,subl) {
+		FORSOMESUBLATTICE_OMP(i,st,subl,private(tmat1)) {
 		    su3_adjoint( &tempmat1[i], &tmat1 );
 		    scalar_mult_add_su3_matrix(&(st->staple), &tmat1,
 			loop_coeff[iloop][0], &(st->staple) );
-		}
+		} END_LOOP_OMP
 	    } /* k (location in path) */
 	} /* ln */
     } /* iloop */

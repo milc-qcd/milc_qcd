@@ -228,6 +228,12 @@ int readin(int prompt) {
 			      &par_buf.eigenval_tol );
 	IF_OK status += get_f(stdin, prompt,"error_decrease", &par_buf.error_decr);
 
+#ifdef CHEBYSHEV_EIGEN
+	/* Chebyshev preconditioner */
+	IF_OK status += get_i(stdin, prompt,"chebyshev_order", &par_buf.cheb_p);
+	IF_OK status += get_f(stdin, prompt,"chebyshev_minE", &par_buf.minE);
+	IF_OK status += get_f(stdin, prompt,"chebyshev_maxE", &par_buf.maxE);
+#endif
         /* find out what kind of starting lattice to use */
 	IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
 	    par_buf.startfile );
@@ -259,8 +265,14 @@ int readin(int prompt) {
     Kiters = par_buf.Kiters ;
     eigenval_tol = par_buf.eigenval_tol ;
     error_decr = par_buf.error_decr ;
+#if CHEBYSHEV_EIGEN
+    cheb_p = par_buf.cheb_p;
+    minE = par_buf.minE;
+    maxE = par_buf.maxE;
+#endif
     startflag = par_buf.startflag;
     strcpy(startfile,par_buf.startfile);
+
 
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
     n_naiks = 1;

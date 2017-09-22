@@ -9,6 +9,7 @@
    space-time plaquettes */
 
 #include "generic_includes.h"
+#include "../include/openmp_defs.h"
 
 void d_plaquette(double *ss_plaq,double *st_plaq) {
 /* su3mat is scratch space of size su3_matrix */
@@ -36,16 +37,16 @@ msg_tag *mtag0,*mtag1;
 	    mtag1 = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 		dir2, EVENANDODD, gen_pt[1] );
 
-	    FORALLSITES(i,s){
+	    FORALLSITES_OMP(i,s,private(m1,m4)){
 		m1 = &(s->link[dir1]);
 		m4 = &(s->link[dir2]);
 		mult_su3_an(m4,m1,&su3mat[i]);
-	    }
+	    } END_LOOP_OMP
 
 	    wait_gather(mtag0);
 	    wait_gather(mtag1);
 
-	    FORALLSITES(i,s){
+	    FORALLSITES_OMP(i,s,private(mtmp) reduction(+:st_sum,ss_sum) ){
 #ifdef SCHROED_FUN
 		if(dir1==TUP ){
 		    if(s->t==(nt-1)){
@@ -74,7 +75,7 @@ msg_tag *mtag0,*mtag1;
 		else          ss_sum += (double)
 		    realtrace_su3((su3_matrix *)(gen_pt[1][i]),&mtmp);
 #endif
-	    }
+	    } END_LOOP_OMP
 
 	    cleanup_gather(mtag0);
 	    cleanup_gather(mtag1);

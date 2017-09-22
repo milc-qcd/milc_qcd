@@ -5,6 +5,8 @@
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 #include "../include/fermion_links.h"
+#include "../include/openmp_defs.h"
+
 static Real ahmat_mag_sq(anti_hermitmat *pt);
 
 /*DEBUG*/
@@ -13,6 +15,7 @@ double old_g, old_h, old_f, old_a;
 
 double d_action_rhmc( su3_vector **multi_x, su3_vector *sumvec){
   double ssplaq,stplaq,g_action,h_action,f_action;
+  double dtimec = -dclock();
   
   d_plaquette(&ssplaq,&stplaq);
   ssplaq *= -1.0; stplaq *= -1.0;
@@ -36,6 +39,8 @@ double d_action_rhmc( su3_vector **multi_x, su3_vector *sumvec){
   old_a=g_action+h_action+f_action;
   /*ENDDEBUG*/
   
+  dtimec += dclock();
+  node0_printf("ACTIONTIME: time = %e\n",dtimec);
   return(g_action+h_action+f_action);
 }
 
@@ -64,9 +69,9 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
 		 inaik, rparam[iphi].naik_term_epsilon );
       ks_rateval( sumvec, F_OFFSET(phi[iphi]), multi_x, 
   		rparam[iphi].FA.res, rparam[iphi].FA.order, EVEN );
-      FOREVENSITES(i,s){ /* phi is defined on even sites only */
+      FOREVENFIELDSITES_OMP(i,default(shared) reduction(+:sum)){ /* phi is defined on even sites only */
         sum += magsq_su3vec( &(sumvec[i]) );
-      }
+      } END_LOOP_OMP
       iphi++;
     }
   }
@@ -82,12 +87,12 @@ double hmom_action(void) {
   double sum;
 
   sum=0.0;
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(dir) reduction(+:sum)) {
     for(dir=XUP;dir<=TUP;dir++){
       sum += (double)ahmat_mag_sq( &(s->mom[dir]) ) - 4.0;
       /* subtract 1/2 per d.o.f. to help numerical acc. in sum */
     }
-  }
+  } END_LOOP_OMP
   g_doublesum( &sum );
   return(sum);
 }

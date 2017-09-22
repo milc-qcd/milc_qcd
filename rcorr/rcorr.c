@@ -141,8 +141,8 @@ rcorr(Real *qblock[], Real *q2block[],
 
       /* Compute average of current density for this block */
       clear_c_array_field(qtmp, NMU);
-      for(int ib = 0; ib < bs; ib++)
-	sum_c_array_field(qtmp, qin_sloppy[jrand+ib], NMU);
+      for(int kb = 0; kb < bs; kb++)
+	sum_c_array_field(qtmp, qin_sloppy[jrand+kb], NMU);
       mulreal_c_field(qtmp, 1./((double) bs), NMU);
   
       /* The forward FT is done separately for each current component */

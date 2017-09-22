@@ -803,7 +803,8 @@ dumpmat( &(W_unitlink[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
     rephase_field_offset( V_link, OFF, NULL, r0 );
     rephase_field_offset( Y_unitlink, OFF, NULL, r0 );
     
-    FORALLFIELDSITES_OMP(i,private(tmat,dydv,dydagdv,dwdv,dwdagdv,m,n,k,l,force_tmp,ftmp) reduction(+:nflops_all_sites) ){
+    FORALLFIELDSITES_OMP(i,private(tmat,dydv,dydagdv,dwdv,dwdagdv,m,n,k,l,force_tmp,ftmp) 
+			 reduction(+:nflops_all_sites) ){
       for(dir=XUP;dir<=TUP;dir++){
 	// derivatives: dY/dV, dY^+/dV
 	switch (ap->umethod){
@@ -1897,7 +1898,8 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
   rephase_field_offset( internal_V_link, OFF, NULL , r0);
   rephase_field_offset( internal_Y_link, OFF, NULL , r0);
   
-  FORALLFIELDSITES(i){
+  FORALLFIELDSITES_OMP(i, private(dwdv, dwdagdv, dir, tmat, dwdvs, dwdagdvs, m, n, k, l, ftmp)
+ 		       reduction(+:nflops_all_sites)){
     for(dir=XUP;dir<=TUP;dir++){
       // calculate derivatives
       if(ap->umethod == UNITARIZE_ROOT )
@@ -1980,8 +1982,8 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
   }
 #endif /* HISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
-    }
-  }
+    } /* dir */
+    } END_LOOP_OMP;
 
     /* Sum over all nodes and update counters */
 

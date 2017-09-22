@@ -24,15 +24,6 @@
  *  overkill.                                                             */
 /**#define STRICT_CONVERGENCE	(taken out by UMH)**/
 
-
-/* If you do not define the USE_DSLASH_SPECIAL then calls to the standard   *
- * dslash are made. If you do define USE_DSLASH_SPECIAL then DSLASH_SPECIAL *
- * is used                                                                  */
-#ifdef FN
-#define USE_DSLASH_SPECIAL
-#endif
-
-
 /* Include files */
 #include "generic_ks_includes.h"
 #include "../include/jacobi.h"

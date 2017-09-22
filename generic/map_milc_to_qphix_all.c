@@ -35,12 +35,15 @@ static int QPHIX_node_index_raw_D(int coords[], int milc_parity){
 MILCTYPE * \
 create_qphix_raw4_##P##_##T (void){ \
   MILCTYPE *raw = NULL; \
+  int i; \
   raw = (MILCTYPE *)malloc(4*sites_on_node*sizeof(MILCTYPE)); \
   if(raw == NULL){				\
     printf("create4_qphix_raw: No room\n");	\
     return NULL;				\
   } \
-  memset(raw, 0, 4*sites_on_node*sizeof(MILCTYPE)); \
+  FORALLFIELDSITES_OMP(i, ){ \
+    memset(raw+4*i, 0, 4*sizeof(MILCTYPE));	\
+  } END_LOOP_OMP; \
   return raw; \
 }
 
@@ -59,12 +62,15 @@ destroy_qphix_raw4_##P##_##T (MILCTYPE *raw){ \
 MILCTYPE * \
 create_qphix_raw_##P##_##T(void){ \
   MILCTYPE *raw = NULL; \
+  int i; \
   raw = (MILCTYPE *)malloc(sites_on_node*sizeof(MILCTYPE)); \
   if(raw == NULL){ \
     printf("create_qphix_raw: No room\n"); \
     return NULL; \
   } \
-  memset(raw, 0, sites_on_node*sizeof(MILCTYPE)); \
+  FORALLFIELDSITES_OMP(i, ){ \
+    memset(raw + i, 0, sizeof(MILCTYPE)); \
+  } END_LOOP_OMP; \
   return raw; \
 }
 
@@ -126,7 +132,8 @@ copy_D_F_to_milc(anti_hermitmat *dest, dsu3_matrix *src){
 #define copy_F_D_to_milc(d,s) f2p_wvec(d,s);
 #define copy_D_D_to_milc(d,s) d2p_wvec(d,s);
 
-void site_coords(int coords[4],site *s){
+static void 
+site_coords(int coords[4],site *s){
   coords[0] = s->x;
   coords[1] = s->y;
   coords[2] = s->z;
