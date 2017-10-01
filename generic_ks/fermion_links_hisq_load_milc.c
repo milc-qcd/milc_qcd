@@ -599,9 +599,10 @@ load_hisq_fn_links(info_t *info, fn_links_t **fn, fn_links_t *fn_deps,
     // 2nd path table set
     load_X_from_W(info, fn[0], aux, &ap->p2);
     final_flop += info->final_flop;
-    for( inaik = 1; inaik < n_naiks; inaik++ )
+    for( inaik = 1; inaik < n_naiks; inaik++ ) {
       add_fn( fn[inaik], fn[0], fn[inaik] );
       final_flop += 18.*volume/numnodes();
+    }
   }
   else {
     // 2nd path table set only, no other terms with Naik corrections

@@ -19,7 +19,6 @@
 // gpu code 
 void imp_gauge_force_gpu(Real eps, field_offset mom_off)
 {
-  char myname[] = "imp_gauge_force_gpu";
   Real **loop_coeff = get_loop_coeff();
   //int max_length = get_max_length();
   //int nreps = get_nreps();
