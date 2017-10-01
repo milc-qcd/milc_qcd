@@ -237,7 +237,7 @@ create_fermion_links_hisq(int precision, int n_naiks,
 		 PRECISION);
 
   if( phases_in != 1){
-    node0_printf("BOTCH: %s needs phases in\n",myname);
+    if(mynode() == 0) printf("BOTCH: %s needs phases in\n",myname);
     terminate(1);
   }
   

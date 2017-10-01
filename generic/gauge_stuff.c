@@ -11,15 +11,17 @@
 #include "../include/openmp_defs.h"
 
 /* I don't understand the advantage of following SG 5/25/17 will comment out */
-//#ifdef LOOPEND
-//#undef FORALLSITES
-//#define FORALLSITES(i,s)
-//{ register int loopend; loopend=sites_on_node;
-//for( i=0,  s=lattice ; i<loopend; i++,s++ )
-//#define END_LOOP }
-//#else
-//#define END_LOOP        /* define it to be nothing */
-//#endif
+/*
+#ifdef LOOPEND
+#undef FORALLSITES
+#define FORALLSITES(i,s) \
+{ register int loopend; loopend=sites_on_node; \
+for( i=0,  s=lattice ; i<loopend; i++,s++ )
+#define END_LOOP }
+#else
+#define END_LOOP        // define it to be nothing
+#endif
+*/
 /* I don't understand the advantage of preceeding SG 5/25/17 will comment out */
 
 #define GOES_FORWARDS(dir) (dir<=TUP)
