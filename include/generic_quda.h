@@ -56,7 +56,7 @@ static su3_matrix* create_G_from_site_quda(void) {
   site *s;
 
   FORALLSITES_OMP(i,s,){
-    fast_copy(links+4*i+XUP, s->link+XUP, (TUP+1-XUP)*sizeof(su3_matrix));
+    fast_copy(links+4*i, s->link, 4*sizeof(su3_matrix));
   } END_LOOP_OMP
 
   return links;
@@ -70,7 +70,7 @@ static void copy_to_site_from_G_quda(su3_matrix *links) {
   site *s;
 
   FORALLSITES_OMP(i,s,){
-    fast_copy(s->link+XUP, links+4*i+XUP, (TUP+1-XUP)*sizeof(su3_matrix));
+    fast_copy(s->link, links+4*i, 4*sizeof(su3_matrix));
   } END_LOOP_OMP
 }
 
@@ -97,7 +97,7 @@ static anti_hermitmat* create_M_from_site_quda(void) {
   site *s;
 
   FORALLSITES_OMP(i,s,){
-    fast_copy(momentum+4*i+XUP, s->mom+XUP, (TUP+1-XUP)*sizeof(anti_hermitmat));
+    fast_copy(momentum+4*i, s->mom, 4*sizeof(anti_hermitmat));
   } END_LOOP_OMP
 
   return momentum;
@@ -111,7 +111,7 @@ static void copy_to_site_from_M_quda(anti_hermitmat *momentum) {
   site *s;
 
   FORALLSITES_OMP(i,s,){
-    fast_copy(s->mom+XUP, momentum+4*i+XUP, (TUP+1-XUP)*sizeof(anti_hermitmat));
+    fast_copy(s->mom, momentum+4*i, 4*sizeof(anti_hermitmat));
   } END_LOOP_OMP
 }
 
