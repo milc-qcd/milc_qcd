@@ -516,6 +516,7 @@ load_X_from_W(info_t *info, fn_links_t *fn, hisq_auxiliary_t *aux,
   double dtime = -dclock();
 #ifdef USE_FL_GPU
   load_fatlonglinks_gpu(info, fat, lng, ap, aux->W_unitlink);
+  final_flop += info->final_flop;
 #else
   load_fatlinks(info, fat, ap, aux->W_unitlink );
   final_flop += info->final_flop;
@@ -788,6 +789,7 @@ create_hisq_links_milc(info_t *info, fn_links_t **fn, fn_links_t **fn_deps,
 
   dtime += dclock();
   info->final_sec = dtime;
+  info->final_flop = final_flop;
 }
 
 void
