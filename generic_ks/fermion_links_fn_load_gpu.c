@@ -12,8 +12,6 @@
 
 #include "generic_ks_includes.h"
 #include "../include/info.h"
-
-#include <quda_milc_interface.h>
 #include "../include/generic_quda.h"
 
 void  
@@ -31,7 +29,6 @@ load_fatlinks_gpu(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matr
   QudaFatLinkArgs_t fatlink_args;
   fatlink_args.su3_source = 0; // Cannot guarantee that the incoming field is an SU(3) gauge-field 
 			       // Need a workaround for this
-  fatlink_args.use_pinned_memory = 0;
  
   initialize_quda();
 
@@ -53,7 +50,6 @@ load_fatlonglinks_gpu(info_t *info, su3_matrix *fatlinks, su3_matrix *longlinks,
   QudaFatLinkArgs_t fatlink_args;
   fatlink_args.su3_source = 0; // Cannot guarantee that the incoming field is an SU(3) gauge-field
   // Need a workaround for this
-  fatlink_args.use_pinned_memory = 0;
  
   initialize_quda();
 
