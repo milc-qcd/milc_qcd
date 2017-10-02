@@ -27,6 +27,7 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
   const int num_loop_types = get_nloop();
   double *quda_loop_coeff = (double*)malloc(num_loop_types * sizeof(double));
   int i;
+  site *st;
   const Real eb3 = eps*beta/3.0;
   
   initialize_quda();
@@ -38,7 +39,13 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
 
   qudaGaugeForce(PRECISION,num_loop_types,quda_loop_coeff,eb3,links,momentum);
 
-  copy_to_site_from_M_quda(momentum); // insert back into site
+  FORALLSITES_OMP(i,st,){
+    for(int dir=XUP; dir<=TUP; ++dir){
+      for(int j=0; j<10; ++j){
+	((Real*)&(st->mom[dir]))[j] += ((Real*)(momentum + 4*i+dir))[j];
+      }
+    }
+  } END_LOOP_OMP
   
   free(quda_loop_coeff);
   destroy_G_quda(links);
