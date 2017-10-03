@@ -206,7 +206,12 @@ endif
 # Standard MILC
 
 # Choices here are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
+ifeq ($(strip ${WANTQUDA}),true)
+# When using QUDA, the back links are not used and just add unnecessary overhead
+  DSLASH_FN_MILC = dslash_fn.o
+else
   DSLASH_FN_MILC = dslash_fn_dblstore.o
+endif
 
 # No other choice
   DSLASH_EO = dslash_eo.o

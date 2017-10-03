@@ -683,7 +683,13 @@ CGEOM +=# -DFIX_IONODE_GEOM
 #                For now, works only with dslash_fn_dblstore.o
 # FEWSUMS        Fewer CG reduction calls
 
-KSCGSTORE = -DDBLSTORE_FN -DFEWSUMS -DD_FN_GATHER13 
+# If we are using QUDA, the backward links are unused, so we should
+# avoid unecessary overhead and use the standard dslash
+ifeq ($(strip ${WANTQUDA}),true)
+  KSCGSTORE = -DFEWSUMS
+else
+  KSCGSTORE = -DDBLSTORE_FN -DFEWSUMS -DD_FN_GATHER13
+endif
 
 #------------------------------
 # Staggered fermion force routines
