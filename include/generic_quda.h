@@ -122,5 +122,16 @@ static void destroy_M_quda(anti_hermitmat *momentum) {
   qudaFreePinned(momentum);
 }
 
+/*
+  Return the most recent fermion link field passed to QUDA
+  (defined in generic_ks/ks_multicg_offset_gpu.c)
+*/
+imp_ferm_links_t* get_fn_last();
+
+/*
+  Update the fermion link field passed to QUDA
+  (defined in generic_ks/ks_multicg_offset_gpu.c)
+*/
+void set_fn_last(imp_ferm_links_t *fn_last_new);
 
 #endif /* GENERIC_QUDA_H */

@@ -684,7 +684,9 @@ CGEOM +=# -DFIX_IONODE_GEOM
 # FEWSUMS        Fewer CG reduction calls
 
 # If we are using QUDA, the backward links are unused, so we should
-# avoid unecessary overhead and use the standard dslash
+# avoid unecessary overhead and use the standard dslash.  Note that
+# dslash_fn also has hooks in place to offload any dslash_fn_field
+# calls to QUDA
 ifeq ($(strip ${WANTQUDA}),true)
   KSCGSTORE = -DFEWSUMS
 else
