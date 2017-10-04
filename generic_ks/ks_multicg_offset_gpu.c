@@ -22,6 +22,19 @@
 static const char *prec_label[2] = {"F", "D"};
 #endif
 
+// this is used to store the most recent fermion link field passed to QUDA
+static imp_ferm_links_t *fn_last = NULL;
+
+// return the most recent fermion link field passed to QUDA
+imp_ferm_links_t* get_fn_last() {
+  return fn_last;
+}
+
+// update the fermion link field passed to QUDA
+void set_fn_last(imp_ferm_links_t *fn_last_new) {
+  fn_last = fn_last_new;
+}
+
 int ks_multicg_offset_field_gpu(
     su3_vector *src,
     su3_vector **psim,
@@ -150,18 +163,18 @@ int ks_multicg_offset_field_gpu(
 
   // for newer versions of QUDA we need to invalidate the gauge field if the naik term changes to prevent caching
   static imp_ferm_links_t *fn_last = NULL;
-  if ( fn != fn_last || fresh_fn_links(fn) ){
+  if ( fn != get_fn_last() || fresh_fn_links(fn) ){
     cancel_quda_notification(fn);
-    fn_last = fn;
+    set_fn_last(fn);
     num_iters = -1;
-    node0_printf("%s: fn, notify: Signal QUDA to refresh links", myname);
+    node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", myname);
   }
 
   static int naik_term_epsilon_index = -1; 
   if ( naik_term_epsilon_index != ksp[0].naik_term_epsilon_index) {
     num_iters = -1; // temporary back door hack to invalidate gauge fields since naik index has changed
     naik_term_epsilon_index = ksp[0].naik_term_epsilon_index;
-    node0_printf("%s: naik_epsilon: Signal QUDA to refresh links", myname);
+    node0_printf("%s: naik_epsilon: Signal QUDA to refresh links\n", myname);
   }
 
   qudaMultishiftInvert(

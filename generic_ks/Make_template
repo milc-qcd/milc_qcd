@@ -74,7 +74,6 @@ G_KS_ALL = \
   fermion_links_fn_load_milc.o \
   fermion_links_fn_utilities_gpu.o \
   fermion_links_hisq_milc.o \
-  fermion_links_hisq_load_gpu.o \
   fermion_links_hisq_load_milc.o \
   fermion_links_hisq_qop.o \
   fermion_links_hyp.o \
@@ -323,8 +322,6 @@ fermion_links_fn_load_gpu.o: ../generic_ks/fermion_links_fn_load_gpu.c
 fermion_links_fn_load_milc.o: ../generic_ks/fermion_links_fn_load_milc.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_hisq_milc.o: ../generic_ks/fermion_links_hisq_milc.c
-	${CC} -c ${CFLAGS} $<
-fermion_links_hisq_load_gpu.o: ../generic_ks/fermion_links_hisq_load_gpu.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_hisq_load_milc.o: ../generic_ks/fermion_links_hisq_load_milc.c
 	${CC} -c ${CFLAGS} $<
