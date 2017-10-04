@@ -349,12 +349,12 @@ endif
 #----------------------------------------------------------------------
 # 15. GPU/QUDA Options
 
-WANTQUDA    = #true
-WANT_CL_BCG_GPU = #true
-WANT_FN_CG_GPU = #true
-WANT_FL_GPU = #true
-WANT_FF_GPU = #true
-WANT_GF_GPU = #true
+WANTQUDA    ?= #true
+WANT_CL_BCG_GPU ?= #true
+WANT_FN_CG_GPU ?= #true
+WANT_FL_GPU ?= #true
+WANT_FF_GPU ?= #true
+WANT_GF_GPU ?= #true
 
 ifeq ($(strip ${WANTQUDA}),true)
 
