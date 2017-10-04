@@ -114,7 +114,8 @@ ifeq ($(strip ${COMPILER}),gnu)
 
 # Other Gnu options
 #OCFLAGS += -mavx # depends on architecture
-#OCFLAGS += -Wall
+# enable all warnings with exceptions
+OCFLAGS += -Wall -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas -Wno-unused-function
 
 endif
 

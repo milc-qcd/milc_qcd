@@ -580,7 +580,7 @@ int get_f( FILE *fp, int prompt, char *tag, Real *value ){
 	s = 0;
 	while(s != 1){
 	  printf("enter %s ",tag);
-	  fscanf(fp,"%s",checkvalue);
+	  s=fscanf(fp,"%s",checkvalue);
 #if PRECISION == 1
 	  s=sscanf(checkvalue,"%e",value);
 #else
@@ -615,7 +615,7 @@ int get_i( FILE *fp, int prompt, char *tag, int *value ){
       s = 0;
       while(s != 1){
     	printf("enter %s ",tag);
-	fscanf(fp,"%s",checkvalue);
+	s=fscanf(fp,"%s",checkvalue);
     	s=sscanf(checkvalue,"%d",value);
 	if(s==EOF)return 1;
 	if(s==0)printf("Data format error.\n");
@@ -808,7 +808,7 @@ int get_prompt( FILE *fp, int *prompt ){
       }
     }
     if(strcmp(initial_prompt,"prompt") == 0)  {
-      fscanf(fp, "%d",prompt);
+      status = fscanf(fp, "%d",prompt);
     }
     else if(strcmp(initial_prompt,"0") == 0) *prompt=0;
     else if(strcmp(initial_prompt,"1") == 0) *prompt=1;
