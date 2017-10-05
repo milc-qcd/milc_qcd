@@ -112,12 +112,11 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   int num_iters;
 
   // for newer versions of QUDA we need to invalidate the gauge field if the links are new
-  static imp_ferm_links_t *fn_last = NULL;
-  if ( fn != fn_last || fresh_fn_links(fn) ){
+  if ( fn != get_fn_last() || fresh_fn_links(fn) ){
     cancel_quda_notification(fn);
-    fn_last = fn;
+    set_fn_last(fn);
     num_iters = -1;
-    node0_printf("%s: fn, notify: Signal QUDA to refresh links", myname);
+    node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", myname);
   }
 
   qudaInvert(PRECISION,
@@ -261,8 +260,8 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
                  fatlink,
                  longlink,
                  u0,
-                 t_src,
-                 t_dest,
+                 (void**)t_src,
+		 (void**)t_dest,
                  &residual,
                  &relative_residual,
                  &num_iters,

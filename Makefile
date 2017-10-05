@@ -114,7 +114,8 @@ ifeq ($(strip ${COMPILER}),gnu)
 
 # Other Gnu options
 #OCFLAGS += -mavx # depends on architecture
-#OCFLAGS += -Wall
+# enable all warnings with exceptions
+OCFLAGS += -Wall -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas -Wno-unused-function
 
 endif
 
@@ -348,12 +349,12 @@ endif
 #----------------------------------------------------------------------
 # 15. GPU/QUDA Options
 
-WANTQUDA    = #true
-WANT_CL_BCG_GPU = #true
-WANT_FN_CG_GPU = #true
-WANT_FL_GPU = #true
-WANT_FF_GPU = #true
-WANT_GF_GPU = #true
+WANTQUDA    ?= #true
+WANT_CL_BCG_GPU ?= #true
+WANT_FN_CG_GPU ?= #true
+WANT_FL_GPU ?= #true
+WANT_FF_GPU ?= #true
+WANT_GF_GPU ?= #true
 
 ifeq ($(strip ${WANTQUDA}),true)
 
@@ -682,7 +683,15 @@ CGEOM +=# -DFIX_IONODE_GEOM
 #                For now, works only with dslash_fn_dblstore.o
 # FEWSUMS        Fewer CG reduction calls
 
-KSCGSTORE = -DDBLSTORE_FN -DFEWSUMS -DD_FN_GATHER13 
+# If we are using QUDA, the backward links are unused, so we should
+# avoid unecessary overhead and use the standard dslash.  Note that
+# dslash_fn also has hooks in place to offload any dslash_fn_field
+# calls to QUDA
+ifeq ($(strip ${WANTQUDA}),true)
+  KSCGSTORE = -DFEWSUMS
+else
+  KSCGSTORE = -DDBLSTORE_FN -DFEWSUMS -DD_FN_GATHER13
+endif
 
 #------------------------------
 # Staggered fermion force routines
