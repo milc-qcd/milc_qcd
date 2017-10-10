@@ -11,34 +11,22 @@
 int initialize_quda(void);
 #endif
 
-#ifdef USE_FAST_X86_COPY
-#include <x86intrin.h>
-
-static inline void *__movsb(void *d, const void *s, size_t n) {
-  __asm volatile ("rep movsb"
-		: "=D" (d),
-		  "=S" (s),
-		  "=c" (n)
-		: "0" (d),
-		  "1" (s),
-		  "2" (n)
-		: "memory");
-  return d;
+static QudaMILCSiteArg_t newQudaMILCSiteArg() {
+  QudaMILCSiteArg_t arg;
+  arg.site = lattice;
+  arg.link = NULL;
+  arg.link_offset = (char*)lattice->link-(char*)lattice;
+  arg.mom = NULL;
+  arg.mom_offset = (char*)lattice->mom-(char*)lattice;
+  arg.size = sizeof(*lattice);
+  return arg;
 }
-
-static inline void fast_copy(void *dest, const void *src, size_t n) {
-  __movsb(dest, src, n);
-}
-
-#else
 
 #include <string.h>
 
 static inline void fast_copy(void *dest, const void *src, size_t n) {
   memcpy(dest, src, n);
 }
-
-#endif
 
 /*
   Allocate a pinned gauge-field array suitable for DMA transfer to the GPU

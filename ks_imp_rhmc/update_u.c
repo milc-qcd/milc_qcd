@@ -33,15 +33,8 @@ void update_u(Real eps){
   dtime = -dclock();
 #endif
 
-  su3_matrix *links = create_G_from_site_quda();
-  anti_hermitmat* momentum = create_M_from_site_quda();
-
-  qudaUpdateU(PRECISION, eps, momentum, links);
-
-  copy_to_site_from_G_quda(links); // insert back into site
-
-  destroy_G_quda(links);
-  destroy_M_quda(momentum);
+  QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+  qudaUpdateU(PRECISION, eps, &arg);
 
 #ifdef GFTIME
   dtime += dclock();
