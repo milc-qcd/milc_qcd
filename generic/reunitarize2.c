@@ -216,13 +216,8 @@ void reunitarize_gpu() {
   dtime = -dclock();
 #endif
 
-  su3_matrix *links = create_G_from_site_quda();
-
-  qudaUnitarizeSU3(PRECISION, links, TOLERANCE);
-
-  copy_to_site_from_G_quda(links); // insert back into site
-
-  destroy_G_quda(links);
+  QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+  qudaUnitarizeSU3(PRECISION, TOLERANCE, &arg);
 
 #ifdef GFTIME
   dtime += dclock();
