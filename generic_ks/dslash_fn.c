@@ -310,7 +310,7 @@ void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
   su3_matrix* longlink = get_lnglinks(fn);
 
   // for newer versions of QUDA we need to invalidate the gauge field if the links are new
-  int num_iters;
+  int num_iters  = 0;
   if (fn != get_fn_last() || fresh_fn_links(fn)){
     cancel_quda_notification(fn);
     set_fn_last(fn);
