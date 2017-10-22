@@ -109,7 +109,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   const int quda_precision = qic->prec;
 
   double residual, relative_residual;
-  int num_iters;
+  int num_iters = 0;
 
   // for newer versions of QUDA we need to invalidate the gauge field if the links are new
   if ( fn != get_fn_last() || fresh_fn_links(fn) ){

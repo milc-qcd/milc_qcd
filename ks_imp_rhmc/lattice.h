@@ -1,7 +1,6 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 /****************************** lattice.h ********************************/
-
 /* include file for MIMD version 7
    This file defines global scalars and the fields in the lattice.
 
@@ -48,11 +47,18 @@ typedef struct {
 /* ------------------------------------------------------------ */
 /*   Now come the physical fields, program dependent            */
 /* ------------------------------------------------------------ */
-	/* gauge field */
-	su3_matrix link[4];	/* the fundamental field */
+
+#ifndef HAVE_QUDA
+        /* gauge field */
+        su3_matrix link[4];	/* the fundamental field */
 
 	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4];
+        anti_hermitmat mom[4];
+#else
+        /* For optimal GPU reading / writing  we align onto 32-byte boundaries */
+        su3_matrix link[4] __attribute__((aligned(32)));
+        anti_hermitmat mom[4] __attribute__((aligned(32)));
+#endif
 
 #ifdef HMC
  	su3_matrix old_link[4];

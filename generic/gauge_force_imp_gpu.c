@@ -32,24 +32,12 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
   
   initialize_quda();
 
-  su3_matrix *links = create_G_from_site_quda();
-  anti_hermitmat* momentum = create_M_quda();
-
   for(i=0; i<num_loop_types; ++i) quda_loop_coeff[i] = loop_coeff[i][0];
 
-  qudaGaugeForce(PRECISION,num_loop_types,quda_loop_coeff,eb3,links,momentum);
+  QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+  qudaGaugeForce(PRECISION,num_loop_types,quda_loop_coeff,eb3,&arg);
 
-  FORALLSITES_OMP(i,st,){
-    for(int dir=XUP; dir<=TUP; ++dir){
-      for(int j=0; j<10; ++j){
-	((Real*)&(st->mom[dir]))[j] += ((Real*)(momentum + 4*i+dir))[j];
-      }
-    }
-  } END_LOOP_OMP
-  
   free(quda_loop_coeff);
-  destroy_G_quda(links);
-  destroy_M_quda(momentum);
 
 #ifdef GFTIME
   dtime+=dclock();
