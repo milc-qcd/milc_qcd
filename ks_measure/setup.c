@@ -507,7 +507,7 @@ int readin(int prompt) {
   rephase( ON );
 
 /* We put in antiperiodic bc to match what we did to the gauge field */
-  apply_apbc( ape_links );
+  apply_apbc( ape_links, 0 );
 
 #if EIGMODE == EIGCG
   int Nvecs_max = param.eigcgp.Nvecs_max;

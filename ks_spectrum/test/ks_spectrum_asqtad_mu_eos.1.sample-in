@@ -19,6 +19,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0
+time_bc antiperiodic
 
 # Chiral condensate and related measurements
 

@@ -21,9 +21,11 @@ typedef struct {
   int MaxIter ; /* max  Rayleigh iterations */
   int Restart ; /* Restart  Rayleigh every so many iterations */
   int Kiters ; /* Kalkreuter iterations */
+#ifdef CHEBYSHEV_EIGEN
   int cheb_p ; /* Order of the Chebyshev preconditioning polynomial */
   double minE ; /* Lower end of eigenvalue exclusion window */
   double maxE ; /* Upper end of eigenvalue exclusion window */
+#endif
   int startflag;  /* what to do for beginning lattice */
   char startfile[MAXFILENAME];
 }  params;

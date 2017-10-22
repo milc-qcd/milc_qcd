@@ -60,6 +60,7 @@ typedef struct {
   int start_u1flag;	/* what to do for beginning u(1) lattice */
   Real u0;
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
+  int time_bc;          /* 0 for antiperiodic, 1 for periodic */
   int fixflag;    /* whether to gauge fix */
   int saveflag;	/* what to do for saving lattice */
   int save_u1flag;	/* what to do with ending u(1) lattice */

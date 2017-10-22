@@ -19,6 +19,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0
+time_bc antiperiodic
 
 # Dirac eigenpair calculation
 
@@ -89,7 +90,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 0
@@ -115,7 +115,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 1
@@ -141,7 +140,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 2
@@ -219,6 +217,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0
+time_bc antiperiodic
 
 # Dirac eigenpair calculation
 
@@ -290,7 +289,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 0
@@ -316,7 +314,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 1
@@ -342,7 +339,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 2

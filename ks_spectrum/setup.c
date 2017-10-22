@@ -79,7 +79,7 @@ int setup()   {
   /* set up 3rd nearest neighbor pointers and comlink structures
      code for this routine is below  */
   make_3n_gathers();
-  /* set up K-S phase vectors, boundary conditions */
+  /* set up K-S phase vectors, antiperiodic boundary conditions */
   phaseset();
 
   return(prompt);
@@ -238,6 +238,16 @@ int readin(int prompt) {
 
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
     IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
+    IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
+    IF_OK {
+      /* NOTE: The staggered default time bc is antiperiodic. */
+      if(strcmp(savebuf,"antiperiodic") == 0)param.time_bc = 0;
+      else if(strcmp(savebuf,"periodic") == 0)param.time_bc = 1;
+      else{
+	node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n", savebuf);
+	status++;
+      }
+    }
     
 #if EIGMODE == EIGCG
     /* for eigcg */
@@ -247,9 +257,11 @@ int readin(int prompt) {
     /* number of eigenvectors per inversion */
     IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigcgp.Nvecs);
 
-    if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
-      printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
-      status++;
+    IF_OK {
+      if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
+	printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
+	status++;
+      }
     }
 
     /* maximum number of eigenvectors */
@@ -485,7 +497,6 @@ int readin(int prompt) {
     IF_OK for(k = 0; k < param.num_set; k++){
       int max_cg_iterations, max_cg_restarts;
       int check = CHECK_NO;
-      Real bdry_phase[4];
 
       /* maximum no. of conjugate gradient iterations */
       IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
@@ -520,21 +531,12 @@ int readin(int prompt) {
       /* The values are entered as fractions of pi */
       /* So 0 0 0.5 inserts a phase exp(i 0.5 pi) */
       
+      Real bdry_phase[4];
       IF_OK status += get_vf(stdin, prompt, "momentum_twist",
 			     bdry_phase, 3);
+      bdry_phase[3] = param.time_bc;  /* Enforce a uniform boundary condition */
 
-      /* Antiperiodic or periodic boundary conditions in time */
-
-      IF_OK status += get_s(stdin, prompt,"time_bc", savebuf);
       IF_OK {
-	/* NOTE: The staggered default time bc is antiperiodic. */
-	if(strcmp(savebuf,"antiperiodic") == 0)bdry_phase[3] = 0;
-	else if(strcmp(savebuf,"periodic") == 0)bdry_phase[3] = 1;
-	else{
-	  node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n",
-		       savebuf);
-	  status++;
-	}
 	IF_OK status += get_i(stdin, prompt,"precision", &param.qic[0].prec );
 #if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU)
 	IF_OK if(param.qic[0].prec != PRECISION){
@@ -1184,7 +1186,7 @@ int readin(int prompt) {
      adjusted according to boundary phases and momentum twists. */
   rephase( OFF );
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
-  apply_apbc( ape_links );
+  if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
   rephase( ON );
 
 #if EIGMODE == EIGCG
