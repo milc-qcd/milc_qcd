@@ -19,6 +19,7 @@
 extern "C" {
 #include "generic_includes.h"
 #include "../include/generic_grid.h"
+  void check_create(void);
 }
 using namespace std;
 using namespace Grid;
@@ -99,17 +100,19 @@ initialize_grid(void){
   char val_foo[MAXARGSTR];
   snprintf (val_grid, MAXARGSTR, "%d.%d.%d.%d\0", nx, ny, nz, nt);
   snprintf (val_mpi, MAXARGSTR, "%d.%d.%d.%d\0",  mpiX,   mpiY,   mpiZ,   mpiT);
+  snprintf (val_foo, MAXARGSTR, "");
   char **argv = (char **)malloc(MAXARG*sizeof(char *));
   argv[0] = tag_grid; argv[1] = val_grid;
   argv[2] = tag_mpi;  argv[3] = val_mpi;
   argv[4] = tag_foo;  argv[5] = val_foo;
+  node0_printf("Calling Grid_init with %s %s %s %s %s %s\n",argv[0],argv[1],argv[2],argv[3],argv[4],argv[5]);
   Grid_init(&argc, &argv);
 
   std::vector<int> latt_size   = GridDefaultLatt();
   std::vector<int> simd_layout = GridDefaultSimd(Nd,vComplex::Nsimd());
   std::vector<int> mpi_layout  = GridDefaultMpi();
   CGrid  = new GridCartesian(latt_size,simd_layout,mpi_layout);
-  RBGrid = new GridRedBlackCartesian(latt_size,simd_layout,mpi_layout);
+  RBGrid = new GridRedBlackCartesian(CGrid);
 
   node0_printf("milc_to_grid_utilities: Initialized Grid with args\n%s %s\n%s %s\n%s %s\n",
 	       argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
@@ -125,6 +128,15 @@ initialize_grid(void){
 
 }
 
+void check_create(void){
+  // DEBUG
+  node0_printf("Trying to create a Grid fermion field\n");  fflush(stdout);
+  typename ImprovedStaggeredFermionD::FermionField *cv = new typename ImprovedStaggeredFermionD::FermionField(RBGrid);
+  node0_printf("Success creating a Grid fermion field\n");  fflush(stdout);
+  delete cv;
+  node0_printf("Success deleting the Grid fermion field\n");  fflush(stdout);
+}
+
 static Grid::CartesianCommunicator *grid_cart = NULL;
 
 // Set up communicator for quick access to the rank mapping
@@ -135,12 +147,9 @@ void setup_grid_communicator(int peGrid[]){
     terminate(1);
   }
 
-  printf("setting up CartesianCommunicator with %d %d %d %d\n", 
-	 peGrid[0], peGrid[1], peGrid[2], peGrid[3]); fflush(stdout);
   std::vector<int> processors;
   for(int i=0;i<4;i++) processors.push_back(peGrid[i]);
   grid_cart = new Grid::CartesianCommunicator(processors);
-  printf("done with CartesianCommunicator\n"); fflush(stdout);
 }
 
 // Return the coordinate as assigned by Grid
@@ -149,12 +158,12 @@ void setup_grid_communicator(int peGrid[]){
 int *query_grid_node_mapping(void){
 
   if(! grid_is_initialized){
-    printf("query_grid_node_mapping: Grid must first be initialized\n");
+    node0_printf("query_grid_node_mapping: Grid must first be initialized\n");
     terminate(1);
   }
 
   if(grid_cart == NULL){
-    printf("query_grid_node_mapping: Must call setup_grid_communicator first\n");
+    node0_printf("query_grid_node_mapping: Must call setup_grid_communicator first\n");
     terminate(1);
   }
 
@@ -185,12 +194,12 @@ int *query_grid_node_mapping(void){
 
 int grid_rank_from_processor_coor(int x, int y, int z, int t){
   if(! grid_is_initialized){
-    printf("grid_lexicographic_to_worldrank: Grid must first be initialized\n");
+    node0_printf("grid_lexicographic_to_worldrank: Grid must first be initialized\n");
     terminate(1);
   }
 
   if(grid_cart == NULL){
-    printf("grid_lexicographic_to_worldrank: Must call setup_grid_communicator first\n");
+    node0_printf("grid_lexicographic_to_worldrank: Must call setup_grid_communicator first\n");
     terminate(1);
   }
 
@@ -201,12 +210,12 @@ int grid_rank_from_processor_coor(int x, int y, int z, int t){
 
 void grid_coor_from_processor_rank(int coords[], int worldrank){
   if(! grid_is_initialized){
-    printf("grid_coor_from_processor_rank: Grid must first be initialized\n");
+    node0_printf("grid_coor_from_processor_rank: Grid must first be initialized\n");
     terminate(1);
   }
 
   if(grid_cart == NULL){
-    printf("grid_coor_from_processor_rank: Must call setup_grid_communicator first\n");
+    node0_printf("grid_coor_from_processor_rank: Must call setup_grid_communicator first\n");
     terminate(1);
   }
 
