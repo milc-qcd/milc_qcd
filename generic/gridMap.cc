@@ -21,7 +21,7 @@ extern GridRedBlackCartesian *RBGrid;
 extern std::vector<int> squaresize;
 
 static void
-indexToCoords(int idx, std::vector<int> &x){
+indexToCoords(uint64_t idx, std::vector<int> &x){
 
   // Gets the lattice coordinates from the MILC index
   get_coords(x.data(), this_node, idx);
@@ -38,30 +38,33 @@ indexToCoords(int idx, std::vector<int> &x){
 // and Map a MILC color vector field from MILC to Grid layout
 // Precision conversion takes place in the copies if need be
 
-template<typename ISF, typename CV, typename Cpx>
-static struct GRID_ColorVector_struct<ISF> *
+template<typename ImprovedStaggeredFermion, typename ColourVector, typename Complex>
+static struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *
 create_V_from_vec( su3_vector *src, int milc_parity){
 
-  struct GRID_ColorVector_struct<ISF> *out;
+  node0_printf("Entered create_V_from_vec\n"); fflush(stdout);
 
-  out = (struct GRID_ColorVector_struct<ISF> *) 
-    malloc(sizeof(struct GRID_ColorVector_struct<ISF>));
+  struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *out;
+
+  out = (struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *) 
+    malloc(sizeof(struct GRID_ColorVector_struct<ImprovedStaggeredFermion>));
   GRID_ASSERT( out != NULL, GRID_MEM_ERROR );
-  GRID_ASSERT( milc_parity != EVENANDODD, GRID_FAIL );  // We don't support EVENANDODD
+  //  GRID_ASSERT( milc_parity != EVENANDODD, GRID_FAIL );  // We don't support EVENANDODD
 
   switch (milc_parity)
     {
     case EVEN:
-      out->cv = new typename ISF::FermionField(RBGrid);
+      out->cv = new typename ImprovedStaggeredFermion::FermionField(RBGrid);
       out->cv->checkerboard = Even;
       break;
+
     case ODD:
-      out->cv = new typename ISF::FermionField(RBGrid);
+      out->cv = new typename ImprovedStaggeredFermion::FermionField(RBGrid);
       out->cv->checkerboard = Odd;
       break;
 
     case EVENANDODD:
-      out->cv = new typename ISF::FermionField(CGrid);
+      out->cv = new typename ImprovedStaggeredFermion::FermionField(CGrid);
       break;
       
     default:
@@ -70,43 +73,45 @@ create_V_from_vec( su3_vector *src, int milc_parity){
 
   GRID_ASSERT(out->cv != NULL, GRID_FAIL);
 
-  printf("Loading checkerboard %d for milc_parity %d\n", out->cv->checkerboard , milc_parity); fflush(stdout);
-
   int loopend= (milc_parity)==EVEN ? even_sites_on_node : sites_on_node ;
   int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
 
+  auto start = std::chrono::system_clock::now();
   PARALLEL_FOR_LOOP
-    for( int idx = loopstart; idx < loopend; idx++){
+    for( uint64_t idx = loopstart; idx < loopend; idx++){
 
       std::vector<int> x(4);
       indexToCoords(idx,x);
 
-      CV cVec;
+      ColourVector cVec;
       for(int col=0; col<Nc; col++){
 	cVec._internal._internal._internal[col] = 
-	  Cpx(src[idx].c[col].real, src[idx].c[col].imag);
+	  Complex(src[idx].c[col].real, src[idx].c[col].imag);
       }
       
       pokeLocalSite(cVec, *(out->cv), x);
       
     }
+  auto end = std::chrono::system_clock::now();
+  auto elapsed = end - start;
+  std::cout << "Mapped vector field in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+	    << "\n" << std::flush;
   
-
   return out;
 }
 
 // Map a color vector field from Grid layout to MILC layout
-template<typename ISF, typename CV>
+template<typename ImprovedStaggeredFermion, typename ColourVector>
 static void extract_V_to_vec( su3_vector *dest, 
-			      struct GRID_ColorVector_struct<ISF> *src, 
+			      struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *src, 
 			      int milc_parity ){
-  int idx;
+  uint64_t idx;
 
   FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
     {
       std::vector<int> x(4);
       indexToCoords(idx, x);
-      CV cVec;
+      ColourVector cVec;
 
       peekLocalSite(cVec, *(src->cv), x);
 
@@ -121,9 +126,9 @@ static void extract_V_to_vec( su3_vector *dest,
 }
 
 // free color vector
-template<typename ISF>
+template<typename ImprovedStaggeredFermion>
 static void 
-destroy_V( struct GRID_ColorVector_struct<ISF> *V ){
+destroy_V( struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *V ){
 
   if (V->cv != NULL) delete V->cv;
   if (V != NULL) free(V);
@@ -131,102 +136,90 @@ destroy_V( struct GRID_ColorVector_struct<ISF> *V ){
   return;
 }
 
+// Copy MILC su3_matrix to Grid vLorentzColourMatrix
+// Precision conversion can happen here
+
+template<typename sobj, typename Complex>
+static void milcSU3MatrixToGrid(su3_matrix *in, sobj &out){
+
+  for (int mu=0; mu<4; mu++)
+    for (int i=0; i<Nc; i++)
+      for (int j=0; j<Nc; j++)
+	out._internal[mu]._internal._internal[i][j] = Complex(in[mu].e[i][j].real, in[mu].e[i][j].imag);
+}
+
+// Map a flattened MILC gauge field (4 matrices per site) to a Grid LatticeGaugeField
+template<typename LatticeGaugeField, typename Complex>
+static void milcGaugeFieldToGrid(su3_matrix *in, LatticeGaugeField &out, int milc_parity){
+
+  typedef typename LatticeGaugeField::vector_object vobj;
+  typedef typename vobj::scalar_object sobj;
+
+  GridBase *grid = out._grid;
+  int lsites = grid->lSites();
+  std::vector<sobj> scalardata(lsites);
+
+  int loopend= (milc_parity)==EVEN ? even_sites_on_node : sites_on_node ;
+  int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
+
+  PARALLEL_FOR_LOOP
+    for (uint64_t milc_idx = loopstart; milc_idx < loopend; milc_idx++){
+      std::vector<int> x(4);
+      indexToCoords(milc_idx, x);
+      int grid_idx;
+      Lexicographic::IndexFromCoor(x, grid_idx, grid->LocalDimensions());
+      milcSU3MatrixToGrid<sobj, Complex>(in + 4*milc_idx, scalardata[grid_idx]);
+    }
+  
+  vectorizeFromLexOrdArray(scalardata, out);
+}
+
+template<typename ColourMatrix>
+static void dumpGrid(ColourMatrix out){
+
+  for (int i=0; i<Nc; i++){
+    for (int j=0; j<Nc; j++)
+      std::cout << "(" << out._internal._internal._internal[i][j].real() << "," << 
+	out._internal._internal._internal[i][j].imag() << ") ";
+    std::cout << "\n";
+  }
+  std::cout << "\n";
+}
+
 // Create asqtad fermion links object from MILC fields
 // Precision conversion takes place in the copies if need be
 
-template<typename LatticeGaugeField, typename LatticeColourMatrix, typename Cpx>
+template<typename LatticeGaugeField, typename LatticeColourMatrix, typename Complex>
 static struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField>  *
 asqtad_create_L_from_MILC( su3_matrix *thn, su3_matrix *fat, 
 			   su3_matrix *lng, int milc_parity ){
 
-  std::vector< LatticeColourMatrix > *U, *Uft, *UUU;
+  // We support only even and odd.
+  GRID_ASSERT(milc_parity == EVENANDODD, GRID_MEM_ERROR);
+
   struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *out;
 
   out = (struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *) malloc(sizeof(struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField>));
   GRID_ASSERT(out != NULL, GRID_MEM_ERROR);
 
-  switch (milc_parity)
-    {
-    case EVEN:
-      out->thnlinks = new LatticeGaugeField(RBGrid);
-      out->fatlinks = new LatticeGaugeField(RBGrid);
-      out->lnglinks = new LatticeGaugeField(RBGrid);
-      out->thnlinks->checkerboard = out->fatlinks->checkerboard = out->lnglinks->checkerboard = Even;
-      break;
-      U   = new std::vector<LatticeColourMatrix>(4,RBGrid);
-      Uft = new std::vector<LatticeColourMatrix>(4,RBGrid);
-      UUU = new std::vector<LatticeColourMatrix>(4,RBGrid);
-      break;
-      
-    case ODD:
-      out->thnlinks = new LatticeGaugeField(RBGrid);
-      out->fatlinks = new LatticeGaugeField(RBGrid);
-      out->lnglinks = new LatticeGaugeField(RBGrid);
-      out->thnlinks->checkerboard = out->fatlinks->checkerboard = out->lnglinks->checkerboard = Odd;
-      U   = new std::vector<LatticeColourMatrix>(4,RBGrid);
-      Uft = new std::vector<LatticeColourMatrix>(4,RBGrid);
-      UUU = new std::vector<LatticeColourMatrix>(4,RBGrid);
-      break;
-      
-    case EVENANDODD:
-      out->thnlinks = new LatticeGaugeField(CGrid);
-      out->fatlinks = new LatticeGaugeField(CGrid);
-      out->lnglinks = new LatticeGaugeField(CGrid);
-      U   = new std::vector<LatticeColourMatrix>(4,CGrid);
-      Uft = new std::vector<LatticeColourMatrix>(4,CGrid);
-      UUU = new std::vector<LatticeColourMatrix>(4,CGrid);
-      break;
-    }
 
-  int loopend= (milc_parity)==EVEN ? even_sites_on_node : sites_on_node ;
-  int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
+  out->thnlinks = NULL;  // We don't need this one
+  out->fatlinks = new LatticeGaugeField(CGrid);
+  out->lnglinks = new LatticeGaugeField(CGrid);
   
-  PARALLEL_FOR_LOOP
-    for( int idx = loopstart; idx < loopend; idx++){
-      
-      std::vector<int> x(4);
-      indexToCoords(idx,x);
-      //      printf("Converted %d to %d %d %d %d\n", idx, x[0], x[1], x[2], x[3]); fflush(stdout);
-      
-      ColourMatrix tmpU;
-      ColourMatrix tmpUft;
-      ColourMatrix tmpUUU;
-      
-      for (int mu=0; mu<4; mu++)
-	{
-	  for (int i=0; i<Nc; i++)
-	    {
-	      for (int j=0; j<Nc; j++)
-		{
-		  // Copy thin links from MILC site structure.  We therefore ignore the thn parameter.
-		  tmpU._internal._internal._internal[i][j]
-		    = Cpx(lattice[idx].link[mu].e[i][j].real, lattice[idx].link[mu].e[i][j].imag);
-		  // Copy thin links from field
-		  //  tmpU._internal._internal._internal[i][j] 
-		  // = ComplexD(thn[4*idx+mu].e[i][j].real, thn[4*idx+mu].e[i][j].imag);
-		  tmpUft._internal._internal._internal[i][j] 
-		    = Cpx(fat[4*idx+mu].e[i][j].real, fat[4*idx+mu].e[i][j].imag);
-		  tmpUUU._internal._internal._internal[i][j] 
-		    = Cpx(lng[4*idx+mu].e[i][j].real, lng[4*idx+mu].e[i][j].imag);
-		} // j
-	    } // i
-      
-	  pokeLocalSite(tmpU,     (*U)[mu], x);
-	  pokeLocalSite(tmpUft, (*Uft)[mu], x);
-	  pokeLocalSite(tmpUUU, (*UUU)[mu], x);
-	  
-      
-	  PokeIndex<LorentzIndex>(*(out->thnlinks),   (*U)[mu], mu);
-	  PokeIndex<LorentzIndex>(*(out->fatlinks), (*Uft)[mu], mu);
-	  PokeIndex<LorentzIndex>(*(out->lnglinks), (*UUU)[mu], mu);
-      	}  // mu
-    }  
-  
+  auto start = std::chrono::system_clock::now();
+
+  milcGaugeFieldToGrid<LatticeGaugeField, Complex>(fat, *out->fatlinks, milc_parity);
+  milcGaugeFieldToGrid<LatticeGaugeField, Complex>(lng, *out->lnglinks, milc_parity);
+
+  auto end = std::chrono::system_clock::now();
+  auto elapsed = end - start;
+  std::cout << "Mapped gauge fields in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+	    << "\n" << std::flush;
   return out;
-  
 }
 
-  // free wilson fermion links
+  // free aasqtad fermion links
 template<typename LatticeGaugeField>
 static void  
 asqtad_destroy_L( struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *Link ){
