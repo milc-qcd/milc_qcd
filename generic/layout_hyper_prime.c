@@ -60,6 +60,8 @@
 #include "generic_includes.h"
 #ifdef HAVE_GRID
 #include "../include/generic_grid.h"
+//DEBUG
+void check_create(void);
 #endif
 #ifdef HAVE_QMP
 #include <qmp.h>
@@ -404,14 +406,10 @@ void setup_layout(){
   //  int peRank = (int)lex_rank(pePos, 4, nsquares);
   int peRank = grid_rank_from_processor_coor(pePos[0], pePos[1], pePos[2], pePos[3]);
 
-  printf("setup_layout(%d) query returns %d\n", mynode(), peRank);
   fflush(stdout);
 
   /* Reassign my rank with the communicator */
   reset_machine_rank(peRank);
-
-  printf("setup_layout(%d) is %d after reset\n", mynode(), peRank);
-  fflush(stdout);
 
 #endif
 
@@ -423,10 +421,6 @@ void setup_layout(){
   /* Compute machine coordinates for this node */
 #ifdef HAVE_GRID
   grid_coor_from_processor_rank(machine_coordinates, mynode());
-  printf("setup_layout(%d) pePos %d,%d,%d,%d machine %d,%d,%d,%d\n", 
-	 mynode(), pePos[0], pePos[1], pePos[2], pePos[3],
-	 machine_coordinates[0],  machine_coordinates[1],  
-	 machine_coordinates[2],  machine_coordinates[3]);
 #else
   lex_coords(machine_coordinates, 4, nsquares, mynode());
 #endif
@@ -450,8 +444,6 @@ void setup_layout(){
 
   odd_sites_on_node = sites_on_node - even_sites_on_node;
 
-  printf("sites on node %d; even_sites_on_node %d, odd_sites_on_node %d\n",
-	 sites_on_node, even_sites_on_node, odd_sites_on_node);
 }
 
 /*------------------------------------------------------------------*/
