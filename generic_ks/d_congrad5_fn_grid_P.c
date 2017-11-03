@@ -31,6 +31,7 @@
 #include "generic_ks_includes.h"
 #include "../include/generic_grid.h"
 #include "../include/generic_ks_grid.h"
+#include "../include/openmp_defs.h"
 #include <assert.h>
 #ifdef VTUNE
 #include <ittnotify.h>
@@ -63,7 +64,7 @@ create_grid_resid_arg( quark_invert_control *qic )
   }
   *res_arg = GRID_RESID_ARG_DEFAULT;
   /* For now the residuals are the same for all sources and masses */
-  res_arg->resid = qic->resid * qic->resid;
+  res_arg->resid        = qic->resid;
   res_arg->relresid     = 0.;  /* NOT SUPPORTED */
   res_arg->final_rsq    = 0.;
   res_arg->final_rel    = 0.;
@@ -75,13 +76,13 @@ create_grid_resid_arg( quark_invert_control *qic )
 
 static void 
 get_grid_resid_arg( quark_invert_control *qic, 
-		    GRID_resid_arg_t* grid_resid_arg, int iters )
+		    GRID_resid_arg_t* grid_resid_arg )
 {
   qic->final_rsq     = grid_resid_arg->final_rsq;
   qic->final_relrsq  = 0.;                          /* Not supported at the moment */
   qic->size_r        = grid_resid_arg->size_r;
   qic->size_relr     = grid_resid_arg->size_relr;
-  qic->final_iters   = iters;
+  qic->final_iters   = grid_resid_arg->final_iter;
   qic->final_restart = grid_resid_arg->final_restart;
 }
 
@@ -126,7 +127,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
     terminate(1);
   }
 
-#ifdef CG_DEBUG
+#ifdef CGTIME
   dctime = -dclock();
 #endif
   
@@ -143,6 +144,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   t_sp1 = -dclock();
 #endif    
   
+  node0_printf("Calling GRID_create_V_from_vec\n"); fflush(stdout);
   grid_src = GRID_create_V_from_vec( src, qic->parity);
   
 #ifdef REMAP
@@ -150,6 +152,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   t_sp2 = -dclock();
 #endif    
   
+  node0_printf("Calling GRID_create_V_from_vec\n"); fflush(stdout);
   grid_sol = GRID_create_V_from_vec( sol, qic->parity);
   
 #ifdef REMAP
@@ -157,6 +160,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   t_l   = -dclock(); 
 #endif     
   
+  node0_printf("Calling GRID_asqtad_create_L_from_MILC\n"); fflush(stdout);
   /* For now we are taking the thin links from the site structure, so the first parameter is NULL */
   links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), EVENANDODD );
   
@@ -177,33 +181,38 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   fflush(stdout);
 #endif
   
-#ifdef CG_DEBUG
+#ifdef CGTIME
   dctime +=dclock();
   dtime = -dclock();
 #endif    
   
-#ifdef CG_DEBUG
-  node0_printf("Calling GRID_asqtad_invert\n");fflush(stdout);
-#endif
-
+  node0_printf("Calling GRID_asqtad_invert\n"); fflush(stdout);
   GRID_asqtad_invert( &info, links, &grid_invert_arg, 
 		      grid_resid_arg, (MYREAL)mass, grid_sol, grid_src );
+  iters = grid_resid_arg->final_iter;
   
-#ifdef CG_DEBUG    
+#ifdef CGTIME    
   dtime += dclock();
 #endif
   
-  get_grid_resid_arg(qic, grid_resid_arg, iters);
+  get_grid_resid_arg(qic, grid_resid_arg);
   
   /* Free the structure */
   destroy_grid_resid_arg(grid_resid_arg);
   
-#ifdef CG_DEBUG
+#ifdef CGTIME
   ttime = -dclock();
 #endif
   
   /* Copy results back to su3_vector */
   GRID_extract_V_to_vec( sol, grid_sol, qic->parity);
+
+  /* Fix normalization */
+  int i;
+  Real rescale = 1./(2.*mass);
+  FORSOMEFIELDPARITY_OMP(i, qic->parity, default(shared)){
+    scalar_mult_su3_vector( sol+i, rescale, sol+i);
+  } END_LOOP_OMP;
   
   /* Free GRID fields  */
   
@@ -211,7 +220,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   GRID_destroy_V(grid_sol);     
   GRID_asqtad_destroy_L(links);
   
-#ifdef CG_DEBUG
+#ifdef CGTIME
   ttime +=dclock();
   dctime +=ttime;
 #endif
@@ -221,23 +230,23 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
     char *prec_label[2] = {"F", "D"};
     node0_printf("CONGRAD5: total cg-time = %e "
 		 
-#ifdef CG_DEBUG
+#ifdef CGTIME
 		 "solve-time = %e "
 		 "layout-conversion-time = %e "
 #endif            
 		 "(Grid %s) masses = 1 iters = "
 		 "%d mflops = %e "
-#ifdef CG_DEBUG
+#ifdef CGTIME
 		 "mflops(ignore data-conv.) = %e"
 #endif
 		 "\n"
 		 , tot_cg_time
-#ifdef CG_DEBUG
+#ifdef CGTIME
 		 , dtime, dctime
 #endif
 		 , prec_label[MILC_PRECISION-1], iters
 		 , (double)(nflop*volume*iters/(1.0e6*tot_cg_time*numnodes()))
-#ifdef CG_DEBUG
+#ifdef CGTIME
 		 , (double)(nflop*volume*iters/(1.0e6*dtime*numnodes()))
 #endif
 		 );
