@@ -109,7 +109,7 @@ ifeq ($(strip ${COMPILER}),gnu)
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -fopenmp
     OCXXFLAGS += -fopenmp
-    LDFLAGS = -fopenmp
+    LDFLAGS += -fopenmp
   endif
 
 # Other Gnu options
@@ -157,7 +157,7 @@ ifeq ($(strip ${COMPILER}),intel)
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
     OCXXFLAGS += -qopenmp
-    LDFLAGS = -qopenmp
+    LDFLAGS += -qopenmp
   endif
 
 endif
@@ -192,7 +192,7 @@ ifeq ($(strip ${COMPILER}),cray-intel)
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
     OCXXFLAGS += -qopenmp
-    LDFLAGS = -qopenmp
+    LDFLAGS += -qopenmp
   endif
 
 endif
@@ -367,6 +367,7 @@ ifeq ($(strip ${WANTQUDA}),true)
   PACKAGE_HEADERS += ${QUDA_HEADERS}
 
   INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
+  PACKAGE_HEADERS += ${QUDA_HOME}/include
   LIBQUDA = -L${QUDA_HOME}/lib -lquda
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
 
@@ -500,7 +501,7 @@ ifeq ($(strip ${WANTGRID}), true)
   GRID_HEADERS = ${GRID_HOME}/include
   INCGRID = -I${GRID_HEADERS}
 
-  PACKAGE_HEADERS += ${GRID_HEADERS}
+  PACKAGE_HEADERS += ${GRID_HEADERS}/Grid
   PACKAGE_DEPS += Grid
 
 endif
@@ -894,7 +895,7 @@ ifeq ($(strip ${MPP}),true)
      COMMTYPE = QMP
      COMMPKG = com_qmp.o
   else
-     COMMTYPE = MPI
+     COMMTYPE = MPI_COMMS
      COMMPKG = com_mpi.o
   endif
 else
