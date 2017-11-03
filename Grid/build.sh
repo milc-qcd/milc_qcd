@@ -75,7 +75,7 @@ then
             --enable-comms=mpi \
 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
 	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc/lib \
-            CXX="${PK_CXX}" \
+            CXX="${PK_CXX}" CC="${PK_CC}" \
             CXXFLAGS="-std=c++11 -xMIC-AVX512" \
 
              ;;
@@ -84,15 +84,15 @@ then
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
             --enable-precision=double \
-            --enable-simd=GEN \
+            --enable-simd=KNL \
             --enable-comms=mpi \
             --host=x86_64-unknown-linux-gnu \
-	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
 	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc/lib \
-            CXX="${PK_CXX}" \
+            CXX="${PK_CXX}" CC="${PK_CC}" \
             CXXFLAGS="-std=c++11 -xMIC-AVX512" \
 
 
+	    # --with-hdf5=/opt/cray/pe/hdf5/1.10.0.3/INTEL/16.0 \
 	    #            --enable-mkl=yes \
 
              ;;
