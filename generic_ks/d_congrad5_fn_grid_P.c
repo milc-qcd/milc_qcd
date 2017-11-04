@@ -116,8 +116,6 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   GRID_invert_arg_t grid_invert_arg = GRID_INVERT_ARG_DEFAULT;
   GRID_FermionLinksAsqtad  *links;    
   
-  assert(qic[0].parity != EVENANDODD && "EVENANDODD not yet implemented");
-    
 #ifdef CGTIME
   tot_cg_time = -dclock();
 #endif   
