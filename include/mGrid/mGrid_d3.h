@@ -68,8 +68,7 @@ void GRID_D3_asqtad_invert_multi (GRID_info_t *info,
 				  GRID_D3_FermionLinksAsqtad *asqtad,
 				  GRID_invert_arg_t *inv_arg,
 				  GRID_resid_arg_t *res_arg[],
-				  double *mass,
-				  int num_offsets,
+				  double *mass, int nmass,
 				  GRID_D3_ColorVector *out[],
 				  GRID_D3_ColorVector *in);
   
