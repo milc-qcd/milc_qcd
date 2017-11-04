@@ -93,13 +93,12 @@ create_grid_resid_arg( quark_invert_control *qic, int nmass)
 
 static void 
 get_grid_resid_arg( quark_invert_control *qic, 
-		     GRID_resid_arg_t **grid_resid_arg, int nmass, int num_iters )
+		    GRID_resid_arg_t **grid_resid_arg, int nmass)
 {
   /* For now we don't support separate residuals for each mass */
   for(int i=0; i<nmass; ++i){
     qic[i].final_rsq     = grid_resid_arg[i]->final_rsq;
     qic[i].final_relrsq  = 0.;                            /* Not supported at the moment */
-    qic[i].final_iters   = num_iters;
     qic[i].size_r        = grid_resid_arg[i]->size_r;
     qic[i].size_relr     = grid_resid_arg[i]->size_relr;
     qic[i].final_iters   = grid_resid_arg[i]->final_iter;
@@ -202,8 +201,8 @@ KS_MULTICG_OFFSET_FIELD(
   for(int i = 0; i < nmass; i++){
     GRID_asqtad_invert( &info, links, &grid_invert_arg, grid_resid_arg[i], 
 			mass[i], grid_sol[i], grid_src );
-    get_grid_resid_arg( qic+i, grid_resid_arg, nmass, num_iters);
-
+    num_iters += grid_resid_arg[i]->final_iter;
+    get_grid_resid_arg( qic, grid_resid_arg, nmass);
   }
 
 
