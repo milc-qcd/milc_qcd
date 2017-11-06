@@ -23,6 +23,7 @@ void make_lattice(){
 	       (double)sites_on_node * sizeof(site)/1e6);
 
 #ifdef HAVE_QUDA
+  initialize_quda();
   lattice = (site *)qudaAllocatePinned( sites_on_node * sizeof(site) );
 #else
   lattice = (site *)malloc( sites_on_node * sizeof(site) );
