@@ -347,6 +347,16 @@ ifeq ($(strip ${WANTPRIMME}),true)
 endif
 
 #----------------------------------------------------------------------
+# 14. ARPACK Options (for ks_eigen).  REQUIRES LAPACK AS WELL.
+
+WANTARPACK = #true
+
+ifeq ($(strip ${WANTARPACK}),true)
+#  LIBARPACK = -L/usr/lib64 -lparpack  -larpack -lifcore -llapack -lblas
+  LIBARPACK = -L/usr/lib64 -larpack
+endif
+
+#----------------------------------------------------------------------
 # 15. GPU/QUDA Options
 
 WANTQUDA    ?= #true
@@ -726,6 +736,8 @@ CPREFETCH = #
 #                    and single-mass refinements in double
 # NO_REFINE          No refinements except for masses with nonzero Naik eps
 # CPU_REFINE         Refine on CPU only (if at all), not GPU
+# PRIMME_PRECOND
+# POLY_EIGEN
 
 KSCGMULTI = -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
 

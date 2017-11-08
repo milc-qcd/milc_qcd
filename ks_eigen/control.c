@@ -44,30 +44,35 @@ int main( int argc, char **argv ){
     f_meas_imp( 1, PRECISION, F_OFFSET(phi), F_OFFSET(xxx), mass,
 		0, fn_links);
 
-    eigVal = (double *)malloc(Nvecs*sizeof(double));
-    eigVec = (su3_vector **)malloc(Nvecs*sizeof(su3_vector*));
-    for(i=0;i<Nvecs;i++)
+    eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
+    eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector*));
+    for(i=0;i<param.eigen_param.Nvecs;i++)
       eigVec[i]=
 	(su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
     
     fn = get_fm_links(fn_links);
-    active_parity = EVEN;
-    total_R_iters=Kalkreuter(eigVec, eigVal, eigenval_tol, 
-			     error_decr, Nvecs, MaxIter, Restart, 
-			     Kiters, 1);
-    construct_eigen_odd(eigVec, eigVal, Nvecs, fn[0]);
+    param.eigen_param.parity = EVEN;
+    total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
+    construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn[0]);
 
     /* Calculate and print the residues and norms of the eigenvectors */
-    resid = (double *)malloc(Nvecs*sizeof(double));
+    resid = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
     node0_printf("Even site residuals\n");
-    check_eigres( resid, eigVec, eigVal, Nvecs, EVEN, fn[0] );
+    check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs, EVEN, fn[0] );
     node0_printf("Odd site residuals\n");
-    check_eigres( resid, eigVec, eigVal, Nvecs, ODD, fn[0] );
+    check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs, ODD, fn[0] );
+
+    /* save eigenvectors if requested */
+    int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
+			       param.eigen_param.Nvecs, eigVal, eigVec, resid, 1);
+    if(status != 0){
+      node0_printf("ERROR writing eigenvectors\n");
+    }
 
     /* print eigenvalues of iDslash */
     node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
     node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
-    for(i=0;i<Nvecs;i++)
+    for(i=0;i<param.eigen_param.Nvecs;i++)
       { 
 	if ( eigVal[i] > 0.0 ){ chirality = sqrt(eigVal[i]) / 2.0; }
 	else { chirality = 0.0; }
@@ -75,7 +80,7 @@ int main( int argc, char **argv ){
       } 
 
     tmp = (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
-    for(i=0;i<Nvecs;i++)
+    for(i=0;i<param.eigen_param.Nvecs;i++)
       { 
 //	if ( eigVal[i] > 10.0*eigenval_tol )
 //	  {
@@ -121,7 +126,7 @@ int main( int argc, char **argv ){
        print_densities(eigVec[i], label, ny/2,nz/2,nt/2, EVEN) ;
        }
     **/
-    for(i=0;i<Nvecs;i++)
+    for(i=0;i<param.eigen_param.Nvecs;i++)
       free(eigVec[i]) ;
     free(eigVec) ;
     free(eigVal) ;

@@ -41,6 +41,7 @@ G_KS_ALL = \
   dslash_fn_qop.o \
   dslash_fn_qop_milc_D.o \
   dslash_fn_qop_milc_F.o \
+  eigen_stuff_ARPACK.o \
   eigen_stuff_helpers.o \
   eigen_stuff_Ritz.o \
   eigen_stuff_PRIMME.o \
@@ -232,6 +233,8 @@ dslash_fn_qop.o: ../generic_ks/dslash_fn_qop.c
 dslash_fn_qop_milc_D.o: ../generic_ks/dslash_fn_qop_milc_D.c ../generic_ks/dslash_fn_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<
 dslash_fn_qop_milc_F.o: ../generic_ks/dslash_fn_qop_milc_F.c ../generic_ks/dslash_fn_qop_milc_P.c
+	${CC} -c ${CFLAGS} $<
+eigen_stuff_ARPACK.o: ../generic_ks/eigen_stuff_ARPACK.c
 	${CC} -c ${CFLAGS} $<
 eigen_stuff_helpers.o: ../generic_ks/eigen_stuff_helpers.c
 	${CC} -c ${CFLAGS} $<

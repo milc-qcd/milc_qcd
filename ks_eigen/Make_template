@@ -43,11 +43,17 @@ LAYOUT = layout_hyper_prime.o
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} jacobi.o spin_taste_ops.o gammas.o
 
-ADD_OBJECTS += eigen_stuff_PRIMME.o eigen_stuff_Ritz.o eigen_stuff_helpers.o
+ADD_OBJECTS += eigen_stuff_ARPACK.o eigen_stuff_PRIMME.o eigen_stuff_Ritz.o 
+ADD_OBJECTS += eigen_stuff_helpers.o io_helpers_ks_eigen.o io_ks_eigen.o io_scidac_ks_eigen.o
 
 # Always use PRIMME if it is provided
 ifeq ($(strip ${HAVEPRIMME}),true)
   ADDDEFINES += -DPRIMME
+# Always use ARPACK if it is provided
+else ifeq ($(strip ${HAVEARPACK}),true)
+  ADDDEFINES += -DARPACK
+else
+  ADDDEFINES += -DKalkreuter_Ritz
 endif
 
 # # Generic QOP objects
@@ -129,13 +135,13 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 su3_eigen_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \
-	"DEFINES = -DFN" \
+	"DEFINES = -DFN -DEIGEN_QIO" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS = ${FN_OBJECTS}"
 
 su3_eigen_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \
-	"DEFINES = -DFN" \
+	"DEFINES = -DFN -DEIGEN_QIO" \
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS = ${HISQ_OBJECTS}"
 
