@@ -174,7 +174,10 @@ QCDheader * qcdhdr_get_hdr(FILE *in)
   char *p, *q;
 
   /* Begin reading, and check for "BEGIN_HEADER" token */
-  fgets(line,MAX_LINE_LENGTH,in);
+  if (fgets(line,MAX_LINE_LENGTH,in) == NULL) {
+    node0_printf("Unexpected NULL pointer in fgets\n");
+    terminate(1);
+  }
   /*
   if (strcmp(line,"BEGIN_HEADER\n")!=0)
     error_exit("qcdhdr_get_hdr: Missing \"BEGIN_HEADER\"; punting \n");
@@ -190,7 +193,10 @@ QCDheader * qcdhdr_get_hdr(FILE *in)
   n = 0;
   printf("reading Archive header:\n");
   while (1) {
-    fgets(line,MAX_LINE_LENGTH,in);
+    if (fgets(line,MAX_LINE_LENGTH,in) == NULL) {
+      node0_printf("Unexpected NULL pointer in fgets\n");
+      terminate(1);
+    }
     printf("%s", line);
 
     if (strcmp(line,"END_HEADER\n")==0) break;

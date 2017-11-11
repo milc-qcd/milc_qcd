@@ -37,6 +37,9 @@ eigenval_tolerance 1.0e-7
 # See README.ks_eigen - For optimizing the RR CG
 error_decrease .3
 
+# Eigenvector file
+forget_ks_eigen
+
 # Input lattice
 reload_serial ../../binary_samples/lat.sample.inst
 staple_weight 0

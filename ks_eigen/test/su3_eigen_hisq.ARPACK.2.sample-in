@@ -24,20 +24,21 @@ error_for_propagator .000002
 # Number of eigenvalues to compute (storage required for all eigenvectors)
 Number_of_eigenvals 32
 
-# CG for Rayleigh-Ritz minimization
-Max_Rayleigh_iters 100
-Restart_Rayleigh 10
-
-# Outer loop iterations
-Kalkreuter_iters 20
+Max_Rayleigh_iters 2000
+nArnoldi 384
 
 # Eigenvalue tolerance
-eigenval_tolerance 1.0e-14
+eigenval_tolerance 1.0e-13
 
-# See README.ks_eigen - For optimizing the RR CG
-error_decrease .3
+# which_poly 3
+# norder 10
+# eig_start  1
+# eig_end  50
+# poly_param_1 30
+# poly_param_2 0.5
+# eigmax 1
 
-# Eigenvector file
+# Output eigenvectors
 forget_ks_eigen
 
 # Input lattice

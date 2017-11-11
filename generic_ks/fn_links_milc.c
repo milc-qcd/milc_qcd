@@ -10,6 +10,10 @@
 #ifdef QCDOC
 #define special_alloc qcdoc_alloc
 #define special_free qfree
+#elif defined(USE_FL_GPU)
+#include "../include/generic_quda.h"
+#define special_alloc qudaAllocatePinned
+#define special_free qudaFreePinned
 #else
 #define special_alloc malloc
 #define special_free free

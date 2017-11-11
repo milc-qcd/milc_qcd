@@ -132,11 +132,7 @@ EXTERN fermion_links_t    *fn_links;
 
 /* For eigenpair calculation */
 #if EIGMODE == EIGCG || EIGMODE == DEFLATION
-EXTERN int active_parity ; /* parity used in eigenvalue calculation */
 EXTERN int Nvecs_tot;
-EXTERN int cheb_p ; /* Order of the Chebyshev preconditioning polynomial */
-EXTERN double minE ; /* Lower end of eigenvalue exclusion window */
-EXTERN double maxE ; /* Upper end of eigenvalue exclusion window */
 EXTERN double *eigVal; /* eigenvalues of M^adj M */
 EXTERN su3_vector **eigVec; /* eigenvectors */
 #endif

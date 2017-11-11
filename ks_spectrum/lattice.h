@@ -132,11 +132,7 @@ EXTERN Real g_splaq,g_tplaq;	/* global U(1) plaquette measures */
 
 /* For eigenpair calculation */
 #if EIGMODE == EIGCG || EIGMODE == DEFLATION
-EXTERN int active_parity ; /* parity used in eigenvalue calculation */
 EXTERN int Nvecs_tot;
-EXTERN int cheb_p ; /* Order of the Chebyshev preconditioning polynomial */
-EXTERN double minE ; /* Lower end of eigenvalue exclusion window */
-EXTERN double maxE ; /* Upper end of eigenvalue exclusion window */
 EXTERN double *eigVal; /* eigenvalues of D^dag D */
 EXTERN su3_vector **eigVec; /* eigenvectors */
 #endif

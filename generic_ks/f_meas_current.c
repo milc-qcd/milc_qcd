@@ -678,7 +678,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
     for(i = j; i < Nvecs; i += 8){
       double_complex cc ;
       dot_product(eigVec[i], eigVec[j], &cc, EVEN) ;
-      if(i == j && fabs(cc.real - 1) > 1e-8 || i != j && fabs(cc.real) > 1e-8)
+      if((i == j && fabs(cc.real - 1) > 1e-8) || (i != j && fabs(cc.real) > 1e-8))
 	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
     }
 #endif
@@ -1163,7 +1163,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
     for(i = j; i < Nvecs; i += 8){
       double_complex cc ;
       dot_product(eigVec[i], eigVec[j], &cc, EVEN) ;
-      if(i == j && fabs(cc.real - 1) > 1e-8 || i != j && fabs(cc.real) > 1e-8)
+      if(((i == j) && (fabs(cc.real - 1) > 1e-8)) || ((i != j) && (fabs(cc.real) > 1e-8)))
 	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
     }
 #endif
