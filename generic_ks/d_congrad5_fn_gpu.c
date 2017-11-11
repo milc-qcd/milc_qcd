@@ -117,7 +117,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
     cancel_quda_notification(fn);
     fn_last = fn;
     num_iters = -1;
-    node0_printf("%s: fn, notify: Signal QUDA to refresh links", myname);
+    node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", myname);
   }
 
   qudaInvert(PRECISION,
@@ -249,7 +249,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
     cancel_quda_notification(fn);
     fn_last = fn;
     num_iters = -1;
-    node0_printf("%s: fn, notify: Signal QUDA to refresh links", myname);
+    node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", myname);
   }
 
   qudaInvertMsrc(PRECISION,
@@ -261,8 +261,8 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
                  fatlink,
                  longlink,
                  u0,
-                 t_src,
-                 t_dest,
+                 (void **)t_src,
+                 (void **)t_dest,
                  &residual,
                  &relative_residual,
                  &num_iters,
