@@ -342,7 +342,9 @@ void g_measure( ){
 
 	    for(rep=0;rep<NREPS;rep++)average[rep] = 0.0;
     	    this_total_action=0.;
-	    FORALLSITES_OMP(i,s,private(trace,action,act2,rep) reduction(+:this_total_action,average)){
+	    // BNL mpicc couldn't handle reduction average[]
+	    //	    FORALLSITES_OMP(i,s,private(trace,action,act2,rep) reduction(+:this_total_action,average)){
+	    FORALLSITES(i,s){
 		trace=trace_su3( &tempmat1[i] );
 		average[0] += (double)trace.real;
 		action =  3.0 - (double)trace.real;
@@ -354,7 +356,8 @@ void g_measure( ){
 		    average[rep] += act2;
 		    this_total_action += (double)loop_coeff[iloop][rep]*act2;
 		} /* reps */
-	    } END_LOOP_OMP /* sites */
+		//	    } END_LOOP_OMP /* sites */
+	    }
 	    g_vecdoublesum( average, NREPS );
 	    total_action += this_total_action;
 	    /* dump the loop */
