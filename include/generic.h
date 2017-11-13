@@ -269,6 +269,8 @@ spin_wilson_vector *extract_swv_from_wp(wilson_prop_field * wp, int color);
 
 void copy_wv_from_wprop(wilson_vector *wv, wilson_propagator *wprop, 
 			int color, int spin);
+void insert_wv_array_from_wv(wilson_vector *wva, wilson_vector *wv, int k, int n);
+void extract_wv_from_wv_array(wilson_vector *wv, wilson_vector *wva, int k, int n);
 
 /* file_types_milc_usqcd.c */
 int ks_prop_milc_to_usqcd(int milc_type);
@@ -402,6 +404,7 @@ void momentum_twist_site(Real bdry_phase[4], int sign);
 void momentum_twist_links(Real bdry_phase[4], int sign, su3_matrix *links);
 void rephase_v_field(su3_vector *v, Real bdry_phase[4], int r0[4], int sign);
 void rephase_wv_field(wilson_vector *wv, Real bdry_phase[4], int r0[4], int sign);
+void rephase_wv_array_field(wilson_vector *wv, Real bdry_phase[4], int r0[4], int sign, int ns);
 
 /* path_product.c */
 void path_product( const int *dir, const int length, su3_matrix *tempmat1);

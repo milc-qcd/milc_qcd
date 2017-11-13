@@ -297,3 +297,30 @@ rephase_wv_field(wilson_vector *wv, Real bdry_phase[4], int r0[4], int sign) {
   }  
 }
 
+void 
+rephase_wv_array_field(wilson_vector *wv, Real bdry_phase[4], int r0[4], int sign, int ns) {
+
+  int i;
+  site *s;
+  complex c;
+  Real p;
+
+  /* No transformation if phases are all zero */
+  if(bdry_phase[XUP] == 0. && bdry_phase[YUP] == 0. &&
+     bdry_phase[ZUP] == 0. && bdry_phase[TUP] == 0.)
+    return;
+
+  node0_printf("Applying momentum phases %g %g %g %g sign %d to Wilson vector field\n",
+	       bdry_phase[0], bdry_phase[1], bdry_phase[2], bdry_phase[3], sign);
+
+  FORALLSITES(i,s){
+    p = bdry_phase[XUP]*((int)(s->x + nx - r0[XUP]) % nx)/(Real)nx 
+      + bdry_phase[YUP]*((int)(s->y + ny - r0[YUP]) % ny)/(Real)ny 
+      + bdry_phase[ZUP]*((int)(s->z + nz - r0[ZUP]) % nz)/(Real)nz 
+      + bdry_phase[TUP]*((int)(s->t + nt - r0[TUP]) % nt)/(Real)nt;
+    c = ce_itheta(sign*PI*p);
+    for (int k = 0; k < ns; k++)
+      phase_mult_wilson_vector(wv+ns*i+k, c);
+  }  
+}
+

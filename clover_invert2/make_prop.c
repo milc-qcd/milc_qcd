@@ -39,6 +39,7 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
   int status;
   char *fileinfo;
   wilson_vector *dst;
+  wilson_vector *dst_mrhs;
   w_prop_file *fp_in, *fp_out; 
   char myname[] = "get_wprop_to_wp_field";
   Real mybdry_phase[4];
@@ -48,11 +49,11 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
   int io_timing = 0;
 #endif
 
+  dst = create_wv_field();
+
   /* Local copy of bdry_phase */
   for(i = 0; i < 4; i++)
     mybdry_phase[i] = bdry_phase[i];
-
-  dst = create_wv_field();
 
   /* Open files for Wilson propagators, if requested */
   fp_in  = r_open_wprop(startflag, startfile);
@@ -76,8 +77,11 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
   momentum_twist_links(mybdry_phase, 1, ape_links);
   mybdry_phase[3] = bdry_phase[3]; 
 
+  int ns = my_wqs->nsource;
+  dst_mrhs = create_wv_array_field(ns);
+
   /* Loop over source colors and spins */
-  for(ksource = 0; ksource < my_wqs->nsource; ksource++){
+  for(ksource = 0; ksource < ns; ksource++){
     spin = convert_ksource_to_spin(ksource);
     color = convert_ksource_to_color(ksource);
 
@@ -87,84 +91,109 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
       printf("%s(%d): Error reloading propagator\n", myname, this_node);
       terminate(1);
     }
-      
-    /* (Re)construct propagator */
-    
-    if(startflag == FRESH)my_qic->start_flag = START_ZERO_GUESS;
-    else                  my_qic->start_flag = START_NONZERO_GUESS;      
-    
-    /* Solve for the propagator if the starting guess is zero
-       or we didn't say not to solve. */
-    if(check != CHECK_NO || startflag == FRESH){
 
-      /* Make the source */
-      wilson_vector *src = create_wv_field();
+    insert_wv_array_from_wv(dst_mrhs, dst, ksource, ns);
+  }
       
+  /* (Re)construct propagator */
+    
+  if(startflag == FRESH)my_qic->start_flag = START_ZERO_GUESS;
+  else                  my_qic->start_flag = START_NONZERO_GUESS;      
+  
+  /* Solve for the propagator if the starting guess is zero
+     or we didn't say not to solve. */
+  if(check != CHECK_NO || startflag == FRESH){
+    
+    wilson_vector *src = create_wv_field();
+    wilson_vector *src_mrhs = create_wv_array_field(ns);
+
+    /* Make the source */
+    for(ksource = 0; ksource < ns; ksource++){
+
       /* Create the source */
       if(wv_source_field(src, my_wqs)){
 	printf("%s(%d): error getting source\n",myname, this_node);
 	terminate(1);
       };
-
-      /* Cache the source for writing to the propagator file */
-      if(saveflag != FORGET){
-	alloc_cached_wv_source(my_wqs);
-	copy_wv_field(get_cached_wv_source(my_wqs), src);
-      }
       
-      /* Write the source to a source file, if requested */
-      if(my_wqs->saveflag != FORGET){
-	if(w_source_dirac( src, my_wqs ) != 0){
-	  node0_printf("%s: Error writing source\n",myname);
-	}
+      insert_wv_array_from_wv(src_mrhs, src, ksource, ns);
+    }
+
+    if(check == CHECK_SOURCE_ONLY){
+
+      for(ksource = 0; ksource < ns; ksource++){
+	spin = convert_ksource_to_spin(ksource);
+	color = convert_ksource_to_color(ksource);
+	/* Copy source to solution(s) so we can use it there */
+	extract_wv_from_wv_array(src, src_mrhs, ksource, ns);
+	copy_wp_from_wv( wp, src, color, spin);
       }
+	
+    } else {
       
-      if(check != CHECK_SOURCE_ONLY){
+      /* Apply the momentum twist to the source.  This U(1) gauge
+	 transformation converts the boundary twist on the gauge field
+	 above into the desired volume twist. We do it this way to
+	 make our coding compatible with QOP, which does only a
+	 surface twist. */
+      
+      /* The time phase is special.  It is applied only on the
+	 boundary, so we don't gauge-transform it to the volume here.
+	 It is used only for switching between periodic and
+	 antiperiodic bc's */
+      
+      mybdry_phase[3] = 0; 
+      rephase_wv_array_field(src_mrhs, mybdry_phase, r0, 1, ns);
+      mybdry_phase[3] = bdry_phase[3]; 
 
-	/* Apply the momentum twist to the source.  This U(1) gauge
-	   transformation converts the boundary twist on the gauge field
-	   above into the desired volume twist. We do it this way to
-	   make our coding compatible with QOP, which does only a
-	   surface twist. */
-	
-	/* The time phase is special.  It is applied only on the
-	   boundary, so we don't gauge-transform it to the volume here.
-	   It is used only for switching between periodic and
-	   antiperiodic bc's */
-	
-	mybdry_phase[3] = 0; 
-	rephase_wv_field(src, mybdry_phase, r0, 1);
-	mybdry_phase[3] = bdry_phase[3]; 
-	
-	/* solve for dst */
+      /* solve for dst */
+      
+      if(prop_type == CLOVER_TYPE){
+	if (cl_cg == BICG) {
+	  avs_iters = bicgilu_cl_field_mrhs(src_mrhs, dst_mrhs, my_qic, my_dcp, ns);
+	} else {
 
-	if(prop_type == CLOVER_TYPE){
-	  switch (cl_cg) {
-	  case BICG:
-	    avs_iters = bicgilu_cl_field(src, dst, my_qic, my_dcp);
-	    break;
-	  case HOP:
-	    avs_iters = hopilu_cl_field(src, dst, my_qic, my_dcp);
-	    break;
-	  case MR:
-	    avs_iters = mrilu_cl_field(src, dst, my_qic, my_dcp);
-	    break;
-	  case CG:
-	    avs_iters = cgilu_cl_field(src, dst, my_qic, my_dcp);
-	    break;
-	  default:
-	    node0_printf("%s(%d): Inverter choice %d not supported\n",
-			 myname, this_node,cl_cg);
+	  for(ksource = 0; ksource < ns; ksource++){
+
+	    extract_wv_from_wv_array(src, src_mrhs, ksource, ns);
+
+	    switch (cl_cg) {
+	    case BICG:
+	      avs_iters = bicgilu_cl_field(src, dst, my_qic, my_dcp);
+	      break;
+	    case HOP:
+	      avs_iters = hopilu_cl_field(src, dst, my_qic, my_dcp);
+	      break;
+	    case MR:
+	      avs_iters = mrilu_cl_field(src, dst, my_qic, my_dcp);
+	      break;
+	    case CG:
+	      avs_iters = cgilu_cl_field(src, dst, my_qic, my_dcp);
+	      break;
+	    default:
+	      node0_printf("%s(%d): Inverter choice %d not supported\n",
+			   myname, this_node,cl_cg);
+	      terminate(1);
+	    }
+
+	    insert_wv_array_from_wv(dst_mrhs, dst, ksource, ns);
 	  }
-	} else if(prop_type == IFLA_TYPE){
+
+      } else if(prop_type == IFLA_TYPE){
+
 #ifdef HAVE_QOP
 	  switch (cl_cg) {
-	  case BICG:
-	    avs_iters = bicgilu_cl_field_ifla(src, dst, my_qic, my_dcp);
-	    break;
-	  default:
-	    node0_printf("%s(%d): Inverter choice %d not supported\n",
-			 myname, this_node,cl_cg);
+	    for(ksource = 0; ksource < ns; ksource++){
+	    case BICG:
+	      extract_wv_from_wv_array(src, src_mrhs, ksource, ns);
+	      avs_iters = bicgilu_cl_field_ifla(src, dst, my_qic, my_dcp);
+	      insert_wv_array_from_wv(dst_mrhs, dst, ksource, ns);
+	      break;
+	    default:
+	      node0_printf("%s(%d): Inverter choice %d not supported\n",
+			   myname, this_node,cl_cg);
+	      terminate(1);
+	    }
 	  }
 #else
 	  node0_printf("%s: QOP compilation required for IFLA\n", myname);
@@ -177,30 +206,43 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
 
 	report_status(my_qic);
 	
-	// DEBUG
-	//static_prop_wv(dst, src, my_wqs);
+	/* Transform solution, completing the U(1) gauge transformation */
+	mybdry_phase[3] = 0; 
+	rephase_wv_array_field(dst_mrhs, mybdry_phase, r0, -1, ns);
+	mybdry_phase[3] = bdry_phase[3]; 
 	
-      } else { /* check != CHECK_SOURCE_ONLY */
+	for(ksource = 0; ksource < ns; ksource++){
+	  spin = convert_ksource_to_spin(ksource);
+	  color = convert_ksource_to_color(ksource);
+	  
+	  extract_wv_from_wv_array(src, src_mrhs, ksource, ns);
+	  extract_wv_from_wv_array(dst, dst_mrhs, ksource, ns);
 
-	/* Copy source to solution(s) so we can use it there */
-	copy_wv_field(dst, src);
+	  /* Copy solution vector to wilson_prop_field wp */
+	  copy_wp_from_wv( wp, dst, color, spin);
+
+	  /* Cache the source for writing to the propagator file */
+	  if(saveflag != FORGET){
+	    alloc_cached_wv_source(my_wqs);
+	    copy_wv_field(get_cached_wv_source(my_wqs), src);
+	  }
 	
-      }
+	  /* Write the source to a source file, if requested */
+	  if(my_wqs->saveflag != FORGET){
+	    if(w_source_dirac( src, my_wqs ) != 0){
+	      node0_printf("%s: Error writing source\n",myname);
+	    }
+	  }
+	  
+	  /* save solution if requested */
+	  save_wprop_sc_from_field( saveflag, fp_out, my_wqs, spin, color, dst, 
+				    "", io_timing);
+	}
+	  
+	destroy_wv_field(src);
+	destroy_wv_array_field(src_mrhs);
 
-      destroy_wv_field(src);
-    }
-    
-    /* Transform solution, completing the U(1) gauge transformation */
-    mybdry_phase[3] = 0; 
-    rephase_wv_field(dst, mybdry_phase, r0, -1);
-    mybdry_phase[3] = bdry_phase[3]; 
-    
-    /* Copy solution vector to wilson_prop_field wp */
-    copy_wp_from_wv( wp, dst, color, spin);
-    
-    /* save solution if requested */
-    save_wprop_sc_from_field( saveflag, fp_out, my_wqs, spin, color, dst, 
-			      "", io_timing);
+    } /* check != CHECK_NO || startflag == FRESH */
     
     tot_iters += avs_iters;
   } /* ksource */
@@ -231,6 +273,7 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
   }
   
   destroy_wv_field(dst);
+  destroy_wv_array_field(dst_mrhs);
 
   return tot_iters;
 }

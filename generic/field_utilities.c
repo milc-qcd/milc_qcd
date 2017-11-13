@@ -638,3 +638,19 @@ void insert_swv_from_wv(spin_wilson_vector *swv, int spin, wilson_vector *wv){
   } END_LOOP_OMP
 }
 
+/*--------------------------------------------------------------------*/
+
+void insert_wv_array_from_wv(wilson_vector *wva, wilson_vector *wv, int k, int n){
+  FORALLFIELDSITES_OMP(i, default(shared)){
+    wva[i*n + k] = wv[i];
+  } END_LOOP_OMP
+}
+
+/*--------------------------------------------------------------------*/
+
+void extract_wv_from_wv_array(wilson_vector *wv, wilson_vector *wva, int k, int n){
+  FORALLFIELDSITES_OMP(i, default(shared)){
+    wv[i] = wva[i*n + k];
+  } END_LOOP_OMP
+}
+
