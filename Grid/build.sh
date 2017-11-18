@@ -85,7 +85,7 @@ then
             --prefix=${INSTALLDIR} \
             --enable-precision=double \
             --enable-simd=KNL \
-            --enable-comms=mpi \
+            --enable-comms=mpit \
             --host=x86_64-unknown-linux-gnu \
 	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc/lib \
             CXX="${PK_CXX}" CC="${PK_CC}" \
