@@ -254,7 +254,7 @@ KS_MULTICG_OFFSET_FIELD(
 	   );
     printf("CONGRAD5-QPhiX: "
   	   "solve-time = %e "
-           "(multicg_offset_GRID %s) "
+           "(multicg_offset_QPhiX %s) "
            "masses = %d iters = %d "
            "mflops(ignore data-conv.) = %e\n",
            dtime,

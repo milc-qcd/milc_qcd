@@ -237,9 +237,10 @@ KS_MULTICG_OFFSET_FIELD(
   char *prec_label[2] = {"F", "D"};
   if(this_node==0){
     printf("CONGRAD5: time = %e "
-           "(multicg_offset_GRID %s) "
+           "(multicg_offset_Grid %s) "
            "masses = %d iters = %d "
-           "mflops = %e ",
+           "mflops = %e"
+	   "\n",
            tot_cg_time,
            prec_label[qic[0].prec-1],nmass,num_iters,
            (double)(nflop)*volume*num_iters/(1.0e6*tot_cg_time*numnodes())
@@ -260,7 +261,7 @@ KS_MULTICG_OFFSET_FIELD(
 	   );
     printf("CONGRAD5-Grid: "
   	   "solve-time = %e "
-           "(multicg_offset_GRID %s) "
+           "(multicg_offset_Grid %s) "
            "masses = %d iters = %d "
            "mflops(ignore data-conv.) = %e\n",
            dtimeinv,
