@@ -106,8 +106,6 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
 			 fn_links_t *fn)			 
 {
   char myname[] = "ks_congrad_parity_grid";
-  double ttime, dctime, tot_cg_time;
-  double dtime;
   double nflop = 1187;
   int iters = 0;
   GRID_info_t info = GRID_INFO_ZERO;
@@ -116,19 +114,13 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   GRID_invert_arg_t grid_invert_arg = GRID_INVERT_ARG_DEFAULT;
   GRID_FermionLinksAsqtad  *links;    
   
-#ifdef CGTIME
-  tot_cg_time = -dclock();
-#endif   
+  double tot_cg_time = -dclock();
   
   if(! grid_initialized()){
     node0_printf("%s: FATAL Grid has not been initialized\n", myname);
     terminate(1);
   }
 
-#ifdef CGTIME
-  dctime = -dclock();
-#endif
-  
   /* Set grid_invert_arg */
   set_grid_invert_arg( & grid_invert_arg, qic );
   
@@ -137,80 +129,57 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   
   /* Data layout conversions */
   
-#ifdef REMAP
   double t_sp1, t_sp2, t_l;
   t_sp1 = -dclock();
-#endif    
   
   node0_printf("Calling GRID_create_V_from_vec\n"); fflush(stdout);
   grid_src = GRID_create_V_from_vec( src, qic->parity);
   
-#ifdef REMAP
   t_sp1 += dclock();
   t_sp2 = -dclock();
-#endif    
   
   node0_printf("Calling GRID_create_V_from_vec\n"); fflush(stdout);
   grid_sol = GRID_create_V_from_vec( sol, qic->parity);
   
-#ifdef REMAP
   t_sp2 += dclock();
   t_l   = -dclock(); 
-#endif     
   
   node0_printf("Calling GRID_asqtad_create_L_from_MILC\n"); fflush(stdout);
   /* For now we are taking the thin links from the site structure, so the first parameter is NULL */
   links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), EVENANDODD );
-  
-#ifdef REMAP
+
   t_l   += dclock(); 
-#endif       
   
-#ifdef REMAP
-  node0_printf("MILC-->Grid data layout conversion timings"
-	       " (Unoptimized Gathers).\n"
-	       "\t src-spinor  = %e\n"
-	       "\t dest-spinor = %e\n"
-	       "\t links       = %e\n"
-	       "\t total       = %e\n"
-	       , t_sp1, t_sp2, t_l
-	       , t_sp1 + t_sp2 + t_l
-	       );
-  fflush(stdout);
-#endif
   
-#ifdef CGTIME
-  dctime +=dclock();
-  dtime = -dclock();
-#endif    
+  double dtimegridinv = -dclock();
   
   node0_printf("Calling GRID_asqtad_invert\n"); fflush(stdout);
   GRID_asqtad_invert( &info, links, &grid_invert_arg, 
 		      grid_resid_arg, (MYREAL)mass, grid_sol, grid_src );
   iters = grid_resid_arg->final_iter;
   
-#ifdef CGTIME    
-  dtime += dclock();
-#endif
+  dtimegridinv += dclock();
+  double dtimeinv = info.final_sec;
+  double t_gr = dtimegridinv - dtimeinv - info.misc_sec;
   
   get_grid_resid_arg(qic, grid_resid_arg);
   
   /* Free the structure */
   destroy_grid_resid_arg(grid_resid_arg);
   
-#ifdef CGTIME
-  ttime = -dclock();
-#endif
-  
   /* Copy results back to su3_vector */
+  double t_sl = -dclock();
   GRID_extract_V_to_vec( sol, grid_sol, qic->parity);
+  t_sl += dclock();
 
+#if 0
   /* Fix normalization */
   int i;
   Real rescale = 1./(2.*mass);
   FORSOMEFIELDPARITY_OMP(i, qic->parity, default(shared)){
     scalar_mult_su3_vector( sol+i, rescale, sol+i);
   } END_LOOP_OMP;
+#endif
   
   /* Free GRID fields  */
   
@@ -218,38 +187,46 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   GRID_destroy_V(grid_sol);     
   GRID_asqtad_destroy_L(links);
   
-#ifdef CGTIME
-  ttime +=dclock();
-  dctime +=ttime;
-#endif
-#ifdef CGTIME
   tot_cg_time +=dclock();
+
+#ifdef CGTIME
+  char *prec_label[2] = {"F", "D"};
   if(this_node==0) {
-    char *prec_label[2] = {"F", "D"};
-    node0_printf("CONGRAD5: total cg-time = %e "
-		 
-#ifdef CGTIME
-		 "solve-time = %e "
-		 "layout-conversion-time = %e "
-#endif            
-		 "(Grid %s) masses = 1 iters = "
-		 "%d mflops = %e "
-#ifdef CGTIME
-		 "mflops(ignore data-conv.) = %e"
-#endif
-		 "\n"
-		 , tot_cg_time
-#ifdef CGTIME
-		 , dtime, dctime
-#endif
-		 , prec_label[MILC_PRECISION-1], iters
-		 , (double)(nflop*volume*iters/(1.0e6*tot_cg_time*numnodes()))
-#ifdef CGTIME
-		 , (double)(nflop*volume*iters/(1.0e6*dtime*numnodes()))
-#endif
-		 );
+    printf("CONGRAD5: time = %e "
+	   "(Grid %s) masses = 1 iters = %d "
+	   "mflops = %e "
+	   "\n"
+	   , tot_cg_time
+	   , prec_label[MILC_PRECISION-1], iters
+	   , (double)(nflop*volume*iters/(1.0e6*tot_cg_time*numnodes()))
+	   );
     fflush(stdout);
   }
+#ifdef REMAP
+  if(this_node==0) {
+    printf("MILC<-->Grid data layout conversion timings\n"
+	   "\t src-spinor   = %e\n"
+	   "\t dest-spinors = %e\n"
+	   "\t soln-spinor  = %e\n"
+	   "\t links        = %e\n"
+	   "\t Grid remap   = %e\n"
+	   "\t ---------------------------\n"
+	   "\t total remap  = %e\n"
+	   , t_sp1, t_sp2, t_l, t_sl, t_gr
+	   , t_sp1 + t_sp2 + t_l + t_sl + t_gr
+	   );
+    printf("CONGRAD5-Grid: "
+	   "solve-time = %e "
+	   "(Grid %s) masses = 1 iters = %d "
+	   "mflops(ignore data-conv.) = %e "
+	   "\n"
+	   , dtimeinv
+	   , prec_label[MILC_PRECISION-1], iters
+	   , (double)(nflop*volume*iters/(1.0e6*dtimeinv*numnodes()))
+	   );
+    fflush(stdout);
+  }
+#endif
 #endif
 
   return iters;

@@ -148,10 +148,8 @@ KS_MULTICG_OFFSET_FIELD(
     terminate(1);
   }
 
-#ifdef CGTIME
-  double dtimec = -dclock();
+  double tot_cg_time = -dclock();
   double nflop = 1205 + 15*nmass;
-#endif
 
   assert(qic[0].parity != EVENANDODD && "EVENANDODD not yet implemented");
     
@@ -162,10 +160,8 @@ KS_MULTICG_OFFSET_FIELD(
 
   if( nmass==0 )return 0;
 
-  double dtimet = -dclock();
   /* Set grid_invert_arg */
   set_grid_invert_arg( & grid_invert_arg, qic+0, nmass );
-  node0_printf("set_grid_invert_arg: time = %.6e sec\n", dclock()+dtimet);
 
   /* Pointers for residual errors */
   grid_resid_arg = create_grid_resid_arg( qic+0, nmass );
@@ -175,52 +171,57 @@ KS_MULTICG_OFFSET_FIELD(
     mass[i] = sqrt(ksp[i].offset/4.0);
 
   /* Map the input and output fields */
-  dtimet = -dclock();
+  double t_sp1 = -dclock();
   grid_src = GRID_create_V_from_vec( src, qic[0].parity);
-  node0_printf("GRID_create_V_from_vec: time = %.6e sec\n", dclock()+dtimet);
-  fflush(stdout);
+  t_sp1 += dclock();
   
-  dtimet = -dclock();
+  /* Create the solution fields, but leave them zeroed out */
+  double t_sp2 = -dclock();
   for(i = 0; i < nmass; i++){
-    grid_sol[i] = 
-      GRID_create_V_from_vec( psim[i], qic[0].parity);
+    //    grid_sol[i] =  GRID_create_V( qic[0].parity);
+    grid_sol[i] =  GRID_create_V_from_vec(psim[i], qic[0].parity);
   }
-  node0_printf("GRID_create_V_from_field x %d: time = %.6e sec\n", 
-	       nmass, dclock()+dtimet);
+  t_sp2 += dclock();
+
   fflush(stdout);
 
-  dtimet = -dclock();
+  double t_l = -dclock();
   links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), EVENANDODD );
-  node0_printf("GRID_asqtad_create_L_from_fn_links: time = %.6e sec\n", dclock()+dtimet);
-  fflush(stdout);
-
-#ifdef CG_DEBUG
+  t_l += dclock();
+  
+  double dtimegridinv = -dclock();
+#if 0
   node0_printf("Faking GRID_ks_multicg_offset\n");fflush(stdout);
-#endif
 
   for(int i = 0; i < nmass; i++){
     GRID_asqtad_invert( &info, links, &grid_invert_arg, grid_resid_arg[i], 
 			mass[i], grid_sol[i], grid_src );
     num_iters += grid_resid_arg[i]->final_iter;
-    get_grid_resid_arg( qic, grid_resid_arg, nmass);
   }
-
+#else
+  GRID_asqtad_invert_multi( &info, links, &grid_invert_arg, grid_resid_arg,
+			    mass, nmass, grid_sol, grid_src);
+  /* Take the maximum number of iters in order to compare with other multi-mass inverters */
+  num_iters = 0;
+  for(int i = 0; i < nmass; i++){
+    if(grid_resid_arg[i]->final_iter > num_iters)
+      num_iters = grid_resid_arg[i]->final_iter;
+  }
+#endif
+  dtimegridinv += dclock();
+  double dtimeinv = info.final_sec;
+  double t_gr = dtimegridinv - dtimeinv;
+  get_grid_resid_arg( qic, grid_resid_arg, nmass);
 
   /* Free the structure */
   destroy_grid_resid_arg(grid_resid_arg, nmass);
   
   /* Unpack the solutions */
-#ifdef CG_DEBUG
-  node0_printf("Extracting output\n");fflush(stdout);
-#endif
-
-  dtimet = -dclock();
+  double t_sl = -dclock();
   for(i=0; i<nmass; ++i)
     /* Copy results back to su3_vector */
     GRID_extract_V_to_vec( psim[i], grid_sol[i], qic->parity);
-  node0_printf("GRID_extract_V_to_vec x %d: time = %.6e sec\n", 
-	       nmass, dclock()+dtimet);
-  fflush(stdout);
+  t_sl += dclock();
   
   /* Free GRID fields  */
   
@@ -230,15 +231,44 @@ KS_MULTICG_OFFSET_FIELD(
 
   GRID_asqtad_destroy_L(links);
   
+  tot_cg_time += dclock();
+
 #ifdef CGTIME
-  dtimec += dclock();
+  char *prec_label[2] = {"F", "D"};
   if(this_node==0){
-    char *prec_label[2] = {"F", "D"};
-    printf("CONGRAD5: time = %e (multicg_offset_GRID %s) masses = %d iters = %d mflops = %e\n",
-	   dtimec,prec_label[qic[0].prec-1],nmass,num_iters,
-	   (double)(nflop)*volume*
-	   num_iters/(1.0e6*dtimec*numnodes()));
+    printf("CONGRAD5: time = %e "
+           "(multicg_offset_GRID %s) "
+           "masses = %d iters = %d "
+           "mflops = %e ",
+           tot_cg_time,
+           prec_label[qic[0].prec-1],nmass,num_iters,
+           (double)(nflop)*volume*num_iters/(1.0e6*tot_cg_time*numnodes())
+           );
     fflush(stdout);}
+#ifdef REMAP
+  if(this_node==0){
+    printf("MILC<-->Grid data layout conversion timings\n"
+	   "\t src-spinor   = %e\n"
+	   "\t dest-spinors = %e\n"
+	   "\t soln-spinor  = %e\n"
+	   "\t links        = %e\n"
+	   "\t Grid remap   = %e\n"
+	   "\t ---------------------------\n"
+	   "\t total remap  = %e\n"
+	   , t_sp1, t_sp2, t_l, t_sl, t_gr
+	   , t_sp1 + t_sp2 + t_l + t_sl + t_gr
+	   );
+    printf("CONGRAD5-Grid: "
+  	   "solve-time = %e "
+           "(multicg_offset_GRID %s) "
+           "masses = %d iters = %d "
+           "mflops(ignore data-conv.) = %e\n",
+           dtimeinv,
+           prec_label[qic[0].prec-1],nmass,num_iters,
+           (double)(nflop)*volume*num_iters/(1.0e6*dtimeinv*numnodes())
+           );
+    fflush(stdout);}
+#endif
 #endif
 
   total_iters += num_iters;

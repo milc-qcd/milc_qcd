@@ -35,21 +35,16 @@ indexToCoords(uint64_t idx, std::vector<int> &x){
 
 
 // Create the color vector interface object
-// and Map a MILC color vector field from MILC to Grid layout
-// Precision conversion takes place in the copies if need be
 
-template<typename ImprovedStaggeredFermion, typename ColourVector, typename Complex>
+template<typename ImprovedStaggeredFermion>
 static struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *
-create_V_from_vec( su3_vector *src, int milc_parity){
-
-  node0_printf("Entered create_V_from_vec\n"); fflush(stdout);
+create_V(int milc_parity){
 
   struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *out;
 
   out = (struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *) 
     malloc(sizeof(struct GRID_ColorVector_struct<ImprovedStaggeredFermion>));
   GRID_ASSERT( out != NULL, GRID_MEM_ERROR );
-  //  GRID_ASSERT( milc_parity != EVENANDODD, GRID_FAIL );  // We don't support EVENANDODD
 
   switch (milc_parity)
     {
@@ -71,7 +66,36 @@ create_V_from_vec( su3_vector *src, int milc_parity){
       break;
     }
 
+  GRID_ASSERT(out->cv->_grid == RBGrid, GRID_FAIL);
   GRID_ASSERT(out->cv != NULL, GRID_FAIL);
+
+  return out;
+}
+
+// free color vector
+template<typename ImprovedStaggeredFermion>
+static void 
+destroy_V( struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *V ){
+
+  if (V->cv != NULL) delete V->cv;
+  if (V != NULL) free(V);
+
+  return;
+}
+
+// Create the color vector interface object
+// and Map a MILC color vector field from MILC to Grid layout
+// Precision conversion takes place in the copies if need be
+
+template<typename ImprovedStaggeredFermion, typename ColourVector, typename Complex>
+static struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *
+create_V_from_vec( su3_vector *src, int milc_parity){
+
+  //  node0_printf("Entered create_V_from_vec\n"); fflush(stdout);
+
+  struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *out;
+
+  out = create_V<ImprovedStaggeredFermion>(milc_parity);
 
   int loopend= (milc_parity)==EVEN ? even_sites_on_node : sites_on_node ;
   int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
@@ -94,8 +118,8 @@ create_V_from_vec( su3_vector *src, int milc_parity){
     }
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
-  std::cout << "Mapped vector field in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
-	    << "\n" << std::flush;
+  //  std::cout << "Mapped vector field in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+  //	    << "\n" << std::flush;
   
   return out;
 }
@@ -121,17 +145,6 @@ static void extract_V_to_vec( su3_vector *dest,
 	  dest[idx].c[col].imag = cVec._internal._internal._internal[col].imag();
 	}
     } END_LOOP_OMP;
-
-  return;
-}
-
-// free color vector
-template<typename ImprovedStaggeredFermion>
-static void 
-destroy_V( struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *V ){
-
-  if (V->cv != NULL) delete V->cv;
-  if (V != NULL) free(V);
 
   return;
 }
@@ -238,6 +251,30 @@ asqtad_destroy_L( struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *Link
 //====================================================================//
 // The GRID C API for mapping between MILC and GRID types
 
+// create color vector
+GRID_F3_ColorVector *
+GRID_F3_create_V( int milc_parity ){
+  create_V<ImprovedStaggeredFermionF>( milc_parity );
+}
+
+// free Dirac vector
+GRID_D3_ColorVector *
+GRID_D3_create_V( int milc_parity ){
+  create_V<ImprovedStaggeredFermionD>( milc_parity );
+}
+
+// free color vector
+void  
+GRID_F3_destroy_V( GRID_F3_ColorVector *gcv ){
+  destroy_V<ImprovedStaggeredFermionF>( gcv );
+}
+
+// free color vector
+void  
+GRID_D3_destroy_V( GRID_D3_ColorVector *gcv ){
+  destroy_V<ImprovedStaggeredFermionD>( gcv );
+}
+
 // Map a Dirac vector field from MILC layout to GRID layout
 GRID_F3_ColorVector *
 GRID_F3_create_V_from_vec( su3_vector *src, int milc_parity ){
@@ -260,18 +297,6 @@ GRID_F3_extract_V_to_vec( su3_vector *dest, GRID_F3_ColorVector *gcv, int milc_p
 void 
 GRID_D3_extract_V_to_vec( su3_vector *dest, GRID_D3_ColorVector *gcv, int milc_parity ){
   extract_V_to_vec<ImprovedStaggeredFermionD, ColourVectorD>( dest, gcv, milc_parity );
-}
-
-// free color vector
-void  
-GRID_F3_destroy_V( GRID_F3_ColorVector *gcv ){
-  destroy_V<ImprovedStaggeredFermionF>( gcv );
-}
-
-// free Dirac vector
-void  
-GRID_D3_destroy_V( GRID_D3_ColorVector *gcv ){
-  destroy_V<ImprovedStaggeredFermionD>( gcv );
 }
 
 // create asqtad fermion links from MILC

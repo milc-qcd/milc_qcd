@@ -26,13 +26,17 @@ extern "C" {
 typedef STRUCT GRID_D3_ColorVector_struct		GRID_D3_ColorVector;
 typedef STRUCT GRID_D3_FermionLinksAsqtad_struct	GRID_D3_FermionLinksAsqtad;
 
+// create color vectors
+GRID_D3_ColorVector *GRID_D3_create_V( int milc_parity );
+
+// free color vectors
+void GRID_D3_destroy_V(GRID_D3_ColorVector *V);
+
 // create color vectors from MILC type
 GRID_D3_ColorVector  *GRID_D3_create_V_from_vec( su3_vector *src, int milc_parity);
 
 // copy color vectors from Grid structure to MILC type
 void GRID_D3_extract_V_to_vec( su3_vector *dest, GRID_D3_ColorVector *src, int milc_parity);
-// free color vectors
-void GRID_D3_destroy_V(GRID_D3_ColorVector *V);
 
   /*********************/
   /*  Asqtad routines  */

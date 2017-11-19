@@ -27,7 +27,8 @@ typedef double GRID_D_Real;
 #define GRID_LAYOUT_ZERO ((GRID_layout_t){NULL,NULL,0,NULL,0,NULL,0,0,0,0})
 
 typedef struct {
-  double final_sec;        /* (out) total number of seconds used */
+  double final_sec;        /* (out) number of seconds in inverter */
+  double misc_sec;         /* (out) number of seconds instantiating operators */
   double final_flop;       /* (out) total number of flops performed */
   GRID_status_t status;     /* (out) error status */
   int count1, count2;      /* (out) generic counters */
