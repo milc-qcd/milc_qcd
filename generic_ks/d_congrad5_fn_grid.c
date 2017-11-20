@@ -30,6 +30,5 @@ ks_congrad_parity_grid ( su3_vector *src
     iterations_used = 
       ks_congrad_parity_grid_D( src, sol, qic, mass, fn );
   
-  total_iters += iterations_used;
   return iterations_used;
 }
