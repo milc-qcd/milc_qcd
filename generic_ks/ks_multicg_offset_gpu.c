@@ -124,7 +124,9 @@ int ks_multicg_offset_field_gpu(
   for(i=0; i<num_offsets; ++i){
     tmp = ksp[i].offset;
     offset[i] = tmp;
+#if defined(SET_QUDA_VERBOSE) || defined(SET_QUDA_DEBUG_VERBOSE)
     node0_printf("offset[%d] = %g\n",i,offset[i]);
+#endif
   }
 
 
@@ -145,7 +147,9 @@ int ks_multicg_offset_field_gpu(
 #endif
    }
    relative_residual[i] = qic[i].relresid;
+#if defined(SET_QUDA_VERBOSE) || defined(SET_QUDA_DEBUG_VERBOSE)
    node0_printf("residual[%d] = %g relative %g\n",i, residual[i], relative_residual[i]);
+#endif
   }
 
   inv_args.max_iter  = qic[0].max*qic[0].nrestart;

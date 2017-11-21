@@ -248,7 +248,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
     cancel_quda_notification(fn);
     fn_last = fn;
     num_iters = -1;
-    node0_printf("%s: fn, notify: Signal QUDA to refresh links", myname);
+    node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", myname);
   }
 
   qudaInvertMsrc(PRECISION,
