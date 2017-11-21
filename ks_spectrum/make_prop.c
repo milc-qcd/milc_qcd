@@ -218,17 +218,16 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	     the optimized mat_invert_uml_field algorithm. */
 	  
 	  if(startflag[0] == FRESH){
-	    tot_iters += mat_invert_uml_field(src, dst[0], 
-	       my_qic+0, my_ksp[0].mass, fn_multi[0]);
+	    mat_invert_uml_field(src, dst[0], my_qic+0, my_ksp[0].mass, 
+				 fn_multi[0]);
 	  } else {
-	    tot_iters += mat_invert_cg_field(src, dst[0],
-	       my_qic+0, my_ksp[0].mass, fn_multi[0]);
+	    mat_invert_cg_field(src, dst[0], my_qic+0, my_ksp[0].mass, 
+				fn_multi[0]);
 	  }
 	} else {
 	  
 	  /* Multimass inversion */
-	  tot_iters = 
-	    mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
+	  mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
 	}
 	
 	

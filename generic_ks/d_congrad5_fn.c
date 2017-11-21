@@ -145,6 +145,5 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
 
   /* Unpack the results */
   *final_rsq    = qic.final_rsq;
-  total_iters += iters;
   return iters;
 }

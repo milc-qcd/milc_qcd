@@ -1782,7 +1782,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
 	    
 	    /* First, sloppy solution */
 	    /* M_inv_gr = M^{-1} gr (same random source for each mass) */
-	    total_iters += mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic_sloppy, fn_multi );
+	    mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic_sloppy, fn_multi );
 	    
 	    for(j = 0; j < n_masses; j++){
 	      
@@ -1806,7 +1806,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
 	    /* Next, get a "precise" solution from the same source */
 	    /* This won't be a continuation of the sloppy solution, because multimass always starts again from 0 */
 	    /* M_inv_gr = M^{-1} gr (same random source for each mass) */
-	    total_iters += mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic_precise, fn_multi );
+	    mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic_precise, fn_multi );
 	    
 	    for(j = 0; j < n_masses; j++){
 	      
@@ -1933,7 +1933,7 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
 	    thin_source( gr, d, ex, ey, ez, et );
 	    
 	    /* M_inv_gr = M^{-1} gr */
-	    total_iters += mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic, fn_multi );
+	    mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic, fn_multi );
 	    
 	    for(j = 0; j < n_masses; j++){
 	      
