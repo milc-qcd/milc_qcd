@@ -66,7 +66,32 @@ create_V(int milc_parity){
       break;
     }
 
-  GRID_ASSERT(out->cv->_grid == RBGrid, GRID_FAIL);
+  GRID_ASSERT(out->cv != NULL, GRID_FAIL);
+
+  return out;
+}
+
+// Create the block color vector interface object
+
+template<typename ImprovedStaggeredFermion5D>
+static struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *
+create_nV(int n, int milc_parity){
+
+  struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *out;
+
+  out = (struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *) 
+    malloc(sizeof(struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D>));
+  GRID_ASSERT( out != NULL, GRID_MEM_ERROR );
+
+  if(milc_parity == EVEN || milc_parity == ODD){
+    GridRedBlackCartesian *FRBGrid = SpaceTimeGrid::makeFiveDimRedBlackGrid(n, CGrid);
+    out->cv = new typename ImprovedStaggeredFermion5D::FermionField(FRBGrid);
+    out->cv->checkerboard == EVEN ? Even : Odd ;
+  } else {
+    GridCartesian *FCGrid = SpaceTimeGrid::makeFiveDimGrid(n, CGrid);
+    out->cv = new typename ImprovedStaggeredFermion5D::FermionField(FCGrid);
+  }
+
   GRID_ASSERT(out->cv != NULL, GRID_FAIL);
 
   return out;
@@ -78,6 +103,20 @@ static void
 destroy_V( struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *V ){
 
   if (V->cv != NULL) delete V->cv;
+  if (V != NULL) free(V);
+
+  return;
+}
+
+// free block color vector
+template<typename ImprovedStaggeredFermion5D>
+static void 
+destroy_nV( struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *V ){
+
+  if (V->cv != NULL) {
+    delete V->cv->_grid;
+    delete V->cv;
+  }
   if (V != NULL) free(V);
 
   return;
@@ -124,6 +163,50 @@ create_V_from_vec( su3_vector *src, int milc_parity){
   return out;
 }
 
+// Create the blocked color vector interface object
+// and Map a set of MILC color vector field from MILC to Grid layout
+// Precision conversion takes place in the copies if need be
+
+template<typename ImprovedStaggeredFermion5D, typename ColourVector, typename Complex>
+static struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *
+create_nV_from_vecs( su3_vector *src[], int n, int milc_parity){
+
+  //  node0_printf("Entered create_V_from_vec\n"); fflush(stdout);
+
+  struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *out;
+
+  out = create_nV<ImprovedStaggeredFermion5D>(n, milc_parity);
+
+  int loopend= (milc_parity)==EVEN ? even_sites_on_node : sites_on_node ;
+  int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
+
+  auto start = std::chrono::system_clock::now();
+  PARALLEL_FOR_LOOP
+    for( uint64_t idx = loopstart; idx < loopend; idx++){
+
+      std::vector<int> x(5);
+      indexToCoords(idx,x);
+
+      for( int j = 0; j < n; j++ ){
+	x[4] = j;
+	ColourVector cVec;
+	for(int col=0; col<Nc; col++){
+	  cVec._internal._internal._internal[col] = 
+	    Complex(src[j][idx].c[col].real, src[j][idx].c[col].imag);
+	}
+	
+	pokeLocalSite(cVec, *(out->cv), x);
+      }
+      
+    }
+  auto end = std::chrono::system_clock::now();
+  auto elapsed = end - start;
+  //  std::cout << "Mapped vector field in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+  //	    << "\n" << std::flush;
+  
+  return out;
+}
+
 // Map a color vector field from Grid layout to MILC layout
 template<typename ImprovedStaggeredFermion, typename ColourVector>
 static void extract_V_to_vec( su3_vector *dest, 
@@ -144,6 +227,35 @@ static void extract_V_to_vec( su3_vector *dest,
 	  dest[idx].c[col].real = cVec._internal._internal._internal[col].real();
 	  dest[idx].c[col].imag = cVec._internal._internal._internal[col].imag();
 	}
+    } END_LOOP_OMP;
+
+  return;
+}
+
+// Map a color vector field from Grid layout to MILC layout
+template<typename ImprovedStaggeredFermion5D, typename ColourVector>
+static void extract_nV_to_vecs( su3_vector *dest[], int n,
+				struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *src, 
+				int milc_parity ){
+  uint64_t idx;
+
+  FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
+    {
+      std::vector<int> x(5);
+      indexToCoords(idx, x);
+      ColourVector cVec;
+
+      for( int j = 0; j < n; j++ ){
+	x[4] = j;
+
+	peekLocalSite(cVec, *(src->cv), x);
+	
+	for(int col = 0; col < Nc; col++)
+	  {
+	    dest[j][idx].c[col].real = cVec._internal._internal._internal[col].real();
+	    dest[j][idx].c[col].imag = cVec._internal._internal._internal[col].imag();
+	  }
+      }
     } END_LOOP_OMP;
 
   return;
@@ -257,10 +369,22 @@ GRID_F3_create_V( int milc_parity ){
   create_V<ImprovedStaggeredFermionF>( milc_parity );
 }
 
-// free Dirac vector
+// create block color vector
+GRID_F3_ColorVectorBlock *
+GRID_F3_create_nV( int n, int milc_parity ){
+  create_nV<ImprovedStaggeredFermion5DF>( n, milc_parity );
+}
+
+// create color vector
 GRID_D3_ColorVector *
 GRID_D3_create_V( int milc_parity ){
   create_V<ImprovedStaggeredFermionD>( milc_parity );
+}
+
+// ceate block color vector
+GRID_D3_ColorVectorBlock *
+GRID_D3_create_nV( int n, int milc_parity ){
+  create_nV<ImprovedStaggeredFermion5DD>( n, milc_parity );
 }
 
 // free color vector
@@ -269,10 +393,22 @@ GRID_F3_destroy_V( GRID_F3_ColorVector *gcv ){
   destroy_V<ImprovedStaggeredFermionF>( gcv );
 }
 
+// free block color vector
+void  
+GRID_F3_destroy_nV( GRID_F3_ColorVectorBlock *gcv ){
+  destroy_nV<ImprovedStaggeredFermion5DF>( gcv );
+}
+
 // free color vector
 void  
 GRID_D3_destroy_V( GRID_D3_ColorVector *gcv ){
   destroy_V<ImprovedStaggeredFermionD>( gcv );
+}
+
+// free block color vector
+void  
+GRID_D3_destroy_nV( GRID_D3_ColorVectorBlock *gcv ){
+  destroy_nV<ImprovedStaggeredFermion5DD>( gcv );
 }
 
 // Map a Dirac vector field from MILC layout to GRID layout
@@ -281,10 +417,22 @@ GRID_F3_create_V_from_vec( su3_vector *src, int milc_parity ){
   return create_V_from_vec<ImprovedStaggeredFermionF, ColourVectorF, ComplexF>( src, milc_parity );
 }
   
+// Map a Dirac vector field from MILC layout to GRID layout
+GRID_F3_ColorVectorBlock *
+GRID_F3_create_nV_from_vecs( su3_vector *src[], int n, int milc_parity ){
+  return create_nV_from_vecs<ImprovedStaggeredFermion5DF, ColourVectorF, ComplexF>( src, n, milc_parity );
+}
+  
 // Map a Dirac vector field from MILC layout to QPhiX layout
 GRID_D3_ColorVector *
 GRID_D3_create_V_from_vec( su3_vector *src, int milc_parity ){
   return create_V_from_vec<ImprovedStaggeredFermionD, ColourVectorD, ComplexD>( src, milc_parity );
+}
+  
+// Map a blocked Dirac vector field from MILC layout to QPhiX layout
+GRID_D3_ColorVectorBlock *
+GRID_D3_create_nV_from_vecs( su3_vector *src[], int n, int milc_parity ){
+  return create_nV_from_vecs<ImprovedStaggeredFermion5DD, ColourVectorD, ComplexD>( src, n, milc_parity );
 }
   
 // Map a color vector field from GRID layout to MILC layout
@@ -293,10 +441,22 @@ GRID_F3_extract_V_to_vec( su3_vector *dest, GRID_F3_ColorVector *gcv, int milc_p
   extract_V_to_vec<ImprovedStaggeredFermionF, ColourVectorF>( dest, gcv, milc_parity );
 }
 
+// Map a block color vector field from GRID layout to MILC layout
+void 
+GRID_F3_extract_nV_to_vecs( su3_vector *dest[], int n, GRID_F3_ColorVectorBlock *gcv, int milc_parity ){
+  extract_nV_to_vecs<ImprovedStaggeredFermion5DF, ColourVectorF>( dest, n, gcv, milc_parity );
+}
+
 // Map a color vector field from GRID layout to MILC layout
 void 
 GRID_D3_extract_V_to_vec( su3_vector *dest, GRID_D3_ColorVector *gcv, int milc_parity ){
   extract_V_to_vec<ImprovedStaggeredFermionD, ColourVectorD>( dest, gcv, milc_parity );
+}
+
+// Map a block color vector field from GRID layout to MILC layout
+void 
+GRID_D3_extract_nV_to_vecs( su3_vector *dest[], int n, GRID_D3_ColorVectorBlock *gcv, int milc_parity ){
+  extract_nV_to_vecs<ImprovedStaggeredFermion5DD, ColourVectorD>( dest, n, gcv, milc_parity );
 }
 
 // create asqtad fermion links from MILC

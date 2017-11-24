@@ -3,7 +3,6 @@
 /*************************************/
 
 #ifndef _MGRID_D3_H
-
 #define _MGRID_D3_H
 
 #ifdef __cplusplus
@@ -24,19 +23,24 @@ extern "C" {
 
 
 typedef STRUCT GRID_D3_ColorVector_struct		GRID_D3_ColorVector;
+typedef STRUCT GRID_D3_ColorVectorBlock_struct		GRID_D3_ColorVectorBlock;
 typedef STRUCT GRID_D3_FermionLinksAsqtad_struct	GRID_D3_FermionLinksAsqtad;
 
 // create color vectors
 GRID_D3_ColorVector *GRID_D3_create_V( int milc_parity );
+GRID_D3_ColorVectorBlock *GRID_D3_create_nV( int n, int milc_parity );
 
 // free color vectors
 void GRID_D3_destroy_V(GRID_D3_ColorVector *V);
+void GRID_D3_destroy_nV(GRID_D3_ColorVectorBlock *V);
 
 // create color vectors from MILC type
 GRID_D3_ColorVector  *GRID_D3_create_V_from_vec( su3_vector *src, int milc_parity);
+GRID_D3_ColorVectorBlock  *GRID_D3_create_nV_from_vecs( su3_vector *src[], int n, int milc_parity);
 
 // copy color vectors from Grid structure to MILC type
 void GRID_D3_extract_V_to_vec( su3_vector *dest, GRID_D3_ColorVector *src, int milc_parity);
+void GRID_D3_extract_nV_to_vecs( su3_vector *dest[], int n, GRID_D3_ColorVectorBlock *src, int milc_parity);
 
   /*********************/
   /*  Asqtad routines  */
@@ -75,6 +79,15 @@ void GRID_D3_asqtad_invert_multi (GRID_info_t *info,
 				  double *mass, int nmass,
 				  GRID_D3_ColorVector *out[],
 				  GRID_D3_ColorVector *in);
+
+// block CG inverter
+void GRID_D3_asqtad_invert_block (GRID_info_t *info,
+				  GRID_D3_FermionLinksAsqtad *asqtad,
+				  GRID_invert_arg_t *inv_arg,
+				  GRID_resid_arg_t *res_arg,
+				  double mass, int nrhs,
+				  GRID_D3_ColorVectorBlock *out,
+				  GRID_D3_ColorVectorBlock *in);
   
   /**************************************************/
   /* Mapping of generic names to specific precision */
