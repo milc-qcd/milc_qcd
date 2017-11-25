@@ -64,7 +64,7 @@ else ifeq ($(strip ${COMPILER}),gnu)
     CXX = mpiCC
   else
     CC  = gcc
-    CXX = CC
+    CXX = g++
   endif
 
 endif

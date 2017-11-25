@@ -1156,7 +1156,7 @@ static void
 declare_accumulate_strided_gather(
   msg_tag **mmtag,      /* tag to accumulate gather into */
   void *field,	        /* which field? Some member of structure "site" */
-  int stride,           /* bytes between fields in source buffer */
+  size_t stride,        /* bytes between fields in source buffer */
   size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */

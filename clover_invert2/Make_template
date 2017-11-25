@@ -32,6 +32,7 @@ MY_HEADERS = \
   quark_action.h
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
+HEADERS += ${QUDA_HEADERS} ${QPHIX_HEADERS} ${QPHIXJ_HEADERS}
 
 # All required object files
 # Basic set from current directory

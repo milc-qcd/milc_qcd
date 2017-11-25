@@ -28,6 +28,9 @@ G_ALL = \
  gaugefix2.o \
  gauge_force_imp.o \
  gauge_force_imp_gpu.o \
+ gauge_force_symzk1_qphix.o \
+ gauge_force_symzk1_qphix_D.o \
+ gauge_force_symzk1_qphix_F.o \
  gauge_force_symzk1_qdp.o \
  gauge_force_symzk1_qop.o \
  gauge_force_symzk1_qop_milc.o \
@@ -62,10 +65,12 @@ G_ALL = \
  layout_qcdoc.o \
  map_milc_to_qopmilc.o \
  map_milc_to_qphix.o \
+ map_milc_to_qphixj.o \
  map_milc_to_qopqdp.o \
  milc_to_grid_utilities.o \
  milc_to_qop_utilities.o \
  milc_to_qphix_utilities.o \
+ milc_to_qphixj_utilities.o \
  milc_to_quda_utilities.o \
  make_lattice.o \
  momentum_twist.o \
@@ -161,6 +166,12 @@ gauge_force_imp.o: ../generic/gauge_force_imp.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_imp_gpu.o: ../generic/gauge_force_imp_gpu.c
 	${CC} -c ${CFLAGS} $<
+gauge_force_symzk1_qphix.o: ../generic/gauge_force_symzk1_qphix.c
+	${CC} -c ${CFLAGS} $<
+gauge_force_symzk1_qphix_D.o: ../generic/gauge_force_symzk1_qphix_D.c ../generic/gauge_force_symzk1_qphix_P.c 
+	${CC} -c ${CFLAGS} $<
+gauge_force_symzk1_qphix_F.o: ../generic/gauge_force_symzk1_qphix_F.c ../generic/gauge_force_symzk1_qphix_P.c 
+	${CC} -c ${CFLAGS} $<
 gauge_force_symzk1_qdp.o: ../generic/gauge_force_symzk1_qdp.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_symzk1_qop.o: ../generic/gauge_force_symzk1_qop.c
@@ -234,13 +245,17 @@ map_milc_to_qopmilc.o: ../generic/map_milc_to_qopmilc.c ../generic/map_milc_to_q
 	${CC} -c ${CFLAGS} $<
 map_milc_to_qopqdp.o: ../generic/map_milc_to_qopqdp.c ../generic/map_milc_to_qop_all.c
 	${CC} -c ${CFLAGS} $<
-milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
-	${CC} -c ${CFLAGS} $<
 map_milc_to_qphix.o: ../generic/map_milc_to_qphix.c ../generic/map_milc_to_qphix_all.c
+	${CC} -c ${CFLAGS} $<
+milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
 	${CC} -c ${CFLAGS} $<
 milc_to_grid_utilities.o: ../generic/milc_to_grid_utilities.cc
 	${CXX} -c ${CXXFLAGS} $<
+map_milc_to_qphixj.o: ../generic/map_milc_to_qphixj.c ../generic/map_milc_to_qphixj_all.c
+	${CC} -c ${CFLAGS} $<
 milc_to_qphix_utilities.o: ../generic/milc_to_qphix_utilities.c
+	${CC} -c ${CFLAGS} $<
+milc_to_qphixj_utilities.o: ../generic/milc_to_qphixj_utilities.c
 	${CC} -c ${CFLAGS} $<
 milc_to_quda_utilities.o: ../generic/milc_to_quda_utilities.c
 	${CC} -c ${CFLAGS} $<

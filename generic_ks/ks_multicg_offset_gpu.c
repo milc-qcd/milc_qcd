@@ -149,10 +149,19 @@ int ks_multicg_offset_field_gpu(
   initialize_quda();
 
   // for newer versions of QUDA we need to invalidate the gauge field if the naik term changes to prevent caching
+  static imp_ferm_links_t *fn_last = NULL;
+  if ( fn != fn_last || fresh_fn_links(fn) ){
+    cancel_quda_notification(fn);
+    fn_last = fn;
+    num_iters = -1;
+    node0_printf("%s: fn, notify: Signal QUDA to refresh links", myname);
+  }
+
   static int naik_term_epsilon_index = -1; 
   if ( naik_term_epsilon_index != ksp[0].naik_term_epsilon_index) {
     num_iters = -1; // temporary back door hack to invalidate gauge fields since naik index has changed
     naik_term_epsilon_index = ksp[0].naik_term_epsilon_index;
+    node0_printf("%s: naik_epsilon: Signal QUDA to refresh links", myname);
   }
 
   qudaMultishiftInvert(

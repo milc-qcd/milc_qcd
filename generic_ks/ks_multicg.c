@@ -216,7 +216,7 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
 #ifdef CPU_REFINE
     ks_congrad_field_cpu( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
 #else
-    /* Note ks_congrad_parity is redefined as ks_congrad_field_cpu or ks_congrad_field_gpu */
+    /* Note ks_congrad_parity is redefined as ks_congrad_parity_cpu or ks_congrad_parity_gpu */
     ks_congrad_parity( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
 #endif
     iters += qic[i].final_iters;

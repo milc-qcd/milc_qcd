@@ -329,9 +329,15 @@ restore_fermion_links_hisq(fermion_links_t *fl, int precision,
   restore_milc_hisq_links_t(&info, fl->flg, links, &fl->options);
 
 #ifdef FLTIME
-  if(mynode()==0)printf("FLTIME: time = %e (HISQ %s) mflops = %e\n",
-	       info.final_sec,milc_prec[MILC_PRECISION-1],
+#ifdef USE_FL_GPU
+  if(mynode()==0)printf("FLTIME: time = %e (HISQ QUDA %s) mflops = %e\n",
+	       info.final_sec,milc_prec[PRECISION-1],
 	       info.final_flop/(1e6*info.final_sec) );
+#else
+  if(mynode()==0)printf("FLTIME: time = %e (HISQ MILC %s) mflops = %e\n",
+	       info.final_sec,milc_prec[PRECISION-1],
+	       info.final_flop/(1e6*info.final_sec) );
+#endif
 #endif
 }
 
