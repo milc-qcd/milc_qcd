@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-/*! \brief call to the grid_ks_congrad_parity.
+/*! \brief call to ks_congrad_parity_grid.
  *
  * Choose the inversion precision
  */
@@ -29,6 +29,30 @@ ks_congrad_parity_grid ( su3_vector *src
   else
     iterations_used = 
       ks_congrad_parity_grid_D( src, sol, qic, mass, fn );
+  
+  return iterations_used;
+}
+
+/*! \brief call to ks_congrad_parity_grid.
+ *
+ * Choose the inversion precision
+ */
+int
+ks_congrad_block_parity_grid ( int nrhs
+			       , su3_vector *src[]
+			       , su3_vector *sol[]
+			       , quark_invert_control *qic
+			       , Real mass
+			       , fn_links_t *fn)			 
+{
+  int iterations_used;
+  
+  if(qic->prec == 1)
+    iterations_used = 
+      ks_congrad_block_parity_grid_F( nrhs, src, sol, qic, mass, fn );
+  else
+    iterations_used = 
+      ks_congrad_block_parity_grid_D( nrhs, src, sol, qic, mass, fn );
   
   return iterations_used;
 }

@@ -72,24 +72,16 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 
 #ifdef USE_CG_GPU
 #define ks_congrad_parity ks_congrad_parity_gpu
-#ifdef BLOCKCG
 #define ks_congrad_block_parity ks_congrad_block_parity_gpu
-#endif
 #elif USE_CG_QPHIX
 #define ks_congrad_parity ks_congrad_parity_qphix
-#ifdef BLOCKCG
 #define ks_congrad_block_parity ks_congrad_block_parity_qphix
-#endif
 #elif HAVE_GRID
 #define ks_congrad_parity ks_congrad_parity_grid
-#ifdef BLOCKCG
 #define ks_congrad_block_parity ks_congrad_block_parity_grid
-#endif
 #else
 #define ks_congrad_parity ks_congrad_parity_cpu
-#ifdef BLOCKCG
 #define ks_congrad_block_parity ks_congrad_block_parity_cpu
-#endif
 #endif
 
 int ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest, 
