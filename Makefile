@@ -109,7 +109,7 @@ ifeq ($(strip ${COMPILER}),gnu)
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -fopenmp
     OCXXFLAGS += -fopenmp
-    LDFLAGS = -fopenmp
+    LDFLAGS += -fopenmp
   endif
 
 # Other Gnu options
@@ -158,7 +158,7 @@ ifeq ($(strip ${COMPILER}),intel)
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
     OCXXFLAGS += -qopenmp
-    LDFLAGS = -qopenmp
+    LDFLAGS += -qopenmp
   endif
 
 endif
@@ -193,7 +193,7 @@ ifeq ($(strip ${COMPILER}),cray-intel)
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
     OCXXFLAGS += -qopenmp
-    LDFLAGS = -qopenmp
+    LDFLAGS += -qopenmp
   endif
 
 endif
@@ -293,11 +293,11 @@ include ../Make_template_scidac
 #----------------------------------------------------------------------
 # 12. FFTW3 Options
 
-WANTFFTW = #true    # On cori, edison loaded by default
+WANTFFTW = #true    # On cori, edison loaded by default, but need "true"
 
 ifeq ($(strip ${WANTFFTW}),true)
+FFTW=/usr/local/fftw
 
-FFTW=
 ifeq ($(strip ${PRECISION}),1)
   FFTW_HEADERS = ${FFTW}/float-mvapich2/include
   INCFFTW = -I${FFTW_HEADERS}
@@ -325,11 +325,14 @@ endif
 # LDLAPACK = gfortran
 
 # FNAL cluster (Jim's installation of ATLAS)
-#LDFLAGS = -Wl,-rpath,"/usr/local/atlas-3.10-lapack-3.4.2/lib" -L/usr/local/atlas-3.10-lapack-3.4.2/lib
-#LIBS = $(LDFLAGS) -lprimme -lm  -llapack -lptf77blas -lptcblas -latlas -lgfortran -lpthread
+# LDFLAGS = -Wl,-rpath,"/usr/local/atlas-3.10-lapack-3.4.2/lib" -L/usr/local/atlas-3.10-lapack-3.4.2/lib
+# LIBS = $(LDFLAGS) -lprimme -lm  -llapack -lptf77blas -lptcblas -latlas -lgfortran -lpthread
 
-# NERSC Cori
+# NERSC Cori Haswell
 # LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/haswell/lib -lsci_intel
+
+# NERSC Cori KNL
+# LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/mic_knl/lib -lsci_intel
 
 # NERSC Edison
 # LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/ivybridge/lib -lsci_intel
@@ -483,7 +486,11 @@ endif
 #----------------------------------------------------------------------
 # 16. QPhiXJ (JLab) Options
 
-WANTQPHIXJ = true
+WANTQPHIXJ = #true
+
+# Choose vectorization parameters.
+# Choices 4, 8 (or 1 for scalar)
+QPHIXJ_SOALEN=4
 
 ifeq ($(strip ${WANTQPHIXJ}), true)
 
@@ -494,31 +501,27 @@ ifeq ($(strip ${WANTQPHIXJ}), true)
 
   # QMP versions of QPHIXJ
 
-  ifeq ($(strip ${ARCH}),knl)
-    QPHIXJ_HOME = ../QPhiX_JLab/install/dslash-avx512-s4
-    LIBQPHIXJ = -L${QPHIXJ_HOME}/lib -lqphix_solver 
-    QPHIXJ_HEADERS = ${QPHIXJ_HOME}/include
-    INCQPHIXJ = -I${QPHIXJ_HEADERS}
-    QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/lib
+    ifeq ($(strip ${ARCH}),knl)
+      QPHIXJ_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),hsw)
+      QPHIXJ_ARCH = avx2
+    endif
   else
-    QPHIXJ_HOME = ../QPhiX_git/install/dslash-avx2-s4
-    LIBQPHIXJ = -L${QPHIXJ_HOME}/lib -lqphix_solver
-    QPHIXJ_HEADERS = ${QPHIXJ_HOME}/include
-    INCQPHIXJ = -I${QPHIXJ_HEADERS}
-    QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/lib
+    # Scalar version
+    QPHIXJ_ARCH = scalar
+    QPHIXJ_SOALEN = 1
   endif
 
-  else
+  # NOTE: These are QMP versions of QPHIXJ so requires QMP
 
-  # Scalar version ???
-    QPHIXJ_HOME = ../QPhiX_JLab/install/dslash-avx2-s4
-    LIBQPHIXJ = -L${QPHIXJ_HOME}/lib -lclov_wrapper -lqphix_solver
-    QPHIXJ_HEADERS = ${QPHIXJ_HOME}/include
-    INCQPHIXJ = -I${QPHIXJ_HEADERS}
-    QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/lib
+  QPHIXJ_HOME = ../QPhiX_JLab/install/dslash-${QPHIXJ_ARCH}-s${QPHIXJ_SOALEN}
+  QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/lib
+  LIBQPHIXJ = -L${QPHIXJ_LIBRARIES} -lqphix_solver 
+  QPHIXJ_HEADERS = ${QPHIXJ_HOME}/include
+  INCQPHIXJ = -I${QPHIXJ_HEADERS}
 
-  endif
   PACKAGE_HEADERS += ${QPHIXJ_HEADERS}
+  PACKAGE_DEPS += QPhiX_JLab
 
 endif
 
@@ -531,7 +534,6 @@ ifeq ($(strip ${WANTGRID}), true)
 
   HAVE_GRID = true
   CPHI = -DHAVE_GRID
-  GRID_HOME = ../Grid/install
 
   ifeq ($(strip ${MPP}),true)
     ifeq ($(strip ${ARCH}),knl)
@@ -546,12 +548,13 @@ ifeq ($(strip ${WANTGRID}), true)
 
   endif
 
+  GRID_HOME = ../Grid/install-${GRID_ARCH}
   GRID_LIBRARIES = ${GRID_HOME}/lib
   LIBGRID = -L${GRID_LIBRARIES} -lGrid
   GRID_HEADERS = ${GRID_HOME}/include
   INCGRID = -I${GRID_HEADERS}
 
-  PACKAGE_HEADERS += ${GRID_HEADERS}
+  PACKAGE_HEADERS += ${GRID_HEADERS}/Grid
   PACKAGE_DEPS += Grid
   
 
@@ -620,13 +623,6 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 # To get them, uncomment the next line
 
 #INLINEOPT += -DSSEOPTERON
-
-# At present inlining and threading do not mix
-# The inline code could introduce new variables that need to be declared private
-
-ifeq ($(strip ${OMP}),true)
-  INLINEOPT =
-endif
 
 #----------------------------------------------------------------------
 # 20. Miscellaneous macros for performance control and metric
@@ -795,6 +791,8 @@ CPREFETCH = #
 # CPU_REFINE         Refine on CPU only (if at all), not GPU
 # PRIMME_PRECOND
 # POLY_EIGEN
+# MATVEC_PRECOND
+# CHEBYSHEV_EIGEN
 
 KSCGMULTI = -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
 
@@ -883,11 +881,7 @@ INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCQPHIXJ} ${INCGRID} 
 #----------------------------------------------------------------------
 #  Extra libraries
 
-LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBGRID} ${LIBVTUNE}
-
-ifeq ($(strip ${WANTQPHIXJ}), true)
-  LIBADD += ${LIBQPHIXJ}
-endif
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBQPHIXJ} ${LIBGRID} ${LIBVTUNE}
 
 #------------------------------
 # Summary
@@ -916,7 +910,7 @@ ifeq ($(strip ${MPP}),true)
      COMMTYPE = QMP
      COMMPKG = com_qmp.o
   else
-     COMMTYPE = MPI
+     COMMTYPE = MPI_COMMS
      COMMPKG = com_mpi.o
   endif
 else
@@ -968,7 +962,8 @@ endif
 
 include ../Make_template_combos
 
-CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} ${QPHIXPREC} ${GRIDPREC}
+# Temporarily define both precisions until we switch completely to MILC_PRECISION
+CPREC = -DMILC_PRECISION=${PRECISION} -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} ${QPHIXPREC} ${GRIDPREC}
 DARCH = ${CSCIDAC} ${CGPU} ${CPHI}
 
 # Complete set of compiler flags - do not change
