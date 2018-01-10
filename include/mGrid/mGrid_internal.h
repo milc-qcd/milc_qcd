@@ -6,6 +6,13 @@
 using namespace Grid;
 using namespace Grid::QCD;
 
+// Containers for grid definitions
+
+struct GRID_4Dgrid_struct { GridCartesian *grid; };
+struct GRID_4DRBgrid_struct { GridRedBlackCartesian *grid; };
+struct GRID_5Dgrid_struct { GridCartesian *grid; };
+struct GRID_5DRBgrid_struct { GridRedBlackCartesian *grid; };
+
 // The color-vector and gauge field objects used in the interface
 
 template<typename ISF>

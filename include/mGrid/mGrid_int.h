@@ -5,6 +5,34 @@
 extern "C" {
 #endif
 
+// The following strategem is intended to provide a strong chain of typedefs for both C and C++ compilation
+// Above the API the data types are opaque (incomplete).
+// If mGrid_internal.h is used, it must precede this header file
+
+#if defined( _MGRID_INTERNAL_H) && defined( __cplusplus)
+#define STRUCT
+#else
+#define STRUCT struct
+#endif
+
+  /**********************************************/
+  /*  Opaque container for a 5D Grid definition */
+  /**********************************************/
+
+typedef STRUCT GRID_4Dgrid_struct   GRID_4Dgrid;
+typedef STRUCT GRID_4DRBgrid_struct GRID_4DRBgrid;
+typedef STRUCT GRID_5Dgrid_struct   GRID_5Dgrid;
+typedef STRUCT GRID_5DRBgrid_struct GRID_5DRBgrid;
+
+GRID_4Dgrid *GRID_create_grid(void);
+GRID_4DRBgrid *GRID_create_RBgrid(GRID_4Dgrid *full_grid);
+GRID_5Dgrid *GRID_create_5Dgrid(int n, GRID_4Dgrid *full_grid);
+GRID_5DRBgrid *GRID_create_5DRBgrid(int n, GRID_4Dgrid *full_grid);
+void GRID_destroy_4Dgrid(GRID_4Dgrid *g);
+void GRID_destroy_4DRBgrid(GRID_4DRBgrid *g);
+void GRID_destroy_5Dgrid(GRID_5Dgrid *g);
+void GRID_destroy_5DRBgrid(GRID_5DRBgrid *g);
+
 /* This file defines miscellaneous types that may be used in all compilations */
 /* It is included in mGrid.h so it doesn't need to be included separately */
 
@@ -22,7 +50,6 @@ typedef enum {
 
 typedef float GRID_F_Real;
 typedef double GRID_D_Real;
-//typedef Real  GRID_Real;
 
 #define GRID_LAYOUT_ZERO ((GRID_layout_t){NULL,NULL,0,NULL,0,NULL,0,0,0,0})
 
