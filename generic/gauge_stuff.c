@@ -11,15 +11,17 @@
 #include "../include/openmp_defs.h"
 
 /* I don't understand the advantage of following SG 5/25/17 will comment out */
-//#ifdef LOOPEND
-//#undef FORALLSITES
-//#define FORALLSITES(i,s) \
-//{ register int loopend; loopend=sites_on_node; \
-//for( i=0,  s=lattice ; i<loopend; i++,s++ )
-//#define END_LOOP }
-//#else
-//#define END_LOOP        /* define it to be nothing */
-//#endif
+/*
+#ifdef LOOPEND
+#undef FORALLSITES
+#define FORALLSITES(i,s) \
+{ register int loopend; loopend=sites_on_node; \
+for( i=0,  s=lattice ; i<loopend; i++,s++ )
+#define END_LOOP }
+#else
+#define END_LOOP        // define it to be nothing
+#endif
+*/
 /* I don't understand the advantage of preceeding SG 5/25/17 will comment out */
 
 #define GOES_FORWARDS(dir) (dir<=TUP)
@@ -342,7 +344,8 @@ void g_measure( ){
 
 	    for(rep=0;rep<NREPS;rep++)average[rep] = 0.0;
     	    this_total_action=0.;
-	    FORALLSITES_OMP(i,s,private(trace,action,act2,rep) reduction(+:this_total_action,average)){
+	    //	    FORALLSITES_OMP(i,s,private(trace,action,act2,rep) reduction(+:this_total_action,average)){
+	    FORALLFIELDSITES(i){
 		trace=trace_su3( &tempmat1[i] );
 		average[0] += (double)trace.real;
 		action =  3.0 - (double)trace.real;
@@ -354,7 +357,8 @@ void g_measure( ){
 		    average[rep] += act2;
 		    this_total_action += (double)loop_coeff[iloop][rep]*act2;
 		} /* reps */
-	    } END_LOOP_OMP /* sites */
+		//	    } END_LOOP_OMP /* sites */
+	    } /* sites */
 	    g_vecdoublesum( average, NREPS );
 	    total_action += this_total_action;
 	    /* dump the loop */

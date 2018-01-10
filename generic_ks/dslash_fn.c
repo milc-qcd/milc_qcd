@@ -299,13 +299,56 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
       
 }
 
+#ifdef USE_CG_GPU
+#include "../include/generic_quda.h"
+
+// if using QUDA then we offload the dslash to the GPU
 void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
 		      fn_links_t *fn) {
-  msg_tag *tag[16];
-    
-   dslash_fn_field_special(src, dest, parity, tag, 1, fn);
-   cleanup_one_gather_set(tag);
+
+  su3_matrix* fatlink = get_fatlinks(fn);
+  su3_matrix* longlink = get_lnglinks(fn);
+
+  // for newer versions of QUDA we need to invalidate the gauge field if the links are new
+  int num_iters  = 0;
+  if (fn != get_fn_last() || fresh_fn_links(fn)){
+    cancel_quda_notification(fn);
+    set_fn_last(fn);
+    num_iters = -1;
+    node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", __func__);
+  }
+
+  QudaInvertArgs_t inv_args;
+  if (parity != EVENANDODD) {
+    switch(parity) {
+    case EVEN: inv_args.evenodd = QUDA_EVEN_PARITY; break;
+    case ODD:  inv_args.evenodd = QUDA_ODD_PARITY; break;
+    default: printf("%s: Unrecognised parity\n",__func__); terminate(2);
+    }
+
+    qudaDslash(PRECISION, PRECISION, inv_args, fatlink, longlink, u0, src, dest, &num_iters);
+  } else { // do both parities as separate calls
+    inv_args.evenodd = QUDA_EVEN_PARITY;
+    qudaDslash(PRECISION, PRECISION, inv_args, fatlink, longlink, u0, src, dest, &num_iters);
+    inv_args.evenodd = QUDA_ODD_PARITY;
+    qudaDslash(PRECISION, PRECISION, inv_args, fatlink, longlink, u0, src, dest, &num_iters);
+  }
+
 }
+
+#else
+
+void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
+		      fn_links_t *fn) {
+
+  msg_tag *tag[16];
+
+  dslash_fn_field_special(src, dest, parity, tag, 1, fn);
+  cleanup_one_gather_set(tag);
+
+}
+
+#endif
 
 /* Special dslash for use by congrad.  Uses restart_gather_field() when
   possible. Next to last argument is an array of message tags, to be set
@@ -532,7 +575,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
 {
   register int i ;
   site *s;
-  msg_tag *tag[2];
+  msg_tag *tag[2] = {NULL, NULL};
   su3_matrix *fat = get_fatlinks(fn);
   su3_matrix *lng = get_lnglinks(fn);
   su3_vector tmp;

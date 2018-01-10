@@ -215,22 +215,34 @@ int readin(int prompt) {
     /*------------------------------------------------------------*/
 
     /* number of eigenvectors */
-    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.Nvecs);
+    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigen_param.Nvecs);
 
     /* max  Rayleigh iterations */
-    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.MaxIter);
+    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
 
     /* Restart  Rayleigh every so many iterations */
-    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.Restart);
+    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
 
     /* Kalkreuter iterations */
-    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.Kiters);
+    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
 
      /* Tolerance for the eigenvalue computation */
-    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigenval_tol);
+    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
 
      /* error decrease per Rayleigh minimization */
-    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.error_decr);
+    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
+
+#ifdef POLY_EIGEN
+	/* Chebyshev preconditioner */
+	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
+	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
+	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
+	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
+
+	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
+	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
+	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
+#endif
 
     /* eigenvector input */
     IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
@@ -380,7 +392,11 @@ int readin(int prompt) {
 	param.qic_pbp[npbp_masses].resid = error_for_propagator;
 	param.qic_pbp[npbp_masses].relresid = rel_error_for_propagator;
 
+#ifdef CURRENT_DISC
+	param.qic_pbp[npbp_masses].parity = EVEN;
+#else
 	param.qic_pbp[npbp_masses].parity = EVENANDODD;
+#endif
 	param.qic_pbp[npbp_masses].min = 0;
 	param.qic_pbp[npbp_masses].start_flag = 0;
 	param.qic_pbp[npbp_masses].nsrc = 1;
@@ -427,6 +443,16 @@ int readin(int prompt) {
 
   if(prompt==2)return 0;
 
+#if EIGMODE == DEFLATION && defined(POLY_EIGEN)
+  /* Parameters for polynomial preconditioning */
+    which_poly = param.eigen_param.poly.which_poly ;
+    norder = param.eigen_param.poly.norder;
+    minE = param.eigen_param.poly.minE;
+    maxE = param.eigen_param.poly.maxE;
+    poly_param_1 = param.eigen_param.poly.poly_param_1 ;
+    poly_param_2 = param.eigen_param.poly.poly_param_2 ;
+#endif
+
   /* Construct the eps_naik table of unique Naik epsilon
      coefficients.  Also build the hash table for mapping a mass term to
      its Naik epsilon index */
@@ -449,6 +475,17 @@ int readin(int prompt) {
   if( param.startflag != CONTINUE ){
     startlat_p = reload_lattice( param.startflag, param.startfile );
   }
+
+#if 0
+  su3_matrix *G = create_random_m_field();
+  gauge_transform_links(G);
+  d_plaquette(&g_ssplaq,&g_stplaq);
+  d_linktrsum(&linktrsum);
+  nersc_checksum = nersc_cksum();
+  node0_printf("CHECK PLAQ: %.16e %.16e\n",g_ssplaq,g_stplaq);
+  node0_printf("CHECK NERSC LINKTR: %.16e CKSUM: %x\n",
+	       linktrsum.real/3.,nersc_checksum);
+#endif
 
   /* if a lattice was read in, put in KS phases and AP boundary condition */
   phases_in = OFF;
@@ -514,16 +551,23 @@ int readin(int prompt) {
 
 #if EIGMODE == DEFLATION
   /* malloc for eigenpairs */
-  eigVal = (double *)malloc(param.Nvecs*sizeof(double));
-  eigVec = (su3_vector **)malloc(param.Nvecs*sizeof(su3_vector *));
-  for(i=0; i < param.Nvecs; i++)
+  eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
+  eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
+  for(i=0; i < param.eigen_param.Nvecs; i++)
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
   /* Do whatever is needed to get eigenpairs */
-  node0_printf("Reading %d eigenvectors\n", param.Nvecs); fflush(stdout);
+  node0_printf("Reading %d eigenvectors\n", param.eigen_param.Nvecs); fflush(stdout);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &param.Nvecs, eigVal, eigVec, 1);
+			   &param.eigen_param.Nvecs, eigVal, eigVec, 1);
   if(status != 0)terminate(1);
+
+#if 0
+  for(int j = 0; j < param.eigen_param.Nvecs; j++){
+    gauge_transform_v_field(eigVec[j], G);
+  }
+  destroy_m_field(G);
+#endif
 #endif
 
   ENDTIME("readin");

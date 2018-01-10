@@ -183,6 +183,10 @@ void copy_site_member_from_v_field(field_offset sv, su3_vector *v);
 void add_v_fields(su3_vector *vsum, su3_vector *v1, su3_vector *v2);
 void destroy_v_field(su3_vector *v);
 
+void saxpby_v_field(su3_vector *w, Real a, su3_vector *x, Real b, su3_vector *y);
+void saxpbypcz_v_field(su3_vector *w, Real a, su3_vector *x, 
+		       Real b, su3_vector *y, Real c, su3_vector *z);
+
 /* array versions of the above */
 
 Real* create_r_array_field(int n);

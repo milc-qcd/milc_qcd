@@ -132,9 +132,8 @@ EXTERN Real g_splaq,g_tplaq;	/* global U(1) plaquette measures */
 
 /* For eigenpair calculation */
 #if EIGMODE == EIGCG || EIGMODE == DEFLATION
-EXTERN int active_parity ; /* parity used in eigenvalue calculation */
 EXTERN int Nvecs_tot;
-EXTERN double *eigVal; /* eigenvalues of M^adj M */
+EXTERN double *eigVal; /* eigenvalues of D^dag D */
 EXTERN su3_vector **eigVec; /* eigenvectors */
 #endif
 

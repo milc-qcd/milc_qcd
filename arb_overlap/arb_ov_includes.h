@@ -172,17 +172,19 @@ int Rayleigh_min(wilson_vector *vec,wilson_vector **eigVec,Real Tolerance,
                  Real RelTol,int Nvecs,int MaxIter,int Restart);
 
 #ifdef PRIMME
-#define Kalkreuter Kalkreuter_PRIMME
+#define ks_eigensolve ks_eigensolve_PRIMME
+#else ARPACK
+#define ks_eigensolve ks_eigensolve_ARPACK
 #else
-#define Kalkreuter Kalkreuter_Ritz
+#define ks_eigensolve ks_eigensolve_Kalkreuter_Ritz
 #endif
 
-int Kalkreuter_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
-               Real RelTol, int Nvecs, int MaxIter, 
-               int Restart, int iters, int parity) ;
-int Kalkreuter_Ritz(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
-               Real RelTol, int Nvecs, int MaxIter, 
-               int Restart, int iters, int parity) ;
+int ks_eigensolve_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
+			 Real RelTol, int Nvecs, int MaxIter, 
+			 int Restart, int iters, int parity) ;
+int ks_eigensolve_Kalkreuter__Ritz(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
+				   Real RelTol, int Nvecs, int MaxIter, 
+				   int Restart, int iters, int parity) ;
 //void dot_product(wilson_vector *vec1, wilson_vector *vec2,
 // double_complex *dot) ;
 

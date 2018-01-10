@@ -31,11 +31,8 @@ fermion_force_oprod_site(Real eps, Real weight1, Real weight2,
   msg_tag* mtag[2];
   
   { // copy the quark-field information to su3_vector fields
-    v[0] = (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
-    v[1] = (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
-
-    if(v[0] == NULL) printf("fermion_force_oprod_site: v[0] not allocated\n");
-    if(v[1] == NULL) printf("fermion_force_oprod_site: v[1] not allocated\n");  
+    v[0] = (su3_vector*)qudaAllocatePinned(sites_on_node*sizeof(su3_vector));
+    v[1] = (su3_vector*)qudaAllocatePinned(sites_on_node*sizeof(su3_vector));
 
     FORALLSITES(i,s){
       v[0][i] = *(su3_vector*)F_PT(s,x1_off);
@@ -67,8 +64,8 @@ fermion_force_oprod_site(Real eps, Real weight1, Real weight2,
   free(combined_coeff);
 
   // Cleanup
-  free(v[0]);
-  free(v[1]);
+  qudaFreePinned(v[0]);
+  qudaFreePinned(v[1]);
 }     
 
 void 

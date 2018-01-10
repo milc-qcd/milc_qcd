@@ -13,6 +13,10 @@
 #include "generic_includes.h"
 #include "../include/openmp_defs.h"
 
+#ifdef USE_GF_GPU
+#include "../include/generic_quda.h"
+#endif
+
 #define TOLERANCE (0.0001)
 #define MAXERRCOUNT 100
 /**#define UNIDEBUG**/
@@ -201,7 +205,30 @@ int reunit_su3(su3_matrix *c)
 
 } /* reunit_su3 */
 
-void reunitarize() {
+#ifdef USE_GF_GPU
+
+void reunitarize_gpu() {
+
+  initialize_quda();
+
+#ifdef GFTIME
+  double dtime, dclock();
+  dtime = -dclock();
+#endif
+
+  QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+  qudaUnitarizeSU3(PRECISION, TOLERANCE, &arg);
+
+#ifdef GFTIME
+  dtime += dclock();
+  node0_printf("REUNITARIZE: time = %e\n", dtime);
+#endif
+
+}  /* reunitarize2 */
+
+#endif
+
+void reunitarize_cpu() {
   register su3_matrix *mat;
   register int i,dir;
   register site *s;
@@ -210,7 +237,7 @@ void reunitarize() {
 
   max_deviation = 0.;
   av_deviation = 0.;
-  
+
   FORALLSITES_OMP(i,s,private(dir,mat,errors) reduction(+:errcount) ){
 #ifdef SCHROED_FUN
   for(dir=XUP; dir<=TUP; dir++ ) if(dir==TUP || s->t>0 ){
@@ -248,3 +275,21 @@ void reunitarize() {
 
 }  /* reunitarize2 */
 
+void reunitarize() {
+
+#ifdef USE_GF_GPU
+
+  /* Use QUDA if gauge-force is enabled for GPU, but fallback to CPU
+     if Schroedinger functional boundary conditions are enabled */
+#ifdef SCHROED_FUN
+  node0_printf("%s not supported on GPU, using CPU fallback\n", __func__);
+  reunitarize_cpu();
+#else
+  reunitarize_gpu();
+#endif
+
+#else
+  reunitarize_cpu();
+#endif
+
+}

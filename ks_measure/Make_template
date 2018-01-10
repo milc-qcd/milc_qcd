@@ -87,8 +87,12 @@ ifeq ($(strip ${HAVEQOP}),true)
   ifeq ($(strip ${HAVEPRIMME}),true)
      DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_PRIMME.o
      ADDDEFINES += -DPRIMME
+  else ifeq ($(strip ${HAVEARPACK}),true)
+     DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_ARPACK.o
+     ADDDEFINES += -DARPACK
   else
      DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_Ritz.o
+     ADDDEFINES += -DKalkreuter_Ritz
   endif
 else
   ifeq ($(strip ${HAVEQDP}),true)
@@ -97,8 +101,12 @@ else
     ifeq ($(strip ${HAVEPRIMME}),true)
        DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_PRIMME.o
        ADDDEFINES += -DPRIMME
+    else ifeq ($(strip ${HAVEARPACK}),true)
+       DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_ARPACK.o
+       ADDDEFINES += -DARPACK
     else
        DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_Ritz.o
+       ADDDEFINES += -DKalkreuter_Ritz
     endif
   endif
 endif
@@ -271,7 +279,8 @@ include ../generic_wilson/Make_template
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
 	cd ${LIBDIR} ;\
-	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" \
+        "ARCH=${ARCH}" "COMPILER=${COMPILER}" all
 
 localmake: ${OBJECTS} ${LIBRARIES}
 	${LD} -o ${MYTARGET} ${LDFLAGS} \

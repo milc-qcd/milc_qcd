@@ -114,7 +114,7 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 
     /* Apply twist to the APE links */
     /* They do not carry the KS phases, but they do carry an antiperiodic bc */
-    /* This operation applies the phase to the volume */
+    /* This operation applies the phase to the boundary */
     //    mybdry_phase[3] = 0; 
     //    momentum_twist_links(mybdry_phase, 1, ape_links);
     //    mybdry_phase[3] = bdry_phase[3]; 
@@ -218,17 +218,16 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	     the optimized mat_invert_uml_field algorithm. */
 	  
 	  if(startflag[0] == FRESH){
-	    tot_iters += mat_invert_uml_field(src, dst[0], 
-	       my_qic+0, my_ksp[0].mass, fn_multi[0]);
+	    mat_invert_uml_field(src, dst[0], my_qic+0, my_ksp[0].mass, 
+				 fn_multi[0]);
 	  } else {
-	    tot_iters += mat_invert_cg_field(src, dst[0],
-	       my_qic+0, my_ksp[0].mass, fn_multi[0]);
+	    mat_invert_cg_field(src, dst[0], my_qic+0, my_ksp[0].mass, 
+				fn_multi[0]);
 	  }
 	} else {
 	  
 	  /* Multimass inversion */
-	  tot_iters = 
-	    mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
+	  mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
 	}
 	
 	

@@ -41,6 +41,7 @@ G_KS_ALL = \
   dslash_fn_qop.o \
   dslash_fn_qop_milc_D.o \
   dslash_fn_qop_milc_F.o \
+  eigen_stuff_ARPACK.o \
   eigen_stuff_helpers.o \
   eigen_stuff_Ritz.o \
   eigen_stuff_PRIMME.o \
@@ -74,7 +75,6 @@ G_KS_ALL = \
   fermion_links_fn_load_milc.o \
   fermion_links_fn_utilities_gpu.o \
   fermion_links_hisq_milc.o \
-  fermion_links_hisq_load_gpu.o \
   fermion_links_hisq_load_milc.o \
   fermion_links_hisq_qop.o \
   fermion_links_hyp.o \
@@ -234,6 +234,8 @@ dslash_fn_qop_milc_D.o: ../generic_ks/dslash_fn_qop_milc_D.c ../generic_ks/dslas
 	${CC} -c ${CFLAGS} $<
 dslash_fn_qop_milc_F.o: ../generic_ks/dslash_fn_qop_milc_F.c ../generic_ks/dslash_fn_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<
+eigen_stuff_ARPACK.o: ../generic_ks/eigen_stuff_ARPACK.c
+	${CC} -c ${CFLAGS} $<
 eigen_stuff_helpers.o: ../generic_ks/eigen_stuff_helpers.c
 	${CC} -c ${CFLAGS} $<
 eigen_stuff_Ritz.o: ../generic_ks/eigen_stuff_Ritz.c
@@ -323,8 +325,6 @@ fermion_links_fn_load_gpu.o: ../generic_ks/fermion_links_fn_load_gpu.c
 fermion_links_fn_load_milc.o: ../generic_ks/fermion_links_fn_load_milc.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_hisq_milc.o: ../generic_ks/fermion_links_hisq_milc.c
-	${CC} -c ${CFLAGS} $<
-fermion_links_hisq_load_gpu.o: ../generic_ks/fermion_links_hisq_load_gpu.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_hisq_load_milc.o: ../generic_ks/fermion_links_hisq_load_milc.c
 	${CC} -c ${CFLAGS} $<

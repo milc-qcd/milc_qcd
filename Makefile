@@ -114,7 +114,8 @@ ifeq ($(strip ${COMPILER}),gnu)
 
 # Other Gnu options
 #OCFLAGS += -mavx # depends on architecture
-#OCFLAGS += -Wall
+# enable all warnings with exceptions
+OCFLAGS += -Wall -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas -Wno-unused-function
 
 endif
 
@@ -187,6 +188,7 @@ ifeq ($(strip ${COMPILER}),cray-intel)
   OCXXFLAGS += ${ARCH_FLAG}
   LDFLAGS += ${ARCH_FLAG}
   OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
 
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
@@ -291,11 +293,11 @@ include ../Make_template_scidac
 #----------------------------------------------------------------------
 # 12. FFTW3 Options
 
-WANTFFTW = #true
+WANTFFTW = #true    # On cori, edison loaded by default
 
 ifeq ($(strip ${WANTFFTW}),true)
-FFTW=/usr/local/fftw
 
+FFTW=
 ifeq ($(strip ${PRECISION}),1)
   FFTW_HEADERS = ${FFTW}/float-mvapich2/include
   INCFFTW = -I${FFTW_HEADERS}
@@ -310,8 +312,6 @@ endif
   PACKAGE_HEADERS += ${FFTW_HEADERS}
 endif
 
-WANTFFTW = true    # On cori, loaded by default
-
 #----------------------------------------------------------------------
 # 13. LAPACK Options (for qopqdp-lapack and arb_overlap )
 
@@ -321,7 +321,7 @@ WANTFFTW = true    # On cori, loaded by default
 # LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran
 
 # Utah physics and math Centos-linux.  Must link with gfortran. 
-#LIBLAPACK = -L/usr/local/lib64 -llapack -lblas
+# LIBLAPACK = -L/usr/local/lib64 -llapack -lblas
 # LDLAPACK = gfortran
 
 # FNAL cluster (Jim's installation of ATLAS)
@@ -349,20 +349,28 @@ ifeq ($(strip ${WANTPRIMME}),true)
 endif
 
 #----------------------------------------------------------------------
+# 14. ARPACK Options (for ks_eigen).  REQUIRES LAPACK AS WELL.
+
+WANTARPACK = #true
+
+ifeq ($(strip ${WANTARPACK}),true)
+#  LIBARPACK = -L/usr/lib64 -lparpack  -larpack -lifcore -llapack -lblas
+  LIBARPACK = -L/usr/lib64 -larpack
+endif
+
+#----------------------------------------------------------------------
 # 15. GPU/QUDA Options
 
-WANTQUDA    = #true
-WANT_CL_BCG_GPU = #true
-WANT_FN_CG_GPU = #true
-WANT_FL_GPU = #true
-WANT_FF_GPU = #true
-WANT_GF_GPU = #true
+WANTQUDA    ?= #true
+WANT_CL_BCG_GPU ?= #true
+WANT_FN_CG_GPU ?= #true
+WANT_FL_GPU ?= #true
+WANT_FF_GPU ?= #true
+WANT_GF_GPU ?= #true
 
 ifeq ($(strip ${WANTQUDA}),true)
 
   QUDA_HOME = ${HOME}/quda
-  QUDA_HEADERS = ${QUDA_HOME}/include
-  PACKAGE_HEADERS += ${QUDA_HEADERS}
 
   INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
   PACKAGE_HEADERS += ${QUDA_HOME}/include
@@ -373,6 +381,7 @@ ifeq ($(strip ${WANTQUDA}),true)
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
   LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
+  QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
 
@@ -417,7 +426,7 @@ WANTQPHIX = #true
 WANT_FN_CG_QPHIX = true
 WANT_GF_QPHIX = true
 
-QPHIX_HOME = ${HOME}/QPhiX/milc-qphix
+QPHIX_HOME = ../QPhiX_MILC/milc-qphix
 
 ifeq ($(strip ${WANTQPHIX}), true)
 
@@ -425,6 +434,7 @@ ifeq ($(strip ${WANTQPHIX}), true)
   PACKAGE_HEADERS += ${QPHIX_HOME}
   HAVE_QPHIX = true
   CPHI = -DHAVE_QPHIX
+  QPHIX_HEADERS = ${QPHIX_HOME}
 
   ifeq ($(strip ${MPP}),true)
 
@@ -485,36 +495,70 @@ ifeq ($(strip ${WANTQPHIXJ}), true)
   # QMP versions of QPHIXJ
 
   ifeq ($(strip ${ARCH}),knl)
-    QPHIXJ_HOME = ${HOME}/QPhiX_git/avx512/install
-    LIBQPHIXJ = -L${QPHIXJ_HOME}/dslash-avx512-s4/lib -lqphix_solver 
-    QPHIXJ_HEADERS = ${QPHIXJ_HOME}/dslash-avx512-s4/include
+    QPHIXJ_HOME = ../QPhiX_JLab/install/dslash-avx512-s4
+    LIBQPHIXJ = -L${QPHIXJ_HOME}/lib -lqphix_solver 
+    QPHIXJ_HEADERS = ${QPHIXJ_HOME}/include
     INCQPHIXJ = -I${QPHIXJ_HEADERS}
-    QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/dslash-avx512-s4/lib
+    QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/lib
   else
-    QPHIXJ_HOME = ${HOME}/QPhiX_git/avx2/install
-    LIBQPHIXJ = -L${QPHIXJ_HOME}/dslash-avx2-s4/lib -lqphix_solver
-    QPHIXJ_HEADERS = ${QPHIXJ_HOME}/dslash-avx2-s4/include
+    QPHIXJ_HOME = ../QPhiX_git/install/dslash-avx2-s4
+    LIBQPHIXJ = -L${QPHIXJ_HOME}/lib -lqphix_solver
+    QPHIXJ_HEADERS = ${QPHIXJ_HOME}/include
     INCQPHIXJ = -I${QPHIXJ_HEADERS}
-    QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/dslash-avx2-s4/lib
+    QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/lib
   endif
 
   else
 
   # Scalar version ???
-    QPHIXJ_HOME = ${HOME}/QPhiX_JLab/avx2/install
-    LIBQPHIXJ = -L${QPHIXJ_HOME}/dslash-avx2-s4/lib -lclov_wrapper -lqphix_solver
-    QPHIXJ_HEADERS = ${QPHIXJ_HOME}/dslash-avx2-s4/include
+    QPHIXJ_HOME = ../QPhiX_JLab/install/dslash-avx2-s4
+    LIBQPHIXJ = -L${QPHIXJ_HOME}/lib -lclov_wrapper -lqphix_solver
+    QPHIXJ_HEADERS = ${QPHIXJ_HOME}/include
     INCQPHIXJ = -I${QPHIXJ_HEADERS}
-    QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/dslash-avx2-s4/lib
+    QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/lib
 
   endif
   PACKAGE_HEADERS += ${QPHIXJ_HEADERS}
 
->>>>>>> qphix-jlab-milc
 endif
 
 #----------------------------------------------------------------------
-# 17. Linker (need the C++ linker for QUDA and QPHIX)
+# 16. Grid Options
+
+WANTGRID = #true
+
+ifeq ($(strip ${WANTGRID}), true)
+
+  HAVE_GRID = true
+  CPHI = -DHAVE_GRID
+  GRID_HOME = ../Grid/install
+
+  ifeq ($(strip ${MPP}),true)
+    ifeq ($(strip ${ARCH}),knl)
+      GRID_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),hsw)
+      GRID_ARCH = avx2
+    endif
+  else
+    # Scalar version                                                                
+
+    GRID_ARCH = scalar
+
+  endif
+
+  GRID_LIBRARIES = ${GRID_HOME}/lib
+  LIBGRID = -L${GRID_LIBRARIES} -lGrid
+  GRID_HEADERS = ${GRID_HOME}/include
+  INCGRID = -I${GRID_HEADERS}
+
+  PACKAGE_HEADERS += ${GRID_HEADERS}
+  PACKAGE_DEPS += Grid
+  
+
+endif
+
+#----------------------------------------------------------------------
+# 17. Linker (need the C++ linker for QUDA, QPHIX, GRID)
 
 ifeq ($(strip ${LDLAPACK}),)
   ifeq ($(strip ${WANTQUDA}),true)
@@ -522,6 +566,8 @@ ifeq ($(strip ${LDLAPACK}),)
   else ifeq ($(strip ${WANTQPHIX}),true)
     LD  = ${CXX}
   else ifeq ($(strip ${WANTQPHIXJ}),true)
+    LD  = ${CXX}
+  else ifeq ($(strip ${WANTGRID}),true)
     LD  = ${CXX}
   else
     LD  = ${CC}
@@ -704,7 +750,15 @@ CGEOM +=# -DFIX_IONODE_GEOM
 #                For now, works only with dslash_fn_dblstore.o
 # FEWSUMS        Fewer CG reduction calls
 
-KSCGSTORE = -DDBLSTORE_FN -DFEWSUMS -DD_FN_GATHER13 
+# If we are using QUDA, the backward links are unused, so we should
+# avoid unecessary overhead and use the standard dslash.  Note that
+# dslash_fn also has hooks in place to offload any dslash_fn_field
+# calls to QUDA
+ifeq ($(strip ${WANTQUDA}),true)
+  KSCGSTORE = -DFEWSUMS
+else
+  KSCGSTORE = -DDBLSTORE_FN -DFEWSUMS -DD_FN_GATHER13
+endif
 
 #------------------------------
 # Staggered fermion force routines
@@ -739,6 +793,8 @@ CPREFETCH = #
 #                    and single-mass refinements in double
 # NO_REFINE          No refinements except for masses with nonzero Naik eps
 # CPU_REFINE         Refine on CPU only (if at all), not GPU
+# PRIMME_PRECOND
+# POLY_EIGEN
 
 KSCGMULTI = -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
 
@@ -822,16 +878,12 @@ CLMEM = #-DCLOV_LEAN
 #----------------------------------------------------------------------
 # Extra include paths
 
-INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCQPHIXJ} ${INCVTUNE}
+INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCQPHIXJ} ${INCGRID} ${INCVTUNE}
 
 #----------------------------------------------------------------------
 #  Extra libraries
 
-LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBVTUNE}
-
-ifeq ($(strip ${WANTQPHIX}), true)
-  LIBADD += ${LIBQPHIX}
-endif
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBGRID} ${LIBVTUNE}
 
 ifeq ($(strip ${WANTQPHIXJ}), true)
   LIBADD += ${LIBQPHIXJ}
@@ -893,6 +945,10 @@ ifeq ($(strip ${WANTQPHIXJ}),true)
   QPHIXPREC = -DQPHIXJ_PrecisionInt=${PRECISION}
 endif
 
+ifeq ($(strip ${WANTGRID}),true)
+  GRIDPREC = -DGRID_PrecisionInt=${PRECISION}
+endif
+
 ifeq ($(strip ${WANTDCAP}),true)
    MACHINE_DEP_IO = io_dcap.o
    OCFLAGS += -I${DCAP_DIR}/include
@@ -912,7 +968,7 @@ endif
 
 include ../Make_template_combos
 
-CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} ${QPHIXPREC}
+CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} ${QPHIXPREC} ${GRIDPREC}
 DARCH = ${CSCIDAC} ${CGPU} ${CPHI}
 
 # Complete set of compiler flags - do not change
@@ -920,7 +976,7 @@ CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
 	${CPREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DARCH} \
 	${DEFINES} ${ADDDEFINES} ${IMPI} ${INCADD}
 CXXFLAGS = ${OPT} ${OCXXFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
-	${CPREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DARCH} \
+        ${CPREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DARCH} \
 	${DEFINES} ${ADDDEFINES} ${IMPI} ${INCADD}
 
 ILIB = ${LIBSCIDAC} ${LMPI} ${LIBADD}

@@ -84,9 +84,9 @@ void av_ov (void *x, long *ldx, void *y, long *ldy, int *blockSize, struct primm
 
 }
 
-int Kalkreuter_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
-	Real RelTol, int Nvecs, int MaxIter, 
-	int Restart, int Kiters, int parity)
+int ks_eigensolve_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
+			 Real RelTol, int Nvecs, int MaxIter, 
+			 int Restart, int Kiters, int parity)
 {
     int maxnev=Nvecs;       /* number of eigenvalues to compute*/
     int maxn;
@@ -242,11 +242,11 @@ void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme_params
 
 /* Stub to allow compilation (but not execution) in case PRIMME is not available */
 
-int Kalkreuter_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
-	Real RelTol, int Nvecs, int MaxIter, 
-	int Restart, int Kiters, int parity)
+int ks_eigensolve_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
+			 Real RelTol, int Nvecs, int MaxIter, 
+			 int Restart, int Kiters, int parity)
 {
-  node0_printf("Kalkreuter_PRIMME: Requires compilation with the PRIMME package\n");
+  node0_printf("ks_eigensolve_PRIMME: Requires compilation with the PRIMME package\n");
   terminate(1);
 
   return 0;
