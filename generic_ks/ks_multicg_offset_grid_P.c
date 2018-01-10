@@ -45,6 +45,9 @@
 #include <ittnotify.h>
 #endif
 
+extern GRID_4Dgrid *grid_full;
+extern GRID_4DRBgrid *grid_rb;
+
 /* Load inversion args for Level 3 inverter */
 
 static void 
@@ -172,21 +175,21 @@ KS_MULTICG_OFFSET_FIELD(
 
   /* Map the input and output fields */
   double t_sp1 = -dclock();
-  grid_src = GRID_create_V_from_vec( src, qic[0].parity);
+  grid_src = GRID_create_V_from_vec( src, qic[0].parity, grid_full, grid_rb);
   t_sp1 += dclock();
   
   /* Create the solution fields, but leave them zeroed out */
   double t_sp2 = -dclock();
   for(i = 0; i < nmass; i++){
     //    grid_sol[i] =  GRID_create_V( qic[0].parity);
-    grid_sol[i] =  GRID_create_V_from_vec(psim[i], qic[0].parity);
+    grid_sol[i] =  GRID_create_V_from_vec(psim[i], qic[0].parity, grid_full, grid_rb);
   }
   t_sp2 += dclock();
 
   fflush(stdout);
 
   double t_l = -dclock();
-  links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), EVENANDODD );
+  links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), grid_full);
   t_l += dclock();
   
   double dtimegridinv = -dclock();
@@ -195,12 +198,12 @@ KS_MULTICG_OFFSET_FIELD(
 
   for(int i = 0; i < nmass; i++){
     GRID_asqtad_invert( &info, links, &grid_invert_arg, grid_resid_arg[i], 
-			mass[i], grid_sol[i], grid_src );
+			mass[i], grid_sol[i], grid_src, grid_full, grid_rb );
     num_iters += grid_resid_arg[i]->final_iter;
   }
 #else
   GRID_asqtad_invert_multi( &info, links, &grid_invert_arg, grid_resid_arg,
-			    mass, nmass, grid_sol, grid_src);
+			    mass, nmass, grid_sol, grid_src, grid_full, grid_rb );
   /* Take the maximum number of iters in order to compare with other multi-mass inverters */
   num_iters = 0;
   for(int i = 0; i < nmass; i++){
