@@ -40,6 +40,9 @@
 #include <ittnotify.h>
 #endif
 
+extern GRID_4Dgrid *grid_full;
+extern GRID_4DRBgrid *grid_rb;
+
 /* Load inversion args for Level 3 inverter */
 
 static void 
@@ -134,20 +137,20 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   t_sp1 = -dclock();
   
   node0_printf("Calling GRID_create_V_from_vec\n"); fflush(stdout);
-  grid_src = GRID_create_V_from_vec( src, qic->parity);
+  grid_src = GRID_create_V_from_vec( src, qic->parity, grid_full, grid_rb);
   
   t_sp1 += dclock();
   t_sp2 = -dclock();
   
   node0_printf("Calling GRID_create_V_from_vec\n"); fflush(stdout);
-  grid_sol = GRID_create_V_from_vec( sol, qic->parity);
+  grid_sol = GRID_create_V_from_vec( sol, qic->parity, grid_full, grid_rb);
   
   t_sp2 += dclock();
   t_l   = -dclock(); 
   
   node0_printf("Calling GRID_asqtad_create_L_from_MILC\n"); fflush(stdout);
   /* For now we are taking the thin links from the site structure, so the first parameter is NULL */
-  links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), EVENANDODD );
+  links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), grid_full );
 
   t_l   += dclock(); 
   
@@ -156,7 +159,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   
   node0_printf("Calling GRID_asqtad_invert\n"); fflush(stdout);
   GRID_asqtad_invert( &info, links, &grid_invert_arg, 
-		      grid_resid_arg, (MYREAL)mass, grid_sol, grid_src );
+		      grid_resid_arg, (MYREAL)mass, grid_sol, grid_src, grid_full, grid_rb );
   iters = grid_resid_arg->final_iter;
   
   dtimegridinv += dclock();
@@ -268,25 +271,30 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
   grid_resid_arg = create_grid_resid_arg( qic );
   
   /* Data layout conversions */
+
+  GRID_5Dgrid *grid_5D = GRID_create_5Dgrid(nrhs, grid_full);
+  GRID_5DRBgrid *grid_5Drb = GRID_create_5DRBgrid(nrhs, grid_full);
   
   double t_sp1, t_sp2, t_l;
   t_sp1 = -dclock();
   
-  node0_printf("Calling GRID_create_V_from_vec\n"); fflush(stdout);
-  grid_src = GRID_create_nV_from_vecs( src, nrhs, qic->parity);
+  node0_printf("Calling GRID_create_nV_from_vec\n"); fflush(stdout);
+  grid_src = GRID_create_nV_from_vecs( src, nrhs, qic->parity, 
+				       grid_5D, grid_5Drb, grid_full, grid_rb);
   
   t_sp1 += dclock();
   t_sp2 = -dclock();
   
-  node0_printf("Calling GRID_create_V_from_vec\n"); fflush(stdout);
-  grid_sol = GRID_create_nV_from_vecs( sol, nrhs, qic->parity);
+  node0_printf("Calling GRID_create_nV_from_vec\n"); fflush(stdout);
+  grid_sol = GRID_create_nV_from_vecs( sol, nrhs, qic->parity,
+				       grid_5D, grid_5Drb, grid_full, grid_rb);
   
   t_sp2 += dclock();
   t_l   = -dclock(); 
   
   node0_printf("Calling GRID_asqtad_create_L_from_MILC\n"); fflush(stdout);
   /* For now we are taking the thin links from the site structure, so the first parameter is NULL */
-  links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), EVENANDODD );
+  links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), grid_full);
 
   t_l   += dclock(); 
   
@@ -295,7 +303,9 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
   
   node0_printf("Calling GRID_asqtad_invert_block\n"); fflush(stdout);
   GRID_asqtad_invert_block( &info, links, &grid_invert_arg, 
-			    grid_resid_arg, (MYREAL)mass, nrhs, grid_sol, grid_src );
+			    grid_resid_arg, (MYREAL)mass, nrhs, grid_sol, grid_src,
+			    grid_5D, grid_5Drb, grid_full, grid_rb);
+
   iters = grid_resid_arg->final_iter;
   
   dtimegridinv += dclock();
@@ -308,6 +318,7 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
   destroy_grid_resid_arg(grid_resid_arg);
   
   /* Copy results back to su3_vector */
+  node0_printf("Calling GRID_extract_nV_to_vecs\n"); fflush(stdout);
   double t_sl = -dclock();
   GRID_extract_nV_to_vecs( sol, nrhs, grid_sol, qic->parity);
   t_sl += dclock();
@@ -322,12 +333,23 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
   } END_LOOP_OMP;
 #endif
   
+  node0_printf("Cleaning up\n"); fflush(stdout);
+
   /* Free GRID fields  */
   
+  node0_printf("destroy_nV\n"); fflush(stdout);
   GRID_destroy_nV(grid_src);    
+  node0_printf("destroy_nV\n"); fflush(stdout);
   GRID_destroy_nV(grid_sol);     
+  node0_printf("destroy_L\n"); fflush(stdout);
   GRID_asqtad_destroy_L(links);
   
+  /* Free 5D lattice */
+  node0_printf("destroy_5Dgrid\n"); fflush(stdout);
+  GRID_destroy_5Dgrid(grid_5D);
+  node0_printf("destroy_5DRBgrid\n"); fflush(stdout);
+  GRID_destroy_5DRBgrid(grid_5Drb);
+
   tot_cg_time +=dclock();
 
 #ifdef CGTIME
