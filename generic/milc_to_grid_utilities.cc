@@ -25,8 +25,8 @@ using namespace std;
 using namespace Grid;
 using namespace Grid::QCD;
 
-GridCartesian *CGrid;
-GridRedBlackCartesian *RBGrid;
+GRID_4Dgrid *grid_full;
+GRID_4DRBgrid *grid_rb;
 
 std::vector<int> squaresize;
 
@@ -60,6 +60,8 @@ void finalize_grid(void)
 {
   /* We omit MPI_Finalize() because most likely it will break a lot of things */
   Grid_unquiesce_nodes();
+  GRID_destroy_4DRBgrid(grid_rb);
+  GRID_destroy_4Dgrid(grid_full);
 }
 
 int grid_initialized(void){
@@ -108,11 +110,14 @@ initialize_grid(void){
   node0_printf("Calling Grid_init with %s %s %s %s %s %s\n",argv[0],argv[1],argv[2],argv[3],argv[4],argv[5]);
   Grid_init(&argc, &argv);
 
+  grid_full = GRID_create_grid();
+  grid_rb = GRID_create_RBgrid(grid_full);
+
   std::vector<int> latt_size   = GridDefaultLatt();
   std::vector<int> simd_layout = GridDefaultSimd(Nd,vComplex::Nsimd());
   std::vector<int> mpi_layout  = GridDefaultMpi();
-  CGrid  = new GridCartesian(latt_size,simd_layout,mpi_layout);
-  RBGrid = new GridRedBlackCartesian(CGrid);
+//  CGrid  = new GridCartesian(latt_size,simd_layout,mpi_layout);
+//  RBGrid = new GridRedBlackCartesian(CGrid);
 
   node0_printf("milc_to_grid_utilities: Initialized Grid with args\n%s %s\n%s %s\n%s %s\n",
 	       argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
@@ -126,15 +131,6 @@ initialize_grid(void){
   grid_is_initialized = 1;
   return GRID_SUCCESS;
 
-}
-
-void check_create(void){
-  // DEBUG
-  node0_printf("Trying to create a Grid fermion field\n");  fflush(stdout);
-  typename ImprovedStaggeredFermionD::FermionField *cv = new typename ImprovedStaggeredFermionD::FermionField(RBGrid);
-  node0_printf("Success creating a Grid fermion field\n");  fflush(stdout);
-  delete cv;
-  node0_printf("Success deleting the Grid fermion field\n");  fflush(stdout);
 }
 
 static Grid::CartesianCommunicator *grid_cart = NULL;
