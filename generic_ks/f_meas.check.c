@@ -64,7 +64,7 @@ BOMB THE COMPILE
     int prec = prec_pbp;  /* Precision of the inversion */
 #else
     int npbp_reps = 1;   /* Default values */
-    int prec = PRECISION;
+    int prec = MILC_PRECISION;
 #endif
     int jpbp_reps;
 #endif

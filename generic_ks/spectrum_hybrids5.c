@@ -180,7 +180,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol, ferm_links_t *fn )
 
         /* compute M^-1 * quark_source */
         cgn += mat_invert( F_OFFSET(quark_source), F_OFFSET(quark_prop),
-			   temp, mass, PRECISION, fn );
+			   temp, mass, MILC_PRECISION, fn );
 	/*if(t_source==0)test_converge(t_source);*/ /*TEMP*/
 	/* TEMP: test inversion, */
 	check_invert( F_OFFSET(quark_prop), F_OFFSET(quark_source), mass, tol,
@@ -198,7 +198,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol, ferm_links_t *fn )
         /* Now the 0+-_0+- propagator */
         mult_zero_pm( F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-			   temp, mass, PRECISION, fn );
+			   temp, mass, MILC_PRECISION, fn );
         mult_zero_pm( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -211,7 +211,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol, ferm_links_t *fn )
         /* Now do the 1-+_1-+ source.  For the moment, Z component only */
         mult_1mp0( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-			   temp, mass, PRECISION, fn );
+			   temp, mass, MILC_PRECISION, fn );
         mult_1mp0( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -224,7 +224,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol, ferm_links_t *fn )
         /* Now do the 1-+_1-+ source.  For the moment, Z component only */
         mult_1mps( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-			   temp, mass, PRECISION, fn );
+			   temp, mass, MILC_PRECISION, fn );
         mult_1mps( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 /**mult_1mps_rev( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );**/
         FORALLSITES(i,s){
@@ -237,7 +237,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol, ferm_links_t *fn )
         /* Now the 1-+2_1+-2 source.  For the moment, Z component only */
         mult_1mpE( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-			   temp, mass, PRECISION, fn );
+			   temp, mass, MILC_PRECISION, fn );
         mult_1mpE( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -256,7 +256,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol, ferm_links_t *fn )
 		       F_OFFSET(quark_source), F_OFFSET(g_rand), 
 		       F_OFFSET(anti_prop), F_OFFSET(phi1), mass1, fn );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-			   temp, mass, PRECISION, fn );
+			   temp, mass, MILC_PRECISION, fn );
 
         mult_1mpE( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
@@ -547,7 +547,7 @@ exit(0);
     FORALLSITES(i,s){
 	/* two (-1)^(x+y+z+t)'s = 1 */
     }
-    mat_invert( dest, work, temp, mass, PRECISION, fn );
+    mat_invert( dest, work, temp, mass, MILC_PRECISION, fn );
     FORALLSITES(i,s){
 	if(s->t== src_t ){
 	    /* really three (-1)^(x+y+z+t)'s - both propagators have one end here */

@@ -63,8 +63,8 @@ load_fatlonglinks_gpu(info_t *info, su3_matrix *fatlinks, su3_matrix *longlinks,
  
   initialize_quda();
 
-  // qudaLoadUnitarizedLink(PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks, NULL);
-  qudaLoadKSLink(PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks);
+  // qudaLoadUnitarizedLink(MILC_PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks, NULL);
+  qudaLoadKSLink(MILC_PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks);
 
   /* Fatlinks */
   info->final_flop = 61632.*volume/numnodes();

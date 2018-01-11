@@ -685,6 +685,10 @@ int main(int argc, char *argv[])
   finalize_qphix();
 #endif
 
+#ifdef HAVE_GRID
+  finalize_grid();
+#endif
+
   normal_exit(0);
   return 0;
 }

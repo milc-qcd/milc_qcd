@@ -23,12 +23,12 @@ void check_fermion_force( char srcfile[MAX_MASS][MAXFILENAME], int srcflag,
   su3_matrix tmat, diffmat;
   char *filexml;
   char recxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test fermion force field</title>";
-#if (PRECISION == 1)
+#if (MILC_PRECISION == 1)
   Real tol = 1e-3;
 #else
   Real tol = 1e-5;
 #endif
-  int ff_prec = PRECISION;  /* Just use prevailing precision for now */
+  int ff_prec = MILC_PRECISION;  /* Just use prevailing precision for now */
   /* Supports only asqtad at the moment */
   imp_ferm_links_t **fn = get_fm_links(fn_links);
   Real *residues = (Real *)malloc(nmass*sizeof(Real));;
@@ -91,7 +91,7 @@ void check_fermion_force( char srcfile[MAX_MASS][MAXFILENAME], int srcflag,
 
   /* If the answer file is given, read it for comparison */
   if(ansflag == RELOAD_SERIAL){
-    restore_color_matrix_scidac_to_field(ansfile, ansmom, 4, PRECISION);
+    restore_color_matrix_scidac_to_field(ansfile, ansmom, 4, MILC_PRECISION);
     node0_printf("Checking the answer\n"); fflush(stdout);
   }
 
@@ -140,24 +140,24 @@ void check_fermion_force( char srcfile[MAX_MASS][MAXFILENAME], int srcflag,
       if(srcflag == SAVE_SERIAL)
 	save_ks_vector_scidac_from_field(srcfile[i], "check fermion force",
 					"source color vector field", 
-					QIO_SINGLEFILE, QIO_SERIAL, src[i], 1, PRECISION);
+					QIO_SINGLEFILE, QIO_SERIAL, src[i], 1, MILC_PRECISION);
       else if(srcflag == SAVE_PARTFILE_SCIDAC)
 	save_ks_vector_scidac_from_field(srcfile[i], "check fermion force",
 					"source color vector field",
-					QIO_PARTFILE, QIO_SERIAL, src[i], 1, PRECISION);
+					QIO_PARTFILE, QIO_SERIAL, src[i], 1, MILC_PRECISION);
     }
 
   if(ansflag == SAVE_SERIAL){
     filexml = create_QCDML();
     save_color_matrix_scidac_from_field(ansfile, filexml, 
-        recxml, QIO_SINGLEFILE, ansmom, 4, PRECISION);
+        recxml, QIO_SINGLEFILE, ansmom, 4, MILC_PRECISION);
     free_QCDML(filexml);
   }
   else if(ansflag == SAVE_PARTFILE_SCIDAC){
     node0_printf("Saving the momentum matrix\n");
     filexml = create_QCDML();
     save_color_matrix_scidac_from_field(ansfile, filexml, 
-       recxml, QIO_PARTFILE, ansmom, 4, PRECISION);
+       recxml, QIO_PARTFILE, ansmom, 4, MILC_PRECISION);
     free_QCDML(filexml);
   }
 #endif

@@ -77,7 +77,7 @@ P = $(strip ${PRECISION})
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
 
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
-LIBRARIES += ${QPHIX_LIBRARIES} ${QPHIXJ_LIBRARIES}
+LIBRARIES += ${QPHIX_LIBRARIES} ${QPHIXJ_LIBRARIES} ${GRID_LIBRARIES}
 
 # Default rule for C compilation
 .c.o: ; ${CC} -c ${CFLAGS} $<
@@ -95,6 +95,7 @@ ${LASTMAKE}: ${ALL_MAKES}
 ALL_MAKES = \
   Make_template \
   ${MAKEFILE} \
+  ../Make_template_qop \
   ../Make_template_combos \
   ../Make_template_scidac \
   ../generic/Make_template \
@@ -109,6 +110,7 @@ ${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
 QUARKIMP = ../generic_ks/imp_actions
 
 quark_action.h: ${QUARKIMP}/${QUARK}
+	@echo Copying quark_action.h from ${QUARKIMP}/${QUARK}
 	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
 
 
@@ -169,8 +171,8 @@ packagemake: ${PACKAGE_DEPS}
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
 	cd ${LIBDIR} ;\
-	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" \
-	"PRECISION=${PRECISION}" "COMPILER=${COMPILER}" "ARCH=${ARCH}" all
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" \
+        "ARCH=${ARCH}" "COMPILER=${COMPILER}" all
 
 localmake: ${OBJECTS} ${LIBRARIES}
 	${LD} -o ${MYTARGET} ${LDFLAGS} \

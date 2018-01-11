@@ -16,7 +16,7 @@
 static const char *prec_label[2] = {"F", "D"};
 #endif
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 #error Requires double precision!
 #endif
 
@@ -466,7 +466,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
     dtimec += dclock();
 #ifdef CGTIME
     node0_printf("CONGRAD5_EIGCG: time = %e (fn_eigcg %s) masses = 1 iters = %d\n",
-		 dtimec, prec_label[PRECISION-1], qic->final_iters);
+		 dtimec, prec_label[MILC_PRECISION-1], qic->final_iters);
 #endif
 
     return 0;
@@ -838,7 +838,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
   dtimec += dclock();
 #ifdef CGTIME
   node0_printf("CONGRAD5_EIGCG: time = %e time_eig = %e (fn_eigcg %s) masses = 1 iters = %d\n",
-	       dtimec, dtimec2, prec_label[PRECISION-1], qic->final_iters);
+	       dtimec, dtimec2, prec_label[MILC_PRECISION-1], qic->final_iters);
 #endif
 
   return iteration;

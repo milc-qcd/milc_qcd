@@ -145,10 +145,8 @@ KS_MULTICG_OFFSET_FIELD(
     terminate(1);
   }
 
-#ifdef CGTIME
-  double dtimec = -dclock();
+  double tot_cg_time = -dclock();
   double nflop = 1205 + 15*nmass;
-#endif
 
   if(qic[0].relresid != 0.){
     node0_printf("%s: QPhiX code does not yet support a Fermilab-type relative residual\n", myname);
@@ -161,10 +159,9 @@ KS_MULTICG_OFFSET_FIELD(
   node0_printf("Starting VTune\n");
   __itt_resume();
 #endif
-  double dtimet = -dclock();
+
   /* Set qphix_invert_arg */
   set_qphix_invert_arg( & qphix_invert_arg, qic+0, nmass );
-  node0_printf("set_qphix_invert_arg: time = %.6e sec\n", dclock()+dtimet);
 
   /* Pointers for residual errors */
   node0_printf("Calling create_qphix_resid_arg\n"); fflush(stdout);
@@ -175,35 +172,29 @@ KS_MULTICG_OFFSET_FIELD(
     mass[i] = sqrt(ksp[i].offset/4.0);
 
   /* Map the input and output fields */
-  dtimet = -dclock();
-  node0_printf("Calling create_qphix_V_from_field\n"); fflush(stdout);
+  double t_sp1 = -dclock();
   qphix_src = create_qphix_V_from_field( src, qic[0].parity);
-  node0_printf("create_qphix_V_from_field: time = %.6e sec\n", dclock()+dtimet);
-  fflush(stdout);
+  t_sp1 += dclock();
   
-  dtimet = -dclock();
+  double t_sp2 = -dclock();
   for(i = 0; i < nmass; i++){
     qphix_sol[i] = 
       create_qphix_V_from_field( psim[i], qic[0].parity);
   }
-  node0_printf("create_qphix_V_from_field x %d: time = %.6e sec\n", 
-	       nmass, dclock()+dtimet);
-  fflush(stdout);
+  t_sp2 += dclock();
 
-  dtimet = -dclock();
-  node0_printf("Calling create_qphix_L\n"); fflush(stdout);
+  double t_l = -dclock();
   links = create_qphix_L_from_fn_links( fn, EVENANDODD );
-  node0_printf("create_qphix_L_from_fn_links: time = %.6e sec\n", dclock()+dtimet);
-  fflush(stdout);
+  t_l += dclock();
 
 #ifdef CG_DEBUG
   node0_printf("Calling QPHIX_ks_multicg_offset\n");fflush(stdout);
 #endif
 
-  node0_printf("Calling QPHIX_asqtad_invert_multi\n"); fflush(stdout);
+  double dtime = -dclock();
   num_iters = QPHIX_asqtad_invert_multi( &info, links, &qphix_invert_arg, qphix_resid_arg, 
 					 mass, nmass, qphix_sol, qphix_src );
-  node0_printf("Done with QPHIX_asqtad_invert_multi\n"); fflush(stdout);
+  dtime += dclock();
 
   get_qphix_resid_arg( qic, qphix_resid_arg, nmass, num_iters);
 
@@ -215,13 +206,11 @@ KS_MULTICG_OFFSET_FIELD(
   node0_printf("Extracting output\n");fflush(stdout);
 #endif
 
-  dtimet = -dclock();
+  double t_sl = -dclock();
   for(i=0; i<nmass; ++i)
     /* Copy results back to su3_vector */
     unload_qphix_V_to_field( psim[i], qphix_sol[i], qic->parity);
-  node0_printf("unload_qphix_V_to_field x %d: time = %.6e sec\n", 
-	       nmass, dclock()+dtimet);
-  fflush(stdout);
+  t_sl += dclock();
   
   /* Free QPHIX fields  */
   
@@ -236,15 +225,39 @@ KS_MULTICG_OFFSET_FIELD(
   node0_printf("Ending VTune\n");
 #endif
 
+  tot_cg_time += dclock();
+
 #ifdef CGTIME
-  dtimec += dclock();
+  char *prec_label[2] = {"F", "D"};
   if(this_node==0){
-    char *prec_label[2] = {"F", "D"};
     printf("CONGRAD5: time = %e (multicg_offset_QPHIX %s) masses = %d iters = %d mflops = %e\n",
-	   dtimec,prec_label[qic[0].prec-1],nmass,num_iters,
+	   tot_cg_time,prec_label[qic[0].prec-1],nmass,num_iters,
 	   (double)(nflop)*volume*
-	   num_iters/(1.0e6*dtimec*numnodes()));
+	   num_iters/(1.0e6*tot_cg_time*numnodes()));
     fflush(stdout);}
+#ifdef REMAP
+  if(this_node==0){
+    printf("MILC<-->QPhiX data layout conversion timings\n"
+	   "\t src-spinor   = %e\n"
+	   "\t dest-spinors = %e\n"
+	   "\t links        = %e\n"
+	   "\t soln-spinor  = %e\n"
+	   "\t ---------------------------\n"
+	   "\t total remap  = %e\n"
+	   , t_sp1, t_sp2, t_l, t_sl
+	   , t_sp1 + t_sp2 + t_l + t_sl
+	   );
+    printf("CONGRAD5-QPhiX: "
+  	   "solve-time = %e "
+           "(multicg_offset_QPhiX %s) "
+           "masses = %d iters = %d "
+           "mflops(ignore data-conv.) = %e\n",
+           dtime,
+           prec_label[qic[0].prec-1],nmass,num_iters,
+           (double)(nflop)*volume*num_iters/(1.0e6*dtime*numnodes())
+           );
+    fflush(stdout);}
+#endif
 #endif
 
   total_iters += num_iters;

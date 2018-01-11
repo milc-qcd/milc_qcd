@@ -345,10 +345,10 @@ WANTPRIMME = #true
 # PRIMME version 2.0
 
 ifeq ($(strip ${WANTPRIMME}),true)
-  PRIMME_HEADERS = ${HOME}/milc/install/PRIMME/include
+  PRIMME_HEADERS = ${HOME}/PRIMME/include
   INCPRIMME = -I${PRIMME_HEADERS}
   PACKAGE_HEADERS += ${PRIMME_HEADERS}
-  LIBPRIMME = -L${HOME}/milc/install/PRIMME/lib -lprimme
+  LIBPRIMME = -L${HOME}/PRIMME/lib -lprimme
 endif
 
 #----------------------------------------------------------------------
@@ -484,6 +484,40 @@ ifeq ($(strip ${WANTQPHIX}), true)
 endif
 
 #----------------------------------------------------------------------
+# 16. Grid Options
+
+WANTGRID = #true
+
+ifeq ($(strip ${WANTGRID}), true)
+
+  HAVE_GRID = true
+  CPHI = -DHAVE_GRID
+
+  ifeq ($(strip ${MPP}),true)
+    ifeq ($(strip ${ARCH}),knl)
+      GRID_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),hsw)
+      GRID_ARCH = avx2
+    endif
+  else
+    # Scalar version                                                                
+
+    GRID_ARCH = scalar
+
+  endif
+
+  GRID_HOME = ../Grid/install-${GRID_ARCH}
+  GRID_LIBRARIES = ${GRID_HOME}/lib
+  LIBGRID = -L${GRID_LIBRARIES} -lGrid
+  GRID_HEADERS = ${GRID_HOME}/include
+  INCGRID = -I${GRID_HEADERS}
+
+  PACKAGE_HEADERS += ${GRID_HEADERS}/Grid
+  PACKAGE_DEPS += Grid
+
+endif
+
+#----------------------------------------------------------------------
 # 16. QPhiXJ (JLab) Options
 
 WANTQPHIXJ = #true
@@ -499,7 +533,9 @@ ifeq ($(strip ${WANTQPHIXJ}), true)
 
   ifeq ($(strip ${MPP}),true)
 
-  # QMP versions of QPHIXJ
+    # QMP versions of QPHIXJ
+
+    QPHIXJ_HOME = ../QPhiX_JLab/install
 
     ifeq ($(strip ${ARCH}),knl)
       QPHIXJ_ARCH = avx512
@@ -623,6 +659,12 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 # To get them, uncomment the next line
 
 #INLINEOPT += -DSSEOPTERON
+
+# At present inlining and threading do not mix
+
+ifeq ($(strip ${OMP}),true)
+  INLINEOPT =
+endif
 
 #----------------------------------------------------------------------
 # 20. Miscellaneous macros for performance control and metric

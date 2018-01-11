@@ -13,7 +13,7 @@
 
 
 MYINCLUDEDIR = .
-INCLUDEDIR = ../include
+INCLUDEDIR = ../include ../include/mGrid
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
@@ -32,7 +32,7 @@ MY_HEADERS = \
   quark_action.h
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} \
-  ${QUDA_HEADERS} ${QPHIX_HEADERS} ${SCIDAC_HEADERS}
+  ${QUDA_HEADERS} ${QPHIX_HEADERS} ${GRID_HEADERS} ${SCIDAC_HEADERS}
 
 # All required object files
 # Basic set from current directory
@@ -111,10 +111,12 @@ endif
 P = $(strip ${PRECISION})
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
 
-LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES} ${QPHIX_LIBRARIES}
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
+LIBRARIES += ${QPHIX_LIBRARIES} ${QPHIXJ_LIBRARIES} ${GRID_LIBRARIES}
 
 # Default rule for C compilation
 .c.o: ; ${CC} -c ${CFLAGS} $<
+.cc.o: ; ${CXX} -c ${CXXFLAGS} $<
 
 # To force a full remake when changing targets
 LASTMAKE = .lastmake.${MAKEFILE}.${P}.${MYTARGET}
@@ -275,6 +277,14 @@ include ../generic_u1/Make_template
 
 # Rules for generic_wilson routines
 include ../generic_wilson/Make_template
+
+# Rules for packages
+Grid:
+	@echo Building Grid
+	cd ${HOME}/Grid && \
+	./build.sh ${GRID_ARCH} ${CC} ${CXX}
+
+packagemake: ${PACKAGE_DEPS}
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}

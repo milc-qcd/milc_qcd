@@ -98,8 +98,18 @@ void accum_gauge_hit(int gauge_dir,int parity)
 
   FORSOMEFIELDPARITY_OMP(i,parity,)
     {
-      clear_su3mat(&diffmatp[i]);
-      clearvec(&sumvecp[i]);
+      // clear_su3mat(&diffmatp[i]);
+
+      /* Threadable version */
+      memset(diffmatp + i, 0, sizeof(su3_matrix));
+    } END_LOOP_OMP;
+
+  FORSOMEFIELDPARITY_OMP(i,parity,)
+    {
+      // clearvec(&sumvecp[i]);
+
+      /* Threadable version */
+      memset(sumvecp + i, 0, sizeof(su3_vector));
     } END_LOOP_OMP;
   
   /* Subtract upward link contributions */
@@ -271,8 +281,8 @@ double get_gauge_fix_action(int gauge_dir,int parity)
  	  //gauge_fix_action += (double)trace.real;
 
 	  /* Vectorizable (threadable) version */
-	  gauge_fix_action += m1->e[0][0].real + m1->e[1][1].real + m1->e[2][2].real;
-	  gauge_fix_action += m2->e[0][0].real + m2->e[1][1].real + m2->e[2][2].real;
+	  gauge_fix_action += m1->e[0][0].real + m1->e[1][1].real + m1->e[2][2].real
+	    + m2->e[0][0].real + m2->e[1][1].real + m2->e[2][2].real;
 	}
     } END_LOOP_OMP;
 

@@ -506,7 +506,7 @@ int readin(int prompt) {
   fermion_links_want_deps(1);
 #endif
   
-  fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 
   /* Construct APE smeared links, but without KS phases */
   rephase( OFF );
