@@ -395,6 +395,8 @@ int ks_congrad_block_parity_cpu( int nsrc, su3_vector **t_src, su3_vector **t_de
 				     quark_invert_control *qic, Real mass,
 				     imp_ferm_links_t *fn){
   /* FAKE version for now */
+  int iters = 0;
   for(int i = 0; i < nsrc; i++)
-    ks_congrad_parity_cpu(t_src[i], t_dest[i], qic, mass, fn);
+    iters += ks_congrad_parity_cpu(t_src[i], t_dest[i], qic, mass, fn);
+  return iters;
 }
