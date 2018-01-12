@@ -562,41 +562,6 @@ ifeq ($(strip ${WANTQPHIXJ}), true)
 endif
 
 #----------------------------------------------------------------------
-# 16. Grid Options
-
-WANTGRID = #true
-
-ifeq ($(strip ${WANTGRID}), true)
-
-  HAVE_GRID = true
-  CPHI = -DHAVE_GRID
-
-  ifeq ($(strip ${MPP}),true)
-    ifeq ($(strip ${ARCH}),knl)
-      GRID_ARCH = avx512
-    else ifeq ($(strip ${ARCH}),hsw)
-      GRID_ARCH = avx2
-    endif
-  else
-    # Scalar version                                                                
-
-    GRID_ARCH = scalar
-
-  endif
-
-  GRID_HOME = ../Grid/install-${GRID_ARCH}
-  GRID_LIBRARIES = ${GRID_HOME}/lib
-  LIBGRID = -L${GRID_LIBRARIES} -lGrid
-  GRID_HEADERS = ${GRID_HOME}/include
-  INCGRID = -I${GRID_HEADERS}
-
-  PACKAGE_HEADERS += ${GRID_HEADERS}/Grid
-  PACKAGE_DEPS += Grid
-  
-
-endif
-
-#----------------------------------------------------------------------
 # 17. Linker (need the C++ linker for QUDA, QPHIX, GRID)
 
 ifeq ($(strip ${LDLAPACK}),)
@@ -659,12 +624,6 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 # To get them, uncomment the next line
 
 #INLINEOPT += -DSSEOPTERON
-
-# At present inlining and threading do not mix
-
-ifeq ($(strip ${OMP}),true)
-  INLINEOPT =
-endif
 
 #----------------------------------------------------------------------
 # 20. Miscellaneous macros for performance control and metric
