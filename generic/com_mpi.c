@@ -115,7 +115,7 @@
 #include "generic_includes.h"
 #include <mpi.h>
 #include <ctype.h>
-#if PRECISION == 1
+#if MILC_PRECISION == 1
 #define MILC_MPI_REAL MPI_FLOAT
 #else
 #define MILC_MPI_REAL MPI_DOUBLE

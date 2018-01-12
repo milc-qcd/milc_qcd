@@ -119,7 +119,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
     node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", myname);
   }
 
-  qudaInvert(PRECISION,
+  qudaInvert(MILC_PRECISION,
 	     quda_precision, 
 	     mass,
 	     inv_args,
@@ -207,7 +207,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 #ifdef CGTIME
   if(this_node==0){
     printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
-           dtimec, prec_label[PRECISION-1], qic->final_iters,
+           dtimec, prec_label[MILC_PRECISION-1], qic->final_iters,
            (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
 #endif
@@ -251,7 +251,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
     node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", myname);
   }
 
-  qudaInvertMsrc(PRECISION,
+  qudaInvertMsrc(MILC_PRECISION,
                  quda_precision,
                  mass,
                  inv_args,

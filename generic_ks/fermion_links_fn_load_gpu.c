@@ -33,7 +33,7 @@ load_fatlinks_gpu(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matr
  
   initialize_quda();
 
-  qudaLoadKSLink(PRECISION, fatlink_args, path_coeff, links, fat, NULL);
+  qudaLoadKSLink(MILC_PRECISION, fatlink_args, path_coeff, links, fat, NULL);
 
   /* Fatlinks */
   info->final_flop = 61632.*volume/numnodes();
@@ -105,7 +105,7 @@ load_hisq_aux_links_gpu(info_t *info, ks_action_paths_hisq *ap,
 
   // Right now, if aux->V_link == NULL
   // the level1 fat link is not copied from the GPU back to the CPU.
-  qudaLoadUnitarizedLink(PRECISION, fatlink_args, path_coeff, aux->U_link, aux->V_link, aux->W_unitlink);
+  qudaLoadUnitarizedLink(MILC_PRECISION, fatlink_args, path_coeff, aux->U_link, aux->V_link, aux->W_unitlink);
 
   /*
     The above equates to

@@ -24,7 +24,7 @@
 
 #ifdef CHECK_MALLOC
 
-#if PRECISION==1
+#if MILC_PRECISION==1
 #define fftwf_malloc(_size) \
   (( (_malloc_ptr = FFTWP(malloc)(_size)), \
    (this_node == 0 ? \

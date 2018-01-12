@@ -32,7 +32,7 @@ int bicgilu_cl_field_qphixj ( // Return value is number of iterations taken
   Real CKU0   = kappa*clov_c/(u0*u0*u0);
 
   /* We don't do precision conversions yet */
-  assert(PRECISION == QPHIXJ_PrecisionInt);
+  assert(MILC_PRECISION == QPHIXJ_PrecisionInt);
   
   /* Reset statistics */
   qic->size_r = 0;
