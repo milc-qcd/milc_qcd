@@ -633,9 +633,9 @@ ft_data *create_ft_data(complex *src, int size){
 void destroy_ft_data(ft_data *ftd){
   if(ftd != NULL){
     if(ftd->data != NULL)
-      free(ftd->data);
+      FFTWP(free)(ftd->data);
     if(ftd->tmp != NULL)
-      free(ftd->tmp);
+      FFTWP(free)(ftd->tmp);
     free(ftd);
   }
 }
@@ -806,6 +806,8 @@ void restrict_fourier_field(
 
   destroy_fftw_plans();
   destroy_ft_data(ftd);
+
+  FFTWP(cleanup)();
 }
 
 /*----------------------------------------------------------------------*/
