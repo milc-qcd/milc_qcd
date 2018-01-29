@@ -141,6 +141,9 @@ ifeq ($(strip ${COMPILER}),intel)
   else ifeq ($(strip ${ARCH}),knc)
   ARCH_FLAG = -mmic
   BINEXT=.knc
+  else ifeq ($(strip ${ARCH}),skx)
+  ARCH_FLAG = -xCORE-AVX512
+  BINEXT=.skx
   else ifeq ($(strip ${ARCH}),hsw)
   ARCH_FLAG = -xCORE-AVX2
   BINEXT=.hsw
@@ -268,17 +271,17 @@ WANTQMP = # true or blank.
 # It is assumed that these are the parents of "include" and "lib"
 
 SCIDAC = ${HOME}/scidac/install
+TAG=""
 # Parallel versions
-QMPPAR = ${SCIDAC}/qmp
-QIOPAR = $(SCIDAC)/qio
+QMPPAR = ${SCIDAC}/qmp${TAG}
+QIOPAR = $(SCIDAC)/qio${TAG}
 # Single processor versions
-QMPSNG = ${SCIDAC}/qmp-single
-QIOSNG = $(SCIDAC)/qio-single
-QLA = ${SCIDAC}/qla
+QMPSNG = ${SCIDAC}/qmp-single${TAG}
+QIOSNG = $(SCIDAC)/qio-single${TAG}
+QLA = ${SCIDAC}/qla${TAG}
 # Either version
-QDP = ${SCIDAC}/qdp
-QOPQDP = ${SCIDAC}/qopqdp
-#QOPQDP = ${SCIDAC}/qopqdp-lapack # BG/P
+QDP = ${SCIDAC}/qdp${TAG}
+QOPQDP = ${SCIDAC}/qopqdp${TAG}
 
 QOP = ${QOPQDP}
 
