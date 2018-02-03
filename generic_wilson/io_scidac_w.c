@@ -172,7 +172,11 @@ void restore_w_vector_scidac_to_field(char *filename, int serpar,
 
   /* Read the lattice field: "count" vectors per site */
   status = read_w_vector_scidac(infile, dest, count);
-  if(status)terminate(1);
+  if(status){
+    printf("restore_w_vector_scidac_to_field(%d): exiting due to read error %d on file %s\n",
+	   this_node, status, filename);
+    terminate(1);
+  }
 
   /* Close the file */
   r_close_scidac_file(infile);
