@@ -7,7 +7,7 @@ GIT_BRANCH=develop
 
 if [ -z ${PK_CXX} ]
 then
-  echo "Usage $0 <scalar|avx512|avx2> <CC> <CXX>"
+  echo "Usage $0 <scalar|avx512|avx2> <PK_CC> <PK_CXX>"
   exit 1
 fi
 
@@ -16,7 +16,7 @@ case ${ARCH} in
       ;;
     *)
       echo "Unsupported ARCH"
-      echo "Usage $0 <scalar|avx512|avx2> <CC> <CXX>"
+      echo "Usage $0 <scalar|avx512|avx2> <PK_CC> <PK_CXX>"
       exit 1
 esac
 
