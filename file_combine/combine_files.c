@@ -154,7 +154,7 @@ static void combine_vector_field_files(int nfile, int ncolor, int t0,
     QIO_encode_usqcd_ksproprecord_info(xml_record, recinfo);
     QIO_destroy_usqcd_ksproprecord_info(recinfo);
     if(t0 == ALL_T_SLICES){
-      if(PRECISION==1)
+      if(MILC_PRECISION==1)
 	status = write_F3_V_from_field(outfile, xml_record, v_dst, 1 );
       else
 	status = write_D3_V_from_field(outfile, xml_record, v_dst, 1 );
@@ -259,7 +259,7 @@ static void combine_dirac_field_files(int nfile, int ncolor, int nspin, int t0,
       QIO_encode_usqcd_proprecord_info(xml_record, recinfo);
       QIO_destroy_usqcd_proprecord_info(recinfo);
 
-      if(PRECISION==1) {
+      if(MILC_PRECISION==1) {
         if (t0 == ALL_T_SLICES)
 	  status = write_F3_D_from_field(outfile, xml_record, wv_dst, 1 );
         else

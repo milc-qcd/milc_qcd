@@ -45,7 +45,7 @@ my_relative_residue(su3_vector *p, su3_vector *q, int parity)
     num = (double)magsq_su3vec( &(p[i]) );
     den = (double)magsq_su3vec( &(q[i]) );
     residue += (den==0) ? 1.0 : (num/den);
-  } END_LOOP_OMP
+  } END_LOOP_OMP;
 
   g_doublesum(&residue);
 
@@ -114,7 +114,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
   source_norm = 0.0;
   FORSOMEFIELDPARITY_OMP(i,parity,reduction(+:source_norm)){
     source_norm += (double)magsq_su3vec( &t_src[i] );
-  } END_LOOP_OMP
+  } END_LOOP_OMP;
   g_doublesum( &source_norm );
 #ifdef CG_DEBUG
   node0_printf("congrad: source_norm = %e\n", (double)source_norm);
@@ -143,7 +143,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 #ifdef CGTIME
   if(this_node==0){
     printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
-	   dtimec, prec_label[PRECISION-1], qic->final_iters, 
+	   dtimec, prec_label[MILC_PRECISION-1], qic->final_iters, 
    ((double)nflop*volume*qic->final_iters)/(1.0e6*dtimec*numnodes()) );
     fflush(stdout);}
 #endif
@@ -208,7 +208,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 	  /* remember ttt contains -M_adjoint*M*src */
 	  cg_p[i] = resid[i];
 	  rsq += (double)magsq_su3vec( &resid[i] );
-	} END_LOOP_OMP
+	} END_LOOP_OMP;
 #ifdef FEWSUMS
 	actual_rsq = rsq; /* not yet summed over nodes */
 #endif
@@ -219,7 +219,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 
 	qic->final_rsq    = (Real)rsq/source_norm;
 	qic->final_relrsq = (Real)relrsq;
-
+	
 	iteration++ ;  /* iteration counts number of multiplications
 			  by M_adjoint*M */
 	total_iters++;
@@ -288,7 +288,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
       c_tr += (double)su3_rdot( &ttt[i], &resid[i] );
       c_tt += (double)su3_rdot( &ttt[i], &ttt[i] );
 #endif
-    } END_LOOP_OMP
+    } END_LOOP_OMP;
 #ifdef FEWSUMS
     /* finally sum oldrsq over nodes, also other sums */
     tempsum[0] = pkp; tempsum[1] = c_tr; 
@@ -326,7 +326,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 #else
       rsq += (double)magsq_su3vec( &resid[i] );
 #endif
-    } END_LOOP_OMP
+    } END_LOOP_OMP;
 #ifdef FEWSUMS
     /**printf("XXX:  node %d\t%e\t%e\t%e\n",this_node,oldrsq,c_tr,c_tt);**/
     rsq = oldrsq + 2.0*a*c_tr + a*a*c_tt; /*TEST - should equal actual_rsq */
@@ -342,6 +342,9 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
     
     qic->size_r        = (Real)rsq/source_norm;
     qic->size_relr     = relrsq;
+    qic->final_iters   = iteration;
+    qic->final_restart = nrestart;
+    qic->converged     = 1;
 
 #ifdef CG_DEBUG
     if(mynode()==0){printf("iter=%d, rsq/src= %e, relrsq= %e, pkp=%e\n",
@@ -354,7 +357,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
     /* cg_p  <- resid + b*cg_p */
     FORSOMEPARITY_OMP(i,s,parity,default(shared)){
       scalar_mult_add_su3_vector( &resid[i], &cg_p[i], b, &cg_p[i]);
-    } END_LOOP_OMP
+    } END_LOOP_OMP;
   }
 
   qic->final_iters   = iteration;
@@ -380,7 +383,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 #ifdef CGTIME
   if(this_node==0){
     printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
-	   dtimec, prec_label[PRECISION-1], qic->final_iters, 
+	   dtimec, prec_label[MILC_PRECISION-1], qic->final_iters, 
 	   (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
 #endif
@@ -388,11 +391,12 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
   return iteration;
 }
 
-int ks_congrad_block_parity_cpu(int nsrc, su3_vector **t_src, su3_vector **t_dest, 
-				quark_invert_control *qic, Real mass,
-				imp_ferm_links_t *fn)
-{
-
-  node0_printf("ks_congrad_block_parity_cpu: NOT IMPLEMENTED\n");
-  terminate(1);
+int ks_congrad_block_parity_cpu( int nsrc, su3_vector **t_src, su3_vector **t_dest, 
+				     quark_invert_control *qic, Real mass,
+				     imp_ferm_links_t *fn){
+  /* FAKE version for now */
+  int iters = 0;
+  for(int i = 0; i < nsrc; i++)
+    iters += ks_congrad_parity_cpu(t_src[i], t_dest[i], qic, mass, fn);
+  return iters;
 }

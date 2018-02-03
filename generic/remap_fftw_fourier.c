@@ -16,7 +16,7 @@
 #include "generic_includes.h"
 #include <fftw3.h>
 
-#if PRECISION==1
+#if MILC_PRECISION==1
 #define FFTWP(x) fftwf_##x
 #else
 #define FFTWP(x) fftw_##x
@@ -24,12 +24,19 @@
 
 #ifdef CHECK_MALLOC
 
-#define FFTWP(malloc)(_size) \
+#if MILC_PRECISION==1
+#define fftwf_malloc(_size) \
   (( (_malloc_ptr = FFTWP(malloc)(_size)), \
    (this_node == 0 ? \
    printf("%x = FFTWP(malloc)(%d) %s:%d\n",_malloc_ptr,_size,__func__,__LINE__) \
    && fflush(stdout) : 0 )), _malloc_ptr)
-
+#else
+#define fftw_malloc(_size) \
+  (( (_malloc_ptr = FFTWP(malloc)(_size)), \
+   (this_node == 0 ? \
+   printf("%x = FFTWP(malloc)(%d) %s:%d\n",_malloc_ptr,_size,__func__,__LINE__) \
+   && fflush(stdout) : 0 )), _malloc_ptr)
+#endif
 #endif
 
 /* Data structure for the layout */

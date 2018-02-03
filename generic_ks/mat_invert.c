@@ -209,12 +209,12 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
 #if EIGMODE == DEFLATION
 
     double dtime = - dclock();
-    node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.Nvecs);
+    node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
 
-    deflate(dst, tmp, mass, param.Nvecs, EVEN);
+    deflate(dst, tmp, mass, param.eigen_param.Nvecs, EVEN);
 
     dtime += dclock();
-    node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
+    node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
 
     /* dst_e <- (M_adj M)^-1 temp_e  (even sites only) */
@@ -224,12 +224,12 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
 #if EIGMODE == DEFLATION
 
     dtime = - dclock();
-    node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.Nvecs);
+    node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
 
-    deflate(dst, tmp, mass, param.Nvecs, ODD);
+    deflate(dst, tmp, mass, param.eigen_param.Nvecs, ODD);
 
     dtime += dclock();
-    node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
+    node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
 
     /* dst_o <- (M_adj M)^-1 temp_o  (odd sites only) */
@@ -335,12 +335,12 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
 #if EIGMODE == DEFLATION
 
     double dtime = - dclock();
-    node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.Nvecs);
+    node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
 
-    deflate(dst, tmp, mass, param.Nvecs, EVEN);
+    deflate(dst, tmp, mass, param.eigen_param.Nvecs, EVEN);
 
     dtime += dclock();
-    node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
+    node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
 
     /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
@@ -363,12 +363,12 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
 
 #if EIGMODE == DEFLATION
     dtime = - dclock();
-    node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.Nvecs);
+    node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
 
-    deflate(dst, tmp, mass, param.Nvecs, ODD);
+    deflate(dst, tmp, mass, param.eigen_param.Nvecs, ODD);
 
     dtime += dclock();
-    node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
+    node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
 
     /* Polish off odd sites to correct for possible roundoff error */
@@ -413,12 +413,12 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
 #if EIGMODE == DEFLATION
     
     dtime = - dclock();
-    node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.Nvecs);
+    node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
     
-    deflate(dst[is], tmp[is], mass, param.Nvecs, EVEN);
+    deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, EVEN);
     
     dtime += dclock();
-    node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
+    node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
   }
   
@@ -438,12 +438,12 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
     
 #if EIGMODE == DEFLATION
     dtime = - dclock();
-    node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.Nvecs);
+    node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
     
-    deflate(dst[is], tmp[is], mass, param.Nvecs, ODD);
+    deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, ODD);
     
     dtime += dclock();
-    node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
+    node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
   }
   
@@ -507,11 +507,13 @@ void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,
     tmp = create_v_field();
 
     /* Compute tmp = M src */
+    node0_printf("check_invert_field: calling ks_dirac_op\n"); fflush(stdout);
     ks_dirac_op( src, tmp, mass, EVENANDODD, fn);
 
     sum2=sum=0.0;
     dmaxerr=0;
     flag = 0;
+    node0_printf("check_invert_field: checking diffs\n"); fflush(stdout);
     FORALLSITES(i,s){
 	for(k=0;k<3;k++){
 	    r_diff = dest[i].c[k].real - tmp[i].c[k].real;

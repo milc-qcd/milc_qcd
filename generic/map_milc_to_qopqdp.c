@@ -12,7 +12,7 @@
 
 /* Convert (or copy) MILC types between specific and prevailing precision */
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 
 static void 
 f2p_mat(su3_matrix *dest, fsu3_matrix *src){

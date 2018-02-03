@@ -309,9 +309,9 @@ int readin(int prompt) {
   
 #if FERM_ACTION == HISQ
   /* WARNING: Not fully supported.  We need to read the Naik epsilons first */
-  fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 #else
-  fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 #endif
 
     rephase( OFF );

@@ -130,7 +130,7 @@ initialize_machine(&argc,&argv);
 		clear_latvec( F_OFFSET(xxx), EVENANDODD);
 		
 		m_iters = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVENANDODD, &rsq,
+				   niter, rsqmin, MILC_PRECISION, EVENANDODD, &rsq,
 				   fn_links);
 		avm_iters += m_iters;
 		++meascount;
@@ -211,7 +211,7 @@ initialize_machine(&argc,&argv);
 		    2.0*mass, F_OFFSET(phi), EVENANDODD);
 		clear_latvec( F_OFFSET(xxx), EVENANDODD);
 		m_iters = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVENANDODD, &rsq);
+				   niter, rsqmin, MILC_PRECISION, EVENANDODD, &rsq);
 		avm_iters += m_iters;
 		++meascount;
 		copy_latvec( F_OFFSET(xxx), F_OFFSET(qprop[j]), EVENANDODD);

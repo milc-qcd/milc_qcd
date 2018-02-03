@@ -58,11 +58,13 @@ endif
 #-------------- Intel icc/ecc -----------------------------------
 ifeq ($(strip ${COMPILER}),cray-intel)
   
-  # Architecture choices: knl, knc, hsw
+  # Architecture choices: knl, skx, knc, hsw
   ifeq ($(strip ${ARCH}),knl)
     OCFLAGS +=  -xMIC-AVX512 
   else ifeq ($(strip ${ARCH}),knc)
     OCFLAGS +=  -mmic
+  else ifeq ($(strip ${ARCH}),skx)
+    OCFLAGS += -xCORE-AVX512
   else ifeq ($(strip ${ARCH}),hsw)
     OCFLAGS += -xCORE-AVX2
   else

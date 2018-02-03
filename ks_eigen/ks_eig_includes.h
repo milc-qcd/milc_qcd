@@ -14,6 +14,7 @@
 #include "../include/macros.h"
 #include "../include/comdefs.h"
 #include "../include/io_lat.h"
+#include "../include/io_ks_eigen.h"
 #include "../include/generic_ks.h"
 #include "../include/generic.h"
 #include "../include/dirs.h"

@@ -193,7 +193,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
 	  node0_printf("WARNING: Premature EOF at %d eigenvectors\n", i);
 	  *Nvecs = i;
 	} else {
-	  node0_printf("ERROR: Can't read an eigenvector\n");
+	  node0_printf("ERROR: Can't read an eigenvector. Error %d\n", qio_status);
 	  status = 1;
 	}
 	break;

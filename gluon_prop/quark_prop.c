@@ -111,7 +111,7 @@ quark_source ksqs;
     rephase( ON );	/* Turn staggered phases on */
 
     /* Create fat and long links */ 
-    restore_fermion_links_from_site(fn_links, PRECISION);
+    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
     fn = get_fm_links(fn_links);
     /* If we want HISQ support, we need the Naik term epsilon index
         here for now we use fn[0] only, which has no epsilon
@@ -155,7 +155,7 @@ quark_source ksqs;
 		    /* do a C.G. (source in phi, result in xxx1) */
 		    cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx1),
 				       mass[j_mass], niter, nrestart, 
-				       rsqprop, PRECISION, EVEN, &finalrsq,
+				       rsqprop, MILC_PRECISION, EVEN, &finalrsq,
 				       fn[0]);
 		    /* Multiply by -Madjoint */
 		    dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), ODD,
@@ -197,7 +197,7 @@ quark_source ksqs;
 	  
 	  /* do a multi-cg */
 	  cgn += ks_multicg_mass_site( F_OFFSET(phi), psim, mass, num_mass,
-				       niter, rsqprop, PRECISION, EVEN, &finalrsq,
+				       niter, rsqprop, MILC_PRECISION, EVEN, &finalrsq,
 				       fn_multi);
 	  /* Multiply by -Madjoint */
 	  for(j_mass=0; j_mass<num_mass; j_mass++){

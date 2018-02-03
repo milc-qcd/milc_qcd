@@ -232,12 +232,13 @@ create_fermion_links_hisq(int precision, int n_naiks,
 
   /* Precision for MILC is ignored: use the prevailing precision */
 
-  if(precision != PRECISION)
+  if(precision != MILC_PRECISION)
     if(mynode() == 0)printf("%s: Warning. Precision request replaced by %d\n", myname,
-		 PRECISION);
+		 MILC_PRECISION);
 
   if( phases_in != 1){
-    if(mynode() == 0)printf("BOTCH: %s needs phases in\n",myname); terminate(1);
+    if(mynode() == 0) printf("BOTCH: %s needs phases in\n",myname);
+    terminate(1);
   }
   
   fl = create_fermion_links_t();
@@ -259,11 +260,11 @@ create_fermion_links_hisq(int precision, int n_naiks,
 #ifdef FLTIME
 #ifdef USE_FL_GPU
   if(mynode()==0)printf("FLTIME: time = %e (HISQ QUDA %s) mflops = %e\n",
-	       info.final_sec,milc_prec[PRECISION-1],
+	       info.final_sec,milc_prec[MILC_PRECISION-1],
 	       info.final_flop/(1e6*info.final_sec) );
 #else
   if(mynode()==0)printf("FLTIME: time = %e (HISQ MILC %s) mflops = %e\n",
-	       info.final_sec,milc_prec[PRECISION-1],
+	       info.final_sec,milc_prec[MILC_PRECISION-1],
 	       info.final_flop/(1e6*info.final_sec) );
 #endif
 #endif
@@ -317,9 +318,9 @@ restore_fermion_links_hisq(fermion_links_t *fl, int precision,
     terminate(1);
   }
 
-  if(precision != PRECISION)
+  if(precision != MILC_PRECISION)
     if(mynode() == 0)printf("%s: Warning. Precision request replaced by %d\n",
-			    myname, PRECISION);
+			    myname, MILC_PRECISION);
 
   if( phases_in != 1){
     if(mynode() == 0)printf("BOTCH: %s needs phases in\n",myname); 
@@ -331,11 +332,11 @@ restore_fermion_links_hisq(fermion_links_t *fl, int precision,
 #ifdef FLTIME
 #ifdef USE_FL_GPU
   if(mynode()==0)printf("FLTIME: time = %e (HISQ QUDA %s) mflops = %e\n",
-	       info.final_sec,milc_prec[PRECISION-1],
+	       info.final_sec,milc_prec[MILC_PRECISION-1],
 	       info.final_flop/(1e6*info.final_sec) );
 #else
   if(mynode()==0)printf("FLTIME: time = %e (HISQ MILC %s) mflops = %e\n",
-	       info.final_sec,milc_prec[PRECISION-1],
+	       info.final_sec,milc_prec[MILC_PRECISION-1],
 	       info.final_flop/(1e6*info.final_sec) );
 #endif
 #endif

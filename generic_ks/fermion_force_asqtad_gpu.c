@@ -31,11 +31,8 @@ fermion_force_oprod_site(Real eps, Real weight1, Real weight2,
   msg_tag* mtag[2];
   
   { // copy the quark-field information to su3_vector fields
-    v[0] = (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
-    v[1] = (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
-
-    if(v[0] == NULL) printf("fermion_force_oprod_site: v[0] not allocated\n");
-    if(v[1] == NULL) printf("fermion_force_oprod_site: v[1] not allocated\n");  
+    v[0] = (su3_vector*)qudaAllocatePinned(sites_on_node*sizeof(su3_vector));
+    v[1] = (su3_vector*)qudaAllocatePinned(sites_on_node*sizeof(su3_vector));
 
     FORALLSITES(i,s){
       v[0][i] = *(su3_vector*)F_PT(s,x1_off);
@@ -60,15 +57,15 @@ fermion_force_oprod_site(Real eps, Real weight1, Real weight2,
 
   void* oprod[2] = {one_hop_oprod, three_hop_oprod};
 
-  qudaComputeOprod(PRECISION, 2, combined_coeff, v, oprod);
+  qudaComputeOprod(MILC_PRECISION, 2, combined_coeff, v, oprod);
 
   free(combined_coeff[0]);
   free(combined_coeff[1]);
   free(combined_coeff);
 
   // Cleanup
-  free(v[0]);
-  free(v[1]);
+  qudaFreePinned(v[0]);
+  qudaFreePinned(v[1]);
 }     
 
 void 
@@ -133,7 +130,7 @@ eo_fermion_force_twoterms_site_gpu(Real eps, Real weight1, Real weight2,
 
 
   // Call the quda function
-  qudaAsqtadForce(PRECISION, act_path_coeff, 
+  qudaAsqtadForce(MILC_PRECISION, act_path_coeff, 
       (const void* const*)one_link_oprod,
       (const void* const*)three_link_oprod,
       gauge , momentum);

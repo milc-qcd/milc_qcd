@@ -809,7 +809,7 @@ int r_ascii_w(w_prop_file *wpf,int spin,int color,field_offset src)
 	  for(i=0;i<4;i++)for(j=0;j<3;j++)
 	    {
 	      if( 
-#if PRECISION == 1
+#if MILC_PRECISION == 1
 		 fscanf(fp,"%e%e\n",
 #else
 		 fscanf(fp,"%le%le\n",

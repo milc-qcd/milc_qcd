@@ -142,7 +142,7 @@ void load_in_spectator(int color, int spin, int k_spectator,
   else MinCG = 0;
   
   /* Load inversion control structure */
-  qic_spectator.prec = PRECISION;
+  qic_spectator.prec = MILC_PRECISION;
   qic_spectator.min = MinCG;
   qic_spectator.max = niter_spectator;
   qic_spectator.nrestart = nrestart_spectator;

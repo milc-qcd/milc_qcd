@@ -38,6 +38,7 @@ G_ALL = \
  gauge_utilities.o \
  general_staple.o \
  glueball_op.o \
+ gridMap.o \
  hvy_pot.o \
  io_ansi.o \
  io_dcap.o \
@@ -63,9 +64,9 @@ G_ALL = \
  layout_hyper_sl32.o \
  layout_qcdoc.o \
  map_milc_to_qopmilc.o \
- map_milc_to_qphix.o \
- map_milc_to_qphixj.o \
  map_milc_to_qopqdp.o \
+ map_milc_to_qphix.o \
+ milc_to_grid_utilities.o \
  milc_to_qop_utilities.o \
  milc_to_qphix_utilities.o \
  milc_to_qphixj_utilities.o \
@@ -87,6 +88,8 @@ G_ALL = \
  qop_milc_D.o \
  qop_milc_F.o \
  qop_milc_utilities.o \
+ qphixj_init.o \
+ qphixjClovMap.o \
  quark_source.o \
  quark_source_io.o \
  quark_source_sink_op.o \
@@ -184,6 +187,8 @@ general_staple.o: ../generic/general_staple.c
 	${CC} -c ${CFLAGS} $<
 glueball_op.o: ../generic/glueball_op.c
 	${CC} -c ${CFLAGS} $<
+gridMap.o: ../generic/gridMap.cc ../generic/gridMap.h
+	${CXX} -c ${CXXFLAGS} $<
 hvy_pot.o: ../generic/hvy_pot.c
 	${CC} -c ${CFLAGS} $<
 io_ansi.o: ../generic/io_ansi.c
@@ -241,16 +246,18 @@ map_milc_to_qopmilc.o: ../generic/map_milc_to_qopmilc.c ../generic/map_milc_to_q
 	${CC} -c ${CFLAGS} $<
 map_milc_to_qopqdp.o: ../generic/map_milc_to_qopqdp.c ../generic/map_milc_to_qop_all.c
 	${CC} -c ${CFLAGS} $<
-milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
-	${CC} -c ${CFLAGS} $<
 map_milc_to_qphix.o: ../generic/map_milc_to_qphix.c ../generic/map_milc_to_qphix_all.c
 	${CC} -c ${CFLAGS} $<
 map_milc_to_qphixj.o: ../generic/map_milc_to_qphixj.c ../generic/map_milc_to_qphixj_all.c
 	${CC} -c ${CFLAGS} $<
+milc_to_grid_utilities.o: ../generic/milc_to_grid_utilities.cc
+	${CXX} -c ${CXXFLAGS} $<
+milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
+	${CC} -c ${CFLAGS} $<
 milc_to_qphix_utilities.o: ../generic/milc_to_qphix_utilities.c
 	${CC} -c ${CFLAGS} $<
-milc_to_qphixj_utilities.o: ../generic/milc_to_qphixj_utilities.c
-	${CC} -c ${CFLAGS} $<
+milc_to_qphixj_utilities.o: ../generic/milc_to_qphixj_utilities.cc
+	${CXX} -c ${CXXFLAGS} $<
 milc_to_quda_utilities.o: ../generic/milc_to_quda_utilities.c
 	${CC} -c ${CFLAGS} $<
 momentum_twist.o: ../generic/momentum_twist.c
@@ -285,6 +292,8 @@ qop_milc_F.o: ../generic/qop_milc_F.c ../generic/qop_milc_D.c
 	${CC} -c ${CFLAGS} $<
 qop_milc_utilities.o: ../generic/qop_milc_utilities.c
 	${CC} -c ${CFLAGS} $<
+qphixjClovMap.o: ../generic/qphixjClovMap.cc ../generic/qphixjClovMap.h
+	${CXX} -c ${CXXFLAGS} $<
 quark_source.o: ../generic/quark_source.c
 	${CC} -c ${CFLAGS} $<
 quark_source_io.o: ../generic/quark_source_io.c

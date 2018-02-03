@@ -110,20 +110,19 @@ int main(int argc, char *argv[])
 
     STARTTIME;
 
-    active_parity = EVEN;  /* Required */
+    param.eigen_param.parity = EVEN;  /* Required */
     fn = get_fm_links(fn_links);
-    Nvecs_curr = Nvecs_tot = param.Nvecs;
+    Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
 
     /* compute eigenpairs if requested */
     if(param.ks_eigen_startflag == FRESH){
       int total_R_iters;
-      total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
-			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters, 1);
-      construct_eigen_odd(eigVec, eigVal, Nvecs_curr, fn[0]);
+      total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
+      construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn[0]);
       node0_printf("total Rayleigh iters = %d\n", total_R_iters);
 
 #if 0 /* If needed for debugging */
-      /* (The Kalkreuter routine uses the random number generator to
+      /* (The ks_eigensolve routine uses the random number generator to
 	 initialize the eigenvector search, so, if you want to compare
 	 first results with and without deflation, you need to
 	 re-initialize here.) */
@@ -312,7 +311,7 @@ int main(int argc, char *argv[])
 	/* If we saved the old prop to a file, we can safely free it */
 	if(oldip0 >= 0 && oldip0 != i)
 	  if(param.saveflag_ks[oldip0] != FORGET){
-	    free_ksp_field(prop[oldip0]);  prop[oldip0] = NULL;
+	    destroy_ksp_field(prop[oldip0]);  prop[oldip0] = NULL;
 	    node0_printf("destroy prop[%d]\n",oldip0);
 	  }
 	
@@ -611,16 +610,15 @@ int main(int argc, char *argv[])
 
     STARTTIME;
 
-    active_parity = EVEN;
     Nvecs_curr = param.eigcgp.Nvecs_curr;
 
     fn = get_fm_links(fn_links);
     resid = (double *)malloc(Nvecs_curr*sizeof(double));
 
     if(param.ks_eigen_startflag == FRESH)
-      calc_eigenpairs(eigVal, eigVec, &param.eigcgp, active_parity);
+      calc_eigenpairs(eigVal, eigVec, &param.eigcgp, EVEN);
 
-    check_eigres( resid, eigVec, eigVal, Nvecs_curr, active_parity, fn[0] );
+    check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
 
     if(param.eigcgp.H != NULL) free(param.eigcgp.H);
 
@@ -685,6 +683,10 @@ int main(int argc, char *argv[])
   
 #ifdef HAVE_QPHIX
   finalize_qphix();
+#endif
+
+#ifdef HAVE_GRID
+  finalize_grid();
 #endif
 
   normal_exit(0);

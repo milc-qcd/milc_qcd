@@ -90,10 +90,10 @@ int build_hov(int *trial_chirality, int* jcount)
   build_params(-R0);
   make_clov1();
   kind_of_h0=HOVERLAP;
-  total_R_iters=Kalkreuter(eigVec, eigVal, eigenval_tol, 
-			   error_decr, Nvecs_hov, MaxIter,
-			   Restart, 
-			   Kiters, EVENANDODD) ;
+  total_R_iters=ks_eigensolve(eigVec, eigVal, eigenval_tol, 
+			      error_decr, Nvecs_hov, MaxIter,
+			      Restart, 
+			      Kiters, EVENANDODD) ;
   if(this_node==0)printf("total Rayleigh iters = %d\n",total_R_iters);
 
 

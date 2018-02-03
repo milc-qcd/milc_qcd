@@ -22,10 +22,6 @@
 
 void update_u(Real eps){
 
-  int i,dir;
-  site *s;
-  int j;
-
 #ifdef FN
   invalidate_fermion_links(fn_links);
 #endif
@@ -37,32 +33,8 @@ void update_u(Real eps){
   dtime = -dclock();
 #endif
 
-  anti_hermitmat *momentum = qudaAllocatePinned(sites_on_node*4*sizeof(anti_hermitmat));
-  su3_matrix *gauge = qudaAllocatePinned(sites_on_node*4*sizeof(su3_matrix));
-
-  // Populate gauge and momentum fields
-  FORALLSITES_OMP(i,s,private(dir)){
-    for(dir=XUP; dir<=TUP; ++dir) {
-      gauge[4*i + dir] = s->link[dir];
-    } // dir
-    for(dir=XUP; dir<=TUP; ++dir) {
-      momentum[4*i + dir] = s->mom[dir];
-    } // dir
-  } END_LOOP_OMP
-
-  qudaUpdateU(PRECISION, eps, momentum, gauge);
-
-  // Copy updated gauge field back to site structure
-  FORALLSITES_OMP(i,s,private(dir)){
-    for(dir=XUP; dir<=TUP; ++dir){
-      for(j=0; j<18; ++j){
-	s->link[dir] = gauge[4*i + dir];
-      }
-    }
-  } END_LOOP_OMP
-
-  qudaFreePinned(momentum);
-  qudaFreePinned(gauge);
+  QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+  qudaUpdateU(MILC_PRECISION, eps, &arg);
 
 #ifdef GFTIME
   dtime += dclock();

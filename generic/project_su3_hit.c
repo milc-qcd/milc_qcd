@@ -32,7 +32,7 @@ void project_su3(
    Real z;
    su3_matrix action;
    su2_matrix h;
-   Real conver, old_tr = 0, new_tr;
+   double conver, old_tr = 0, new_tr;
 
    if(tol > 0)
      old_tr = realtrace_su3(w,q)/3.0;
@@ -82,7 +82,15 @@ void project_su3(
       
    } /* hits */
    
+   int nodes = 0;
    if( Nhit > 0 && tol > 0 && conver > tol )
-     printf("project_su3: node %d No convergence: conver = %e\n",
-	    this_node, (double)conver);
+     nodes = 1;
+
+   g_intsum(&nodes);
+   g_doublemax(&conver);
+   if(this_node == 0)
+     if(nodes > 0){
+       printf("project_su3: %d nodes report no convergence: max conver = %e tol = %e\n",
+	      nodes, (double)conver, tol);
+     }
 }

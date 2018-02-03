@@ -11,13 +11,23 @@
 #include "generic_includes.h"
 #include <defines.h>                 /* For SITERAND */
 
+#ifdef HAVE_QUDA
+#include "../include/generic_quda.h"
+#endif
+
 void make_lattice(){
   register int i;		/* scratch */
   short x,y,z,t;		/* coordinates */
   /* allocate space for lattice, fill in parity, coordinates and index */
   node0_printf("Mallocing %.1f MBytes per node for lattice\n",
 	       (double)sites_on_node * sizeof(site)/1e6);
+
+#ifdef HAVE_QUDA
+  initialize_quda();
+  lattice = (site *)qudaAllocatePinned( sites_on_node * sizeof(site) );
+#else
   lattice = (site *)malloc( sites_on_node * sizeof(site) );
+#endif
   if(lattice==NULL){
     printf("NODE %d: no room for lattice\n",this_node);
     terminate(1);
@@ -25,7 +35,7 @@ void make_lattice(){
 
   /* Allocate address vectors */
   for(i=0;i<N_POINTERS;i++){
-    gen_pt[i] = (char **)malloc(sites_on_node*sizeof(char *) );
+    gen_pt[i] = (char **)malloc(sites_on_node * (size_t)sizeof(char *) );
     if(gen_pt[i]==NULL){
       printf("NODE %d: no room for pointer vector\n",this_node);
       terminate(1);
@@ -54,5 +64,9 @@ void free_lattice()
   for(i=0;i<N_POINTERS;i++)
     free(gen_pt[i]);
 
+#ifdef HAVE_QUDA
+  qudaFreePinned(lattice);
+#else
   free(lattice);
+#endif
 }

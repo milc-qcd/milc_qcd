@@ -150,7 +150,7 @@ u_int32type crc32(u_int32type crc, const unsigned char *buf, size_t len);
 #endif
 
 /* Precision */
-#if PRECISION == 1
+#if MILC_PRECISION == 1
 #define QMP_sum_Real QMP_sum_float
 #define QMP_sum_Real_array QMP_sum_float_array
 #define QMP_max_Real QMP_max_float
@@ -385,14 +385,25 @@ void
 initialize_machine(int *argc, char ***argv)
 {
   QMP_status_t i;
-  QMP_thread_level_t provide;
+  QMP_thread_level_t required, provided;
 
-  i = QMP_init_msg_passing(argc, argv, QMP_THREAD_SINGLE, &provide);
+#ifdef HAVE_GRID
+  required = QMP_THREAD_MULTIPLE;
+#else
+  required = QMP_THREAD_SINGLE;
+#endif
+  
+  i = QMP_init_msg_passing(argc, argv, required, &provided);
   if(i!=0) {
     printf("%s\n", QMP_error_string(i));
     printf("com_qmp: Initialize QMP failed.\n");
     fflush(stdout);
-    exit(i);
+    terminate(1);
+  }
+  if(provided != required){
+  printf("com_qmp: required thread-safety level %d can't be provided %d.\n", required, provided);
+    fflush(stdout);
+    terminate(1);
   }
 
   /* check if 32 bit int is set correctly */
@@ -424,6 +435,17 @@ initialize_machine(int *argc, char ***argv)
   n_gathers = 0;
   gather_array_len = 0;
   gather_array = NULL;
+}
+
+/*
+** reset my rank assignment
+*/
+
+void
+reset_machine_rank(int peRank){
+  QMP_comm_t qmp_comm;
+  QMP_comm_split(QMP_comm_get_default(),0,peRank,&qmp_comm);
+  QMP_comm_set_default(qmp_comm);
 }
 
 /*
@@ -469,8 +491,9 @@ terminate(int status)
   time_stamp("termination");
   printf("Termination: node %d, status = %d\n", this_node, status);
   fflush(stdout);
-  g_sync();   /* Added for multijob operation. Is this desirable? */
-  exit(status);
+  //g_sync();   /* Added for multijob operation. Is this desirable? */
+  //exit(status);
+  QMP_abort(status);
 }
 
 /*

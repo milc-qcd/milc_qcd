@@ -129,7 +129,7 @@ write_vector_current_record(QIO_Writer *outfile, int jrand, int nwrite, Real mas
 
   snprintf(recinfo, NRECINFO, "source index %d mass %g", jrand/nwrite, mass);
   QIO_string_set(recxml, recinfo);
-  if(PRECISION == 1)
+  if(MILC_PRECISION == 1)
     status = write_F_R_from_field(outfile, recxml, j_mu, NMU);
   else
     status = write_D_R_from_field(outfile, recxml, j_mu, NMU);
@@ -548,6 +548,11 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	clear_v_field(M_inv_gr[is]);
       
       mat_invert_block_uml_field( nsrc, gr, M_inv_gr, qic_sloppy + j, mass[j], fn_multi[j]);
+
+      node0_printf("f_meas_current checking solutions\n"); fflush(stdout);
+      /* Check solution */
+      for(is = 0; is < nsrc; is++)
+	check_invert_field( gr[i], M_inv_gr[i], mass[j], 1.e-3, fn_multi[j]);
       
       /* For each source, apply current in various directions at the sink */
       for(is = 0; is < nsrc; is++)
@@ -589,7 +594,7 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	} /* is, mu */
     } /* j */
     
-    if((jrand+1) % nwrite == 0){
+    if((jrand+nr) % nwrite == 0){
       wtime -= dclock();
       for(j = 0; j < n_masses; j++){
 #if 0      
@@ -619,6 +624,7 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
   }
   
   node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
+  fflush(stdout);
   
   for(is = 0; is < nsrc; is++){
     destroy_v_field(M_inv_gr[is]);
@@ -678,7 +684,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
     for(i = j; i < Nvecs; i += 8){
       double_complex cc ;
       dot_product(eigVec[i], eigVec[j], &cc, EVEN) ;
-      if(i == j && fabs(cc.real - 1) > 1e-8 || i != j && fabs(cc.real) > 1e-8)
+      if((i == j && fabs(cc.real - 1) > 1e-8) || (i != j && fabs(cc.real) > 1e-8))
 	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
     }
 #endif
@@ -1023,7 +1029,13 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving sloppily for %d %d %d %d\n", ex, ey, ez, et);
 	      clear_v_field(M_inv_gr);
+#if 0
 	      mat_invert_uml_field( gr, M_inv_gr, qic_sloppy + j, mass[j], fn_multi[j]);
+#else
+	      qic_sloppy[j].parity = EVEN;
+	      ks_congrad_field( gr, M_inv_gr, qic_sloppy + j, mass[j], fn_multi[j]);
+	      dslash_fn_field( M_inv_gr, M_inv_gr, ODD, fn_multi[j]);
+#endif
 	      
 	      /* Apply current in various directions at the sink */
 	      for(mu = 0; mu < NMU; mu++){
@@ -1035,9 +1047,10 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 		
 		/* J_mu = imag[gr.M_inv_gr] */
 		/* SUBTRACT the sloppy result */
-		FORALLFIELDSITES(i){
+		FOREVENFIELDSITES(i){
 		  complex cc = su3_dot( gr+i, gr_mu+i );
-		  j_mu[j][NMU*i + mu] -= cc.imag;
+		  //		  j_mu[j][NMU*i + mu] -= cc.imag;
+		  j_mu[j][NMU*i + mu] += cc.imag;
 		}
 
 	      } /* mu */
@@ -1045,7 +1058,13 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	      /* Next, continue to a "precise" solution from the same source */
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving precisely for %d %d %d %d\n", ex, ey, ez, et);
+#if 0
 	      mat_invert_uml_field( gr, M_inv_gr, qic_precise + j, mass[j], fn_multi[j]);
+#else
+	      qic_precise[j].parity = EVEN;
+	      ks_congrad_field( gr, M_inv_gr, qic_precise + j, mass[j], fn_multi[j]);
+	      dslash_fn_field( M_inv_gr, M_inv_gr, ODD, fn_multi[j]);
+#endif
 	      
 	      /* Apply current in various directions at the sink */
 	      for(mu = 0; mu < NMU; mu++){
@@ -1055,11 +1074,13 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 		spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, M_inv_gr);
 		spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
 		
-		/* J_mu = imag[gr.M_inv_gr] */
+		/* J_mu = imag[gr * gr_mu] */
 		/* ADD the precise result, which then gives the difference */
-		FORALLFIELDSITES(i){
+		FOREVENFIELDSITES(i){
 		  complex cc = su3_dot( gr+i, gr_mu+i );
-		  j_mu[j][NMU*i + mu] += cc.imag;
+		  //		  j_mu[j][NMU*i + mu] += cc.imag;
+		  j_mu[j][NMU*i + mu] -= cc.imag;
+		  printf("j_mu %d %d %d %d %d %g %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, -cc.real, -cc.imag);
 		}
 	      } /* mu */
      
@@ -1148,7 +1169,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
     for(i = j; i < Nvecs; i += 8){
       double_complex cc ;
       dot_product(eigVec[i], eigVec[j], &cc, EVEN) ;
-      if(i == j && fabs(cc.real - 1) > 1e-8 || i != j && fabs(cc.real) > 1e-8)
+      if(((i == j) && (fabs(cc.real - 1) > 1e-8)) || ((i != j) && (fabs(cc.real) > 1e-8)))
 	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
     }
 #endif
@@ -1195,7 +1216,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
     } /* j */
   } /* n */
 
-#if 1
+#if 0
   for(j = 0; j < n_masses; j++){
     for(mu = 0; mu < NMU; mu++){
       node0_printf("For mass %g\n", mass[j]);
@@ -1265,7 +1286,13 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving for %d %d %d %d mass %g\n", ex, ey, ez, et, mass[j]);
 	      clear_v_field(M_inv_gr);
+#if 0
 	      mat_invert_uml_field( gr, M_inv_gr, qic + j, mass[j], fn_multi[j]);
+#else
+	      qic[j].parity = EVEN;
+	      ks_congrad_field( gr, M_inv_gr, qic + j, mass[j], fn_multi[j]);
+	      dslash_fn_field( M_inv_gr, M_inv_gr, ODD, fn_multi[j]);
+#endif
 	      
 #if 0
 	      /* DEBUG */
@@ -1297,11 +1324,13 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
 		spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, M_inv_gr);
 		spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
 		
-		/* J_mu = imag[gr.M_inv_gr] */
+		/* J_mu = -imag[gr * gr_mu] */
 		FORALLFIELDSITES(i){
 		  complex cc = su3_dot( gr+i, gr_mu+i );
-		  j_mu[j][NMU*i + mu] += cc.imag;
+		  //		  j_mu[j][NMU*i + mu] += cc.imag;
+		  j_mu[j][NMU*i + mu] -= cc.imag;
 		  //		  printf("j_mu %d %d %d %d %d %g %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, cc.real, cc.imag);
+		  printf("j_mu %d %d %d %d %d %g %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, -cc.real, -cc.imag);
 		}
 
 #if 0
@@ -1759,7 +1788,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
 	    
 	    /* First, sloppy solution */
 	    /* M_inv_gr = M^{-1} gr (same random source for each mass) */
-	    total_iters += mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic_sloppy, fn_multi );
+	    mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic_sloppy, fn_multi );
 	    
 	    for(j = 0; j < n_masses; j++){
 	      
@@ -1783,7 +1812,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
 	    /* Next, get a "precise" solution from the same source */
 	    /* This won't be a continuation of the sloppy solution, because multimass always starts again from 0 */
 	    /* M_inv_gr = M^{-1} gr (same random source for each mass) */
-	    total_iters += mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic_precise, fn_multi );
+	    mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic_precise, fn_multi );
 	    
 	    for(j = 0; j < n_masses; j++){
 	      
@@ -1910,7 +1939,7 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
 	    thin_source( gr, d, ex, ey, ez, et );
 	    
 	    /* M_inv_gr = M^{-1} gr */
-	    total_iters += mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic, fn_multi );
+	    mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic, fn_multi );
 	    
 	    for(j = 0; j < n_masses; j++){
 	      
