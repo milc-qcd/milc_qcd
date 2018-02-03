@@ -311,7 +311,7 @@ int main(int argc, char *argv[])
 	/* If we saved the old prop to a file, we can safely free it */
 	if(oldip0 >= 0 && oldip0 != i)
 	  if(param.saveflag_ks[oldip0] != FORGET){
-	    free_ksp_field(prop[oldip0]);  prop[oldip0] = NULL;
+	    destroy_ksp_field(prop[oldip0]);  prop[oldip0] = NULL;
 	    node0_printf("destroy prop[%d]\n",oldip0);
 	  }
 	
