@@ -253,11 +253,11 @@ static void extract_nV_to_vecs( su3_vector *dest[], int n,
       std::vector<int> x(4);
       indexToCoords(idx, x);
       std::vector<int> x5(1,0);
-      for( int d = 0; d < 4; d++)
+      for( int d = 0; d < 4; d++ )
 	x5.push_back(x[d]);
 
       for( int j = 0; j < n; j++ ){
-	x[0] = j;
+	x5[0] = j;
 
 	ColourVector cVec;
 	peekLocalSite(cVec, *(src->cv), x5);
