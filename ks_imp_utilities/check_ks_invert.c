@@ -21,7 +21,7 @@ void check_ks_invert( char *srcfile, int srcflag,
 {
   char myname[] = "check_ks_invert";
   /* Note: these are absolute, not relative errors. */
-#if (PRECISION == 1)
+#if (MILC_PRECISION == 1)
   Real tol_M = 1e-2;
   Real tol_MdagM = 1e-3;
 #else
@@ -131,7 +131,7 @@ void check_ks_invert( char *srcfile, int srcflag,
 #ifdef HAVE_QIO
   if(srcflag == SAVE_SERIAL)
     save_ks_vector_scidac_from_field(srcfile, srcfilexml, srcrecxml, 
-				     QIO_SINGLEFILE, QIO_SERIAL, src, 1, PRECISION);
+				     QIO_SINGLEFILE, QIO_SERIAL, src, 1, MILC_PRECISION);
 #endif
 
   /* Check the inversion */
@@ -149,10 +149,10 @@ void check_ks_invert( char *srcfile, int srcflag,
     if(ansflag[0] == SAVE_SERIAL){
       if(inverttype == INVERT_M)
 	save_ks_vector_scidac_from_field(ansfile[i], srcfilexml, ansMrecxml, 
-					QIO_SINGLEFILE, QIO_SERIAL, ans[i], 1, PRECISION);
+					QIO_SINGLEFILE, QIO_SERIAL, ans[i], 1, MILC_PRECISION);
       else
 	save_ks_vector_scidac_from_field(ansfile[i], srcfilexml, ansMdMrecxml,
-					QIO_SINGLEFILE, QIO_SERIAL, ans[i], 1, PRECISION);
+					QIO_SINGLEFILE, QIO_SERIAL, ans[i], 1, MILC_PRECISION);
     }
 #endif
   }

@@ -774,7 +774,7 @@ int mat_invert_multi(
      twice the slowest of them.
   */
 
-#if EIGMODE == DEFLATION || EIGMODE == EIGCG
+#if EIGMODE == DEFLATION || EIGMODE == EIGCG || defined(HAVE_GRID)
 
   for(i = 0; i < num_masses; i++)
     tot_iters += mat_invert_uml_field(src, dst[i], &qic[i], ksp[i].mass, fn_multi[i] );

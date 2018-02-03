@@ -11,7 +11,7 @@
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 
 void update_h( Real eps ){
-  int ff_prec = PRECISION;  /* Just use prevailing precision for now */
+  int ff_prec = MILC_PRECISION;  /* Just use prevailing precision for now */
 #ifdef FN
 //    free_fn_links(&fn_links);
 //    free_fn_links(&fn_links_dmdu0);
@@ -25,7 +25,7 @@ void update_h( Real eps ){
     /* First compute M*xxx in temporary vector xxx_odd */
     /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
-    restore_fermion_links_from_site(fn_links, PRECISION);
+    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 #ifdef ONEMASS
     eo_fermion_force_oneterm_site( eps, ((Real)nflavors)/4., F_OFFSET(xxx),
 				   ff_prec, fn_links );

@@ -50,7 +50,7 @@
 
 /* Conversions from prevailing MILC formats to specified formats */
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 
 static void 
 p2d_mat(dsu3_matrix *dest, su3_matrix *src){
@@ -308,8 +308,6 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
 			  , fn_links_t *fn)			 
 {
   char myname[] = "ks_congrad_parity_qphix";
-  double ttime, dctime, tot_cg_time;
-  double dtime;
   double nflop = 1187;
   int iters = 0;
   int otherparity;
@@ -321,18 +319,13 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
   
   assert(qic->parity != EVENANDODD && "EVENANDODD not yet implemented");
   
-#ifdef CGTIME
-  tot_cg_time = -dclock();
-#endif   
+  double tot_cg_time = -dclock();
   
   /* Initialize QPHIX if not already done */
   if(initialize_qphix(QPHIX_PrecisionInt) != QPHIX_SUCCESS){
     node0_printf("%s: Error initializing QPHIX\n",myname);
     terminate(1);
   }
-#ifdef CG_DEBUG
-  dctime = -dclock();
-#endif
   
   /* Set qphix_invert_arg */
   set_qphix_invert_arg( & qphix_invert_arg, qic );
@@ -342,71 +335,36 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
   
   /* Data layout conversions */
   
-#ifdef REMAP
-  double t_sp1, t_sp2, t_l;
-  t_sp1 = -dclock();
-#endif    
-  
+  double t_sp1 = -dclock();
   qphix_src = create_qphix_V_from_field( src, qic->parity);
-  
-#ifdef REMAP
   t_sp1 += dclock();
-  t_sp2 = -dclock();
-#endif    
-  
+
+  double t_sp2 = -dclock();
   qphix_sol = create_qphix_V_from_field( sol, qic->parity);
-  
-#ifdef REMAP
   t_sp2 += dclock();
-  t_l   = -dclock(); 
-#endif     
-  
+
+  double t_l   = -dclock(); 
   links = create_qphix_L_from_fn_links( fn, EVENANDODD );
-  
-#if CG_DEBUG
   t_l   += dclock(); 
-#endif       
-  
-#ifdef REMAP
-  node0_printf("MILC-->QPhiX data layout conversion timings"
-	       " (Unoptimized Gathers).\n"
-	       "\t src-spinor  = %e\n"
-	       "\t dest-spinor = %e\n"
-	       "\t links       = %e\n"
-	       "\t total       = %e\n"
-	       , t_sp1, t_sp2, t_l
-	       , t_sp1 + t_sp2 + t_l
-	       );
-  fflush(stdout);
-#endif
-  
-#ifdef CG_DEBUG
-  dctime +=dclock();
-  dtime = -dclock();
-#endif    
   
 #ifdef CG_DEBUG
   node0_printf("Calling QPHIX_asqtad_invert\n");fflush(stdout);
 #endif
 
+  double dtime = -dclock();
   iters = QPHIX_asqtad_invert( &info, links, &qphix_invert_arg, 
 			       qphix_resid_arg, (MYREAL)mass, qphix_sol, qphix_src );
-  
-#ifdef CG_DEBUG    
   dtime += dclock();
-#endif
   
   get_qphix_resid_arg(qic, qphix_resid_arg, iters);
   
   /* Free the structure */
   destroy_qphix_resid_arg(qphix_resid_arg);
-  
-#ifdef CG_DEBUG
-  ttime = -dclock();
-#endif
-  
+
   /* Copy results back to su3_vector */
+  double t_sl = -dclock();
   unload_qphix_V_to_field( sol, qphix_sol, qic->parity);
+  t_sl += dclock();
   
   /* Free QPHIX fields  */
   
@@ -414,38 +372,45 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
   QPHIX_destroy_V(qphix_sol);     
   QPHIX_asqtad_destroy_L(links);
   
-#ifdef CG_DEBUG
-  ttime +=dclock();
-  dctime +=ttime;
-#endif
-#ifdef CGTIME
   tot_cg_time +=dclock();
-  if(this_node==0) {
-    char *prec_label[2] = {"F", "D"};
-    node0_printf("QPhiX-CONGRAD5: total cg-time = %e "
-		 
-#ifdef CG_DEBUG
-		 "solve-time = %e "
-		 "layout-conversion-time = %e "
-#endif            
-		 "(fn %s) masses = 1 iters = "
-		 "%d mflops = %e "
-#ifdef CG_DEBUG
-		 "mflops(ignore data-conv.) = %e"
-#endif
-		 "\n"
-		 , tot_cg_time
-#ifdef CG_DEBUG
-		 , dtime, dctime
-#endif
-		 , prec_label[PRECISION-1], iters
-		 , (double)(nflop*volume*iters/(1.0e6*tot_cg_time*numnodes()))
-#ifdef CG_DEBUG
-		 , (double)(nflop*volume*iters/(1.0e6*dtime*numnodes()))
-#endif
-		 );
+
+#ifdef CGTIME
+  char *prec_label[2] = {"F", "D"};
+  if(this_node==0){
+    printf("CONGRAD5: time = %e "
+	   "(QPHIX %s) masses = 1 iters = "
+	   "%d mflops = %e "
+	   "\n"
+	   , tot_cg_time
+	   , prec_label[MILC_PRECISION-1], iters
+	   , (double)(nflop*volume*iters/(1.0e6*tot_cg_time*numnodes()))
+	   );
     fflush(stdout);
   }
+#ifdef REMAP
+  if(this_node==0) {
+    printf("MILC<-->QPhiX data layout conversion timings"
+	   "\t src-spinor   = %e\n"
+	   "\t dest-spinors = %e\n"
+	   "\t soln-spinor  = %e\n"
+	   "\t links        = %e\n"
+	   "\t ---------------------------\n"
+	   "\t total remap  = %e\n"
+	   , t_sp1, t_sp2, t_l, t_sl
+	   , t_sp1 + t_sp2 + t_l + t_sl
+	   );
+    printf("CONGRAD5-QPhiX: "
+	   "solve-time = %e "
+	   "(QPhiX %s) masses = 1 iters = %d "
+	   "mflops(ignore data-conv.) = %e "
+	   "\n"
+	   , dtime
+	   , prec_label[MILC_PRECISION-1], iters
+	   , (double)(nflop*volume*iters/(1.0e6*dtime*numnodes()))
+	   );
+    fflush(stdout);
+  }
+#endif
 #endif
 
   return iters;

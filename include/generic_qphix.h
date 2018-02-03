@@ -153,5 +153,6 @@ void imp_gauge_force_qphix_F( Real eps, field_offset mom_off);
 
 void imp_gauge_force_qphix_D( Real eps, field_offset mom_off);
 
+void destroy_qphix_raw4_D_G(dsu3_matrix *raw);
 
 #endif // _GENERIC_QPHIX_H

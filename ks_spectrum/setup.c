@@ -541,11 +541,11 @@ int readin(int prompt) {
 	  status++;
 	}
 	IF_OK status += get_i(stdin, prompt,"precision", &param.qic[0].prec );
-#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU)
-	IF_OK if(param.qic[0].prec != PRECISION){
-	  node0_printf("WARNING: Compiled precision %d overrides request\n",PRECISION);
-	  node0_printf("QOP or CG_GPU compilation is required for mixed precision\n");
-	  param.qic[0].prec = PRECISION;   /* Same for all members of a set*/
+#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU) && !defined(HAVE_QPHIX)
+	IF_OK if(param.qic[0].prec != MILC_PRECISION){
+	  node0_printf("WARNING: Compiled precision %d overrides request\n",MILC_PRECISION);
+	  node0_printf("QOP or CG_GPU or QPHIX compilation is required for mixed precision\n");
+	  param.qic[0].prec = MILC_PRECISION;   /* Same for all members of a set*/
 	}
 #endif
       }
@@ -1153,6 +1153,7 @@ int readin(int prompt) {
   phases_in = OFF;
   rephase( ON );
 
+
 #ifdef U1_FIELD
   /* Read the U(1) gauge field, if wanted */
   start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
@@ -1174,7 +1175,7 @@ int readin(int prompt) {
   fermion_links_want_deps(1);
 #endif
 
-  fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 
 #else
 
@@ -1182,7 +1183,7 @@ int readin(int prompt) {
   fermion_links_want_du0(1);
 #endif
 
-  fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 
 #endif
 

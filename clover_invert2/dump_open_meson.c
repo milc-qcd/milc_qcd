@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdint.h>
 
-#define PRECISION 2
+#define MILC_PRECISION 2
 
 typedef struct {   
   float real;	   
@@ -20,7 +20,7 @@ typedef struct {
    double imag;
 } dcomplex;
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 #define complex fcomplex
 #else
 #define complex dcomplex
@@ -44,7 +44,7 @@ typedef struct { dwilson_vector d[4]; } dspin_wilson_vector;
 typedef struct { dcolor_wilson_vector d[4]; } dwilson_matrix;
 typedef struct { dspin_wilson_vector c[3]; } dwilson_propagator;
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 
 #define wilson_vector       fwilson_vector
 #define half_wilson_vector  fhalf_wilson_vector

@@ -64,7 +64,7 @@ if(warms==0 && trajecs==0 && startflag==CONTINUE)cool_half();
                 /* do conjugate gradient to get (Madj M)inverse * phi  */
 		load_ferm_links(&fn_links);
 		m_iters=ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVEN, &rsq,
+				   niter, rsqmin, MILC_PRECISION, EVEN, &rsq,
 				   &fn_links);
 
 	        /* call plaquette measuring process */

@@ -182,6 +182,14 @@ initialize_machine(int *argc, char ***argv)
 }
 
 /*
+** reset my rank assignment
+*/
+
+void
+reset_machine_rank(int peRank){
+}
+
+/*
 **  version of normal exit for scalar processes
 */
 void

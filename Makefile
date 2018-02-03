@@ -109,7 +109,7 @@ ifeq ($(strip ${COMPILER}),gnu)
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -fopenmp
     OCXXFLAGS += -fopenmp
-    LDFLAGS = -fopenmp
+    LDFLAGS += -fopenmp
   endif
 
 # Other Gnu options
@@ -141,6 +141,9 @@ ifeq ($(strip ${COMPILER}),intel)
   else ifeq ($(strip ${ARCH}),knc)
   ARCH_FLAG = -mmic
   BINEXT=.knc
+  else ifeq ($(strip ${ARCH}),skx)
+  ARCH_FLAG = -xCORE-AVX512
+  BINEXT=.skx
   else ifeq ($(strip ${ARCH}),hsw)
   ARCH_FLAG = -xCORE-AVX2
   BINEXT=.hsw
@@ -158,7 +161,7 @@ ifeq ($(strip ${COMPILER}),intel)
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
     OCXXFLAGS += -qopenmp
-    LDFLAGS = -qopenmp
+    LDFLAGS += -qopenmp
   endif
 
 endif
@@ -193,7 +196,7 @@ ifeq ($(strip ${COMPILER}),cray-intel)
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
     OCXXFLAGS += -qopenmp
-    LDFLAGS = -qopenmp
+    LDFLAGS += -qopenmp
   endif
 
 endif
@@ -268,17 +271,17 @@ WANTQMP = # true or blank.
 # It is assumed that these are the parents of "include" and "lib"
 
 SCIDAC = ${HOME}/scidac/install
+TAG=""
 # Parallel versions
-QMPPAR = ${SCIDAC}/qmp
-QIOPAR = $(SCIDAC)/qio
+QMPPAR = ${SCIDAC}/qmp${TAG}
+QIOPAR = $(SCIDAC)/qio${TAG}
 # Single processor versions
-QMPSNG = ${SCIDAC}/qmp-single
-QIOSNG = $(SCIDAC)/qio-single
-QLA = ${SCIDAC}/qla
+QMPSNG = ${SCIDAC}/qmp-single${TAG}
+QIOSNG = $(SCIDAC)/qio-single${TAG}
+QLA = ${SCIDAC}/qla${TAG}
 # Either version
-QDP = ${SCIDAC}/qdp
-QOPQDP = ${SCIDAC}/qopqdp
-#QOPQDP = ${SCIDAC}/qopqdp-lapack # BG/P
+QDP = ${SCIDAC}/qdp${TAG}
+QOPQDP = ${SCIDAC}/qopqdp${TAG}
 
 QOP = ${QOPQDP}
 
@@ -293,23 +296,23 @@ include ../Make_template_scidac
 #----------------------------------------------------------------------
 # 12. FFTW3 Options
 
-WANTFFTW = #true
+WANTFFTW = #true    # On cori, edison loaded by default, but need "true"
 
 ifeq ($(strip ${WANTFFTW}),true)
+FFTW=/usr/local/fftw
 
-FFTW=${HOME}/fftw/build-gcc
-
-INCFFTW = -I${FFTW}/include
-LIBFFTW = -L${FFTW}/lib -lfftw3 -lfftw3f
-# ifeq ($(strip ${PRECISION}),1)
-#   INCFFTW = -I${FFTW}/float-mvapich2/include
-#   LIBFFTW = -L${FFTW}/float-mvapich2/lib
-#   LIBFFTW += -lfftw3f
-# else
-#   INCFFTW = -I${FFTW}/double-mvapich2/include
-#   LIBFFTW = -L${FFTW}/double-mvapich2/lib
-#   LIBFFTW += -lfftw3
-# endif
+ifeq ($(strip ${PRECISION}),1)
+  FFTW_HEADERS = ${FFTW}/float-mvapich2/include
+  INCFFTW = -I${FFTW_HEADERS}
+  LIBFFTW = -L${FFTW}/float-mvapich2/lib
+  LIBFFTW += -lfftw3f
+else
+  FFTW_HEADERS = ${FFTW}/double-mvapich2/include
+  INCFFTW = -I${FFTW_HEADERS}
+  LIBFFTW = -L${FFTW}/double-mvapich2/lib
+  LIBFFTW += -lfftw3
+endif
+  PACKAGE_HEADERS += ${FFTW_HEADERS}
 endif
 
 #----------------------------------------------------------------------
@@ -325,11 +328,14 @@ endif
 # LDLAPACK = gfortran
 
 # FNAL cluster (Jim's installation of ATLAS)
-#LDFLAGS = -Wl,-rpath,"/usr/local/atlas-3.10-lapack-3.4.2/lib" -L/usr/local/atlas-3.10-lapack-3.4.2/lib
-#LIBS = $(LDFLAGS) -lprimme -lm  -llapack -lptf77blas -lptcblas -latlas -lgfortran -lpthread
+# LDFLAGS = -Wl,-rpath,"/usr/local/atlas-3.10-lapack-3.4.2/lib" -L/usr/local/atlas-3.10-lapack-3.4.2/lib
+# LIBS = $(LDFLAGS) -lprimme -lm  -llapack -lptf77blas -lptcblas -latlas -lgfortran -lpthread
 
-# NERSC Cori
+# NERSC Cori Haswell
 # LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/haswell/lib -lsci_intel
+
+# NERSC Cori KNL
+# LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/mic_knl/lib -lsci_intel
 
 # NERSC Edison
 # LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/ivybridge/lib -lsci_intel
@@ -342,7 +348,9 @@ WANTPRIMME = #true
 # PRIMME version 2.0
 
 ifeq ($(strip ${WANTPRIMME}),true)
-  INCPRIMME = -I${HOME}/PRIMME/include
+  PRIMME_HEADERS = ${HOME}/PRIMME/include
+  INCPRIMME = -I${PRIMME_HEADERS}
+  PACKAGE_HEADERS += ${PRIMME_HEADERS}
   LIBPRIMME = -L${HOME}/PRIMME/lib -lprimme
 endif
 
@@ -370,12 +378,14 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   QUDA_HOME = ${HOME}/quda
 
-  INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
+  INCQUDA = -I${QUDA_HOME}/include -I${QUDA_HOME}/tests
+  PACKAGE_HEADERS += ${QUDA_HOME}/include
   LIBQUDA = -L${QUDA_HOME}/lib -lquda
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
 
   CUDA_HOME = /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
+  PACKAGE_HEADERS += ${CUDA_HOME}/include
   LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
   QUDA_HEADERS = ${QUDA_HOME}/include
 
@@ -422,11 +432,12 @@ WANTQPHIX = #true
 WANT_FN_CG_QPHIX = true
 WANT_GF_QPHIX = true
 
-QPHIX_HOME = ${HOME}/QPhiX/mbench_gf
+QPHIX_HOME = ../QPhiX_MILC/milc-qphix
 
 ifeq ($(strip ${WANTQPHIX}), true)
 
   INCQPHIX = -I${QPHIX_HOME}
+  PACKAGE_HEADERS += ${QPHIX_HOME}
   HAVE_QPHIX = true
   CPHI = -DHAVE_QPHIX
   QPHIX_HEADERS = ${QPHIX_HOME}
@@ -460,6 +471,7 @@ ifeq ($(strip ${WANTQPHIX}), true)
   endif
 
   QPHIX_HEADERS   = ${QPHIX_HOME}
+  PACKAGE_HEADERS += ${QPHIX_HEADERS}
   QPHIX_LIBRARIES = ${QPHIX_HOME}
 
   ifeq ($(strip ${WANT_FN_CG_QPHIX}),true)
@@ -483,7 +495,6 @@ ifeq ($(strip ${WANTGRID}), true)
 
   HAVE_GRID = true
   CPHI = -DHAVE_GRID
-  GRID_HOME = ../Grid/install
 
   ifeq ($(strip ${MPP}),true)
     ifeq ($(strip ${ARCH}),knl)
@@ -498,14 +509,58 @@ ifeq ($(strip ${WANTGRID}), true)
 
   endif
 
+  GRID_HOME = ../Grid/install-${GRID_ARCH}
   GRID_LIBRARIES = ${GRID_HOME}/lib
   LIBGRID = -L${GRID_LIBRARIES} -lGrid
   GRID_HEADERS = ${GRID_HOME}/include
   INCGRID = -I${GRID_HEADERS}
 
-  PACKAGE_HEADERS += ${GRID_HEADERS}
+  PACKAGE_HEADERS += ${GRID_HEADERS}/Grid
   PACKAGE_DEPS += Grid
-  
+
+endif
+
+#----------------------------------------------------------------------
+# 16. QPhiXJ (JLab) Options
+
+WANTQPHIXJ = #true
+
+# Choose vectorization parameters.
+# Choices 4, 8 (or 1 for scalar)
+QPHIXJ_SOALEN=4
+
+ifeq ($(strip ${WANTQPHIXJ}), true)
+
+  HAVE_QPHIXJ = true
+  CPHI += -DHAVE_QPHIXJ
+
+  ifeq ($(strip ${MPP}),true)
+
+    # QMP versions of QPHIXJ
+
+    QPHIXJ_HOME = ../QPhiX_JLab/install
+
+    ifeq ($(strip ${ARCH}),knl)
+      QPHIXJ_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),hsw)
+      QPHIXJ_ARCH = avx2
+    endif
+  else
+    # Scalar version
+    QPHIXJ_ARCH = scalar
+    QPHIXJ_SOALEN = 1
+  endif
+
+  # NOTE: These are QMP versions of QPHIXJ so requires QMP
+
+  QPHIXJ_HOME = ../QPhiX_JLab/install/dslash-${QPHIXJ_ARCH}-s${QPHIXJ_SOALEN}
+  QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/lib
+  LIBQPHIXJ = -L${QPHIXJ_LIBRARIES} -lqphix_solver 
+  QPHIXJ_HEADERS = ${QPHIXJ_HOME}/include
+  INCQPHIXJ = -I${QPHIXJ_HEADERS}
+
+  PACKAGE_HEADERS += ${QPHIXJ_HEADERS}
+  PACKAGE_DEPS += QPhiX_JLab
 
 endif
 
@@ -516,6 +571,8 @@ ifeq ($(strip ${LDLAPACK}),)
   ifeq ($(strip ${WANTQUDA}),true)
     LD  = ${CXX}
   else ifeq ($(strip ${WANTQPHIX}),true)
+    LD  = ${CXX}
+  else ifeq ($(strip ${WANTQPHIXJ}),true)
     LD  = ${CXX}
   else ifeq ($(strip ${WANTGRID}),true)
     LD  = ${CXX}
@@ -738,6 +795,8 @@ CPREFETCH = #
 # CPU_REFINE         Refine on CPU only (if at all), not GPU
 # PRIMME_PRECOND
 # POLY_EIGEN
+# MATVEC_PRECOND
+# CHEBYSHEV_EIGEN
 
 KSCGMULTI = -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
 
@@ -821,12 +880,12 @@ CLMEM = #-DCLOV_LEAN
 #----------------------------------------------------------------------
 # Extra include paths
 
-INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCGRID} ${INCVTUNE}
+INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCQPHIXJ} ${INCGRID} ${INCVTUNE}
 
 #----------------------------------------------------------------------
 #  Extra libraries
 
-LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBGRID} ${LIBVTUNE}
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBQPHIXJ} ${LIBGRID} ${LIBVTUNE}
 
 #------------------------------
 # Summary
@@ -855,7 +914,7 @@ ifeq ($(strip ${MPP}),true)
      COMMTYPE = QMP
      COMMPKG = com_qmp.o
   else
-     COMMTYPE = MPI
+     COMMTYPE = MPI_COMMS
      COMMPKG = com_mpi.o
   endif
 else
@@ -878,6 +937,10 @@ endif
 
 ifeq ($(strip ${WANTQPHIX}),true)
   QPHIXPREC = -DQPHIX_PrecisionInt=${PRECISION}
+endif
+
+ifeq ($(strip ${WANTQPHIXJ}),true)
+  QPHIXPREC = -DQPHIXJ_PrecisionInt=${PRECISION}
 endif
 
 ifeq ($(strip ${WANTGRID}),true)
@@ -903,7 +966,8 @@ endif
 
 include ../Make_template_combos
 
-CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} ${QPHIXPREC} ${GRIDPREC}
+# Temporarily define both precisions until we switch completely to MILC_PRECISION
+CPREC = -DMILC_PRECISION=${PRECISION} -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} ${QPHIXPREC} ${GRIDPREC}
 DARCH = ${CSCIDAC} ${CGPU} ${CPHI}
 
 # Complete set of compiler flags - do not change

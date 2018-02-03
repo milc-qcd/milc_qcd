@@ -228,7 +228,7 @@ readin(int prompt)
       par_buf.qic[i].nsrc = 1;
       par_buf.qic[i].max = par_buf.qic[0].max;
       par_buf.qic[i].nrestart = par_buf.qic[0].nrestart;
-      par_buf.qic[i].prec = PRECISION;
+      par_buf.qic[i].prec = MILC_PRECISION;
       par_buf.qic[i].parity = EVENANDODD;
       /* error for propagator conjugate gradient */
       IF_OK status += get_f(stdin, prompt, "error_for_propagator", 
@@ -335,9 +335,9 @@ readin(int prompt)
 #endif
 
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-  fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 #else
-  fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 #endif
 
   return(0);

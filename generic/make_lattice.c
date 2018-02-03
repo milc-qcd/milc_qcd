@@ -35,7 +35,7 @@ void make_lattice(){
 
   /* Allocate address vectors */
   for(i=0;i<N_POINTERS;i++){
-    gen_pt[i] = (char **)malloc(sites_on_node*sizeof(char *) );
+    gen_pt[i] = (char **)malloc(sites_on_node * (size_t)sizeof(char *) );
     if(gen_pt[i]==NULL){
       printf("NODE %d: no room for pointer vector\n",this_node);
       terminate(1);

@@ -46,6 +46,7 @@ typedef struct msg_tag msg_tag;
 /* Declarations for all exported routines in the com_*.c files */
 
 void initialize_machine(int *argc, char ***argv);
+void reset_machine_rank(int peRank);
 void normal_exit(int status);
 void terminate(int status);
 char *machine_type(void);

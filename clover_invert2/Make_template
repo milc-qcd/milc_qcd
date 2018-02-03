@@ -13,7 +13,7 @@
 #          bi-conjugate gradient inverter
 
 MYINCLUDEDIR = .
-INCLUDEDIR = ../include
+INCLUDEDIR = ../include ../include/qphixj
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
@@ -31,8 +31,8 @@ MY_HEADERS = \
   cl_inv_includes.h \
   quark_action.h
 
-HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
-HEADERS += ${QUDA_HEADERS} ${QPHIX_HEADERS} ${QPHIXJ_HEADERS}
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} \
+	${SCIDAC_HEADERS} ${PACKAGE_HEADERS}
 
 # All required object files
 # Basic set from current directory
@@ -77,10 +77,11 @@ P = $(strip ${PRECISION})
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
 
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
-LIBRARIES += ${QPHIX_LIBRARIES} ${QPHIXJ_LIBRARIES}
+LIBRARIES += ${QPHIX_LIBRARIES} ${QPHIXJ_LIBRARIES} ${GRID_LIBRARIES}
 
 # Default rule for C compilation
 .c.o: ; ${CC} -c ${CFLAGS} $<
+.cc.o: ; ${CXX} -c ${CXXFLAGS} $<
 
 # To force a full remake when changing targets
 LASTMAKE = .lastmake.${MAKEFILE}.${P}.${MYTARGET}
@@ -94,6 +95,7 @@ ${LASTMAKE}: ${ALL_MAKES}
 ALL_MAKES = \
   Make_template \
   ${MAKEFILE} \
+  ../Make_template_qop \
   ../Make_template_combos \
   ../Make_template_scidac \
   ../generic/Make_template \
@@ -108,17 +110,11 @@ ${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
 QUARKIMP = ../generic_ks/imp_actions
 
 quark_action.h: ${QUARKIMP}/${QUARK}
+	@echo Copying quark_action.h from ${QUARKIMP}/${QUARK}
 	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
 
 
 ##### Targets:
-
-# Common compiler macros
-
-# Optional DEFINES for timing:
-# -DIOTIME for I/O timing
-# -DPRTIME for propagator timing
-# -DCGTIME for cg timing and iterations
 
 su3_clov::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -164,16 +160,23 @@ include ../generic_wilson/Make_template
 # Rules for generic_clover routines
 include ../generic_clover/Make_template
 
+# Rules for packages
+QPhiX_JLab:
+	@echo Building QPhiX_JLab
+	cd ../QPhiX_JLab && \
+	./build.sh ${QPHIXJ_ARCH} ${QPHIXJ_SOALEN} ${CC} ${CXX}
+
+packagemake: ${PACKAGE_DEPS}
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
 	cd ${LIBDIR} ;\
-	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" \
-	"PRECISION=${PRECISION}" "COMPILER=${COMPILER}" "ARCH=${ARCH}" all
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" \
+        "ARCH=${ARCH}" "COMPILER=${COMPILER}" all
 
 localmake: ${OBJECTS} ${LIBRARIES}
 	${LD} -o ${MYTARGET} ${LDFLAGS} \
 	${OBJECTS} ${QCDLIB} ${ILIB} -lm
 	touch localmake
 
-target: libmake localmake 
+target: packagemake libmake localmake 

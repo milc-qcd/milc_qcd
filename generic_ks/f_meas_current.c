@@ -129,7 +129,7 @@ write_vector_current_record(QIO_Writer *outfile, int jrand, int nwrite, Real mas
 
   snprintf(recinfo, NRECINFO, "source index %d mass %g", jrand/nwrite, mass);
   QIO_string_set(recxml, recinfo);
-  if(PRECISION == 1)
+  if(MILC_PRECISION == 1)
     status = write_F_R_from_field(outfile, recxml, j_mu, NMU);
   else
     status = write_D_R_from_field(outfile, recxml, j_mu, NMU);
@@ -548,6 +548,11 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	clear_v_field(M_inv_gr[is]);
       
       mat_invert_block_uml_field( nsrc, gr, M_inv_gr, qic_sloppy + j, mass[j], fn_multi[j]);
+
+      node0_printf("f_meas_current checking solutions\n"); fflush(stdout);
+      /* Check solution */
+      for(is = 0; is < nsrc; is++)
+	check_invert_field( gr[i], M_inv_gr[i], mass[j], 1.e-3, fn_multi[j]);
       
       /* For each source, apply current in various directions at the sink */
       for(is = 0; is < nsrc; is++)
@@ -589,7 +594,7 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	} /* is, mu */
     } /* j */
     
-    if((jrand+1) % nwrite == 0){
+    if((jrand+nr) % nwrite == 0){
       wtime -= dclock();
       for(j = 0; j < n_masses; j++){
 #if 0      
@@ -619,6 +624,7 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
   }
   
   node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
+  fflush(stdout);
   
   for(is = 0; is < nsrc; is++){
     destroy_v_field(M_inv_gr[is]);

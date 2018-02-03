@@ -34,7 +34,7 @@ void update_u(Real eps){
 #endif
 
   QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
-  qudaUpdateU(PRECISION, eps, &arg);
+  qudaUpdateU(MILC_PRECISION, eps, &arg);
 
 #ifdef GFTIME
   dtime += dclock();

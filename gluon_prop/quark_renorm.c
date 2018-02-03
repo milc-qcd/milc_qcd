@@ -41,7 +41,7 @@ int xi, j2, j3, j4, parity;
 int multiflag;
 FILE *fp_mom_ks[MAX_NUM_MASS];	/* for writing mom propagator files */
 char filename[50];
- int prec = PRECISION;   /* Make internal precision for CG the same as
+ int prec = MILC_PRECISION;   /* Make internal precision for CG the same as
 			    the prevailing precision */
 
     pix = 2.*PI / (Real)nx;
@@ -78,7 +78,7 @@ char filename[50];
     rephase( ON );	/* Turn staggered phases on */
 
     /* Create fat and long links */
-    restore_fermion_links_from_site(fn_links, PRECISION);
+    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
     fn = get_fm_links(fn_links);
     /* If we want HISQ support, we need the Naik term epsilon index
         here for now we use fn[0] only, which has no epsilon
@@ -132,7 +132,7 @@ char filename[50];
 			/* do a C.G. (source in phi, result in xxx1) */
 		      cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx1),
 					 mass[j_mass], niter, nrestart, 
-					 rsqprop,  PRECISION, 
+					 rsqprop,  MILC_PRECISION, 
 					 EVEN, &finalrsq, fn[0]);
 		      /* Multiply by -Madjoint */
 		      dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), ODD,
@@ -147,7 +147,7 @@ char filename[50];
 			/* do a C.G. (source in phi, result in xxx1) */
 			cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx1),
 					   mass[j_mass], niter, nrestart, 
-					   rsqprop, PRECISION, ODD, &finalrsq,
+					   rsqprop, MILC_PRECISION, ODD, &finalrsq,
 					   fn[0]);
 			/* Multiply by -Madjoint */
 			dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), EVEN,

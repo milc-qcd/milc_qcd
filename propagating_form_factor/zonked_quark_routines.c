@@ -66,7 +66,7 @@ void load_in_zonked_light(int color, int k_zonked_light)
     else MinCG = 0;
 
     /* Load inversion control structure */
-    qic_zonked_light.prec = PRECISION;
+    qic_zonked_light.prec = MILC_PRECISION;
     qic_zonked_light.min = MinCG;
     qic_zonked_light.max = niter_zonked_light;
     qic_zonked_light.nrestart = nrestart_zonked_light;
@@ -141,7 +141,7 @@ void load_in_zonked_light2(int color, int spin, int k_zonked_light,
   else MinCG = 0;
   
   /* Load inversion control structure */
-  qic_zonked_light.prec = PRECISION;
+  qic_zonked_light.prec = MILC_PRECISION;
   qic_zonked_light.min = MinCG;
   qic_zonked_light.max = niter_zonked_light;
   qic_zonked_light.nrestart = nrestart_zonked_light;
@@ -258,7 +258,7 @@ void generate_heavy_zonked(int color, int spin,
   MinCG = nt;
   
   /* Load inversion control structure */
-  qic_zonked_heavy.prec = PRECISION;
+  qic_zonked_heavy.prec = MILC_PRECISION;
   qic_zonked_heavy.min = MinCG;
   qic_zonked_heavy.max = niter_zonked_heavy;
   qic_zonked_heavy.nrestart = nrestart_zonked_heavy;

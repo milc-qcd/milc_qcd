@@ -182,7 +182,7 @@ write_ks_eigenvector(QIO_Writer *outfile, su3_vector *eigVec, double eigVal,
   xml = create_record_xml(eigVal, resid);
   QIO_string_set(recxml, xml);
 
-  if(PRECISION == 1)
+  if(MILC_PRECISION == 1)
     status = write_F3_V_from_field(outfile, recxml, eigVec, 1);
   else
     status = write_D3_V_from_field(outfile, recxml, eigVec, 1);
@@ -252,7 +252,7 @@ read_ks_eigenvector(QIO_Reader *infile, su3_vector *eigVec, double *eigVal){
   QIO_String *recxml = QIO_string_create();
 
 
-  if(PRECISION == 1)
+  if(MILC_PRECISION == 1)
     status = read_F3_V_to_field(infile, recxml, eigVec, 1);
   else
     status = read_D3_V_to_field(infile, recxml, eigVec, 1);

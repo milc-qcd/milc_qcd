@@ -52,7 +52,7 @@ int wf_pt_t() /* return the C.G. iteration number */
 	      /* do a C.G. (source in phi, result in xxx) */
 	      load_ferm_links(&fn_links);
 	      cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				niter, rsqprop, PRECISION, EVEN, &finalrsq,
+				niter, rsqprop, MILC_PRECISION, EVEN, &finalrsq,
 				&fn_links);
 	      /* Multiply by -Madjoint */
 	      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, &fn_links);

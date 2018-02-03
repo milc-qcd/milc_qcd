@@ -47,7 +47,7 @@ int update()  {
 	/* also clear xxx, since zero is our best guess for the solution
 	   with a new random phi field. */
      	if(step==1){
-	  restore_fermion_links_from_site(fn_links, PRECISION);
+	  restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	  fn = get_fm_links(fn_links);
 	  clear_latvec( F_OFFSET(xxx1), EVENANDODD );
 	  grsource_imp( F_OFFSET(phi1), mass1, EVEN, fn[0]);
@@ -60,15 +60,15 @@ int update()  {
         /* do conjugate gradient to get (Madj M)inverse * phi */
         if(step==1){
             /* do conjugate gradient to get (Madj M)inverse * phi */
-	  restore_fermion_links_from_site(fn_links, PRECISION);
+	  restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	  fn = get_fm_links(fn_links);
 	    iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
-				 niter, nrestart, rsqmin, PRECISION, EVEN, 
+				 niter, nrestart, rsqmin, MILC_PRECISION, EVEN, 
 				 &final_rsq, fn[0]);
-	  restore_fermion_links_from_site(fn_links, PRECISION);
+	  restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	  fn = get_fm_links(fn_links);
 	    iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-				 niter, nrestart, rsqmin, PRECISION, EVEN, 
+				 niter, nrestart, rsqmin, MILC_PRECISION, EVEN, 
 				 &final_rsq, fn[n-1]);
 
      	    startaction=d_action();
@@ -87,13 +87,13 @@ int update()  {
 
        	update_u(epsilon*(0.5-nflavors1/8.0));
 	clear_latvec( F_OFFSET(xxx1), EVENANDODD );
-	restore_fermion_links_from_site(fn_links, PRECISION);
+	restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	fn = get_fm_links(fn_links);
      	grsource_imp( F_OFFSET(phi1), mass1, EVEN, fn[0]);
 
        	update_u(epsilon*((nflavors1-nflavors2)/8.0));
 	clear_latvec( F_OFFSET(xxx2), EVENANDODD );
-	restore_fermion_links_from_site(fn_links, PRECISION);
+	restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	fn = get_fm_links(fn_links);
      	grsource_imp( F_OFFSET(phi2), mass2, EVEN, fn[n-1]);
 
@@ -102,18 +102,18 @@ int update()  {
 #endif
 
         /* do conjugate gradient to get (Madj M)inverse * phi */
-	restore_fermion_links_from_site(fn_links, PRECISION);
+	restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	fn = get_fm_links(fn_links);
 	if(n == 2){
 	  iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
-		       niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq, fn[0] );
+		       niter, nrestart, rsqmin, MILC_PRECISION, EVEN, &final_rsq, fn[0] );
 	  iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-		       niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq, fn[1] );
+		       niter, nrestart, rsqmin, MILC_PRECISION, EVEN, &final_rsq, fn[1] );
 	} else {
 	iters += ks_congrad_two_src( F_OFFSET(phi1), F_OFFSET(phi2),
 				     F_OFFSET(xxx1), F_OFFSET(xxx2),
 				     mass1, mass2, niter, nrestart, rsqmin, 
-				     PRECISION, EVEN, &final_rsq,
+				     MILC_PRECISION, EVEN, &final_rsq,
 				     fn[0]);
 	}
 
@@ -138,7 +138,7 @@ int update()  {
 	    /* Dump the computed fermion force from the site structure */
 	    filexml = create_QCDML();
 	    save_color_matrix_scidac_from_site(ansfile, filexml, 
-		       recxml, QIO_PARTFILE,  F_OFFSET(mom[0]), 4, PRECISION);
+		       recxml, QIO_PARTFILE,  F_OFFSET(mom[0]), 4, MILC_PRECISION);
 	    free_QCDML(filexml);
 	  }
 	}
@@ -158,13 +158,13 @@ int update()  {
 #ifdef HMC_ALGORITHM
     /* find action */
     /* do conjugate gradient to get (Madj M)inverse * phi */
-    restore_fermion_links_from_site(fn_links, PRECISION);
+    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
     fn = get_fm_links(fn_links);
     iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
-			 niter, nrestart, rsqmin, PRECISION, EVEN, 
+			 niter, nrestart, rsqmin, MILC_PRECISION, EVEN, 
 			 &final_rsq, fn[0]);
     iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-			 niter, nrestart, rsqmin, PRECISION, EVEN, 
+			 niter, nrestart, rsqmin, MILC_PRECISION, EVEN, 
 			 &final_rsq, fn[n-1]);
     endaction=d_action();
     /* decide whether to accept, if not, copy old link field back */

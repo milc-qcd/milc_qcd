@@ -14,7 +14,7 @@
 
 // this is needed for
 // u3_unitarize_analytic and u3_unit_der_analytic
-#if(PRECISION==2)
+#if(MILC_PRECISION==2)
 #define U3_UNIT_ANALYTIC_FOLLOW_PREC
 #endif
 
