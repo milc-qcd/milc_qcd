@@ -58,12 +58,15 @@ then
             --enable-precision=double \
             --enable-simd=GEN \
             --enable-comms=none \
-	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
-	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc/lib \
+	    --with-lime=${HOME}/scidac/install/qio-single/lib \
+	    --with-fftw=${HOME}/fftw/build-gcc \
             CXX="${PK_CXX}" \
-            CXXFLAGS="-std=c++11 -xCORE-AVX2" \
+            CXXFLAGS="-std=c++11" \
 
              ;;
+
+
+#	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
 
     avx2)
 
@@ -102,7 +105,7 @@ then
   esac
 
   echo "Building in ${BUILDDIR}"
-  ${MAKE}
+  ${MAKE} -j4
 
   echo "Installing in ${INSTALLDIR}"
   ${MAKE} install
