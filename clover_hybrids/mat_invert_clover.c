@@ -18,7 +18,7 @@ int mat_invert( field_offset src, field_offset dest ){
 
 
   /* Load inversion control structure */
-  qic.prec = PRECISION;
+  qic.prec = MILC_PRECISION;
   qic.min = 0;
   qic.max = niter;
   qic.nrestart = 5;

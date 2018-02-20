@@ -124,7 +124,7 @@ int qcdhdr_get_float(char *s, QCDheader *hdr, Real *q) {
   char *p;
   qcdhdr_get_str(s,hdr,&p);
   if (p==NULL) return (FAILURE);
-#if PRECISION == 1
+#if MILC_PRECISION == 1
   sscanf(p,"%f",q);
 #else
   sscanf(p,"%lf",q);

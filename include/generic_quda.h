@@ -17,7 +17,11 @@ static QudaMILCSiteArg_t newQudaMILCSiteArg() {
   arg.link = NULL;
   arg.link_offset = (char*)lattice->link-(char*)lattice;
   arg.mom = NULL;
+#ifdef MOM_SITE
   arg.mom_offset = (char*)lattice->mom-(char*)lattice;
+#else
+  arg.mom_offset = 0;
+#endif
   arg.size = sizeof(*lattice);
   return arg;
 }
@@ -76,6 +80,7 @@ static anti_hermitmat* create_M_quda(void) {
   return (anti_hermitmat*)qudaAllocatePinned(sites_on_node*4*sizeof(anti_hermitmat));
 }
 
+#ifdef MOM_SITE
 /*
   Extract the momentum field elements into a pinned array suitable for DMA transfer to the GPU
  */
@@ -102,6 +107,7 @@ static void copy_to_site_from_M_quda(anti_hermitmat *momentum) {
     fast_copy(s->mom, momentum+4*i, 4*sizeof(anti_hermitmat));
   } END_LOOP_OMP
 }
+#endif
 
 /*
   Free the pinned gauge-field array

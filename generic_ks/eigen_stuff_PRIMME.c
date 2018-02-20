@@ -21,7 +21,8 @@
 
 static int mxv_kalk;
 static int mxv_precond_kalk;
-static imp_ferm_links_t **fn;
+static ks_eigen_param *my_eigen_param;
+static imp_ferm_links_t *my_fn;
 static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme_params *primme, int *ierr) ;
 
 /************************************************************************/
@@ -33,7 +34,7 @@ static void ks_mxv(void *x, long *ldx, void *y, long *ldy,
   site* s;
   int i,j,iblock;
   int maxn;
-  int parity = active_parity;
+  int parity = my_eigen_param->parity;
   double* xx;
   Real* yy;
   su3_vector tmp1[sites_on_node], tmp2[sites_on_node];
@@ -58,7 +59,7 @@ static void ks_mxv(void *x, long *ldx, void *y, long *ldy,
       for(j=0;j<6;j++) *(yy++) = *(xx++);
     }
 
-    Matrix_Vec_mult(tmp1,tmp2,parity,fn[0]);
+    Matrix_Vec_mult(tmp1,tmp2,my_eigen_param,my_fn);
 	
     /* And copy the result back to a complex vector */
     xx=((double*) y)+2*iblock*maxn;
@@ -80,7 +81,7 @@ static void ks_precond_mxv(void *x, long *ldx, void *y, long *ldy,
   site* s;
   int i,j,iblock;
   int maxn;
-  int parity = active_parity;
+  int parity = my_eigen_param->parity;
   double* xx;
   Real* yy;
   su3_vector tmp1[sites_on_node], tmp2[sites_on_node];
@@ -107,7 +108,7 @@ static void ks_precond_mxv(void *x, long *ldx, void *y, long *ldy,
       for(j=0;j<6;j++) *(yy++) = *(xx++);
     }
 
-    Precond_Matrix_Vec_mult(tmp1,tmp2,parity,fn[0]);
+    Precond_Matrix_Vec_mult(tmp1,tmp2,my_eigen_param,my_fn);
 	
     /* And copy the result back to a complex vector */
     xx=((double*) y)+2*iblock*maxn;
@@ -123,10 +124,13 @@ static void ks_precond_mxv(void *x, long *ldx, void *y, long *ldy,
 
 
 /*****************************************************************************/
-int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance, 
-		      Real RelTol, int Nvecs, int MaxIter, 
-		      int Restart, int Kiters, int init ){
+int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal, 
+			 ks_eigen_param *eigen_param, int init){
 
+  my_eigen_param = eigen_param;  /* Save for mxv call-back function */
+  int Nvecs   = eigen_param->Nvecs;
+  int MaxIter = eigen_param->MaxIter;
+  int parity  = eigen_param->parity;
   int maxnev=Nvecs;       /* number of eigenvalues to compute*/
   int maxn;
   double * evals , *rnorms;    /*work space*/
@@ -139,7 +143,6 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
   site* s;
   double *xx;		/* for copying */
   Real *yy;		/* for copying */
-  int parity = active_parity;
 
 //  int total_iters=0 ;
 //  Matrix Array,V ;
@@ -158,7 +161,7 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
   mxv_kalk = 0;
   mxv_precond_kalk = 0;
-  fn = get_fm_links(fn_links);
+  my_fn = get_fm_links(fn_links)[0];
 
   if(parity == EVENANDODD){
     maxn=sites_on_node*3;			/*local size of matrix*/
@@ -210,7 +213,7 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
 #else
   primme.target=primme_smallest;
 #endif
-  primme.eps=Tolerance;
+  primme.eps=eigen_param->tol;
   primme.numEvals=maxnev;
   primme.initSize=Nvecs;
 #ifdef PRIMME_PRECOND
@@ -232,7 +235,7 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
   ret = zprimme(evals, (Complex_Z*)evecs, rnorms, &primme);
 
   if (ret!=0){ /*check return value */
-    node0_printf("Kalkreuter_PRIMME: zprimme error\nCall stack:\n");
+    node0_printf("ks_eigensolve_PRIMME: zprimme error\nCall stack:\n");
     /**    primme_PrintStackTrace(primme); NOT SUPPORTED in 2.0**/ 
     fflush(stdout);
     exit(1);
@@ -253,7 +256,7 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
 #ifdef MATVEC_PRECOND
   /* Reset eigenvalues from eigenvectors */
-  reset_eigenvalues(eigVec, eigVal, Nvecs, parity, fn[0]);
+  reset_eigenvalues(eigVec, eigVal, Nvecs, parity, my_fn);
 #endif
 
 #ifdef EIGTIME
@@ -291,11 +294,9 @@ static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme
 
 /* Stub to allow compilation (but not execution) in case PRIMME is not available */
 
-int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance, 
-		      Real RelTol, int Nvecs, int MaxIter, 
-		      int Restart, int Kiters, int init )
+ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal, ks_eigen_param *eigen_param, int init)
 {
-  node0_printf("Kalkreuter_PRIMME: Requires compilation with the PRIMME package\n");
+  node0_printf("ks_eigensolve_PRIMME: Requires compilation with the PRIMME package\n");
   terminate(1);
 
   return 0;

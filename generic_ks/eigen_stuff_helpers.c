@@ -57,9 +57,11 @@ opposite_parity(int parity){
 
 /************************************************************************/
 static void 
-DdagD( su3_vector *res, su3_vector *src, int parity, imp_ferm_links_t *fn )
+DdagD( su3_vector *res, su3_vector *src, ks_eigen_param *eigen_param, imp_ferm_links_t *fn )
 {
   int i;
+  int parity = eigen_param->parity;
+  otherparity = opposite_parity(parity);
   
   dslash_fn_field_special(src , temp, otherparity, tags1, dslash_start, fn) ;
   dslash_fn_field_special(temp, res , parity     , tags2, dslash_start, fn) ;
@@ -112,15 +114,17 @@ poly( double am, double aM, int p, double x) {
 
 /* Use Chebyshev preconditioned operator p(DdagD) vec */
 
+#if defined(PRIMME) || defined(ARPACK)
 static void 
-PDdagD( su3_vector *res, su3_vector *src, int parity, imp_ferm_links_t *fn )
+PDdagD( su3_vector *res, su3_vector *src, ks_eigen_param *eigen_param, imp_ferm_links_t *fn )
 
 {
   /* Chebyshev operator */
 
-  double am = minE;   /* Lower focus of window of exclusion */
-  double aM = maxE;   /* Upper focus of window of exclusion */
-  int p = cheb_p;     /* Degree. Must be >= 1 */
+  int parity = eigen_param->parity;
+  double am = eigen_param->poly.minE;   /* Lower focus of window of exclusion */
+  double aM = eigen_param->poly.maxE;   /* Upper focus of window of exclusion */
+  int p = eigen_param->poly.norder;     /* Degree. Must be >= 1 */
   
   double delta = 0.5*(aM-am);
   double theta = 0.5*(aM+am);
@@ -137,7 +141,7 @@ PDdagD( su3_vector *res, su3_vector *src, int parity, imp_ferm_links_t *fn )
   /* double x1    = d1*x + d2; */
   su3_vector *x1 = create_v_field();
   su3_vector *y1 = create_v_field();
-  DdagD(y1, src, parity, fn);
+  DdagD(y1, src, eigen_param, fn);
   saxpby_v_field( x1, d1, y1, d2, x0);
 
   /* double x2    = x1; */
@@ -155,7 +159,7 @@ PDdagD( su3_vector *res, su3_vector *src, int parity, imp_ferm_links_t *fn )
     d3 = -sigma*sig1;
     
     /* x2 = theta*(d3*x0 + d2*x1 + d1*x*x1); */
-    DdagD(y1, x1, parity, fn);
+    DdagD(y1, x1, eigen_param, fn);
     saxpbypcz_v_field( x2, d3, x0, d2, x1, d1, y1);
 
     /* x0 = x1; */
@@ -175,14 +179,14 @@ PDdagD( su3_vector *res, su3_vector *src, int parity, imp_ferm_links_t *fn )
   destroy_v_field(x1);
   destroy_v_field(x0);
 }
-
+#endif
 /*****************************************************************************/
 /* The Matrix_Vec_mult and cleanup_Matrix() */
 
-void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
+void Matrix_Vec_mult(su3_vector *src, su3_vector *res, 
+		     ks_eigen_param *eigen_param,
                      imp_ferm_links_t *fn ){
 
-  int otherparity = opposite_parity(parity);
   /* store last source so that we know when to reinitialize the message tags */
   static su3_vector *last_src=NULL ;
 
@@ -198,21 +202,22 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
   }
 
 #ifdef MATVEC_PRECOND
-  PDdagD(res, src, parity, fn);
+  PDdagD(res, src, eigen_param, fn);
 #else
-  DdagD(res, src, parity, fn);
+  DdagD(res, src, eigen_param, fn);
 #endif
 
   dslash_start = 0 ;
 }
 
 /*****************************************************************************/
+#if defined(PRIMME) || defined(ARPACK)
+
 /* The Matrix_Vec_mult and cleanup_Matrix() */
 
-void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
+void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *eigen_param,
 			     imp_ferm_links_t *fn ){
 
-  int otherparity = opposite_parity(parity);
   /* store last source so that we know when to reinitialize the message tags */
   static su3_vector *last_src=NULL ;
 
@@ -227,10 +232,11 @@ void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
     last_src = src ;
   }
 
-  PDdagD(res, src, parity, fn);
+  PDdagD(res, src, eigen_param, fn);
 
   dslash_start = 0 ;
 }
+#endif
 
 /************************************************************************/
 /* Deallocates the tags and the temporaries the Matrix_Vec_mult needs */
@@ -394,7 +400,7 @@ static void dvecmagsq(double magsq[], su3_vector *vec[], int parity, int n) {
 /*****************************************************************************/
 /* Returns vec2 = a*vec1   a is a double vec2 can be vec1*/
 static void double_vec_mult(double *a, su3_vector *vec1, 
-		     su3_vector *vec2, int parity){
+			    su3_vector *vec2, int parity){
   
   register site *s;
   register  int i;
@@ -408,13 +414,15 @@ static void double_vec_mult(double *a, su3_vector *vec1,
 /* Construct odd-site eigenvectors from even                                 */
 /* (Simply multiply even-site vectors by dslash and normalize                */
 
-void construct_eigen_odd(su3_vector *eigVec[], double eigVal[], int Nvecs, imp_ferm_links_t *fn){
+void construct_eigen_odd(su3_vector *eigVec[], double eigVal[], 
+			 ks_eigen_param *eigen_param, imp_ferm_links_t *fn){
   
   char myname[] = "construct_eigen_odd";
   int i,j;
   double *magsq;
+  int Nvecs = eigen_param->Nvecs;
 
-  if(active_parity != EVEN){
+  if(eigen_param->parity != EVEN){
     node0_printf("%s: ERROR. active_parity must be EVEN\n", myname);
     terminate(1);
   }

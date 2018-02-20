@@ -26,7 +26,7 @@ typedef struct {
   double m00im,m11im,m22im; 
   double space; } danti_hermitmat;
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 
 #define su3_matrix      fsu3_matrix
 #define su3_vector      fsu3_vector
@@ -51,7 +51,7 @@ typedef struct {
 typedef struct { fcomplex t4[3][3][3][3]; } fsu3_tensor4;
 typedef struct { dcomplex t4[3][3][3][3]; } dsu3_tensor4;
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 #define su3_tensor4 fsu3_tensor4
 #else
 #define su3_tensor4 dsu3_tensor4
@@ -98,7 +98,7 @@ typedef struct { dwilson_vector d[4]; } dspin_wilson_vector;
 typedef struct { dcolor_wilson_vector d[4]; } dwilson_matrix;
 typedef struct { dspin_wilson_vector c[3]; } dwilson_propagator;
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 
 #define wilson_vector       fwilson_vector
 #define half_wilson_vector  fhalf_wilson_vector
@@ -563,7 +563,7 @@ void byterevn64(int32type w[], int n);
    and double precision */
 
 #if defined SSE_INLINE || defined SSE_GLOBAL_INLINE
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 #ifdef SSEOPTERON
 #include "../sse_opteron/include/inline_sse.h"
 #else
@@ -593,7 +593,7 @@ void byterevn64(int32type w[], int n);
 /********************************************************************/
 /* Our available single-precision SSE macros */
 
-#if (PRECISION == 1)
+#if (MILC_PRECISION == 1)
 
 #define add_su3_vector(...) _inline_sse_add_su3_vector(__VA_ARGS__)
 #define mult_su3_nn(...) _inline_sse_mult_su3_nn(__VA_ARGS__)
@@ -613,7 +613,7 @@ void byterevn64(int32type w[], int n);
 
 /********************************************************************/
 
-#else // PRECISION == 2
+#else // MILC_PRECISION == 2
 
 /********************************************************************/
 /* Our available double-precision SSE macros */
@@ -632,7 +632,7 @@ void byterevn64(int32type w[], int n);
 
 /********************************************************************/
 
-#endif // PRECISION
+#endif // MILC_PRECISION
 #endif // SSE_GLOBAL_INLINE
 
 #if defined C_GLOBAL_INLINE

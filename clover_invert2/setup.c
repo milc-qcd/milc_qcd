@@ -484,10 +484,10 @@ int readin(int prompt) {
 			    &param.qic[i].relresid );
       IF_OK status += get_i(stdin, prompt,"precision", &param.qic[i].prec );
 #if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU)
-      if(param.qic[i].prec != PRECISION){
-	node0_printf("WARNING: Compiled precision %d overrides request\n",PRECISION);
+      if(param.qic[i].prec != MILC_PRECISION){
+	node0_printf("WARNING: Compiled precision %d overrides request\n",MILC_PRECISION);
 	node0_printf("QOP or CG_GPU compilation is required for mixed precision\n");
-	param.qic[i].prec = PRECISION;
+	param.qic[i].prec = MILC_PRECISION;
       }
 #endif
       param.qic[i].max = max_cg_iterations;

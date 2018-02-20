@@ -44,6 +44,10 @@ GAUGE_OBJECTS = \
   show_generic_opts.o \
   show_scidac_opts.o
 
+ifeq ($(strip ${WANTGRID}),true)
+  GAUGE_OBJECTS += gridMap.o milc_to_grid_utilities.o
+endif
+
 ifeq ($(strip ${HAVEQOP}),true)
   GAUGE_OBJECTS += map_milc_to_qopqdp.o milc_to_qop_utilities.o
 endif
@@ -57,7 +61,7 @@ ifeq ($(strip ${WANTQPHIX}),true)
 endif
 
 ifeq ($(strip ${WANTQPHIXJ}),true)
-  GAUGE_OBJECTS += map_milc_to_qphixj.o milc_to_qphixj_utilities.o
+  GAUGE_OBJECTS += qphixjClovMap.o milc_to_qphixj_utilities.o
 endif
 
 ifeq ($(strip ${HAVEFFTW}),true)
@@ -236,6 +240,12 @@ endif
 # No other choice
   CONGRAD_EO = d_congrad5_eo.o d_congrad_opt.o mat_invert.o ks_invert.o report_invert_status.o
 
+# GRID support
+  
+  CONGRAD_FN_GRID = d_congrad5_two_src.o d_congrad5_fn_grid.o \
+     d_congrad5_fn_grid_D.o d_congrad5_fn_grid_F.o d_congrad5_fn_milc.o \
+     gridStaggInvert.o ${CONGRAD_FN_BASE}
+
 # GPU support
 
   CONGRAD_FN_GPU = d_congrad5_fn_gpu.o ${CONGRAD_FN_MILC_CPU}
@@ -253,12 +263,12 @@ endif
 
 ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
   CONGRAD_FN_MILC = ${CONGRAD_FN_GPU}
+else ifeq ($(strip ${WANTGRID}),true)
+  CONGRAD_FN_MILC = ${CONGRAD_FN_GRID}
+else ifeq ($(strip ${WANTQPHIX}),true)
+  CONGRAD_FN_MILC = ${CONGRAD_FN_QPHIX}
 else
-  ifeq ($(strip ${WANTQPHIX}),true)
-    CONGRAD_FN_MILC = ${CONGRAD_FN_QPHIX}
-  else
-    CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
-  endif
+  CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
 endif
 
 ######################################################################
@@ -276,29 +286,29 @@ endif
 
   MULTI_INV_FN_GPU = ks_multicg_offset_gpu.o ${MULTI_INV_FN_MILC_CPU}
   
-# QPhiX support
+# Grid support
 
-  MULTI_INV_FN_QPHIX = ks_multicg_offset_qphix.o ${MULTI_INV_FN_MILC_CPU} \
-    ks_multicg_offset_qphix_D.o  ks_multicg_offset_qphix_F.o
+  MULTI_INV_FN_GRID = ks_multicg_offset_grid.o ${MULTI_INV_FN_MILC_CPU} \
+    ks_multicg_offset_grid_D.o  ks_multicg_offset_grid_F.o
   
+# QPHIX support
+
+  MULTI_INV_FN_QPHIX = ks_multicg.o ks_multicg_offset_qphix.o \
+    ks_multicg_offset_qphix_D.o  ks_multicg_offset_qphix_F.o
+
 # Standard QOP combinations
 
   MULTI_INV_FN_QOP = ks_multicg.o ks_multicg_offset_qop.o \
     ks_multicg_offset_qop_D.o  ks_multicg_offset_qop_F.o
 
-# Standard QPHIX combinations
-
-  MULTI_INV_FN_QPHIX = ks_multicg.o ks_multicg_offset_qphix.o \
-    ks_multicg_offset_qphix_D.o  ks_multicg_offset_qphix_F.o
-
 ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
   MULTI_INV_FN_MILC = ${MULTI_INV_FN_GPU}
+else ifeq ($(strip ${WANTGRID}),true)
+  MULTI_INV_FN_MILC = ${MULTI_INV_FN_GRID}
+else ifeq ($(strip ${WANTQPHIX}),true)
+  MULTI_INV_FN_MILC = ${MULTI_INV_FN_QPHIX}
 else
-  ifeq ($(strip ${WANTQPHIX}),true)
-    MULTI_INV_FN_MILC = ${MULTI_INV_FN_QPHIX}
-  else
-    MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_CPU}
-  endif
+  MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_CPU}
 endif
 
 ######################################################################
@@ -364,14 +374,18 @@ endif
 # GPU support 
   CONGRAD_CL_MILC_GPU = d_bicgilu_cl_gpu.o ${CONGRAD_CL_BASE}
 
-# QPHIXJ support
-  CONGRAD_CL_QPHIXJ =  ${CONGRAD_CL_BASE}
+# QPHIXJ support 
+#  CONGRAD_CL_MILC_QPHIXJ = d_bicgilu_cl_qphixj.o d_bicgilu_cl_qphixj_F.o \
+#      d_bicgilu_cl_qphixj_D.o ${CONGRAD_CL_BASE}
 
+# QPHIXJ support 
+  CONGRAD_CL_MILC_QPHIXJ = d_bicgilu_cl_qphixj.o qphixjClovInvert.o \
+      d_bicgilu_cl_qphixj_F.o d_bicgilu_cl_qphixj_D.o ${CONGRAD_CL_BASE}
 
 ifeq ($(strip ${HAVE_CL_GPU}),true)
   CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_GPU}
-else ifeq ($(strip ${HAVE_CL_QPHIXJ}),true)
-  CONGRAD_CL_MILC = ${CONGRAD_CL_QPHIXJ}
+else ifeq ($(strip ${HAVE_QPHIXJ}),true)
+  CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_QPHIXJ}
 else
   CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_CPU}
 endif
@@ -409,7 +423,7 @@ else
 endif
 
 ######################################################################
-# QOP or MILC/GPU or QPHIX
+# QOP or MILC/GPU or QPHIX or GRID
 ######################################################################
 
 ifeq ($(strip ${HAVEQOP}),true)

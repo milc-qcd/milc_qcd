@@ -223,7 +223,7 @@ int main(int argc, char **argv)
 	     iterations */
 
 	  /* Load inversion control structure */
-	  qic.prec = PRECISION;
+	  qic.prec = MILC_PRECISION;
 	  qic.min = 0;
 	  qic.max = MaxMR;
 	  qic.nrestart = nrestart;

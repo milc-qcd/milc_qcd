@@ -18,7 +18,7 @@ void
 imp_gauge_force_qphix ( Real eps, field_offset mom_off )
 {
 
-  if(PRECISION == 1)
+  if(MILC_PRECISION == 1)
     imp_gauge_force_qphix_F( eps, mom_off);
   else
     imp_gauge_force_qphix_D( eps, mom_off);

@@ -96,7 +96,7 @@ initialize_qphix(int precision){
   node0_printf("Initializing QPhiX for precision %d\n", precision);
   node0_printf("NumCores = %d, ThreadsPerCore = %d, minCt = %d\n", numCores, threads_per_core, minCt);
 
-  status = QPHIX_init(&layout, precision);
+  status = QPHIX_init(&layout);
 
   if(status){
     node0_printf("Error initializing QPhiX\n");

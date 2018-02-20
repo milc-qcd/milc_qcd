@@ -274,28 +274,33 @@ int readin(int prompt) {
     /*------------------------------------------------------------*/
 
     /* number of eigenvectors */
-    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.Nvecs);
+    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigen_param.Nvecs);
 
     /* max  Rayleigh iterations */
-    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.MaxIter);
+    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
 
     /* Restart  Rayleigh every so many iterations */
-    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.Restart);
+    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
 
     /* Kalkreuter iterations */
-    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.Kiters);
+    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
 
      /* Tolerance for the eigenvalue computation */
-    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigenval_tol);
+    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
 
      /* error decrease per Rayleigh minimization */
-    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.error_decr);
+    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
 
-#ifdef CHEBYSHEV_EIGEN
+#ifdef POLY_EIGEN
 	/* Chebyshev preconditioner */
-	IF_OK status += get_i(stdin, prompt,"chebyshev_order", &param.cheb_p);
-	IF_OK status += get_f(stdin, prompt,"chebyshev_minE", &param.minE);
-	IF_OK status += get_f(stdin, prompt,"chebyshev_maxE", &param.maxE);
+	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
+	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
+	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
+	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
+
+	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
+	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
+	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
 #endif
     /* eigenvector input */
     IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
@@ -536,11 +541,11 @@ int readin(int prompt) {
 	  status++;
 	}
 	IF_OK status += get_i(stdin, prompt,"precision", &param.qic[0].prec );
-#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU)
-	IF_OK if(param.qic[0].prec != PRECISION){
-	  node0_printf("WARNING: Compiled precision %d overrides request\n",PRECISION);
-	  node0_printf("QOP or CG_GPU compilation is required for mixed precision\n");
-	  param.qic[0].prec = PRECISION;   /* Same for all members of a set*/
+#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU) && !defined(HAVE_QPHIX)
+	IF_OK if(param.qic[0].prec != MILC_PRECISION){
+	  node0_printf("WARNING: Compiled precision %d overrides request\n",MILC_PRECISION);
+	  node0_printf("QOP or CG_GPU or QPHIX compilation is required for mixed precision\n");
+	  param.qic[0].prec = MILC_PRECISION;   /* Same for all members of a set*/
 	}
 #endif
       }
@@ -1075,12 +1080,15 @@ int readin(int prompt) {
   /* Broadcast parameter values kept on the heap */
   broadcast_heap_params();
 
-#if EIGMODE == DEFLATION && defined(CHEBYSHEV_EIGEN)
-  /* Parameters for Chebyshev preconditioning */
-    cheb_p = param.cheb_p;
-    minE = param.minE;
-    maxE = param.maxE;
-#endif
+//#if EIGMODE == DEFLATION && defined(POLY_EIGEN)
+//  /* Parameters for Chebyshev preconditioning */
+//    which_poly = par_buf.which_poly ;
+//    norder = par_buf.norder;
+//    minE = par_buf.minE;
+//    maxE = par_buf.maxE;
+//    poly_param_1 = par_buf.poly_param_1 ;
+//    poly_param_2 = par_buf.poly_param_2 ;
+//#endif
 
   /* Construct the eps_naik table of unique Naik epsilon coefficients.
      Also build the hash table for mapping a mass term to its Naik
@@ -1145,6 +1153,7 @@ int readin(int prompt) {
   phases_in = OFF;
   rephase( ON );
 
+
 #ifdef U1_FIELD
   /* Read the U(1) gauge field, if wanted */
   start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
@@ -1166,7 +1175,7 @@ int readin(int prompt) {
   fermion_links_want_deps(1);
 #endif
 
-  fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 
 #else
 
@@ -1174,7 +1183,7 @@ int readin(int prompt) {
   fermion_links_want_du0(1);
 #endif
 
-  fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 
 #endif
 
@@ -1224,14 +1233,14 @@ int readin(int prompt) {
 
 #if EIGMODE == DEFLATION
   /* malloc for eigenpairs */
-  eigVal = (double *)malloc(param.Nvecs*sizeof(double));
-  eigVec = (su3_vector **)malloc(param.Nvecs*sizeof(su3_vector *));
-  for(i=0; i < param.Nvecs; i++)
+  eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
+  eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
+  for(i=0; i < param.eigen_param.Nvecs; i++)
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
   /* Do whatever is needed to get eigenpairs */
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &param.Nvecs, eigVal, eigVec, 1);
+			   &param.eigen_param.Nvecs, eigVal, eigVec, 1);
   if(param.fixflag != NO_GAUGE_FIX){
     node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
   }

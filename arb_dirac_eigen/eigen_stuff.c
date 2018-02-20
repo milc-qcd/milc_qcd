@@ -491,9 +491,9 @@ void RotateBasis(wilson_vector **eigVec, Matrix *V, int parity)
   free(Tmp) ;
 }
 
-int Kalkreuter(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
-	       Real RelTol, int Nvecs, int MaxIter, 
-	       int Restart, int Kiters, int parity)
+int ks_eigensolve(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
+		  Real RelTol, int Nvecs, int MaxIter, 
+		  int Restart, int Kiters, int parity)
 {
   int total_iters=0 ;
   int j,k;

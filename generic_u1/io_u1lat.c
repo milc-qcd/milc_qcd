@@ -87,7 +87,7 @@ int ask_ending_u1_lattice(FILE *fp,
   char savebuf[256];
   char myname[] = "ask_ending_u1_lattice";
   
-  if(prompt!=0)
+  if(prompt==1)
     {
       printf("enter: 'forget_u1', 'save_u1_ascii', \n");
       printf("'save_u1_serial' or 'save_u1_parallel: \n");
@@ -122,7 +122,7 @@ int ask_ending_u1_lattice(FILE *fp,
   
   if(*flag!=FORGET)
     {
-      if(prompt!=0) printf("enter filename: \n");
+      if(prompt==1) printf("enter filename: \n");
       status=fscanf(fp,"%s",filename);
       if(status !=1)
 	{
@@ -177,7 +177,7 @@ gauge_file *save_u1_lattice(int flag,char *filename)
     node0_printf("Saved lattice to ascii file %s!\n",gf->filename);
     node0_printf("Time to save = %e\n",dtime);
   }
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
   node0_printf("\nCHECK U(1) PLAQ: %e %e\n\n",g_splaq,g_tplaq);
 #else
   node0_printf("\nCHECK U(1) PLAQ: %.16e %.16e\n\n",g_splaq,g_tplaq);
@@ -410,7 +410,7 @@ int ask_starting_u1_lattice(FILE *fp,
   char savebuf[256];
   char myname[] = "ask_starting_u1_lattice";
   
-  if(prompt!=0)
+  if(prompt==1)
     {
       printf("enter: 'fresh_u1', 'continue_u1' or 'reload_u1_ascii'\n");
       printf(" or 'reload_u1_serial' or 'reload_u1_parallel\n");
@@ -449,7 +449,7 @@ int ask_starting_u1_lattice(FILE *fp,
   /*read name of file and load it */
   if(*flag!=FRESH && *flag!=CONTINUE)
     {
-      if(prompt!=0) printf("enter file containing lattice:\n");
+      if(prompt==1) printf("enter file containing lattice:\n");
       status=fscanf(fp,"%s",filename);
       if(status!=1)
 	{
@@ -498,7 +498,7 @@ gauge_file *reload_u1_lattice(int flag, char *filename)
     node0_printf("Time to reload gauge configuration = %e\n",dtime);
   u1plaq(&g_splaq,&g_tplaq);
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
   node0_printf("\nCHECK U(1) PLAQ: %e %e\n\n",g_splaq,g_tplaq);
   fflush(stdout);
 #else

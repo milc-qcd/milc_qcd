@@ -28,14 +28,11 @@ Number_of_eigenvals 32
 Max_Rayleigh_iters 2000
 Restart_Rayleigh 10
 
-# Outer loop iterations
-Kalkreuter_iters 20
-
 # Eigenvalue tolerance
-eigenval_tolerance 1.0e-7
+eigenval_tolerance 5.0e-14
 
-# See README.ks_eigen - For optimizing the RR CG
-error_decrease .3
+# Eigenvector file
+forget_ks_eigen
 
 # Input lattice
 reload_serial ../../binary_samples/lat.sample.inst

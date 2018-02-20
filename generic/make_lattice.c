@@ -23,6 +23,7 @@ void make_lattice(){
 	       (double)sites_on_node * sizeof(site)/1e6);
 
 #ifdef HAVE_QUDA
+  initialize_quda();
   lattice = (site *)qudaAllocatePinned( sites_on_node * sizeof(site) );
 #else
   lattice = (site *)malloc( sites_on_node * sizeof(site) );
@@ -34,7 +35,7 @@ void make_lattice(){
 
   /* Allocate address vectors */
   for(i=0;i<N_POINTERS;i++){
-    gen_pt[i] = (char **)malloc(sites_on_node*sizeof(char *) );
+    gen_pt[i] = (char **)malloc(sites_on_node * (size_t)sizeof(char *) );
     if(gen_pt[i]==NULL){
       printf("NODE %d: no room for pointer vector\n",this_node);
       terminate(1);

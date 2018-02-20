@@ -160,7 +160,7 @@ ks_congrad_two_src(	/* Return value is number of iterations taken */
   qic.resid     = sqrt(rsqmin);
   qic.relresid  = 0;     /* Suppresses this test */
 
-  if(PRECISION == 1)
+  if(MILC_PRECISION == 1)
     iterations_used = ks_congrad_two_src_F(src1, src2, dest1, 
 					   dest2, &qic, mass1, mass2, fn);
   else

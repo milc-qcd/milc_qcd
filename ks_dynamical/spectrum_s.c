@@ -46,7 +46,7 @@ int spectrum() /* return the C.G. iteration number */
       /* do a C.G. */
       load_ferm_links(&fn_links);
       cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			niter, rsqprop, PRECISION, EVENANDODD, &finalrsq,
+			niter, rsqprop, MILC_PRECISION, EVENANDODD, &finalrsq,
 			&fn_links);
       
       /* fill the hadron matrix */

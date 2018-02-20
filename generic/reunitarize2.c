@@ -217,7 +217,7 @@ void reunitarize_gpu() {
 #endif
 
   QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
-  qudaUnitarizeSU3(PRECISION, TOLERANCE, &arg);
+  qudaUnitarizeSU3(MILC_PRECISION, TOLERANCE, &arg);
 
 #ifdef GFTIME
   dtime += dclock();

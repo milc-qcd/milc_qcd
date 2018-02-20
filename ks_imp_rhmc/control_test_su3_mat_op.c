@@ -34,11 +34,11 @@ int main(void) {
   /* unit matrix */
   unity_su3mat( &Unit );
 
-#if ( PRECISION==1 )
+#if ( MILC_PRECISION==1 )
   printf( "Testing in SINGLE precision\n" );
 #else
   printf( "Testing in DOUBLE precision\n" );
-#endif /* PRECISION */
+#endif /* MILC_PRECISION */
 
 
   /* MAIN REPETITION LOOP */

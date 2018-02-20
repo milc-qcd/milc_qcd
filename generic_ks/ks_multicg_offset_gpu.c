@@ -93,7 +93,7 @@ int ks_multicg_offset_field_gpu(
   dtimec += dclock();
   if(this_node==0){
     printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
-	   dtimec, prec_label[PRECISION-1], qic->final_iters, 
+	   dtimec, prec_label[MILC_PRECISION-1], qic->final_iters, 
 	   (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
 #endif
@@ -124,7 +124,9 @@ int ks_multicg_offset_field_gpu(
   for(i=0; i<num_offsets; ++i){
     tmp = ksp[i].offset;
     offset[i] = tmp;
+#if defined(SET_QUDA_VERBOSE) || defined(SET_QUDA_DEBUG_VERBOSE)
     node0_printf("offset[%d] = %g\n",i,offset[i]);
+#endif
   }
 
 
@@ -145,7 +147,9 @@ int ks_multicg_offset_field_gpu(
 #endif
    }
    relative_residual[i] = qic[i].relresid;
+#if defined(SET_QUDA_VERBOSE) || defined(SET_QUDA_DEBUG_VERBOSE)
    node0_printf("residual[%d] = %g relative %g\n",i, residual[i], relative_residual[i]);
+#endif
   }
 
   inv_args.max_iter  = qic[0].max*qic[0].nrestart;
@@ -178,7 +182,7 @@ int ks_multicg_offset_field_gpu(
   }
 
   qudaMultishiftInvert(
-		       PRECISION,
+		       MILC_PRECISION,
 		       qic[0].prec,
 		       num_offsets,
 		       offset,

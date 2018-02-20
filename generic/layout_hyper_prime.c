@@ -58,6 +58,11 @@
      each site on the node.)
 */
 #include "generic_includes.h"
+#ifdef HAVE_GRID
+#include "../include/generic_grid.h"
+//DEBUG
+void check_create(void);
+#endif
 #ifdef HAVE_QMP
 #include <qmp.h>
 #endif
@@ -284,9 +289,10 @@ static void init_io_node(){
 #endif
 
 /*------------------------------------------------------------------*/
-/* Initialization entry point */
+/* Sets nsquares, squaresize */
+/* For QMP, declares logical topology */
 
-void setup_layout(){
+static void set_topology(){
   int k = mynode();
   int nd = 0;
   int const *geom;
@@ -373,14 +379,51 @@ void setup_layout(){
   }
   
 #endif
+
+}
   
+/*------------------------------------------------------------------*/
+/* Initialization entry point */
+
+void setup_layout(){
+  int nd = 0;
+  int const *geom;
+
+  /* Set topology: nsquares, squaresize */
+
+  set_topology();
+
+#ifdef HAVE_GRID
+
+  /* Initlalize Grid */
+  initialize_grid();
+
+  /* Grid assigns its own machine coordinates */
+
+  /* Find my rank, according to Grid */
+  setup_grid_communicator(nsquares);
+  int *pePos = query_grid_node_mapping();
+  //  int peRank = (int)lex_rank(pePos, 4, nsquares);
+  int peRank = grid_rank_from_processor_coor(pePos[0], pePos[1], pePos[2], pePos[3]);
+
+  fflush(stdout);
+
+  /* Reassign my rank with the communicator */
+  reset_machine_rank(peRank);
+
+#endif
+
   /* Initialize I/O node function */
 #ifdef FIX_IONODE_GEOM
   init_io_node();
 #endif
   
   /* Compute machine coordinates for this node */
-  lex_coords(machine_coordinates, 4, nsquares, k);
+#ifdef HAVE_GRID
+  grid_coor_from_processor_rank(machine_coordinates, mynode());
+#else
+  lex_coords(machine_coordinates, 4, nsquares, mynode());
+#endif
 
   /* Number of sites on node */
   sites_on_node =
@@ -400,15 +443,20 @@ void setup_layout(){
     even_sites_on_node++;
 
   odd_sites_on_node = sites_on_node - even_sites_on_node;
+
 }
 
 /*------------------------------------------------------------------*/
 int node_number(int x, int y, int z, int t) {
-register int i;
-    x /= squaresize[XUP]; y /= squaresize[YUP];
-    z /= squaresize[ZUP]; t /= squaresize[TUP];
-    i = x + nsquares[XUP]*( y + nsquares[YUP]*( z + nsquares[ZUP]*( t )));
-    return( i );
+  register int i;
+  x /= squaresize[XUP]; y /= squaresize[YUP];
+  z /= squaresize[ZUP]; t /= squaresize[TUP];
+#ifdef HAVE_GRID
+  i = grid_rank_from_processor_coor(x, y, z, t);
+#else
+  i = x + nsquares[XUP]*( y + nsquares[YUP]*( z + nsquares[ZUP]*( t )));
+#endif
+  return i;
 }
 
 /*------------------------------------------------------------------*/
@@ -453,7 +501,11 @@ void get_coords(int coords[], int node, int index){
   int k = node;
 
   /* mc = the machine coordinates for node k */
+#ifdef HAVE_GRID
+  grid_coor_from_processor_rank(mc, k);
+#else
   lex_coords(mc, 4, nsquares, k);
+#endif
 
   /* meo = the parity of the machine coordinate */
   meo = coord_parity(mc);
@@ -530,7 +582,11 @@ int io_node(const int node){
     return node;
 
   /* Get the machine coordinates for the specified node */
+#ifdef HAVE_GRID
+  grid_coor_from_processor_rank(io_node_coords, node);
+#else
   lex_coords(io_node_coords, 4, nsquares, node);
+#endif
 
   /* Round the node coordinates down to get the io_node coordinate */
   for(i = 0; i < 4; i++)
@@ -538,7 +594,12 @@ int io_node(const int node){
       (io_node_coords[i]/nodes_per_ionode[i]);
   
   /* Return the linearized machine coordinates of the I/O node */
+#ifdef HAVE_GRID
+  return grid_rank_from_processor_coor(io_node_coords[0], 
+	     io_node_coords[1], io_node_coords[2], io_node_coords[3]);
+#else
   return (int)lex_rank(io_node_coords, 4, nsquares);
+#endif
 }
 
 

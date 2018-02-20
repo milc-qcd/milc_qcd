@@ -115,7 +115,7 @@
 #include "generic_includes.h"
 #include <mpi.h>
 #include <ctype.h>
-#if PRECISION == 1
+#if MILC_PRECISION == 1
 #define MILC_MPI_REAL MPI_FLOAT
 #else
 #define MILC_MPI_REAL MPI_DOUBLE
@@ -440,6 +440,7 @@ repartition_mesh_machine(void){
 **  This version breaks the MPI machine into a number of
 **  separate lattices.
 */
+
 void
 initialize_machine(int *argc, char ***argv)
 {
@@ -448,11 +449,26 @@ initialize_machine(int *argc, char ***argv)
   int first, last, *a = NULL;
   char *c = NULL;
   char myname[] = "initialize_machine";
+  int required, provided;
   
   MPI_Comm comm;
   MPI_Errhandler errhandler;
 
-  flag = MPI_Init(argc, argv);
+#ifdef HAVE_GRID
+  required = MPI_THREAD_MULTIPLE;
+  printf("com_mpi: setting required thread-safety level to MPI_THREAD_MULTIPLE = %d\n", MPI_THREAD_MULTIPLE);
+#else
+  printf("com_mpi: setting required thread-safety level to MPI_THREAD_SINGLE = %d\n", MPI_THREAD_SINGLE);
+  required = MPI_THREAD_SINGLE;
+#endif
+  
+  flag = MPI_Init_thread(argc, argv, required, &provided);
+  if(flag != MPI_SUCCESS) err_func(&comm, &flag);
+  if(provided != required){
+    printf("com_mpi: required thread-safety level %d can't be provided %d.\n", required, provided);
+    fflush(stdout);
+    exit(flag);
+  }
   flag = MPI_Comm_dup(MPI_COMM_WORLD, &MPI_COMM_THISJOB);
   comm = MPI_COMM_THISJOB;
   if(flag != MPI_SUCCESS) err_func(&comm, &flag);
@@ -592,6 +608,18 @@ initialize_machine(int *argc, char ***argv)
   n_gathers = 0;
   gather_array_len = 0;
   gather_array = NULL;
+}
+
+/*
+** reset my rank assignment
+*/
+
+/* WARNING: NOT TESTED TOGETHER WITH MULTIJOB FEATURE */
+void
+reset_machine_rank(int peRank){
+  MPI_Comm comm;
+  MPI_Comm_split(MPI_COMM_THISJOB,jobid,peRank,&comm);
+  MPI_COMM_THISJOB = comm;
 }
 
 /*

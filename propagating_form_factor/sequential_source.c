@@ -88,7 +88,7 @@ void sequential_source(
   MinMR = nt;
 
   /* Load inversion control structure */
-  qic_sequential.prec = PRECISION;
+  qic_sequential.prec = MILC_PRECISION;
   qic_sequential.min = MinMR;
   qic_sequential.max = MaxMR;
   qic_sequential.nrestart = nrestart;

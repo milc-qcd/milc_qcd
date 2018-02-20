@@ -33,4 +33,5 @@ int ks_congrad_block_parity_cpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   node0_printf("ks_congrad_block_parity_cpu: NOT IMPLEMENTED\n");
   terminate(1);
+  return 0;
 }

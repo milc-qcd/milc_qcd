@@ -1,0 +1,117 @@
+/*************************************/
+/* Function declarations of F-3 type */
+/*************************************/
+
+#ifndef _MGRID_F3_H
+#define _MGRID_F3_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// The following strategem is intended to provide a strong chain of typedefs for both C and C++ compilation
+// Above the API the data types are opaque (incomplete).
+// If mGrid_internal.h is used, it must precede this header file
+
+#if defined( _MGRID_INTERNAL_H) && defined( __cplusplus)
+#define STRUCT
+#else
+#define STRUCT struct
+#endif
+
+#include "../include/generic_ks.h"
+
+
+typedef STRUCT GRID_F3_ColorVector_struct		GRID_F3_ColorVector;
+typedef STRUCT GRID_F3_ColorVectorBlock_struct		GRID_F3_ColorVectorBlock;
+typedef STRUCT GRID_F3_FermionLinksAsqtad_struct	GRID_F3_FermionLinksAsqtad;
+
+// create color vectors
+GRID_F3_ColorVector *GRID_F3_create_V( int milc_parity, 
+				       GRID_4Dgrid *grid_full,GRID_4DRBgrid *grid_rb );
+
+GRID_F3_ColorVectorBlock *GRID_F3_create_nV( int n, int milc_parity, 
+					     GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
+					     GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb );
+
+// free color vectors
+void GRID_F3_destroy_V(GRID_F3_ColorVector *V);
+void GRID_F3_destroy_nV(GRID_F3_ColorVectorBlock *V);
+
+// create color vectors from MILC type
+GRID_F3_ColorVector  *GRID_F3_create_V_from_vec( su3_vector *src, int milc_parity,
+						 GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb );
+
+GRID_F3_ColorVectorBlock  *GRID_F3_create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
+							GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb,
+							GRID_4Dgrid *grid_full,GRID_4DRBgrid *grid_rb );
+
+// copy color vectors from Grid structure to MILC type
+void GRID_F3_extract_V_to_vec( su3_vector *dest, GRID_F3_ColorVector *src, int milc_parity);
+void GRID_F3_extract_nV_to_vecs( su3_vector *dest[], int n, GRID_F3_ColorVectorBlock *src, int milc_parity);
+
+  /*********************/
+  /*  Asqtad routines  */
+  /*********************/
+
+  /* fermion matrix link routines */
+
+// create asqtad fermion links from MILC
+GRID_F3_FermionLinksAsqtad  *GRID_F3_asqtad_create_L_from_MILC( su3_matrix *thn, su3_matrix *fat, 
+								su3_matrix *lng, GRID_4Dgrid *grid_full);
+
+// free asqtad fermion links
+void GRID_F3_asqtad_destroy_L(GRID_F3_FermionLinksAsqtad *L);
+
+// dslash
+void GRID_F3_asqtad_dslash (GRID_F3_FermionLinksAsqtad *asqtad,
+			    GRID_F3_ColorVector *out,
+			    GRID_F3_ColorVector *in,
+			    float mass,
+			    int milc_parity);
+
+// inverter
+void GRID_F3_asqtad_invert (GRID_info_t *info,
+			    GRID_F3_FermionLinksAsqtad *asqtad,
+			    GRID_invert_arg_t *inv_arg,
+			    GRID_resid_arg_t *res_arg,
+			    float mass,
+			    GRID_F3_ColorVector *out,
+			    GRID_F3_ColorVector *in,
+			    GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
+
+// multi-mass inverter
+void GRID_F3_asqtad_invert_multi (GRID_info_t *info,
+				  GRID_F3_FermionLinksAsqtad *asqtad,
+				  GRID_invert_arg_t *inv_arg,
+				  GRID_resid_arg_t *res_arg[],
+				  float *mass, int nmass,
+				  GRID_F3_ColorVector *out[],
+				  GRID_F3_ColorVector *in,
+				  GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
+
+// block CG inverter
+void GRID_F3_asqtad_invert_block (GRID_info_t *info,
+				  GRID_F3_FermionLinksAsqtad *asqtad,
+				  GRID_invert_arg_t *inv_arg,
+				  GRID_resid_arg_t *res_arg,
+				  float mass, int nrhs,
+				  GRID_F3_ColorVectorBlock *out,
+				  GRID_F3_ColorVectorBlock *in,
+				  GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
+				  GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
+
+  /**************************************************/
+  /* Mapping of generic names to specific precision */
+  /**************************************************/
+
+#if GRID_Precision == 'F'
+#include "mGrid_f3_generic.h"
+#endif
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* _MGRID_F3_H */

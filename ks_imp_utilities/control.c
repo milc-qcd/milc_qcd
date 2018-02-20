@@ -66,11 +66,11 @@ int main( int argc, char **argv ){
       node0_printf("Saving the long links\n");
       save_color_matrix_scidac_from_field( savelongfile, filexml, 
 		   "Long links", QIO_SINGLEFILE, 
-		   get_lnglinks(get_fm_links(fn_links)[0]), 4, PRECISION);
+		   get_lnglinks(get_fm_links(fn_links)[0]), 4, MILC_PRECISION);
       /* REMOVE NEXT STATEMENT */
       //      save_color_matrix_scidac_from_field( "lngback.scidac", filexml, 
       //		   "Long back links", QIO_SINGLEFILE, 
-      //                   get_lngbacklinks(get_fm_links(fn_links)[0]), 4, PRECISION);
+      //                   get_lngbacklinks(get_fm_links(fn_links)[0]), 4, MILC_PRECISION);
       free_QCDML(filexml);
 #else
       printf("ERROR: Can't save the longlinks.  Recompile with QIO\n");
@@ -84,11 +84,11 @@ int main( int argc, char **argv ){
       node0_printf("Saving the fat links\n");
       save_color_matrix_scidac_from_field( savefatfile, filexml, 
             "Fat links", QIO_SINGLEFILE, 
-	    get_fatlinks(get_fm_links(fn_links)[0]), 4, PRECISION);
+	    get_fatlinks(get_fm_links(fn_links)[0]), 4, MILC_PRECISION);
       /* REMOVE NEXT STATEMENT */
       //      save_color_matrix_scidac_from_field( "fatback.scidac", filexml, 
       //	   "Fat back links", QIO_SINGLEFILE, 
-      //	    get_fatbacklinks(get_fm_links(fn_links)[0]), 4, PRECISION);
+      //	    get_fatbacklinks(get_fm_links(fn_links)[0]), 4, MILC_PRECISION);
       free_QCDML(filexml);
 #else
       printf("ERROR: Can't save the fatlinks.  Recompile with QIO\n");

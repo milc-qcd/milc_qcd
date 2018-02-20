@@ -18,6 +18,7 @@
 
 
 #include "defines.h"
+#include "params.h"
 #include "../include/generic_quark_types.h"
 #include "../include/generic_ks.h" /* For ferm_links_t and ks_action_paths */
 #include "../include/random.h"
@@ -121,6 +122,7 @@ EXTERN	Real rsqmin,rsqprop;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */
 EXTERN	char startfile[MAXFILENAME];
+EXTERN  params param;           /* user input parameters */
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
@@ -128,17 +130,6 @@ EXTERN	int total_iters;
 EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
         /* source time, increment for it, and number of source slices */
 
-/* Eigenvalue related global variables */
-EXTERN  int Nvecs ; /* number of eigenvectors */
-EXTERN  Real eigenval_tol ; /* Tolerance for the eigenvalue computation */
-EXTERN  Real error_decr ; /* error decrease per Rayleigh minimization */
-EXTERN  int MaxIter ; /* max  Rayleigh iterations */
-EXTERN  int Restart ; /* Restart  Rayleigh every so many iterations */
-EXTERN  int Kiters ; /* Kalkreuter iterations */
-EXTERN  int active_parity ; /* parity used in eigenvalue calculation */
-EXTERN  int cheb_p ; /* Order of the Chebyshev preconditioning polynomial */
-EXTERN  double minE ; /* Lower end of eigenvalue exclusion window */
-EXTERN  double maxE ; /* Upper end of eigenvalue exclusion window */
 /*******/
 
 /* Some of these global variables are node dependent */

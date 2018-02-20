@@ -38,7 +38,6 @@ void r_binary_f(gauge_file *);
 
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"
-params par_buf;
 
 //#ifdef HAVE_QDP
 //void
@@ -160,26 +159,26 @@ int prompt,status;
 
 	status=get_prompt(stdin, &prompt);
 
-	IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
-	IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
-	IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
-	IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
-	IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
+	IF_OK status += get_i(stdin, prompt,"nx", &param.nx );
+	IF_OK status += get_i(stdin, prompt,"ny", &param.ny );
+	IF_OK status += get_i(stdin, prompt,"nz", &param.nz );
+	IF_OK status += get_i(stdin, prompt,"nt", &param.nt );
+	IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
 
-	if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
+	if(status>0) param.stopflag=1; else param.stopflag=0;
     } /* end if(mynode()==0) */
 
     /* Node 0 broadcasts parameter buffer to all other nodes */
-    broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+    broadcast_bytes((char *)&param,sizeof(param));
 
-    if( par_buf.stopflag != 0 )
+    if( param.stopflag != 0 )
       normal_exit(0);
 
-    nx=par_buf.nx;
-    ny=par_buf.ny;
-    nz=par_buf.nz;
-    nt=par_buf.nt;
-    iseed=par_buf.iseed;
+    nx=param.nx;
+    ny=param.ny;
+    nz=param.nz;
+    nt=param.nt;
+    iseed=param.iseed;
     
     this_node = mynode();
     number_of_nodes = numnodes();
@@ -204,75 +203,87 @@ int readin(int prompt) {
     
 	/* get couplings and broadcast to nodes	*/
 	/* beta, mass */
-	IF_OK status += get_f(stdin, prompt,"mass", &par_buf.mass );
-	IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+	IF_OK status += get_f(stdin, prompt,"mass", &param.mass );
+	IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
 
 	/* maximum no. of conjugate gradient iterations */
-	IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter );
+	IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &param.niter );
 	/* maximum no. of conjugate gradient restarts */
-	IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &par_buf.nrestart );
+	IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &param.nrestart );
     
 	/* error per site for conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_per_site", &x );
-	IF_OK par_buf.rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
+	IF_OK param.rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
 	    /* New conjugate gradient normalizes rsqmin by norm of source */
     
 	/* error for propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
-	IF_OK par_buf.rsqprop = x*x;
-	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &par_buf.Nvecs );
-	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &par_buf.MaxIter );
-	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &par_buf.Restart );
-	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &par_buf.Kiters );
-	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", 
-			      &par_buf.eigenval_tol );
-	IF_OK status += get_f(stdin, prompt,"error_decrease", &par_buf.error_decr);
+	IF_OK param.rsqprop = x*x;
 
-#ifdef CHEBYSHEV_EIGEN
-	/* Chebyshev preconditioner */
-	IF_OK status += get_i(stdin, prompt,"chebyshev_order", &par_buf.cheb_p);
-	IF_OK status += get_f(stdin, prompt,"chebyshev_minE", &par_buf.minE);
-	IF_OK status += get_f(stdin, prompt,"chebyshev_maxE", &par_buf.maxE);
+	/* Parameters for eigensolver */
+	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", 
+			      &param.eigen_param.Nvecs );
+#if defined(PRIMME)
+	/* PRIMME */
+	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
+	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart );
+	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
+#elif defined(ARPACK)
+	/* ARPACK */
+	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
+	IF_OK status += get_i(stdin, prompt,"nArnoldi", &param.eigen_param.nArnoldi );
+	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
+#else
+	/* Kalkreuter_Ritz */
+	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
+	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart );
+	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters );
+	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
+	IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
 #endif
+
+#ifdef POLY_EIGEN
+	/* Chebyshev preconditioner */
+	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
+	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
+	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
+	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
+	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
+	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
+	IF_OK status += get_f(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
+#endif
+	/* eigenvector output */
+	IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
+					    param.ks_eigen_savefile);
+
         /* find out what kind of starting lattice to use */
-	IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
-	    par_buf.startfile );
+	IF_OK status += ask_starting_lattice(stdin,  prompt, &(param.startflag),
+	    param.startfile );
 
 	/* APE smearing parameters (if needed) */
 	/* Zero suppresses APE smearing */
 	IF_OK status += get_f(stdin, prompt, "staple_weight", 
-			      &par_buf.staple_weight);
+			      &param.staple_weight);
 	IF_OK status += get_i(stdin, prompt, "ape_iter",
-			      &par_buf.ape_iter);
+			      &param.ape_iter);
 	
-	if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
+	if( status > 0)param.stopflag=1; else param.stopflag=0;
     } /* end if(this_node==0) */
 
     /* Node 0 broadcasts parameter buffer to all other nodes */
-    broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+    broadcast_bytes((char *)&param,sizeof(param));
 
-    if( par_buf.stopflag != 0 )return par_buf.stopflag;
+    if( param.stopflag != 0 )return param.stopflag;
 
-    niter = par_buf.niter;
-    nrestart = par_buf.nrestart;
-    rsqmin = par_buf.rsqmin;
-    rsqprop = par_buf.rsqprop;
-    mass = par_buf.mass;
-    u0 = par_buf.u0;
-    Nvecs = par_buf.Nvecs ;
-    MaxIter = par_buf.MaxIter ;
-    Restart = par_buf.Restart ;
-    Kiters = par_buf.Kiters ;
-    eigenval_tol = par_buf.eigenval_tol ;
-    error_decr = par_buf.error_decr ;
-#if CHEBYSHEV_EIGEN
-    cheb_p = par_buf.cheb_p;
-    minE = par_buf.minE;
-    maxE = par_buf.maxE;
-#endif
-    startflag = par_buf.startflag;
-    strcpy(startfile,par_buf.startfile);
+    niter = param.niter;
+    nrestart = param.nrestart;
+    rsqmin = param.rsqmin;
+    rsqprop = param.rsqprop;
+    mass = param.mass;
+    u0 = param.u0;
 
+    startflag = param.startflag;
+    strcpy(startfile,param.startfile);
 
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
     n_naiks = 1;
@@ -297,15 +308,15 @@ int readin(int prompt) {
 #endif
     
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-    fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+    fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 #else
-    fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+    fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 #endif
     
     /* Construct APE smeared links, but without KS phases */
     /* (We need these for the chirality calculation in some targets) */
     rephase( OFF );
-    ape_links = ape_smear_4D( par_buf.staple_weight, par_buf.ape_iter );
+    ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
     rephase( ON );
     
 /* We put in antiperiodic bc to match what we did to the gauge field */

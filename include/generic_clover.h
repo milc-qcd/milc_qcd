@@ -37,8 +37,17 @@ int bicgilu_cl_field_gpu(    /* Return value is number of iterations taken */
     void *dmp            /* parameters defining the Dirac matrix */
     );
 
+int bicgilu_cl_field_qphixj(    /* Return value is number of iterations taken */
+    wilson_vector *src,  /* type wilson_vector (source vector - OVERWRITTEN!)*/
+    wilson_vector *dest, /* type wilson_vector (answer and initial guess )*/
+    quark_invert_control *qic, /* parameters controlling inversion */
+    void *dmp            /* parameters defining the Dirac matrix */
+    );
+
 #ifdef USE_CL_GPU
 #define bicgilu_cl_field bicgilu_cl_field_gpu
+#elif HAVE_QPHIXJ
+#define bicgilu_cl_field bicgilu_cl_field_qphixj
 #else
 #define bicgilu_cl_field bicgilu_cl_field_cpu
 #endif
