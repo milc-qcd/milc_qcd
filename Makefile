@@ -966,8 +966,7 @@ endif
 
 include ../Make_template_combos
 
-# Temporarily define both precisions until we switch completely to MILC_PRECISION
-CPREC = -DMILC_PRECISION=${PRECISION} -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} ${QPHIXPREC} ${GRIDPREC}
+CPREC = -DMILC_PRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} ${QPHIXPREC} ${GRIDPREC}
 DARCH = ${CSCIDAC} ${CGPU} ${CPHI}
 
 # Complete set of compiler flags - do not change
