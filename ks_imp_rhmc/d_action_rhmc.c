@@ -63,7 +63,7 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
     for( jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
       restore_fermion_links_from_site(fn_links, prec_fa[iphi]);
       fn = get_fm_links(fn_links);
-      ks_ratinv( F_OFFSET(phi[iphi]), multi_x, rparam[iphi].FA.pole, 
+      ks_ratinv( F_OFFSET(phi[iphi]), multi_x, rparam[iphi].FA.pole, 0,
 		 rparam[iphi].FA.order, niter_fa[iphi], rsqmin_fa[iphi], 
 		 prec_fa[iphi], EVEN, &final_rsq, fn[inaik], 
 		 inaik, rparam[iphi].naik_term_epsilon );

@@ -33,7 +33,7 @@ void eo_fermion_force_rhmc( Real eps, params_ratfunc *rf,
     fn = get_fm_links(fl);
 
     /* Do the inversion for zero Naik term epsilon */
-    ks_ratinv( phi_off, multi_x, roots, order, my_niter,
+    ks_ratinv( phi_off, multi_x, roots, residues, order, my_niter,
 	       my_rsqmin, cg_prec, EVEN, &final_rsq, fn[0], 0, 0. );
 
     /* Do dslash for zero Naik term epsilon */

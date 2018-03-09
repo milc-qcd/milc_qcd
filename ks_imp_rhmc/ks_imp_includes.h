@@ -88,6 +88,7 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
     Real *roots,	/* the roots */
+    Real *residues,	/* the residues (if not zero, there are used to scale the shifted target residual) */
     int order,		/* order of rational function approx */
     int my_niter,	/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */

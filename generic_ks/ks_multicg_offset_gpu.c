@@ -118,12 +118,11 @@ int ks_multicg_offset_field_gpu(
   }
 
   double* offset = (double*)malloc(num_offsets*sizeof(double));
-  for(i=0; i<num_offsets; ++i) offset[i] = ksp[i].offset;
+  double* residue = (double*)malloc(num_offsets*sizeof(double));
 
-  double tmp;
   for(i=0; i<num_offsets; ++i){
-    tmp = ksp[i].offset;
-    offset[i] = tmp;
+    offset[i] = ksp[i].offset;
+    residue[i] = ksp[i].residue;
 #if defined(SET_QUDA_VERBOSE) || defined(SET_QUDA_DEBUG_VERBOSE)
     node0_printf("offset[%d] = %g\n",i,offset[i]);
 #endif
@@ -140,11 +139,16 @@ int ks_multicg_offset_field_gpu(
 
    residual[i]          = qic[i].resid;
    if (i>0){
+     if (residue[i] > 0) {
+       // scale the shifted residual relative to the residue
+       residual[i] = (residue[0] / residue[i]) * residual[0];
+     } else {
 #if defined(MAX_MIXED) || defined(HALF_MIXED)
-       residual[i] = qic[i].resid; // for a mixed precision solver use residual for higher shifts
+     residual[i] = qic[i].resid; // for a mixed precision solver use residual for higher shifts
 #else
-       residual[i] = 0; // a unmixed solver should iterate until breakdown to agreee with CPU behavior
+     residual[i] = 0; // a unmixed solver should iterate until breakdown to agreee with CPU behavior
 #endif
+     }
    }
    relative_residual[i] = qic[i].relresid;
 #if defined(SET_QUDA_VERBOSE) || defined(SET_QUDA_DEBUG_VERBOSE)
@@ -214,6 +218,7 @@ int ks_multicg_offset_field_gpu(
     qic[i].size_relr = 0.0;
   }
 
+  free(residue);
   free(offset);
   free(residual);
   free(relative_residual);
