@@ -50,6 +50,10 @@
 #include "../include/generic_qphix.h"
 #endif
 
+#ifdef HAVE_GRID
+#include "../include/generic_grid.h"
+#endif
+
 int main(int argc, char *argv[])
 {
   int prompt;
