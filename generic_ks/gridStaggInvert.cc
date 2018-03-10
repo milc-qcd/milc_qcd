@@ -37,8 +37,8 @@ asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGa
 
   // Note: the first argument is ignored here
   auto start = std::chrono::system_clock::now();
-  ImprovedStaggeredFermion Ds(*(asqtad->lnglinks), *(asqtad->lnglinks), *(asqtad->fatlinks), 
-			      *CGrid, *RBGrid, 2.*mass);
+  ImprovedStaggeredFermion Ds(*CGrid, *RBGrid, 2.*mass, 2., 2., 1.);
+  Ds.ImportGaugeSimple(*(asqtad->lnglinks), *(asqtad->fatlinks));
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
   std::cout << "Instantiate ImprovedStaggeredFermion Ds " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
@@ -132,8 +132,8 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
   Shifts.tolerances = tolerances;
 
   auto start = std::chrono::system_clock::now();
-  ImprovedStaggeredFermion Ds(*(asqtad->lnglinks), *(asqtad->lnglinks), *(asqtad->fatlinks), 
-			      *CGrid, *RBGrid, 0.);
+  ImprovedStaggeredFermion Ds(*CGrid, *RBGrid, 0., 2., 2., 1.);
+  Ds.ImportGaugeSimple(*(asqtad->lnglinks), *(asqtad->fatlinks));
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
   std::cout << "Instantiate ImprovedStaggeredFermion Ds " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
@@ -237,8 +237,8 @@ asqtadInvertBlock (GRID_info_t *info,
   typedef typename ImprovedStaggeredFermion5D::ComplexField ComplexField; 
 
   // Call using c1 = c2 = 2. and u0 = 1. to neutralize link rescaling
-  ImprovedStaggeredFermion5D Ds(*(asqtad->lnglinks), *(asqtad->fatlinks), *FCGrid, *FRBGrid, 
-				*CGrid, *RBGrid, mass, 2., 2., 1.);
+  ImprovedStaggeredFermion5D Ds(*FCGrid, *FRBGrid, *CGrid, *RBGrid, 2.*mass, 2., 2., 1.);
+  Ds.ImportGaugeSimple(*(asqtad->lnglinks), *(asqtad->fatlinks));
   std::cout << "instantiating 5D CG with resid " << res_arg->resid << " and " << inv_arg->max*inv_arg->nrestart << " iters\n" << std::flush;
   ConjugateGradient<FermionField> CG(res_arg->resid, inv_arg->max*inv_arg->nrestart, false);
 
