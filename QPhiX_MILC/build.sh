@@ -1,6 +1,15 @@
 #! /bin/bash
 
-ARCH=$1     # Choices: scalar, avx, avx512
+# Usage
+
+#  build.sh <scalar|knl|hsw> <CC> <CXX>
+
+# where CC is the C compiler (currently ignored)
+#       CXX is the C++ compiler
+
+# You may also need to edit milc-qphix/Makefile_qphixlib
+
+ARCH=$1     # Choices: scalar, knl, hsw
 PK_CC=$2
 PK_CXX=$3
 GIT_BRANCH=gauge_force
@@ -59,7 +68,7 @@ fi
 
 pushd ${dir}
 
-${MAKE} -f Makefile_qphixlib ${modecmd}
+${MAKE} -f Makefile_qphixlib ${modecmd} "PK_CXX=${PK_CXX}"
 
 popd
 
