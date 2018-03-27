@@ -176,6 +176,8 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
 	// and the checkerboards is the same
 	GRID_ASSERT(in->cv->_grid == RBGrid, GRID_FAIL);
 	std::vector<FermionField> outvec(nmass, RBGrid);
+	for(int i = 0; i < nmass; i++)
+	  outvec[i].checkerboard = inv_arg->parity == EVEN ? Even : Odd ;
 	SchurStaggeredOperator<ImprovedStaggeredFermion,FermionField> HermOp(Ds);
 	
 	// Do the solve

@@ -530,6 +530,7 @@ void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,
  	    sum += derr;
 	}
 	sum2 += magsq_su3vec( dest+i );
+	if(flag > 200)break;  // Don't write too many lines for debugging
     }
     g_doublesum( &sum );
     g_doublesum( &sum2 );
