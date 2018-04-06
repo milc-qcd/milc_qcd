@@ -320,7 +320,7 @@ int readin(int prompt) {
     rephase( ON );
     
 /* We put in antiperiodic bc to match what we did to the gauge field */
-    apply_apbc( ape_links );
+    apply_apbc( ape_links, 0 );
 
 //    node0_printf("Calling for path table\n");fflush(stdout);
 //    /* make table of coefficients and permutations of paths in quark action */

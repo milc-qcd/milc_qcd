@@ -240,6 +240,15 @@ int readin(int prompt) {
 
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
     IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
+    IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
+    IF_OK {
+      if(strcmp(savebuf,"antiperiodic") == 0)param.time_bc = 0;
+      else if(strcmp(savebuf,"periodic") == 0)param.time_bc = 1;
+      else{
+	node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n",  savebuf);
+	status++;
+      }
+    }
     
     /*------------------------------------------------------------*/
     /* Propagator inversion control                               */
@@ -501,34 +510,23 @@ int readin(int prompt) {
 
       IF_OK status += get_vf(stdin, prompt, "momentum_twist",
 			     bdry_phase, 3);
-      
-      IF_OK status += get_s(stdin, prompt,"time_bc", savebuf);
+      IF_OK {
+	/* NOTE: The Dirac built-in bc is periodic. */
+	if(param.time_bc == 0)bdry_phase[3] = 1;
+	else bdry_phase[3] = 0;
+      }
 
+      
       if(param.prop_type[i] == CLOVER_TYPE || param.prop_type[i] == IFLA_TYPE){
 
-	/* NOTE: The Dirac built-in bc is periodic. */
-	IF_OK {
-	  if(strcmp(savebuf,"antiperiodic") == 0)bdry_phase[3] = 1;
-	  else if(strcmp(savebuf,"periodic") == 0)bdry_phase[3] = 0;
-	  else{
-	    node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n",
-			 savebuf);
-	    status++;
-	  }
-	}
 
       } else {  /* KS_TYPE || KS0_TYPE || KS4_TYPE */
 
-	/* NOTE: The staggered built-in bc is antiperiodic.  We use
-	   bdry_phase to alter the built-in convention. */
 	IF_OK {
-	  if(strcmp(savebuf,"antiperiodic") == 0)bdry_phase[3] = 0;
-	  else if(strcmp(savebuf,"periodic") == 0)bdry_phase[3] = 1;
-	  else{
-	    node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n",
-			 savebuf);
-	    status++;
-	  }
+	  /* NOTE: The staggered built-in bc is antiperiodic.  We use
+	     bdry_phase to alter the built-in convention. */
+	  if(param.time_bc == 0)bdry_phase[3] = 0;
+	  else bdry_phase[3] = 1;
 	}
       }
 
@@ -996,6 +994,7 @@ int readin(int prompt) {
 
   /* Construct APE smeared links */
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+  if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
 
   /* Set options for fermion links in case we use them */
   

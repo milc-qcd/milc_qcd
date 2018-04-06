@@ -20,7 +20,6 @@ typedef struct {
   ks_eigen_param eigen_param; /* Parameters for eigensolver */
   int ks_eigen_saveflag; /* eigenvector file type */
   char ks_eigen_savefile[MAXFILENAME]; /* eigenvector output file name */
-  
   int startflag;  /* what to do for beginning lattice */
   char startfile[MAXFILENAME]; /* starting lattice file name */
 }  params;

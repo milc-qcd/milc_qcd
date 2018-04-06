@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
 	   No KS phases here! */
 	destroy_ape_links_4D(ape_links);
 	ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
-	apply_apbc( ape_links );
+	if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
 
 	rephase( ON );
 	invalidate_fermion_links(fn_links);

@@ -55,6 +55,7 @@ typedef struct {
   int ape_iter;
   Real u0;
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
+  int time_bc;          /* 0 for antiperiodic, 1 for periodic */
   quark_invert_control qic[MAX_PROP];
   int num_base_source;       /* Number of modified sources */
   quark_source base_src_qs[MAX_SOURCE];

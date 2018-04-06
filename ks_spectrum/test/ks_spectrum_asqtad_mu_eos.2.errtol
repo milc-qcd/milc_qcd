@@ -978,7 +978,7 @@ GFIX: Ended at step 0.002 Av gf action 2e-05 delta 2e-05
 Aggregate time to gauge fix 0.7
 Time to APE smear 0.002 sec
 END OF HEADER
-Aggregate time to compute propagators 4e-06
+Aggregate time to compute propagators XXX
 Aggregate time to tie meson correlators 2e-06
 Aggregate time to tie baryon correlators 2e-06
 RUNNING COMPLETED

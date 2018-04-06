@@ -174,13 +174,13 @@ void rephase_field_offset( su3_matrix *internal_links, int flag,
 } /* rephase_field_offset */
 
 /* conventional antiperiodic boundary conditions in Euclidean time */
-void apply_apbc( su3_matrix *links ){
+void apply_apbc( su3_matrix *links, int r0t ){
 
   int i;
   site *s;
 
   FORALLSITES_OMP(i,s,default(shared)){
-    if( s->t == nt-1){
+    if( s->t == nt-1 - r0t % nt){
       scalar_mult_su3_matrix( links + 4*i + TUP, -1., links + 4*i + TUP );
     }
   }
