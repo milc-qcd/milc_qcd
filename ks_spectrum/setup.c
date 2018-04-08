@@ -304,15 +304,15 @@ int readin(int prompt) {
     IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
 
 #ifdef POLY_EIGEN
-	/* Chebyshev preconditioner */
-	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
-	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
-	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
-	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
-
-	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
-	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
-	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
+    /* Chebyshev preconditioner */
+    IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
+    IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
+    IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
+    IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
+    
+    IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
+    IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
+    IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
 #endif
     /* eigenvector input */
     IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
@@ -388,7 +388,9 @@ int readin(int prompt) {
       IF_OK param.parent_source[i] = BASE_SOURCE_PARENT;
       IF_OK init_qss_op(&param.src_qs_op[i]);
       IF_OK set_qss_op_offset(&param.src_qs_op[i], param.coord_origin);
-
+      /* NOTE: The KS built-in bc is antiperiodic. */
+      IF_OK param.src_qs_op[i].bp[3] = param.time_bc;    
+      
       /* Get optional file for saving the base source */
       IF_OK {
 	int source_type, saveflag_s;
@@ -438,10 +440,13 @@ int readin(int prompt) {
       }
 
       IF_OK init_qss_op(&param.src_qs_op[is]);
-      set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
       
       /* Get source operator attributes */
       IF_OK status += get_v_field_op( stdin, prompt, &param.src_qs_op[is]);
+      /* Enforce a uniform boundary condition */
+      set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
+      /* NOTE: The KS built-in bc is antiperiodic. */
+      param.src_qs_op[is].bp[3] = param.time_bc;    
       
       /* Copy parent source attributes to the derived source structure */
       IF_OK {
@@ -678,6 +683,10 @@ int readin(int prompt) {
       }
       
       IF_OK init_qss_op(&param.snk_qs_op[i]);
+      /* Enforce a uniform boundary condition */
+      set_qss_op_offset(&param.snk_qs_op[i], param.coord_origin);
+      /* NOTE: The KS built-in bc is antiperiodic. */
+      param.snk_qs_op[i].bp[3] = param.time_bc;    
 
       if( param.parent_type[i] == PROP_TYPE ||  param.parent_type[i] == QUARK_TYPE ){
 	/* Next we get its index */

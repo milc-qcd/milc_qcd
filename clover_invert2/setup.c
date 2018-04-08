@@ -284,6 +284,8 @@ int readin(int prompt) {
       IF_OK param.parent_source[i] = BASE_SOURCE_PARENT;
       IF_OK init_qss_op(&param.src_qs_op[i]);
       IF_OK set_qss_op_offset(&param.src_qs_op[i], param.coord_origin);
+      /* NOTE: The Dirac built-in bc is periodic. */
+      param.src_qs_op[i].bp[3] = 1-param.time_bc;    
 
       /* Get optional file for saving the base source */
       IF_OK {
@@ -336,10 +338,13 @@ int readin(int prompt) {
       }
 
       IF_OK init_qss_op(&param.src_qs_op[is]);
-      set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
 
       /* Get source operator attributes */
       IF_OK status += get_wv_field_op( stdin, prompt, &param.src_qs_op[is]);
+      /* Enforce a uniform boundary condition */
+      set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
+      /* NOTE: The Dirac built-in bc is periodic. */
+      param.src_qs_op[is].bp[3] = 1-param.time_bc;    
 
       /* Copy parent source attributes to the derived source structure */
       IF_OK {
@@ -712,6 +717,10 @@ int readin(int prompt) {
       /* Get sink operator attributes */
       IF_OK init_qss_op(&param.snk_qs_op[i]);
       IF_OK status += get_wv_field_op( stdin, prompt, &param.snk_qs_op[i]);
+      /* Enforce a uniform boundary condition */
+      IF_OK set_qss_op_offset(&param.snk_qs_op[i], param.coord_origin);
+      /* NOTE: The Dirac built-in bc is periodic. */
+      IF_OK param.snk_qs_op[i].bp[3] = 1-param.time_bc;    
       /* Get sink quark save attributes */
       IF_OK {
 	char descrp[MAXDESCRP];
