@@ -636,7 +636,7 @@ int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal,
 
 # else
 
-/* Stub to allow compilation (but not execution) in case ARPACK is not available */
+/* Stub to allow compilation (but not execution) in case Kalkreuter_Ritz is not available */
 
 int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, 
 				  ks_eigen_param *eigen_param, int init)
