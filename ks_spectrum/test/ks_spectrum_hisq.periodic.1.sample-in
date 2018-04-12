@@ -21,6 +21,10 @@ ape_iter 0
 coordinate_origin 0 0 0 0
 time_bc periodic
 
+# Eigenpairs
+
+max_number_of_eigenpairs 0
+
 # Chiral condensate and related measurements
 
 number_of_pbp_masses 0
