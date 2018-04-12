@@ -249,79 +249,96 @@ int readin(int prompt) {
       }
     }
     
-#if EIGMODE == EIGCG
-    /* for eigcg */
-    /* restart for Lanczos */
-    IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
+    /* number of eigenpairs */
+    IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
 
-    /* number of eigenvectors per inversion */
-    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigcgp.Nvecs);
+    IF_OK if(param.eigen_param.Nvecs > 0){
 
-    IF_OK {
-      if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
-	printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
-	status++;
-      }
-    }
+      /* eigenvector input */
+      IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
+					    param.ks_eigen_startfile);
+      
+      /* eigenvector output */
+      IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
+					  param.ks_eigen_savefile);
 
-    /* maximum number of eigenvectors */
-    IF_OK status += get_i(stdin, prompt,"Max_Number_of_eigenvals",
-			  &param.eigcgp.Nvecs_max);
+      /* If we are reading in eigenpairs, we don't regenerate them */
 
-    /* eigenvector input */
-    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
-					  param.ks_eigen_startfile);
-
-    /* eigenvector output */
-    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
-					param.ks_eigen_savefile);
-
-    param.eigcgp.Nvecs_curr = 0;
-    param.eigcgp.H = NULL;
-#endif
-
-#if EIGMODE == DEFLATION
-    /*------------------------------------------------------------*/
-    /* Dirac eigenpair calculation                                */
-    /*------------------------------------------------------------*/
-
-    /* number of eigenvectors */
-    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigen_param.Nvecs);
-
-    /* max  Rayleigh iterations */
-    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
-
-    /* Restart  Rayleigh every so many iterations */
-    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
-
-    /* Kalkreuter iterations */
-    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
-
-     /* Tolerance for the eigenvalue computation */
-    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
-
-     /* error decrease per Rayleigh minimization */
-    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
-
+#if EIGMODE != EIGCG
+      if(param.ks_eigen_startflag == FRESH){
+	
+	/*------------------------------------------------------------*/
+	/* Dirac eigenpair calculation                                */
+	/*------------------------------------------------------------*/
+	
+	/* max  Rayleigh iterations */
+	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
+	
+	/* Restart  Rayleigh every so many iterations */
+	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
+	
+	/* Kalkreuter iterations */
+	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
+	
+	/* Tolerance for the eigenvalue computation */
+	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
+	
+	/* error decrease per Rayleigh minimization */
+	IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
+	
 #ifdef POLY_EIGEN
-    /* Chebyshev preconditioner */
-    IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
-    IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
-    IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
-    IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
-    
-    IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
-    IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
-    IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
+	/* Chebyshev preconditioner */
+	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
+	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
+	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
+	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
+	
+	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
+	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
+	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
 #endif
-    /* eigenvector input */
-    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
-					  param.ks_eigen_startfile);
+      } else {
+	param.eigen_param.MaxIter = 0;
+	param.eigen_param.Restart = 0;
+	param.eigen_param.Kiters = 0;
+	param.eigen_param.tol = 0;
+	param.eigen_param.error_decr = 0.0;
+      }
 
-    /* eigenvector output */
-    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
-					param.ks_eigen_savefile);
+#else
+
+      /* for eigcg */
+
+      /* maximum number of eigenvectors */
+      param.eigcgp.Nvecs_max =  param.eigen_param.Nvecs;
+
+      /* If we are reading in eigenpairs, we don't regenerate them */
+
+      if(param.ks_eigen_startflag == FRESH){
+	
+
+	/* restart for Lanczos */
+	IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
+	
+	/* number of eigenvectors per inversion */
+	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals_per_inversion", &param.eigcgp.Nvecs);
+	
+	IF_OK {
+	  if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
+	    printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
+	    status++;
+	  }
+	}
+      } else {
+	param.eigcgp.m = 0;
+	param.eigcgp.Nvecs = 0;
+      }
+      
+      param.eigcgp.Nvecs_curr = 0;
+      param.eigcgp.H = NULL;
 #endif
+
+    }
 
     /*------------------------------------------------------------*/
     /* Chiral condensate and related quantities                   */
@@ -1091,16 +1108,6 @@ int readin(int prompt) {
   /* Broadcast parameter values kept on the heap */
   broadcast_heap_params();
 
-//#if EIGMODE == DEFLATION && defined(POLY_EIGEN)
-//  /* Parameters for Chebyshev preconditioning */
-//    which_poly = par_buf.which_poly ;
-//    norder = par_buf.norder;
-//    minE = par_buf.minE;
-//    maxE = par_buf.maxE;
-//    poly_param_1 = par_buf.poly_param_1 ;
-//    poly_param_2 = par_buf.poly_param_2 ;
-//#endif
-
   /* Construct the eps_naik table of unique Naik epsilon coefficients.
      Also build the hash table for mapping a mass term to its Naik
      epsilon index.  We need to list any required Naik epsilons. */
@@ -1242,18 +1249,20 @@ int readin(int prompt) {
   }
 #endif
 
-#if EIGMODE == DEFLATION
-  /* malloc for eigenpairs */
-  eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
-  eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
-  for(i=0; i < param.eigen_param.Nvecs; i++)
-    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-
-  /* Do whatever is needed to get eigenpairs */
-  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &param.eigen_param.Nvecs, eigVal, eigVec, 1);
-  if(param.fixflag != NO_GAUGE_FIX){
-    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+#if EIGMODE != EIGCG
+  if(param.eigen_param.Nvecs > 0){
+    /* malloc for eigenpairs */
+    eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
+    eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
+    for(i=0; i < param.eigen_param.Nvecs; i++)
+      eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+    
+    /* Do whatever is needed to get eigenpairs */
+    status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+			     &param.eigen_param.Nvecs, eigVal, eigVec, 1);
+    if(param.fixflag != NO_GAUGE_FIX){
+      node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+    }
   }
 #endif
 

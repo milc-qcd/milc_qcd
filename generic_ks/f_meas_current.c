@@ -18,8 +18,6 @@
     f_meas_current_multi_diff
     f_meas_current_multi
 
-    With EIGMODE defined:
-
     f_meas_current_multi_diff_eig
     f_meas_current_multi_diff
     f_meas_current_multi_eig
@@ -377,7 +375,6 @@ f_meas_current( int nrand, int nwrite, int thinning, quark_invert_control *qic,
   destroy_r_array_field(j_mu, NMU);
 }
 
-/*#if EIGMODE == EIGCG || EIGMODE == DEFLATE*/
 #ifdef EIGMODE
 
 /*****************************************************************************/
@@ -1408,7 +1405,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
 
 } /* f_meas_current_multi_eig --single-source version */
 
-#endif
+#endif  /* BLOCKCG */
 
 /************************************************************************/
 /* Entry point for multiple masses with iterated single-mass inverter.
@@ -1707,9 +1704,8 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
   destroy_v_field(gr0); gr0 = NULL;
 }
 
-#else
 
-    /* Entry point for multiple masses.  Uses the multimass inverter */
+/* Entry point for multiple masses.  Uses the multimass inverter */
 
 void 
 f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
@@ -1987,5 +1983,4 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
   destroy_v_field(gr0); gr0 = NULL;
 } /* f_meas_current_multi */
 
-#endif
 

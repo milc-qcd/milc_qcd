@@ -44,19 +44,13 @@ typedef struct {
   char savefile[MAXFILENAME];
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 #if EIGMODE == EIGCG
-  int ks_eigen_startflag; /* what to do for beginning eigenvectors */
-  int ks_eigen_saveflag; /* what to do for ending eigenvectors */
-  char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
-  char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
   eigcg_params eigcgp; /* parameters for eigCG */
 #endif
-#if EIGMODE == DEFLATION
   int ks_eigen_startflag; /* what to do for beginning eigenvectors */
   int ks_eigen_saveflag; /* what to do for ending eigenvectors */
   ks_eigen_param eigen_param; /* parameters for the eigensolver */
   char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
   char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
-#endif
   int num_set;                  /* Number of sets */
   int num_pbp_masses[MAX_SET];   /* Number of masses for pbp calculation */
   int begin_pbp_masses[MAX_SET]; /* index of beginning propagator in this set */

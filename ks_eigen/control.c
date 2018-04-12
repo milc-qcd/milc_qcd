@@ -12,9 +12,9 @@ int main( int argc, char **argv ){
   int i,si;
   int prompt;
   double dtime;
-  su3_vector **eigVec ;
+  //  su3_vector **eigVec ;
   su3_vector *tmp ;
-  double *eigVal ;
+  //  double *eigVal ;
   int total_R_iters ;
   double *resid = NULL;
   double chirality, chir_ev, chir_od ;
@@ -39,17 +39,18 @@ int main( int argc, char **argv ){
     hypisq_svd_counter = 0;
 #endif
     restore_fermion_links_from_site(fn_links, MILC_PRECISION);
-    /* call fermion_variable measuring routines */
-    /* results are printed in output file */
-    f_meas_imp( 1, MILC_PRECISION, F_OFFSET(phi), F_OFFSET(xxx), mass,
-		0, fn_links);
 
     eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
     eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector*));
     for(i=0;i<param.eigen_param.Nvecs;i++)
       eigVec[i]=
 	(su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
-    
+
+    /* call fermion_variable measuring routines */
+    /* results are printed in output file */
+    f_meas_imp( 1, MILC_PRECISION, F_OFFSET(phi), F_OFFSET(xxx), mass,
+		0, fn_links);
+
     fn = get_fm_links(fn_links);
     param.eigen_param.parity = EVEN;
     total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);

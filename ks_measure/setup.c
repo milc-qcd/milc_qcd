@@ -180,83 +180,97 @@ int readin(int prompt) {
     IF_OK status += get_i(stdin, prompt, "ape_iter",
 			  &param.ape_iter);
 
+    /* number of eigenpairs */
+    IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
+
+    IF_OK if(param.eigen_param.Nvecs > 0){
+
+      /* eigenvector input */
+      IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
+					    param.ks_eigen_startfile);
+      
+      /* eigenvector output */
+      IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
+					  param.ks_eigen_savefile);
+
+      /* If we are reading in eigenpairs, we don't regenerate them */
+
 #if EIGMODE == EIGCG
-    /* for eigcg */
-    /* restart for Lanczos */
-    IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
+      /* for eigcg */
 
-    /* number of eigenvectors per inversion */
-    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigcgp.Nvecs);
+      /* maximum number of eigenvectors */
+      param.eigcgp.Nvecs_max =  param.eigen_param.Nvecs;
 
-    if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
-      printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
-      status++;
-    }
+      /* If we are reading in eigenpairs, we don't regenerate them */
 
-    /* maximum number of eigenvectors */
-    IF_OK status += get_i(stdin, prompt,"Max_Number_of_eigenvals",
-			  &param.eigcgp.Nvecs_max);
+      if(param.ks_eigen_startflag == FRESH){
+	
+	/* restart for Lanczos */
+	IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
+	
+	/* number of eigenvectors per inversion */
+	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigcgp.Nvecs);
+	
+	if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
+	  printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
+	  status++;
+	}
+      } else {
+	param.eigcgp.m = 0;
+	param.eigcgp.Nvecs = 0;
+      }
+      
+      param.eigcgp.Nvecs_curr = 0;
+      param.eigcgp.H = NULL;
+#else
 
-    /* eigenvector input */
-    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
-					  param.ks_eigen_startfile);
-
-    /* eigenvector output */
-    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
-					param.ks_eigen_savefile);
-
-    param.eigcgp.Nvecs_curr = 0;
-    param.eigcgp.H = NULL;
-#endif
-
-#if EIGMODE == DEFLATION
-    /*------------------------------------------------------------*/
-    /* Dirac eigenpair calculation                                */
-    /*------------------------------------------------------------*/
-
-    /* number of eigenvectors */
-    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigen_param.Nvecs);
-
-    /* max  Rayleigh iterations */
-    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
-
-    /* Restart  Rayleigh every so many iterations */
-    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
-
-    /* Kalkreuter iterations */
-    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
-
-     /* Tolerance for the eigenvalue computation */
-    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
-
-     /* error decrease per Rayleigh minimization */
-    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
-
+      /*------------------------------------------------------------*/
+      /* Dirac eigenpair calculation                                */
+      /*------------------------------------------------------------*/
+      
+      if(param.ks_eigen_startflag == FRESH){
+	
+	/* max  Rayleigh iterations */
+	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
+	
+	/* Restart  Rayleigh every so many iterations */
+	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
+	
+	/* Kalkreuter iterations */
+	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
+	
+	/* Tolerance for the eigenvalue computation */
+	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
+	
+	/* error decrease per Rayleigh minimization */
+	IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
+	
 #ifdef POLY_EIGEN
 	/* Chebyshev preconditioner */
 	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
 	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
 	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
 	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
-
+	
 	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
 	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
 	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
 #endif
+      } else {
+	param.eigen_param.MaxIter = 0;
+	param.eigen_param.Restart = 0;
+	param.eigen_param.Kiters = 0;
+	param.eigen_param.tol = 0;
+	param.eigen_param.error_decr = 0.0;
+      }
 
-    /* eigenvector input */
-    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
-					  param.ks_eigen_startfile);
-
-    /* eigenvector output */
-    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
-					param.ks_eigen_savefile);
 #endif
+    }
 
     /*------------------------------------------------------------*/
     /* Chiral condensate and related quantities                   */
     /*------------------------------------------------------------*/
-
+    
     IF_OK status += get_i(stdin,prompt,"number_of_sets", &param.num_set);
     if( param.num_set>MAX_SET ){
       printf("num_set = %d must be <= %d!\n", param.num_set, MAX_SET);
@@ -429,8 +443,8 @@ int readin(int prompt) {
 #endif
 	
 	npbp_masses++;
-      }
-    }
+      } /* i */
+    } /* k */
     
     /* End of input fields */
     if( status > 0)param.stopflag=1; else param.stopflag=0;
@@ -442,16 +456,6 @@ int readin(int prompt) {
   if( param.stopflag != 0 )return param.stopflag;
 
   if(prompt==2)return 0;
-
-#if EIGMODE == DEFLATION && defined(POLY_EIGEN)
-  /* Parameters for polynomial preconditioning */
-    which_poly = param.eigen_param.poly.which_poly ;
-    norder = param.eigen_param.poly.norder;
-    minE = param.eigen_param.poly.minE;
-    maxE = param.eigen_param.poly.maxE;
-    poly_param_1 = param.eigen_param.poly.poly_param_1 ;
-    poly_param_2 = param.eigen_param.poly.poly_param_2 ;
-#endif
 
   /* Construct the eps_naik table of unique Naik epsilon
      coefficients.  Also build the hash table for mapping a mass term to
@@ -548,26 +552,28 @@ int readin(int prompt) {
     }
   }
 #endif
-
-#if EIGMODE == DEFLATION
-  /* malloc for eigenpairs */
-  eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
-  eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
-  for(i=0; i < param.eigen_param.Nvecs; i++)
-    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-
-  /* Do whatever is needed to get eigenpairs */
-  node0_printf("Reading %d eigenvectors\n", param.eigen_param.Nvecs); fflush(stdout);
-  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &param.eigen_param.Nvecs, eigVal, eigVec, 1);
-  if(status != 0)terminate(1);
+  
+#if EIGMODE != EIGCG
+  if(param.eigen_param.Nvecs > 0){
+    /* malloc for eigenpairs */
+    eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
+    eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
+    for(i=0; i < param.eigen_param.Nvecs; i++)
+      eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+    
+    /* Do whatever is needed to get eigenpairs */
+    node0_printf("Reading %d eigenvectors\n", param.eigen_param.Nvecs); fflush(stdout);
+    status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+			     &param.eigen_param.Nvecs, eigVal, eigVec, 1);
+    if(status != 0)terminate(1);
 
 #if 0
-  for(int j = 0; j < param.eigen_param.Nvecs; j++){
-    gauge_transform_v_field(eigVec[j], G);
-  }
-  destroy_m_field(G);
+    for(int j = 0; j < param.eigen_param.Nvecs; j++){
+      gauge_transform_v_field(eigVec[j], G);
+    }
+    destroy_m_field(G);
 #endif
+  }
 #endif
 
   ENDTIME("readin");

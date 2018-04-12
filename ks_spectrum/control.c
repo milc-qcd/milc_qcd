@@ -71,11 +71,9 @@ int main(int argc, char *argv[])
   ks_prop_field *prop[MAX_PROP];
   ks_prop_field *quark[MAX_QK];
   int prop_nc[MAX_PROP];
-#if EIGMODE == EIGCG || EIGMODE == DEFLATION
   int Nvecs_curr;
   double *resid = NULL;
   imp_ferm_links_t **fn;
-#endif
   
   initialize_machine(&argc,&argv);
 
@@ -108,55 +106,57 @@ int main(int argc, char *argv[])
     hypisq_svd_counter = 0;
 #endif
     
-#if EIGMODE == DEFLATION
     /**************************************************************/
     /* Compute Dirac eigenpairs           */
-
-    STARTTIME;
-
-    param.eigen_param.parity = EVEN;  /* Required */
-    fn = get_fm_links(fn_links);
-    Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
-
-    /* compute eigenpairs if requested */
-    if(param.ks_eigen_startflag == FRESH){
-      int total_R_iters;
-      total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
-      construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn[0]);
-      node0_printf("total Rayleigh iters = %d\n", total_R_iters);
-
+    if(param.eigen_param.Nvecs > 0){
+      
+#if EIGMODE != EIGCG
+      
+      STARTTIME;
+      
+      param.eigen_param.parity = EVEN;  /* Required */
+      fn = get_fm_links(fn_links);
+      Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
+      
+      /* compute eigenpairs if requested */
+      if(param.ks_eigen_startflag == FRESH){
+	int total_R_iters;
+	total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
+	construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn[0]);
+	node0_printf("total Rayleigh iters = %d\n", total_R_iters);
+	
 #if 0 /* If needed for debugging */
       /* (The ks_eigensolve routine uses the random number generator to
 	 initialize the eigenvector search, so, if you want to compare
 	 first results with and without deflation, you need to
 	 re-initialize here.) */
-      initialize_site_prn_from_seed(iseed);
+	initialize_site_prn_from_seed(iseed);
 #endif
-    }
+      }
     
-    /* Calculate and print the residues and norms of the eigenvectors */
-    resid = (double *)malloc(Nvecs_curr*sizeof(double));
-    node0_printf("Even site residuals\n");
-    check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
-    node0_printf("Odd site residuals\n");
-    check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn[0] );
-
-    /* print eigenvalues of iDslash */
-    node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
-    node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
-    for(i=0;i<Nvecs_curr;i++){ 
-      if ( eigVal[i] > 0.0 ){
-	node0_printf("eigenval(%i): %10g\n", i, 0.5*sqrt(eigVal[i]));
+      /* Calculate and print the residues and norms of the eigenvectors */
+      resid = (double *)malloc(Nvecs_curr*sizeof(double));
+      node0_printf("Even site residuals\n");
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
+      node0_printf("Odd site residuals\n");
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn[0] );
+      
+      /* print eigenvalues of iDslash */
+      node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
+      node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
+      for(i=0;i<Nvecs_curr;i++){ 
+	if ( eigVal[i] > 0.0 ){
+	  node0_printf("eigenval(%i): %10g\n", i, 0.5*sqrt(eigVal[i]));
+	}
+	else{
+	  eigVal[i] = 0.0;
+	  node0_printf("eigenval(%i): %10g\n", i, 0.0);
+	}
       }
-      else{
-	eigVal[i] = 0.0;
-	node0_printf("eigenval(%i): %10g\n", i, 0.0);
-      }
-    }
-
-    ENDTIME("calculate Dirac eigenpairs");
-
+      
+      ENDTIME("calculate Dirac eigenpairs");
 #endif
+    }
     
     /**************************************************************/
     /* Compute chiral condensate and related quantities           */
@@ -612,41 +612,41 @@ int main(int argc, char *argv[])
     
 #if EIGMODE == EIGCG
 
-    STARTTIME;
-
-    Nvecs_curr = param.eigcgp.Nvecs_curr;
-
-    fn = get_fm_links(fn_links);
-    resid = (double *)malloc(Nvecs_curr*sizeof(double));
-
-    if(param.ks_eigen_startflag == FRESH)
-      calc_eigenpairs(eigVal, eigVec, &param.eigcgp, EVEN);
-
-    check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
-
-    if(param.eigcgp.H != NULL) free(param.eigcgp.H);
-
-    ENDTIME("compute eigenvectors");
-#endif
-
-#if EIGMODE == EIGCG || EIGMODE == DEFLATION
-
-    STARTTIME;
-
-    /* save eigenvectors if requested */
-    int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
-			       Nvecs_curr, eigVal, eigVec, resid, 1);
-    if(status != 0){
-      node0_printf("ERROR writing eigenvectors\n");
+    if(param.eigcgp.Nvecs_max > 0){
+      STARTTIME;
+      
+      Nvecs_curr = param.eigcgp.Nvecs_curr;
+      
+      fn = get_fm_links(fn_links);
+      resid = (double *)malloc(Nvecs_curr*sizeof(double));
+      
+      if(param.ks_eigen_startflag == FRESH)
+	calc_eigenpairs(eigVal, eigVec, &param.eigcgp, EVEN);
+      
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
+      
+      if(param.eigcgp.H != NULL) free(param.eigcgp.H);
+      
+      ENDTIME("compute eigenvectors");
     }
-
-    /* Clean up eigen storage */
-    for(i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
-    free(eigVal); free(eigVec); free(resid);
-
-    ENDTIME("save eigenvectors (if requested)");
-
 #endif
+
+    if(param.eigen_param.Nvecs > 0){
+      STARTTIME;
+      
+      /* save eigenvectors if requested */
+      int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
+				 Nvecs_curr, eigVal, eigVec, resid, 1);
+      if(status != 0){
+	node0_printf("ERROR writing eigenvectors\n");
+      }
+      
+      /* Clean up eigen storage */
+      for(i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
+      free(eigVal); free(eigVec); free(resid);
+      
+      ENDTIME("save eigenvectors (if requested)");
+    }
 
     node0_printf("RUNNING COMPLETED\n");
     endtime=dclock();

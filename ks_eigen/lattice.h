@@ -165,4 +165,9 @@ EXTERN fermion_links_t    *fn_links;
 EXTERN int n_naiks;	/* Only one (dummy) Naik correction (for HISQ) */
 EXTERN double eps_naik[1];	/* Naik correction */
 
+/* For eigenpair calculation */
+EXTERN int Nvecs_tot;
+EXTERN double *eigVal; /* eigenvalues of D^dag D */
+EXTERN su3_vector **eigVec; /* eigenvectors */
+
 #endif /* _LATTICE_H */

@@ -67,19 +67,13 @@ typedef struct {
   Real staple_weight;
   int ape_iter;
 #if EIGMODE == EIGCG
-  int ks_eigen_startflag; /* what to do for beginning eigenvectors */
-  int ks_eigen_saveflag; /* what to do for ending eigenvectors */
-  char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
-  char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
   eigcg_params eigcgp; /* parameters for eigCG */
 #endif
-#if EIGMODE == DEFLATION
+  char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
+  char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
   int ks_eigen_startflag; /* what to do for beginning eigenvectors */
   int ks_eigen_saveflag; /* what to do for ending eigenvectors */
   ks_eigen_param eigen_param; /* Parameters for eigensolver */
-  char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
-  char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
-#endif
   int num_pbp_masses;   /* Number of masses for pbp calculation */
   quark_invert_control qic_pbp[MAX_MASS_PBP];
   int prec_pbp;         /* Precision of the pbp calculation (1 or 2) */
