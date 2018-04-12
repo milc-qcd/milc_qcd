@@ -885,7 +885,7 @@ INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCQPHIXJ} ${INCGRID} 
 #----------------------------------------------------------------------
 #  Extra libraries
 
-LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBQPHIXJ} ${LIBGRID} ${LIBVTUNE}
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBARPACK} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBQPHIXJ} ${LIBGRID} ${LIBVTUNE}
 
 #------------------------------
 # Summary
@@ -959,6 +959,10 @@ endif
 
 ifeq ($(strip ${WANTPRIMME}),true)
   HAVEPRIMME = true
+endif
+
+ifeq ($(strip ${WANTARPACK}),true)
+  HAVEARPACK = true
 endif
 
 # Make_template_combos defines convenience macros for interdependent
