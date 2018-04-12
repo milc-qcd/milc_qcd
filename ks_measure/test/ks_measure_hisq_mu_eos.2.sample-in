@@ -18,6 +18,8 @@ forget
 staple_weight 0
 ape_iter 0
 
+max_number_of_eigenpairs 0
+
 # Chiral condensate and related measurements
 
 number_of_sets 2

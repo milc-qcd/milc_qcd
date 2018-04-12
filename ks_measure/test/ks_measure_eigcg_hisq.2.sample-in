@@ -18,6 +18,12 @@ forget
 staple_weight 0
 ape_iter 0
 
+max_number_of_eigenpairs 500
+
+# eigenvector I/O
+fresh_ks_eigen
+save_serial_ks_eigen ./ks_eigen.out
+
 # EigCG
 
 # restart for Lanczos 
@@ -25,13 +31,6 @@ restart_lanczos 50
 
 # Number of eigenvalues to compute
 Number_of_eigenvals 10
-
-# Max number of eigenvalues
-Max_Number_of_eigenvals 500
-
-# eigenvector I/O
-fresh_ks_eigen
-save_serial_ks_eigen ./ks_eigen.out
 
 # Chiral condensate and related measurements
 
@@ -64,14 +63,8 @@ ape_iter 0
 
 # EigCG
 
-# restart for Lanczos 
-restart_lanczos 50
-
-# Number of eigenvalues to compute
-Number_of_eigenvals 10
-
-# Max number of eigenvalues
-Max_Number_of_eigenvals 100
+# Max number of eigenpairs
+max_number_of_eigenpairs 100
 
 # eigenvector I/O
 reload_serial_ks_eigen ./ks_eigen.out
