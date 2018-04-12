@@ -30,7 +30,9 @@ enum accel_type { NO_POLY, POLY_X , MSQ_POLY , CHEBY , POLY_INV , NO_POLY_SQRT ,
 #include "../include/dslash_ks_redefine.h"
 #include <string.h>
 
-#include<mpi.h>
+#ifdef MPI_COMMS
+#include <mpi.h>
+#endif
 
 //static imp_ferm_links_t **fn;
 
@@ -860,7 +862,7 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
   
   //#define PARPACK 1
   
-#if defined(MPI) && defined(PARPACK)
+#if defined(MPI_COMMS) && defined(PARPACK)
   MPI_Comm comm; //communicator used when we call PARPACK
   int comm_err ;
 #endif
@@ -1041,7 +1043,7 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
     }
   
   
-#if defined(MPI) && defined(PARPACK)
+#if defined(MPI_COMMS) && defined(PARPACK)
   /****   parallel stuff  ***********/
   //duplicate the MPI_COMM_WORLD to create a communicator to be used with arpack
   comm_err = MPI_Comm_dup(MPI_COMM_WORLD,&comm); 
