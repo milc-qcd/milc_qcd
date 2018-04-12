@@ -224,7 +224,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
    0 is normal exit code
    >1 for seek, read error, or missing data error 
 */
-int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
+int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
 		    su3_vector **eigVec, int timing){
 
   register int i, j;
@@ -237,7 +237,7 @@ int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
 
   switch(flag){
   case FRESH:
-    for(i = 0; i < Nvecs; i++){
+    for(i = 0; i < *Nvecs; i++){
       FORALLFIELDSITES(j){
 	clearvec(eigVec[i]+j);
       }
@@ -245,12 +245,12 @@ int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
     break;
   case RELOAD_ASCII:
     kseigf = r_open_ks_eigen(flag, eigfile);
-    status = r_ascii_ks_eigen(kseigf, Nvecs, eigVal, eigVec);
+    status = r_ascii_ks_eigen(kseigf, *Nvecs, eigVal, eigVec);
     r_close_ks_eigen(flag, kseigf);
     break;
   case RELOAD_SERIAL:
     kseigf = r_open_ks_eigen(flag, eigfile);
-    status = r_serial_ks_eigen(kseigf, Nvecs, eigVal, eigVec);
+    status = r_serial_ks_eigen(kseigf, *Nvecs, eigVal, eigVec);
     r_close_ks_eigen(flag, kseigf);
     break;
   default:
@@ -260,7 +260,7 @@ int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
   
   if(timing && flag != FRESH){
     dtime += dclock();
-    node0_printf("Time to reload %d eigenvectors = %e\n", Nvecs, dtime);
+    node0_printf("Time to reload %d eigenvectors = %e\n", *Nvecs, dtime);
   }
 
   if(kseigf != NULL && kseigf->parity == EVENANDODD){
