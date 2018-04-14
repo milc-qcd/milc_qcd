@@ -1,9 +1,9 @@
 /****** eigen_stuff_PRIMME.c  ******************/
-/* Eigenvalue and Eigevector computation routines.
-* This version uses PRIMME (UMH Jul 2010e
+/* Eigenvalue and Eigevector computation routines. UMH Jul 2010
+* This version uses PRIMME (2.1 released on Apr. 4 2017)
 * MIMD version 7
 *
-*  These routines are for the computation of the Eigenvalues and Eigevectors
+*  These routines are for the computation of the Eigenvalues and Eigenvectors
 * of the Kogut-Susskind dslash^2. 
 */
 
@@ -290,11 +290,11 @@ static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme
     *ierr = 0 ;
 }
 
-#else
+#else  /* ifdef PRIMME */
 
 /* Stub to allow compilation (but not execution) in case PRIMME is not available */
 
- int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal, ks_eigen_param *eigen_param, int init)
+int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal, ks_eigen_param *eigen_param, int init)
 {
   node0_printf("ks_eigensolve_PRIMME: Requires compilation with the PRIMME package\n");
   terminate(1);
