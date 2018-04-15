@@ -19,8 +19,8 @@
 #include "../include/dslash_ks_redefine.h"
 #include <string.h>
 
-static int mxv_kalk;
-static int mxv_precond_kalk;
+static int mxv;
+static int mxv_precond;
 static ks_eigen_param *my_eigen_param;
 static imp_ferm_links_t *my_fn;
 static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme_params *primme, int *ierr) ;
@@ -39,19 +39,19 @@ static void ks_mxv(void *x, long *ldx, void *y, long *ldy,
   Real* yy;
   su3_vector tmp1[sites_on_node], tmp2[sites_on_node];
 
-  mxv_kalk++;
+  mxv++;
   if(parity == EVENANDODD){
     maxn=sites_on_node*3;                       /*local size of matrix*/
   }
   else
     maxn=sites_on_node*3/2;                     /*local size of matrix*/
 
-  /* This routine gets a number of vectors (stored consequtively) which
+  /* This routine gets a number of vectors (stored consecutively) which
    * need to be mutliplied by the matrix */
     
   for (iblock=0;iblock<*blockSize;iblock++)
   {
-    /* Copy double precsion vector to single precision su3_vectors */
+    /* Copy double precision vector to single precision su3_vectors */
     xx=((double*) x)+2*iblock*maxn;
     FORSOMEPARITY(i,s,parity){
       clearvec(&tmp1[i]);
@@ -88,7 +88,7 @@ static void ks_precond_mxv(void *x, long *ldx, void *y, long *ldy,
 
   node0_printf("ks_precond_mxv called\n");
 
-  mxv_precond_kalk++;
+  mxv_precond++;
   if(parity == EVENANDODD){
     maxn=sites_on_node*3;                       /*local size of matrix*/
   }
@@ -159,8 +159,8 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   double dtimec;
 #endif
 
-  mxv_kalk = 0;
-  mxv_precond_kalk = 0;
+  mxv = 0;
+  mxv_precond = 0;
   my_fn = get_fm_links(fn_links)[0];
 
   if(parity == EVENANDODD){
@@ -177,6 +177,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   rnorms=malloc(Nvecs*sizeof(double_complex));
   if (rnorms==NULL) exit(1);
 
+#if 0
   /* Initiallize all the eigenvectors to a random vector and
      convert to double precision temporary fields */
   
@@ -190,6 +191,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
     }
   }
   destroy_v_field(gr0);
+#endif
 
   /*set the parameters of the EV finder*/
   primme_initialize(&primme);
@@ -215,9 +217,19 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 #endif
   primme.eps=eigen_param->tol;
   primme.numEvals=maxnev;
-  primme.initSize=Nvecs;
+  //primme.initSize=Nvecs; /* # initial guess vectors stored in evecs */
 #ifdef PRIMME_PRECOND
   primme.applyPreconditioner = ks_precond_mxv;
+#endif
+
+  /* Optimaized Parameter Setting */
+  primme.correctionParams.robustShifts = 1; // led to faster convergence with 0 for tol=1e-8  
+  primme.locking=1;
+#if 1 /* James and Xiao-Yong's optimal setting */
+  primme.minRestartSize=120;  /* relevant if locking != 0 */
+  primme.maxBasisSize=192;    /* relevant if locking != 0 */
+  primme.maxBlockSize=8;
+  primme.restartingParams.maxPrevRetain=2;
 #endif
 
   /*
@@ -265,8 +277,8 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 	   dtimec,total_iters, (double)(total_iters)/Nvecs);
 #endif
 
-  node0_printf("mxv operations for eigenvecs %d\n",mxv_kalk);
-  node0_printf("mxv precond operations for eigenvecs %d\n",mxv_precond_kalk);
+  node0_printf("mxv operations for eigenvecs %d\n",mxv);
+  node0_printf("mxv precond operations for eigenvecs %d\n",mxv_precond);
   node0_printf("BEGIN RESULTS\n");
   for(i=0;i<Nvecs;i++){
     node0_printf("Eigenvalue(%i) = %g \n", i,eigVal[i]);
@@ -276,7 +288,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   free(evecs);
   free(rnorms);
   primme_free(&primme);
-  return mxv_kalk;
+  return mxv;
 }
 
 /*****************************************************************************/
