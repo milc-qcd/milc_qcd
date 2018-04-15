@@ -94,39 +94,92 @@ Time to APE smear 1.070499e-04 sec
  OK converged final_rsq= 8.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 5
 PBP: mass 1.000000e-01     1.509526e-01  5.396824e-02  2.643297e-03  2.643257e-03 ( 1 of 1 )
 FACTION: mass = 1.000000e-01,  1.522323e+00 ( 1 of 1 )
-Lock epair[ 1 ]= 4.613495e-02 norm 8.2590e-07 Mvecs 39 Time 2.4401e-02 Flag 2
-Lock epair[ 2 ]= 4.613482e-02 norm 1.5587e-06 Mvecs 64 Time 2.7026e-01 Flag 2
-Lock epair[ 3 ]= 1.984240e+00 norm 1.8348e-06 Mvecs 137 Time 3.2291e-01 Flag 2
-Lock epair[ 4 ]= 1.984240e+00 norm 1.5954e-06 Mvecs 226 Time 5.0080e-01 Flag 2
-Lock epair[ 5 ]= 2.033702e+00 norm 1.1208e-06 Mvecs 331 Time 5.7710e-01 Flag 2
-Lock epair[ 6 ]= 2.033702e+00 norm 1.5450e-06 Mvecs 331 Time 5.7715e-01 Flag 2
-Lock epair[ 7 ]= 2.073985e+00 norm 1.3451e-06 Mvecs 445 Time 7.7784e-01 Flag 2
-Lock epair[ 8 ]= 2.073985e+00 norm 1.2041e-06 Mvecs 454 Time 7.8650e-01 Flag 2
-Lock epair[ 9 ]= 2.092368e+00 norm 1.4680e-06 Mvecs 535 Time 1.0613e+00 Flag 2
-Lock epair[ 10 ]= 2.092368e+00 norm 1.6017e-06 Mvecs 544 Time 1.0701e+00 Flag 2
-Lock epair[ 11 ]= 2.135127e+00 norm 1.7030e-06 Mvecs 625 Time 1.1300e+00 Flag 2
-Lock epair[ 12 ]= 2.135127e+00 norm 1.9645e-06 Mvecs 625 Time 1.1301e+00 Flag 2
-Lock epair[ 13 ]= 2.175197e+00 norm 1.7963e-06 Mvecs 715 Time 1.4166e+00 Flag 2
-Lock epair[ 14 ]= 2.175197e+00 norm 1.2153e-06 Mvecs 715 Time 1.4167e+00 Flag 2
-Lock epair[ 15 ]= 2.347220e+00 norm 1.5276e-06 Mvecs 877 Time 1.7636e+00 Flag 2
-Lock epair[ 16 ]= 2.347220e+00 norm 1.0675e-06 Mvecs 877 Time 1.7636e+00 Flag 2
-Lock epair[ 17 ]= 2.347220e+00 norm 1.0477e-06 Mvecs 877 Time 1.7637e+00 Flag 2
-Lock epair[ 18 ]= 2.347220e+00 norm 1.8134e-06 Mvecs 928 Time 2.0244e+00 Flag 2
-Lock epair[ 19 ]= 2.347220e+00 norm 1.2793e-06 Mvecs 1001 Time 2.0818e+00 Flag 2
-Lock epair[ 20 ]= 2.347220e+00 norm 1.1167e-06 Mvecs 1074 Time 2.2813e+00 Flag 2
-Lock epair[ 21 ]= 2.347220e+00 norm 1.7121e-06 Mvecs 1147 Time 2.3422e+00 Flag 2
-Lock epair[ 22 ]= 2.445175e+00 norm 1.9037e-06 Mvecs 1147 Time 2.3422e+00 Flag 2
-Lock epair[ 23 ]= 2.347220e+00 norm 1.2398e-06 Mvecs 1221 Time 2.6512e+00 Flag 2
-Lock epair[ 24 ]= 2.347220e+00 norm 1.6728e-06 Mvecs 1294 Time 2.7075e+00 Flag 2
-Lock epair[ 25 ]= 2.347220e+00 norm 1.0318e-06 Mvecs 1375 Time 3.0767e+00 Flag 2
-Lock epair[ 26 ]= 2.445175e+00 norm 1.4532e-06 Mvecs 1375 Time 3.0767e+00 Flag 2
-Lock epair[ 27 ]= 2.347220e+00 norm 1.7268e-06 Mvecs 1457 Time 3.2998e+00 Flag 2
-Lock epair[ 28 ]= 2.347220e+00 norm 1.4108e-06 Mvecs 1529 Time 3.3624e+00 Flag 2
-Lock epair[ 29 ]= 2.347220e+00 norm 1.9050e-06 Mvecs 1617 Time 3.7560e+00 Flag 2
-Lock epair[ 30 ]= 2.347220e+00 norm 1.6695e-06 Mvecs 1713 Time 3.8364e+00 Flag 2
-Lock epair[ 31 ]= 2.347220e+00 norm 1.6687e-06 Mvecs 1801 Time 4.1364e+00 Flag 2
-Lock epair[ 32 ]= 2.471377e+00 norm 1.4141e-06 Mvecs 1801 Time 4.1364e+00 Flag 2
-mxv operations for eigenvecs 1789
+PRIMME workspace int = 4032 long int = 5932512
+// ---------------------------------------------------
+//                 primme configuration               
+// ---------------------------------------------------
+primme.n = 384
+primme.nLocal = 384
+primme.numProcs = 1
+primme.procID = 0
+
+// Output and reporting
+primme.printLevel = 2
+
+// Solver parameters
+primme.numEvals = 32
+primme.aNorm = 0.000000e+00
+primme.eps = 5.000000e-14
+primme.maxBasisSize = 192
+primme.minRestartSize = 120
+primme.maxBlockSize = 8
+primme.maxOuterIterations = 6000
+primme.maxMatvecs = 2147483647
+primme.target = primme_smallest
+primme.projection.projection = primme_proj_RR
+primme.initBasisMode = primme_init_krylov
+primme.numTargetShifts = 0
+primme.dynamicMethodSwitch = 1
+primme.locking = 1
+primme.initSize = 0
+primme.numOrthoConst = 0
+primme.ldevecs = 384
+primme.ldOPs = 384
+primme.iseed = -1 -1 -1 -1
+
+// Restarting
+primme.restarting.scheme = primme_thick
+primme.restarting.maxPrevRetain = 2
+
+// Correction parameters
+primme.correction.precondition = 0
+primme.correction.robustShifts = 1
+primme.correction.maxInnerIterations = -1
+primme.correction.relTolBase = 0
+primme.correction.convTest = primme_adaptive_ETolerance
+
+// projectors for JD cor.eq.
+primme.correction.projectors.LeftQ = 0
+primme.correction.projectors.LeftX = 1
+primme.correction.projectors.RightQ = 0
+primme.correction.projectors.SkewQ = 0
+primme.correction.projectors.RightX = 0
+primme.correction.projectors.SkewX = 1
+// ---------------------------------------------------
+Lock epair[ 1 ]= 4.613508e-02 norm 3.1727e-14 Mvecs 374 Time 5.3376e-01 Flag 2
+Lock epair[ 2 ]= 4.613508e-02 norm 2.8002e-14 Mvecs 374 Time 5.3379e-01 Flag 2
+Lock epair[ 3 ]= 1.984240e+00 norm 1.3340e-13 Mvecs 374 Time 5.3379e-01 Flag 2
+Lock epair[ 4 ]= 1.984240e+00 norm 8.2571e-14 Mvecs 374 Time 5.3379e-01 Flag 2
+Lock epair[ 5 ]= 2.033702e+00 norm 1.7157e-13 Mvecs 374 Time 5.3380e-01 Flag 2
+Lock epair[ 6 ]= 2.033702e+00 norm 4.7334e-13 Mvecs 374 Time 5.3380e-01 Flag 2
+Lock epair[ 7 ]= 2.073985e+00 norm 4.3890e-13 Mvecs 374 Time 5.3380e-01 Flag 2
+Lock epair[ 8 ]= 2.073985e+00 norm 1.3356e-13 Mvecs 374 Time 5.3380e-01 Flag 2
+Lock epair[ 9 ]= 2.092368e+00 norm 3.0766e-13 Mvecs 374 Time 5.3381e-01 Flag 2
+Lock epair[ 10 ]= 2.092368e+00 norm 2.2531e-13 Mvecs 374 Time 5.3381e-01 Flag 2
+Lock epair[ 11 ]= 2.135127e+00 norm 1.7568e-13 Mvecs 643 Time 7.8382e-01 Flag 2
+Lock epair[ 12 ]= 2.135127e+00 norm 7.8136e-14 Mvecs 643 Time 7.8384e-01 Flag 2
+Lock epair[ 13 ]= 2.175197e+00 norm 2.7882e-13 Mvecs 643 Time 7.8384e-01 Flag 2
+Lock epair[ 14 ]= 2.175197e+00 norm 1.8782e-13 Mvecs 643 Time 7.8385e-01 Flag 2
+Lock epair[ 15 ]= 2.347222e+00 norm 1.0648e-12 Mvecs 643 Time 7.8385e-01 Flag 2
+Lock epair[ 16 ]= 2.347222e+00 norm 3.1817e-13 Mvecs 643 Time 7.8385e-01 Flag 2
+Lock epair[ 17 ]= 2.347222e+00 norm 9.7485e-13 Mvecs 851 Time 1.0106e+00 Flag 2
+Lock epair[ 18 ]= 2.347222e+00 norm 1.6059e-12 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 19 ]= 2.347222e+00 norm 1.6479e-12 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 20 ]= 2.347222e+00 norm 3.1555e-12 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 21 ]= 2.347222e+00 norm 2.6592e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 22 ]= 2.347222e+00 norm 5.1577e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 23 ]= 2.347222e+00 norm 3.1459e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 24 ]= 2.347222e+00 norm 2.3273e-12 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 25 ]= 2.347222e+00 norm 2.4617e-12 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 26 ]= 2.347222e+00 norm 5.9661e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 27 ]= 2.347222e+00 norm 2.8914e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 28 ]= 2.347222e+00 norm 1.5156e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 29 ]= 2.347222e+00 norm 8.5230e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 30 ]= 2.445175e+00 norm 1.0074e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 31 ]= 2.445175e+00 norm 8.2343e-14 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 32 ]= 2.347222e+00 norm 4.4568e-13 Mvecs 857 Time 1.0467e+00 Flag 2
+mxv operations for eigenvecs 618
+mxv precond operations for eigenvecs 0
 BEGIN RESULTS
 Eigenvalue(0) = 0.0461351 
 Eigenvalue(1) = 0.0461351 
@@ -156,79 +209,79 @@ Eigenvalue(24) = 2.34722
 Eigenvalue(25) = 2.34722 
 Eigenvalue(26) = 2.34722 
 Eigenvalue(27) = 2.34722 
-Eigenvalue(28) = 2.44517 
-Eigenvalue(29) = 2.44517 
-Eigenvalue(30) = 2.47138 
-Eigenvalue(31) = 2.47138 
+Eigenvalue(28) = 2.34722 
+Eigenvalue(29) = 2.34722 
+Eigenvalue(30) = 2.44517 
+Eigenvalue(31) = 2.44517 
 Even site residuals
 Checking eigensolutions
-eigVal[0] = 4.613508e-02 ( resid = 6.266813e-13 , |eigVec[0]|-1 = 1.110223e-15 )
-eigVal[1] = 4.613508e-02 ( resid = 6.563399e-13 , |eigVec[1]|-1 = 2.220446e-16 )
-eigVal[2] = 1.984240e+00 ( resid = 4.216337e-13 , |eigVec[2]|-1 = 2.220446e-16 )
-eigVal[3] = 1.984240e+00 ( resid = 8.356695e-13 , |eigVec[3]|-1 = 2.220446e-16 )
-eigVal[4] = 2.033702e+00 ( resid = 6.562736e-13 , |eigVec[4]|-1 = 2.220446e-16 )
-eigVal[5] = 2.033702e+00 ( resid = 4.162717e-13 , |eigVec[5]|-1 = 0.000000e+00 )
-eigVal[6] = 2.073985e+00 ( resid = 7.547824e-13 , |eigVec[6]|-1 = -1.443290e-15 )
-eigVal[7] = 2.073985e+00 ( resid = 5.776325e-13 , |eigVec[7]|-1 = -7.771561e-16 )
-eigVal[8] = 2.092368e+00 ( resid = 7.880887e-13 , |eigVec[8]|-1 = -9.992007e-16 )
-eigVal[9] = 2.092368e+00 ( resid = 1.359672e-12 , |eigVec[9]|-1 = 2.220446e-16 )
-eigVal[10] = 2.135127e+00 ( resid = 9.794925e-13 , |eigVec[10]|-1 = -1.443290e-15 )
-eigVal[11] = 2.135127e+00 ( resid = 3.431460e-13 , |eigVec[11]|-1 = 2.220446e-15 )
-eigVal[12] = 2.175197e+00 ( resid = 6.876569e-13 , |eigVec[12]|-1 = 2.886580e-15 )
-eigVal[13] = 2.175197e+00 ( resid = 8.196640e-13 , |eigVec[13]|-1 = 1.110223e-15 )
-eigVal[14] = 2.347222e+00 ( resid = 8.253162e-13 , |eigVec[14]|-1 = -1.554312e-15 )
-eigVal[15] = 2.347222e+00 ( resid = 8.671915e-13 , |eigVec[15]|-1 = -9.992007e-16 )
-eigVal[16] = 2.347222e+00 ( resid = 6.985314e-13 , |eigVec[16]|-1 = 1.110223e-15 )
-eigVal[17] = 2.347222e+00 ( resid = 5.002242e-13 , |eigVec[17]|-1 = -3.330669e-16 )
-eigVal[18] = 2.347222e+00 ( resid = 6.465024e-13 , |eigVec[18]|-1 = -7.771561e-16 )
-eigVal[19] = 2.347222e+00 ( resid = 5.669346e-13 , |eigVec[19]|-1 = -5.551115e-16 )
-eigVal[20] = 2.347222e+00 ( resid = 8.697485e-13 , |eigVec[20]|-1 = -1.110223e-16 )
-eigVal[21] = 2.347222e+00 ( resid = 2.503113e-12 , |eigVec[21]|-1 = -3.330669e-16 )
-eigVal[22] = 2.347222e+00 ( resid = 5.794598e-13 , |eigVec[22]|-1 = 6.661338e-16 )
-eigVal[23] = 2.347222e+00 ( resid = 5.747266e-13 , |eigVec[23]|-1 = 4.440892e-16 )
-eigVal[24] = 2.347222e+00 ( resid = 9.896610e-13 , |eigVec[24]|-1 = -7.771561e-16 )
-eigVal[25] = 2.347222e+00 ( resid = 8.341277e-13 , |eigVec[25]|-1 = 1.554312e-15 )
-eigVal[26] = 2.347222e+00 ( resid = 6.602404e-13 , |eigVec[26]|-1 = 8.881784e-16 )
-eigVal[27] = 2.347222e+00 ( resid = 9.832302e-13 , |eigVec[27]|-1 = 2.220446e-16 )
-eigVal[28] = 2.445175e+00 ( resid = 9.237451e-13 , |eigVec[28]|-1 = 4.440892e-16 )
-eigVal[29] = 2.445175e+00 ( resid = 2.305100e-13 , |eigVec[29]|-1 = 2.664535e-15 )
-eigVal[30] = 2.471377e+00 ( resid = 5.093275e-13 , |eigVec[30]|-1 = -3.330669e-16 )
-eigVal[31] = 2.471377e+00 ( resid = 5.742820e-13 , |eigVec[31]|-1 = -1.110223e-15 )
+eigVal[0] = 4.613508e-02 ( resid = 3.323791e-14 , |eigVec[0]|-1 = -1.221245e-15 )
+eigVal[1] = 4.613508e-02 ( resid = 2.974120e-14 , |eigVec[1]|-1 = -2.886580e-15 )
+eigVal[2] = 1.984240e+00 ( resid = 1.341275e-13 , |eigVec[2]|-1 = 6.661338e-16 )
+eigVal[3] = 1.984240e+00 ( resid = 8.321383e-14 , |eigVec[3]|-1 = -5.551115e-16 )
+eigVal[4] = 2.033702e+00 ( resid = 1.715402e-13 , |eigVec[4]|-1 = -1.110223e-16 )
+eigVal[5] = 2.033702e+00 ( resid = 4.735746e-13 , |eigVec[5]|-1 = 4.440892e-16 )
+eigVal[6] = 2.073985e+00 ( resid = 4.401457e-13 , |eigVec[6]|-1 = -3.330669e-16 )
+eigVal[7] = 2.073985e+00 ( resid = 1.338896e-13 , |eigVec[7]|-1 = -1.443290e-15 )
+eigVal[8] = 2.092368e+00 ( resid = 3.078675e-13 , |eigVec[8]|-1 = 1.332268e-15 )
+eigVal[9] = 2.092368e+00 ( resid = 2.257328e-13 , |eigVec[9]|-1 = -1.110223e-15 )
+eigVal[10] = 2.135127e+00 ( resid = 1.764423e-13 , |eigVec[10]|-1 = -1.332268e-15 )
+eigVal[11] = 2.135127e+00 ( resid = 7.846490e-14 , |eigVec[11]|-1 = 1.776357e-15 )
+eigVal[12] = 2.175197e+00 ( resid = 2.784441e-13 , |eigVec[12]|-1 = 8.881784e-16 )
+eigVal[13] = 2.175197e+00 ( resid = 1.876124e-13 , |eigVec[13]|-1 = 1.998401e-15 )
+eigVal[14] = 2.347222e+00 ( resid = 9.744164e-13 , |eigVec[14]|-1 = 8.881784e-16 )
+eigVal[15] = 2.347222e+00 ( resid = 1.605806e-12 , |eigVec[15]|-1 = 1.776357e-15 )
+eigVal[16] = 2.347222e+00 ( resid = 1.648205e-12 , |eigVec[16]|-1 = 8.881784e-16 )
+eigVal[17] = 2.347222e+00 ( resid = 3.155763e-12 , |eigVec[17]|-1 = 1.776357e-15 )
+eigVal[18] = 2.347222e+00 ( resid = 1.065049e-12 , |eigVec[18]|-1 = -6.661338e-16 )
+eigVal[19] = 2.347222e+00 ( resid = 2.661200e-13 , |eigVec[19]|-1 = 4.440892e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 5.157614e-13 , |eigVec[20]|-1 = -1.110223e-16 )
+eigVal[21] = 2.347222e+00 ( resid = 3.144854e-13 , |eigVec[21]|-1 = 6.661338e-16 )
+eigVal[22] = 2.347222e+00 ( resid = 3.180581e-13 , |eigVec[22]|-1 = -1.110223e-16 )
+eigVal[23] = 2.347222e+00 ( resid = 2.327619e-12 , |eigVec[23]|-1 = -3.330669e-16 )
+eigVal[24] = 2.347222e+00 ( resid = 2.462142e-12 , |eigVec[24]|-1 = 4.440892e-16 )
+eigVal[25] = 2.347222e+00 ( resid = 4.457093e-13 , |eigVec[25]|-1 = 4.440892e-16 )
+eigVal[26] = 2.347222e+00 ( resid = 5.971413e-13 , |eigVec[26]|-1 = -3.330669e-16 )
+eigVal[27] = 2.347222e+00 ( resid = 2.896475e-13 , |eigVec[27]|-1 = -1.554312e-15 )
+eigVal[28] = 2.347222e+00 ( resid = 1.510796e-13 , |eigVec[28]|-1 = -7.771561e-16 )
+eigVal[29] = 2.347222e+00 ( resid = 8.523996e-13 , |eigVec[29]|-1 = -1.554312e-15 )
+eigVal[30] = 2.445175e+00 ( resid = 1.013758e-13 , |eigVec[30]|-1 = -9.992007e-16 )
+eigVal[31] = 2.445175e+00 ( resid = 8.256046e-14 , |eigVec[31]|-1 = -2.775558e-15 )
 End of eigensolutions
 Odd site residuals
 Checking eigensolutions
-eigVal[0] = 4.613508e-02 ( resid = 9.621455e-12 , |eigVec[0]|-1 = -1.110223e-16 )
-eigVal[1] = 4.613508e-02 ( resid = 9.641572e-12 , |eigVec[1]|-1 = -2.220446e-16 )
-eigVal[2] = 1.984240e+00 ( resid = 8.101019e-13 , |eigVec[2]|-1 = 0.000000e+00 )
-eigVal[3] = 1.984240e+00 ( resid = 1.883996e-12 , |eigVec[3]|-1 = -1.110223e-16 )
-eigVal[4] = 2.033702e+00 ( resid = 1.202199e-12 , |eigVec[4]|-1 = 0.000000e+00 )
-eigVal[5] = 2.033702e+00 ( resid = 8.698681e-13 , |eigVec[5]|-1 = 2.220446e-16 )
-eigVal[6] = 2.073985e+00 ( resid = 1.408512e-12 , |eigVec[6]|-1 = 0.000000e+00 )
-eigVal[7] = 2.073985e+00 ( resid = 1.119431e-12 , |eigVec[7]|-1 = -3.330669e-16 )
-eigVal[8] = 2.092368e+00 ( resid = 1.865597e-12 , |eigVec[8]|-1 = 2.220446e-16 )
-eigVal[9] = 2.092368e+00 ( resid = 3.176139e-12 , |eigVec[9]|-1 = 0.000000e+00 )
-eigVal[10] = 2.135127e+00 ( resid = 2.040802e-12 , |eigVec[10]|-1 = -1.110223e-16 )
-eigVal[11] = 2.135127e+00 ( resid = 7.279978e-13 , |eigVec[11]|-1 = 0.000000e+00 )
-eigVal[12] = 2.175197e+00 ( resid = 1.311219e-12 , |eigVec[12]|-1 = 0.000000e+00 )
-eigVal[13] = 2.175197e+00 ( resid = 1.880257e-12 , |eigVec[13]|-1 = -4.440892e-16 )
-eigVal[14] = 2.347222e+00 ( resid = 1.691363e-12 , |eigVec[14]|-1 = 0.000000e+00 )
-eigVal[15] = 2.347222e+00 ( resid = 1.751741e-12 , |eigVec[15]|-1 = -8.881784e-16 )
-eigVal[16] = 2.347222e+00 ( resid = 1.499737e-12 , |eigVec[16]|-1 = 0.000000e+00 )
-eigVal[17] = 2.347222e+00 ( resid = 7.587765e-13 , |eigVec[17]|-1 = 0.000000e+00 )
-eigVal[18] = 2.347222e+00 ( resid = 1.174495e-12 , |eigVec[18]|-1 = 0.000000e+00 )
-eigVal[19] = 2.347222e+00 ( resid = 1.074575e-12 , |eigVec[19]|-1 = 0.000000e+00 )
-eigVal[20] = 2.347222e+00 ( resid = 1.727298e-12 , |eigVec[20]|-1 = 2.220446e-16 )
-eigVal[21] = 2.347222e+00 ( resid = 5.456650e-12 , |eigVec[21]|-1 = 0.000000e+00 )
-eigVal[22] = 2.347222e+00 ( resid = 1.317337e-12 , |eigVec[22]|-1 = -5.551115e-16 )
-eigVal[23] = 2.347222e+00 ( resid = 1.041174e-12 , |eigVec[23]|-1 = 4.440892e-16 )
-eigVal[24] = 2.347222e+00 ( resid = 2.150497e-12 , |eigVec[24]|-1 = -1.110223e-16 )
-eigVal[25] = 2.347222e+00 ( resid = 1.657371e-12 , |eigVec[25]|-1 = -4.440892e-16 )
-eigVal[26] = 2.347222e+00 ( resid = 1.464484e-12 , |eigVec[26]|-1 = -1.110223e-16 )
-eigVal[27] = 2.347222e+00 ( resid = 1.955184e-12 , |eigVec[27]|-1 = 0.000000e+00 )
-eigVal[28] = 2.445175e+00 ( resid = 2.149486e-12 , |eigVec[28]|-1 = 0.000000e+00 )
-eigVal[29] = 2.445175e+00 ( resid = 4.435810e-13 , |eigVec[29]|-1 = -1.110223e-16 )
-eigVal[30] = 2.471377e+00 ( resid = 1.084348e-12 , |eigVec[30]|-1 = 0.000000e+00 )
-eigVal[31] = 2.471377e+00 ( resid = 1.258674e-12 , |eigVec[31]|-1 = 0.000000e+00 )
+eigVal[0] = 4.613508e-02 ( resid = 4.149181e-13 , |eigVec[0]|-1 = -2.220446e-16 )
+eigVal[1] = 4.613508e-02 ( resid = 4.353451e-13 , |eigVec[1]|-1 = -3.330669e-16 )
+eigVal[2] = 1.984240e+00 ( resid = 3.403040e-13 , |eigVec[2]|-1 = -1.110223e-16 )
+eigVal[3] = 1.984240e+00 ( resid = 2.101296e-13 , |eigVec[3]|-1 = 0.000000e+00 )
+eigVal[4] = 2.033702e+00 ( resid = 4.374830e-13 , |eigVec[4]|-1 = -3.330669e-16 )
+eigVal[5] = 2.033702e+00 ( resid = 1.183154e-12 , |eigVec[5]|-1 = 0.000000e+00 )
+eigVal[6] = 2.073985e+00 ( resid = 1.063335e-12 , |eigVec[6]|-1 = 2.220446e-16 )
+eigVal[7] = 2.073985e+00 ( resid = 3.077713e-13 , |eigVec[7]|-1 = 0.000000e+00 )
+eigVal[8] = 2.092368e+00 ( resid = 8.003724e-13 , |eigVec[8]|-1 = 0.000000e+00 )
+eigVal[9] = 2.092368e+00 ( resid = 5.561576e-13 , |eigVec[9]|-1 = 0.000000e+00 )
+eigVal[10] = 2.135127e+00 ( resid = 4.196841e-13 , |eigVec[10]|-1 = -1.110223e-16 )
+eigVal[11] = 2.135127e+00 ( resid = 1.646291e-13 , |eigVec[11]|-1 = 0.000000e+00 )
+eigVal[12] = 2.175197e+00 ( resid = 5.539525e-13 , |eigVec[12]|-1 = -1.110223e-16 )
+eigVal[13] = 2.175197e+00 ( resid = 3.937836e-13 , |eigVec[13]|-1 = -1.110223e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 2.432378e-12 , |eigVec[14]|-1 = 2.220446e-16 )
+eigVal[15] = 2.347222e+00 ( resid = 3.980525e-12 , |eigVec[15]|-1 = 0.000000e+00 )
+eigVal[16] = 2.347222e+00 ( resid = 4.183328e-12 , |eigVec[16]|-1 = -4.440892e-16 )
+eigVal[17] = 2.347222e+00 ( resid = 7.956642e-12 , |eigVec[17]|-1 = 0.000000e+00 )
+eigVal[18] = 2.347222e+00 ( resid = 2.552708e-12 , |eigVec[18]|-1 = -4.440892e-16 )
+eigVal[19] = 2.347222e+00 ( resid = 6.534865e-13 , |eigVec[19]|-1 = 4.440892e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 1.282686e-12 , |eigVec[20]|-1 = 2.220446e-16 )
+eigVal[21] = 2.347222e+00 ( resid = 7.798201e-13 , |eigVec[21]|-1 = -1.110223e-16 )
+eigVal[22] = 2.347222e+00 ( resid = 7.837934e-13 , |eigVec[22]|-1 = -1.110223e-16 )
+eigVal[23] = 2.347222e+00 ( resid = 5.754616e-12 , |eigVec[23]|-1 = 2.220446e-16 )
+eigVal[24] = 2.347222e+00 ( resid = 6.082362e-12 , |eigVec[24]|-1 = -4.440892e-16 )
+eigVal[25] = 2.347222e+00 ( resid = 9.802031e-13 , |eigVec[25]|-1 = 2.220446e-16 )
+eigVal[26] = 2.347222e+00 ( resid = 1.471776e-12 , |eigVec[26]|-1 = -1.110223e-16 )
+eigVal[27] = 2.347222e+00 ( resid = 7.109877e-13 , |eigVec[27]|-1 = -1.110223e-16 )
+eigVal[28] = 2.347222e+00 ( resid = 3.667470e-13 , |eigVec[28]|-1 = -1.110223e-16 )
+eigVal[29] = 2.347222e+00 ( resid = 2.138212e-12 , |eigVec[29]|-1 = 0.000000e+00 )
+eigVal[30] = 2.445175e+00 ( resid = 2.473746e-13 , |eigVec[30]|-1 = -3.330669e-16 )
+eigVal[31] = 2.445175e+00 ( resid = 1.930502e-13 , |eigVec[31]|-1 = 0.000000e+00 )
 End of eigensolutions
 The above were eigenvalues of -Dslash^2 in MILC normalization
 Here we also list eigenvalues of iDslash in continuum normalization
@@ -260,10 +313,10 @@ eigenval(24):   0.766032
 eigenval(25):   0.766032
 eigenval(26):   0.766032
 eigenval(27):   0.766032
-eigenval(28):   0.781853
-eigenval(29):   0.781853
-eigenval(30):   0.786031
-eigenval(31):   0.786031
+eigenval(28):   0.766032
+eigenval(29):   0.766032
+eigenval(30):   0.781853
+eigenval(31):   0.781853
 Chirality(0) -- even, odd, total:  -0.362081,  -0.339635,  -0.350858
 Chirality(1) -- even, odd, total:  -0.362081,  -0.339635,  -0.350858
 Chirality(2) -- even, odd, total:  0.0182727,  0.0932587,  0.0557657
@@ -278,31 +331,32 @@ Chirality(10) -- even, odd, total:   0.494248,  -0.429885,  0.0321813
 Chirality(11) -- even, odd, total:   0.494248,  -0.429885,  0.0321813
 Chirality(12) -- even, odd, total:   0.136046, -0.0949102,  0.0205679
 Chirality(13) -- even, odd, total:   0.136046, -0.0949102,  0.0205679
-Chirality(14) -- even, odd, total:  -0.153535,   0.153535, 2.35922e-16
-Chirality(15) -- even, odd, total:  0.0667559, -0.0667559, 4.16334e-17
-Chirality(16) -- even, odd, total:   0.145348,  -0.145348, -9.71445e-17
-Chirality(17) -- even, odd, total: -0.0765279,  0.0765279, 1.45717e-16
-Chirality(18) -- even, odd, total:   0.283263,  -0.283263, 1.11022e-16
-Chirality(19) -- even, odd, total: -0.0469545,  0.0469545, -6.93889e-17
-Chirality(20) -- even, odd, total:  -0.144161,   0.144161, -8.32667e-17
-Chirality(21) -- even, odd, total:   0.224388,  -0.224388, 2.35922e-16
-Chirality(22) -- even, odd, total: -0.0757599,  0.0757599, -1.17961e-16
-Chirality(23) -- even, odd, total: -0.0572694,  0.0572694, -3.46945e-18
-Chirality(24) -- even, odd, total:  -0.197974,   0.197974, -2.77556e-16
-Chirality(25) -- even, odd, total:  -0.220005,   0.220005, -1.249e-16
-Chirality(26) -- even, odd, total:   0.142962,  -0.142962, 1.11022e-16
-Chirality(27) -- even, odd, total: -0.0959501,  0.0959501, -5.55112e-17
-Chirality(28) -- even, odd, total:   0.317288,  -0.348286, -0.0154987
-Chirality(29) -- even, odd, total:   0.317288,  -0.348286, -0.0154987
-Chirality(30) -- even, odd, total:  -0.170127,   0.131387, -0.0193701
-Chirality(31) -- even, odd, total:  -0.170127,   0.131387, -0.0193701
+Chirality(14) -- even, odd, total:  0.0279028, -0.0279028, -2.06432e-16
+Chirality(15) -- even, odd, total:    0.14863,   -0.14863, -7.07767e-16
+Chirality(16) -- even, odd, total:  -0.342631,   0.342631, 8.32667e-16
+Chirality(17) -- even, odd, total:   0.193085,  -0.193085, -6.38378e-16
+Chirality(18) -- even, odd, total:  -0.313349,   0.313349, 6.66134e-16
+Chirality(19) -- even, odd, total:  -0.129556,   0.129556, 3.60822e-16
+Chirality(20) -- even, odd, total:  0.0504884, -0.0504884, -1.66533e-16
+Chirality(21) -- even, odd, total:  0.0669598, -0.0669598, -1.38778e-17
+Chirality(22) -- even, odd, total:  0.0855397, -0.0855397, -1.11022e-16
+Chirality(23) -- even, odd, total:  -0.121375,   0.121375, -9.71445e-17
+Chirality(24) -- even, odd, total:   0.013153,  -0.013153, 5.55112e-17
+Chirality(25) -- even, odd, total: -0.0708237,  0.0708237, -6.93889e-18
+Chirality(26) -- even, odd, total: -0.0971303,  0.0971303, -6.245e-17
+Chirality(27) -- even, odd, total:   0.102308,  -0.102308, 1.38778e-16
+Chirality(28) -- even, odd, total:    0.11381,   -0.11381, 1.45717e-16
+Chirality(29) -- even, odd, total:   0.272987,  -0.272987, 5.82867e-16
+Chirality(30) -- even, odd, total:   0.317288,  -0.348286, -0.0154987
+Chirality(31) -- even, odd, total:   0.317288,  -0.348286, -0.0154987
 RUNNING COMPLETED
-Time = 1.103483e+00 seconds
-total_iters = 33
-total Rayleigh iters = 4681
+Time = 1.321603e+00 seconds
+total_iters = 54
+total Rayleigh iters = 618
 
 
 get_f(0): EOF on input.
-exit: Sun Nov  5 21:17:39 2017
+exit: Sat Apr 14 18:31:46 2018
+
 
 
