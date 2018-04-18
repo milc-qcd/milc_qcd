@@ -21,314 +21,297 @@
 #include "ks_eig_includes.h"	/* definitions files and prototypes */
 //#include "lattice_qdp.h"
 #include <string.h>
-#ifdef HAVE_QOP
-#include "../include/generic_qop.h"
-#endif
-
-EXTERN gauge_header start_lat_hdr;
-gauge_file *gf;
-
-gauge_file *r_parallel_i(char *);
-void r_parallel(gauge_file *, field_offset);
-void r_parallel_f(gauge_file *);
-
-gauge_file *r_binary_i(char *);
-void r_binary(gauge_file *);
-void r_binary_f(gauge_file *);
-
-/* Each node has a params structure for passing simulation parameters */
 #include "params.h"
-
-//#ifdef HAVE_QDP
-//void
-//initial_li(QLA_Int *li, int coords[])
-//{
-//  int i,t;
-// 
-//  t = coords[0];
-//  for(i=1; i<4; i++) {
-//    t = t*QDP_coord_size(i) + coords[i];
-//  }
-//  *li = t;
-//}
-// 
-//void
-//make_rand_seed(void)
-//{
-//  QDP_Int *li;
-//
-//  rand_state = QDP_create_S();
-//  li = QDP_create_I();
-//
-//  QDP_I_eq_func(li, initial_li, QDP_all);
-//  QDP_S_eq_seed_i_I(rand_state, iseed, li, QDP_all);
-//
-//  QDP_destroy_I(li);
-//}
-//#endif
-
-int  setup()   {
-    int initial_set();
-    void make_gen_pt();
-    void make_3n_gathers(),
-        setup_layout();
-    int prompt;
-//#ifdef HAVE_QDP
-//    int i;
-//#endif
-
-	/* print banner, get volume, seed */
-    prompt=initial_set();
-   	/* initialize the node random number generator */
-    initialize_prn( &node_prn, iseed, volume+mynode() );
-	/* Initialize the layout functions, which decide where sites live */
-    setup_layout();
-	/* allocate space for lattice, set up coordinate fields */
-    make_lattice();
-    node0_printf("Made lattice\n"); fflush(stdout);
-    //init_ferm_links(&fn_links, &ks_act_paths);
-	/* set up neighbor pointers and comlink structures
-	   code for this routine is in com_machine.c  */
-    make_nn_gathers();
-node0_printf("Made nn gathers\n"); fflush(stdout);
-#ifdef FN
-	/* set up 3rd nearest neighbor pointers and comlink structures
-	   code for this routine is below  */
-    make_3n_gathers();
-node0_printf("Made 3nn gathers\n"); fflush(stdout);
+#include <unistd.h>
+extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
+#ifdef U1_FIELD
+#include "../include/io_u1lat.h"
 #endif
-	/* set up K-S phase vectors, boundary conditions */
-    phaseset();
 
-//#if HAVE_QOP
-//  /* Initialize QOP */
-//  if(initialize_qop() != QOP_SUCCESS){
-//    node0_printf("setup: Error initializing QOP\n");
-//    terminate(1);
-//  }
+//#ifdef HAVE_QOP
+//#include "../include/generic_qop.h"
 //#endif
 
-//#ifdef HAVE_QDP
-//    make_rand_seed();
-//node0_printf("Made random seed\n"); fflush(stdout);
-//
-//  for(i=0; i<4; ++i) {
-//    shiftdirs[i] = QDP_neighbor[i];
-//    shiftdirs[i+4] = neighbor3[i];
-//  }
-//  for(i=0; i<8; ++i) {
-//    shiftfwd[i] = QDP_forward;
-//    shiftbck[i] = QDP_backward;
-//  }
-//#endif
+/* Forward declarations */
 
-node0_printf("Finished setup\n"); fflush(stdout);
-    return( prompt );
+static int initial_set(void);
+static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
+static void make_3n_gathers(void);
+
+int setup()   {
+  int prompt, dir;
+
+  /* print banner, get volume */
+  prompt=initial_set();
+  if(prompt == 2)return prompt;
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, param.iseed, volume+mynode() );
+  /* Initialize the layout functions, which decide where sites live */
+  setup_layout();
+  /* allocate space for lattice, set up coordinate fields */
+  make_lattice();
+#ifdef U1_FIELD
+  u1_A = create_u1_A_field();
+#endif
+  FORALLUPDIR(dir){
+    boundary_phase[dir] = 0.;
+  }
+  /* set up neighbor pointers and comlink structures
+     code for this routine is in com_machine.c  */
+  make_nn_gathers();
+#ifdef FN
+  /* set up 3rd nearest neighbor pointers and comlink structures
+     code for this routine is below  */
+  make_3n_gathers();
+#endif
+  /* set up K-S phase vectors, antiperiodic boundary conditions */
+  phaseset();
+
+  return( prompt );
 }
 
 
 /* SETUP ROUTINES */
-int initial_set(){
-int prompt,status;
-    /* On node zero, read lattice size, seed, and send to others */
-    if(mynode()==0){
-	/* print banner */
-	printf("SU3 with improved KS action\n");
-	printf("Eigenvalues and eigenvectors\n");
-	printf("MIMD version 6\n");
-	printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
-
-	gethostname(hostname, 128);
-	printf("Host(0) = %s\n",hostname);
-	printf("Username = %s\n", getenv("USER"));
-	time_stamp("start");
-	get_utc_datetime(utc_date_time);
-	
-	/* Print list of options selected */
-	node0_printf("Options selected...\n");
-	show_generic_opts();
-	show_generic_ks_opts();
-	
+static int initial_set(){
+  int prompt,status;
+  /* On node zero, read lattice size, seed, and send to others */
+  if(mynode()==0){
+    /* print banner */
+    printf("SU3 with improved KS action\n");
+    printf("Eigenvalues and eigenvectors\n");
+    printf("MIMD version %s\n",MILC_CODE_VERSION);
+    printf("Machine = %s, with %d nodes(ranks)\n",machine_type(),numnodes());
+    
+    gethostname(hostname, 128);
+    printf("Host(0) = %s\n",hostname);
+    printf("Username = %s\n", getenv("USER"));
+    time_stamp("start");
+    get_utc_datetime(utc_date_time);
+    
+    /* Print list of options selected */
+    node0_printf("Options selected...\n");
+    show_generic_opts();
+    show_generic_ks_opts();
+    
 #if FERM_ACTION == HISQ
-	show_su3_mat_opts();
-	show_hisq_links_opts();
+    show_su3_mat_opts();
+    show_hisq_links_opts();
 #elif FERM_ACTION == HYPISQ
-	show_su3_mat_opts();
-	show_hypisq_links_opts();
+    show_su3_mat_opts();
+    show_hypisq_links_opts();
 #endif
 
-	status=get_prompt(stdin, &prompt);
-
-	IF_OK status += get_i(stdin, prompt,"nx", &param.nx );
-	IF_OK status += get_i(stdin, prompt,"ny", &param.ny );
-	IF_OK status += get_i(stdin, prompt,"nz", &param.nz );
-	IF_OK status += get_i(stdin, prompt,"nt", &param.nt );
-	IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
-
-	if(status>0) param.stopflag=1; else param.stopflag=0;
-    } /* end if(mynode()==0) */
-
-    /* Node 0 broadcasts parameter buffer to all other nodes */
-    broadcast_bytes((char *)&param,sizeof(param));
-
-    if( param.stopflag != 0 )
-      normal_exit(0);
-
-    nx=param.nx;
-    ny=param.ny;
-    nz=param.nz;
-    nt=param.nt;
-    iseed=param.iseed;
+    status = get_prompt(stdin, &prompt);
     
-    this_node = mynode();
-    number_of_nodes = numnodes();
-    volume=nx*ny*nz*nt;
-    total_iters=0;
-    return(prompt);
+    IF_OK status += get_i(stdin, prompt,"nx", &param.nx );
+    IF_OK status += get_i(stdin, prompt,"ny", &param.ny );
+    IF_OK status += get_i(stdin, prompt,"nz", &param.nz );
+    IF_OK status += get_i(stdin, prompt,"nt", &param.nt );
+#ifdef FIX_NODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "node_geometry", 
+			   param.node_geometry, 4);
+#ifdef FIX_IONODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
+			   param.ionode_geometry, 4);
+#endif
+#endif
+    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
+    IF_OK status += get_s(stdin, prompt,"job_id",param.job_id);
+
+    if(status>0) param.stopflag=1; else param.stopflag=0;
+  } /* end if(mynode()==0) */
+
+  /* Node 0 broadcasts parameter buffer to all other nodes */
+  broadcast_bytes((char *)&param,sizeof(param));
+  
+  if( param.stopflag != 0 )
+    normal_exit(0);
+
+  if(prompt==2)return prompt;
+
+  nx=param.nx;
+  ny=param.ny;
+  nz=param.nz;
+  nt=param.nt;
+  iseed=param.iseed;
+  
+#ifdef FIX_NODE_GEOM
+  for(int i = 0; i < 4; i++)
+    node_geometry[i] = param.node_geometry[i];
+#ifdef FIX_IONODE_GEOM
+  for(int i = 0; i < 4; i++)
+    ionode_geometry[i] = param.ionode_geometry[i];
+#endif
+#endif
+
+  this_node = mynode();
+  number_of_nodes = numnodes();
+  volume=nx*ny*nz*nt;
+  return(prompt);
 }
 
 /* read in parameters and coupling constants	*/
 int readin(int prompt) {
-/* read in parameters for su3 monte carlo	*/
-/* argument "prompt" is 1 if prompts are to be given for input	*/
+  /* read in parameters for the calculation	*/
+  /* argument "prompt" is 1 if prompts are to be given for input	*/
 
-     int status;
-     Real x;
+  int status;
+  char savebuf[128];
+#ifdef PRTIME
+  double dtime;
+#endif
+  
+  STARTTIME;
 
-    /* On node zero, read parameters and send to all other nodes */
-    if(this_node==0){
-
-	printf("\n\n");
-	status=0;
+  /* On node zero, read parameters and send to all other nodes */
+  if(this_node==0){
     
-	/* get couplings and broadcast to nodes	*/
-	/* beta, mass */
-	IF_OK status += get_f(stdin, prompt,"mass", &param.mass );
-	IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
-
-	/* maximum no. of conjugate gradient iterations */
-	IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &param.niter );
-	/* maximum no. of conjugate gradient restarts */
-	IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &param.nrestart );
+    printf("\n\n");
+    status=0;
     
-	/* error per site for conjugate gradient */
-	IF_OK status += get_f(stdin, prompt,"error_per_site", &x );
-	IF_OK param.rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
-	    /* New conjugate gradient normalizes rsqmin by norm of source */
-    
-	/* error for propagator conjugate gradient */
-	IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
-	IF_OK param.rsqprop = x*x;
+    /*------------------------------------------------------------*/
+    /* Gauge configuration section                                */
+    /*------------------------------------------------------------*/
 
-	/* Parameters for eigensolver */
-	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", 
-			      &param.eigen_param.Nvecs );
+    IF_OK status += ask_starting_lattice(stdin,  prompt, &param.startflag,
+	param.startfile );
+    IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
+
+    IF_OK if (prompt==1) 
+      printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
+    IF_OK scanf("%s",savebuf);
+    IF_OK printf("%s\n",savebuf);
+    IF_OK {
+      if(strcmp("coulomb_gauge_fix",savebuf) == 0 ){
+	param.fixflag = COULOMB_GAUGE_FIX;
+      }
+      else if(strcmp("no_gauge_fix",savebuf) == 0 ) {
+	param.fixflag = NO_GAUGE_FIX;
+      }
+      else{
+	printf("error in input: fixing_command %s is invalid\n",savebuf); status++;
+      }
+    }
+    
+    /* find out what to do with lattice at end */
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.saveflag),
+			     param.savefile );
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
+				  param.stringLFN );
+
+#ifdef U1_FIELD
+    /* what kind of starting U(1) lattice to use, read filename */
+    IF_OK status+=ask_starting_u1_lattice(stdin,prompt,
+					  &param.start_u1flag, param.start_u1file );
+    IF_OK status+=ask_ending_u1_lattice(stdin,prompt,
+					&param.save_u1flag, param.save_u1file );
+#endif
+
+    /* Coordinate origin for KS phases and antiperiodic boundary condition */
+    IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
+    IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
+    IF_OK {
+      /* NOTE: The staggered default time bc is antiperiodic. */
+      if(strcmp(savebuf,"antiperiodic") == 0)param.time_bc = 0;
+      else if(strcmp(savebuf,"periodic") == 0)param.time_bc = 1;
+      else{
+	node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n", savebuf);
+	status++;
+      }
+    }
+    
+#ifdef U1_FIELD
+      /* Charge, if U(1) */
+      IF_OK status += get_s(stdin, prompt, "charge", param.charge_label);
+      IF_OK param.charge = atof(param.charge_label);
+#endif
+
+    /*------------------------------------------------------------*/
+    /* Dirac eigenpair calculation                                */
+    /*------------------------------------------------------------*/
+
+    /* number of eigenpairs */
+    IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
+
+    /* eigenvector output */
+    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
+					param.ks_eigen_savefile);
 #if defined(PRIMME)
-	/* PRIMME */
-	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
-	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart );
-	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
+    /* PRIMME */
+    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
+    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart );
+    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
 #elif defined(ARPACK)
-	/* ARPACK */
-	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
-	IF_OK status += get_i(stdin, prompt,"nArnoldi", &param.eigen_param.nArnoldi );
-	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
+    /* ARPACK */
+    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
+    IF_OK status += get_i(stdin, prompt,"nArnoldi", &param.eigen_param.nArnoldi );
+    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
 #else
-	/* Kalkreuter_Ritz */
-	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
-	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart );
-	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters );
-	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
-	IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
+    /* Kalkreuter_Ritz */
+    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
+    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart );
+    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters );
+    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
+    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
 #endif
 
 #ifdef POLY_EIGEN
-	/* Chebyshev preconditioner */
-	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
-	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
-	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
-	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
-	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
-	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
-	IF_OK status += get_f(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
+    /* Chebyshev preconditioner */
+    IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
+    IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
+    IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
+    IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
+    
+    IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
+    IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
+    IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
 #endif
-	/* eigenvector output */
-	IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
-					    param.ks_eigen_savefile);
-
-        /* find out what kind of starting lattice to use */
-	IF_OK status += ask_starting_lattice(stdin,  prompt, &(param.startflag),
-	    param.startfile );
-
-	/* APE smearing parameters (if needed) */
-	/* Zero suppresses APE smearing */
-	IF_OK status += get_f(stdin, prompt, "staple_weight", 
-			      &param.staple_weight);
-	IF_OK status += get_i(stdin, prompt, "ape_iter",
-			      &param.ape_iter);
 	
-	if( status > 0)param.stopflag=1; else param.stopflag=0;
-    } /* end if(this_node==0) */
+    /* End of input fields */
+    if( status > 0)param.stopflag=1; else param.stopflag=0;
+  } /* end if(this_node==0) */
 
     /* Node 0 broadcasts parameter buffer to all other nodes */
-    broadcast_bytes((char *)&param,sizeof(param));
-
-    if( param.stopflag != 0 )return param.stopflag;
-
-    niter = param.niter;
-    nrestart = param.nrestart;
-    rsqmin = param.rsqmin;
-    rsqprop = param.rsqprop;
-    mass = param.mass;
-    u0 = param.u0;
-
-    startflag = param.startflag;
-    strcpy(startfile,param.startfile);
-
+  broadcast_bytes((char *)&param,sizeof(param));
+  u0 = param.u0;
+  if( param.stopflag != 0 )return param.stopflag;
+  
+  if(prompt==2)return 0;
+  
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-    n_naiks = 1;
-    eps_naik[0] = 0.0;
+  n_naiks = 1;
+  eps_naik[0] = 0.0;
 #endif
-
-    /* Do whatever is needed to get lattice */
-    if( startflag == CONTINUE ){
-        rephase( OFF );
-    }
-    if( startflag != CONTINUE )
-      startlat_p = reload_lattice( startflag, startfile );
-    /* if a lattice was read in, put in KS phases and AP boundary condition */
-    phases_in = OFF;
-    rephase( ON );
-
-  /* Set uptions for fermion links */
-    
-#ifdef DBLSTORE_FN
-    /* We want to double-store the links for optimization */
-    fermion_links_want_back(1);
-#endif
-    
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-    fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
-#else
-    fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
-#endif
-    
-    /* Construct APE smeared links, but without KS phases */
-    /* (We need these for the chirality calculation in some targets) */
+  
+  /* Do whatever is needed to get lattice */
+  if( param.startflag == CONTINUE ){
     rephase( OFF );
-    ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
-    rephase( ON );
-    
-/* We put in antiperiodic bc to match what we did to the gauge field */
-    apply_apbc( ape_links, 0 );
+  }
+  if( param.startflag != CONTINUE )
+    startlat_p = reload_lattice( param.startflag, param.startfile );
+  /* if a lattice was read in, put in KS phases and AP boundary condition */
+  phases_in = OFF;
+  rephase( ON );
 
-//    node0_printf("Calling for path table\n");fflush(stdout);
-//    /* make table of coefficients and permutations of paths in quark action */
-//    init_path_table(fn_links.ap);
-//    make_path_table(fn_links.ap, NULL);
-//    node0_printf("Done with path table\n");fflush(stdout);
-
-    return(0);
+#ifdef U1_FIELD
+  /* Read the U(1) gauge field, if wanted */
+  start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
+#endif
+  
+  /* Set uptions for fermion links */
+  
+#ifdef DBLSTORE_FN
+  /* We want to double-store the links for optimization */
+  fermion_links_want_back(1);
+#endif
+  
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
+#else
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
+#endif
+  
+  return(0);
 }
 
 /* Set up comlink structures for 3rd nearest gather pattern; 
@@ -336,13 +319,9 @@ int readin(int prompt) {
    preferably just before calling make_3n_gathers().
  */
 
-void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
-
-void make_3n_gathers(){
+static void 
+make_3n_gathers(){
    int i;
-//#ifdef HAVE_QDP
-//   int disp[4]={0,0,0,0};
-//#endif
  
    for(i=XUP;i<=TUP;i++) {
       make_gather(third_neighbor,&i,WANT_INVERSE,
@@ -353,21 +332,14 @@ void make_3n_gathers(){
        so you can use X3UP, X3DOWN, etc. as argument in calling them. */
 
    sort_eight_gathers(X3UP);
-
-//#ifdef HAVE_QDP
-//  for(i=0; i<4; i++) {
-//    disp[i] = 3;
-//    neighbor3[i] = QDP_create_shift(disp);
-//    disp[i] = 0;
-//  }
-//#endif
 }
  
 
 /* this routine uses only fundamental directions (XUP..TDOWN) as directions */
 /* returning the coords of the 3rd nearest neighbor in that direction */
 
-void third_neighbor(int x,int y,int z,int t,int *dirpt,int FB,int *xp,int *yp,int *zp,int *tp)
+static void 
+third_neighbor(int x,int y,int z,int t,int *dirpt,int FB,int *xp,int *yp,int *zp,int *tp)
      /* int x,y,z,t,*dirpt,FB;  coordinates of site, direction (eg XUP), and
 				"forwards/backwards"  */
      /* int *xp,*yp,*zp,*tp;    pointers to coordinates of neighbor */

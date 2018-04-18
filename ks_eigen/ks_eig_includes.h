@@ -30,6 +30,14 @@
 #define dslash_field dslash_eo_field
 #endif
 
+#ifdef PRTIME
+#define STARTTIME dtime = -dclock();
+#define ENDTIME(string) dtime += dclock(); node0_printf("Aggregate time to %s %e\n",(string),dtime);
+#else
+#define STARTTIME
+#define ENDTIME(string)
+#endif
+
 /* prototypes for functions in high level code */
 int setup();
 int readin(int prompt);

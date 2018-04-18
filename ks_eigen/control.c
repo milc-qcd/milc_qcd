@@ -5,7 +5,12 @@
 #define CONTROL
 #include "ks_eig_includes.h"	/* definitions files and prototypes */
 
-EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
+#ifdef HAVE_QUDA
+#include <quda_milc_interface.h>
+#endif
+#ifdef U1_FIELD
+#include "../include/io_u1lat.h"
+#endif
 
 int main( int argc, char **argv ){
   register site *s;
@@ -13,7 +18,6 @@ int main( int argc, char **argv ){
   int prompt;
   double dtime;
   //  su3_vector **eigVec ;
-  su3_vector *tmp ;
   //  double *eigVal ;
   int total_R_iters ;
   double *resid = NULL;
@@ -26,7 +30,9 @@ int main( int argc, char **argv ){
 
   g_sync();
   /* set up */
+  STARTTIME;
   prompt = setup();
+  ENDTIME("setup");
 
   /* loop over input sets */
   while( readin(prompt) == 0){
@@ -38,36 +44,74 @@ int main( int argc, char **argv ){
 #ifdef HYPISQ_SVD_COUNTER
     hypisq_svd_counter = 0;
 #endif
-    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 
+    /* Fix the gauge */
+    
+    if( param.fixflag == COULOMB_GAUGE_FIX)
+      {
+	if(this_node == 0) 
+	  printf("Fixing to Coulomb gauge\n");
+	
+	rephase( OFF );
+	STARTTIME;
+	gaugefix(TUP,(Real)1.8,500,GAUGE_FIX_TOL);
+	ENDTIME("gauge fix");
+      }
+    else
+      if(this_node == 0)printf("COULOMB GAUGE FIXING SKIPPED.\n");
+
+    /* save lattice if requested */
+    if( param.saveflag != FORGET ){
+      rephase( OFF );
+      savelat_p = save_lattice( param.saveflag, param.savefile, 
+				param.stringLFN );
+      rephase( ON );
+    }
+
+#ifdef U1_FIELD
+    if( param.save_u1flag != FORGET ){
+      save_u1_lattice( param.save_u1flag, param.save_u1file );
+    }
+
+    /* Insert U(1) phases into the gauge links in the site structure */
+    u1phase_on(param.charge, u1_A);
+    invalidate_fermion_links(fn_links);
+#endif
+    
+    /* Recompute FN links from the links in the site structure */
+    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
+    
+    /* Eigenpair calculation */
+    STARTTIME;
+    
     eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
     eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector*));
     for(i=0;i<param.eigen_param.Nvecs;i++)
-      eigVec[i]=
-	(su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
-
-    /* call fermion_variable measuring routines */
-    /* results are printed in output file */
-    f_meas_imp( 1, MILC_PRECISION, F_OFFSET(phi), F_OFFSET(xxx), mass,
-		0, fn_links);
-
+      eigVec[i]= (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
+    
     fn = get_fm_links(fn_links);
+    /* Calculate eigenpairs on even sites */
     param.eigen_param.parity = EVEN;
     total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
-    construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn[0]);
+    fflush(stdout);
 
+    /* Construct eigenpairs on odd sites */
+    construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn[0]);
+    
     /* Calculate and print the residues and norms of the eigenvectors */
     resid = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
     node0_printf("Even site residuals\n");
     check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs, EVEN, fn[0] );
     node0_printf("Odd site residuals\n");
     check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs, ODD, fn[0] );
-
+    fflush(stdout);
+    
     /* save eigenvectors if requested */
     int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
-			       param.eigen_param.Nvecs, eigVal, eigVec, resid, 1);
+      param.eigen_param.Nvecs, eigVal, eigVec, resid, 1);
+
     if(status != 0){
-      node0_printf("ERROR writing eigenvectors\n");
+      node0_printf("ERROR writing eigenvectors\n"); fflush(stdout);
     }
 
     /* print eigenvalues of iDslash */
@@ -80,92 +124,64 @@ int main( int argc, char **argv ){
 	node0_printf("eigenval(%i): %10g\n",i,chirality) ;
       } 
 
-    tmp = (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
-    for(i=0;i<param.eigen_param.Nvecs;i++)
-      { 
-//	if ( eigVal[i] > 10.0*eigenval_tol )
-//	  {
-	    /* Construct to odd part of the vector.                 *
-	     * Note that the true odd part of the eigenvector is    *
-	     *  i/sqrt(eigVal) Dslash Psi. But since I only compute *
-	     * the chirality the i factor is irrelevant (-i)*i=1!!  */
-	    dslash_field(eigVec[i], tmp, ODD, fn[0]) ;
-	    FORSOMEPARITY(si,s,ODD){ 
-	      scalar_mult_su3_vector( &(tmp[si]),
-				      1.0/sqrt(eigVal[i]), 
-				      &(eigVec[i][si]) ) ;
-	    }
-	
-//	    measure_chirality(eigVec[i], &chirality, EVENANDODD);
-	    /* Here I divide by 2 since the EVEN vector is normalized to
-	     * 1. The EVENANDODD vector is normalized to 2. I could have
-	     * normalized the EVENANDODD vector to 1 and then not devide
-	     * by to.  The measure_chirality routine assumes vectors
-	     * normalized to 1.  */
-//	    node0_printf("Chirality(%i): %g\n",i,chirality/2) ;
-	    measure_chirality(eigVec[i], &chir_ev, EVEN);
-	    measure_chirality(eigVec[i], &chir_od, ODD);
-	    chirality = (chir_ev + chir_od) / 2.0;
-	    node0_printf("Chirality(%i) -- even, odd, total: %10g, %10g, %10g\n",
-			 i,chir_ev,chir_od,chirality) ;
-//	  }
-//	else
-//	  {
-	    /* This is considered a "zero mode", and treated as such */
-//	    measure_chirality(eigVec[i], &chirality, EVEN);
-//	    node0_printf("Chirality(%i): %g\n",i,chirality) ;
-//	  }
-      }
-#ifdef EO
-    cleanup_dslash_temps();
-#endif
-    free(tmp);
-    /**
-       for(i=0;i<Nvecs;i++)
-       {
-       sprintf(label,"DENSITY(%i)",i) ;
-       print_densities(eigVec[i], label, ny/2,nz/2,nt/2, EVEN) ;
-       }
-    **/
-    for(i=0;i<param.eigen_param.Nvecs;i++)
-      free(eigVec[i]) ;
-    free(eigVec) ;
-    free(eigVal) ;
+#ifdef U1_FIELD
+    /* Unapply the U(1) field phases */
+    u1phase_off();
     invalidate_fermion_links(fn_links);
-    fflush(stdout);
+#endif
+    ENDTIME("calculate Dirac eigenpairs");
     
-    node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
-    dtime += dclock();
-    if(this_node==0){
-      printf("Time = %e seconds\n",dtime);
-      printf("total_iters = %d\n",total_iters);
-      printf("total Rayleigh iters = %d\n",total_R_iters);
+#ifdef CHIRALITY
+    measure_chirality(eigVec[i], &chir_ev, EVEN);
+    measure_chirality(eigVec[i], &chir_od, ODD);
+    chirality = (chir_ev + chir_od) / 2.0;
+    node0_printf("Chirality(%i) -- even, odd, total: %10g, %10g, %10g\n",
+		 i,chir_ev,chir_od,chirality) ;
+#endif
+  }
+#ifdef EO
+  cleanup_dslash_temps();
+#endif
+  /**
+     for(i=0;i<Nvecs;i++)
+     {
+     sprintf(label,"DENSITY(%i)",i) ;
+     print_densities(eigVec[i], label, ny/2,nz/2,nt/2, EVEN) ;
+     }
+  **/
+  
+  /* Clean up eigen storage */
+  for(i = 0; i < param.eigen_param.Nvecs; i++) free(eigVec[i]);
+  free(eigVal); free(eigVec); free(resid);
+  invalidate_fermion_links(fn_links);
+  
+  node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
+  dtime += dclock();
+  if(this_node==0){
+    printf("Time = %e seconds\n",dtime);
+    printf("total Rayleigh iters = %d\n",total_R_iters);
 #ifdef HISQ_SVD_COUNTER
-      printf("hisq_svd_counter = %d\n",hisq_svd_counter);
+    printf("hisq_svd_counter = %d\n",hisq_svd_counter);
 #endif
 #ifdef HYPISQ_SVD_COUNTER
-      printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
+    printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
 #endif
-    }
-    fflush(stdout);
-
-    destroy_ape_links_4D(ape_links);
-
-    /* Destroy fermion links (created in readin() */
-
+  }
+  fflush(stdout);
+  
+  /* Destroy fermion links (created in readin() */
+  
 #if FERM_ACTION == HISQ
-    destroy_fermion_links_hisq(fn_links);
+  destroy_fermion_links_hisq(fn_links);
 #else
-    destroy_fermion_links(fn_links);
+  destroy_fermion_links(fn_links);
 #endif
-    fn_links = NULL;
-
-  } /* readin(prompt) */
-
+  fn_links = NULL;
+  
 #ifdef HAVE_QUDA
   qudaFinalize();
 #endif
-
+  
   normal_exit(0);
   return 0;
 }

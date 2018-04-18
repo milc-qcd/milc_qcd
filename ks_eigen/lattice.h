@@ -117,16 +117,13 @@ EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int niter,nrestart,nflavors;
-EXTERN  Real mass,u0;
+EXTERN  Real u0;
 EXTERN	Real rsqmin,rsqprop;
-EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
-			   RELOAD_CHECKPOINT, FRESH */
-EXTERN	char startfile[MAXFILENAME];
 EXTERN  params param;           /* user input parameters */
+EXTERN	int total_iters;
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
-EXTERN	int total_iters;
 EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
         /* source time, increment for it, and number of source slices */
 
@@ -144,6 +141,7 @@ EXTERN  int this_node;		/* node number of this node */
    generator state */
 EXTERN double_prn node_prn ;
 
+EXTERN  gauge_file *savelat_p;
 EXTERN  char utc_date_time[64];
 EXTERN  char hostname[128];
 
