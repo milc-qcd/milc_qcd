@@ -89,11 +89,6 @@ path coefficients: npath  path_coeff
                     1      -4.166667e-02
 MAKING PATH TABLES
 Combined fattening and long-link calculation time: 0.044059
-Time to APE smear 1.070499e-04 sec
- OK converged final_rsq= 1.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 26
- OK converged final_rsq= 8.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 5
-PBP: mass 1.000000e-01     1.509526e-01  5.396824e-02  2.643297e-03  2.643257e-03 ( 1 of 1 )
-FACTION: mass = 1.000000e-01,  1.522323e+00 ( 1 of 1 )
 PRIMME workspace int = 4032 long int = 5932512
 // ---------------------------------------------------
 //                 primme configuration               
@@ -317,46 +312,11 @@ eigenval(28):   0.766032
 eigenval(29):   0.766032
 eigenval(30):   0.781853
 eigenval(31):   0.781853
-Chirality(0) -- even, odd, total:  -0.362081,  -0.339635,  -0.350858
-Chirality(1) -- even, odd, total:  -0.362081,  -0.339635,  -0.350858
-Chirality(2) -- even, odd, total:  0.0182727,  0.0932587,  0.0557657
-Chirality(3) -- even, odd, total:  0.0182727,  0.0932587,  0.0557657
-Chirality(4) -- even, odd, total: -0.0676498,   0.155599,  0.0439746
-Chirality(5) -- even, odd, total: -0.0676498,   0.155599,  0.0439746
-Chirality(6) -- even, odd, total:  -0.364695,   0.451073,  0.0431892
-Chirality(7) -- even, odd, total:  -0.364695,   0.451073,  0.0431892
-Chirality(8) -- even, odd, total:   0.109118, -0.0343145,  0.0374017
-Chirality(9) -- even, odd, total:   0.109118, -0.0343145,  0.0374017
-Chirality(10) -- even, odd, total:   0.494248,  -0.429885,  0.0321813
-Chirality(11) -- even, odd, total:   0.494248,  -0.429885,  0.0321813
-Chirality(12) -- even, odd, total:   0.136046, -0.0949102,  0.0205679
-Chirality(13) -- even, odd, total:   0.136046, -0.0949102,  0.0205679
-Chirality(14) -- even, odd, total:  0.0279028, -0.0279028, -2.06432e-16
-Chirality(15) -- even, odd, total:    0.14863,   -0.14863, -7.07767e-16
-Chirality(16) -- even, odd, total:  -0.342631,   0.342631, 8.32667e-16
-Chirality(17) -- even, odd, total:   0.193085,  -0.193085, -6.38378e-16
-Chirality(18) -- even, odd, total:  -0.313349,   0.313349, 6.66134e-16
-Chirality(19) -- even, odd, total:  -0.129556,   0.129556, 3.60822e-16
-Chirality(20) -- even, odd, total:  0.0504884, -0.0504884, -1.66533e-16
-Chirality(21) -- even, odd, total:  0.0669598, -0.0669598, -1.38778e-17
-Chirality(22) -- even, odd, total:  0.0855397, -0.0855397, -1.11022e-16
-Chirality(23) -- even, odd, total:  -0.121375,   0.121375, -9.71445e-17
-Chirality(24) -- even, odd, total:   0.013153,  -0.013153, 5.55112e-17
-Chirality(25) -- even, odd, total: -0.0708237,  0.0708237, -6.93889e-18
-Chirality(26) -- even, odd, total: -0.0971303,  0.0971303, -6.245e-17
-Chirality(27) -- even, odd, total:   0.102308,  -0.102308, 1.38778e-16
-Chirality(28) -- even, odd, total:    0.11381,   -0.11381, 1.45717e-16
-Chirality(29) -- even, odd, total:   0.272987,  -0.272987, 5.82867e-16
-Chirality(30) -- even, odd, total:   0.317288,  -0.348286, -0.0154987
-Chirality(31) -- even, odd, total:   0.317288,  -0.348286, -0.0154987
+
+
+ask_starting_lattice(0): EOF on input.
 RUNNING COMPLETED
-Time = 1.321603e+00 seconds
-total_iters = 54
+Time = 1.039407e+00 seconds
 total Rayleigh iters = 618
-
-
-get_f(0): EOF on input.
-exit: Sat Apr 14 18:31:46 2018
-
-
+exit: Tue Apr 17 22:17:22 2018
 

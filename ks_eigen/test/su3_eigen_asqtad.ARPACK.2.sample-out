@@ -79,11 +79,6 @@ path coefficients: npath  path_coeff  multiplicity
                     3      1.562500e-02     192
                     4      -2.604167e-03     384
                     5      -6.250000e-02     48
-Time to APE smear 7.319450e-05 sec
- OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 26
- OK converged final_rsq= 1.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 6
-PBP: mass 1.000000e-01     1.581235e-01  5.834143e-02  2.211733e-03  2.211707e-03 ( 1 of 1 )
-FACTION: mass = 1.000000e-01,  1.522603e+00 ( 1 of 1 )
 Calculate eigenvalues with ARPACK
 ARPACK Number of eigenvales requested = 32
 ARPACK size of search subspace (nkv>nev)  = 384
@@ -236,41 +231,8 @@ eigenval(28):   0.766032
 eigenval(29):   0.766032
 eigenval(30):   0.778037
 eigenval(31):   0.778037
-Chirality(0) -- even, odd, total:  -0.357523,  -0.342227,  -0.349875
-Chirality(1) -- even, odd, total:  -0.357523,  -0.342227,  -0.349875
-Chirality(2) -- even, odd, total:   0.061934,  0.0525577,  0.0572459
-Chirality(3) -- even, odd, total:   0.061934,  0.0525577,  0.0572459
-Chirality(4) -- even, odd, total:  -0.166681,   0.276203,   0.054761
-Chirality(5) -- even, odd, total:  -0.166681,   0.276203,   0.054761
-Chirality(6) -- even, odd, total: -0.0982701,   0.195166,   0.048448
-Chirality(7) -- even, odd, total: -0.0982701,   0.195166,   0.048448
-Chirality(8) -- even, odd, total:   0.428099,  -0.333821,  0.0471391
-Chirality(9) -- even, odd, total:   0.428099,  -0.333821,  0.0471391
-Chirality(10) -- even, odd, total:   0.119862,  -0.056302,  0.0317802
-Chirality(11) -- even, odd, total:   0.119862,  -0.056302,  0.0317802
-Chirality(12) -- even, odd, total: 0.00738327,   0.032285,  0.0198341
-Chirality(13) -- even, odd, total: 0.00738327,   0.032285,  0.0198341
-Chirality(14) -- even, odd, total:  0.0712142, -0.0712142, -3.46945e-17
-Chirality(15) -- even, odd, total:  -0.101053,   0.101053, -1.38778e-17
-Chirality(16) -- even, odd, total:  -0.114468,   0.114468, 1.45717e-16
-Chirality(17) -- even, odd, total: -0.0990964,  0.0990964, 6.93889e-17
-Chirality(18) -- even, odd, total:  0.0896987, -0.0896987, -2.08167e-17
-Chirality(19) -- even, odd, total:  -0.075327,   0.075327, -3.46945e-17
-Chirality(20) -- even, odd, total:  0.0727908, -0.0727908, 9.71445e-17
-Chirality(21) -- even, odd, total:   0.381781,  -0.381781, -2.22045e-16
-Chirality(22) -- even, odd, total:  -0.309388,   0.309388, -2.77556e-16
-Chirality(23) -- even, odd, total:  -0.271353,   0.271353, 1.11022e-16
-Chirality(24) -- even, odd, total:  -0.107863,   0.107863, -4.16334e-17
-Chirality(25) -- even, odd, total:   0.231757,  -0.231757, 1.11022e-16
-Chirality(26) -- even, odd, total:   0.146053,  -0.146053, -1.38778e-17
-Chirality(27) -- even, odd, total:   0.141555,  -0.141555,          0
-Chirality(28) -- even, odd, total:  -0.266131,   0.266131, -1.94289e-16
-Chirality(29) -- even, odd, total: -0.0284005,  0.0284005, 5.37764e-17
-Chirality(30) -- even, odd, total:   0.137905,   -0.18605, -0.0240728
-Chirality(31) -- even, odd, total:   0.137905,   -0.18605, -0.0240728
 RUNNING COMPLETED
 Time = 2.058864e+00 seconds
-total_iters = 32
 total Rayleigh iters = 1
 
 
