@@ -135,4 +135,7 @@ eigenval(28): 0.0002
 eigenval(29): 0.0002
 eigenval(30): 0.0002
 eigenval(31): 0.0002
+
+
+ask_starting_lattice(0): EOF on input.
 RUNNING COMPLETED

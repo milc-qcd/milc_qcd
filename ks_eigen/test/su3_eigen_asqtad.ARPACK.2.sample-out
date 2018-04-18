@@ -48,13 +48,6 @@ Max_Rayleigh_iters 2000
 nArnoldi 384
 # Eigenvalue tolerance
 eigenval_tolerance 1e-13
-# which_poly 3
-# norder 10
-# eig_start  1
-# eig_end  50
-# poly_param_1 30
-# poly_param_2 0.5
-# eigmax 1
 # Output eigenvectors
 save_serial_ks_eigen testeigenvecs
 # Input lattice
@@ -126,7 +119,7 @@ Eigenvalue(28) = 2.34722 +/- 0 Im = -1.61868e-16
 Eigenvalue(29) = 2.34722 +/- 0 Im = -7.28966e-17
 Eigenvalue(30) = 2.42137 +/- 0 Im = -2.51574e-16
 Eigenvalue(31) = 2.42137 +/- 0 Im = 6.48263e-17
-Checking linear eigenvalues for mass = 0.1
+Checking linear eigenvalues
 Even site residuals
 Checking eigensolutions
 eigVal[0] = 3.344213e-02 ( resid = 4.982762e-14 , |eigVec[0]|-1 = 2.220446e-16 )
@@ -231,11 +224,11 @@ eigenval(28):   0.766032
 eigenval(29):   0.766032
 eigenval(30):   0.778037
 eigenval(31):   0.778037
+
+
+ask_starting_lattice(0): EOF on input.
 RUNNING COMPLETED
-Time = 2.058864e+00 seconds
+Time = 1.781821e+00 seconds
 total Rayleigh iters = 1
-
-
-get_f(0): EOF on input.
-exit: Mon Nov  6 21:05:37 2017
+exit: Wed Apr 18 12:01:22 2018
 
