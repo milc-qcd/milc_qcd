@@ -1,4 +1,10 @@
 ===========================================================================
+2018-04-18      commit 9052af6
+===========================================================================
+Update ks_eigen to Version 7 standards.  Modify input parameters files.
+See the ks_eigen/test directory for examples of the new format.
+
+===========================================================================
 2018-04-12      commit 3f56829 
 ===========================================================================
 With a series of commits we now set the time boundary condition globally
