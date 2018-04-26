@@ -84,7 +84,7 @@ void ks_dirac_opsq( su3_vector *src, su3_vector *dst, Real mass, int parity,
     dslash_field( tmp, dst, parity, fn);
     FORSOMEPARITYDOMAIN(i,s,parity){
       scalar_mult_su3_vector( dst+i, -1.0, dst+i);
-      scalar_mult_add_su3_vector( dst+i, src+i, msq_x4, dst+i);
+      scalar_mult_sum_su3_vector( dst+i, src+i, msq_x4 );
     }
 
     free(tmp);
@@ -156,8 +156,8 @@ static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int pa
   project_out(dst, Num, parity);
 
   /* Then add the exact solution back */
-  /* dst_e <- sum_j ((eigVec_e[j].src_e)/(eigVal[j]+4*mass*mass)) eigVec_e[j] */
-  
+  /* dst_eo <- sum_j ((eigVec_eo[j].src_eo)/(eigVal[j]+4*mass*mass)) eigVec_eo[j] */
+
   c = (double_complex *)malloc(Num*sizeof(double_complex));
   for( j = 0; j < Num; j++){
     c[j] = dcmplx((double)0.0,(double)0.0);
@@ -169,8 +169,8 @@ static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int pa
   g_vecdcomplexsum( c, Num );
   for( j = 0; j < Num; j++){
     CDIVREAL( c[j], eigVal[j]+4.0*mass*mass, c[j] );
+    complex ctmp = cmplx(c[j].real, c[j].imag);
     FORSOMEFIELDPARITY(i,parity){
-      complex ctmp = cmplx(c[j].real, ctmp.imag);
       c_scalar_mult_add_su3vec( dst+i, &ctmp, eigVec[j]+i );
     }
   }
@@ -234,8 +234,8 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
 
     free(tmp);
 
-    //    check_invert_field2( dst, tmp, mass, 1e-6, fn);
-    //    check_invert_field( dst, src, mass, 1e-6, fn);
+    //    check_invert_field2( dst, tmp, mass, 1e-6, fn, EVENANDODD);
+    //    check_invert_field( dst, src, mass, 1e-6, fn, EVENANDODD);
     return cgn;
 }
 
@@ -336,9 +336,6 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
       node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
       
       deflate(dst, tmp, mass, param.eigen_param.Nvecs, EVEN);
-      
-      dtime += dclock();
-      node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
     }
 #endif
 
@@ -379,7 +376,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     cgn += ks_congrad_field( tmp, dst, qic, mass, fn );
     qic->final_iters += even_iters;
 
-    //    check_invert_field( dst, src, mass, 1e-6, fn);
+    //    check_invert_field( dst, src, mass, 1e-6, fn, EVENANDODD);
     destroy_v_field(tmp);
     destroy_v_field(ttt);
 
@@ -455,7 +452,7 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
   cgn += ks_congrad_block_field(nsrc, tmp, dst, qic, mass, fn );
   qic->final_iters += even_iters;
   
-  //    check_invert_field( dst, src, mass, 1e-6, fn);
+  //    check_invert_field( dst, src, mass, 1e-6, fn, EVENANDODD);
   for(is = 0; is < nsrc; is++)
     destroy_v_field(tmp[is]);
   free(tmp);
@@ -499,7 +496,7 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 /*****************************************************************************/
 /* FOR TESTING: multiply src by matrix and check against dest */
 void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,
-			 Real tol, imp_ferm_links_t *fn){
+			 Real tol, imp_ferm_links_t *fn, int parity){
     register int i,k,flag;
     register site *s;
     Real r_diff, i_diff;
@@ -510,13 +507,13 @@ void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,
 
     /* Compute tmp = M src */
     node0_printf("check_invert_field: calling ks_dirac_op\n"); fflush(stdout);
-    ks_dirac_op( src, tmp, mass, EVENANDODD, fn);
+    ks_dirac_op( src, tmp, mass, parity, fn);
 
     sum2=sum=0.0;
     dmaxerr=0;
     flag = 0;
     node0_printf("check_invert_field: checking diffs\n"); fflush(stdout);
-    FORALLSITES(i,s){
+    FORSOMEFIELDPARITY(i,parity){
 	for(k=0;k<3;k++){
 	    r_diff = dest[i].c[k].real - tmp[i].c[k].real;
 	    i_diff = dest[i].c[k].imag - tmp[i].c[k].imag;
@@ -560,7 +557,7 @@ void check_invert( field_offset src, field_offset dest, Real mass,
   su3_vector *tsrc = create_v_field_from_site_member(src);
   su3_vector *tdest = create_v_field_from_site_member(dest);
   
-  check_invert_field( tsrc, tdest, mass, tol, fn );
+  check_invert_field( tsrc, tdest, mass, tol, fn, EVENANDODD );
   
   destroy_v_field(tdest);
   destroy_v_field(tsrc);
@@ -569,7 +566,7 @@ void check_invert( field_offset src, field_offset dest, Real mass,
 /*****************************************************************************/
 /* FOR TESTING: multiply src by Madj M and check against dest */
 void check_invert_field2( su3_vector *src, su3_vector *dest, Real mass,
-			  Real tol, imp_ferm_links_t *fn){
+			  Real tol, imp_ferm_links_t *fn, int parity){
     register int i,k,flag;
     register site *s;
     Real r_diff, i_diff;
@@ -583,12 +580,12 @@ void check_invert_field2( su3_vector *src, su3_vector *dest, Real mass,
     }
 
     /* Compute tmp = (Madj M) src */
-    ks_dirac_opsq( src, tmp, mass, EVENANDODD, fn);
+    ks_dirac_opsq( src, tmp, mass, parity, fn);
 
     sum2=sum=0.0;
     dmaxerr=0;
     flag = 0;
-    FORALLSITES(i,s){
+    FORSOMEFIELDPARITY(i,parity){
 	for(k=0;k<3;k++){
 	    r_diff = dest[i].c[k].real - tmp[i].c[k].real;
 	    i_diff = dest[i].c[k].imag - tmp[i].c[k].imag;
