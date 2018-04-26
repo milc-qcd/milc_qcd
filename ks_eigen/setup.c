@@ -233,6 +233,16 @@ int readin(int prompt) {
     /* number of eigenpairs */
     IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
 
+    /* eigenvector input */
+    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
+					  param.ks_eigen_startfile);
+
+    IF_OK {
+      if(param.ks_eigen_startflag == FRESH) param.eigen_param.Nvecs_in = 0;
+      /* Start by assuming we have the max number as input -- changed later, if not. */
+      else param.eigen_param.Nvecs_in = param.eigen_param.Nvecs;
+    }
+
     /* eigenvector output */
     IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
 					param.ks_eigen_savefile);
@@ -273,6 +283,11 @@ int readin(int prompt) {
 
     /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));
+
+  if( param.stopflag != 0 )
+    normal_exit(0);
+
+
   u0 = param.u0;
   if( param.stopflag != 0 )return param.stopflag;
   
@@ -298,7 +313,7 @@ int readin(int prompt) {
   start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
 #endif
   
-  /* Set uptions for fermion links */
+  /* Set options for fermion links */
   
 #ifdef DBLSTORE_FN
   /* We want to double-store the links for optimization */
@@ -311,6 +326,20 @@ int readin(int prompt) {
   fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 #endif
   
+  eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
+  eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector*));
+  for(int i=0;i<param.eigen_param.Nvecs;i++)
+    eigVec[i]= (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
+  
+  /* Do whatever is needed to get eigenpairs */
+  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+			   &param.eigen_param.Nvecs_in, eigVal, eigVec, 1);
+
+  if(param.fixflag != NO_GAUGE_FIX){
+    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+  }
+  if(status != 0) normal_exit(0);
+
   return(0);
 }
 
