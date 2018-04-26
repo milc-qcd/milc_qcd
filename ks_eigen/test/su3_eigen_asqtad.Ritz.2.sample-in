@@ -23,6 +23,7 @@ time_bc antiperiodic
 max_number_of_eigenpairs 32
 
 # Eigenvector file
+fresh_ks_eigen
 forget_ks_eigen
 
 # CG for Rayleigh-Ritz minimization
