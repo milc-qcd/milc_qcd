@@ -129,6 +129,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 
   my_eigen_param = eigen_param;  /* Save for mxv call-back function */
   int Nvecs   = eigen_param->Nvecs;
+  int Nvecs_in = eigen_param->Nvecs_in;
   int MaxIter = eigen_param->MaxIter;
   int parity  = eigen_param->parity;
   int maxnev=Nvecs;       /* number of eigenvalues to compute*/
@@ -177,13 +178,23 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   rnorms=malloc(Nvecs*sizeof(double_complex));
   if (rnorms==NULL) exit(1);
 
-#if 0
-  /* Initiallize all the eigenvectors to a random vector and
-     convert to double precision temporary fields */
-  
-  su3_vector *gr0 = create_v_field();
+  /* Initiallize evecs from the input eigenvectors
+   * (convert to double precision) */
   for(j=0;j<Nvecs;j++) {
-    grsource_plain_field( gr0, parity);  
+    evals[j] = eigVal[j];
+    xx = (double*)&(evecs[0].real)+2*j*maxn;
+    FORSOMEPARITY(i,s,parity){
+      yy= &(eigVec[j][i].c[0].real);
+      for(k=0;k<6;k++) *(xx++) = *(yy++);
+    }
+  }
+
+  /* Initiallize all the non-input eigenvectors to a random vector.
+     convert to double precision */
+
+  su3_vector *gr0 = create_v_field();
+  for(j=Nvecs_in;j<Nvecs;j++) {
+    grsource_plain_field( gr0, parity);
     xx = (double*)&(evecs[0].real)+2*j*maxn;
     FORSOMEFIELDPARITY(i,parity){
       yy = &gr0[i].c[0].real;
@@ -191,10 +202,11 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
     }
   }
   destroy_v_field(gr0);
-#endif
 
   /*set the parameters of the EV finder*/
   primme_initialize(&primme);
+
+  primme.initSize = Nvecs_in;                   /* use input vectors as initial guesses */
 
   primme.n=maxn*number_of_nodes;		/* global size of matrix */
   primme.nLocal=maxn;				/* local volume */
@@ -225,7 +237,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   /* Optimaized Parameter Setting */
   primme.correctionParams.robustShifts = 1; // led to faster convergence with 0 for tol=1e-8  
   primme.locking=1;
-#if 1 /* James and Xiao-Yong's optimal setting */
+#if 1 /* James Osborn's and Xiao-Yong Jin's optimal setting */
   primme.minRestartSize=120;  /* relevant if locking != 0 */
   primme.maxBasisSize=192;    /* relevant if locking != 0 */
   primme.maxBlockSize=8;
