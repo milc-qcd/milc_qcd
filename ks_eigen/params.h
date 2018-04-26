@@ -33,6 +33,8 @@ typedef struct {
   Real charge;     /* charge for the Dirac matrix */
   char charge_label[32];  /* for eigenpair label */
   ks_eigen_param eigen_param; /* Parameters for eigensolver */
+  int ks_eigen_startflag; /* what to do for beginning eigenvectors */
+  char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
   int ks_eigen_saveflag; /* eigenvector file type */
   char ks_eigen_savefile[MAXFILENAME]; /* eigenvector output file name */
   int start_u1flag;	/* what to do for beginning u(1) lattice */
