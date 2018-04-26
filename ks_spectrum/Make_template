@@ -170,14 +170,7 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 ks_spectrum_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME" \
-	"EXTRA_OBJECTS= ${FN_OBJECTS}"
-
-ks_spectrum_deflate_asqtad::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME" \
-	"DEFINES += -DEIGMODE=DEFLATION -DEIGEN_QIO" \
+	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -DEIGEN_QIO" \
 	"EXTRA_OBJECTS += ${FN_OBJECTS}"
 
 ks_spectrum_eigcg_asqtad::
@@ -232,11 +225,9 @@ HISQ_OPTIONS = "DEFINES= -DFN -DHAVE_KS \
 	"EXTRA_OBJECTS= ${HISQ_OBJECTS}"
 
 ks_spectrum_hisq::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS}
-
-ks_spectrum_deflate_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	${HISQ_OPTIONS} "DEFINES += -DEIGMODE=DEFLATION -DEIGEN_QIO"
+	${HISQ_OPTIONS} "DEFINES += -DEIGEN_QIO"
+
 
 ks_spectrum_eigcg_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
