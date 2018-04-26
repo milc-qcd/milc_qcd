@@ -84,11 +84,6 @@ int main( int argc, char **argv ){
     /* Eigenpair calculation */
     STARTTIME;
     
-    eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
-    eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector*));
-    for(i=0;i<param.eigen_param.Nvecs;i++)
-      eigVec[i]= (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
-    
     fn = get_fm_links(fn_links);
     /* Calculate eigenpairs on even sites */
     param.eigen_param.parity = EVEN;
