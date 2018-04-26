@@ -297,6 +297,7 @@ typedef struct {
 #define ks_eigensolve ks_eigensolve_PRIMME
 typedef struct {
   int Nvecs ; /* number of eigenvectors */
+  int Nvecs_in ; /* number of input starting eigenvectors */
   Real tol ; /* Tolerance for the eigenvalue computation */
   Real error_decr ; /* error decrease per Rayleigh minimization */
   int MaxIter ; /* max  Rayleigh iterations */
@@ -460,9 +461,9 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
 void check_invert( field_offset src, field_offset dest, Real mass,
 		   Real tol, imp_ferm_links_t *fn );
 void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,
-			 Real tol, imp_ferm_links_t *fn);
+			 Real tol, imp_ferm_links_t *fn, int parity);
 void check_invert_field2( su3_vector *src, su3_vector *dest, Real mass,
-			  Real tol, imp_ferm_links_t *fn);
+			  Real tol, imp_ferm_links_t *fn, int parity);
 
 /* multimass_inverter.c */
 #define MAX_MMINV_NMASSES 32
