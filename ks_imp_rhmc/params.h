@@ -3,6 +3,7 @@
 
 #include "../include/macros.h"  /* For MAXFILENAME */
 #include "defines.h"
+#include "../include/imp_ferm_links.h"
 
 #define MAX_MASS_PBP 8
 /* structure for passing simulation parameters to each node */
@@ -48,6 +49,8 @@ typedef struct {
   char rparamfile[MAXFILENAME];
   char startfile[MAXFILENAME],savefile[MAXFILENAME];
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
+  /* Eigenparameters (not used for RHMC) */
+  ks_eigen_param eigen_param; /* Parameters for eigensolver */
   /* PBP and related quantities */
   int num_pbp_masses;   /* Number of masses for pbp calculation */
   quark_invert_control qic_pbp[MAX_MASS_PBP];
@@ -55,5 +58,6 @@ typedef struct {
   int npbp_reps;     /* Number of random sources for pbp calculation */
   ks_param ksp_pbp[MAX_MASS_PBP];
 } params;
+
 
 #endif /* _PARAMS_H */
