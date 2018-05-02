@@ -334,8 +334,9 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
   for(color=0;color<my_ksqs->ncolor;color++){
     
     /* Read color vector (and source as appropriate) from file */
+    /* FIX ME !! */
     status = reload_ksprop_c_to_field(startflag, fp_in, my_ksqs, 
-				      color, dst, 1);
+				      color, src, dst, 1);
     if(status != 0){
       printf("%s(%d): Error reloading propagator\n", myname, this_node);
       terminate(1);
