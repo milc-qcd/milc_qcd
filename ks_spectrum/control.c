@@ -73,7 +73,6 @@ int main(int argc, char *argv[])
   int prop_nc[MAX_PROP];
   int Nvecs_curr;
   double *resid = NULL;
-  imp_ferm_links_t **fn;
   
   initialize_machine(&argc,&argv);
 
@@ -115,14 +114,14 @@ int main(int argc, char *argv[])
       STARTTIME;
       
       param.eigen_param.parity = EVEN;  /* Required */
-      fn = get_fm_links(fn_links);
+      imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
       Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
       
       /* compute eigenpairs if requested */
       if(param.ks_eigen_startflag == FRESH){
 	int total_R_iters;
 	total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
-	construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn[0]);
+	construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn);
 	node0_printf("total Rayleigh iters = %d\n", total_R_iters);
 	
 #if 0 /* If needed for debugging */
@@ -134,12 +133,27 @@ int main(int argc, char *argv[])
 #endif
       }
     
+      /* Check the eigenvectors */
+
+      /* Move KS phases and apply time boundary condition, based on the
+	 coordinate origin and time_bc */
+      Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+      /* Set values in the structure fn */
+      set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
+      /* Apply the operation */
+      boundary_twist_fn(fn, ON);
+      
       /* Calculate and print the residues and norms of the eigenvectors */
       resid = (double *)malloc(Nvecs_curr*sizeof(double));
       node0_printf("Even site residuals\n");
-      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
       node0_printf("Odd site residuals\n");
-      check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn[0] );
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
+      
+      /* Unapply twisted boundary conditions on the fermion links and
+	 restore conventional KS phases and antiperiodic BC, if
+	 changed. */
+      boundary_twist_fn(fn, OFF);
       
       /* print eigenvalues of iDslash */
       node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
@@ -623,7 +637,7 @@ int main(int argc, char *argv[])
       if(param.ks_eigen_startflag == FRESH)
 	calc_eigenpairs(eigVal, eigVec, &param.eigcgp, EVEN);
       
-      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
       
       if(param.eigcgp.H != NULL) free(param.eigcgp.H);
       
