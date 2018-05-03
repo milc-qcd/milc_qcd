@@ -64,6 +64,7 @@
 /* USQCD propagator file types according to source type */
 /*--------------------------------------------------------------------*/
 
+#if 0
 /* Staggered propagator files */
 int choose_usqcd_ks_file_type(int source_type){
   int file_type;
@@ -96,6 +97,12 @@ int choose_usqcd_ks_file_type(int source_type){
   }
   return file_type;
 }
+#else
+/* Staggered propagator files */
+int choose_usqcd_ks_file_type(int source_type){
+  return FILE_TYPE_KS_USQCD_VV_PAIRS;
+}
+#endif
 
 /* Dirac propagator files */
 int choose_usqcd_w_file_type(int source_type){
