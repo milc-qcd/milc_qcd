@@ -146,7 +146,23 @@ int main( int argc, char **argv ){
     node0_printf("Chirality(%i) -- even, odd, total: %10g, %10g, %10g\n",
 		 i,chir_ev,chir_od,chirality) ;
 #endif
-  }
+
+    node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
+    dtime += dclock();
+    if(this_node==0){
+      printf("Time = %e seconds\n",dtime);
+      printf("total Rayleigh iters = %d\n",total_R_iters);
+#ifdef HISQ_SVD_COUNTER
+      printf("hisq_svd_counter = %d\n",hisq_svd_counter);
+#endif
+#ifdef HYPISQ_SVD_COUNTER
+      printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
+#endif
+    }
+    fflush(stdout);
+  
+  } /* readin(prompt) */
+
 #ifdef EO
   cleanup_dslash_temps();
 #endif
@@ -162,20 +178,6 @@ int main( int argc, char **argv ){
   for(i = 0; i < param.eigen_param.Nvecs; i++) free(eigVec[i]);
   free(eigVal); free(eigVec); free(resid);
   invalidate_fermion_links(fn_links);
-  
-  node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
-  dtime += dclock();
-  if(this_node==0){
-    printf("Time = %e seconds\n",dtime);
-    printf("total Rayleigh iters = %d\n",total_R_iters);
-#ifdef HISQ_SVD_COUNTER
-    printf("hisq_svd_counter = %d\n",hisq_svd_counter);
-#endif
-#ifdef HYPISQ_SVD_COUNTER
-    printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
-#endif
-  }
-  fflush(stdout);
   
   /* Destroy fermion links (created in readin() */
   
