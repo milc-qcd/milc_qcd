@@ -22,7 +22,6 @@ int main( int argc, char **argv ){
   int total_R_iters ;
   double *resid = NULL;
   double chirality, chir_ev, chir_od ;
-  imp_ferm_links_t **fn;
 
   initialize_machine(&argc,&argv);
   /* Remap standard I/O */
@@ -84,23 +83,37 @@ int main( int argc, char **argv ){
     /* Eigenpair calculation */
     STARTTIME;
     
-    fn = get_fm_links(fn_links);
+    imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
+
+    /* Move KS phases and apply time boundary condition, based on the
+       coordinate origin and time_bc */
+    Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+    /* Set values in the structure fn */
+    set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
+    /* Apply the operation */
+    boundary_twist_fn(fn, ON);
+
     /* Calculate eigenpairs on even sites */
     param.eigen_param.parity = EVEN;
     total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
     fflush(stdout);
 
     /* Construct eigenpairs on odd sites */
-    construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn[0]);
+    construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn);
     
     /* Calculate and print the residues and norms of the eigenvectors */
     resid = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
     node0_printf("Even site residuals\n");
-    check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs, EVEN, fn[0] );
+    check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs, EVEN, fn );
     node0_printf("Odd site residuals\n");
-    check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs, ODD, fn[0] );
+    check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs, ODD, fn );
     fflush(stdout);
-    
+
+  /* Unapply twisted boundary conditions on the fermion links and
+     restore conventional KS phases and antiperiodic BC, if
+     changed. */
+    boundary_twist_fn(fn, OFF);
+
     /* save eigenvectors if requested */
     int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
       param.eigen_param.Nvecs, eigVal, eigVec, resid, 1);
@@ -133,7 +146,23 @@ int main( int argc, char **argv ){
     node0_printf("Chirality(%i) -- even, odd, total: %10g, %10g, %10g\n",
 		 i,chir_ev,chir_od,chirality) ;
 #endif
-  }
+
+    node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
+    dtime += dclock();
+    if(this_node==0){
+      printf("Time = %e seconds\n",dtime);
+      printf("total Rayleigh iters = %d\n",total_R_iters);
+#ifdef HISQ_SVD_COUNTER
+      printf("hisq_svd_counter = %d\n",hisq_svd_counter);
+#endif
+#ifdef HYPISQ_SVD_COUNTER
+      printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
+#endif
+    }
+    fflush(stdout);
+  
+  } /* readin(prompt) */
+
 #ifdef EO
   cleanup_dslash_temps();
 #endif
@@ -149,20 +178,6 @@ int main( int argc, char **argv ){
   for(i = 0; i < param.eigen_param.Nvecs; i++) free(eigVec[i]);
   free(eigVal); free(eigVec); free(resid);
   invalidate_fermion_links(fn_links);
-  
-  node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
-  dtime += dclock();
-  if(this_node==0){
-    printf("Time = %e seconds\n",dtime);
-    printf("total Rayleigh iters = %d\n",total_R_iters);
-#ifdef HISQ_SVD_COUNTER
-    printf("hisq_svd_counter = %d\n",hisq_svd_counter);
-#endif
-#ifdef HYPISQ_SVD_COUNTER
-    printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
-#endif
-  }
-  fflush(stdout);
   
   /* Destroy fermion links (created in readin() */
   
