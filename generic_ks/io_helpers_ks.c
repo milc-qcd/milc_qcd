@@ -465,14 +465,14 @@ reload_ksprop_to_field3( int flag, char *filename, quark_source *ksqs,
   ks_prop_file *kspf;
   int i,color,status;
   site *s;
-  su3_vector *prop;
 
-  prop = create_v_field();
-
+  if(flag == FRESH)return 0;
+  
   kspf = r_open_ksprop(flag, filename);
   if(kspf == NULL)return 1;
 
   status = 0;
+  su3_vector *prop = create_v_field();
   for(color = 0; color < 3; color++){
     /* Here src = NULL, because we don't read the source */
     status = reload_ksprop_c_to_field(flag, kspf, ksqs, color, NULL, prop, timing);
@@ -502,22 +502,24 @@ reload_ksprop_to_ksp_field( int flag, char *filename, quark_source *ksqs,
 {
   /* 0 normal exit value
      1 read error */
-
+  
   ks_prop_file *kspf;
   int color,status;
-
+  
+  if(flag == FRESH)return 0;
+  
   kspf = r_open_ksprop(flag, filename);
   if(kspf == NULL)return 1;
-
+  
   status = 0;
   for(color = 0; color < prop->nc; color++){
     status = reload_ksprop_c_to_field(flag, kspf, ksqs, color, source->v[color],
 				      prop->v[color], timing);
     if(status != 0)break;
   }
-
+  
   r_close_ksprop(flag, kspf);
-
+  
   return status;
 
 } /* reload_ksprop_to_ksprop_field */
@@ -611,6 +613,8 @@ save_ksprop_from_ksp_field( int flag, char *filename, char *recxml,
 {
   ks_prop_file *kspf;
   int  color, status;
+
+  if(flag == FORGET)return 0;
 
   kspf = w_open_ksprop(flag, filename, ksqs->type);
   if(kspf == NULL)return 1;
