@@ -53,7 +53,7 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
   int status = 0;
   char *fileinfo;
   int tot_iters = 0;
-  su3_vector **dst, *src;
+  su3_vector **dst;
   imp_ferm_links_t **fn = NULL;
   Real mybdry_phase[4];
   imp_ferm_links_t **fn_multi = NULL;
@@ -127,7 +127,7 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
     node0_printf("%s: color = %d\n",myname, color);
 
     /* Source for this color */
-    src = source->v[color];
+    su3_vector *src = source->v[color];
 
     /* Solve for the propagator if the starting guess is zero
        or we didn't say not to solve. */
@@ -211,8 +211,6 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
       
       /* Clean up */
       free(dst);
-      
-      destroy_v_field(src);
       
     } /* if(check != CHECK_NO || startflag[0] == FRESH)} */
 
