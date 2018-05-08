@@ -278,13 +278,6 @@ int main(int argc, char *argv[])
 	  terminate(1);
 	}
 
-//	/* Cache the source for writing to the propagator file */
-//	/* IS THIS NECESSARY? */
-//	if(qs->saveflag != FORGET){
-//	  alloc_cached_v_source(qs);
-//	  copy_v_field(qs->v_src, source[k]->v[color]);
-//	}
-	
 	/* Write the source, if requested */
 	if(qs->saveflag != FORGET){
 	  if(w_source_ks( source[k]->v[color], qs ) != 0)
@@ -316,13 +309,6 @@ int main(int argc, char *argv[])
 	/* Apply operator*/
 	v_field_op(source[is]->v[color], qs->op, qs->subset, qs->t0);
 
-//	/* Cache the source for writing to the propagator file */
-//	/* IS THIS NECESSARY? */
-//	if(qs->saveflag != FORGET){
-//	  alloc_cached_v_source(qs);
-//	  copy_v_field(qs->v_src, source[is]->v[color]);
-//	}
-	
 	/* Write the source, if requested */
 	if(qs->saveflag != FORGET){
 	  if(w_source_ks( source[is]->v[color], qs ) != 0)
