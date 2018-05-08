@@ -105,6 +105,7 @@ int choose_usqcd_ks_file_type(int source_type){
 #endif
 
 /* Dirac propagator files */
+#if 0
 int choose_usqcd_w_file_type(int source_type){
   int file_type;
 
@@ -140,6 +141,12 @@ int choose_usqcd_w_file_type(int source_type){
   }
   return file_type;
 }
+#else
+/* Staggered propagator files */
+int choose_usqcd_w_file_type(int source_type){
+  return FILE_TYPE_W_USQCD_DD_PAIRS;
+}
+#endif
 
 #ifdef HAVE_QIO
 
@@ -282,12 +289,12 @@ void r_source_open(quark_source *qs){
 
 #ifdef HAVE_KS
 
-  else if(source_type == VECTOR_FIELD_FM_FILE){
-    qs->kssf = r_source_ks_fm_i(source_file);
-    if(qs->kssf == NULL){
-      node0_printf("%s: Failed to open source %s\n", myname, source_file);
-    }
-  }
+//  else if(source_type == VECTOR_FIELD_FM_FILE){
+//    qs->kssf = r_source_ks_fm_i(source_file);
+//    if(qs->kssf == NULL){
+//      node0_printf("%s: Failed to open source %s\n", myname, source_file);
+//    }
+//  }
 #endif
 
 #ifdef HAVE_QIO
@@ -362,12 +369,12 @@ void r_source_close(quark_source *qs){
 
   if(0);
 
-#ifdef HAVE_KS
-  else if(qs->type == VECTOR_FIELD_FM_FILE){
-    r_source_ks_fm_f(qs->kssf);
-    qs->kssf = NULL;
-  }
-#endif
+// #ifdef HAVE_KS
+//   else if(qs->type == VECTOR_FIELD_FM_FILE){
+//     r_source_ks_fm_f(qs->kssf);
+//     qs->kssf = NULL;
+//   }
+// #endif
 #ifdef HAVE_QIO
   else if(qs->type == COMPLEX_FIELD_FILE)
     r_close_scidac_file(qs->infile);
