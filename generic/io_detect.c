@@ -164,6 +164,8 @@ int io_detect_w_usqcd(char *filename){
 #endif
 
 #endif
+
+#if 0
 /********************************************************************/
 /* For FNAL we base the detection on the number of elements per site */
 int io_detect_fm(char *filename){
@@ -221,6 +223,7 @@ int io_detect_fm(char *filename){
   /* All nodes return the same value */
   return status;
 }
+#endif
 
 /*---------------------------------------------------------------*/
 /* Sniff out the file type */
@@ -248,6 +251,7 @@ get_file_type(char *filename)
     terminate(1);
   }
   
+#if 0
   /* Look further for FNAL files */
   if(file_type == FILE_TYPE_FM){
     file_type = io_detect_fm(filename);
@@ -256,9 +260,10 @@ get_file_type(char *filename)
       terminate(1);
     }
   }
+#endif
   
   /* For QIO(LIME) types, same thing */
-  else if(file_type == FILE_TYPE_LIME){
+  if(file_type == FILE_TYPE_LIME){
 #ifdef HAVE_QIO
 #ifndef ONLY_GLUON_FILES
     file_type = io_detect_w_usqcd(filename);
