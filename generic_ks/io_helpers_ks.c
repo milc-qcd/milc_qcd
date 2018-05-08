@@ -59,7 +59,7 @@ read_usqcd_ksprop_record(ks_prop_file *kspf, int color, su3_vector *src,
       if(status == 0){node0_printf("%s: Read prop source %s from %s\n",
 				   myname, ksqs->descrp, kspf->filename);}
     }
-    free(tmp_src);
+    destroy_v_field(tmp_src);
   }
 
   /* Next, read the propagator for this source */
@@ -177,8 +177,6 @@ r_open_ksprop(int flag, char *filename)
 
   if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS){
 #ifdef HAVE_QIO
-    /* SciDAC propagator format */
-
     /* Create a kspf structure. (No file movement here.) */
     int serpar = interpret_usqcd_ks_reload_flag(flag);
     kspf = create_input_ksprop_file_handle(filename);
@@ -237,6 +235,10 @@ w_open_ksprop(int flag, char *filename, int source_type)
     kspf->outfile = open_usqcd_ksprop_write(filename, volfmt, serpar, 
 					    QIO_ILDGNO,  NULL, 
 					    file_type, fileinfo);
+    if(kspf->outfile == NULL){
+      node0_printf("ks_open_wprop: Cannot open %s for writing\n",filename);
+      terminate(1);
+    }
     free_ks_XML(fileinfo);
     
 #else
@@ -280,7 +282,6 @@ void
 w_close_ksprop(int flag, ks_prop_file *kspf)
 {
   su3_vector *ksp;
-  int color;
 
   if(kspf == NULL)return;
 
@@ -352,11 +353,10 @@ reload_ksprop_c_to_field( int flag, ks_prop_file *kspf,
     }
     break;
   case RELOAD_PARALLEL:
-    prop = kspf->prop;
     file_type = kspf->file_type;
-    if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS)
+    if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS){
       status = read_usqcd_ksprop_record(kspf, color, src, dest, ksqs);
-    else {
+    } else {
       node0_printf("%s: Unsupported file type %d\n", myname, file_type);
       status = 1;
     }
@@ -367,6 +367,7 @@ reload_ksprop_c_to_field( int flag, ks_prop_file *kspf,
       node0_printf("%s: Recompile with QIO to read this file\n", myname);
       status = 1; /* Error status */
     }
+    break;
 #endif
   default:
     node0_printf("%s: Unrecognized reload flag.\n", myname);
