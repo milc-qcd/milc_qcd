@@ -92,16 +92,6 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
       boundary_twist_fn(fn[j], ON);
     }
 
-    /* Apply twist to the APE links */
-    /* They do not carry the KS phases, but they do carry the time bc */
-    /* This operation applies the phase to the boundary */
-    //    mybdry_phase[3] = 0; 
-    //    momentum_twist_links(mybdry_phase, 1, ape_links);
-    //    mybdry_phase[3] = bdry_phase[3]; 
-    mybdry_phase[3] = 0;
-    boundary_twist_field( mybdry_phase, r0, 1, ape_links);
-    mybdry_phase[3] = bdry_phase[3];
-
     /* Copy pointers for fermion links, based on Naik epsilon indices */
     fn_multi = (imp_ferm_links_t **)
       malloc(sizeof(imp_ferm_links_t *)*num_prop);
@@ -119,9 +109,12 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
     if(status != 0){
       node0_printf("Failed to reload propagator\n");
       terminate(1);
+    } else {
+      node0_printf("Restored propagator from %s\n",startfile);
     }
   }
 
+  /* Loop over source colors */
   for(color = 0; color < ksprop[0]->nc; color++){
     
     node0_printf("%s: color = %d\n",myname, color);
@@ -170,9 +163,6 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	  
 	  /* Single mass inversion */
 	  
-	  if(startflag[0] == FRESH) my_qic[0].start_flag = START_ZERO_GUESS;
-	  else                      my_qic[0].start_flag = START_NONZERO_GUESS;
-	  
 	  /* When we start from a preloaded solution we use the less
 	     optimized mat_invert_cg_field algorithm, instead of
 	     mat_invert_uml_field here to avoid "reconstructing", and so
@@ -195,7 +185,7 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	  mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
 	}
 	
-	/* Transform solution, completing the U(1) gauge transformation */
+	/* Transform solutions, completing the U(1) gauge transformation */
 	mybdry_phase[3] = 0; 
 	for(j = 0; j < num_prop; j++){
 	  rephase_v_field(dst[j], mybdry_phase, r0, -1);
@@ -229,11 +219,6 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
   }
 
   if(check != CHECK_NO || startflag[0] == FRESH ){
-
-    /* Unapply twist to the APE links */
-    mybdry_phase[3] = 0;
-    boundary_twist_field( mybdry_phase, r0, -1, ape_links);
-    mybdry_phase[3] = bdry_phase[3];
 
   /* Unapply twisted boundary conditions on the fermion links and
      restore conventional KS phases and antiperiodic BC, if
