@@ -216,13 +216,13 @@ void clear_qs(quark_source *qs){
   }
 #endif
 
-#ifdef HAVE_KS
-  /* For VECTOR_FIELD_FM_FILE */
-  if(qs->kssf != NULL){
-    r_source_ks_fm_f(qs->kssf);
-    qs->kssf = NULL;
-  }
-#endif
+// #ifdef HAVE_KS
+//   /* For VECTOR_FIELD_FM_FILE */
+//   if(qs->kssf != NULL){
+//     r_source_ks_fm_f(qs->kssf);
+//     qs->kssf = NULL;
+//   }
+// #endif
   qs->source_file_initialized = 0;
 }
 
@@ -710,14 +710,14 @@ static int get_vector_source(quark_source *qs){
     terminate(1);
 #endif
   }
-  else if(source_type == VECTOR_FIELD_FM_FILE){
-    /* Source file is in FNAL format. 
-       We read the next record, store it in v_src and copy to src */
-    
-    if(qs->source_file_initialized == 0)
-      r_source_open(qs);
-    r_source_ks_fm(qs->kssf, qs->v_src, x0, y0, z0, t0);
-  }
+//  else if(source_type == VECTOR_FIELD_FM_FILE){
+//    /* Source file is in FNAL format. 
+//       We read the next record, store it in v_src and copy to src */
+//    
+//    if(qs->source_file_initialized == 0)
+//      r_source_open(qs);
+//    r_source_ks_fm(qs->kssf, qs->v_src, x0, y0, z0, t0);
+//  }
 #endif
   else {
     return 0;
@@ -771,10 +771,10 @@ static int get_dirac_source(quark_source *qs, int spin, int color){
     terminate(1);
 #endif
   }
-  else if(source_type == DIRAC_FIELD_FM_FILE){
-    r_source_w_fm_to_field(source_file, qs->wv_src, spin, color, 
-			   x0, y0, z0, t0);
-  }
+//  else if(source_type == DIRAC_FIELD_FM_FILE){
+//    r_source_w_fm_to_field(source_file, qs->wv_src, spin, color, 
+//			   x0, y0, z0, t0);
+//  }
   else {
     return 0;
   }
@@ -1421,6 +1421,7 @@ static int get_quark_source(int *status_p, FILE *fp, int prompt,
 /* Get the additional input parameters needed to specify the source */
 int get_v_quark_source(FILE *fp, int prompt, quark_source *qs){
   
+  char myname[] = "get_v_quark_source";
   char c_mask[16];
   char source_label[MAXSRCLABEL];
   int  source_type;
@@ -1431,6 +1432,29 @@ int get_v_quark_source(FILE *fp, int prompt, quark_source *qs){
 				     qs->descrp);
   IF_OK qs->type  = source_type;
   IF_OK qs->orig_type  = source_type;  /* In case we change the type */
+
+  /* Get the field type */
+  IF_OK {
+    if (prompt==1){
+      printf("enter field type ");
+      printf("'Dirac', ");
+      printf("'KS', ");
+      printf("\n");
+    }
+    char *savebuf = get_next_tag(fp, "field type", myname);
+    if (savebuf == NULL) return 1;
+    if(strcmp("Dirac",savebuf) == 0){
+      qs->field_type = WILSON_FIELD;
+    }
+    else if(strcmp("KS",savebuf) == 0){
+      qs->field_type = KS_FIELD;
+    }
+    else{
+      printf("%s: ERROR IN INPUT: field type %s not recognized\n",myname,
+	     savebuf);
+      status++;
+    }
+  }
   
   /* Specify the subset */
   IF_OK status += get_s(fp, prompt, "subset", c_mask);
@@ -1477,15 +1501,37 @@ int get_wv_quark_source(FILE *fp, int prompt, quark_source *qs){
   IF_OK qs->type  = source_type;
   IF_OK qs->orig_type  = source_type;  /* In case we change the type */
   
+  /* Get the field type */
   IF_OK {
 
+    if (prompt==1){
+      printf("enter field type ");
+      printf("'Dirac', ");
+      printf("'KS', ");
+      printf("\n");
+    }
+    char *savebuf = get_next_tag(fp, "field type", myname);
+    if (savebuf == NULL) return 1;
+    if(strcmp("Dirac",savebuf) == 0){
+      qs->field_type = WILSON_FIELD;
+    }
+    else if(strcmp("KS",savebuf) == 0){
+      qs->field_type = KS_FIELD;
+    }
+    else{
+      printf("%s: ERROR IN INPUT: field type %s not recognized\n",myname,
+	     savebuf);
+      status++;
+    }
+
+  
     /* Specify the subset */
     IF_OK status += get_s(fp, prompt, "subset", c_mask);
     IF_OK status += encode_mask(&qs->subset, c_mask);
-
+    
     /* Complex field sources */
     if ( get_quark_source( &status, fp, prompt, qs) );
-
+    
     /* Dirac field sources */
     else if ( source_type == DIRAC_FIELD_FILE ){
       //      IF_OK status += get_i(fp, prompt, "t0", &qs->t0);
