@@ -253,7 +253,6 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
     qic.max        = niter;
     qic.nrestart   = nrestart;
     qic.parity     = EVENANDODD;
-    qic.start_flag = 1;
     qic.nsrc = 1;
     qic.resid      = sqrt(rsqprop);
     qic.relresid   = 0;
@@ -475,7 +474,6 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
     qic.min        = 0;
     qic.max        = niter;
     qic.nrestart   = nrestart;
-    qic.start_flag = 0;
     qic.nsrc       = 1;
     qic.resid      = sqrt(rsqprop);
     qic.relresid   = 0;
