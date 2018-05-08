@@ -135,7 +135,6 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
   qic.max       = niter;
   qic.nrestart  = nrestart;
   qic.parity    = parity;
-  qic.start_flag = 0;
   qic.nsrc      = 1;
   qic.resid     = sqrt(rsqmin);
   qic.relresid  = 0;     /* Suppresses this test */
