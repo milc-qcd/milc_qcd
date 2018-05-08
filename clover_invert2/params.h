@@ -6,6 +6,7 @@
 #include "../include/generic_ks.h" /* For quark_source */
 #include "../include/generic_wilson.h"  /* For quark_source */
 #include "../include/gammatypes.h"
+#include "../include/imp_ferm_links.h"
 
 #define MAX_SOURCE 30
 #define MAX_PROP 50
@@ -54,6 +55,7 @@ typedef struct {
   Real staple_weight;
   int ape_iter;
   Real u0;
+  ks_eigen_param eigen_param; /* Parameters for eigensolver */
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
   int time_bc;          /* 0 for antiperiodic, 1 for periodic */
   quark_invert_control qic[MAX_PROP];
