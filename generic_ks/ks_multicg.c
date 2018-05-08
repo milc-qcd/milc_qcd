@@ -715,7 +715,6 @@ int ks_multicg_mass_site(	/* Return value is number of iterations taken */
     qic[i].nrestart = nrestart;
     qic[i].parity = parity;
     qic[i].nsrc = 1;
-    qic[i].start_flag = 0;
     qic[i].resid = sqrt(rsqmin);
     qic[i].relresid = 0;
 
