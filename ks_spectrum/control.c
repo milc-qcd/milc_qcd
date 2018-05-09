@@ -260,10 +260,12 @@ int main(int argc, char *argv[])
     STARTTIME;
 
     /* Base sources */
+
     for(k=0; k<param.num_base_source; k++){
-      quark_source *qs = &param.base_src_qs[k];
+      quark_source *qs = &param.src_qs[k];
       source[k] = create_ksp_field(qs->ncolor);
 
+      /* Open file with metadata */
       if(qs->saveflag != FORGET){
 	char *fileinfo = create_ks_XML();
 	w_source_open_ks(qs, fileinfo);
@@ -292,8 +294,9 @@ int main(int argc, char *argv[])
     /* Modified sources */
     for(is=param.num_base_source; is<param.num_base_source+param.num_modified_source; is++){
 
-      quark_source *qs = &param.base_src_qs[is];
-
+      quark_source *qs = &param.src_qs[is];
+      source[is] = create_ksp_field(qs->ncolor);
+      
       if(qs->saveflag != FORGET){
 	char *fileinfo = create_ks_XML();
 	w_source_open_ks(qs, fileinfo);
@@ -328,26 +331,36 @@ int main(int argc, char *argv[])
     /* Loop over sets of propagators */
 
     STARTTIME;
+
+    /* Temporary lists */
+    ks_prop_field *tmp_source[MAX_PROP];
+    quark_source *tmp_src_qs[MAX_PROP];
+    
     for(k=0; k<param.num_set; k++){
       int num_prop = param.end_prop[k] - param.begin_prop[k] + 1;
       int i0 = param.begin_prop[k];
 
+
       for(i=param.begin_prop[k]; i <= param.end_prop[k]; i++){
-      
+
 	/**************************************************************/
 	/* Read and/or generate quark propagator */
 	
-	prop_nc[i] = param.src_qs[k].ncolor;
-	prop[i] = create_ksp_field(prop_nc[i]);
+	is = param.source[i];  /* source index for this propagator */
+	prop_nc[i] = param.src_qs[is].ncolor;
 	
+	/* Allocate propagator */
+	prop[i] = create_ksp_field(prop_nc[i]);
 	if(prop[i] == NULL){
 	  printf("main(%d): No room for prop\n",this_node);
 	  terminate(1);
 	}
-	
+	tmp_source[i] = source[is];  /* Pointer copy */
+	tmp_src_qs[i] = &param.src_qs[is]; 
+
 	node0_printf("Mass= %g source %s ",
 		     (double)param.ksp[i].mass,
-		     param.src_qs[k].descrp);
+		     param.src_qs[is].descrp);
 #ifdef U1_FIELD
 	node0_printf("Q %g ",param.charge[k]);
 #endif
@@ -359,22 +372,21 @@ int main(int argc, char *argv[])
       
       /* We pass the beginning addresses of the set data */
       
-      total_iters += solve_ksprop(num_prop,
+      total_iters += solve_ksprop(param.set_type[k],
+				  num_prop,
 				  param.startflag_ks + i0,
 				  param.startfile_ks + i0,
 				  param.saveflag_ks + i0,
 				  param.savefile_ks + i0,
 				  prop + i0,
-				  source[param.source[k]],
-				  &param.src_qs[k],
+				  tmp_source + i0,
+				  tmp_src_qs + i0,
 				  param.qic + i0, 
 				  param.ksp + i0,
 				  param.charge[k],
 				  param.bdry_phase[i0],
 				  param.coord_origin,
 				  param.check[i0]);
-      
-      clear_qs(&param.src_qs[k]);
       
     } /* sets */
     ENDTIME("compute propagators");
@@ -704,7 +716,7 @@ int main(int argc, char *argv[])
       
       Nvecs_curr = param.eigcgp.Nvecs_curr;
       
-      fn = get_fm_links(fn_links);
+      imp_ferm_links_t *fn = get_fm_links(fn_links);
       resid = (double *)malloc(Nvecs_curr*sizeof(double));
       
       if(param.ks_eigen_startflag == FRESH)

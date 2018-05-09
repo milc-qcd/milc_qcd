@@ -35,11 +35,12 @@
 
 /* Solve for the propagator (if requested) for all members of the set */
 
-int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
+int solve_ksprop(int set_type,
+		 int num_prop, int startflag[], char startfile[][MAXFILENAME],
 		 int saveflag[], char savefile[][MAXFILENAME],
 		 ks_prop_field *ksprop[],
-		 ks_prop_field *source,
-                 quark_source *my_ksqs,
+		 ks_prop_field *source[],
+                 quark_source *my_ksqs[],
 		 quark_invert_control my_qic[],
 		 ks_param my_ksp[],
 		 Real charge,
@@ -68,7 +69,7 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
      They can be different for each propagator
      NO, they must be the same! */
 
-  ksqstmp = *my_ksqs;     /* For ksprop_info. Source is common to the set */
+  ksqstmp = *my_ksqs[0];     /* For ksprop_info. Source is common to the set */
   ksptmp  = my_ksp[0];      /* For action parameters */
 
   /* Construct fermion links if we will need them */
@@ -104,33 +105,34 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
   
   /* Load the propagators */
   for(j = 0; j < num_prop; j++){
-    status = reload_ksprop_to_ksp_field(startflag[j], startfile[j],
-					my_ksqs, source, ksprop[j], 1);
-    if(status != 0){
-      node0_printf("Failed to reload propagator\n");
-      terminate(1);
-    } else {
-      node0_printf("Restored propagator from %s\n",startfile);
+    if(startflag[j] != FRESH){
+      status = reload_ksprop_to_ksp_field(startflag[j], startfile[j],
+					  my_ksqs[j], source[j], ksprop[j], 1);
+      if(status != 0){
+	node0_printf("Failed to reload propagator\n");
+	terminate(1);
+      } else {
+	node0_printf("Restored propagator from %s\n",startfile[j]);
+      }
     }
   }
 
-  /* Loop over source colors */
-  for(color = 0; color < ksprop[0]->nc; color++){
+  /* Loop over source colors.  They should be the same for all sources. */
+  for(color = 0; color < source[0]->nc; color++){
     
     node0_printf("%s: color = %d\n",myname, color);
 
-    /* Source for this color */
-    su3_vector *src = source->v[color];
+    /* List pointers to sources for this color */
+    su3_vector **src = (su3_vector **)malloc(num_prop*sizeof(su3_vector *));
+    for(j = 0; j < num_prop; j++) src[j] = source[j]->v[color];
 
     /* Solve for the propagator if the starting guess is zero
        or we didn't say not to solve. */
     if(check != CHECK_NO || startflag[0] == FRESH){
 
-      /* Make a list of num_prop solution pointers for the current color */
+      /* List pointers to solutions for the current color */
       dst = (su3_vector **)malloc(num_prop*sizeof(su3_vector *));
-      for(j = 0; j < num_prop; j++){
-	dst[j] = ksprop[j]->v[color];
-      }
+      for(j = 0; j < num_prop; j++) dst[j] = ksprop[j]->v[color];
 	
       if(check != CHECK_SOURCE_ONLY){
 
@@ -145,8 +147,9 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	   It is used only for switching between periodic and
 	   antiperiodic bc's */
 	
-	mybdry_phase[3] = 0; 
-	rephase_v_field(src, mybdry_phase, r0, 1);
+	mybdry_phase[3] = 0;
+	for(j = 0; j < num_prop; j++)
+	  rephase_v_field(src[j], mybdry_phase, r0, 1);
 	mybdry_phase[3] = bdry_phase[3]; 
 	
 	if(startflag[0] != FRESH){
@@ -173,16 +176,22 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	     the optimized mat_invert_uml_field algorithm. */
 	  
 	  if(startflag[0] == FRESH){
-	    mat_invert_uml_field(src, dst[0], my_qic+0, my_ksp[0].mass, 
+	    mat_invert_uml_field(src[0], dst[0], my_qic+0, my_ksp[0].mass, 
 				 fn_multi[0]);
 	  } else {
-	    mat_invert_cg_field(src, dst[0], my_qic+0, my_ksp[0].mass, 
+	    mat_invert_cg_field(src[0], dst[0], my_qic+0, my_ksp[0].mass, 
 				fn_multi[0]);
 	  }
 	} else {
 	  
-	  /* Multimass inversion */
-	  mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
+	  if(set_type == MULTIMASS_SET)
+	    /* Multimass inversion */
+	    mat_invert_multi(src[0], dst, my_ksp, num_prop, my_qic, fn_multi);
+	  else {
+	    /* Multisource inversion */
+	    node0_printf("Multisource inversions not supported, yet\n");
+	    terminate(1);
+	  }
 	}
 	
 	/* Transform solutions, completing the U(1) gauge transformation */
@@ -196,11 +205,12 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	
 	/* Copy source to solution(s) so we can use it there */
 	for(j = 0; j < num_prop; j++)
-	  copy_v_field(dst[j], src);
+	  copy_v_field(dst[j], src[j]);
       }  /* if(check != CHECK_SOURCE_ONLY) */
       
       /* Clean up */
       free(dst);
+      free(src);
       
     } /* if(check != CHECK_NO || startflag[0] == FRESH)} */
 
@@ -209,7 +219,7 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
   /* save solutions if requested */
   for(j = 0; j < num_prop; j++){
     status = save_ksprop_from_ksp_field( saveflag[j], savefile[j], "",
-					 my_ksqs, source, ksprop[j], 1);
+					 my_ksqs[j], source[j], ksprop[j], 1);
     if(status != 0){
       node0_printf("Failed to write propagator\n");
       terminate(1);

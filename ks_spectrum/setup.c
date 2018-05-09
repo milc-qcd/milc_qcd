@@ -369,7 +369,6 @@ int readin(int prompt) {
 	IF_OK status += get_f(stdin, prompt, "charge", &param.charge_pbp[i]);
 #endif
 	param.qic_pbp[i].min = 0;
-	param.qic_pbp[i].start_flag = 0;
 	param.qic_pbp[i].nsrc = 1;
 	param.qic_pbp[i].max = param.qic_pbp[0].max;
 	param.qic_pbp[i].nrestart = param.qic_pbp[0].nrestart;
@@ -398,12 +397,13 @@ int readin(int prompt) {
 
     for(i = 0; i < param.num_base_source; i++){
       
-      IF_OK init_qs(&param.base_src_qs[i]);
+      IF_OK init_qs(&param.src_qs[i]);
       IF_OK status += get_v_quark_source( stdin, prompt, 
-					  &param.base_src_qs[i]);
+					  &param.src_qs[i]);
       /* Base sources have no parents or ops */
       IF_OK param.parent_source[i] = BASE_SOURCE_PARENT;
       IF_OK init_qss_op(&param.src_qs_op[i]);
+      /* Enforce a uniform boundary condition */
       IF_OK set_qss_op_offset(&param.src_qs_op[i], param.coord_origin);
       /* NOTE: The KS built-in bc is antiperiodic. */
       IF_OK param.src_qs_op[i].bp[3] = param.time_bc;    
@@ -418,9 +418,9 @@ int readin(int prompt) {
 					&source_type, NULL, descrp,
 					savefile_s );
 	IF_OK {
-	  param.base_src_qs[i].savetype = source_type;
-	  param.base_src_qs[i].saveflag = saveflag_s;
-	  strcpy(param.base_src_qs[i].save_file, savefile_s);
+	  param.src_qs[i].savetype = source_type;
+	  param.src_qs[i].saveflag = saveflag_s;
+	  strcpy(param.src_qs[i].save_file, savefile_s);
 	  if(saveflag_s != FORGET && source_type != VECTOR_FIELD_FILE){
 	    printf("Unsupported output source type\n");
 	    status++;
@@ -468,18 +468,18 @@ int readin(int prompt) {
       /* Copy parent source attributes to the derived source structure */
       IF_OK {
 	int p = param.parent_source[is];
-	param.base_src_qs[is] = param.base_src_qs[p];
-	param.base_src_qs[is].op = copy_qss_op_list(param.base_src_qs[p].op);
+	param.src_qs[is] = param.src_qs[p];
+	param.src_qs[is].op = copy_qss_op_list(param.src_qs[p].op);
 	
 	/* Add the new operator to the linked list */
-	insert_qss_op(&param.base_src_qs[is], &param.src_qs_op[is]);
+	insert_qss_op(&param.src_qs[is], &param.src_qs_op[is]);
 	
 	/* Append the operator info to the description if the operator
 	   is nontrivial, but simply copy the label */
 	if(param.src_qs_op[is].type != IDENTITY){
-	  char *descrp = param.base_src_qs[is].descrp;
+	  char *descrp = param.src_qs[is].descrp;
 	  char *op_descrp = param.src_qs_op[is].descrp;
-	  char *label = param.base_src_qs[is].label;
+	  char *label = param.src_qs[is].label;
 	  char *op_label = param.src_qs_op[is].label;
 	  strncat(descrp, "/", MAXDESCRP-strlen(descrp)-1);
 	  strncat(descrp, op_descrp, MAXDESCRP-strlen(descrp)-1);
@@ -497,9 +497,9 @@ int readin(int prompt) {
 					&source_type, NULL, descrp,
 					savefile_s );
 	IF_OK {
-	  param.base_src_qs[is].savetype = source_type;
-	  param.base_src_qs[is].saveflag = saveflag_s;
-	  strcpy(param.base_src_qs[is].save_file, savefile_s);
+	  param.src_qs[is].savetype = source_type;
+	  param.src_qs[is].saveflag = saveflag_s;
+	  strcpy(param.src_qs[is].save_file, savefile_s);
 	  if(saveflag_s != FORGET && source_type != VECTOR_FIELD_FILE){
 	    printf("Unsupported output source type\n");
 	    status++;
@@ -524,6 +524,19 @@ int readin(int prompt) {
     IF_OK for(k = 0; k < param.num_set; k++){
       int max_cg_iterations, max_cg_restarts;
       int check = CHECK_NO;
+
+      IF_OK status += get_s(stdin, prompt, "set_type", savebuf);
+      IF_OK {
+	if(strcmp(savebuf,"multimass") == 0)
+	  param.set_type[k] = MULTIMASS_SET;
+	else if(strcmp(savebuf,"multisource") == 0)
+	  param.set_type[k] = MULTISOURCE_SET;
+	else {
+	  printf("Unrecognized set type %s\n",savebuf);
+	  printf("Choices are 'multimass', 'multisource'\n");
+	  status++;
+	}
+      }
 
       /* maximum no. of conjugate gradient iterations */
       IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
@@ -580,8 +593,28 @@ int readin(int prompt) {
       IF_OK param.charge[k] = atof(param.charge_label[k]);
 #endif
 
-      /* Get source index for this set */
-      IF_OK status += get_i(stdin,prompt,"source", &param.source[k]);
+      int tmp_src;
+      Real tmp_naik;
+      
+      IF_OK {
+
+	if(param.set_type[k] == MULTIMASS_SET){
+	  
+	  /* Get source index common to this set */
+	  IF_OK status += get_i(stdin,prompt,"source", &tmp_src);
+	} else {
+	  
+	  /* Get mass label common to this set */
+	  IF_OK status += get_s(stdin,prompt,"mass", savebuf);
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+	  IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
+				&tmp_naik);
+#else
+	  tmp_naik = 0.0;
+#endif
+	}
+	
+      }
 
       /* Number of propagators in this set */
       IF_OK status += get_i(stdin,prompt,"number_of_propagators", 
@@ -603,14 +636,32 @@ int readin(int prompt) {
     
 	/* Propagator parameters */
 
-	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[nprop] );
-	IF_OK param.ksp[nprop].mass = atof(param.mass_label[nprop]);
+	IF_OK {
+	  
+	  if(param.set_type[k]  == MULTIMASS_SET){
+	    
+	    /* Get mass label common to this set */
+	    IF_OK status += get_s(stdin,prompt,"mass", param.mass_label[nprop]);
+	    
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-	IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
-			      &param.ksp[nprop].naik_term_epsilon );
+	    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
+				  &param.ksp[nprop].naik_term_epsilon);
 #else
-	param.ksp[nprop].naik_term_epsilon = 0.0;
+	    param.ksp[nprop].naik_term_epsilon = 0.0;
 #endif
+	    param.source[nprop] = tmp_src;
+	    
+	  } else {
+	    
+	    /* Get source index common to this set */
+	    IF_OK status += get_i(stdin,prompt,"source", &param.source[nprop]);
+	    strcpy(param.mass_label[nprop], savebuf);
+	    param.ksp[nprop].naik_term_epsilon = tmp_naik;
+	  }
+	}
+
+	IF_OK param.ksp[nprop].mass = atof(param.mass_label[nprop]);
+
 	IF_OK {
 	  int dir;
 	  FORALLUPDIR(dir)param.bdry_phase[nprop][dir] = bdry_phase[dir];
@@ -638,19 +689,10 @@ int readin(int prompt) {
 #endif
 	/* Precision for all members of the set must be the same */
 	param.qic[nprop].prec = param.qic[0].prec;
-
+	
 	/* Parity is always EVENANDODD for spectroscopy */
 	param.qic[nprop].parity = EVENANDODD;
     
-	/* Copy the base source to the propagator source structure */
-
-	IF_OK {
-	  int p = param.source[k];
-	  init_qs(&param.src_qs[k]);
-	  param.src_qs[k] = param.base_src_qs[p];
-	  param.src_qs[k].op = copy_qss_op_list(param.base_src_qs[p].op);
-	}
-
 	IF_OK status += ask_starting_ksprop( stdin, prompt, 
 					     &param.startflag_ks[nprop],
 					     param.startfile_ks[nprop]);
@@ -1277,12 +1319,12 @@ static void broadcast_heap_params(void){
   int i, k;
 
   for(i = 0; i < param.num_base_source + param.num_modified_source; i++){
-    broadcast_quark_source_sink_op_recursive(&param.base_src_qs[i].op);
+    broadcast_quark_source_sink_op_recursive(&param.src_qs[i].op);
     broadcast_quark_source_sink_op_recursive(&param.src_qs_op[i].op);
   }
 
-  for(k = 0; k < param.num_set; k++)
-    broadcast_quark_source_sink_op_recursive(&param.src_qs[k].op);
+//  for(k = 0; k < param.num_set; k++)
+//    broadcast_quark_source_sink_op_recursive(&param.src_qs[k].op);
 
   for(i = 0; i < param.num_qk; i++)
     broadcast_quark_source_sink_op_recursive(&param.snk_qs_op[i].op);

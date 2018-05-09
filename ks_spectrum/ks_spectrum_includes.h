@@ -22,6 +22,8 @@
 #include "../include/dirs.h"
 #include "../include/io_u1lat.h"
 #include "../include/generic_u1.h"
+#define MULTIMASS_SET 0
+#define MULTISOURCE_SET 1
 
 #ifdef PRTIME
 #define STARTTIME dtime = -dclock();
@@ -46,11 +48,12 @@ char *create_kss_XML(char *filename, quark_source *ksqs);
 void read_ksprop_to_ksp_field(int startflag, char startfile[], 
 			      quark_source *my_ksqs, ks_prop_field *ksp);
 
-int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
+int solve_ksprop(int set_type,
+		 int num_prop, int startflag[], char startfile[][MAXFILENAME],
 		 int saveflag[], char savefile[][MAXFILENAME],
 		 ks_prop_field *ksprop[],
-		 ks_prop_field *source,
-                 quark_source *my_ksqs,
+		 ks_prop_field *source[],
+                 quark_source *my_ksqs[],
 		 quark_invert_control my_qic[],
 		 ks_param my_ksp[],
 		 Real charge,
