@@ -323,7 +323,7 @@ int main(int argc, char *argv[])
 
     } /* is */
 
-    ENDTIME("Create sources");
+    ENDTIME("create sources");
 
     /**************************************************************/
 
