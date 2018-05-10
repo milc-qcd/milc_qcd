@@ -388,9 +388,10 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
    BLOCKCG version
 */
 
-int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst, 
-			       quark_invert_control *qic,
-			       Real mass, imp_ferm_links_t *fn ){
+int mat_invert_block_uml(su3_vector **src, su3_vector **dst, 
+			 Real mass, int nsrc, quark_invert_control *qic,
+			 imp_ferm_links_t *fn){
+  
   int cgn;
   register int i, is;
   register site *s;
@@ -403,21 +404,22 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
     tmp[is] = create_v_field();
   
   /* "Precondition" both even and odd sites */
-  /* temp <- M_adj * src */
+  /* tmp <- M_adj * src */
   
   for(is = 0; is < nsrc; is++){
     ks_dirac_adj_op( src[is], tmp[is], mass, EVENANDODD, fn );
     
-#if EIGMODE == DEFLATION
+    if(param.eigen_param.Nvecs > 0){
     
-    dtime = - dclock();
-    node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
-    
-    deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, EVEN);
-    
-    dtime += dclock();
-    node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
-#endif
+      dtime = - dclock();
+      node0_printf("deflating on even sites for mass %g with %d eigenvec\n",
+		   mass, param.eigen_param.Nvecs);
+      
+      deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, EVEN);
+      
+      dtime += dclock();
+      node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
+    }
   }
   
   /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
@@ -434,15 +436,16 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
       scalar_mult_su3_vector( dst[is]+i, 1.0/(2.0*mass), dst[is]+i );
     }
     
-#if EIGMODE == DEFLATION
-    dtime = - dclock();
-    node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
-    
-    deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, ODD);
-    
-    dtime += dclock();
-    node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
-#endif
+    if(param.eigen_param.Nvecs > 0){
+      dtime = - dclock();
+      node0_printf("deflating on odd sites for mass %g with %d eigenvec\n",
+		   mass, param.eigen_param.Nvecs);
+      
+      deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, ODD);
+      
+      dtime += dclock();
+      node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
+    }
   }
   
   /* Polish off odd sites to correct for possible roundoff error */
@@ -458,6 +461,15 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
   destroy_v_field(ttt);
   
   return cgn;
+}
+
+/*****************************************************************************/
+/* Creates an array of vectors for the block-cg solver */
+int mat_invert_mrhs_uml(su3_vector **src, su3_vector **dst, 
+			Real mass, int nsrc, quark_invert_control *qic,
+			imp_ferm_links_t *fn){
+  node0_printf("mat_invert_mrhs_uml is not implemented, yet\n");
+  terminate(1);
 }
 
 /*****************************************************************************/
