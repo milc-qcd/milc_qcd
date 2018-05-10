@@ -189,8 +189,8 @@ int solve_ksprop(int set_type,
 	    mat_invert_multi(src[0], dst, my_ksp, num_prop, my_qic, fn_multi);
 	  else {
 	    /* Multisource inversion */
-	    node0_printf("Multisource inversions not supported, yet\n");
-	    terminate(1);
+	    int num_src = num_prop;  /* Should change to num_prop * ncolors */
+	    mat_invert_block_uml(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
 	  }
 	}
 	
