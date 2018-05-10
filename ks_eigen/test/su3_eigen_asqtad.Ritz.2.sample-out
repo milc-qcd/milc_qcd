@@ -213,11 +213,10 @@ eigenval(28):   0.766032
 eigenval(29):   0.766032
 eigenval(30):   0.778037
 eigenval(31):   0.778037
+RUNNING COMPLETED
+Time = 3.911290e-01 seconds
+total Rayleigh iters = 2443
 
 
 ask_starting_lattice(0): EOF on input.
-RUNNING COMPLETED
-Time = 3.756449e-01 seconds
-total Rayleigh iters = 2443
-exit: Wed Apr 18 12:04:02 2018
-
+exit: Thu May 10 10:23:43 2018
