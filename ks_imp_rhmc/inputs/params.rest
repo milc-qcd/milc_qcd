@@ -1,0 +1,53 @@
+iseed 5682304
+n_pseudo 5
+load_rhmc_params rat.m013m065m838
+beta 5.60
+n_dyn_masses 3
+dyn_mass 0.013 0.065 0.838
+dyn_flavors 2 1 1
+u0 0.85535
+
+warms 0
+trajecs 2
+traj_between_meas 2
+microcanonical_time_step 0.2
+steps_per_trajectory 2
+cgresid_md_fa_gr .000000025 .00000002 .00000002
+max_multicg_md_fa_gr  1750 1750 1750
+cgprec_md_fa_gr  2 2 2
+cgresid_md_fa_gr .00000005 .00000002 .00000002
+max_multicg_md_fa_gr  1750 1750 1750
+cgprec_md_fa_gr  2 2 2
+cgresid_md_fa_gr .00000005 .00000002 .00000002
+max_multicg_md_fa_gr  1750 1750 1750
+cgprec_md_fa_gr  2 2 2
+cgresid_md_fa_gr .00000005 .00000002 .00000002
+max_multicg_md_fa_gr  1750 1750 1750
+cgprec_md_fa_gr  2 2 2
+cgresid_md_fa_gr .000000005 .000000002 .000000002
+max_multicg_md_fa_gr  1750 1750 1750
+cgprec_md_fa_gr  2 2 2
+prec_ff 2
+
+number_of_pbp_masses 3
+max_cg_prop 1750
+max_cg_prop_restarts 5
+npbp_reps 1
+prec_pbp 2
+mass 0.013
+naik_term_epsilon 0
+error_for_propagator 2e-7
+rel_error_for_propagator 0
+mass 0.065
+naik_term_epsilon 0
+error_for_propagator 2e-7
+rel_error_for_propagator 0
+mass 0.838
+naik_term_epsilon -0.358197
+error_for_propagator 2e-8
+rel_error_for_propagator 0
+
+fresh
+#reload_serial l1216b560m013m065m838.test
+forget
+

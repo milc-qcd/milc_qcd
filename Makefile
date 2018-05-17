@@ -142,7 +142,7 @@ ifeq ($(strip ${COMPILER}),intel)
   ARCH_FLAG = -mmic
   BINEXT=.knc
   else ifeq ($(strip ${ARCH}),skx)
-  ARCH_FLAG = -xCORE-AVX512
+  ARCH_FLAG = -xCORE-AVX512 -qopt-zmm-usage=high
   BINEXT=.skx
   else ifeq ($(strip ${ARCH}),hsw)
   ARCH_FLAG = -xCORE-AVX2
@@ -452,7 +452,8 @@ ifeq ($(strip ${WANTQPHIX}), true)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_mic -lrt
   else ifeq ($(strip ${ARCH}),hsw)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx2 -lrt
-  else
+  else ifeq ($(strip ${ARCH}),skx)
+    LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_skx -lrt
   endif
 
   else
@@ -465,7 +466,8 @@ ifeq ($(strip ${WANTQPHIX}), true)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_mic_single -lrt
   else ifeq ($(strip ${ARCH}),hsw)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx2_single -lrt
-  else
+  else ifeq ($(strip ${ARCH}),skx)
+    LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_skx_single -lrt
   endif
 
   endif
