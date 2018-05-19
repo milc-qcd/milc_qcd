@@ -220,6 +220,7 @@ IMP_GAUGE_FORCE_QPHIX ( Real eps, field_offset mom_off )
 	       info.final_flop*(double)volume/(1e6*qtime*numnodes()) );
   node0_printf("GFTIME:   time = %e (QPhiX Symanzik1) mflops = %e\n",
 	       dtime,
-	       nflop*(double)volume/(1e6*dtime*numnodes()) );
+	       info.final_flop*(double)volume/(1e6*dtime*numnodes()) );
+//	       nflop*(double)volume/(1e6*dtime*numnodes()) );
 #endif
 }
