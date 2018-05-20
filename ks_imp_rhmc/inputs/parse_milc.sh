@@ -43,18 +43,23 @@ if [ "${m}" == "time" ]; then
 	if [ "${l}" == "qphix" ]; then
 
 	echo "Assuming output enabled with QPhiX"
-	CGTIME_PER_ITER_NR=`awk '/^qphix_ks_multicg_offset/{cgtime_noremap=$4;}/^CONGRAD5/{iters=$12;cgtime_nr+=cgtime_noremap/$12;++count}END{print cgtime_nr/count}' ${r}` 
-	CGTIME_PER_ITER=`awk '/^CONGRAD5/{cgtime+=$4/$12;++count}END{print cgtime/count}' ${r}`
+	CGTIME_PER_ITER=`awk '/^CONGRAD5:.*multicg_offset_QPHIX/{cgtime+=$4/$12;++count}END{print cgtime/count}' ${r}`
+	CGTIME_PER_ITER_NR=`awk '/^CONGRAD5-QPhiX:.*multicg_offset_QPhiX/{cgtime_noremap+=$4/$12;++count}END{print cgtime_noremap/count}' ${r}`
+#	CGTIME_PER_ITER_NR=`awk '/^CONGRAD5-QPhiX:.*multicg_offset_QPHIX/{cgtime_noremap=$4;}/^CONGRAD5-QPhiX:.*multicg_offset_QPHIX/{iters=$12;cgtime_nr+=cgtime_noremap/$12;++count}END{print cgtime_nr/count}' ${r}`
+ 
 	GFTIME_PER_CALL=`awk '/^GFTIME:/{++count;if (count > 1) gftime+=$4}END{print gftime/(count-1)}' ${r}`
 	GFTIME_PER_CALL_NR=`awk '/^GFTIME_QPHIX:/{++count;if (count > 1) gftime_noremap+=$4}END{print gftime_noremap/(count-1)}' ${r}`
+
 	FFTIME_PER_CALL=`awk '/^FFTIME:/{++count;if (count > 1) fftime+=$4}END{print fftime/(count-1)}' ${r}`
 	FLTIME_PER_CALL=`awk '/^FLTIME:/{++count;if (count > 1) fltime+=$4}END{print fltime/(count-1)}' ${r}`
 
 
-	echo "CGTIME_PER_ITER (NO REMAP) = $CGTIME_PER_ITER_NR"
 	echo "CGTIME_PER_ITER = $CGTIME_PER_ITER"
+	echo "CGTIME_PER_ITER (NO REMAP) = $CGTIME_PER_ITER_NR"
+
 	echo "GFTIME_PER_CALL = $GFTIME_PER_CALL"
 	echo "GFTIME_PER_CALL (NO REMAP)= $GFTIME_PER_CALL_NR"
+
 	echo "FFTIME_PER_CALL = $FFTIME_PER_CALL"
 	echo "FLTIME_PER_CALL = $FLTIME_PER_CALL"
 
@@ -77,7 +82,7 @@ if [ "${m}" == "time" ]; then
 	elif [ "$l" = "baseline" ]; then
 
 	echo "Assuming output enabled with QPhiX"
-	CGTIME_PER_ITER=`awk '/^CONGRAD5/{cgtime+=$4/$12;++count}END{print cgtime/count}' ${r}`
+	CGTIME_PER_ITER=`awk '/multicg_offset D/{cgtime+=$4/$12;++count}END{print cgtime/count}' ${r}`
 	GFTIME_PER_CALL=`awk '/^GFTIME:/{++count;if (count > 1) gftime+=$4}END{print gftime/(count-1)}' ${r}`
 	FFTIME_PER_CALL=`awk '/^FFTIME:/{++count;if (count > 1) fftime+=$4}END{print fftime/(count-1)}' ${r}`
 	FLTIME_PER_CALL=`awk '/^FLTIME:/{++count;if (count > 1) fltime+=$4}END{print fltime/(count-1)}' ${r}`
@@ -97,17 +102,21 @@ elif [ "${m}" == "flops" ]; then
 	if [ "${l}" == "qphix" ]; then
 
 		echo "Assuming output enabled with QPhiX"
-		CGFLOPS=`awk '/^CONGRAD5/ { cgflops+=$15;++count } END {print cgflops/count}' ${r}`
-		CGFLOPS_NR=`awk '/^qphix_ks_multicg_offset/ {cgflops_noremap+=$8;++count } END {print cgflops_noremap/count}' ${r}`
-		GFFLOPS=`awk '/^GFTIME:/ { gfflops+=$9;++count } END {print gfflops/count}' ${r}`
+		CGFLOPS=`awk '/^CONGRAD5:.*multicg_offset_QPHIX/ { cgflops+=$NF;++count } END {print cgflops/count}' ${r}`
+		CGFLOPS_NR=`awk '/^CONGRAD5-QPhiX:.*multicg_offset_QPhiX/ {cgflops_noremap+=$NF;++count } END {print cgflops_noremap/count}' ${r}`
+
+		GFFLOPS=`awk '/^GFTIME:/ { gfflops+=$NF;++count } END {print gfflops/count}' ${r}`
 		GFFLOPS_NR=`awk '/^GFTIME_QPHIX:/ { gfflops_noremap+=$NF;++count } END {print gfflops_noremap/count}' ${r}`
-		FFFLOPS=`awk '/^FFTIME/ { ffflops+=$16;++count } END {print ffflops/count}' ${r}`
-		FLFLOPS=`awk '/^FLTIME/ { flflops+=$10;++count } END {print flflops/count}' ${r}`
+
+		FFFLOPS=`awk '/^FFTIME/ { ffflops+=$NF;++count } END {print ffflops/count}' ${r}`
+		FLFLOPS=`awk '/^FLTIME/ { flflops+=$NF;++count } END {print flflops/count}' ${r}`
 
 		CGFLOPS=`echo "$CGFLOPS*$NODES*0.001" | bc -l`
-		CGFLOPS_NR=`echo "$CGFLOPS_NR*$NODES" | bc -l`
+		CGFLOPS_NR=`echo "$CGFLOPS_NR*$NODES*0.001" | bc -l`
+
 		GFFLOPS=`echo "$GFFLOPS*$NODES*0.001" | bc -l`
 		GFFLOPS_NR=`echo "$GFFLOPS_NR*$NODES*0.001" | bc -l`
+
 		FFFLOPS=`echo "$FFFLOPS*$NODES*0.001" | bc -l`
 		FLFLOPS=`echo "$FLFLOPS*$NODES*0.001" | bc -l`
 
@@ -139,10 +148,10 @@ elif [ "${m}" == "flops" ]; then
 	elif [ "${l}" == "baseline" ]; then
 
 		echo "Assuming baseline MILC output"
-		CGFLOPS=`awk '/^CONGRAD5/ { cgflops+=$15;++count } END {print cgflops/count}' ${r}`
-		GFFLOPS=`awk '/^GFTIME:/ { gfflops+=$8;++count } END {print gfflops/count}' ${r}`
-		FFFLOPS=`awk '/^FFTIME/ { ffflops+=$16;++count } END {print ffflops/count}' ${r}`
-		FLFLOPS=`awk '/^FLTIME/ { flflops+=$10;++count } END {print flflops/count}' ${r}`
+		CGFLOPS=`awk '/multicg_offset D/ { cgflops+=$NF;++count } END {print cgflops/count}' ${r}`
+		GFFLOPS=`awk '/^GFTIME:/ { gfflops+=$NF;++count } END {print gfflops/count}' ${r}`
+		FFFLOPS=`awk '/^FFTIME/ { ffflops+=$NF;++count } END {print ffflops/count}' ${r}`
+		FLFLOPS=`awk '/^FLTIME/ { flflops+=$NF;++count } END {print flflops/count}' ${r}`
 
 		CGFLOPS=`echo "$CGFLOPS*$NODES*0.001" | bc -l`
 		GFFLOPS=`echo "$GFFLOPS*$NODES*0.001" | bc -l`
