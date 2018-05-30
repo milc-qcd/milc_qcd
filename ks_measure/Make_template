@@ -151,9 +151,6 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 # Common compiler macros
 
 # Optional DEFINES for timing:
-# -DIOTIME for I/O timing
-# -DPRTIME for propagator timing
-# -DCGTIME for cg timing and iterations
 
 # -DFN          identifies fat-Naik-like actions with only next and 3rd
 #               next neighbor linkage
@@ -174,26 +171,26 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 ks_measure_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES = ${DEFINES} -DFN -DIOTIME -DPRTIME -DTR_MM_INV" \
+	"DEFINES = ${DEFINES} -DFN -DTR_MM_INV" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_measure_asqtad_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES = ${DEFINES}  -DFN -DIOTIME -DPRTIME -DDM_DU0 \
+	"DEFINES = ${DEFINES}  -DFN -DDM_DU0 \
 	-DTR_MM_INV -DCHEM_POT" "EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_measure_asqtad_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES = ${DEFINES}  -DFN -DIOTIME -DPRTIME -DCHEM_POT \
+	"DEFINES = ${DEFINES}  -DFN -DCHEM_POT \
 	-DTR_MM_INV" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_measure_asqtad_mu_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES = ${DEFINES}  -DFN -DIOTIME -DPRTIME -DDM_DU0 \
+	"DEFINES = ${DEFINES}  -DFN -DDM_DU0 \
 	-DTR_MM_INV -DCHEM_POT -DD_CHEM_POT" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} mu_fast.o"
 
@@ -213,37 +210,26 @@ ks_measure_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS}
 
-ks_measure_deflate_hisq::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	${HISQ_OPTIONS} "DEFINES += -DEIGEN_QIO"
-
 ks_measure_eigcg_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	${HISQ_OPTIONS} "DEFINES += -DEIGMODE=EIGCG -DEIGEN_QIO" \
+	${HISQ_OPTIONS} "DEFINES += -DEIGMODE=EIGCG" \
 	"EXTRA_OBJECTS += ${EIGCG_OBJECTS}"
 
 ks_measure_current_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC" \
-	"EXTRA_OBJECTS += f_meas_current.o spin_taste_ops.o \
-	gammas.o"
-
-ks_measure_current_deflate_hisq::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
-	-DEIGEN_QIO" \
 	"EXTRA_OBJECTS += f_meas_current.o"
 
-ks_measure_current_block_deflate_hisq::
+ks_measure_current_block_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
-	-DEIGEN_QIO -DBLOCKCG" \
+	-DBLOCKCG" \
 	"EXTRA_OBJECTS += f_meas_current.o"
 
 ks_measure_current_eigcg_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
-	-DEIGMODE=EIGCG -DEIGEN_QIO" \
+	-DEIGMODE=EIGCG" \
 	"EXTRA_OBJECTS += f_meas_current.o ${EIGCG_OBJECTS}"
 
 ks_measure_hisq_eos::
