@@ -115,6 +115,15 @@ int main(int argc, char *argv[])
       
       param.eigen_param.parity = EVEN;  /* Required */
       imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
+
+      /* Move KS phases and apply time boundary condition, based on the
+	 coordinate origin and time_bc */
+      Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+      /* Set values in the structure fn */
+      set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
+      /* Apply the operation */
+      boundary_twist_fn(fn, ON);
+      
       Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
       
       /* compute eigenpairs if requested */
@@ -135,18 +144,11 @@ int main(int argc, char *argv[])
     
       /* Check the eigenvectors */
 
-      /* Move KS phases and apply time boundary condition, based on the
-	 coordinate origin and time_bc */
-      Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
-      /* Set values in the structure fn */
-      set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
-      /* Apply the operation */
-      boundary_twist_fn(fn, ON);
-      
       /* Calculate and print the residues and norms of the eigenvectors */
       resid = (double *)malloc(Nvecs_curr*sizeof(double));
       node0_printf("Even site residuals\n");
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
+      construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn);
       node0_printf("Odd site residuals\n");
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
       
@@ -185,6 +187,7 @@ int main(int argc, char *argv[])
       invalidate_fermion_links(fn_links);
 #endif
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i].prec);
+
       naik_index = param.ksp_pbp[i].naik_term_epsilon_index;
       mass = param.ksp_pbp[i].mass;
 
