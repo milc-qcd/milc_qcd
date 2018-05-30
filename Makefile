@@ -271,7 +271,7 @@ WANTQMP = # true or blank.
 # It is assumed that these are the parents of "include" and "lib"
 
 SCIDAC = ${HOME}/scidac/install
-TAG=""
+TAG=
 # Parallel versions
 QMPPAR = ${SCIDAC}/qmp${TAG}
 QIOPAR = $(SCIDAC)/qio${TAG}
