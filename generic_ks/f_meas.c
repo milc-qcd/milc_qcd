@@ -155,14 +155,30 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
 
   imp_ferm_links_t* fn = get_fm_links(fl)[naik_term_epsilon_index];
 
+  /* Move KS phases and apply time boundary condition, based on the
+     coordinate origin and time_bc */
+  Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+  /* Set values in the structure fn */
+  set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
+  /* Apply the operation */
+  boundary_twist_fn(fn, ON);
+
 #ifdef DM_DU0
   imp_ferm_links_t* fn_du0 = get_fm_du0_links(fl)[naik_term_epsilon_index];
+  set_boundary_twist_fn(fn_du0, bdry_phase, param.coord_origin);
+  /* Apply the operation */
+  boundary_twist_fn(fn_du0, ON);
 #endif
 
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
   imp_ferm_links_t *fn_deps = get_fn_deps_links(fl);
+  set_boundary_twist_fn(fn_deps, bdry_phase, param.coord_origin);
+  /* Apply the operation */
+  boundary_twist_fn(fn_deps, ON);
 #endif
 
+      
+  
     Real r_psi_bar_psi_even, i_psi_bar_psi_even;
     Real  r_psi_bar_psi_odd, i_psi_bar_psi_odd;
     Real r_ferm_action;
@@ -389,6 +405,14 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
       destroy_v_field(gr); gr = NULL;
 
     } /* jpbp_reps */
+    
+    boundary_twist_fn(fn, OFF);
+#ifdef DM_DU0
+    boundary_twist_fn(fn_du0, OFF);
+#endif
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+    boundary_twist_fn(fn_deps, OFF);
+#endif    
 }
 
 /* Wrapper for obsolete call */
