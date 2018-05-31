@@ -128,7 +128,8 @@ write_vector_current_record(QIO_Writer *outfile, int jrand, int nwrite, Real mas
     status = write_D_R_from_field(outfile, recxml, j_mu, NMU);
   QIO_string_destroy(recxml);
 
-  node0_printf("Wrote current density for source %d and mass %g\n", jrand, mass);
+  node0_printf("Wrote current density for source %d and mass %g to file %s\n",
+	       jrand, mass, outfile);
   
   return status;
 }
@@ -185,7 +186,9 @@ static void project_out(su3_vector *vec, su3_vector *vector[], int Num, int pari
   }
 
   ptime += dclock();
+#ifdef CGTIME
   node0_printf("Time to project out low modes %g sec\n", ptime);
+#endif
 }
 
 /************************************************************************/
@@ -203,7 +206,9 @@ collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
       if ( ((ex+ey+ez+et)%2==0 && parity == EVEN) ||
 	   ((ex+ey+ez+et)%2==1 && parity == ODD) ){
 
+#if 0
 	node0_printf("Source %d is %d %d %d %d\n", is, ex, ey, ez, et);
+#endif
 
 	/* Apply source thinning */
 	copy_v_field( gr[is], gr0 );
@@ -243,9 +248,9 @@ collect_sources(su3_vector *gr_even[], su3_vector *gr_odd[], int nr, int thinnin
 #else
     z2rsource_plain_field( gr0, EVENANDODD );
 #endif
-    node0_printf("EVEN sources\n");
+    //    node0_printf("EVEN sources\n");
     collect_evenodd_sources(gr_even + jr*evol, nr*evol, EVEN, thinning, gr0);
-    node0_printf("ODD sources\n");
+    //    node0_printf("ODD sources\n");
     collect_evenodd_sources(gr_odd  + jr*evol, nr*evol, ODD,  thinning, gr0);
   } /* jr */
 
@@ -327,7 +332,7 @@ block_current_diff(Real *j_mu[], int nwrite, int thinning, int n_masses,
 		   ks_param *ksp, fermion_links_t *fl){
 
   char myname[] = "block_current_diff";
-  node0_printf("Entered %s\n", myname); fflush(stdout);
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   /* Offset for staggered phases in the current definition */
   int r_offset[4] = {0, 0, 0, 0};
@@ -408,7 +413,7 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
 		     char filenames[][MAXFILENAME]){
   
   char myname[] = "f_meas_current_diff";
-  node0_printf("Entered %s\n", myname); fflush(stdout);
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   double wtime = 0.;
   
@@ -460,7 +465,10 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
     destroy_r_array_field(j_mu[j], NMU);
   }
   
+
+#ifdef CGTIME
   node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
+#endif
   fflush(stdout);
   
 } /* f_meas_current_diff */
@@ -526,7 +534,9 @@ exact_current(Real *jlow_mu[], int n_masses, ks_param *ksp, fermion_links_t *fl)
 #endif
 
   dtime += dclock();
+#ifdef CGTIME
   node0_printf("Time for exact low modes %g sec\n", dtime);
+#endif
 }
 
 /*********************************************************************/
@@ -535,7 +545,7 @@ block_current( Real *j_mu[], int nwrite, int n_masses, int thinning,
 	       quark_invert_control *qic, ks_param *ksp, fermion_links_t *fl){
 
   char myname[] = "block_current";
-  node0_printf("Entered %s\n", myname); fflush(stdout);
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   /* Offset for staggered phases in the current definition */
   int r_offset[4] = {0, 0, 0, 0};
@@ -599,7 +609,7 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 		fermion_links_t *fl, char filenames[][MAXFILENAME]){
 
   char myname[] = "f_meas_current";
-  node0_printf("Entered %s\n", myname); fflush(stdout);
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   int i;
   double wtime = 0.;
@@ -681,7 +691,9 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
     destroy_r_array_field(jlow_mu[j], NMU);
   }
   
+#ifdef CGTIME
   node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
+#endif
   
 } /* f_meas_current */
 
@@ -727,7 +739,7 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
   imp_ferm_links_t **fn = get_fm_links(fl);
   double wtime = 0.;
 
-  node0_printf("Entered %s\n", myname); fflush(stdout);
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
  
   /* Create fields for current densities, one for each mass */
   for(j = 0; j < n_masses; j++)
@@ -863,7 +875,9 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
     destroy_r_array_field(j_mu[j], NMU);
   }
   
+#ifdef CGTIME
   node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
+#endif
   
   destroy_v_field(M_inv_gr); M_inv_gr = NULL;
   destroy_v_field(gr_mu); gr_mu = NULL;
@@ -907,7 +921,7 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
   double wtime = 0.;
   int Nvecs = param.eigen_param.Nvecs;
 
-  node0_printf("Entered %s\n", myname); fflush(stdout);
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
 #if 0
   /* DEBUG */
@@ -988,7 +1002,9 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 #endif
 
   dtime += dclock();
+#ifdef CGTIME
   node0_printf("Time for exact low modes %g sec\n", dtime);
+#endif
 
   /* HACK to get only result from low modes  */
   if(nrand == 0){
@@ -1111,7 +1127,9 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
       destroy_r_array_field(jlow_mu[j], NMU);
   }
   
+#ifdef CGTIME
   node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
+#endif
   
   destroy_v_field(M_inv_gr); M_inv_gr = NULL;
   destroy_v_field(gr_mu); gr_mu = NULL;
