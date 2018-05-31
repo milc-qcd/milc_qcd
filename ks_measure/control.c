@@ -151,6 +151,7 @@ int main(int argc, char *argv[])
       int i0 = param.begin_pbp_masses[k];
       
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i0].prec);
+      fn = get_fm_links(fn_links)[0];
       
       /* Move KS phases and apply time boundary condition, based on the
 	 coordinate origin and time_bc */
@@ -181,19 +182,19 @@ int main(int argc, char *argv[])
       else
 	f_meas_imp_multi( param.num_pbp_masses[k], param.npbp_reps[k],
 			  &param.qic_pbp[i0], &param.ksp_pbp[i0], fn_links);
-#endif
       
 #ifdef D_CHEM_POT
-      Deriv_O6_field(param.npbp_reps[k], &param.qic_pbp[i0],
-		     param.ksp_pbp[i0].mass,
-		     fn_links, param.ksp_pbp[i0].naik_term_epsilon_index, 
-		     param.ksp_pbp[i0].naik_term_epsilon);
+      if(num_pbp_masses == 1)
+	Deriv_O6_field(param.npbp_reps[k], &param.qic_pbp[i0],
+		       param.ksp_pbp[i0].mass,
+		       fn_links, param.ksp_pbp[i0].naik_term_epsilon_index, 
+		       param.ksp_pbp[i0].naik_term_epsilon);
+      else
+	Deriv_O6_multi( param.num_pbp_masses[k], param.npbp_reps[k],
+			&param.qic_pbp[i0], &param.ksp_pbp[i0], fn_links);
 #endif
-      
-#ifdef D_CHEM_POT
-      Deriv_O6_multi( param.num_pbp_masses[k], param.npbp_reps[k],
-		      &param.qic_pbp[i0], &param.ksp_pbp[i0], fn_links);
 #endif
+
       
       /* Unapply twisted boundary conditions on the fermion links and
 	 restore conventional KS phases and antiperiodic BC, if
@@ -223,7 +224,7 @@ int main(int argc, char *argv[])
 
     Nvecs_curr = param.eigcgp.Nvecs_curr;
 
-    fn = get_fm_links(fn_links);
+    fn = get_fm_links(fn_links)[0];
     resid = (double *)malloc(Nvecs_curr*sizeof(double));
 
     if(param.ks_eigen_startflag == FRESH)
