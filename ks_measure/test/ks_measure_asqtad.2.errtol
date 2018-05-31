@@ -19,6 +19,8 @@ FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
 TR_MM_INV: mass 2e-05 2e-05 ( 0 of 0 )
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0 2
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0 2
  OK converged final_rsq= 7.7e-19 (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
  OK converged final_rsq= XXX (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
 TR_MM_INV: mass 2e-05 2e-05 ( 0 of 0 )
@@ -27,4 +29,4 @@ TR_MM_INV: mass 2e-05 2e-05 ( 0 of 0 )
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
 Time to calculate observables 6
-RUNNING COMPLETED
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0

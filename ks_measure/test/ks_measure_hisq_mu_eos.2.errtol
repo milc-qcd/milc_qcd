@@ -460,6 +460,8 @@ d3_trMi_dmu3: mass 2e-05 R: 2e-05 Im: 2e-05 ( 0 of 0 )
 d4_trMi_dmu4: mass 2e-05 R: 0.0002 Im: 4e-05 ( 0 of 0 )
 d5_trMi_dmu5: mass 2e-05 R: 0.0002 Im: 2e-05 ( 0 of 0 )
 d6_trMi_dmu6: mass 2e-05 R: 0.03 Im: 0.002 ( 0 of 0 )
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 XXXX converged final_rsq= 2e-05 7e-12 0) rel = 2e-05 1e-10 2e-05 restarts = 0 2 0 5e+01
 XXXX converged final_rsq= 2e-05 XXX 0) rel = 2e-05 4e-12 2e-05 restarts = 0 2 0 4e+01
 PB_DMDEPS_P: mass 2e-05 2e-05 2e-05 ( 0 of 0 )
@@ -700,4 +702,5 @@ d3_trdMdeMi_dmu3: mass 2e-05 R: 2e-05 Im: 2e-05 ( 0 of 0 )
 d4_trdMdeMi_dmu4: mass 2e-05 R: 6e-05 Im: 2e-05 ( 0 of 0 )
 d5_trdMdeMi_dmu5: mass 2e-05 R: 2e-05 Im: 7e-05 ( 0 of 0 )
 d6_trdMdeMi_dmu6: mass 2e-05 R: 0.002 Im: 0.0004 ( 0 of 0 )
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 RUNNING COMPLETED

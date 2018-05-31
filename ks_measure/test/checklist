@@ -10,4 +10,4 @@ exec ks_measure_hisq_susc     2      -         -          PBP:         RUNNING
 exec ks_measure_hisq_eos      2      -         -          PB_DMDEPS_P: RUNNING
 exec ks_measure_hisq_mu_eos   2      -         -          PB_DMDEPS_P: RUNNING
 exec ks_measure_eigcg_hisq    2	     -	       -	  PBP:	       RUNNING	PBP:	       RUNNING
-exec ks_measure_hisq  	      2	     -	       eigs	  PBP:	       RUNNING	PBP:	       RUNNING
+exec ks_measure_hisq  	      2	     -	       eig	  PBP:	       RUNNING	PBP:	       RUNNING

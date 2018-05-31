@@ -74,6 +74,7 @@ PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Checking eigensolutions
 eigVal[0] = 2e-05 ( resid = 2e-05 , ||eigVec[0]|-1| = 2e-05 )
 eigVal[1] = 2e-05 ( resid = 2e-05 , ||eigVec[1]|-1| = 2e-05 )
@@ -354,6 +355,7 @@ PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Checking eigensolutions
 eigVal[0] = 2e-05 ( resid = 2e-05 , ||eigVec[0]|-1| = 2e-05 )
 eigVal[1] = 2e-05 ( resid = 2e-05 , ||eigVec[1]|-1| = 2e-05 )

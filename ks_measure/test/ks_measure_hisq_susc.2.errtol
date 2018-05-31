@@ -12,6 +12,8 @@ PB_D2MDMU2_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
  OK converged final_rsq= 5.5e-19 (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
  OK converged final_rsq= 3.1e-19 (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
 TR_MidM_MidM: mass 2e-05 2e-05 ( 0 of 0 )
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
  OK converged final_rsq= 8e-12 (cf 0) rel = 1e-10 (cf 2e-10 restarts = 2 iters= 5e+01
  OK converged final_rsq= 1e-13 (cf 0) rel = 1e-10 (cf 2e-10 restarts = 2 iters= 4e+01
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
@@ -21,4 +23,5 @@ PB_D2MDMU2_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
  OK converged final_rsq= 9e-11 (cf 0) rel = 2e-10 (cf 2e-10 restarts = 2 iters= 5e+01
  OK converged final_rsq= 2e-13 (cf 0) rel = 2e-10 (cf 2e-10 restarts = 2 iters= 4e+01
 TR_MidM_MidM: mass 2e-05 2e-05 ( 0 of 0 )
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 RUNNING COMPLETED

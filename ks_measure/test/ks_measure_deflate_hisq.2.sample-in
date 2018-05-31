@@ -17,6 +17,8 @@ u0 1.0
 forget
 staple_weight 0
 ape_iter 0
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
 
 # Number of eigenvalues to compute (storage required for all eigenvectors)
 max_number_of_eigenpairs 10
