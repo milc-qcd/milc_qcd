@@ -1,6 +1,5 @@
 ACCEPT: delta S = 0.02
 PLAQ: 4e-05 4e-05
-P_LOOP: 2e-05 2e-05
 G_LOOP: 0 0 0 4e-05 ( 0 0 0 0 )
 G_LOOP: 0 0 0 4e-05 ( 0 0 0 0 )
 G_LOOP: 0 0 0 4e-05 ( 0 0 0 0 )
@@ -36,12 +35,7 @@ G_LOOP: 0 0 0 2e-05 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-05 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-05 ( 0 0 0 0 0 0 )
 GACTION: 0.0001
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
-RUNNING COMPLETED

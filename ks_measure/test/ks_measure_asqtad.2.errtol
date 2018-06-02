@@ -1,32 +1,14 @@
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
- OK converged final_rsq= 8.4e-19 (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
- OK converged final_rsq= 5.3e-19 (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
 TR_MM_INV: mass 2e-05 2e-05 ( 0 of 0 )
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
- OK converged final_rsq= 6.9e-19 (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
- OK converged final_rsq= 8.8e-19 (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
-TR_MM_INV: mass 2e-05 2e-05 ( 0 of 0 )
- OK converged final_rsq= 9.7e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 2 iters= 2
- OK converged final_rsq= 9.7e-19 (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
- OK converged final_rsq= 7.8e-19 (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
- OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 2 iters= 2
-PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
-FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
- OK converged final_rsq= 9.6e-19 (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
- OK converged final_rsq= 6.4e-19 (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
 TR_MM_INV: mass 2e-05 2e-05 ( 0 of 0 )
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
-Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0 2
-Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0 2
- OK converged final_rsq= 7.7e-19 (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
- OK converged final_rsq= XXX (cf 1e-18) rel = XXX (cf 0) restarts = 2 iters= 2
 TR_MM_INV: mass 2e-05 2e-05 ( 0 of 0 )
- OK converged final_rsq= 3e-11 (cf 0) rel = 1e-10 (cf 2e-10 restarts = 2 iters= 7e+01
- OK converged final_rsq= 1e-13 (cf 0) rel = 1e-10 (cf 2e-10 restarts = 2 iters= 6e+01
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
-Time to calculate observables 6
-Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+TR_MM_INV: mass 2e-05 2e-05 ( 0 of 0 )
+PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
+FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
