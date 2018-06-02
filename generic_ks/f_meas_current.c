@@ -114,8 +114,32 @@ average_vector_current_and_sum(int nwrite, Real *j_mu, Real *jadd_mu){
 }
 
 /*Write current record for the accumulated average over random sources */
+static void
+write_tslice_values(char *tag, int jrand, int nwrite, Real mass, Real *j_mu){
+  node0_printf("JTMU%s source %d mass %g\n", tag, jrand, mass);
+  double *jtmu = (double *)malloc(sizeof(double)*4*param.nt);
+  for(int tmu = 0; tmu < 4*param.nt; tmu++)
+    jtmu[tmu] = 0.;
+
+  int i;
+  FORALLFIELDSITES(i){
+    for(int mu = 0; mu < 4; mu++)
+      jtmu[4*lattice[i].t + mu] += j_mu[4*i + mu];
+  }
+  for(int t = 0; t < param.nt; t++){
+    node0_printf("JTMU%s %d ", tag, t);
+    for(int mu = 0; mu < 4; mu++){
+      g_doublesum(&jtmu[4*t+mu]);
+      node0_printf("%g ", jtmu[4*t+mu]);
+    }
+    node0_printf("\n");
+  }
+}
+
+/*Write current record for the accumulated average over random sources */
 static int
-write_vector_current_record(QIO_Writer *outfile, int jrand, int nwrite, Real mass, Real *j_mu){
+write_vector_current_record(QIO_Writer *outfile, char *filename, int jrand,
+			    int nwrite, Real mass, Real *j_mu){
   int status = QIO_SUCCESS;
   QIO_String *recxml = QIO_string_create();
   char recinfo[NRECINFO];
@@ -129,7 +153,7 @@ write_vector_current_record(QIO_Writer *outfile, int jrand, int nwrite, Real mas
   QIO_string_destroy(recxml);
 
   node0_printf("Wrote current density for source %d and mass %g to file %s\n",
-	       jrand, mass, outfile);
+	       jrand, mass, filename);
   
   return status;
 }
@@ -451,12 +475,15 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
 #endif
       node0_printf("For rand %d and mass %g\n", jrand, mass);
       average_vector_current(nwrite, j_mu[j]);
-      int status = write_vector_current_record(outfile[j], jrand, nwrite, ksp[j].mass, j_mu[j]);
-      clear_r_array_field(j_mu[j], NMU);
+      int status = write_vector_current_record(outfile[j], filenames[j], jrand,
+					       nwrite, ksp[j].mass, j_mu[j]);
       wtime += dclock();
       if(status != QIO_SUCCESS){
 	node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
+	terminate(1);
       } 
+      write_tslice_values("DIFF", jrand, nwrite, ksp[j].mass, j_mu[j]);
+      clear_r_array_field(j_mu[j], NMU);
     } /* j */
   } /* jrand */
 
@@ -675,13 +702,15 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 	average_vector_current_and_sum(nwrite, j_mu[j], jlow_mu[j]);
       else
 	average_vector_current(nwrite, j_mu[j]);
-      int status = write_vector_current_record(outfile[j], jrand, nwrite, mass, j_mu[j]);
-      if(Nvecs > 0)
-	clear_r_array_field(j_mu[j], NMU);
+      int status = write_vector_current_record(outfile[j], filenames[j], jrand,
+					       nwrite, ksp[j].mass, j_mu[j]);
       wtime += dclock();
       if(status != QIO_SUCCESS){
 	node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
-      } 
+	terminate(1);
+      }
+      write_tslice_values("", jrand, nwrite, ksp[j].mass, j_mu[j]);
+      clear_r_array_field(j_mu[j], NMU);
     } /* j */
   } /* jrand */
   
@@ -860,12 +889,15 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
 #endif
 	node0_printf("For rand %d and mass %g\n", jrand, mass);
 	average_vector_current(nwrite, j_mu[j]);
-	int status = write_vector_current_record(outfile[j], jrand, nwrite, mass, j_mu[j]);
-	clear_r_array_field(j_mu[j], NMU);
+	int status = write_vector_current_record(outfile[j], filenames[j], jrand,
+						 nwrite, ksp[j].mass, j_mu[j]);
 	wtime += dclock();
 	if(status != QIO_SUCCESS){
 	  node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
+	  terminate(1);
 	}
+	write_tslice_values("DIFF", jrand, nwrite, ksp[j].mass, j_mu[j]);
+	clear_r_array_field(j_mu[j], NMU);
       } /* j */
     } /* if write */
   } /* jrand */
@@ -1010,10 +1042,13 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
   if(nrand == 0){
     for(j = 0; j < n_masses; j++){
       average_vector_current_and_sum(1, j_mu[j], jlow_mu[j]);
-      int status = write_vector_current_record(outfile[j], 0, 1, mass[j], j_mu[j]);
+      int status = write_vector_current_record(outfile[j], filenames[j], 0,
+					       1, ksp[j].mass, j_mu[j]);
       if(status != QIO_SUCCESS){
 	node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
+	terminate(1);
       } 
+      write_tslice_values("", jrand, nwrite, ksp[j].mass, j_mu[j]);
       clear_r_array_field(j_mu[j], NMU);
     }
   }
@@ -1108,7 +1143,8 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 	  average_vector_current_and_sum(nwrite, j_mu[j], jlow_mu[j]);
 	else
 	  average_vector_current(nwrite, j_mu[j]);
-	int status = write_vector_current_record(outfile[j], jrand, nwrite, mass[j], j_mu[j]);
+	int status = write_vector_current_record(outfile[j], filenames[j], jrand,
+						 nwrite, mass[j], j_mu[j]);
 	if(Nvecs > 0)
 	  clear_r_array_field(j_mu[j], NMU);
 	wtime += dclock();
