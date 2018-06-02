@@ -16,11 +16,13 @@
 */
 
 #include "generic_ks_includes.h"
-#include "../include/io_ks_eigen.h"
-#ifdef EIGEN_QIO
-#include "../include/io_scidac_ks.h"
-#endif
 #include <string.h>
+
+/* Non-SciDAC file formats are deprecated. These non-QIO procedures are kept temporarily */
+
+#ifndef HAVE_QIO
+
+#include "../include/io_ks_eigen.h"
 
 /* Restore the ODD (EVEN) part of KS eigenvectors from the EVEN (ODD) part */
 void restore_eigVec(int Nvecs, double *eigVal, su3_vector **eigVec, int parity,
@@ -142,10 +144,13 @@ void w_close_ks_eigen(int flag, ks_eigen_file *kseigf){
   }
 } /* w_close_ks_eigen */
 
-#ifdef EIGEN_QIO
+#endif
+
+#ifdef HAVE_QIO
+
 /* QIO version */
 
-#include <qio.h>
+#include "../include/io_scidac_ks.h"
 
 /*---------------------------------------------------------------*/
 
@@ -273,10 +278,8 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
  
 #endif
  
-#ifdef EIGEN_QIO
+#ifdef HAVE_QIO
 /* QIO version */
- 
-#include <qio.h>
  
 /*---------------------------------------------------------------*/
  

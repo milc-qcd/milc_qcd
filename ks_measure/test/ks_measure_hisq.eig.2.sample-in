@@ -20,19 +20,27 @@ ape_iter 0
 coordinate_origin 0 0 0 0
 time_bc antiperiodic
 
-max_number_of_eigenpairs 500
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+max_number_of_eigenpairs 10
 
 # eigenvector I/O
 fresh_ks_eigen
-save_serial_ks_eigen ./ks_eigen.out
+save_serial_ks_eigen ./eigen_serial.out
 
-# EigCG
+# Dirac eigenpair calculation
 
-# restart for Lanczos 
-restart_lanczos 50
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
 
-# Number of eigenvalues to compute
-Number_of_eigenvals 10
+# Outer loop iterations
+Kalkreuter_iters 20
+
+# Eigenvalue tolerance
+eigenval_tolerance 1.0e-6
+
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease .3
 
 # Chiral condensate and related measurements
 
@@ -40,7 +48,7 @@ number_of_sets 1
 
 # Parameters common to all members of set 0
 
-npbp_reps 10
+npbp_reps 1
 max_cg_iterations 300
 max_cg_restarts 5
 prec_pbp 2
@@ -48,14 +56,16 @@ prec_pbp 2
 number_of_pbp_masses 2
 mass 0.01
 naik_term_epsilon 0
-error_for_propagator 1e-9
+error_for_propagator 1e-8
 rel_error_for_propagator 0
 mass 0.1
 naik_term_epsilon 0
-error_for_propagator 1e-9
+error_for_propagator 1e-8
 rel_error_for_propagator 0
 
 ######################################################################
+
+# Gauge field description
 
 continue
 u0 1.0
@@ -65,13 +75,13 @@ ape_iter 0
 coordinate_origin 0 0 0 0
 time_bc antiperiodic
 
-# EigCG
+# Dirac eigenpair calculation
 
-# Max number of eigenpairs
-max_number_of_eigenpairs 100
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+max_number_of_eigenpairs 5
 
 # eigenvector I/O
-reload_serial_ks_eigen ./ks_eigen.out
+reload_serial_ks_eigen ./eigen_serial.out
 forget_ks_eigen
 
 # Chiral condensate and related measurements
@@ -80,7 +90,7 @@ number_of_sets 1
 
 # Parameters common to all members of set 0
 
-npbp_reps 10
+npbp_reps 1
 max_cg_iterations 300
 max_cg_restarts 5
 prec_pbp 2
@@ -88,9 +98,9 @@ prec_pbp 2
 number_of_pbp_masses 2
 mass 0.01
 naik_term_epsilon 0
-error_for_propagator 1e-9
+error_for_propagator 1e-8
 rel_error_for_propagator 0
 mass 0.1
 naik_term_epsilon 0
-error_for_propagator 1e-9
+error_for_propagator 1e-8
 rel_error_for_propagator 0

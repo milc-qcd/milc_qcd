@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
   int Nvecs_curr;
   double *resid = NULL;
-  imp_ferm_links_t **fn;
+  imp_ferm_links_t *fn;
   
   initialize_machine(&argc,&argv);
 
@@ -81,7 +81,17 @@ int main(int argc, char *argv[])
       STARTTIME;
       
       param.eigen_param.parity = EVEN;  /* EVEN is required */
-      fn = get_fm_links(fn_links);
+      fn = get_fm_links(fn_links)[0];
+
+      /* Move KS phases and apply time boundary condition, based on the
+	 coordinate origin and time_bc */
+      Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+      /* Set values in the structure fn */
+      set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
+      /* Apply the operation */
+      boundary_twist_fn(fn, ON);
+      
+
       Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
       
       /* compute eigenpairs if requested */
@@ -89,25 +99,24 @@ int main(int argc, char *argv[])
       if(param.ks_eigen_startflag == FRESH){
 	total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param,
 				    param.ks_eigen_startflag == FRESH);
-	construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn[0]);
+	construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn);
 	node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
-
-#if 0 /* If needed for debugging */
-      /* (The ks_eigensolve routine uses the random number generator to
-	 initialize the eigenvector search, so, if you want to compare
-	 first results with and without deflation, you need to
-	 re-initialize here.) */
-	initialize_site_prn_from_seed(iseed);
-#endif
       }
-    
+
+      /* Check the eigenvectors */
+
       /* Calculate and print the residues and norms of the eigenvectors */
       resid = (double *)malloc(Nvecs_curr*sizeof(double));
       node0_printf("Even site residuals\n");
-      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
-      construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn[0]);
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
+      construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn);
       node0_printf("Odd site residuals\n");
-      check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn[0] );
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
+      
+      /* Unapply twisted boundary conditions on the fermion links and
+	 restore conventional KS phases and antiperiodic BC, if
+	 changed. */
+      boundary_twist_fn(fn, OFF);
       
       /* print eigenvalues of iDslash */
       node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
@@ -132,89 +141,74 @@ int main(int argc, char *argv[])
     STARTTIME;
     
     for(k = 0; k < param.num_set; k++){
+
+#if 0 /* If needed for debugging */
+      /* (The Kalkreuter routine uses the random number generator to                                    initialize the eigenvector search, so, if you want to compare                                  first results with and without deflation, you need to                                          re-initialize here.) */
+      initialize_site_prn_from_seed(iseed);
+#endif
+
       int num_pbp_masses = param.num_pbp_masses[k];
       int i0 = param.begin_pbp_masses[k];
       
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i0].prec);
+      fn = get_fm_links(fn_links)[0];
       
-      if(num_pbp_masses == 1){
+      /* Move KS phases and apply time boundary condition, based on the
+	 coordinate origin and time_bc */
+      Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+      /* Set values in the structure fn */
+      set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
+      /* Apply the operation */
+      boundary_twist_fn(fn, ON);
+      
 #ifdef CURRENT_DISC
-	if(param.truncate_diff[k])
-	  f_meas_current_diff( param.npbp_reps[k], param.nwrite[k], param.thinning[k],
-			       &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
-			       param.ksp_pbp[i0].mass, 
-			       param.ksp_pbp[i0].naik_term_epsilon_index, 
-			       fn_links, param.pbp_filenames[i0] );
+      if(param.truncate_diff[k])
+	f_meas_current_diff( num_pbp_masses, param.npbp_reps[k],
+			     param.nwrite[k], param.thinning[k],
+			     &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+			     &param.ksp_pbp[i0],
+			     fn_links, &param.pbp_filenames[i0] );
 	else
-	  f_meas_current( param.npbp_reps[k], param.nwrite[k], param.thinning[k],
-			  &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
-			  param.ksp_pbp[i0].naik_term_epsilon_index, 
-			  fn_links, param.pbp_filenames[i0] );
-	
+	  f_meas_current( num_pbp_masses, param.npbp_reps[k],
+			  param.nwrite[k], param.thinning[k],
+			  &param.qic_pbp[i0], &param.ksp_pbp[i0],
+			  fn_links, &param.pbp_filenames[i0] );
 #else
-	f_meas_imp_field( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
-			  param.ksp_pbp[i0].naik_term_epsilon_index, fn_links);
-#endif
-	
+      if(num_pbp_masses == 1)
+	f_meas_imp_field( param.npbp_reps[k], &param.qic_pbp[i0],
+			  param.ksp_pbp[i0].mass, 
+			  param.ksp_pbp[i0].naik_term_epsilon_index,
+			  fn_links);
+      else
+	f_meas_imp_multi( param.num_pbp_masses[k], param.npbp_reps[k],
+			  &param.qic_pbp[i0], &param.ksp_pbp[i0], fn_links);
+      
 #ifdef D_CHEM_POT
-	Deriv_O6_field(param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass,
+      if(num_pbp_masses == 1)
+	Deriv_O6_field(param.npbp_reps[k], &param.qic_pbp[i0],
+		       param.ksp_pbp[i0].mass,
 		       fn_links, param.ksp_pbp[i0].naik_term_epsilon_index, 
 		       param.ksp_pbp[i0].naik_term_epsilon);
+      else
+	Deriv_O6_multi( param.num_pbp_masses[k], param.npbp_reps[k],
+			&param.qic_pbp[i0], &param.ksp_pbp[i0], fn_links);
 #endif
-      } else {
-
-#ifdef CURRENT_DISC
-	
-	// initialize_site_prn_from_seed(iseed); /* Use the same random number sequence for all sets */
-
-	if(param.eigen_param.Nvecs > 0){
-
-	  if(param.truncate_diff[k])
-	    /* current density difference with deflation */
-	    f_meas_current_multi_diff_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
-					   param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
-					   eigVec, eigVal, Nvecs_curr,
-					   &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
-	  else
-	    /* current density with deflation */
-	    f_meas_current_multi_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
-				      param.thinning[k], &param.qic_pbp[i0], 
-				      eigVec, eigVal, Nvecs_curr,
-				      &param.ksp_pbp[i0], 
-				      fn_links, &param.pbp_filenames[i0] );
-	
-	} else {
-	  if(param.truncate_diff[k])
-	    /* current density difference -- no deflation */
-	    f_meas_current_multi_diff( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
-				       param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
-				       &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
-	  else
-	    /* current density -- no deflation */
-	    f_meas_current_multi( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
-				  param.thinning[k], &param.qic_pbp[i0], &param.ksp_pbp[i0], 
-				  fn_links, &param.pbp_filenames[i0] );
-	}
-#else
-	/* standard f_meas with multimass */
-
-	f_meas_imp_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
-			  &param.ksp_pbp[i0], fn_links);
 #endif
 
-#ifdef D_CHEM_POT
-	Deriv_O6_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0],
-			&param.ksp_pbp[i0], fn_links);
-#endif
-      }
+      
+      /* Unapply twisted boundary conditions on the fermion links and
+	 restore conventional KS phases and antiperiodic BC, if
+	 changed. */
+      boundary_twist_fn(fn, OFF);
+      
     } /* k num_set */
  
 #ifdef HISQ_SVD_COUNTER
     node0_printf("hisq_svd_counter = %d\n",hisq_svd_counter);
 #endif
-
+    
     ENDTIME("calculate observables");
-
+    
     /* save lattice if requested */
     if( param.saveflag != FORGET ){
       STARTTIME;
@@ -230,13 +224,13 @@ int main(int argc, char *argv[])
 
     Nvecs_curr = param.eigcgp.Nvecs_curr;
 
-    fn = get_fm_links(fn_links);
+    fn = get_fm_links(fn_links)[0];
     resid = (double *)malloc(Nvecs_curr*sizeof(double));
 
     if(param.ks_eigen_startflag == FRESH)
       calc_eigenpairs(eigVal, eigVec, &param.eigcgp, EVEN);
 
-    check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
+    check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
 
     if(param.eigcgp.H != NULL) free(param.eigcgp.H);
 
@@ -255,7 +249,7 @@ int main(int argc, char *argv[])
       for(int i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
       free(eigVal); free(eigVec); free(resid);
     }
-
+    
     node0_printf("RUNNING COMPLETED\n");
     endtime = dclock();
 

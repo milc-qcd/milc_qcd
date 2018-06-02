@@ -229,6 +229,11 @@ initial_set(void)
 
     IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
 
+    /* Use antiperiodic boundary conditions */
+    for(int k = 0; k < 4; k++)
+      param.coord_origin[k] = 0;
+    param.time_bc = 0;
+
     if(status>0) param.stopflag=1; else param.stopflag=0;
   } /* end if(mynode()==0) */
   

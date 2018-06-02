@@ -180,7 +180,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 
   /* Initiallize evecs from the input eigenvectors
    * (convert to double precision) */
-  for(j=0;j<Nvecs;j++) {
+  for(j=0;j<Nvecs_in;j++) {
     evals[j] = eigVal[j];
     xx = (double*)&(evecs[0].real)+2*j*maxn;
     FORSOMEPARITY(i,s,parity){
@@ -189,6 +189,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
     }
   }
 
+#if 0
   /* Initiallize all the non-input eigenvectors to a random vector.
      convert to double precision */
 
@@ -202,6 +203,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
     }
   }
   destroy_v_field(gr0);
+#endif
 
   /*set the parameters of the EV finder*/
   primme_initialize(&primme);
@@ -229,7 +231,6 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 #endif
   primme.eps=eigen_param->tol;
   primme.numEvals=maxnev;
-  //primme.initSize=Nvecs; /* # initial guess vectors stored in evecs */
 #ifdef PRIMME_PRECOND
   primme.applyPreconditioner = ks_precond_mxv;
 #endif

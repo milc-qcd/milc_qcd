@@ -332,7 +332,6 @@ typedef struct {
 } ks_eigen_param;
 #endif
 
-#define DEFLATION 1
 #define EIGCG 2
 
 int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance, 

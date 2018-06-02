@@ -190,6 +190,7 @@ eigVal[29] = 2.347222e+00 ( resid = 7.324526e-14 , |eigVec[29]|-1 = -2.220446e-1
 eigVal[30] = 2.421365e+00 ( resid = 8.588734e-14 , |eigVec[30]|-1 = 2.220446e-16 )
 eigVal[31] = 2.421365e+00 ( resid = 7.147440e-14 , |eigVec[31]|-1 = 0.000000e+00 )
 End of eigensolutions
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 The above were eigenvalues of -Dslash^2 in MILC normalization
 Here we also list eigenvalues of iDslash in continuum normalization
 eigenval(0):  0.0914359
@@ -224,11 +225,13 @@ eigenval(28):   0.766032
 eigenval(29):   0.766032
 eigenval(30):   0.778037
 eigenval(31):   0.778037
+RUNNING COMPLETED
+Time = 1.962867e+00 seconds
+total Rayleigh iters = 1
 
 
 ask_starting_lattice(0): EOF on input.
-RUNNING COMPLETED
-Time = 1.781821e+00 seconds
-total Rayleigh iters = 1
-exit: Wed Apr 18 12:01:22 2018
+exit: Thu May 31 17:19:10 2018
+
+
 

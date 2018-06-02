@@ -13,7 +13,7 @@ exec ks_spectrum_asqtad   1      -         spectrum2  PBP: FACTION: PBP: FACTION
      extra-output      ks_spectrum_asqtad.spectrum2.1.corrfile_t0  --- EOF
 exec ks_spectrum_asqtad   1      -         periodic  PLAQ: NERSC
      extra-output      ks_spectrum_asqtad.periodic.1.corrfile_t0  --- EOF
-exec ks_spectrum_asqtad_mu_eos   1      -         -  PB_DMDU_P RUNNING
+exec ks_spectrum_asqtad_mu_eos   1      -         -  PB_DMDU_P RUNNING 'SELECT=PB|FACTION|TR|trM|trlnM|trMi|trdM'
 
 exec ks_spectrum_asqtad   2      -         fpi        PLAQ: NERSC
      extra-output      ks_spectrum_asqtad.fpi.2.corrfile_t0  --- EOF
@@ -42,7 +42,7 @@ exec ks_spectrum_hisq     1      -         nl         PLAQ: NERSC
      extra-output      ks_spectrum_hisq.nl.1.corrfile_t0  --- EOF
 exec ks_spectrum_hisq     1      -         nlpi2      PLAQ: NERSC     
      extra-output      ks_spectrum_hisq.nlpi2.1.corrfile_t0  --- EOF
-exec ks_spectrum_hisq     1      -         spectrum2  PLAQ: NERSC     
+exec ks_spectrum_hisq     1      -         spectrum2    PBP: FACTION: PBP: FACTION: 
      extra-output      ks_spectrum_hisq.spectrum2.1.corrfile_t0  --- EOF
 exec ks_spectrum_hisq     1      -         periodic  PLAQ: NERSC     
      extra-output      ks_spectrum_hisq.periodic.1.corrfile_t0  --- EOF
@@ -56,7 +56,7 @@ exec ks_spectrum_hisq     2      -         nl         PLAQ: NERSC
      extra-output      ks_spectrum_hisq.nl.2.corrfile_t0  --- EOF
 exec ks_spectrum_hisq     2      -         nlpi2      PLAQ: NERSC     
      extra-output      ks_spectrum_hisq.nlpi2.2.corrfile_t0  --- EOF
-exec ks_spectrum_hisq     2      -         spectrum2  PLAQ: NERSC     
+exec ks_spectrum_hisq     2      -         spectrum2  PBP: FACTION: PBP: FACTION: 
      extra-output      ks_spectrum_hisq.spectrum2.2.corrfile_t0  --- EOF
 exec ks_spectrum_hisq     2      -         periodic  PLAQ: NERSC     
      extra-output      ks_spectrum_hisq.periodic.2.corrfile_t0  --- EOF

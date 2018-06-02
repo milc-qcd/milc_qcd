@@ -3,25 +3,16 @@ PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
 PB_DMDMU_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 PB_D2MDMU2_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
-XXXX converged final_rsq= 2e-05 (cf 2e-05 rel = 0 (cf 0) restarts = 0 iters= 0
-XXXX converged final_rsq= 2e-05 (cf 2e-05 rel = 0 (cf 0) restarts = 0 iters= 0
 TR_MidM_MidM: mass 2e-05 2e-05 ( 0 of 0 )
 PB_DMDEPS_P: mass 2e-05 2e-05 2e-05 ( 0 of 0 )
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
 PB_DMDMU_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 PB_D2MDMU2_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
-XXXX converged final_rsq= 2e-05 (cf 2e-05 rel = 0 (cf 0) restarts = 0 iters= 0
-XXXX converged final_rsq= 2e-05 (cf 2e-05 rel = 0 (cf 0) restarts = 0 iters= 0
 TR_MidM_MidM: mass 2e-05 2e-05 ( 0 of 0 )
-XXXX converged final_rsq= 2e-05 (cf 0) rel = 2e-05 (cf 2e-05 restarts = 0 iters= 0
-XXXX converged final_rsq= 2e-05 (cf 0) rel = 2e-05 (cf 2e-05 restarts = 0 iters= 0
 PB_DMDEPS_P: mass 2e-05 2e-05 2e-05 ( 0 of 0 )
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
 PB_DMDMU_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 PB_D2MDMU2_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
-XXXX converged final_rsq= 2e-05 (cf 0) rel = 2e-05 (cf 2e-05 restarts = 0 iters= 0
-XXXX converged final_rsq= 2e-05 (cf 0) rel = 2e-05 (cf 2e-05 restarts = 0 iters= 0
 TR_MidM_MidM: mass 2e-05 2e-05 ( 0 of 0 )
-RUNNING COMPLETED

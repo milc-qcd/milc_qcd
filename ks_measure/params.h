@@ -37,6 +37,8 @@ typedef struct {
   /*  REPEATING BLOCK */
   int startflag;	/* what to do for beginning lattice */
   Real u0;
+  int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
+  int time_bc;          /* 0 for antiperiodic, 1 for periodic */
   Real staple_weight;
   int ape_iter;
   int saveflag;	/* what to do for saving lattice */
