@@ -11,5 +11,5 @@ exec ks_measure_hisq_eos      2      -         -          PB_DMDEPS_P: RUNNING '
 exec ks_measure_hisq_mu_eos   2      -         -          PB_DMDEPS_P: RUNNING 'SELECT=PB|FACTION|TR|trM|trlnM|trMi|trdM'
 exec ks_measure_eigcg_hisq    2	     -	       -	  PBP:	       RUNNING	PBP:	       RUNNING  'SELECT=PBP|FACTION|eigVal'
 exec ks_measure_hisq  	      2	     -	       eig	  PBP:	       RUNNING	PBP:	       RUNNING 'SELECT=PBP|FACTION|eigVal'
-exec ks_measure_current_hisq  2      -         -          JTMU         RUNNING  'SELECT=JTMU'
+exec ks_measure_current_hisq  2      "WANTARPACK=false","WANTPRIMME=true"        -          JTMU         RUNNING  'SELECT=JTMU'
 
