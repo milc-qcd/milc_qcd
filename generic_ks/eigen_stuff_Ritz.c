@@ -517,13 +517,12 @@ int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal,
      converged.  Initiallize the remaining ones to a random vector */
   for(j=0;j<Nvecs;j++)
     grad[j] = 1.0e+10 ;
-    
+  
   for(j=Nvecs_in;j<Nvecs;j++) {
-      grsource_plain_field( eigVec[j], parity);
-      eigVal[j] = 1.0e+16 ;
-    }
+    grsource_plain_field( eigVec[j], parity);
+    eigVal[j] = 1.0e+16 ;
   }
-
+  
 #ifdef EIGTIME
   dtimec = -dclock();
 #endif
