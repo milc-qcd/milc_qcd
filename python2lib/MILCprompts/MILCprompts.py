@@ -1,4 +1,4 @@
-# Procesures for generating MILC prompts
+# Procedures for generating MILC prompts
 # Mostly by J. Simone.  Some additions by C. DeTar
 
 import sys
@@ -395,6 +395,43 @@ class FatCovariantGaussian:
         return { 'name': wname, 'depends': depends,
                  'requires': requires, 'produces': produces }
     pass
+
+class Eigen:
+    """Read eigenpairs from file."""
+    _Template = """
+    #== ${_classType} ==
+    max_number_of_eigenpairs ${Nvecs}
+    #if $Nvecs > 0:
+    #echo ' '.join($load)#
+    #echo ' '.join($save)#
+    #end if"""
+    def __init__(self,load, Nvecs, save):
+        self._classType = self.__class__.__name__
+        self._objectID = self._classType+'_'+base36(id(self))
+        self.Nvecs = Nvecs
+        self.load = load
+        self.save =save
+        self._template = Template(source=textwrap.dedent(self._Template),searchList=vars(self))
+        return
+    def generate(self,ostream):
+        print>>ostream, self._template
+        return
+    def dataflow(self):
+        wname = self._objectID
+        depends = list()
+        requires = list()
+        produces = list()
+        if len(self.load) > 1:
+            requires.append(self.load[1])
+            pass
+        if len(self.save) > 1:
+            produces.append(self.save[1])
+            pass
+        depends.append(self.source._objectID)
+        return { 'name': wname, 'depends': depends,
+                 'requires': requires, 'produces': produces }
+    pass
+    
 
 class SolveKS:
     """su3_clov KS propagator solve."""
@@ -1124,6 +1161,7 @@ class ks_spectrum:
         - init gauge field
         -  gauge fix
         -  link smear
+        -  eigenpairs??
         -  pbp masses??
         -  define sources
         -  define KS propsets
@@ -1148,6 +1186,10 @@ class ks_spectrum:
         self.cycnt += 1
         self.cycle[self.cycnt].gauge = uspec
         return uspec
+    def newEigen(self,eigspec):
+        """Add an eigensolve specification."""
+        self.cycle[self.cycnt].eigen = eigspec
+        return eigspec
     def addBaseSource(self,src):
         """Add a base source specification."""
         self.cycle[self.cycnt].bsource.append(src)
@@ -1215,6 +1257,7 @@ class ks_spectrum:
 class _Cycle_ks_spectrum:
     def __init__(self):
         self.gauge = None
+        self.eigen = None
         self.bsource = list()
         self.msource = list()
         self.nextpropidx = 0
@@ -1225,7 +1268,7 @@ class _Cycle_ks_spectrum:
         return
     def generate(self,ostream):
         self.gauge.generate(ostream)
-        print>>ostream
+        self.eigen.generate(ostream)
         print>>ostream, '#== PBP Masses =='
         print>>ostream
         print>>ostream, 'number_of_pbp_masses 0'
