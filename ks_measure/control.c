@@ -143,7 +143,10 @@ int main(int argc, char *argv[])
     for(k = 0; k < param.num_set; k++){
 
 #if 0 /* If needed for debugging */
-      /* (The Kalkreuter routine uses the random number generator to                                    initialize the eigenvector search, so, if you want to compare                                  first results with and without deflation, you need to                                          re-initialize here.) */
+      /* (The Kalkreuter routine uses the random number generator to
+	 initialize the eigenvector search, so, if you want to compare
+	 results with and without deflation, you need to re-initialize
+	 here.) */
       initialize_site_prn_from_seed(iseed);
 #endif
 
