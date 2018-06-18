@@ -390,7 +390,7 @@ block_current_diff(Real *j_mu[], int nwrite, int thinning, int n_masses,
     imp_ferm_links_t **fn = get_fm_links(fl);
     for(int j = 0; j < n_masses; j++){
       Real mass = ksp[j].mass;
-      imp_ferm_links_t *fn_mass = fn[j];
+      imp_ferm_links_t *fn_mass = fn[ksp[j].naik_term_epsilon_index];
       
       /* First, the sloppy high-mode solution */
       node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", mass);
@@ -519,7 +519,7 @@ exact_current(Real *jlow_mu[], int n_masses, ks_param *ksp, fermion_links_t *fl)
   for(int n = 0; n < Nvecs; n++){
     for(int j = 0; j < n_masses; j++){
       Real mass = ksp[j].mass;
-      imp_ferm_links_t *fn_mass = fn[j];
+      imp_ferm_links_t *fn_mass = fn[ksp[j].naik_term_epsilon_index];
       dslash_fn_field(eigVec[n], gr0, ODD, fn_mass);
       for(int mu = 0; mu < NMU; mu++){
 
@@ -606,7 +606,7 @@ block_current( Real *j_mu[], int nwrite, int n_masses, int thinning,
     imp_ferm_links_t **fn = get_fm_links(fl);
     for(int j = 0; j < n_masses; j++){
       Real mass = ksp[j].mass;
-      imp_ferm_links_t *fn_mass = fn[j];
+      imp_ferm_links_t *fn_mass = fn[ksp[j].naik_term_epsilon_index];
       
       node0_printf("Solving for all EVEN displacements for mass %g\n", mass);
       block_current_stochastic( j_mu[j], mass, nsrc, +1, EVEN, qic + j, fn_mass,
@@ -811,7 +811,7 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
 
 	    for(j = 0; j < n_masses; j++){
 	      Real mass = ksp[j].mass;
-	      imp_ferm_links_t *fn_mass = fn[j];
+	      imp_ferm_links_t *fn_mass = fn[ksp[j].naik_term_epsilon_index];
 
 	      /* First, the sloppy high-mode solution */
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
