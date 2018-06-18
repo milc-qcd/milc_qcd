@@ -337,10 +337,8 @@ static void set_topology(){
       nd = 4;
       geom = nsquares;
       node0_printf("QMP with automatic hyper_prime layout\n");
-#ifdef FIX_NODE_GEOM
-      }
-#endif
     }
+  }
 
   set_qmp_logical_topology(geom, nd);
   
