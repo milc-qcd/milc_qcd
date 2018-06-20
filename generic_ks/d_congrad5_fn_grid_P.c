@@ -209,11 +209,11 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
 #ifdef REMAP
   if(this_node==0) {
     printf("MILC<-->Grid data layout conversion timings\n"
-	   "\t src-spinor   = %e\n"
-	   "\t dest-spinors = %e\n"
-	   "\t soln-spinor  = %e\n"
-	   "\t links        = %e\n"
-	   "\t Grid remap   = %e\n"
+	   "\t src-spinor    = %e\n"
+	   "\t dest-spinors  = %e\n"
+	   "\t soln-spinor   = %e\n"
+	   "\t links         = %e\n"
+	   "\t Grid overhead = %e\n"
 	   "\t ---------------------------\n"
 	   "\t total remap  = %e\n"
 	   , t_sp1, t_sp2, t_l, t_sl, t_gr
@@ -356,7 +356,7 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
   char *prec_label[2] = {"F", "D"};
   if(this_node==0) {
     printf("CONGRAD5: time = %e "
-	   "(Grid %s) masses = 1 rhs = %d iters = %d "
+	   "(Grid %s) masses = 1 iters = %d rhs = %d "
 	   "mflops = %e "
 	   "\n"
 	   , tot_cg_time
@@ -368,11 +368,11 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
 #ifdef REMAP
   if(this_node==0) {
     printf("MILC<-->Grid data layout conversion timings\n"
-	   "\t src-spinor   = %e\n"
-	   "\t dest-spinors = %e\n"
-	   "\t soln-spinor  = %e\n"
-	   "\t links        = %e\n"
-	   "\t Grid remap   = %e\n"
+	   "\t src-spinor    = %e\n"
+	   "\t dest-spinors  = %e\n"
+	   "\t soln-spinor   = %e\n"
+	   "\t links         = %e\n"
+	   "\t Grid overhead = %e\n"
 	   "\t ---------------------------\n"
 	   "\t total remap  = %e\n"
 	   , t_sp1, t_sp2, t_l, t_sl, t_gr
