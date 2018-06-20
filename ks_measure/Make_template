@@ -35,7 +35,8 @@ MY_HEADERS = \
   ks_measure_includes.h \
   quark_action.h
 
-HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} \
+  ${QUDA_HEADERS} ${QPHIX_HEADERS} ${GRID_HEADERS} ${SCIDAC_HEADERS}
 
 # All required object files
 # Basic set from current directory
