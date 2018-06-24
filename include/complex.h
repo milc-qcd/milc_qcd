@@ -55,53 +55,13 @@
 /*    									      */
 /*============================================================================*/
 
-/* On the paragon, under OSF, complex is defined in math.h, but not 
-  quite the way we did it, so redefine it:
-*/
-#include "../include/precision.h"
-
-#ifdef HPUX
-#define complex complexx
-#endif
+#include "../include/milc_datatypes.h"
+#include "../include/precision.h"   /* For "Real" */
 
 /* Rename to prevent conflict with gcc 3.xx standard functions */
 #define cexp  cexp_single
 #define clog  clog_single
 #define csqrt csqrt_single
-
-/* generic precision complex number definition */
-/* specific for float complex */
-typedef struct {   
-  float real;	   
-  float imag; 
-} fcomplex;  
-
-/* specific for double complex */
-typedef struct {
-   double real;
-   double imag;
-} double_complex;
-
-#if (MILC_PRECISION==1)
-#define complex fcomplex
-#else
-#define complex dcomplex
-#endif
-
-/* Alternative name for double complex */
-typedef double_complex dcomplex;
-
-/* define complex as a union to ensure alignment to doubleword boundary */
-/*typedef union {    ** standard complex number declaration for single- **
-  Real f[2];             ** precision complex numbers **
-   double dummy;
-} complex;
-typedef struct {           ** standard complex number declaration for double- **
-   double f[2];		   ** precision complex numbers			      **
-} double_complex; */
-/*#define real f[0] */
-/*#define imag f[1] */
-
 
 /* Generic Precision Function Prototypes for Complex Numbers */
 complex cmplx(  Real x, Real y );

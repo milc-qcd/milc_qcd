@@ -2,10 +2,7 @@
 
 #include "../include/mGrid/mGrid_internal.h"
 #include "../include/mGrid/mGrid.h"
-
-extern "C" {
-#include "generic_ks_includes.h"
-}
+#include "../include/milc_datatypes.h"
 
 #define GRID_5DCG    0
 #define GRID_MRHSCG  1
@@ -13,12 +10,10 @@ extern "C" {
 
 #include "../include/mGrid/mGrid_assert.h"
 #include "../include/mGrid/mGrid_internal.h"
+#include "../include/macros.h"
 
 using namespace Grid;
 using namespace Grid::QCD;
-
-// extern Grid::GridCartesian         *CGrid;
-// extern Grid::GridRedBlackCartesian *RBGrid;
 
 template<typename FT, typename LatticeGaugeField, typename ImprovedStaggeredFermion>
 static void
@@ -146,6 +141,9 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
 	
   ConjugateGradientMultiShift<FermionField> MSCG(inv_arg->max*inv_arg->nrestart, Shifts);
 
+  GRID_ASSERT(inv_arg->parity == GRID_EVENODD || inv_arg->parity == GRID_EVEN || 
+	      inv_arg->parity == GRID_ODD, GRID_FAIL);
+
   switch (inv_arg->parity)
     {
     case GRID_EVENODD:
@@ -211,11 +209,6 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
 		  << "\n";
 	break;
       }
-    default:
-      {
-	node0_printf("asqtadInvertMulti: Unrecognized parity %d\n", inv_arg->parity);
-	terminate(1);
-      }
     }
   
 }
@@ -253,6 +246,9 @@ asqtadInvertBlock (GRID_info_t *info,
   BlockConjugateGradient<FermionField>    BCGrQ(BlockCGrQ, blockDim, res_arg->resid, inv_arg->max*inv_arg->nrestart);
   BlockConjugateGradient<FermionField>    BCG  (BlockCG, blockDim, res_arg->resid, inv_arg->max*inv_arg->nrestart);
   BlockConjugateGradient<FermionField>    mCG  (CGmultiRHS, blockDim, res_arg->resid, inv_arg->max*inv_arg->nrestart);
+
+  GRID_ASSERT(inv_arg->parity == GRID_EVENODD || inv_arg->parity == GRID_EVEN || 
+	      inv_arg->parity == GRID_ODD, GRID_FAIL);
 
   switch (inv_arg->parity)
     {
@@ -323,12 +319,6 @@ asqtadInvertBlock (GRID_info_t *info,
 	Ds.Report();
 #endif	
 	break;
-      }
-
-    default:
-      {
-	node0_printf("asqtadInvertBlock: Unrecognized parity %d\n", inv_arg->parity);
-	terminate(1);
       }
     }
 

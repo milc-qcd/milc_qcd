@@ -7,10 +7,14 @@
 #include "../include/mGrid/mGrid_assert.h"
 
 extern "C" {
-#include "generic_includes.h"
-#include "../include/openmp_defs.h"
+  void get_coords(int coords[], int node, int index);
 }
 
+#include "../include/milc_datatypes.h"
+#include "../include/openmp_defs.h"
+extern	int sites_on_node;		/* number of sites on this node */
+extern	int even_sites_on_node;	/* number of even sites on this node */
+extern  int this_node;
 
 using namespace Grid;
 using namespace Grid::QCD;
@@ -188,6 +192,9 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
   int loopend= (milc_parity)==EVEN ? even_sites_on_node : sites_on_node ;
   int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
 
+
+  //  std::cout << "create_nv_from_vecs: ColourVector size * Nsimd = " << sizeof(ColourVector)*Nsimd <<
+  //	    << "ColourVectorField size =", << sizeof(*(out->cv)) << "\n" << std::flush;
   auto start = std::chrono::system_clock::now();
   PARALLEL_FOR_LOOP
     for( uint64_t idx = loopstart; idx < loopend; idx++){
