@@ -215,7 +215,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
 	   "\t links         = %e\n"
 	   "\t Grid overhead = %e\n"
 	   "\t ---------------------------\n"
-	   "\t total remap  = %e\n"
+	   "\t total remap   = %e\n"
 	   , t_sp1, t_sp2, t_l, t_sl, t_gr
 	   , t_sp1 + t_sp2 + t_l + t_sl + t_gr
 	   );
@@ -374,7 +374,7 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
 	   "\t links         = %e\n"
 	   "\t Grid overhead = %e\n"
 	   "\t ---------------------------\n"
-	   "\t total remap  = %e\n"
+	   "\t total remap   = %e\n"
 	   , t_sp1, t_sp2, t_l, t_sl, t_gr
 	   , t_sp1 + t_sp2 + t_l + t_sl + t_gr
 	   );
