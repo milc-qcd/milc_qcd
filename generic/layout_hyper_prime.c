@@ -327,24 +327,19 @@ static void set_topology(){
       node0_printf("QMP using allocated_dimension\n");
     } else {
 #ifdef FIX_NODE_GEOM
-      if(node_geometry != NULL){
-	nd = 4;
-	geom = node_geometry;
-	/* take geometry from input parameter node_geometry line */
-	setup_fixed_geom(geom, nd);
-	node0_printf("QMP with specified node_geometry\n");
-      } else {
+      nd = 4;
+      geom = node_geometry;
+      /* take geometry from input parameter node_geometry line */
+      setup_fixed_geom(geom, nd);
+      node0_printf("QMP with specified node_geometry\n");
 #endif
-	setup_hyper_prime();
-	nd = 4;
-	geom = nsquares;
-	node0_printf("QMP with automatic hyper_prime layout\n");
-#ifdef FIX_NODE_GEOM
-      }
-#endif
+      setup_hyper_prime();
+      nd = 4;
+      geom = nsquares;
+      node0_printf("QMP with automatic hyper_prime layout\n");
     }
   }
-  
+
   set_qmp_logical_topology(geom, nd);
   
 #else

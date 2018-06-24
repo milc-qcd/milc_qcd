@@ -473,6 +473,7 @@ int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal,
   Real Tolerance = eigen_param->tol;
   Real RelTol    = eigen_param->error_decr;
   int Nvecs      = eigen_param->Nvecs;
+  int Nvecs_in   = eigen_param->Nvecs_in;
   int MaxIter    = eigen_param->MaxIter;
   int Restart    = eigen_param->Restart;
   int Kiters     = eigen_param->Kiters;
@@ -512,16 +513,16 @@ int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal,
     MeigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
   }
 
-  /* If init is true, initiallize all the eigenvectors to a random
-     vector. Otherwise, start from the eigenpairs we are given.*/
-  for(j=0;j<Nvecs;j++) {
+  /* Start from the eigenpairs we are given, but pretend then are not
+     converged.  Initiallize the remaining ones to a random vector */
+  for(j=0;j<Nvecs;j++)
     grad[j] = 1.0e+10 ;
-    if(init){
-      grsource_plain_field( eigVec[j], parity);
-      eigVal[j] = 1.0e+16 ;
-    }
+  
+  for(j=Nvecs_in;j<Nvecs;j++) {
+    grsource_plain_field( eigVec[j], parity);
+    eigVal[j] = 1.0e+16 ;
   }
-
+  
 #ifdef EIGTIME
   dtimec = -dclock();
 #endif

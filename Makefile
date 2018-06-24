@@ -491,10 +491,14 @@ endif
 
 WANTGRID = #true
 
+  CPHI = -DGRID_BLOCKCG # Other choices: -DGRID_5DCG -DGRID_MRHSCG
+
 ifeq ($(strip ${WANTGRID}), true)
 
   HAVE_GRID = true
-  CPHI = -DHAVE_GRID
+  CPHI += -DHAVE_GRID
+
+  CPHI += -DGRID_SHMEM_MAX=2048
 
   ifeq ($(strip ${MPP}),true)
     ifeq ($(strip ${ARCH}),knl)
