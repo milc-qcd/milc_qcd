@@ -14,7 +14,7 @@ MAKEFILE = Makefile
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH = # knl knc hsw pow8
+ARCH = # skx knl knc hsw pow8
 
 #----------------------------------------------------------------------
 # 2. Compiler family
