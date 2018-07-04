@@ -14,24 +14,24 @@ MAKEFILE = Makefile
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH = # knl knc hsw pow8
+ARCH ?= # knl knc hsw pow8
 
 #----------------------------------------------------------------------
 # 2. Compiler family
 
-COMPILER = gnu # intel, ibm, portland, cray-intel
+COMPILER ?= gnu # intel, ibm, portland, cray-intel
 
 #----------------------------------------------------------------------
 # 3. MPP vs Scalar
 
 # Compiling for a parallel machine?  blank for a scalar machine
-MPP = #true
+MPP ?= true
 
 #----------------------------------------------------------------------
 # 4. Precision 
 
 # 1 = single precision; 2 = double
-PRECISION = 1
+PRECISION ?= 1
 
 #----------------------------------------------------------------------
 # 5. Compiler
@@ -40,31 +40,31 @@ PRECISION = 1
 ifeq ($(strip ${COMPILER}),intel)
 
   ifeq ($(strip ${MPP}),true)
-    CC = mpiicc
-    CXX = mpiicpc
+    CC ?= mpiicc
+    CXX ?= mpiicpc
   else
-    CC  = icc
-    CXX = icpc
+    CC  ?= icc
+    CXX ?= icpc
   endif
 
 else ifeq ($(strip ${COMPILER}),cray-intel)
 
   ifeq ($(strip ${MPP}),true)
-    CC = cc
-    CXX = CC
+    CC ?= cc
+    CXX ?= CC
   else
-    CC  = icc
-    CXX = icpc
+    CC  ?= icc
+    CXX ?= icpc
   endif
 
 else ifeq ($(strip ${COMPILER}),gnu)
 
   ifeq ($(strip ${MPP}),true)
-    CC = mpicc
-    CXX = mpiCC
+    CC ?= mpicc
+    CXX ?= mpiCC
   else
-    CC  = gcc
-    CXX = g++
+    CC  ?= gcc
+    CXX ?= g++
   endif
 
 endif
@@ -90,7 +90,7 @@ OPT              = -O3
 
 # OpenMP?
 
-OMP = #true
+OMP ?= #true
 
 #----------------------------------------------------------------------
 # 7. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -261,11 +261,11 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 
 # Edit these "wants"
 
-WANTQOP = # true # or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
+WANTQOP ?= # true # or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
 
-WANTQIO = true # or blank.  Implies HAVEQMP.
+WANTQIO ?= # true # or blank.  Implies HAVEQMP.
 
-WANTQMP = # true or blank.
+WANTQMP ?= # true or blank.
 
 # Edit these locations for the installed SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
@@ -376,14 +376,14 @@ WANT_GF_GPU ?= #true
 
 ifeq ($(strip ${WANTQUDA}),true)
 
-  QUDA_HOME = ${HOME}/quda
+  QUDA_HOME ?= ${HOME}/quda
 
   INCQUDA = -I${QUDA_HOME}/include -I${QUDA_HOME}/tests
   PACKAGE_HEADERS += ${QUDA_HOME}/include
   LIBQUDA = -L${QUDA_HOME}/lib -lquda
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
 
-  CUDA_HOME = /usr/local/cuda
+  CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
   LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
