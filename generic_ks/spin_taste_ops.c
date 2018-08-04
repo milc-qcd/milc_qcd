@@ -1104,7 +1104,7 @@ gamma_gamma_string(int index){
 
   strcpy(label, gamma_label(gamma_spin_index));
   strcat(label, "-");
-  strcpy(label, gamma_label(gamma_taste_index));
+  strcat(label, gamma_label(gamma_taste_index));
 
   return label;
 }
