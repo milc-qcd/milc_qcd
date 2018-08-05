@@ -1,7 +1,6 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 /****************************** lattice.h ********************************/
-
 /* include file for MIMD version 7
    This file defines global scalars and the fields in the lattice.
 
@@ -48,16 +47,23 @@ typedef struct {
 /* ------------------------------------------------------------ */
 /*   Now come the physical fields, program dependent            */
 /* ------------------------------------------------------------ */
-	/* gauge field */
-	su3_matrix link[4];	/* the fundamental field */
+
+#ifndef HAVE_QUDA
+        /* gauge field */
+        su3_matrix link[4];	/* the fundamental field */
+
+	/* antihermitian momentum matrices in each direction */
+        anti_hermitmat mom[4];
+#else
+        /* For optimal GPU reading / writing  we align onto 32-byte boundaries */
+        su3_matrix link[4] __attribute__((aligned(32)));
+        anti_hermitmat mom[4] __attribute__((aligned(32)));
+#endif
 
 #ifdef HMC
  	su3_matrix old_link[4];
 	/* For accept/reject */
 #endif
-
-	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4];
 
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */
@@ -120,7 +126,7 @@ EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-EXTERN  params par_buf;
+EXTERN  params param;
 EXTERN	int iseed;		/* random number seed */
 EXTERN  Real beta,u0;
 EXTERN  int n_dyn_masses; // number of dynamical masses
@@ -190,5 +196,11 @@ EXTERN int global_current_time_step;
 EXTERN int n_order_naik_total;
 EXTERN int n_pseudo_naik[MAX_N_PSEUDO];
 EXTERN int n_orders_naik[MAX_N_PSEUDO];
+
+/* For eigenpair calculation */
+/* Not used for HMC */
+EXTERN int Nvecs_tot;
+EXTERN double *eigVal; /* eigenvalues of D^dag D */
+EXTERN su3_vector **eigVec; /* eigenvectors */
 
 #endif /* _LATTICE_H */

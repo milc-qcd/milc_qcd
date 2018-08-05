@@ -204,9 +204,9 @@ int Rayleigh_min(wilson_vector *vec, wilson_vector **eigVec, Real Tolerance,
   return iter ;
 }
 
-int Kalkreuter_Ritz(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
-	       Real RelTol, int Nvecs, int MaxIter, 
-	       int Restart, int Kiters, int parity)
+int ks_eigensolve_Kalkreuter_Ritz(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
+				  Real RelTol, int Nvecs, int MaxIter, 
+				  int Restart, int Kiters, int parity)
 {
   int total_itns=0 ;
   int j ;

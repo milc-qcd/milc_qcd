@@ -218,9 +218,9 @@ if((spin %4) == 0){spin=0;color++;}
 
 
 
-                total_R_iters=Kalkreuter(eigVec, eigVal, eigenval_tol, 
-                                         error_decr, Nvecs, MaxIter, Restart, 
-                                         Kiters, EVENANDODD) ;
+                total_R_iters=ks_eigensolve(eigVec, eigVal, eigenval_tol, 
+					    error_decr, Nvecs, MaxIter, Restart, 
+					    Kiters, EVENANDODD) ;
 
 		/* save the eigenvectors if requested */
 spin=color=0;

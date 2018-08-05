@@ -27,7 +27,7 @@ int get_f( FILE *fp, int prompt, char *variable_name_string, Real *value ){
 
     if(prompt)  {
     	printf("enter %s ",variable_name_string);
-#if PRECISION == 1
+#if MILC_PRECISION == 1
     	s=fscanf(fp,"%e",value);
 #else
     	s=fscanf(fp,"%le",value);
@@ -38,7 +38,7 @@ int get_f( FILE *fp, int prompt, char *variable_name_string, Real *value ){
 	}
     }
     else  {
-#if PRECISION == 1
+#if MILC_PRECISION == 1
     	s=fscanf(fp,"%s %e",checkname,value);
 #else
     	s=fscanf(fp,"%s %le",checkname,value);

@@ -136,4 +136,9 @@ EXTERN double eps_naik[MAX_NAIK];
 /* Storage for the clover term */
 EXTERN clover *gen_clov;
 
+/* For eigenpair calculation */
+EXTERN int Nvecs_tot;
+EXTERN double *eigVal; /* eigenvalues of D^dag D */
+EXTERN su3_vector **eigVec; /* eigenvectors */
+
 #endif /* _LATTICE_H */

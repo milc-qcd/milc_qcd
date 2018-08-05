@@ -84,8 +84,9 @@ int main(int argc, char *argv[])
 
 	/* (Re)construct APE smeared links after gauge fixing.  
 	   No KS phases here! */
-	destroy_ape_links_3D(ape_links);
-	ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
+	destroy_ape_links_4D(ape_links);
+	ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+	if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
 
 	invalidate_this_clov(gen_clov);
       }

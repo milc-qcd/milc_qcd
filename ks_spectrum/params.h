@@ -11,7 +11,7 @@
 
 #define MAX_MASS_PBP 8
 #define MAX_SOURCE 32
-#define MAX_SET 16
+#define MAX_SET 64
 #define MAX_PROP 64
 #define MAX_QK 128
 #define MAX_COMBO 8
@@ -60,30 +60,20 @@ typedef struct {
   int start_u1flag;	/* what to do for beginning u(1) lattice */
   Real u0;
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
+  int time_bc;          /* 0 for antiperiodic, 1 for periodic */
   int fixflag;    /* whether to gauge fix */
   int saveflag;	/* what to do for saving lattice */
   int save_u1flag;	/* what to do with ending u(1) lattice */
   Real staple_weight;
   int ape_iter;
 #if EIGMODE == EIGCG
-  int ks_eigen_startflag; /* what to do for beginning eigenvectors */
-  int ks_eigen_saveflag; /* what to do for ending eigenvectors */
-  char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
-  char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
   eigcg_params eigcgp; /* parameters for eigCG */
 #endif
-#if EIGMODE == DEFLATION
-  int ks_eigen_startflag; /* what to do for beginning eigenvectors */
-  int ks_eigen_saveflag; /* what to do for ending eigenvectors */
-  int Nvecs; /* number of eigenvectors */
-  int MaxIter ; /* max  Rayleigh iterations */
-  int Restart ; /* Restart  Rayleigh every so many iterations */
-  int Kiters ; /* Kalkreuter iterations */
-  Real eigenval_tol ; /* Tolerance for the eigenvalue computation */
-  Real error_decr ; /* error decrease per Rayleigh minimization */
   char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
   char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
-#endif
+  int ks_eigen_startflag; /* what to do for beginning eigenvectors */
+  int ks_eigen_saveflag; /* what to do for ending eigenvectors */
+  ks_eigen_param eigen_param; /* Parameters for eigensolver */
   int num_pbp_masses;   /* Number of masses for pbp calculation */
   quark_invert_control qic_pbp[MAX_MASS_PBP];
   int prec_pbp;         /* Precision of the pbp calculation (1 or 2) */

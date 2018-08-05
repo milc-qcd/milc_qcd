@@ -80,9 +80,9 @@ int build_h0()
   /* next we find some trial eigenvalues of our
 		   approximate GW action */
 		/* we'll live at m=0 for now */
-  total_R_iters=Kalkreuter(eigVec1, eigVal1, eigenval_tol, 
-                                         error_decr, Nvecs_h0, MaxIter, Restart, 
-                                         Kiters, EVENANDODD) ;
+  total_R_iters=ks_eigensolve(eigVec1, eigVal1, eigenval_tol, 
+			      error_decr, Nvecs_h0, MaxIter, Restart, 
+			      Kiters, EVENANDODD) ;
   if(this_node==0)printf("total Rayleigh iters = %d\n",total_R_iters);
 
   /** Print out various properties of h(0) **/

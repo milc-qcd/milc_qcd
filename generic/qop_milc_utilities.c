@@ -2,7 +2,7 @@
 /* MILC Version 7 */
 
 /* Functions for mapping QOP-MILC data of a specific precision to flat
-   MILC arrays of the prevailing precision specified by the PRECISION
+   MILC arrays of the prevailing precision specified by the MILC_PRECISION
    macro.  Supports the MILC test version of QOP in mixed precision
    calculation */
 
@@ -13,7 +13,7 @@
 
 /* Convert (or copy) MILC types between specific and prevailing precision */
 
-#if (PRECISION == 1)
+#if (MILC_PRECISION == 1)
 
 static void 
 f2p_mat(su3_matrix *dest, fsu3_matrix *src){
@@ -145,7 +145,7 @@ p2d_vec(dsu3_vector *dest, su3_vector *src){
 /* su3_matrix field conversion                                      */
 /********************************************************************/
 
-#if ( PRECISION == 1 )
+#if ( MILC_PRECISION == 1 )
 
 /* No copy necessary if the prevailing precision matches the input array */
 
@@ -229,7 +229,7 @@ destroy_links_from_qop_milc_D(su3_matrix *g){
 /* su3_vector field conversion                                      */
 /********************************************************************/
 
-#if ( PRECISION == 1 )
+#if ( MILC_PRECISION == 1 )
 
 su3_vector *
 create_latvec_from_qop_milc_F(fsu3_vector *src)
@@ -309,7 +309,7 @@ destroy_latvec_from_qop_milc_D(su3_vector *v){
    QOP precision */
 /********************************************************************/
 
-#if ( PRECISION == 1 )
+#if ( MILC_PRECISION == 1 )
 void
 copy_latvec_to_qop_milc_F( fsu3_vector *dest, su3_vector *src)
 {

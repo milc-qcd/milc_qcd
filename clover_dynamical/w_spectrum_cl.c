@@ -37,7 +37,7 @@ int iters,spin,color;
 /* printf("DUMP source!!\n");
 FORALLSITES(i,s){
     printf("i = %d,  coords %d %d %d %d\n",i,s->x,s->y,s->z,s->t);
-    dump_wvec( &(s->chi) );
+    dump_wilson_vec( &(s->chi) );
 }
 
  printf("DUMP link[1]\n");
@@ -51,7 +51,7 @@ FORALLSITES(i,s){
 
   /* Load inversion control structure */
   qic.start_flag = 0;   /* Use zero initial guess for psi */
-  qic.prec = PRECISION;
+  qic.prec = MILC_PRECISION;
   
   /* Load Dirac matrix parameters */
   
@@ -69,7 +69,7 @@ FORALLSITES(i,s){
 printf("DUMP propagator!!\n");
 FORALLSITES(i,s){
     printf("i = %d,  coords %d %d %d %d\n",i,s->x,s->y,s->z,s->t);
-    dump_wvec( &(s->psi) );
+    dump_wilson_vec( &(s->psi) );
 }
 */
 	/* copy result to quark_propagator - KLUDGE- FIX CONGRAD! */

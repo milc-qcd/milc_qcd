@@ -16,7 +16,7 @@
 #include "generic_includes.h"
 #include <fftw3.h>
 
-#if PRECISION==1
+#if MILC_PRECISION==1
 #define FFTWP(x) fftwf_##x
 #else
 #define FFTWP(x) fftw_##x
@@ -24,12 +24,19 @@
 
 #ifdef CHECK_MALLOC
 
-#define FFTWP(malloc)(_size) \
+#if MILC_PRECISION==1
+#define fftwf_malloc(_size) \
   (( (_malloc_ptr = FFTWP(malloc)(_size)), \
    (this_node == 0 ? \
    printf("%x = FFTWP(malloc)(%d) %s:%d\n",_malloc_ptr,_size,__func__,__LINE__) \
    && fflush(stdout) : 0 )), _malloc_ptr)
-
+#else
+#define fftw_malloc(_size) \
+  (( (_malloc_ptr = FFTWP(malloc)(_size)), \
+   (this_node == 0 ? \
+   printf("%x = FFTWP(malloc)(%d) %s:%d\n",_malloc_ptr,_size,__func__,__LINE__) \
+   && fflush(stdout) : 0 )), _malloc_ptr)
+#endif
 #endif
 
 /* Data structure for the layout */
@@ -626,9 +633,9 @@ ft_data *create_ft_data(complex *src, int size){
 void destroy_ft_data(ft_data *ftd){
   if(ftd != NULL){
     if(ftd->data != NULL)
-      free(ftd->data);
+      FFTWP(free)(ftd->data);
     if(ftd->tmp != NULL)
-      free(ftd->tmp);
+      FFTWP(free)(ftd->tmp);
     free(ftd);
   }
 }
@@ -799,6 +806,8 @@ void restrict_fourier_field(
 
   destroy_fftw_plans();
   destroy_ft_data(ftd);
+
+  FFTWP(cleanup)();
 }
 
 /*----------------------------------------------------------------------*/

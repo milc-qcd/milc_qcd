@@ -199,8 +199,7 @@ struct qss_op_struct {
   char mass_label[32]; /* For KS solver */
   Real eps_naik;      /* Naik epsilon for KS hopping operator and KS inverse */
   quark_invert_control qic; /* For Dirac and KS solver */
-  int co[4];          /* Coordinate origin for Dirac solver boundary twist */
-  Real bp[4];         /* Boundary phase for Dirac solver */
+  Real bp[4];         /* Boundary phase for Dirac and KS solvers */
   int t0;             /* For time slice projection */
   struct qss_op_struct *op;   /* Next operation in the chain */
 };

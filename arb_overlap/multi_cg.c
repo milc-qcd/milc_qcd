@@ -327,7 +327,7 @@ color,spin,my_chirality);
 	    FORALLSITES(i,s) {
 	      copy_wvec(&(psim[j][i]),&(s->psi));
 /* test 
-if(s->y == 0 && s->z == 0 && s->t == 0) dump_wvec(&(s->psi));
+if(s->y == 0 && s->z == 0 && s->t == 0) dump_wilson_vec(&(s->psi));
 */
 	    }
 #ifdef IOTIME
@@ -420,7 +420,7 @@ and we just have to remember what our chirality is... */
 	      /** DEBUGGING
 	    FORALLSITES(i,s){
              printf("%d %d %d %d\n",s->x,s->y,s->z,s->t);
-                dump_wvec(&(s->psi));
+                dump_wilson_vec(&(s->psi));
 	    }
 	    **/		
 

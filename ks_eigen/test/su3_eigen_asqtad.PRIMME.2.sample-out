@@ -50,7 +50,7 @@ Restart_Rayleigh 10
 # Outer loop iterations
 Kalkreuter_iters 20
 # Eigenvalue tolerance
-eigenval_tolerance 1e-07
+eigenval_tolerance 5e-14
 # See README.ks_eigen - For optimizing the RR CG
 error_decrease 0.3
 # Input lattice
@@ -76,10 +76,6 @@ path coefficients: npath  path_coeff  multiplicity
                     4      -2.604167e-03     384
                     5      -6.250000e-02     48
 Time to APE smear 9.107590e-05 sec
- OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 25
- OK converged final_rsq= 1.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 5
-PBP: mass 1.000000e-01     1.581236e-01  5.834140e-02  2.211805e-03  2.211716e-03 ( 1 of 1 )
-FACTION: mass = 1.000000e-01,  1.522603e+00 ( 1 of 1 )
 Lock epair[ 1 ]= 3.344201e-02 norm 9.1573e-07 Mvecs 39 Time 2.9411e-02 Flag 2
 Lock epair[ 2 ]= 3.344220e-02 norm 1.6944e-06 Mvecs 64 Time 4.7935e-02 Flag 2
 Lock epair[ 3 ]= 1.946451e+00 norm 1.4962e-06 Mvecs 177 Time 1.2759e-01 Flag 2
@@ -137,85 +133,86 @@ Eigenvalue(19) = 2.34722
 Eigenvalue(20) = 2.34722 
 Eigenvalue(21) = 2.34722 
 Eigenvalue(22) = 2.34722 
-Eigenvalue(23) = 2.42137 
-Eigenvalue(24) = 2.42137 
-Eigenvalue(25) = 2.43439 
-Eigenvalue(26) = 2.43439 
-Eigenvalue(27) = 2.4499 
-Eigenvalue(28) = 2.4499 
-Eigenvalue(29) = 2.46749 
-Eigenvalue(30) = 2.46749 
-Eigenvalue(31) = 2.47506 
+Eigenvalue(23) = 2.34722 
+Eigenvalue(24) = 2.34722 
+Eigenvalue(25) = 2.34722 
+Eigenvalue(26) = 2.34722 
+Eigenvalue(27) = 2.34722 
+Eigenvalue(28) = 2.42137 
+Eigenvalue(29) = 2.42137 
+Eigenvalue(30) = 2.43439 
+Eigenvalue(31) = 2.43439 
 Even site residuals
 Checking eigensolutions
-eigVal[0] = 3.344213e-02 ( resid = 6.445882e-07 , ||eigVec[0]|-1| = -9.992007e-16 )
-eigVal[1] = 3.344213e-02 ( resid = 8.523853e-07 , ||eigVec[1]|-1| = 0.000000e+00 )
-eigVal[2] = 1.946451e+00 ( resid = 1.111277e-06 , ||eigVec[2]|-1| = 0.000000e+00 )
-eigVal[3] = 1.946451e+00 ( resid = 1.822752e-06 , ||eigVec[3]|-1| = 6.661338e-16 )
-eigVal[4] = 1.955962e+00 ( resid = 1.355560e-06 , ||eigVec[4]|-1| = 1.110223e-15 )
-eigVal[5] = 1.955962e+00 ( resid = 1.714676e-06 , ||eigVec[5]|-1| = -6.661338e-16 )
-eigVal[6] = 1.981036e+00 ( resid = 1.718007e-06 , ||eigVec[6]|-1| = 8.881784e-16 )
-eigVal[7] = 1.981036e+00 ( resid = 1.468216e-06 , ||eigVec[7]|-1| = 0.000000e+00 )
-eigVal[8] = 2.013302e+00 ( resid = 1.660868e-06 , ||eigVec[8]|-1| = 8.881784e-16 )
-eigVal[9] = 2.013302e+00 ( resid = 1.862948e-06 , ||eigVec[9]|-1| = -1.221245e-15 )
-eigVal[10] = 2.117685e+00 ( resid = 8.685115e-07 , ||eigVec[10]|-1| = 2.442491e-15 )
-eigVal[11] = 2.117685e+00 ( resid = 1.454688e-06 , ||eigVec[11]|-1| = -5.551115e-16 )
-eigVal[12] = 2.146502e+00 ( resid = 1.507026e-06 , ||eigVec[12]|-1| = -2.220446e-16 )
-eigVal[13] = 2.146502e+00 ( resid = 1.729608e-06 , ||eigVec[13]|-1| = -9.992007e-16 )
-eigVal[14] = 2.347222e+00 ( resid = 1.442298e-06 , ||eigVec[14]|-1| = 1.776357e-15 )
-eigVal[15] = 2.347222e+00 ( resid = 1.286860e-06 , ||eigVec[15]|-1| = -1.110223e-15 )
-eigVal[16] = 2.347222e+00 ( resid = 1.483442e-06 , ||eigVec[16]|-1| = 4.440892e-16 )
-eigVal[17] = 2.347222e+00 ( resid = 1.262697e-06 , ||eigVec[17]|-1| = -2.220446e-16 )
-eigVal[18] = 2.347222e+00 ( resid = 1.470892e-06 , ||eigVec[18]|-1| = -2.220446e-15 )
-eigVal[19] = 2.347222e+00 ( resid = 1.324053e-06 , ||eigVec[19]|-1| = 1.110223e-15 )
-eigVal[20] = 2.347222e+00 ( resid = 1.498316e-06 , ||eigVec[20]|-1| = 4.440892e-16 )
-eigVal[21] = 2.347222e+00 ( resid = 1.871578e-06 , ||eigVec[21]|-1| = 1.998401e-15 )
-eigVal[22] = 2.347222e+00 ( resid = 1.684791e-06 , ||eigVec[22]|-1| = 8.881784e-16 )
-eigVal[23] = 2.421365e+00 ( resid = 7.721815e-07 , ||eigVec[23]|-1| = 1.554312e-15 )
-eigVal[24] = 2.421365e+00 ( resid = 1.463471e-06 , ||eigVec[24]|-1| = 1.110223e-15 )
-eigVal[25] = 2.434392e+00 ( resid = 1.267027e-06 , ||eigVec[25]|-1| = 1.776357e-15 )
-eigVal[26] = 2.434392e+00 ( resid = 1.488646e-06 , ||eigVec[26]|-1| = 1.554312e-15 )
-eigVal[27] = 2.449900e+00 ( resid = 9.661412e-07 , ||eigVec[27]|-1| = -2.109424e-15 )
-eigVal[28] = 2.449900e+00 ( resid = 1.505950e-06 , ||eigVec[28]|-1| = -2.553513e-15 )
-eigVal[29] = 2.467491e+00 ( resid = 1.457201e-06 , ||eigVec[29]|-1| = 0.000000e+00 )
-eigVal[30] = 2.467491e+00 ( resid = 1.500913e-06 , ||eigVec[30]|-1| = -3.330669e-16 )
-eigVal[31] = 2.475057e+00 ( resid = 1.683725e-06 , ||eigVec[31]|-1| = -3.774758e-15 )
+eigVal[0] = 3.344213e-02 ( resid = 8.278142e-13 , |eigVec[0]|-1 = 6.661338e-16 )
+eigVal[1] = 3.344213e-02 ( resid = 6.137623e-13 , |eigVec[1]|-1 = 0.000000e+00 )
+eigVal[2] = 1.946451e+00 ( resid = 6.255658e-13 , |eigVec[2]|-1 = 2.220446e-16 )
+eigVal[3] = 1.946451e+00 ( resid = 8.342061e-13 , |eigVec[3]|-1 = 2.442491e-15 )
+eigVal[4] = 1.955962e+00 ( resid = 7.480337e-13 , |eigVec[4]|-1 = 1.110223e-15 )
+eigVal[5] = 1.955962e+00 ( resid = 4.402457e-13 , |eigVec[5]|-1 = 1.554312e-15 )
+eigVal[6] = 1.981036e+00 ( resid = 3.739091e-13 , |eigVec[6]|-1 = -3.330669e-16 )
+eigVal[7] = 1.981036e+00 ( resid = 4.157531e-13 , |eigVec[7]|-1 = 4.440892e-16 )
+eigVal[8] = 2.013302e+00 ( resid = 7.420692e-13 , |eigVec[8]|-1 = -3.330669e-16 )
+eigVal[9] = 2.013302e+00 ( resid = 4.855833e-13 , |eigVec[9]|-1 = -1.221245e-15 )
+eigVal[10] = 2.117685e+00 ( resid = 3.390560e-13 , |eigVec[10]|-1 = 0.000000e+00 )
+eigVal[11] = 2.117685e+00 ( resid = 7.734636e-13 , |eigVec[11]|-1 = 2.220446e-16 )
+eigVal[12] = 2.146502e+00 ( resid = 4.186037e-13 , |eigVec[12]|-1 = 8.881784e-16 )
+eigVal[13] = 2.146502e+00 ( resid = 6.278715e-13 , |eigVec[13]|-1 = 2.220446e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 8.695415e-13 , |eigVec[14]|-1 = -6.661338e-16 )
+eigVal[15] = 2.347222e+00 ( resid = 5.633443e-13 , |eigVec[15]|-1 = -1.221245e-15 )
+eigVal[16] = 2.347222e+00 ( resid = 4.333406e-13 , |eigVec[16]|-1 = -8.881784e-16 )
+eigVal[17] = 2.347222e+00 ( resid = 6.144229e-13 , |eigVec[17]|-1 = -4.440892e-16 )
+eigVal[18] = 2.347222e+00 ( resid = 7.593734e-13 , |eigVec[18]|-1 = 0.000000e+00 )
+eigVal[19] = 2.347222e+00 ( resid = 7.930111e-13 , |eigVec[19]|-1 = 2.220446e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 7.186170e-13 , |eigVec[20]|-1 = 0.000000e+00 )
+eigVal[21] = 2.347222e+00 ( resid = 9.237055e-13 , |eigVec[21]|-1 = -2.220446e-16 )
+eigVal[22] = 2.347222e+00 ( resid = 4.158412e-13 , |eigVec[22]|-1 = 2.220446e-16 )
+eigVal[23] = 2.347222e+00 ( resid = 4.014308e-13 , |eigVec[23]|-1 = 2.220446e-16 )
+eigVal[24] = 2.347222e+00 ( resid = 9.111788e-13 , |eigVec[24]|-1 = 2.220446e-16 )
+eigVal[25] = 2.347222e+00 ( resid = 5.476846e-13 , |eigVec[25]|-1 = 1.110223e-15 )
+eigVal[26] = 2.347222e+00 ( resid = 8.496279e-13 , |eigVec[26]|-1 = 2.220446e-16 )
+eigVal[27] = 2.347222e+00 ( resid = 5.127019e-13 , |eigVec[27]|-1 = 8.881784e-16 )
+eigVal[28] = 2.421365e+00 ( resid = 2.761457e-13 , |eigVec[28]|-1 = 1.332268e-15 )
+eigVal[29] = 2.421365e+00 ( resid = 4.183061e-13 , |eigVec[29]|-1 = 2.886580e-15 )
+eigVal[30] = 2.434392e+00 ( resid = 7.679966e-13 , |eigVec[30]|-1 = 1.332268e-15 )
+eigVal[31] = 2.434392e+00 ( resid = 6.522701e-13 , |eigVec[31]|-1 = -8.881784e-16 )
 End of eigensolutions
 Odd site residuals
 Checking eigensolutions
-eigVal[0] = 3.344213e-02 ( resid = 1.168945e-05 , ||eigVec[0]|-1| = 6.522286e-08 )
-eigVal[1] = 3.344213e-02 ( resid = 1.483772e-05 , ||eigVec[1]|-1| = 1.056401e-07 )
-eigVal[2] = 1.946451e+00 ( resid = 2.485689e-06 , ||eigVec[2]|-1| = 4.352586e-03 )
-eigVal[3] = 1.946451e+00 ( resid = 3.890176e-06 , ||eigVec[3]|-1| = -2.163663e-02 )
-eigVal[4] = 1.955962e+00 ( resid = 2.412205e-06 , ||eigVec[4]|-1| = 1.170443e-02 )
-eigVal[5] = 1.955962e+00 ( resid = 3.557197e-06 , ||eigVec[5]|-1| = -8.246329e-03 )
-eigVal[6] = 1.981036e+00 ( resid = 3.813610e-06 , ||eigVec[6]|-1| = 8.408128e-10 )
-eigVal[7] = 1.981036e+00 ( resid = 3.007454e-06 , ||eigVec[7]|-1| = 1.586191e-09 )
-eigVal[8] = 2.013302e+00 ( resid = 3.592178e-06 , ||eigVec[8]|-1| = 1.346208e-02 )
-eigVal[9] = 2.013302e+00 ( resid = 3.712548e-06 , ||eigVec[9]|-1| = 2.467420e-03 )
-eigVal[10] = 2.117685e+00 ( resid = 1.531380e-06 , ||eigVec[10]|-1| = -4.792956e-03 )
-eigVal[11] = 2.117685e+00 ( resid = 2.791817e-06 , ||eigVec[11]|-1| = -6.136548e-03 )
-eigVal[12] = 2.146502e+00 ( resid = 3.153349e-06 , ||eigVec[12]|-1| = 2.867120e-10 )
-eigVal[13] = 2.146502e+00 ( resid = 3.555266e-06 , ||eigVec[13]|-1| = -7.354675e-10 )
-eigVal[14] = 2.347222e+00 ( resid = 2.880965e-06 , ||eigVec[14]|-1| = 1.244974e-02 )
-eigVal[15] = 2.347222e+00 ( resid = 2.622301e-06 , ||eigVec[15]|-1| = 2.559787e-03 )
-eigVal[16] = 2.347222e+00 ( resid = 3.022006e-06 , ||eigVec[16]|-1| = -4.820434e-03 )
-eigVal[17] = 2.347222e+00 ( resid = 2.555264e-06 , ||eigVec[17]|-1| = -5.821118e-03 )
-eigVal[18] = 2.347222e+00 ( resid = 2.966558e-06 , ||eigVec[18]|-1| = -2.931794e-10 )
-eigVal[19] = 2.347222e+00 ( resid = 2.614594e-06 , ||eigVec[19]|-1| = -9.654229e-10 )
-eigVal[20] = 2.347222e+00 ( resid = 2.739649e-06 , ||eigVec[20]|-1| = 3.695400e-03 )
-eigVal[21] = 2.347222e+00 ( resid = 3.795246e-06 , ||eigVec[21]|-1| = -1.792151e-02 )
-eigVal[22] = 2.347222e+00 ( resid = 3.403602e-06 , ||eigVec[22]|-1| = 9.712934e-03 )
-eigVal[23] = 2.421365e+00 ( resid = 1.083805e-06 , ||eigVec[23]|-1| = -6.962012e-03 )
-eigVal[24] = 2.421365e+00 ( resid = 2.710360e-06 , ||eigVec[24]|-1| = 7.831287e-10 )
-eigVal[25] = 2.434392e+00 ( resid = 2.347472e-06 , ||eigVec[25]|-1| = 1.523406e-09 )
-eigVal[26] = 2.434392e+00 ( resid = 2.863900e-06 , ||eigVec[26]|-1| = 7.524245e-03 )
-eigVal[27] = 2.449900e+00 ( resid = 1.526171e-06 , ||eigVec[27]|-1| = -3.524092e-02 )
-eigVal[28] = 2.449900e+00 ( resid = 2.877400e-06 , ||eigVec[28]|-1| = 1.964825e-02 )
-eigVal[29] = 2.467491e+00 ( resid = 2.846975e-06 , ||eigVec[29]|-1| = -1.387799e-02 )
-eigVal[30] = 2.467491e+00 ( resid = 2.901101e-06 , ||eigVec[30]|-1| = 5.323062e-10 )
-eigVal[31] = 2.475057e+00 ( resid = 3.038203e-06 , ||eigVec[31]|-1| = 1.734073e-09 )
+eigVal[0] = 3.344213e-02 ( resid = 1.392212e-11 , |eigVec[0]|-1 = 0.000000e+00 )
+eigVal[1] = 3.344213e-02 ( resid = 1.050251e-11 , |eigVec[1]|-1 = -1.110223e-16 )
+eigVal[2] = 1.946451e+00 ( resid = 1.314634e-12 , |eigVec[2]|-1 = 2.220446e-16 )
+eigVal[3] = 1.946451e+00 ( resid = 1.669340e-12 , |eigVec[3]|-1 = 2.220446e-16 )
+eigVal[4] = 1.955962e+00 ( resid = 1.477269e-12 , |eigVec[4]|-1 = -1.110223e-16 )
+eigVal[5] = 1.955962e+00 ( resid = 1.093537e-12 , |eigVec[5]|-1 = 0.000000e+00 )
+eigVal[6] = 1.981036e+00 ( resid = 8.466477e-13 , |eigVec[6]|-1 = -1.110223e-16 )
+eigVal[7] = 1.981036e+00 ( resid = 9.455109e-13 , |eigVec[7]|-1 = 0.000000e+00 )
+eigVal[8] = 2.013302e+00 ( resid = 1.532138e-12 , |eigVec[8]|-1 = 2.220446e-16 )
+eigVal[9] = 2.013302e+00 ( resid = 9.379373e-13 , |eigVec[9]|-1 = 0.000000e+00 )
+eigVal[10] = 2.117685e+00 ( resid = 6.414618e-13 , |eigVec[10]|-1 = -1.110223e-16 )
+eigVal[11] = 2.117685e+00 ( resid = 1.453892e-12 , |eigVec[11]|-1 = -4.440892e-16 )
+eigVal[12] = 2.146502e+00 ( resid = 7.358083e-13 , |eigVec[12]|-1 = -1.110223e-16 )
+eigVal[13] = 2.146502e+00 ( resid = 1.109802e-12 , |eigVec[13]|-1 = -2.220446e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 1.571176e-12 , |eigVec[14]|-1 = -2.220446e-16 )
+eigVal[15] = 2.347222e+00 ( resid = 1.116434e-12 , |eigVec[15]|-1 = -1.110223e-16 )
+eigVal[16] = 2.347222e+00 ( resid = 9.953081e-13 , |eigVec[16]|-1 = 0.000000e+00 )
+eigVal[17] = 2.347222e+00 ( resid = 1.154739e-12 , |eigVec[17]|-1 = 0.000000e+00 )
+eigVal[18] = 2.347222e+00 ( resid = 1.180297e-12 , |eigVec[18]|-1 = 2.220446e-16 )
+eigVal[19] = 2.347222e+00 ( resid = 1.387929e-12 , |eigVec[19]|-1 = -3.330669e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 1.508931e-12 , |eigVec[20]|-1 = 0.000000e+00 )
+eigVal[21] = 2.347222e+00 ( resid = 1.744725e-12 , |eigVec[21]|-1 = -5.551115e-16 )
+eigVal[22] = 2.347222e+00 ( resid = 8.142367e-13 , |eigVec[22]|-1 = -2.220446e-16 )
+eigVal[23] = 2.347222e+00 ( resid = 7.611869e-13 , |eigVec[23]|-1 = 0.000000e+00 )
+eigVal[24] = 2.347222e+00 ( resid = 1.840698e-12 , |eigVec[24]|-1 = 0.000000e+00 )
+eigVal[25] = 2.347222e+00 ( resid = 9.732382e-13 , |eigVec[25]|-1 = 0.000000e+00 )
+eigVal[26] = 2.347222e+00 ( resid = 1.425028e-12 , |eigVec[26]|-1 = 0.000000e+00 )
+eigVal[27] = 2.347222e+00 ( resid = 1.063451e-12 , |eigVec[27]|-1 = -1.110223e-16 )
+eigVal[28] = 2.421365e+00 ( resid = 4.804381e-13 , |eigVec[28]|-1 = -1.110223e-16 )
+eigVal[29] = 2.421365e+00 ( resid = 7.428681e-13 , |eigVec[29]|-1 = 2.220446e-16 )
+eigVal[30] = 2.434392e+00 ( resid = 1.576279e-12 , |eigVec[30]|-1 = -1.110223e-16 )
+eigVal[31] = 2.434392e+00 ( resid = 1.203443e-12 , |eigVec[31]|-1 = 0.000000e+00 )
 End of eigensolutions
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 The above were eigenvalues of -Dslash^2 in MILC normalization
 Here we also list eigenvalues of iDslash in continuum normalization
 eigenval(0):  0.0914359
@@ -241,53 +238,19 @@ eigenval(19):   0.766032
 eigenval(20):   0.766032
 eigenval(21):   0.766032
 eigenval(22):   0.766032
-eigenval(23):   0.778037
-eigenval(24):   0.778037
-eigenval(25):   0.780127
-eigenval(26):   0.780127
-eigenval(27):   0.782608
-eigenval(28):   0.782608
-eigenval(29):   0.785412
-eigenval(30):   0.785412
-eigenval(31):   0.786616
-Chirality(0) -- even, odd, total:  -0.357523,  -0.342227,  -0.349875
-Chirality(1) -- even, odd, total:  -0.357523,  -0.342227,  -0.349875
-Chirality(2) -- even, odd, total:  0.0619336,  0.0525582,  0.0572459
-Chirality(3) -- even, odd, total:  0.0619341,  0.0525577,  0.0572459
-Chirality(4) -- even, odd, total:  -0.166685,   0.276207,   0.054761
-Chirality(5) -- even, odd, total:  -0.166679,   0.276201,   0.054761
-Chirality(6) -- even, odd, total:   -0.09827,   0.195166,   0.048448
-Chirality(7) -- even, odd, total: -0.0982697,   0.195166,   0.048448
-Chirality(8) -- even, odd, total:   0.428102,  -0.333823,  0.0471392
-Chirality(9) -- even, odd, total:   0.428098,   -0.33382,  0.0471391
-Chirality(10) -- even, odd, total:   0.119863, -0.0563022,  0.0317803
-Chirality(11) -- even, odd, total:   0.119862, -0.0563011,  0.0317802
-Chirality(12) -- even, odd, total: 0.00738294,  0.0322853,  0.0198341
-Chirality(13) -- even, odd, total: 0.00738404,  0.0322843,  0.0198341
-Chirality(14) -- even, odd, total:  -0.099343,   0.099343, -6.13953e-14
-Chirality(15) -- even, odd, total:  0.0177384, -0.0177384, 2.11267e-13
-Chirality(16) -- even, odd, total: -0.00611533, 0.00611533, -1.3765e-15
-Chirality(17) -- even, odd, total:  -0.188555,   0.188555, -7.77156e-14
-Chirality(18) -- even, odd, total:  -0.205326,   0.205326, -4.1836e-13
-Chirality(19) -- even, odd, total: -0.0369959,  0.0369959, -1.10741e-13
-Chirality(20) -- even, odd, total:  -0.151925,   0.151925, 4.40759e-14
-Chirality(21) -- even, odd, total:  -0.121926,   0.121926, -3.20195e-13
-Chirality(22) -- even, odd, total:   0.178971,  -0.178971, -7.47818e-13
-Chirality(23) -- even, odd, total:   0.137904,   -0.18605, -0.0240728
-Chirality(24) -- even, odd, total:   0.137901,  -0.186046, -0.0240727
-Chirality(25) -- even, odd, total:   0.132698,  -0.170103, -0.0187026
-Chirality(26) -- even, odd, total:   0.132696,  -0.170101, -0.0187025
-Chirality(27) -- even, odd, total: 0.00796456, -0.0456721, -0.0188538
-Chirality(28) -- even, odd, total:  0.0079624,   -0.04567, -0.0188538
-Chirality(29) -- even, odd, total:  -0.382569,   0.346885, -0.0178419
-Chirality(30) -- even, odd, total:  -0.382571,   0.346887, -0.0178418
-Chirality(31) -- even, odd, total: -0.0403604, 0.00419062, -0.0180849
+eigenval(23):   0.766032
+eigenval(24):   0.766032
+eigenval(25):   0.766032
+eigenval(26):   0.766032
+eigenval(27):   0.766032
+eigenval(28):   0.778037
+eigenval(29):   0.778037
+eigenval(30):   0.780127
+eigenval(31):   0.780127
 RUNNING COMPLETED
-Time = 2.203869e+00 seconds
-total_iters = 32
-total Rayleigh iters = 1650
+Time = 1.280451e+00 seconds
+total Rayleigh iters = 536
 
 
-get_f(0): EOF on input.
-exit: Sun Feb 14 16:34:51 2016
-
+ask_starting_lattice(0): EOF on input.
+exit: Thu May 31 16:07:07 2018

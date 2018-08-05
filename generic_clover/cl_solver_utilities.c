@@ -153,6 +153,30 @@ void ilu_DRD(
   *is_startede = 1;
 }
 
+void ilu_DRD_odd(
+  wilson_vector *in,
+  wilson_vector *drd_in,
+  wilson_vector *r_in,
+  wilson_vector *tmpo,
+  int isign,
+  msg_tag* tago[],
+  int *is_startedo,
+  msg_tag* tage[],
+  int *is_startede
+  )
+{
+  /* r_in_e = R_e in_e */
+  mult_this_ldu_field(gen_clov, in, r_in, ODD);
+  /* drd_in_o = D_oe in_e */
+  dslash_w_field_special(in, tmpo, isign, EVEN, tago, *is_startedo);
+  *is_startedo = 1;
+  /* r_in_o = 1/R_o D_oe in_e */
+  mult_this_ldu_field(gen_clov, tmpo, r_in, EVEN);
+  /* drd_in_e = D_eo/R_o D_oe in_e */
+  dslash_w_field_special(r_in, drd_in, isign, ODD, tage, *is_startede);
+  *is_startede = 1;
+}
+
 /* ------------------------------------------------------------ */
 /* Reconstruct solution on odd sites */
 

@@ -1,0 +1,25 @@
+These are instructions for downloading and building the JLab QPhiX
+package ("devel" branch) for clover solves.
+
+Check paths defined at the top of ./build.sh
+
+Then run 
+
+   ./build.sh
+
+It may be necessary to edit some of the cmake parameters
+
+cd build
+ccmake ../qphix
+
+On Cray systems, use CC = cc and CXX = CC.  Also, be sure the modules
+include compiler, architecture (KNL), and MPI support.  For example,
+
+PrgEnv-intel/6.0.4 
+craype-mic-knl 
+cray-mpich/7.6.2
+
+
+C. DeTar
+3/11/2018
+

@@ -43,11 +43,18 @@ sub is_number {
 (defined($errfile) && defined($file2) && defined($file1)) || 
     die "Usage $0 <file1> <file2> <errfile>\n";
 
+print "$0 $file1 $file2 $errfile\n";
+
 open(FILE1,$file1) || die "Couldn't open $file1: $!";
 open(FILE2,$file2) || die "Couldn't open $file2: $!";
 open(ERR,$errfile) || die "Couldn't open $errfile: $!";
 
-print "$0 $file1 $file2 $errfile\n";
+($n1, $rest) = split(' ',`wc -l $file1`);
+($n2, $rest) = split(' ',`wc -l $file2`);
+($ne, $rest) = split(' ',`wc -l $errfile`);
+
+$n1 == $n2 && $n1 == $ne or die "ERROR: File line counts must match";
+
 $lines = 0;
 
 $difflines = 0;

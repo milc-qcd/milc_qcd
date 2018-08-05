@@ -172,9 +172,9 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
   double dtime = -dclock();
   info_t info = INFO_ZERO;
 
-  if(prec != PRECISION){
+  if(prec != MILC_PRECISION){
     node0_printf("eo_fermion_force_multi: WARNING, precision requests not supported. Using %d.\n",
-		 PRECISION);
+		 MILC_PRECISION);
   }
   switch(KS_MULTIFF){
   case FNMATREV:
@@ -195,7 +195,7 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
   info.final_sec = dtime;
 #ifdef FFTIME
   node0_printf("FFTIME:  time = %e (HYPISQ %s) terms = %d flops/site = %d mflops = %e\n",
-	       info.final_sec,qop_prec[PRECISION-1],nterms,
+	       info.final_sec,qop_prec[MILC_PRECISION-1],nterms,
 	       (int)(info.final_flop*numnodes()/volume),
 	       info.final_flop/(1e6*info.final_sec) );
 #endif
@@ -2198,7 +2198,7 @@ fn_fermion_force_multi_hypisq_wrapper_mx_gpu(info_t* info, Real eps, Real *resid
   qudaHypisqParamsInit(params);
   // end optional code
 		
-  qudaHypisqForce(PRECISION, level2_coeff, fat7_coeff, 
+  qudaHypisqForce(MILC_PRECISION, level2_coeff, fat7_coeff, 
 		(const void* const*)staple_oprod, 
 		(const void* const*)one_link_oprod, 
 		(const void* const*)three_link_oprod, 

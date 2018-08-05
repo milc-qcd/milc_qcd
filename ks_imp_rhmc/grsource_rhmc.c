@@ -4,6 +4,7 @@
    or general "even plus odd" quark actions.
 */
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "../include/openmp_defs.h"
 
 /* construct a gaussian random vector, g_rand, and phi=M(dagger)*M)^(nf/8)*g_rand  */
 /* "parity" is EVEN, ODD, or EVENANDODD.  The parity is the parity at
@@ -24,9 +25,10 @@ void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
   Real *residues = rf->res;
   Real *roots = rf->pole;
   /*TEMP*/ double sum;
+  double dtimec = -dclock();
   
   sum=0.0;
-  FORSOMEPARITY(i,s,parity){
+  FORSOMEPARITY_OMP(i,s,parity,private(j) reduction(+:sum)){
     for(j=0;j<3;j++){
 #ifdef SITERAND
       s->g_rand.c[j] = complex_gaussian_rand_no(&(s->site_prn));
@@ -35,11 +37,16 @@ void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
 #endif
     }
     /*TEMP*/ sum += (double)magsq_su3vec( &(s->g_rand) );
-  }
+  } END_LOOP_OMP
   /*TEMP*/g_doublesum( &sum);  node0_printf("GRSOURCE: sum = %.10e\n",sum);
+  dtimec += dclock();
   ks_ratinv( F_OFFSET(g_rand), multi_x, roots, order, my_niter, 
 	     my_rsqmin, my_prec, parity, &final_rsq, fn, 
 	     naik_term_epsilon_index, naik_term_epsilon );
+  dtimec -= dclock();
   ks_rateval( sumvec, F_OFFSET(g_rand), multi_x, residues, order, parity );
-  FORSOMEPARITY(i,s,parity){ *(su3_vector *)F_PT(s,dest) = sumvec[i]; }
+  //  dtimec -= dclock();
+  FORSOMEPARITY_OMP(i,s,parity,default(shared) ){ *(su3_vector *)F_PT(s,dest) = sumvec[i]; } END_LOOP_OMP
+  dtimec += dclock();
+  node0_printf("GRSOURCETIME: time = %e\n",dtimec);
 }/* grsource_rhmc */

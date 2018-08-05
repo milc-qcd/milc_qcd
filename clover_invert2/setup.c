@@ -240,6 +240,15 @@ int readin(int prompt) {
 
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
     IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
+    IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
+    IF_OK {
+      if(strcmp(savebuf,"antiperiodic") == 0)param.time_bc = 0;
+      else if(strcmp(savebuf,"periodic") == 0)param.time_bc = 1;
+      else{
+	node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n",  savebuf);
+	status++;
+      }
+    }
     
     /*------------------------------------------------------------*/
     /* Propagator inversion control                               */
@@ -275,6 +284,8 @@ int readin(int prompt) {
       IF_OK param.parent_source[i] = BASE_SOURCE_PARENT;
       IF_OK init_qss_op(&param.src_qs_op[i]);
       IF_OK set_qss_op_offset(&param.src_qs_op[i], param.coord_origin);
+      /* NOTE: The Dirac built-in bc is periodic. */
+      param.src_qs_op[i].bp[3] = 1-param.time_bc;    
 
       /* Get optional file for saving the base source */
       IF_OK {
@@ -327,10 +338,13 @@ int readin(int prompt) {
       }
 
       IF_OK init_qss_op(&param.src_qs_op[is]);
-      set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
 
       /* Get source operator attributes */
       IF_OK status += get_wv_field_op( stdin, prompt, &param.src_qs_op[is]);
+      /* Enforce a uniform boundary condition */
+      set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
+      /* NOTE: The Dirac built-in bc is periodic. */
+      param.src_qs_op[is].bp[3] = 1-param.time_bc;    
 
       /* Copy parent source attributes to the derived source structure */
       IF_OK {
@@ -484,10 +498,10 @@ int readin(int prompt) {
 			    &param.qic[i].relresid );
       IF_OK status += get_i(stdin, prompt,"precision", &param.qic[i].prec );
 #if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU)
-      if(param.qic[i].prec != PRECISION){
-	node0_printf("WARNING: Compiled precision %d overrides request\n",PRECISION);
+      if(param.qic[i].prec != MILC_PRECISION){
+	node0_printf("WARNING: Compiled precision %d overrides request\n",MILC_PRECISION);
 	node0_printf("QOP or CG_GPU compilation is required for mixed precision\n");
-	param.qic[i].prec = PRECISION;
+	param.qic[i].prec = MILC_PRECISION;
       }
 #endif
       param.qic[i].max = max_cg_iterations;
@@ -501,34 +515,23 @@ int readin(int prompt) {
 
       IF_OK status += get_vf(stdin, prompt, "momentum_twist",
 			     bdry_phase, 3);
-      
-      IF_OK status += get_s(stdin, prompt,"time_bc", savebuf);
+      IF_OK {
+	/* NOTE: The Dirac built-in bc is periodic. */
+	if(param.time_bc == 0)bdry_phase[3] = 1;
+	else bdry_phase[3] = 0;
+      }
 
+      
       if(param.prop_type[i] == CLOVER_TYPE || param.prop_type[i] == IFLA_TYPE){
 
-	/* NOTE: The Dirac built-in bc is periodic. */
-	IF_OK {
-	  if(strcmp(savebuf,"antiperiodic") == 0)bdry_phase[3] = 1;
-	  else if(strcmp(savebuf,"periodic") == 0)bdry_phase[3] = 0;
-	  else{
-	    node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n",
-			 savebuf);
-	    status++;
-	  }
-	}
 
       } else {  /* KS_TYPE || KS0_TYPE || KS4_TYPE */
 
-	/* NOTE: The staggered built-in bc is antiperiodic.  We use
-	   bdry_phase to alter the built-in convention. */
 	IF_OK {
-	  if(strcmp(savebuf,"antiperiodic") == 0)bdry_phase[3] = 0;
-	  else if(strcmp(savebuf,"periodic") == 0)bdry_phase[3] = 1;
-	  else{
-	    node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n",
-			 savebuf);
-	    status++;
-	  }
+	  /* NOTE: The staggered built-in bc is antiperiodic.  We use
+	     bdry_phase to alter the built-in convention. */
+	  if(param.time_bc == 0)bdry_phase[3] = 0;
+	  else bdry_phase[3] = 1;
 	}
       }
 
@@ -714,6 +717,10 @@ int readin(int prompt) {
       /* Get sink operator attributes */
       IF_OK init_qss_op(&param.snk_qs_op[i]);
       IF_OK status += get_wv_field_op( stdin, prompt, &param.snk_qs_op[i]);
+      /* Enforce a uniform boundary condition */
+      IF_OK set_qss_op_offset(&param.snk_qs_op[i], param.coord_origin);
+      /* NOTE: The Dirac built-in bc is periodic. */
+      IF_OK param.snk_qs_op[i].bp[3] = 1-param.time_bc;    
       /* Get sink quark save attributes */
       IF_OK {
 	char descrp[MAXDESCRP];
@@ -996,6 +1003,7 @@ int readin(int prompt) {
 
   /* Construct APE smeared links */
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+  if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
 
   /* Set options for fermion links in case we use them */
   

@@ -136,17 +136,17 @@ the overlap hamiltonian. We reload the pole-crossing (negative) mass */
 
   /*find lowest mode in chirality sector plus*/
   chirality_flag=1;
-  total_R_iters=Kalkreuter(eigVec, eigVal, eigenval_tol, 
-                                         error_decr, 1, MaxIter,
-					 Restart, 
-                                         Kiters, EVENANDODD) ;
-
+  total_R_iters=ks_eigensolve(eigVec, eigVal, eigenval_tol, 
+			      error_decr, 1, MaxIter,
+			      Restart, 
+			      Kiters, EVENANDODD) ;
+  
   /*find lowest mode in chirality sector minus*/
   chirality_flag=-1;
-  total_R_iters=Kalkreuter(&eigVec[1], &eigVal[1], eigenval_tol, 
-                                         error_decr, 1, MaxIter,
-					 Restart, 
-                                         Kiters, EVENANDODD) ;
+  total_R_iters=ks_eigensolve(&eigVec[1], &eigVal[1], eigenval_tol, 
+			      error_decr, 1, MaxIter,
+			      Restart, 
+			      Kiters, EVENANDODD) ;
   if(this_node==0)printf("total Rayleigh iters = %d\n",total_R_iters);
 
   node0_printf("\n");

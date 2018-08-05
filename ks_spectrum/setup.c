@@ -79,7 +79,7 @@ int setup()   {
   /* set up 3rd nearest neighbor pointers and comlink structures
      code for this routine is below  */
   make_3n_gathers();
-  /* set up K-S phase vectors, boundary conditions */
+  /* set up K-S phase vectors, antiperiodic boundary conditions */
   phaseset();
 
   return(prompt);
@@ -238,67 +238,107 @@ int readin(int prompt) {
 
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
     IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
-    
-#if EIGMODE == EIGCG
-    /* for eigcg */
-    /* restart for Lanczos */
-    IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
-
-    /* number of eigenvectors per inversion */
-    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigcgp.Nvecs);
-
-    if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
-      printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
-      status++;
+    IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
+    IF_OK {
+      /* NOTE: The staggered default time bc is antiperiodic. */
+      if(strcmp(savebuf,"antiperiodic") == 0)param.time_bc = 0;
+      else if(strcmp(savebuf,"periodic") == 0)param.time_bc = 1;
+      else{
+	node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n", savebuf);
+	status++;
+      }
     }
+    
+    /* number of eigenpairs */
+    IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
 
-    /* maximum number of eigenvectors */
-    IF_OK status += get_i(stdin, prompt,"Max_Number_of_eigenvals",
-			  &param.eigcgp.Nvecs_max);
+    IF_OK if(param.eigen_param.Nvecs > 0){
 
-    /* eigenvector input */
-    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
-					  param.ks_eigen_startfile);
+      /* eigenvector input */
+      IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
+					    param.ks_eigen_startfile);
+      
+      /* eigenvector output */
+      IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
+					  param.ks_eigen_savefile);
 
-    /* eigenvector output */
-    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
-					param.ks_eigen_savefile);
+      /* If we are reading in eigenpairs, we don't regenerate them */
 
-    param.eigcgp.Nvecs_curr = 0;
-    param.eigcgp.H = NULL;
+#if EIGMODE != EIGCG
+      if(param.ks_eigen_startflag == FRESH){
+	
+	/*------------------------------------------------------------*/
+	/* Dirac eigenpair calculation                                */
+	/*------------------------------------------------------------*/
+	
+	/* max  Rayleigh iterations */
+	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
+	
+	/* Restart  Rayleigh every so many iterations */
+	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
+	
+	/* Kalkreuter iterations */
+	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
+	
+	/* Tolerance for the eigenvalue computation */
+	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
+	
+	/* error decrease per Rayleigh minimization */
+	IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
+	
+#ifdef POLY_EIGEN
+	/* Chebyshev preconditioner */
+	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
+	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
+	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
+	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
+	
+	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
+	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
+	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
+#endif
+      } else {
+	param.eigen_param.MaxIter = 0;
+	param.eigen_param.Restart = 0;
+	param.eigen_param.Kiters = 0;
+	param.eigen_param.tol = 0;
+	param.eigen_param.error_decr = 0.0;
+      }
+
+#else
+
+      /* for eigcg */
+
+      /* maximum number of eigenvectors */
+      param.eigcgp.Nvecs_max =  param.eigen_param.Nvecs;
+
+      /* If we are reading in eigenpairs, we don't regenerate them */
+
+      if(param.ks_eigen_startflag == FRESH){
+	
+
+	/* restart for Lanczos */
+	IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
+	
+	/* number of eigenvectors per inversion */
+	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals_per_inversion", &param.eigcgp.Nvecs);
+	
+	IF_OK {
+	  if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
+	    printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
+	    status++;
+	  }
+	}
+      } else {
+	param.eigcgp.m = 0;
+	param.eigcgp.Nvecs = 0;
+      }
+      
+      param.eigcgp.Nvecs_curr = 0;
+      param.eigcgp.H = NULL;
 #endif
 
-#if EIGMODE == DEFLATION
-    /*------------------------------------------------------------*/
-    /* Dirac eigenpair calculation                                */
-    /*------------------------------------------------------------*/
-
-    /* number of eigenvectors */
-    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.Nvecs);
-
-    /* max  Rayleigh iterations */
-    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.MaxIter);
-
-    /* Restart  Rayleigh every so many iterations */
-    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.Restart);
-
-    /* Kalkreuter iterations */
-    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.Kiters);
-
-     /* Tolerance for the eigenvalue computation */
-    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigenval_tol);
-
-     /* error decrease per Rayleigh minimization */
-    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.error_decr);
-
-    /* eigenvector input */
-    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
-					  param.ks_eigen_startfile);
-
-    /* eigenvector output */
-    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
-					param.ks_eigen_savefile);
-#endif
+    }
 
     /*------------------------------------------------------------*/
     /* Chiral condensate and related quantities                   */
@@ -365,7 +405,9 @@ int readin(int prompt) {
       IF_OK param.parent_source[i] = BASE_SOURCE_PARENT;
       IF_OK init_qss_op(&param.src_qs_op[i]);
       IF_OK set_qss_op_offset(&param.src_qs_op[i], param.coord_origin);
-
+      /* NOTE: The KS built-in bc is antiperiodic. */
+      IF_OK param.src_qs_op[i].bp[3] = param.time_bc;    
+      
       /* Get optional file for saving the base source */
       IF_OK {
 	int source_type, saveflag_s;
@@ -415,10 +457,13 @@ int readin(int prompt) {
       }
 
       IF_OK init_qss_op(&param.src_qs_op[is]);
-      set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
       
       /* Get source operator attributes */
       IF_OK status += get_v_field_op( stdin, prompt, &param.src_qs_op[is]);
+      /* Enforce a uniform boundary condition */
+      set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
+      /* NOTE: The KS built-in bc is antiperiodic. */
+      param.src_qs_op[is].bp[3] = param.time_bc;    
       
       /* Copy parent source attributes to the derived source structure */
       IF_OK {
@@ -479,7 +524,6 @@ int readin(int prompt) {
     IF_OK for(k = 0; k < param.num_set; k++){
       int max_cg_iterations, max_cg_restarts;
       int check = CHECK_NO;
-      Real bdry_phase[4];
 
       /* maximum no. of conjugate gradient iterations */
       IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
@@ -514,27 +558,18 @@ int readin(int prompt) {
       /* The values are entered as fractions of pi */
       /* So 0 0 0.5 inserts a phase exp(i 0.5 pi) */
       
+      Real bdry_phase[4];
       IF_OK status += get_vf(stdin, prompt, "momentum_twist",
 			     bdry_phase, 3);
+      bdry_phase[3] = param.time_bc;  /* Enforce a uniform boundary condition */
 
-      /* Antiperiodic or periodic boundary conditions in time */
-
-      IF_OK status += get_s(stdin, prompt,"time_bc", savebuf);
       IF_OK {
-	/* NOTE: The staggered default time bc is antiperiodic. */
-	if(strcmp(savebuf,"antiperiodic") == 0)bdry_phase[3] = 0;
-	else if(strcmp(savebuf,"periodic") == 0)bdry_phase[3] = 1;
-	else{
-	  node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n",
-		       savebuf);
-	  status++;
-	}
 	IF_OK status += get_i(stdin, prompt,"precision", &param.qic[0].prec );
-#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU)
-	IF_OK if(param.qic[0].prec != PRECISION){
-	  node0_printf("WARNING: Compiled precision %d overrides request\n",PRECISION);
-	  node0_printf("QOP or CG_GPU compilation is required for mixed precision\n");
-	  param.qic[0].prec = PRECISION;   /* Same for all members of a set*/
+#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU) && !defined(HAVE_QPHIX)
+	IF_OK if(param.qic[0].prec != MILC_PRECISION){
+	  node0_printf("WARNING: Compiled precision %d overrides request\n",MILC_PRECISION);
+	  node0_printf("QOP or CG_GPU or QPHIX compilation is required for mixed precision\n");
+	  param.qic[0].prec = MILC_PRECISION;   /* Same for all members of a set*/
 	}
 #endif
       }
@@ -665,6 +700,10 @@ int readin(int prompt) {
       }
       
       IF_OK init_qss_op(&param.snk_qs_op[i]);
+      /* Enforce a uniform boundary condition */
+      set_qss_op_offset(&param.snk_qs_op[i], param.coord_origin);
+      /* NOTE: The KS built-in bc is antiperiodic. */
+      param.snk_qs_op[i].bp[3] = param.time_bc;    
 
       if( param.parent_type[i] == PROP_TYPE ||  param.parent_type[i] == QUARK_TYPE ){
 	/* Next we get its index */
@@ -1132,6 +1171,7 @@ int readin(int prompt) {
   phases_in = OFF;
   rephase( ON );
 
+
 #ifdef U1_FIELD
   /* Read the U(1) gauge field, if wanted */
   start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
@@ -1153,7 +1193,7 @@ int readin(int prompt) {
   fermion_links_want_deps(1);
 #endif
 
-  fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 
 #else
 
@@ -1161,7 +1201,7 @@ int readin(int prompt) {
   fermion_links_want_du0(1);
 #endif
 
-  fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 
 #endif
 
@@ -1171,7 +1211,7 @@ int readin(int prompt) {
      adjusted according to boundary phases and momentum twists. */
   rephase( OFF );
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
-  apply_apbc( ape_links );
+  if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
   rephase( ON );
 
 #if EIGMODE == EIGCG
@@ -1209,18 +1249,20 @@ int readin(int prompt) {
   }
 #endif
 
-#if EIGMODE == DEFLATION
-  /* malloc for eigenpairs */
-  eigVal = (double *)malloc(param.Nvecs*sizeof(double));
-  eigVec = (su3_vector **)malloc(param.Nvecs*sizeof(su3_vector *));
-  for(i=0; i < param.Nvecs; i++)
-    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-
-  /* Do whatever is needed to get eigenpairs */
-  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &param.Nvecs, eigVal, eigVec, 1);
-  if(param.fixflag != NO_GAUGE_FIX){
-    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+#if EIGMODE != EIGCG
+  if(param.eigen_param.Nvecs > 0){
+    /* malloc for eigenpairs */
+    eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
+    eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
+    for(i=0; i < param.eigen_param.Nvecs; i++)
+      eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+    
+    /* Do whatever is needed to get eigenpairs */
+    status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+			     &param.eigen_param.Nvecs, eigVal, eigVec, 1);
+    if(param.fixflag != NO_GAUGE_FIX){
+      node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+    }
   }
 #endif
 

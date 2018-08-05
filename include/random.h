@@ -1,5 +1,5 @@
-#ifndef _RANDOM_H
-#define _RANDOM_H
+#ifndef _MILC_RANDOM_H
+#define _MILC_RANDOM_H
 
 #include "../include/precision.h"
 
@@ -17,4 +17,4 @@ typedef struct {
    random value on [0,1] */
 Real myrand(double_prn *prn_pt);
 
-#endif /* _RANDOM_H */
+#endif /* _MILC_RANDOM_H */

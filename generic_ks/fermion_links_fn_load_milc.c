@@ -303,7 +303,6 @@ void load_fn_links_gpu(info_t *info, fn_links_t *fn, ks_action_paths *ap,
 		       su3_matrix *links, int want_back)
 {
   ks_component_paths *p = &ap->p;
-  double final_flop = 0;
   double dtime = -dclock();
 
   load_fatlonglinks_gpu(info, fn->fat, fn->lng, p, links);
@@ -315,7 +314,6 @@ void load_fn_links_gpu(info_t *info, fn_links_t *fn, ks_action_paths *ap,
 
   dtime += dclock();
   info->final_sec = dtime;
-  info->final_flop = final_flop;
 }
 #endif
 

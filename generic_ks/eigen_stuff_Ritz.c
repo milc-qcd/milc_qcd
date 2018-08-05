@@ -24,20 +24,13 @@
  *  overkill.                                                             */
 /**#define STRICT_CONVERGENCE	(taken out by UMH)**/
 
-
-/* If you do not define the USE_DSLASH_SPECIAL then calls to the standard   *
- * dslash are made. If you do define USE_DSLASH_SPECIAL then DSLASH_SPECIAL *
- * is used                                                                  */
-#ifdef FN
-#define USE_DSLASH_SPECIAL
-#endif
-
-
 /* Include files */
 #include "generic_ks_includes.h"
 #include "../include/jacobi.h"
 #include "../include/dslash_ks_redefine.h"
 #include <string.h>
+
+#ifdef Kalkreuter_Ritz
 
 static void copy_Vector(su3_vector *src, su3_vector *res ) ; 
 static void norm2(su3_vector *vec, double *norm, int parity); 
@@ -58,7 +51,7 @@ static void vec_plus_double_vec_mult(su3_vector *vec1, double *a, su3_vector *ve
 static void normalize(su3_vector *vec,int parity) ;
 static void project_out(su3_vector *vec, su3_vector **vector, int Num, int parity);
 static void constructArray(su3_vector **eigVec, su3_vector **MeigVec, Matrix *A,
-		    double *err, int *converged, int parity,
+			   double *err, int *converged, ks_eigen_param *eigen_param,
 		    imp_ferm_links_t *fn);
 static void RotateBasis(su3_vector **eigVec, Matrix *V, int parity) ;
 
@@ -257,7 +250,7 @@ static void normalize(su3_vector *vec,int parity){
 
 int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance, 
 		 Real RelTol, int Nvecs, int MaxIter, int Restart, 
-		 int parity, imp_ferm_links_t *fn){
+		 ks_eigen_param *eigen_param, imp_ferm_links_t *fn){
 
   int iter ;
   double beta = 0., cos_theta, sin_theta ;
@@ -268,6 +261,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
   double g_norm, old_g_norm, start_g_norm ;
   double_complex cc ;
   su3_vector *Mvec, *grad, *P, *MP ;
+  int parity = eigen_param->parity;
   
   Mvec     = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector)) ;
   grad     = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector)) ;
@@ -278,7 +272,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
   old_quot = 1.0e+16 ;
   project_out(vec, eigVec, Nvecs, parity);
   normalize(vec,parity) ; 
-  Matrix_Vec_mult(vec,Mvec,parity, fn) ;
+  Matrix_Vec_mult(vec,Mvec,eigen_param, fn) ;
   project_out(Mvec, eigVec, Nvecs, parity);
   
   /* Compute the quotient quot=vev*M*vec */
@@ -308,7 +302,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
 	 ( ((iter<MaxIter)&&(g_norm/start_g_norm>RelTol)) || (iter<MINITER) ) 
 	 ){
     iter++ ;
-    Matrix_Vec_mult(P,MP,parity, fn) ;
+    Matrix_Vec_mult(P,MP,eigen_param, fn) ;
     dot_product(vec, MP, &cc, parity) ;
     real_vecMp = cc.real ;
     dot_product(P, MP, &cc, parity) ;
@@ -337,7 +331,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
       /* Project vec on the orthogonal complement of eigVec */
       project_out(vec, eigVec, Nvecs, parity);
       normalize(vec,parity) ;
-      Matrix_Vec_mult(vec,Mvec,parity, fn);
+      Matrix_Vec_mult(vec,Mvec,eigen_param, fn);
       /* Recompute the quotient */
       dot_product(vec, Mvec, &cc, parity) ;
       /* quot is real since M is hermitian. quot = vec*M*vec */
@@ -404,16 +398,17 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
 /*****************************************************************************/
 /* Returns the projected matrix A and the error of each eigenvector */
 static void constructArray(su3_vector **eigVec, su3_vector **MeigVec, Matrix *A,
-		    double *err, int *converged, int parity,
+		    double *err, int *converged, ks_eigen_param *eigen_param,
 		    imp_ferm_links_t *fn){
   int i,j,Nvecs ;
   su3_vector *grad ;
   double_complex cc,Aij,Aji ;
+  int parity = eigen_param->parity;
 
   Nvecs = A->N ;
   grad = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
   for(i=0;i<Nvecs;i++){
-    if(converged[i]==0) Matrix_Vec_mult(eigVec[i],MeigVec[i],parity, fn) ;
+    if(converged[i]==0) Matrix_Vec_mult(eigVec[i],MeigVec[i],eigen_param, fn) ;
     dot_product(MeigVec[i], eigVec[i], &cc, parity) ;
     A->M[i][i].real = cc.real ; A->M[i][i].imag = 0.0 ;
     copy_Vector(MeigVec[i], grad) ;
@@ -472,10 +467,17 @@ static void RotateBasis(su3_vector **eigVec, Matrix *V, int parity){
 }
 
 /*****************************************************************************/
-int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance, 
-		    Real RelTol, int Nvecs, int MaxIter, 
-		    int Restart, int Kiters, int init ){
+int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, 
+				  ks_eigen_param *eigen_param, int init ){
 
+  Real Tolerance = eigen_param->tol;
+  Real RelTol    = eigen_param->error_decr;
+  int Nvecs      = eigen_param->Nvecs;
+  int Nvecs_in   = eigen_param->Nvecs_in;
+  int MaxIter    = eigen_param->MaxIter;
+  int Restart    = eigen_param->Restart;
+  int Kiters     = eigen_param->Kiters;
+  int parity     = eigen_param->parity;
   int total_iters=0 ;
   int j;
   Matrix Array,V ;
@@ -487,14 +489,12 @@ int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance,
   double *grad, *err ;
   int iter = 0 ;
   int *converged ;
-  int parity = active_parity ;
   Real ToleranceG ;
 #ifdef EIGTIME
   double dtimec;
 #endif
-  imp_ferm_links_t **fn;
 
-  fn = get_fm_links(fn_links);
+  imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
 
 
   ToleranceG = 10.0*Tolerance ;
@@ -513,16 +513,16 @@ int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance,
     MeigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
   }
 
-  /* If init is true, initiallize all the eigenvectors to a random
-     vector. Otherwise, start from the eigenpairs we are given.*/
-  for(j=0;j<Nvecs;j++) {
+  /* Start from the eigenpairs we are given, but pretend then are not
+     converged.  Initiallize the remaining ones to a random vector */
+  for(j=0;j<Nvecs;j++)
     grad[j] = 1.0e+10 ;
-    if(init){
-      grsource_plain_field( eigVec[j], parity);
-      eigVal[j] = 1.0e+16 ;
-    }
+  
+  for(j=Nvecs_in;j<Nvecs;j++) {
+    grsource_plain_field( eigVec[j], parity);
+    eigVal[j] = 1.0e+16 ;
   }
-
+  
 #ifdef EIGTIME
   dtimec = -dclock();
 #endif
@@ -539,7 +539,7 @@ int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance,
 	converged[j] = 0 ;
 	copy_Vector(eigVec[j],vec) ;
 	total_iters += Rayleigh_min(vec, eigVec, ToleranceG, RelTol,
-				    j, MaxIter , Restart, parity, fn[0]) ;
+				    j, MaxIter , Restart, eigen_param, fn) ;
 	/* Copy only wanted parity (UMH) */
 	/** copy_Vector(vec,eigVec[j]) ; **/
 	FORSOMEPARITY(i,s,parity){
@@ -555,7 +555,7 @@ int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
     /* if you didn't act on eigVec[i] last time, converged[i]=1,
        and  MeigVec hasn't changed, so don't compute it */
-    constructArray(eigVec, MeigVec, &Array, grad, converged, parity, fn[0]) ;
+    constructArray(eigVec, MeigVec, &Array, grad, converged, eigen_param, fn) ;
 
 #ifdef DEBUG
     node0_printf("Eigenvalues before diagonalization\n");
@@ -635,3 +635,17 @@ int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance,
   return total_iters ;
 }
 
+# else
+
+/* Stub to allow compilation (but not execution) in case Kalkreuter_Ritz is not available */
+
+int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, 
+				  ks_eigen_param *eigen_param, int init)
+{
+  node0_printf("ks_eigensolve_Kalkreuter_Ritz: Requires compilation with the Kalkreuter_Ritz package\n");
+  terminate(1);
+
+  return 0;
+}
+
+#endif

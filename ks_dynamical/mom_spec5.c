@@ -94,7 +94,7 @@ int mom_spec() /* return the C.G. iteration number */
          /* do a C.G. */
 	 load_ferm_links(&fn_links);
          cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			   niter, rsqprop, PRECISION, EVEN, &finalrsq,
+			   niter, rsqprop, MILC_PRECISION, EVEN, &finalrsq,
 			   &fn_links);
          /* Now solution vector is in xxx */
          /* Multiply by -Madjoint, even site source -> propmat[0] */
@@ -124,7 +124,7 @@ int mom_spec() /* return the C.G. iteration number */
          /* do a C.G. */
 	 load_ferm_links(&fn_links);
          cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			   niter, rsqprop, PRECISION, EVEN, &finalrsq,
+			   niter, rsqprop, MILC_PRECISION, EVEN, &finalrsq,
 			   &fn_links);
          /* Now solution vector is in xxx */
          /* Multiply by -Madjoint, even site nonzero mom. source -> propmat[1]*/
@@ -153,7 +153,7 @@ int mom_spec() /* return the C.G. iteration number */
          /* do a C.G. */
 	 load_ferm_links(&fn_links);
          cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			   niter, rsqprop, PRECISION, ODD, &finalrsq,
+			   niter, rsqprop, MILC_PRECISION, ODD, &finalrsq,
 			   &fn_links);
          /* Now solution vector is in xxx */
          /* Multiply by -Madjoint, odd site source -> ttt */

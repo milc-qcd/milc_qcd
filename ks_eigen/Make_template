@@ -31,29 +31,39 @@ MY_HEADERS = \
   ks_eig_includes.h \
   quark_action.h
 
-HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} \
+  ${QUDA_HEADERS} ${QPHIX_HEADERS} ${GRID_HEADERS} ${SCIDAC_HEADERS}
 
+# All required object files
+# Basic set from current directory
 MY_OBJECTS = \
   control.o \
   gauge_info.o \
   setup.o
 
+G_U1_OBJECTS =       \
+  io_u1lat.o         \
+  u1link.o           \
+  u1plaq.o
 
-LAYOUT = layout_hyper_prime.o
+# Selection of layout
+
+LAYOUT = layout_hyper_prime.o # Choices possible here
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} jacobi.o spin_taste_ops.o gammas.o
 
-ADD_OBJECTS += eigen_stuff_PRIMME.o eigen_stuff_Ritz.o eigen_stuff_helpers.o
+ADD_OBJECTS += eigen_stuff_ARPACK.o eigen_stuff_PRIMME.o eigen_stuff_Ritz.o 
+ADD_OBJECTS += eigen_stuff_helpers.o io_helpers_ks_eigen.o io_ks_eigen.o io_scidac_ks_eigen.o
 
 # Always use PRIMME if it is provided
 ifeq ($(strip ${HAVEPRIMME}),true)
   ADDDEFINES += -DPRIMME
+# Always use ARPACK if it is provided
+else ifeq ($(strip ${HAVEARPACK}),true)
+  ADDDEFINES += -DARPACK
+else
+  ADDDEFINES += -DKalkreuter_Ritz
 endif
-
-# # Generic QOP objects
-# ifeq ($(strip ${HAVEQOP}),true)
-#   ADD_OBJECTS += ${GENERICQOP}
-# endif
 
 OBJECTS = \
   ${MY_OBJECTS} \
@@ -71,7 +81,8 @@ QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
 
 # Default rule for C compilation
-.c.o: ; ${CC} -c ${CFLAGS}  $*.c 
+.c.o: ; ${CC} -c ${CFLAGS} $<
+.cc.o: ; ${CXX} -c ${CXXFLAGS} $<
 
 # To force a full remake when changing targets
 LASTMAKE = .lastmake.${MAKEFILE}.${P}.${MYTARGET}
@@ -83,13 +94,13 @@ ${LASTMAKE}: ${ALL_MAKES}
 
 # All make files used in this compilation
 ALL_MAKES = \
-   Make_template \
-   ${MAKEFILE} \
-   ../Make_template_combos \
-   ../Make_template_scidac \
-   ../generic/Make_template \
-   ../generic_ks/Make_template \
-   ../generic_wilson/Make_template
+  Make_template \
+  ${MAKEFILE} \
+  ../Make_template_combos \
+  ../Make_template_scidac \
+  ../generic/Make_template \
+  ../generic_ks/Make_template \
+  ../generic_u1/Make_template   
 
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
@@ -101,43 +112,32 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 	@echo Copying quark_action.h from ${QUARKIMP}/${QUARK}
 	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
 
-ifeq ($(strip ${HAVEQMP}),true)
-  DHAVE_QMP = -DHAVE_QMP
-endif
+##### Targets:
 
-ifeq ($(strip ${HAVEQIO}),true)
-  DHAVE_QIO = -DHAVE_QIO
-endif
-
-ifeq ($(strip ${HAVEQDP}),true)
-  DHAVE_QDP = -DHAVE_QDP
-endif
-
-ifeq ($(strip ${HAVEQOP}),true)
-  DHAVE_QOP = -DHAVE_QOP
-endif
-
-DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
-
-########################################################
 # Optional DEFINES for targets
 
 # -DFN          identifies fat-Naik-like actions with only next and 3rd
 #               next neighbor linkage
 
-##### Targets:
-
 su3_eigen_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \
-	"DEFINES = -DFN" \
+	"DEFINES = -DFN -DEIGEN_QIO" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS = ${FN_OBJECTS}"
 
 su3_eigen_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \
-	"DEFINES = -DFN" \
+	"DEFINES = -DFN -DEIGEN_QIO" \
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS = ${HISQ_OBJECTS}"
+
+# HISQ + U(1) targets WARNING: Naive implementation
+
+su3_u1_eigen_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \
+	"DEFINES = -DFN -DEIGEN_QIO -DU1_FIELD" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS = ${HISQ_OBJECTS} ${G_U1_OBJECTS}"
 
 # No QOP support for p4, so we use pure MILC routines only and
 # undefine the macros HAVE_QOP and HAVE_QDP
@@ -165,7 +165,8 @@ include ../generic_wilson/Make_template
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
 	cd ${LIBDIR} ;\
-	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" \
+        "ARCH=${ARCH}" "COMPILER=${COMPILER}" all
 
 localmake: ${OBJECTS} ${LIBRARIES}
 	${LD} -o ${MYTARGET} ${LDFLAGS} \

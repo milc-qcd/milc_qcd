@@ -37,6 +37,8 @@ typedef struct {
   /*  REPEATING BLOCK */
   int startflag;	/* what to do for beginning lattice */
   Real u0;
+  int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
+  int time_bc;          /* 0 for antiperiodic, 1 for periodic */
   Real staple_weight;
   int ape_iter;
   int saveflag;	/* what to do for saving lattice */
@@ -44,24 +46,13 @@ typedef struct {
   char savefile[MAXFILENAME];
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 #if EIGMODE == EIGCG
-  int ks_eigen_startflag; /* what to do for beginning eigenvectors */
-  int ks_eigen_saveflag; /* what to do for ending eigenvectors */
-  char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
-  char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
   eigcg_params eigcgp; /* parameters for eigCG */
 #endif
-#if EIGMODE == DEFLATION
   int ks_eigen_startflag; /* what to do for beginning eigenvectors */
   int ks_eigen_saveflag; /* what to do for ending eigenvectors */
-  int Nvecs; /* number of eigenvectors */
-  int MaxIter ; /* max  Rayleigh iterations */
-  int Restart ; /* Restart  Rayleigh every so many iterations */
-  int Kiters ; /* Kalkreuter iterations */
-  Real eigenval_tol ; /* Tolerance for the eigenvalue computation */
-  Real error_decr ; /* error decrease per Rayleigh minimization */
+  ks_eigen_param eigen_param; /* parameters for the eigensolver */
   char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
   char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
-#endif
   int num_set;                  /* Number of sets */
   int num_pbp_masses[MAX_SET];   /* Number of masses for pbp calculation */
   int begin_pbp_masses[MAX_SET]; /* index of beginning propagator in this set */

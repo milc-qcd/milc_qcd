@@ -2,24 +2,14 @@ PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
 PB_DMDMU_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 PB_D2MDMU2_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
- OK converged final_rsq= 6.5e-19 (cf 1e-18) rel = XXX (cf 0) restarts = XXX iters= XXX
- OK converged final_rsq= 6.2e-19 (cf 1e-18) rel = XXX (cf 0) restarts = XXX iters= XXX
 TR_MidM_MidM: mass 2e-05 2e-05 ( 0 of 0 )
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
 PB_DMDMU_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 PB_D2MDMU2_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
- OK converged final_rsq= 5.5e-19 (cf 1e-18) rel = XXX (cf 0) restarts = XXX iters= XXX
- OK converged final_rsq= 3.1e-19 (cf 1e-18) rel = XXX (cf 0) restarts = XXX iters= XXX
 TR_MidM_MidM: mass 2e-05 2e-05 ( 0 of 0 )
- OK converged final_rsq= 1e-13 (cf 0) rel = 1e-10 (cf 2e-10 restarts = XXX iters= XXX
- OK converged final_rsq= 1e-13 (cf 0) rel = 1e-10 (cf 2e-10 restarts = XXX iters= XXX
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
 PB_DMDMU_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 PB_D2MDMU2_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
- OK converged final_rsq= 2e-13 (cf 0) rel = 2e-10 (cf 2e-10 restarts = XXX iters= XXX
- OK converged final_rsq= 2e-13 (cf 0) rel = 2e-10 (cf 2e-10 restarts = XXX iters= XXX
 TR_MidM_MidM: mass 2e-05 2e-05 ( 0 of 0 )
-Time to calculate observables XXX
-RUNNING COMPLETED

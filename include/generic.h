@@ -183,6 +183,10 @@ void copy_site_member_from_v_field(field_offset sv, su3_vector *v);
 void add_v_fields(su3_vector *vsum, su3_vector *v1, su3_vector *v2);
 void destroy_v_field(su3_vector *v);
 
+void saxpby_v_field(su3_vector *w, Real a, su3_vector *x, Real b, su3_vector *y);
+void saxpbypcz_v_field(su3_vector *w, Real a, su3_vector *x, 
+		       Real b, su3_vector *y, Real c, su3_vector *z);
+
 /* array versions of the above */
 
 Real* create_r_array_field(int n);
@@ -283,13 +287,18 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 		    int nantiherm, field_offset antiherm_offset[], 
 		    int antiherm_parity[] );
 
-/* gauge_force_imp.c and gauge_force_symzk1_qop.c */
-/* gauge_force_imp.c and gauge_force_symzk1_qop.c */
+/* gauge_force_imp_*.c */
 void imp_gauge_force_cpu( Real eps, field_offset mom_off );
 void imp_gauge_force_gpu( Real eps, field_offset mom_off );
 
+/* gauge_force_symzk1_qphix.c */
+
+void imp_gauge_force_qphix( Real eps, field_offset mom_off );
+
 #ifdef USE_GF_GPU
 #define imp_gauge_force imp_gauge_force_gpu
+#elif USE_GF_QPHIX
+#define imp_gauge_force imp_gauge_force_qphix
 #else
 #define imp_gauge_force imp_gauge_force_cpu
 #endif

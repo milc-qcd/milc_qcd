@@ -1104,7 +1104,7 @@ gamma_gamma_string(int index){
 
   strcpy(label, gamma_label(gamma_spin_index));
   strcat(label, "-");
-  strcpy(label, gamma_label(gamma_taste_index));
+  strcat(label, gamma_label(gamma_taste_index));
 
   return label;
 }
@@ -1207,7 +1207,6 @@ spin_taste_op_links(int index, int r0[], su3_vector *dest,
 		    su3_vector *src, su3_matrix *links){
   switch(index){
   case pion5:
-    copy_v_field(dest, src);
     mult_pion5_field(r0, src, dest);
     break;
   case pion05:
@@ -1328,7 +1327,7 @@ mult_rhois_fn_field( imp_ferm_links_t *fn, int fdir,
   register int i;
   register site *s;  
   
-  /* apply the symmetric shift FN operator (uses fat and long links) */
+  /* apply the shift FN operator (uses fat links) */
   shift_fn_field(fn, fdir, fb, src, dest);
 
   /* Apply an antiquark gamma_5 x gamma_5 */

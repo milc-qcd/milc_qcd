@@ -46,6 +46,8 @@ while(<>){
 	next;
     }
 
+    $add_macro =~ s/,/ /;
+    
     if(defined($choose_exec) && $exec ne $choose_exec){next;}
 
     if(defined($choose_prec) && $prec ne $choose_prec){next;}
@@ -64,7 +66,7 @@ while(<>){
 	if($macro eq ""){
 	    print `cd .. ; make clean ; make $exec \"PRECISION=$prec\" 2>&1`;
 	} else {
-	    print `cd .. ; make clean ; make $exec \"PRECISION=$prec\" \"$macro\" 2>&1`;
+	    print `cd .. ; make clean ; make $exec \"PRECISION=$prec\" $macro 2>&1`;
 	}
 	$oldexec = $exec;
 	$oldprec = $prec;

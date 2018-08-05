@@ -96,9 +96,9 @@ void Matrix_Vec_mult(wilson_vector *src, wilson_vector *res, int parity) ;
 void cleanup_Matrix() ;
 int Rayleigh_min(wilson_vector *vec,wilson_vector **eigVec,Real Tolerance, 
                  Real RelTol,int Nvecs,int MaxIter,int Restart,int parity);
-int Kalkreuter(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
-               Real RelTol, int Nvecs, int MaxIter, 
-               int Restart, int iters, int parity) ;
+int ks_eigensolve(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
+		  Real RelTol, int Nvecs, int MaxIter, 
+		  int Restart, int iters, int parity) ;
 
 void measure_chirality(wilson_vector *src, double *chirality, int parity) ;
 void print_densities(wilson_vector *src, char *tag, int y,int z,int t,int parity);

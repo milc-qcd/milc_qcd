@@ -192,9 +192,9 @@ create_fermion_links(int precision, int phases_in, su3_matrix *links){
 
   /* Precision for MILC is ignored: use the prevailing precision */
 
-  if(precision != PRECISION)
+  if(precision != MILC_PRECISION)
     if(mynode() == 0)printf("%s: Warning. Precision request replaced by %d\n",
-			    myname, PRECISION);
+			    myname, MILC_PRECISION);
 
   if( phases_in != 1){
     if(mynode() == 0)printf("BOTCH: %s needs phases in\n",myname); 
@@ -224,7 +224,7 @@ create_fermion_links(int precision, int phases_in, su3_matrix *links){
 
 #ifdef FLTIME
   if(mynode()==0)printf("FLTIME: time = %e (asqtad %s) mflops = %e\n",
-	       info.final_sec,milc_prec[PRECISION-1],
+	       info.final_sec,milc_prec[MILC_PRECISION-1],
 	       info.final_flop/(1e6*info.final_sec) );
 #endif
   return fl;
@@ -268,18 +268,18 @@ restore_fermion_links(fermion_links_t *fl, int precision, int phases_in, su3_mat
     terminate(1);
   }
 
-  if(precision != PRECISION)
+  if(precision != MILC_PRECISION)
     if(mynode() == 0)printf("%s: Warning. Precision request replaced by %d\n",
-			    myname, PRECISION);
+			    myname, MILC_PRECISION);
 
   if( phases_in != 1){
-    if(mynode() == 0)printf("BOTCH: %s needs phases in\n",myname); terminate(1);
+    if(mynode() == 0){printf("BOTCH: %s needs phases in\n",myname); terminate(1);}
   }
   
   restore_milc_fm_links_t(&info, fl->flg, links, fl->options.want_back);
 #ifdef FLTIME
   if(mynode()==0)printf("FLTIME: time = %e (asqtad %s) mflops = %e\n",
-	       info.final_sec,milc_prec[PRECISION-1],
+	       info.final_sec,milc_prec[MILC_PRECISION-1],
 	       info.final_flop/(1e6*info.final_sec) );
 #endif
 }

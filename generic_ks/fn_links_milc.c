@@ -10,6 +10,10 @@
 #ifdef QCDOC
 #define special_alloc qcdoc_alloc
 #define special_free qfree
+#elif defined(USE_FL_GPU)
+#include "../include/generic_quda.h"
+#define special_alloc qudaAllocatePinned
+#define special_free qudaFreePinned
 #else
 #define special_alloc malloc
 #define special_free free
@@ -227,6 +231,14 @@ load_fn_backlinks(fn_links_t *fn){
 /* Create/destroy fn links                                           */
 /*-------------------------------------------------------------------*/
 
+void 
+init_ferm_links(fn_links_t *fn){
+  fn->fat = NULL;
+  fn->lng = NULL;
+  fn->fatback = NULL;
+  fn->lngback = NULL;
+  fn->notify_quda_new_links = 1;
+}
 /* The fat/long members are not created */
 
 fn_links_t *
@@ -245,6 +257,7 @@ create_fn_links(void){
     terminate(1);
   }
   
+  init_ferm_links(fn);
   fn->phase = create_link_phase_info();
   fn->fat = create_fatlinks();
   fn->lng = create_lnglinks();
@@ -384,3 +397,14 @@ add_fn(fn_links_t *fn_A, fn_links_t *fn_B, fn_links_t *fn_C){
   END_LOOP_OMP;
 }
 
+int
+fresh_fn_links(fn_links_t *fn)
+{
+  return fn->notify_quda_new_links;
+}
+
+void
+cancel_quda_notification(fn_links_t *fn)
+{
+  fn->notify_quda_new_links = 0;
+}

@@ -104,8 +104,8 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
     restore_fermion_links_from_site(fn_links, my_qic[0].prec);
     fn = get_fm_links(fn_links);
 
-    /* Apply twisted boundary conditions and move KS phases and
-       time boundary to new origin r0, if requested */
+    /* Apply twisted boundary conditions and move KS phases, if
+       requested */
     /* This operation applies the phase to the boundary FN links */
     for(j = 0; j < n_naiks; j++){
       set_boundary_twist_fn(fn[j], mybdry_phase, r0);
@@ -113,12 +113,14 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
     }
 
     /* Apply twist to the APE links */
-    /* They do not carry the KS phases, but they do carry an antiperiodic bc */
-    /* This operation applies the phase to the volume */
+    /* They do not carry the KS phases, but they do carry the time bc */
+    /* This operation applies the phase to the boundary */
     //    mybdry_phase[3] = 0; 
     //    momentum_twist_links(mybdry_phase, 1, ape_links);
     //    mybdry_phase[3] = bdry_phase[3]; 
+    mybdry_phase[3] = 0;
     boundary_twist_field( mybdry_phase, r0, 1, ape_links);
+    mybdry_phase[3] = bdry_phase[3];
 
     /* Copy pointers for fermion links, based on Naik epsilon indices */
     fn_multi = (imp_ferm_links_t **)
@@ -218,17 +220,16 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	     the optimized mat_invert_uml_field algorithm. */
 	  
 	  if(startflag[0] == FRESH){
-	    tot_iters += mat_invert_uml_field(src, dst[0], 
-	       my_qic+0, my_ksp[0].mass, fn_multi[0]);
+	    mat_invert_uml_field(src, dst[0], my_qic+0, my_ksp[0].mass, 
+				 fn_multi[0]);
 	  } else {
-	    tot_iters += mat_invert_cg_field(src, dst[0],
-	       my_qic+0, my_ksp[0].mass, fn_multi[0]);
+	    mat_invert_cg_field(src, dst[0], my_qic+0, my_ksp[0].mass, 
+				fn_multi[0]);
 	  }
 	} else {
 	  
 	  /* Multimass inversion */
-	  tot_iters = 
-	    mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
+	  mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
 	}
 	
 	
@@ -300,7 +301,9 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
     //    mybdry_phase[3] = 0; 
     //    momentum_twist_links(mybdry_phase, -1, ape_links);
     //    mybdry_phase[3] = bdry_phase[3]; 
+    mybdry_phase[3] = 0;
     boundary_twist_field( mybdry_phase, r0, -1, ape_links);
+    mybdry_phase[3] = bdry_phase[3];
 
   /* Unapply twisted boundary conditions on the fermion links and
      restore conventional KS phases and antiperiodic BC, if

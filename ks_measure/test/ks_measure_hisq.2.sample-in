@@ -17,6 +17,10 @@ u0 0.8696
 forget
 staple_weight 0
 ape_iter 0
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
+
+max_number_of_eigenpairs 0
 
 # Chiral condensate and related measurements
 
