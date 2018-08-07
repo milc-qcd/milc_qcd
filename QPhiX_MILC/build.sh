@@ -16,7 +16,7 @@ GIT_BRANCH=gauge_force
 
 if [ -z "${ARCH}" ]
 then
-   echo "Usage $0 <scalar|knl|hsw> <CC> <CXX>"
+   echo "Usage $0 <scalar|knl|skx|hsw> <CC> <CXX>"
    exit 1
 fi
 
@@ -27,6 +27,14 @@ then
 elif [ ${ARCH} = "knl" ]
 then
   modecmd="mode=mic"
+  TARGET=avx512
+elif [ ${ARCH} = "skx" ]
+then
+  modecmd="mode=mic"
+  TARGET=avx512
+elif [ ${ARCH} = "hsw" ]
+then
+  modecmd="mode=hsw"
   TARGET=avx512
 else
   modecmd="mode=mic"
@@ -68,7 +76,7 @@ fi
 
 pushd ${dir}
 
-${MAKE} -f Makefile_qphixlib ${modecmd} "PK_CXX=${PK_CXX}"
+${MAKE} -f Makefile_qphixlib ${modecmd} "ARCH=${ARCH}" "PK_CXX=${PK_CXX}"
 
 popd
 

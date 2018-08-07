@@ -504,6 +504,8 @@ ifeq ($(strip ${WANTGRID}), true)
   ifeq ($(strip ${MPP}),true)
     ifeq ($(strip ${ARCH}),knl)
       GRID_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),skx)
+      GRID_ARCH = avx512
     else ifeq ($(strip ${ARCH}),hsw)
       GRID_ARCH = avx2
     endif
