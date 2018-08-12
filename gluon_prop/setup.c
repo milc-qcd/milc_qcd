@@ -49,7 +49,7 @@ static double eps_naik[MAX_NAIK];
 
 /* SETUP ROUTINES */
 int initial_set(){
-int prompt,status;
+int prompt=0,status;
 
     /* On node zero, read lattice size and send to others */
     if(mynode()==0){

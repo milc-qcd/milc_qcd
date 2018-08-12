@@ -59,7 +59,7 @@ static double eps_naik[MAX_NAIK];
 /* SETUP ROUTINES */
 static int 
 initial_set(){
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif

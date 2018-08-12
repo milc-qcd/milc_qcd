@@ -53,7 +53,7 @@ setup()
 int 
 initial_set()
 {
-  int prompt,status;
+  int prompt=0,status;
   int i;
 
   /* On node zero, read lattice size, seed, nflavors1, nflavors2,

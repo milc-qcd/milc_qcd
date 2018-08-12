@@ -99,7 +99,7 @@ int
 setup()
 {
   int initial_set();
-  int prompt, dir;
+  int prompt=0, dir;
   
   /* print banner, get volume, nflavors1,nflavors2, nflavors, seed */
   prompt = initial_set();
@@ -139,7 +139,7 @@ static double eps_naik[MAX_NAIK];
 int 
 initial_set()
 {
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif

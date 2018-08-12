@@ -34,7 +34,7 @@ int  setup()   {
 
 /* SETUP ROUTINES */
 int initial_set(void){
-int prompt,status;
+int prompt=0,status;
     /* On node zero, read lattice size, seed, nflavors and send to others */
     if(mynode()==0){
 	/* print banner */

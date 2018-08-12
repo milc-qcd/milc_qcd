@@ -65,7 +65,7 @@ int setup(void)
 static int initial_set(void)
 {
 
-  int prompt,status;
+  int prompt=0,status;
 
   if(mynode()==0)
     {

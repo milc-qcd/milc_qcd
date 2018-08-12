@@ -89,7 +89,7 @@ setup()
 int 
 initial_set()
 {
-  int prompt,status;
+  int prompt=0,status;
   /* On node zero, read lattice size, seed, nflavors1, nflavors2,
      nflavors, and send to others */
   if(mynode()==0){

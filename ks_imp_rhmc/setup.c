@@ -162,7 +162,7 @@ static double eps_naik[MAX_NAIK];
 static int 
 initial_set(void)
 {
-  int prompt,status,i,tmporder;
+  int prompt=0,status,i,tmporder;
   Real current_naik_epsilon;
 
   /* On node zero, read lattice size, seed, and send to others */

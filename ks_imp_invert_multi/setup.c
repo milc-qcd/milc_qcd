@@ -73,7 +73,7 @@ node0_printf("Finished setup\n"); fflush(stdout);
 
 /* SETUP ROUTINES */
 int initial_set(){
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
