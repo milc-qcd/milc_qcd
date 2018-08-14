@@ -498,7 +498,7 @@ ifeq ($(strip ${WANTGRID}), true)
   HAVE_GRID = true
   CPHI += -DHAVE_GRID
 
-  CPHI += -DGRID_MULTI_CG=GRID_BLOCKCG # Other choices: GRID_5DCG GRID_MRHSCG
+  CPHI += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
   CPHI += -DGRID_SHMEM_MAX=2048
 
   ifeq ($(strip ${MPP}),true)
