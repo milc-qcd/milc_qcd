@@ -37,12 +37,12 @@ int setup(void)
   /* print banner, get lattice parameters */
   prompt=initial_set();
 
-  /* initialize the node random number generator */
-  initialize_prn(&node_prn,iseed,volume+mynode());
-
   /* initialize the layout -- lattice across the nodes */
   setup_layout();
   this_node=mynode();
+
+  /* initialize the node random number generator */
+  initialize_prn(&node_prn,iseed,volume+mynode());
 
   /* allocate space for lattice, set up coordinates */
   make_lattice();
