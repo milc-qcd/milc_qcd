@@ -42,6 +42,7 @@ int setup(void)
 
   /* initialize the layout -- lattice across the nodes */
   setup_layout();
+  this_node=mynode();
 
   /* allocate space for lattice, set up coordinates */
   make_lattice();
@@ -98,7 +99,6 @@ static int initial_set(void)
   nt=par_buf.nt;
   iseed=par_buf.iseed;
 
-  this_node=mynode();
   number_of_nodes=numnodes();
   volume=nx*ny*nz*nt;
 

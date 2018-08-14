@@ -26,6 +26,7 @@ int setup()   {
   initialize_prn(&node_prn,iseed,volume+mynode());
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   /* set up neighbor pointers and comlink structures */
@@ -94,7 +95,6 @@ int initial_set(){
   nt=par_buf.nt;
   iseed=par_buf.iseed;
 
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   total_iters=0;

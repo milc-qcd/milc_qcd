@@ -35,6 +35,7 @@ setup()
   initialize_prn( &node_prn, iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
 
@@ -112,7 +113,6 @@ initial_set()
 #endif
   iseed=param.iseed;
   
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   beta = param.beta;

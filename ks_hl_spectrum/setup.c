@@ -18,6 +18,7 @@ int setup()   {
   prompt=initial_set();
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   /* set up neighbor pointers and comlink structures */
@@ -59,7 +60,6 @@ int initial_set(){
   nt=par_buf.nt;
   strcpy(job_id,par_buf.job_id);
   
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   total_iters=0;

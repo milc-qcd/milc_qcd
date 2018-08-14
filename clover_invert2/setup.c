@@ -83,6 +83,7 @@ int setup(void)   {
   initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   FORALLUPDIR(dir){
@@ -172,7 +173,6 @@ static int initial_set(){
 #endif
 #endif
 
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   return(prompt);

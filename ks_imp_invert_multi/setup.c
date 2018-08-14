@@ -50,6 +50,7 @@ int  setup()   {
     initialize_prn( &node_prn, iseed, volume+mynode() );
 	/* Initialize the layout functions, which decide where sites live */
     setup_layout();
+    this_node = mynode();
 	/* allocate space for lattice, set up coordinate fields */
     make_lattice();
     node0_printf("Made lattice\n"); fflush(stdout);
@@ -129,7 +130,6 @@ int initial_set(){
     dyn_flavors[0] = nflavors1;
     dyn_flavors[1] = nflavors2;
     
-    this_node = mynode();
     number_of_nodes = numnodes();
     volume=nx*ny*nz*nt;
     total_iters=0;
