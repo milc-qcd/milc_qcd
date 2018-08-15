@@ -284,10 +284,6 @@ int readin(int prompt) {
     /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));
 
-  if( param.stopflag != 0 )
-    normal_exit(0);
-
-
   u0 = param.u0;
   if( param.stopflag != 0 )return param.stopflag;
   
