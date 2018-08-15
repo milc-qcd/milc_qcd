@@ -294,6 +294,14 @@ QOP = ${QOPQDP}
 include ../Make_template_scidac
 
 #----------------------------------------------------------------------
+# 12. Intel MKL for FFTW and LAPACK
+
+ifeq ($(strip ${COMPILER}),intel)
+  INCFFTW = -mkl
+  LIBFFTW = -mkl
+endif
+
+#----------------------------------------------------------------------
 # 12. FFTW3 Options
 
 WANTFFTW = #true    # On cori, edison loaded by default, but need "true"
