@@ -463,7 +463,7 @@ int ask_starting_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
 
 static void print_save_options(void){
 
-  printf("'forget_ks_eigen', 'save_ascii_ks_eigen' or 'save_serial_ks_eigen' or 'save_parallel_ks_eigen'");
+  printf("'forget_ks_eigen', 'save_ascii_ks_eigen', 'save_serial_ks_eigen', or 'save_parallel_ks_eigen'");
 }
 
 /*--------------------------------------------------------------------*/
@@ -495,6 +495,8 @@ int ask_ending_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
     *flag = SAVE_ASCII;
   else if(strcmp("save_serial_ks_eigen",savebuf) == 0)
     *flag = SAVE_SERIAL;
+  else if(strcmp("save_parallel_ks_eigen",savebuf) == 0)
+    *flag = SAVE_PARALLEL;
   else{
     printf("ERROR IN INPUT: ks_eigen command is invalid.\n");
     printf("Choices are ");
