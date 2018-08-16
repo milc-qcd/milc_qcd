@@ -450,7 +450,7 @@ su3_matrix *ape_smear_3D(Real staple_weight, int iters){
 su3_matrix *ape_smear_4D(Real staple_weight, int iters){
   int space_only = 1;
   //  int nhits = 0;   /* Turn off SU(3) projection */
-  int nhits = 10;
+  int nhits = 100;
   //  Real tol = 0;    /* Used only for SU(3) projection */
   Real tol = 1e-5;    /* Used only for SU(3) projection */
   int i,dir;
