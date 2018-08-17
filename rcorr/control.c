@@ -14,10 +14,10 @@ main(int argc, char *argv[])
 {
   int prompt;
   complex **qin_sloppy, **qin_diff;
-  Real *q, **qblock, **q2block;
+  Real **qblock, **q2block;
   double starttime, endtime;
   
-  int jflav, k, j, ib;
+  int jflav, k, ib;
   int key[4] = {1,1,1,1};  /* 4D Fourier transform */
   
 
