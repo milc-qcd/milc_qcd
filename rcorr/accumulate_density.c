@@ -25,7 +25,6 @@ sum_c_field_mask(complex *dest, Real *src, Real wt, int count){
 static void
 sum_c_field(complex *dest, Real *src, Real wt, int count){
   int i, j;
-  site *s;
 
   FOREVENFIELDSITES(i){
     for(j = 0; j < count; j++){
