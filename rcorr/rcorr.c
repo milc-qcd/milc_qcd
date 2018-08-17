@@ -37,7 +37,8 @@ dot_corr( complex *dest, complex *src, int count )
 
   FORALLFIELDSITES(i){
     dest[i].real = 0.;
-    for(j = 0; j < count; j++)
+    /* Sum only the spatial components -- hence count-1 */
+    for(j = 0; j < count-1; j++)
       dest[i].real += 
 	(src[i*count+j].real*src[i*count+j].real + src[i*count+j].imag*src[i*count+j].imag)/volume; 
     
