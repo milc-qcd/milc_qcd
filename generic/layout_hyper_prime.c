@@ -381,8 +381,6 @@ static void set_topology(){
 /* Initialization entry point */
 
 void setup_layout(){
-  int nd = 0;
-  int const *geom;
 
   /* Set topology: nsquares, squaresize */
 
