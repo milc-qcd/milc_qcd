@@ -103,7 +103,6 @@ rcorr(Real *qblock[], Real *q2block[],
       complex *qin_diff[], int nrand_diff,
       int nblock, int block_size[]){
   complex *qtmp;
-  Real *q;
   int jrand;
 
   /* Average qin_diff, the differnece between precise and sloppy. */
