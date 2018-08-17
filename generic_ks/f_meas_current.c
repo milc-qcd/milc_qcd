@@ -293,7 +293,7 @@ block_current_stochastic( Real *j_mu_mass, Real mass, int nsrc, int sign, int pa
   
   char myname[] = "block_current_stochastic";
 
-  int otherparity;
+  int otherparity = ODD;
 
   /* Offset for staggered phases in the current definition */
   int r_offset[4] = {0, 0, 0, 0};

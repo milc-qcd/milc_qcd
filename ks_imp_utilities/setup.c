@@ -41,10 +41,11 @@ setup()
   /* print banner, get volume, nflavors1,nflavors2, seed */
   prompt = initial_set();
   if(prompt == 2)return prompt;
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   node0_printf("Made lattice\n"); fflush(stdout);
@@ -72,7 +73,7 @@ static double eps_naik[MAX_NAIK];
 int
 initial_set()
 {
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
@@ -125,7 +126,6 @@ initial_set()
 #endif
 #endif
 
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
 #ifdef HISQ_SVD_COUNTER

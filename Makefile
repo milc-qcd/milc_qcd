@@ -294,6 +294,14 @@ QOP = ${QOPQDP}
 include ../Make_template_scidac
 
 #----------------------------------------------------------------------
+# 12. Intel MKL for FFTW and LAPACK
+
+ifeq ($(strip ${COMPILER}),intel)
+  INCFFTW = -mkl
+  LIBFFTW = -mkl
+endif
+
+#----------------------------------------------------------------------
 # 12. FFTW3 Options
 
 WANTFFTW = #true    # On cori, edison loaded by default, but need "true"
@@ -498,7 +506,7 @@ ifeq ($(strip ${WANTGRID}), true)
   HAVE_GRID = true
   CPHI += -DHAVE_GRID
 
-  CPHI += -DGRID_BLOCKCG # Other choices: -DGRID_5DCG -DGRID_MRHSCG
+  CPHI += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
   CPHI += -DGRID_SHMEM_MAX=2048
 
   ifeq ($(strip ${MPP}),true)

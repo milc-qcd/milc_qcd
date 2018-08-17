@@ -36,6 +36,8 @@ int main( int argc, char **argv ){
   /* loop over input sets */
   while( readin(prompt) == 0){
     
+    if(prompt == 2)continue;
+
     dtime = -dclock();
 #ifdef HISQ_SVD_COUNTER
     hisq_svd_counter = 0;

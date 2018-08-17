@@ -2,7 +2,7 @@
 
 # Usage
 
-#  build.sh <scalar|knl|hsw> <CC> <CXX>
+#  build.sh <scalar|knl|hsw|skx> <CC> <CXX>
 
 # where CC is the C compiler (currently ignored)
 #       CXX is the C++ compiler

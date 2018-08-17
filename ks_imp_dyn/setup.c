@@ -99,14 +99,15 @@ int
 setup()
 {
   int initial_set();
-  int prompt, dir;
+  int prompt=0, dir;
   
   /* print banner, get volume, nflavors1,nflavors2, nflavors, seed */
   prompt = initial_set();
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   FORALLUPDIR(dir){
@@ -139,7 +140,7 @@ static double eps_naik[MAX_NAIK];
 int 
 initial_set()
 {
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
@@ -250,7 +251,6 @@ initial_set()
   dyn_flavors[1] = nflavors2;
 #endif
   
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   total_iters=0;
