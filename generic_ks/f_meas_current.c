@@ -651,6 +651,10 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
     block_current_diff(n_masses, j_mu, masses, fn_mass, nwrite, thinning, 
 		       qic_precise, qic_sloppy);
 #else
+    if(n_masses < 3){
+      node0_printf("This code currently requires at least three masses\n");
+      terminate(1);
+    }
     block_current_diff_01diff(j_mu[0], j_mu[2],
 			      masses[0], masses[1], masses[2],
 			      fn_mass[0], fn_mass[2], nwrite, thinning, 
@@ -1046,6 +1050,10 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 #ifndef DIFF
     exact_currents(n_masses, jlow_mu, masses, fn_mass);
 #else
+    if(n_masses < 3){
+      node0_printf("This code currently requires at least three masses\n");
+      terminate(1);
+    }
     exact_currents_deltam(jlow_mu[0], jlow_mu[2],
       masses[0], masses[1], masses[2], fn_mass[0], fn_mass[2]);
 #endif
