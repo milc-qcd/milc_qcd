@@ -1,7 +1,7 @@
 /******************** d_congrad5_fn_1sum_qdp_D.c ****************************/
 /* MILC Version 7 */
 
-/* Dor specifically single precision inversions using QDP routines */
+/* Do specifically single precision inversions using QDP routines */
 
 /* 12/03/06 C. DeTar */
 
