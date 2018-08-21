@@ -10,7 +10,7 @@ void report_status(quark_invert_control *qic){
   if((qic->resid > 0 && qic->final_rsq <= qic->resid * qic->resid ) ||
      (qic->relresid > 0 && qic->final_relrsq <= qic->relresid * qic->relresid ))
 #ifdef CG_OK
-    printf(" OK converged final_rsq= %.2g (cf %.2g) rel = %.2g (cf %.2g) restarts = %d iters= %d\n",
+    printf(" OK converged final_rsq= %.2g (cf %.2g) rel = %.2g (cf %.2g) (re)starts = %d iters= %d\n",
 	   qic->final_rsq, qic->resid * qic->resid, 
 	   qic->final_relrsq, qic->relresid * qic->relresid, 
 	   qic->final_restart, qic->final_iters );
@@ -18,7 +18,7 @@ void report_status(quark_invert_control *qic){
   ;
 #endif
   else
-    printf(" NOT converged final_rsq= %.2g (cf %.2g) rel = %.2g (cf %.2g) restarts = %d iters= %d \n",
+    printf(" NOT converged final_rsq= %.2g (cf %.2g) rel = %.2g (cf %.2g) (re)starts = %d iters= %d \n",
 	   qic->final_rsq, qic->resid * qic->resid, 
 	   qic->final_relrsq, qic->relresid * qic->relresid, 
 	   qic->final_restart, qic->final_iters );
