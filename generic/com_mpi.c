@@ -35,7 +35,7 @@
    myjobid()             returns the jobid of this node.
    numjobs()             returns number of jobs
    g_sync()              provides a synchronization point for all nodes.
-   g_floatsum()          sums a floating point number over all nodes.
+   g_floatsum()          sums a generic floating point number over all nodes.
    g_vecfloatsum()       sums a vector of generic floats over all nodes 
    g_doublesum()         sums a double over all nodes.
    g_vecdoublesum()      sums a vector of doubles over all nodes.
