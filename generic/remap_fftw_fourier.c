@@ -301,7 +301,8 @@ void make_fftw_plans(int size, ft_data *ftd){
   int dir;
   //  double dtime = start_timing();
 
-  flags = FFTW_ESTIMATE;  /* Could try FFTW_MEASURE */
+  /* Choosing FFTW_MEASURE eliminates the input array in ft_data for the first call during plan making */
+  flags = FFTW_ESTIMATE; //FFTW_ESTIMATE /* Could try FFTW_MEASURE */
   rank = 1;
   /* Number of complex values in a 4D site datum */
   ncmp = size/sizeof(complex);
@@ -614,8 +615,8 @@ ft_data *create_ft_data(complex *src, int size){
     printf("%s: no room\n",myname);
     terminate(1);
   }
-  /* Copy data in */
-  ft_copy_from_milc(ftd->data, src, size);
+  /* Copy data in */ // This last step needs to be done after making plans if MEASURE is to be used.
+  //ft_copy_from_milc(ftd->data, src, size);
 
   //  print_timing(dtime, "REMAP FFTW copy MILC");
   return ftd;
@@ -781,6 +782,9 @@ void restrict_fourier_field(
   /* Create plans */
   make_fftw_plans(size, ftd);
 
+  /* Copy data in */
+  ft_copy_from_milc(ftd->data, src, size);
+
   /* Map MILC to first FT dir */
 
   remap_data_next(ftd, isign);
@@ -794,7 +798,6 @@ void restrict_fourier_field(
   }
 
   /* Copy result back to src */
-
   ft_copy_to_milc(src, ftd->data, size);
 
   destroy_fftw_plans();
