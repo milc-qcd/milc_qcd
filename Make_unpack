@@ -61,6 +61,8 @@ ALL_APPS = \
 
 ${ALL_APPS}: MAKE_basic
 
+# Rules for unpacking files needed for a selected application.
+
 arb_dirac_eigen:  	MAKE_generic_quark
 arb_dirac_invert: 	MAKE_generic_quark
 clover_dynamical:  	MAKE_generic_quark MAKE_generic_clover
