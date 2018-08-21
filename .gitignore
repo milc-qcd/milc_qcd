@@ -7,5 +7,4 @@ localmake
 *.sample-tmp
 *.test-diff
 *.test-tmp
-
-
+*.optrpt
