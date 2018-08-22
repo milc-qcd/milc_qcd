@@ -43,7 +43,7 @@
 */
 typedef int field_offset;
 #define F_OFFSET(a) \
-  ((field_offset)(((char *)&(lattice[0]. a ))-((char *)&(lattice[0])) ))
+  ((field_offset)(((char *)&(lattice[0].a ))-((char *)&(lattice[0])) ))
 #define F_PT( site , fo )  ((char *)( site ) + (fo)) 
 
 /* ---------------------------------------------------------- */
