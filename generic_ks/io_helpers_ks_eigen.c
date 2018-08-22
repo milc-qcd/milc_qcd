@@ -174,6 +174,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
 	clearvec(eigVec[i]+j);
       }
     }
+    node0_printf("Canceled: The eigenvectors will be computed anew\n");
     break;
   case RELOAD_SERIAL:
   case RELOAD_PARALLEL:
