@@ -9,8 +9,16 @@
  */
 
 typedef struct { 
-	double r, i; 
+  double r, i; 
 } Complex_Z;
+
+typedef struct {
+  float r, i;
+} Complex_f;
+
+typedef struct {
+  double r, i;
+} Complex_d;
 
 /* Macro definitions */
 
@@ -27,7 +35,7 @@ typedef struct {
                            (c).i = (a).i * (b); }
 
 /* Complex-Complex Multiplication */
-#define zz_mult_primme(c, a, b) { \
+#define zz_mult_primme(c, a, b) {		\
 	double cr, ci; \
     	cr = (a).r * (b).r - (a).i * (b).i; \
     	ci = (a).i * (b).r + (a).r * (b).i; \
@@ -40,9 +48,13 @@ typedef struct {
 
 
 /* Prototypes for functions in dcomplex.c */
+/* I am afraid that these definitions are obsolete 
+   and not used in PRIMME2.1 */
+
 void   z_div_primme(Complex_Z *, Complex_Z *, Complex_Z *);
-double z_abs_primme(Complex_Z);     /* exact sqrt(r^2+i^2) */
-double z_abs1_primme(Complex_Z);    /* approximate  |r|+|i| */
+double z_abs_primme(Complex_Z);     // exact sqrt(r^2+i^2) 
+double z_abs1_primme(Complex_Z);    // approximate  |r|+|i|
 void   z_exp_primme(Complex_Z *, Complex_Z *);
 void   d_cnjg_primme(Complex_Z *r, Complex_Z *z);
 double d_imag_primme(Complex_Z *);
+
