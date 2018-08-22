@@ -121,11 +121,11 @@ typedef struct {
 
 /* Same for plain KS case */
 typedef struct {
+  int charge;
   Real mass;
   Real offset;
   int naik_term_epsilon_index;
   Real naik_term_epsilon;
-
 } ks_param;
 
 /* This is the IFLA case */
