@@ -265,8 +265,10 @@ static void double_vec_mult(double *a, su3_vector *vec1,
 
 /*****************************************************************************/
 /* Construct odd-site eigenvectors from even                                 */
-/* (Simply multiply even-site vectors by dslash and normalize                */
-
+/* (Simply multiply even-site vectors by dslash and normalize)                */
+/* (WARNING!!!) 
+   We need to polish the resulting estimates to get better approximation
+   by suppressing the high-mode coefficients. */
 void construct_eigen_odd(su3_vector *eigVec[], double eigVal[], int Nvecs, imp_ferm_links_t *fn){
   
   char myname[] = "construct_eigen_odd";
@@ -310,4 +312,32 @@ void construct_eigen_odd(su3_vector *eigVec[], double eigVal[], int Nvecs, imp_f
   free(magsq);
 }
 
+/*****************************************************************************/
+/* Evaluate eigenvalues of given eigenvectors                                */
+/* Shuhei Yamamoto                                                           */
 
+void construct_eigen_vals(su3_vector **eigVec, double *eigVal, int Nvecs, int parity, imp_ferm_links_t *fn){
+
+  su3_vector *tmp = create_v_field();//(su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+  int i,j;
+
+  double *norme = (double *)malloc(Nvecs*sizeof(double));
+  double *normt = (double *)malloc(Nvecs*sizeof(double));
+  for(i=0; i<Nvecs; i++){
+    norme[i]  = (double)0.0;
+    normt[i]  = (double)0.0;
+    Matrix_Vec_mult(eigVec[i], tmp, parity, fn);
+    FORSOMEFIELDPARITY(j,parity){
+      norme[i] += magsq_su3vec(eigVec[i]+j);
+      normt[i] += magsq_su3vec(tmp+j);
+    }
+  }
+
+  g_vecdoublesum(norme, Nvecs);
+  g_vecdoublesum(normt, Nvecs);
+  for(i=0; i<Nvecs; i++) eigVal[i] = (double) sqrt(normt[i]/norme[i]);
+
+  destroy_v_field(tmp);
+  free(norme);
+  free(normt);
+}
