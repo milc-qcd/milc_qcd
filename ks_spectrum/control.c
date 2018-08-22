@@ -37,6 +37,7 @@
    
 
 #define CONTROL
+
 #include "ks_spectrum_includes.h"
 #include <string.h>
 #ifdef HAVE_QUDA
@@ -45,7 +46,6 @@
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
 #endif
-
 #ifdef HAVE_QPHIX
 #include "../include/generic_qphix.h"
 #endif
