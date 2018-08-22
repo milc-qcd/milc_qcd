@@ -21,7 +21,7 @@ INCLUDEDIR = ../include
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
-GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
+GLOBAL_HEADERS = ${INCLUDEDIR} 
 
 INLINE_HEADERS = \
   ../sse/include/ \
@@ -46,7 +46,7 @@ MY_OBJECTS =         \
 
 # Selection of layout
 
-LAYOUT = layout_hyper_prime.o # Choices possible here
+LAYOUT = layout_hyper_prime.o # Choices possible here.  See Makefile.
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG}
 
@@ -195,7 +195,7 @@ ks_measure_asqtad_mu_eos::
 
 # HISQ targets
 
-# Other HISQ optsions
+# Other HISQ options
 #       -DHISQ_REUNIT_SVD_ONLY \
 
 HISQ_OPTIONS = "DEFINES = -DFN -DHAVE_KS \
@@ -229,6 +229,30 @@ ks_measure_current_deflate_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
 	-DEIGMODE=DEFLATION -DEIGEN_QIO" \
+	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
+
+ks_measure_current_deflate_hisq_eo::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
+	-DEIGMODE=DEFLATION -DEIGEN_QIO -DBOTH_PARITY" \
+	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
+
+ks_measure_current_hisq_pt2pt::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC -DPT2PT" \
+	"EXTRA_OBJECTS += f_meas_current.o spin_taste_ops.o \
+	gammas.o"
+
+ks_measure_current_deflate_hisq_pt2pt::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
+	-DEIGMODE=DEFLATION -DEIGEN_QIO -DPT2PT" \
+	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
+
+ks_measure_current_deflate_hisq_eig_cmp::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
+	-DEIGMODE=DEFLATION -DEIGEN_QIO -DEIGCMP" \
 	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
 
 ks_measure_current_block_deflate_hisq::
