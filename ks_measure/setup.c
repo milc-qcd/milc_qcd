@@ -25,7 +25,7 @@ extern int gethostname (char *__name, size_t __len); // Should get this from uni
 static int initial_set();
 static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 static void make_3n_gathers();
-
+static void complex_scalar_mult_sum_su3_vector(su3_vector *, su3_vector *, double_complex);
 
 int setup()   {
   int prompt;
@@ -223,6 +223,11 @@ int readin(int prompt) {
     /* Restart  Rayleigh every so many iterations */
     IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.Restart);
 
+    /* Chebyshev interval */
+    IF_OK status += get_f(stdin, prompt,"PRIMME_cheb_interval_left", &param.chebInfo[0]);
+    IF_OK status += get_f(stdin, prompt,"PRIMME_cheb_interval_right", &param.chebInfo[1]);
+    IF_OK status += get_f(stdin, prompt,"PRIMME_cheb_poly_degree", &param.chebInfo[2]);
+
     /* Kalkreuter iterations */
     IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.Kiters);
 
@@ -239,6 +244,11 @@ int readin(int prompt) {
     /* eigenvector output */
     IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
 					param.ks_eigen_savefile);
+
+#ifdef EIGCMP
+    IF_OK status += get_i(stdin, prompt,"n0", &param.n_start);
+    IF_OK status += get_i(stdin, prompt,"nn", &param.n_incr);
+#endif
 #endif
 
     /*------------------------------------------------------------*/
@@ -260,14 +270,16 @@ int readin(int prompt) {
       Real error_for_propagator_sloppy, rel_error_for_propagator_sloppy;
 #endif
 
+#ifndef PT2PT
       /* Number of stochastic sources */
       IF_OK status += get_i(stdin, prompt, "npbp_reps", &param.npbp_reps[k] );
+#endif
 
-#ifdef CURRENT_DISC
-      /* For some applications.  Random source count between writes */
+#if defined(CURRENT_DISC) && !defined(PT2PT)
+      /* For some applications: Random source count between writes */
       IF_OK status += get_i(stdin, prompt, "nwrite", &param.nwrite[k] );
       IF_OK status += get_i(stdin, prompt, "source_spacing", &param.thinning[k] );
-      /* For truncated solver Take difference of sloppy and precise?*/
+      /* For truncated solver: Take difference of sloppy and precise?*/
       char savebuf[128];
       IF_OK status += get_s(stdin, prompt, "take_truncate_diff", savebuf);
       IF_OK {
@@ -279,6 +291,8 @@ int readin(int prompt) {
 	  status++;
 	}
       }
+#elif defined(CURRENT_DISC) && defined(PT2PT)
+      param.truncate_diff[k] = 0;
 #endif
 
       /* The following parameters are common to the set and will be copied
@@ -314,7 +328,6 @@ int readin(int prompt) {
 	
 	IF_OK status += get_i(stdin, prompt, "prec_pbp_sloppy", 
 			      &prec_pbp_sloppy );
-	
       }
 #endif
 
@@ -326,6 +339,35 @@ int readin(int prompt) {
 	status++;
       }
 
+      /* Nuber of sets of sloppy solve precisions */
+      IF_OK status += get_i(stdin, prompt, "number_of_pbp_slp_prec_sets",
+			    &param.num_pbp_slp_prec_sets[k]);
+
+      /* Specification of sloppy solve precision for multi solver */
+      IF_OK status += get_s(stdin, prompt, "repeated_sloppy_cg_mode",
+			    param.repeated_sloppy_cg_mode[k]);
+      IF_OK {
+	if(strstr(param.repeated_sloppy_cg_mode[k],"multi")!=NULL){
+	  if(strstr(param.repeated_sloppy_cg_mode[k],"manual")!=NULL){
+	    IF_OK for(i=0;i< param.num_pbp_masses[k] * param.num_pbp_slp_prec_sets[k]; i++){
+	      IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy",
+				    param.slp_prec[k]+i );
+	    }
+	  }else if(strstr(param.repeated_sloppy_cg_mode[k],"param")!=NULL){
+	    for(i=0;i< param.num_pbp_masses[k]; i++){
+	      IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy",
+				    param.slp_prec[k]+i );
+	    }
+	    IF_OK for(i=param.num_pbp_masses[k];i<param.num_pbp_masses[k]*param.num_pbp_slp_prec_sets[k];i++){
+	      int ind = i/param.num_pbp_masses[k];
+	      if(ind%2==0) param.slp_prec[k][i] = param.slp_prec[k][i-param.num_pbp_masses[k]]*0.2;
+	      else if(ind%2==1) param.slp_prec[k][i] = param.slp_prec[k][i-param.num_pbp_masses[k]]*0.5;
+	      node0_printf("%e\n",param.slp_prec[k][i]);fflush(stdout);
+	    }
+	  }
+	}
+      }
+
       /* Indexing range for set */
       param.begin_pbp_masses[k] = npbp_masses;
       param.end_pbp_masses[k] = npbp_masses + param.num_pbp_masses[k] - 1;
@@ -334,12 +376,14 @@ int readin(int prompt) {
 	status++;
       }
 
+      int charges[5] = {1,-1,2,-1,2};// charge in the increasing order of quark mass; the first number is the sum of light charges.
       IF_OK for(i = 0; i < param.num_pbp_masses[k]; i++){
     
 	/* PBP mass parameters */
 	
 	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[npbp_masses] );
 	IF_OK param.ksp_pbp[npbp_masses].mass = atof(param.mass_label[npbp_masses]);
+	param.ksp_pbp[npbp_masses].charge = charges[npbp_masses];
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
 	IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 			      &param.ksp_pbp[npbp_masses].naik_term_epsilon );
@@ -523,6 +567,53 @@ int readin(int prompt) {
   node0_printf("Reading %d eigenvectors\n", param.Nvecs); fflush(stdout);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &param.Nvecs, eigVal, eigVec, 1);
+#ifdef EIGCMP //compare eigenvectors
+  node0_printf("Comparing Eigenvectors\n");fflush(stdout);
+  double sq_dev=0,norm=0,r=0;
+  char *p;
+  char er[5];
+  char fname[MAXFILENAME];
+  char ftmp[MAXFILENAME];
+  su3_vector **eigVec2 = (su3_vector **)malloc(param.Nvecs*sizeof(su3_vector *));
+  double_complex c;
+  for(i=0; i < param.Nvecs; i++)
+    eigVec2[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+  for(int n=0;n<param.n_incr;n++){
+    strcpy(fname,param.ks_eigen_startfile);
+    p=strstr(fname,"er");
+    *p='\0';
+    p+=4;
+    strcpy(ftmp,p);
+    sprintf(er,"er%d",param.n_start+n);
+    strcat(fname,er);
+    strcat(fname,ftmp);
+    node0_printf("%s: %s\n",er,fname);fflush(stdout);
+    reload_ks_eigen(param.ks_eigen_startflag, fname, &param.Nvecs, 
+		    eigVal, eigVec2, 1);
+    for(i=0; i < param.Nvecs; i++){
+      sq_dev=0;
+      norm=0;
+      c=(double_complex){0,0};
+      FOREVENFIELDSITES(k){
+	CSUM(c,(double_complex) su3_dot(eigVec[i]+k,eigVec2[i]+k));
+      }
+      g_complexsum(&c);
+      r=sqrt(c.real*c.real+c.imag*c.imag);//node0_printf("%e\n",r);
+      CDIVREAL(c,-r,c);
+      //CONJG(c,c);
+      FOREVENFIELDSITES(k){
+	complex_scalar_mult_sum_su3_vector(eigVec2[i]+k,eigVec[i]+k,c);
+	sq_dev+=(double) magsq_su3vec(eigVec2[i]+k);
+	norm+=(double) magsq_su3vec(eigVec[i]+k);
+	clearvec(eigVec2[i]+k);
+      }
+      g_doublesum(&sq_dev);
+      g_doublesum(&norm);
+      node0_printf("The norm of the diff. of n=%d and n=%d(%d): %.16e (norm: %.16e)\n",
+		   param.n_start+n, param.n_start+param.n_incr,i,sqrt(sq_dev/norm),sqrt(norm));
+    }
+  }
+#endif
   if(status != 0)terminate(1);
 #endif
 
@@ -574,5 +665,12 @@ third_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
   case TUP: *tp = (t+3)%nt; break;
   case TDOWN: *tp = (t+4*nt-3)%nt; break;
   default: printf("third_neighb: bad direction\n"); exit(1);
+  }
+}
+
+static void complex_scalar_mult_sum_su3_vector(su3_vector *a, su3_vector *b, double_complex c){
+  for(int i=0;i<3;i++){
+    a->c[i].real += c.real*b->c[i].real-c.imag*b->c[i].imag;
+    a->c[i].imag += c.real*b->c[i].imag+c.imag*b->c[i].real;
   }
 }
