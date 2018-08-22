@@ -141,13 +141,12 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 
     dtimec += dclock();
 #ifdef CGTIME
-  if(this_node==0){
-    printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
-	   dtimec, prec_label[PRECISION-1], qic->final_iters, 
-   ((double)nflop*volume*qic->final_iters)/(1.0e6*dtimec*numnodes()) );
-    fflush(stdout);}
+    if(this_node==0){
+      printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
+	     dtimec, prec_label[PRECISION-1], qic->final_iters, 
+	     ((double)nflop*volume*qic->final_iters)/(1.0e6*dtimec*numnodes()) );
+      fflush(stdout);}
 #endif
-
     return 0;
   }
 
@@ -192,43 +191,56 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 	    cleanup_gathers(tags1,tags2);
 	    special_started=0;
 	}
-	rsq = 0.0;
-	dslash_fn_field(t_dest, ttt, otherparity, fn);
-	dslash_fn_field(ttt, ttt, parity, fn);
-	/* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
-	FORSOMEPARITYDOMAIN_OMP(i,s,parity,reduction(+:rsq)){
-	  if( i < loopend-FETCH_UP ){
-	    prefetch_VVVV( &ttt[i+FETCH_UP], 
-			   &t_dest[i+FETCH_UP],
-			   &t_src[i+FETCH_UP],
-			   &resid[i+FETCH_UP]);
-	  }
-	  scalar_mult_add_su3_vector( &ttt[i], &t_dest[i], -msq_x4, &ttt[i] );
-	  add_su3_vector( &t_src[i], &ttt[i], &resid[i] );
-	  /* remember ttt contains -M_adjoint*M*src */
-	  cg_p[i] = resid[i];
-	  rsq += (double)magsq_su3vec( &resid[i] );
-	} END_LOOP_OMP
+	if(iteration == 0){
+	  rsq = 0.0;
+	  dslash_fn_field(t_dest, ttt, otherparity, fn);
+	  dslash_fn_field(ttt, ttt, parity, fn);
+	  /* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
+	  FORSOMEPARITYDOMAIN_OMP(i,s,parity,reduction(+:rsq)){
+	    if( i < loopend-FETCH_UP ){
+	      prefetch_VVVV( &ttt[i+FETCH_UP], 
+			     &t_dest[i+FETCH_UP],
+			     &t_src[i+FETCH_UP],
+			     &resid[i+FETCH_UP]);
+	    }
+	    scalar_mult_add_su3_vector( &ttt[i], &t_dest[i], -msq_x4, &ttt[i] );
+	    add_su3_vector( &t_src[i], &ttt[i], &resid[i] );
+	    /* remember ttt contains -M_adjoint*M*src */
+	    cg_p[i] = resid[i];
+	    rsq += (double)magsq_su3vec( &resid[i] );
+	  } END_LOOP_OMP
+	  /* iteration and total_iters counts number of multiplications by M_adjoint*M */
+	  iteration++;
+	  total_iters++; 
+	  
 #ifdef FEWSUMS
-	actual_rsq = rsq; /* not yet summed over nodes */
+	  actual_rsq = rsq; /* not yet summed over nodes */
 #endif
-        g_doublesum( &rsq );
+	  g_doublesum( &rsq );
+	
+	  if(relrsqmin > 0)
+	    relrsq = my_relative_residue(resid, t_dest, parity);
 
-	if(relrsqmin > 0)
-	  relrsq = my_relative_residue(resid, t_dest, parity);
-
-	qic->final_rsq    = (Real)rsq/source_norm;
-	qic->final_relrsq = (Real)relrsq;
-
-	iteration++ ;  /* iteration counts number of multiplications
-			  by M_adjoint*M */
-	total_iters++;
+	  qic->final_rsq    = (Real)rsq/source_norm;
+	  qic->final_relrsq = (Real)relrsq;
+	  qic->final_iters  = iteration;
+	}
+        else{
+          FORSOMEPARITYDOMAIN_OMP(i,s,parity,reduction(+:rsq)){
+            cg_p[i] = resid[i];
+          } END_LOOP_OMP
+	  qic->final_rsq    = qic->size_r;
+	  qic->final_relrsq = qic->size_relr;
+        }
 
 #ifdef CG_DEBUG
-	if(this_node==0)printf("CONGRAD: (re)start %d rsq = %.10e relrsq %.10e\n",
-			       nrestart, qic->final_rsq, qic->final_relrsq);
+	node0_printf("CONGRAD: (re)start %d rsq = %.10e relrsq %.10e\n",
+		     nrestart, qic->final_rsq, qic->final_relrsq);
+	if(iteration == 1)
+	  node0_printf("iter=%d, rsq/src= %e, relrsq= %e, pkp=nan\n",
+		       iteration,qic->final_rsq,qic->final_relrsq);fflush(stdout);
 #endif
-	/* Quit when true residual and true relative residual are within
+        /* Quit when true residual and true relative residual are within
 	   tolerance or when we exhaust iterations or restarts */
 	
 	if( iteration >= max_cg || 
