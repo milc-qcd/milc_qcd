@@ -1,7 +1,33 @@
 /***************** control.c *****************************************/
 
 /* Main procedure for measuring the staggered fermion chiral
-   condensate and related quantities */
+   condensate and related quantities 
+
+   Control Flow
+
+   if DEFLATION: 
+      compute eigenpairs, if not provided, by 
+        1) if HAVE_PRIMME, using cheb_PRIMME
+	2) otherwise, using Kalkreuter method (current default)
+   if CURR_DISC:
+      compute current for disconnected correlations either for single or multi-mass current
+      * uses deflation method if eigenpairs are avaiable.
+   else:
+      compute chiral condensate (psi_bar psi)
+   if CHEM_POT:
+      compute chemical potential using previously computed psi_bar psi
+   if EIGMODE == EIGCG:
+      compute eigenpairs by conjugate gradient method
+
+   Note:
+   i)   If HAVEPRIMME, cheb_PRIMME will be invoked
+   ii)  Otherwise, Kalkreuter will be invoked
+   iii) Kalkreuter is equated by a macro to
+          Kalkreuter_Ritz from eign_stuff_Ritz.c if HAVE_QOP is true
+          Kalkreuter from eigen_stuff_qdp.c if HAVE_QOP is false but HAVE_QDP is true
+	  Kalkreuter_Ritz from eign_stuff_Ritz.c if HAVE_QOP and HAVE_QDP are both false
+
+*/
 
 /* MIMD version 7 */
 
@@ -28,6 +54,11 @@
 #include <string.h>
 #ifdef HAVE_QUDA
 #include <quda_milc_interface.h>
+#endif
+
+#ifdef BOTH_PARITY
+#define f_meas_current_multi_diff_eig f_meas_current_multi_diff_eig_eo
+#define f_meas_current_multi_eig f_meas_current_multi_eig_eo
 #endif
 
 int main(int argc, char *argv[])
@@ -85,24 +116,25 @@ int main(int argc, char *argv[])
     Nvecs_curr = Nvecs_tot = param.Nvecs;
 
     /* compute eigenpairs if requested */
-    //    if(param.ks_eigen_startflag == FRESH){
-    int total_R_iters;
     if(param.ks_eigen_startflag == FRESH){
-      total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
+#ifdef PRIMME
+      int mxv = cheb_PRIMME(eigVec, eigVal, param.eigenval_tol, Nvecs_curr, param.MaxIter, param.chebInfo, 0);
+#else // default eigensolver
+      int total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
 			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters, 
 			       param.ks_eigen_startflag == FRESH);
-      construct_eigen_odd(eigVec, eigVal, Nvecs_curr, fn[0]);
       node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
+#endif //END: PRIMME
+      construct_eigen_odd(eigVec, eigVal, Nvecs_curr, fn[0]);
     }
 
-#if 0 /* If needed for debugging */
+#if 1 /* If needed for debugging */
       /* (The Kalkreuter routine uses the random number generator to
 	 initialize the eigenvector search, so, if you want to compare
 	 first results with and without deflation, you need to
 	 re-initialize here.) */
       initialize_site_prn_from_seed(iseed);
 #endif
-      //    }
     
     /* Calculate and print the residues and norms of the eigenvectors */
     resid = (double *)malloc(Nvecs_curr*sizeof(double));
@@ -127,7 +159,7 @@ int main(int argc, char *argv[])
 
     ENDTIME("calculate Dirac eigenpairs"); fflush(stdout);
 
-#endif
+#endif // END: EIGMODE == DEFLATION
     
     /**************************************************************/
     /* Compute chiral condensate and other observables            */
@@ -140,21 +172,44 @@ int main(int argc, char *argv[])
 
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i0].prec);
 
+      /* Single Mass */
       if(num_pbp_masses == 1){
 #ifdef CURRENT_DISC
-	if(param.truncate_diff[k])
+#ifdef PT2PT /* Pt. to Pt. sources */
+        f_meas_current_pt2pt( &param.qic_pbp[i0],
+			      param.ksp_pbp[i0].mass, 
+			      param.ksp_pbp[i0].naik_term_epsilon_index,
+			      fn_links, param.pbp_filenames[i0]);
+#else // NOT PT2PT
+	if(strstr(param.repeated_sloppy_cg_mode[k], "none")!=NULL);
+	else if(param.truncate_diff[k])
+#ifdef DEFLATION
+	  f_meas_current_multi_diff_eig( 1, param.npbp_reps[k], param.nwrite[k],
+					 param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+					 eigVec, eigVal, Nvecs_curr,
+					 &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
+#else
 	  f_meas_current_diff( param.npbp_reps[k], param.nwrite[k], param.thinning[k],
 			       &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
 			       param.ksp_pbp[i0].mass, 
 			       param.ksp_pbp[i0].naik_term_epsilon_index, 
 			       fn_links, param.pbp_filenames[i0] );
+#endif
 	else
+#ifdef DEFLATION
+	  f_meas_current_multi_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k],
+				    param.thinning[k], &param.qic_pbp[i0],
+				    eigVec, eigVal, Nvecs_curr,
+				    &param.ksp_pbp[i0],
+				    fn_links, &param.pbp_filenames[i0] );
+#else
 	  f_meas_current( param.npbp_reps[k], param.nwrite[k], param.thinning[k],
 			  &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
 			  param.ksp_pbp[i0].naik_term_epsilon_index, 
 			  fn_links, param.pbp_filenames[i0] );
-
-#else
+#endif
+#endif //END: PT2PT
+#else // NOT CURRENT_DISC
 	f_meas_imp_field( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
 			  param.ksp_pbp[i0].naik_term_epsilon_index, fn_links);
 #endif
@@ -164,26 +219,50 @@ int main(int argc, char *argv[])
 		       fn_links, param.ksp_pbp[i0].naik_term_epsilon_index, 
 		       param.ksp_pbp[i0].naik_term_epsilon);
 #endif
+      /* Multiple Masses */
       } else {
 #ifdef CURRENT_DISC
 	
 	// initialize_site_prn_from_seed(iseed); /* Use the same random number sequence for all sets */
 
 #if EIGMODE == DEFLATION
-
-	if(param.truncate_diff[k])
-	  f_meas_current_multi_diff_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
-					 param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
-					 eigVec, eigVal, Nvecs_curr,
-					 &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
-	else
-	  f_meas_current_multi_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
-				    param.thinning[k], &param.qic_pbp[i0], 
-				    eigVec, eigVal, Nvecs_curr,
-				    &param.ksp_pbp[i0], 
-				    fn_links, &param.pbp_filenames[i0] );
 	
-#else
+	/* Compute the bias correction current */
+	if(param.truncate_diff[k]){
+	  if(strstr(param.repeated_sloppy_cg_mode[k], "none")!=NULL);
+	  else if(strstr(param.repeated_sloppy_cg_mode[k], "single")!=NULL)
+	    f_meas_current_multi_diff_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
+					   param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+					   eigVec, eigVal, Nvecs_curr,
+					   &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
+	  else if(strstr(param.repeated_sloppy_cg_mode[k],"multi")!=NULL)
+	    f_meas_current_multi_diff_eig_corr( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k],
+						param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+						eigVec, eigVal, Nvecs_curr,
+						&param.ksp_pbp[i0], fn_links, param.slp_prec[k], param.num_pbp_slp_prec_sets[k],
+						&param.pbp_filenames[i0]);
+	}
+	/* Compute the sloppy current */
+	else{
+	  if(strstr(param.repeated_sloppy_cg_mode[k], "none")!=NULL);
+	  else if(strstr(param.repeated_sloppy_cg_mode[k], "single")!=NULL)
+	    f_meas_current_multi_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
+				      param.thinning[k], &param.qic_pbp[i0], 
+				      eigVec, eigVal, Nvecs_curr,
+				      &param.ksp_pbp[i0], 
+				      fn_links, &param.pbp_filenames[i0] );
+	  else if(strstr(param.repeated_sloppy_cg_mode[k],"multi")!=NULL)
+	    f_meas_current_multi_eig_multi_solve( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k],
+						  param.thinning[k], &param.qic_pbp[i0],
+						  eigVec, eigVal, Nvecs_curr,
+						  &param.ksp_pbp[i0], fn_links, param.slp_prec[k], param.num_pbp_slp_prec_sets[k],
+						  &param.pbp_filenames[i0]);
+	}
+#else /* Case: Not using deflation */
+#ifdef PT2PT /* Pt. to Pt. sources */
+	f_meas_current_multi_pt2pt( param.num_pbp_masses[k], &param.qic_pbp[i0], &param.ksp_pbp[i0], fn_links,
+				    &param.pbp_filenames[i0]);
+#else /* Stochastic estimation */
 	if(param.truncate_diff[k])
 	  f_meas_current_multi_diff( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
 				     param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
@@ -193,17 +272,18 @@ int main(int argc, char *argv[])
 				param.thinning[k], &param.qic_pbp[i0], &param.ksp_pbp[i0], 
 				fn_links, &param.pbp_filenames[i0] );
 #endif
-#else
+#endif // END: EIGMODE == DEFLATION
+#else // Not CURRENT_DISK
 	f_meas_imp_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
 			  &param.ksp_pbp[i0], fn_links);
-#endif
+#endif //END: CURRENT_DISC
 #ifdef D_CHEM_POT
 	Deriv_O6_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0],
 			&param.ksp_pbp[i0], fn_links);
 #endif
       }
     } /* k num_set */
- 
+
 #ifdef HISQ_SVD_COUNTER
     node0_printf("hisq_svd_counter = %d\n",hisq_svd_counter);
 #endif
@@ -239,6 +319,9 @@ int main(int argc, char *argv[])
     ENDTIME("compute eigenvectors");
 #endif
 
+    /**************************************************************/
+    /* clean up */
+
 #if EIGMODE == EIGCG || EIGMODE == DEFLATION
 
     /* save eigenvectors if requested */
@@ -258,7 +341,7 @@ int main(int argc, char *argv[])
     endtime = dclock();
 
     node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
-    node0_printf("total_iters = %d\n",total_iters);
+    node0_printf("total_matrix_mult = %d\n",total_iters);
     fflush(stdout);
 
     destroy_ape_links_4D(ape_links);
