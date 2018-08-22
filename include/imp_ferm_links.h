@@ -267,7 +267,7 @@ int mat_invert_multi(
 
 /* eigen_stuff*.c */
 #ifdef PRIMME
-#define Kalkreuter Kalkreuter_PRIMME
+//#define Kalkreuter Kalkreuter_PRIMME
 #else
 #define Kalkreuter Kalkreuter_Ritz
 #endif
@@ -281,9 +281,8 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
 int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance, 
 		    Real RelTol, int Nvecs, int MaxIter, 
 		    int Restart, int Kiters, int init );
-int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance, 
-		      Real RelTol, int Nvecs, int MaxIter, 
-		      int Restart, int Kiters, int init );
+int cheb_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance, 
+		int Nvecs, int MaxIter, Real * chebInfo, int flag );
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
 		     imp_ferm_links_t *fn );
 void cleanup_Matrix();
@@ -293,7 +292,7 @@ void print_densities(su3_vector *src, char *tag, int y,int z,int t,
 void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
 		  int Nvecs, int parity, imp_ferm_links_t *fn);
 void construct_eigen_odd(su3_vector **eigVec, double *eigVal, int Nvecs, imp_ferm_links_t *fn);
-
+void construct_eigen_vals(su3_vector **eigVec, double *eigVal, int Nvecs, int parity, imp_ferm_links_t *fn);
 
 /* fn_links_qop.c  and fn_links_milc.c */
 
@@ -393,6 +392,12 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 int mat_invert_uml_field(su3_vector *src, su3_vector *dst, 
 			 quark_invert_control *qic,
 			 Real mass, imp_ferm_links_t *fn );
+int mat_invert_uml_field_projected(su3_vector *src, su3_vector *dst,
+				   quark_invert_control *qic, int parity,
+				   Real mass, imp_ferm_links_t *fn );
+int mat_invert_uml_projected_field_mult_prec(su3_vector *src, su3_vector **dst,
+					     quark_invert_control *qic, int extp,
+					     Real mass, imp_ferm_links_t *fn );
 int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst, 
 			       quark_invert_control *qic,
 			       Real mass, imp_ferm_links_t *fn );
