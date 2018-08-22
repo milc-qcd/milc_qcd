@@ -11,6 +11,10 @@
 #include "generic_ks_includes.h"
 #include "../include/dslash_ks_redefine.h"
 
+#ifdef DEBUG
+static double *c_dst_org = malloc( sizeof(int)*param.Nvecs );
+#endif
+
 /*****************************************************************************/
 /* dst = M src. With parity selection */
 
@@ -135,8 +139,12 @@ static void project_out(su3_vector *vec, int Num, int parity){
   double_complex cc ;
   double ptime = -dclock();
 
+  
   for(i=Num-1;i>-1;i--){
     dot_product(eigVec[i], vec, &cc, parity) ;
+#ifdef DEBUG
+    c_dst_org[i]=cabs(&cc);
+#endif
     complex_vec_mult_sub(&cc, eigVec[i], vec, parity);
   }
 
@@ -146,6 +154,9 @@ static void project_out(su3_vector *vec, int Num, int parity){
 
 /*****************************************************************************/
 /* Construct the exact solution in the space spanned by eigVec 
+   dst stores guess for M^(-1) src 
+   if parity = EVEN, replace low-mode part of A
+   if parity = ODD, replaces low-mode part of B
    keep the trial solution in the complementary space */
 
 static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int parity){
@@ -158,8 +169,8 @@ static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int pa
   project_out(dst, Num, parity);
 
   /* Then add the exact solution back */
-  /* dst_e <- sum_j ((eigVec_e[j].src_e)/(eigVal[j]+4*mass*mass)) eigVec_e[j] */
-  
+  /* dst_parity <- high_mode(det_parity) + sum_j ((eigVec_parity[j].src_parity)/(eigVal[j]+4*mass*mass)) eigVec_parity[j] */
+
   c = (double_complex *)malloc(Num*sizeof(double_complex));
   for( j = 0; j < Num; j++){
     c[j] = dcmplx((double)0.0,(double)0.0);
@@ -170,15 +181,21 @@ static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int pa
   }
   g_vecdcomplexsum( c, Num );
   for( j = 0; j < Num; j++){
+#ifdef DEBUG
+    node0_printf("c_src[%d]=%.16e c_dst_orig[%d]=%.16e ",j,cabs(&c[j]),j,c_dst_org[j]);
+#endif
     CDIVREAL( c[j], eigVal[j]+4.0*mass*mass, c[j] );
+#ifdef DEBUG
+    node0_printf("c_dst_rplcd[%d]=%.16e\n",j,cabs(&c[j]));
+    c_dst_org[j]=0;
+#endif
     FORSOMEFIELDPARITY(i,parity){
-      complex ctmp = cmplx(c[j].real, ctmp.imag);
+      complex ctmp = cmplx(c[j].real, c[j].imag);
       c_scalar_mult_add_su3vec( dst+i, &ctmp, eigVec[j]+i );
     }
   }
   free(c);
 }
-
 
 #endif
 
@@ -217,7 +234,7 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
     node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
 #endif
 
-    /* dst_e <- (M_adj M)^-1 temp_e  (even sites only) */
+    /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
     qic->parity = EVEN;
     cgn = ks_congrad_field( tmp, dst, qic, mass, fn );
 
@@ -232,7 +249,7 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
     node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
 #endif
 
-    /* dst_o <- (M_adj M)^-1 temp_o  (odd sites only) */
+    /* dst_o <- (M_adj M)^-1 tmp_o  (odd sites only) */
     qic->parity = ODD;
     cgn += ks_congrad_field( tmp, dst, qic, mass, fn );
 
@@ -313,8 +330,8 @@ where  A = (4m^2+D_eo D_eo^adj)^-1 and B = (4m^2+D_oe^adj D_oe)^-1
 */
          
 /*****************************************************************************/
-/* This algorithm solves even sites, reconstructs odd and then polishes
-   to compensate for loss of significance in the reconstruction
+/* This algorithm first finds even part of the solution, reconstructs odd and 
+   then polishes to compensate for loss of significance in the reconstruction
 */
 
 int mat_invert_uml_field(su3_vector *src, su3_vector *dst, 
@@ -328,12 +345,11 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     int even_iters;
 
     /* "Precondition" both even and odd sites */
-    /* temp <- M_adj * src */
+    /* tmp <- M_adj * src */
 
     ks_dirac_adj_op( src, tmp, mass, EVENANDODD, fn );
 
 #if EIGMODE == DEFLATION
-
     double dtime = - dclock();
     node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.Nvecs);
 
@@ -343,8 +359,8 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
 #endif
 
-    /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
-    qic->parity     = EVEN;
+    /* dst_e <- (M_adj M)^-1 tmp_e  (work only with even sites) */
+    qic->parity = EVEN;
 #if EIGMODE == EIGCG
     cgn = ks_inc_eigCG_parity(tmp, dst, eigVal, eigVec, &param.eigcgp, qic, mass, fn);
     report_status(qic);
@@ -354,7 +370,8 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     even_iters = qic->final_iters;
 
     /* reconstruct odd site solution */
-    /* dst_o <-  1/2m (Dslash_oe*dst_e + src_o) */
+    /* dst_o <-  1/2m (src_o + Dslash_oe*dst_e) = 1/2m (src_o - Dslash_oe*(cong. grad.)*[M^dagger]*src_e) */
+    /* our dst_e comes with extra minus sign, making subtraction necessary */
     dslash_field( dst, ttt, ODD, fn );
     FORODDSITES(i,s){
       sub_su3_vector( src+i, ttt+i, dst+i);
@@ -372,7 +389,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
 #endif
 
     /* Polish off odd sites to correct for possible roundoff error */
-    /* dst_o <- (M_adj M)^-1 temp_o  (odd sites only) */
+    /* dst_o <- (M_adj M)^-1 tmp_o */
     qic->parity = ODD;
     cgn += ks_congrad_field( tmp, dst, qic, mass, fn );
     qic->final_iters += even_iters;
@@ -382,6 +399,138 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     destroy_v_field(ttt);
 
     return cgn;
+}
+
+/*****************************************************************************/
+/* This algorithm solves even sites, reconstructs odd, and then polishes
+   to compensate for loss of significance in the reconstruction.
+   Assume: low-mode part already projected out
+ */
+int mat_invert_uml_field_projected(su3_vector *src, su3_vector *dst,
+				   quark_invert_control *qic, int parity,
+				   Real mass, imp_ferm_links_t *fn ){
+  int cgn;
+  register int i;
+  register site *s;
+  su3_vector *tmp = create_v_field();
+  su3_vector *ttt = create_v_field();
+  int even_iters=0;
+
+  /* "Precondition" both even and odd sites */
+  /* tmp <- M_adj * src */
+  ks_dirac_adj_op( src, tmp, mass, EVENANDODD, fn );
+
+  /* Precondition even sites */
+  //project_out(tmp, param.Nvecs, EVEN); 
+  //project_out(dst, param.Nvecs, EVEN);
+
+  /* dst_e <- (M_adj M)^-1 tmp_e  (work only with even sites) */
+  qic->parity = EVEN;
+#if EIGMODE == EIGCG
+  cgn = ks_inc_eigCG_parity(tmp, dst, eigVal, eigVec, &param.eigcgp, qic, mass, fn);
+  report_status(qic);
+#else
+  cgn = ks_congrad_field( tmp, dst, qic, mass, fn );
+#endif
+  even_iters = qic->final_iters;
+
+  /* reconstruct odd site solution */
+  if(parity==EVEN || parity== EVENANDODD){
+    /* dst_o <-  1/2m (src_o - Dslash_oe*dst_e) = 1/2m (src_o - Dslash_oe*(cong. grad.)*[M^dagger]*src_e) */
+    /* our dst_e comes with extra minus sign, making subtraction necessary */
+    dslash_field( dst, ttt, ODD, fn );
+    FORODDSITES(i,s){
+      sub_su3_vector( src+i, ttt+i, dst+i);
+      scalar_mult_su3_vector( dst+i, 1.0/(2.0*mass), dst+i );
+    }
+    
+    /* Precondition odd sites */
+
+    //project_out(tmp, param.Nvecs, ODD); // odd eigenvectors are not precise enough.
+    
+    /* Polish off odd sites to correct for possible roundoff error */
+    /* dst_o <- (M_adj M)^-1 tmp_o */
+    qic->parity = ODD;
+    cgn += ks_congrad_field( tmp, dst, qic, mass, fn );
+    qic->final_iters += even_iters;
+    
+    //    check_invert_field( dst, src, mass, 1e-6, fn);
+  }
+
+  destroy_v_field(tmp);
+  destroy_v_field(ttt);
+
+  return cgn;
+}
+
+/*****************************************************************************/
+/* This algorithm solves even sites, reconstructs odd, and then polishes
+   to compensate for loss of significance in the reconstruction.
+   Finally, it uses the last result to obtain odd solutions with
+   higher precision.
+   Assume: low-mode part already projected out
+ */
+int mat_invert_uml_projected_field_mult_prec(su3_vector *src, su3_vector **dst,
+					     quark_invert_control *qic, int extp,
+					     Real mass, imp_ferm_links_t *fn ){
+  int cgn;
+  register int i;
+  register site *s;
+  su3_vector *tmp = create_v_field();
+  su3_vector *ttt = create_v_field();
+  int even_iters,odd_iters=0;
+
+  /* "Precondition" both even and odd sites */
+  /* tmp <- M_adj * src */
+  ks_dirac_adj_op( src, tmp, mass, EVENANDODD, fn );
+
+#if EIGMODE == DEFLATION
+  /* Precondition even sites */
+  project_out(tmp, param.Nvecs, EVEN);
+  for(i=0;i < extp;i++) project_out(dst[i], param.Nvecs, EVEN);
+#endif
+
+  /* dst_e <- (M_adj M)^-1 tmp_e  (work only with even sites) */
+  qic->parity = EVEN;
+#if EIGMODE == EIGCG
+  cgn = ks_inc_eigCG_parity(tmp, dst[0], eigVal, eigVec, &param.eigcgp, qic, mass, fn);
+  report_status(qic);
+#else
+  cgn = ks_congrad_field( tmp, dst[0], qic, mass, fn );
+#endif
+  even_iters = qic->final_iters;
+
+  /* reconstruct odd site solution */
+  /* dst_o <-  1/2m (src_o - Dslash_oe*dst_e) = 1/2m (src_o - Dslash_oe*(cong. grad.)*[M^dagger*src]_e) */
+  /* our dst_e comes with extra minus sign, making subtraction necessary */
+  dslash_field( dst[0], ttt, ODD, fn );
+  FORODDSITES(i,s){
+    sub_su3_vector( src+i, ttt+i, dst[0]+i);
+    scalar_mult_su3_vector( dst[0]+i, 1.0/(2.0*mass), dst[0]+i );
+  }
+
+#if EIGMODE == DEFLATION
+  /* Precondition odd sites */
+  project_out(tmp, param.Nvecs, ODD);
+  for(i=0;i < extp;i++) project_out(dst[i], param.Nvecs, ODD);
+#endif
+
+  /* Polish off odd sites to correct for possible roundoff error */
+  /* dst_o <- (M_adj M)^-1 tmp_o */
+  qic->parity = ODD;
+  for(int n=0; n < extp; n++){
+    cgn += ks_congrad_field( tmp, dst[n], qic, mass, fn );
+    if(n<extp-1) copy_v_field(dst[n+1], dst[n]);
+    qic->resid++;//<-?
+    odd_iters+=qic->final_iters;
+  }
+  qic->final_iters = even_iters + odd_iters;
+
+  //    check_invert_field( dst, src, mass, 1e-6, fn);                                                                                                                             
+  destroy_v_field(tmp);
+  destroy_v_field(ttt);
+
+  return cgn;
 }
 
 /*****************************************************************************/
@@ -428,7 +577,7 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
   even_iters = qic->final_iters;
   
   /* reconstruct odd site solution */
-  /* dst_o <-  1/2m (Dslash_oe*dst_e + src_o) */
+  /* dst_o <-  1/2m (src_o - Dslash_oe*dst_e) */
   for(is = 0; is < nsrc; is++){
     dslash_field( dst[is], ttt, ODD, fn );
     FORODDSITES(i,s){
@@ -448,7 +597,7 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
   }
   
   /* Polish off odd sites to correct for possible roundoff error */
-  /* dst_o <- (M_adj M)^-1 temp_o  (odd sites only) */
+  /* dst_o <- (M_adj M)^-1 tmp_o */
   qic->parity = ODD;
   cgn += ks_congrad_block_field(nsrc, tmp, dst, qic, mass, fn );
   qic->final_iters += even_iters;
