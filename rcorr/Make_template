@@ -81,9 +81,62 @@ clean:
 # Rules for generic routines
 include ../generic/Make_template
 
+# Minimal setting: only computes C(r) via FFT
 current_rcorr::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DNO_GAUGE_FIELD"
+	"DEFINES= -DNO_GAUGE_FIELD -DFFT"
+
+# Computes C(r) via FFT along w/ other quantities 
+# needed for optimization
+current_rcorr_opt::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DNO_GAUGE_FIELD -DFFT -DOPT -DCORR_VAR_DISP"
+
+# Computes C(r) via FFT along w/ other quantities 
+# needed for debugging
+current_rcorr_debug::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DNO_GAUGE_FIELD -DFFT -DDEBUG"
+
+# Computes C(r) via FFT along w/ other quantities 
+current_rcorr_opt_debug::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DNO_GAUGE_FIELD -DFFT -DOPT -DCORR_VAR_DISP -DDEBUG"
+
+# Computes C(r) via FFT and also the current densities
+current_rcorr_jmu::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DNO_GAUGE_FIELD -DFFT -DOPT"
+
+# Computes C(r) via Brute Force method
+current_rcorr_bf::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DNO_GAUGE_FIELD -DBF"
+
+# Computes C(r) via both BF and FFT methods for comparison
+current_rcorr_bf_fft::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DNO_GAUGE_FIELD -DBF -DFFT"
+
+# Computes time-slice to time-slice correlator C(t)
+current_rcorr_t2t::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DNO_GAUGE_FIELD -DTIME_TO_TIME"
+
+# Computes time-slice to time-slice correlator C(t) & current densities
+current_rcorr_t2t_jmu::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DNO_GAUGE_FIELD -DTIME_TO_TIME -DOPT"
+
+# Computes time-slice to time-slice correlator C_\mu(t)
+current_rcorr_t2t_mu::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DNO_GAUGE_FIELD -DTIME_TO_TIME -DCOMPY"
+
+# Computes time-slice to time-slice correlator C(t) from pt2pt correlator
+current_rcorr_t2tfrmpt2pt::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DNO_GAUGE_FIELD -DT2TFRMPT2PT"
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
