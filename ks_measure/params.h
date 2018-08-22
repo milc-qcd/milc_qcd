@@ -12,6 +12,7 @@
 #define MAX_MASS_PBP 8
 #define MAX_SET 8
 #define MAX_PBP_MASSES 32
+#define MAX_SLP_SET 50
 
 /* structure for passing simulation parameters to each node */
 typedef struct {
@@ -57,13 +58,21 @@ typedef struct {
   int MaxIter ; /* max  Rayleigh iterations */
   int Restart ; /* Restart  Rayleigh every so many iterations */
   int Kiters ; /* Kalkreuter iterations */
+  Real chebInfo[3]; /* interval for Chebyshev polynomial and its degree */
   Real eigenval_tol ; /* Tolerance for the eigenvalue computation */
   Real error_decr ; /* error decrease per Rayleigh minimization */
   char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
   char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
+#ifdef EIGCMP
+  int n_start;
+  int n_incr;
+#endif
 #endif
   int num_set;                  /* Number of sets */
   int num_pbp_masses[MAX_SET];   /* Number of masses for pbp calculation */
+  int num_pbp_slp_prec_sets[MAX_SET]; /* Nuber of sets of sloppy solve precisions */
+  char repeated_sloppy_cg_mode[MAX_SET][MAXFILENAME]; /* Specification of sets of sloppy solve precisions */
+  Real slp_prec[MAX_SET][MAX_MASS_PBP*MAX_SLP_SET]; /* sets of sloppy precisions for each set of masses */
   int begin_pbp_masses[MAX_SET]; /* index of beginning propagator in this set */
   int end_pbp_masses[MAX_SET]; /* index of ending propagator in this set */
   int prec_pbp[MAX_SET];         /* Precision of the pbp calculation (1 or 2) */
