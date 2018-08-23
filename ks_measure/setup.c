@@ -34,10 +34,11 @@ int setup()   {
   prompt=initial_set();
   if(prompt == 2)return prompt;
 
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   /* Initialize fermion links as unallocated */
@@ -59,7 +60,7 @@ static double eps_naik[MAX_NAIK];
 /* SETUP ROUTINES */
 static int 
 initial_set(){
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
@@ -130,7 +131,6 @@ initial_set(){
 #endif
 #endif
 
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
 
@@ -144,6 +144,7 @@ int readin(int prompt) {
   /* argument "prompt" is 1 if prompts are to be given for input	*/
   
   int status;
+  char savebuf[128];
   int i, k, npbp_masses;
 #ifdef PRTIME
   double dtime;
@@ -180,6 +181,19 @@ int readin(int prompt) {
     IF_OK status += get_i(stdin, prompt, "ape_iter",
 			  &param.ape_iter);
 
+    /* Coordinate origin for KS phases and antiperiodic boundary condition */
+    IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
+    IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
+    IF_OK {
+      /* NOTE: The staggered default time bc is antiperiodic. */
+      if(strcmp(savebuf,"antiperiodic") == 0)param.time_bc = 0;
+      else if(strcmp(savebuf,"periodic") == 0)param.time_bc = 1;
+      else{
+	node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n", savebuf);
+	status++;
+      }
+    }
+    
     /* number of eigenpairs */
     IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
 
@@ -562,7 +576,6 @@ int readin(int prompt) {
       eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
     
     /* Do whatever is needed to get eigenpairs */
-    node0_printf("Reading %d eigenvectors\n", param.eigen_param.Nvecs); fflush(stdout);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			     &param.eigen_param.Nvecs, eigVal, eigVec, 1);
     if(status != 0)terminate(1);

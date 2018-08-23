@@ -30,6 +30,8 @@ typedef struct {
   Real dyn_mass[MAX_DYN_MASSES];  /* List of dynamical masses */
   int dyn_flavors[MAX_DYN_MASSES]; /* Numbers of dynamical flavors */
   Real u0;                /* tadpole parameter */
+  int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
+  int time_bc;          /* 0 for antiperiodic, 1 for periodic */
   /*  REPEATING BLOCK */
   int warms;	/* the number of warmup trajectories */
   int trajecs;	/* the number of real trajectories */

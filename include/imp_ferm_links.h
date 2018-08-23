@@ -310,6 +310,7 @@ typedef struct {
 #define ks_eigensolve ks_eigensolve_ARPACK
 typedef struct {
   int Nvecs ; /* number of eigenvectors */
+  int Nvecs_in ; /* number of input starting eigenvectors */
   Real tol ; /* Tolerance for the eigenvalue computation */
   Real error_decr ; /* error decrease per Rayleigh minimization */
   int MaxIter ; /* max  Rayleigh iterations */
@@ -321,6 +322,7 @@ typedef struct {
 #define ks_eigensolve ks_eigensolve_Kalkreuter_Ritz
 typedef struct {
   int Nvecs ; /* number of eigenvectors */
+  int Nvecs_in ; /* number of input starting eigenvectors */
   Real tol ; /* Tolerance for the eigenvalue computation */
   Real error_decr ; /* error decrease per Rayleigh minimization */
   int MaxIter ; /* max  Rayleigh iterations */
@@ -330,7 +332,6 @@ typedef struct {
 } ks_eigen_param;
 #endif
 
-#define DEFLATION 1
 #define EIGCG 2
 
 int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance, 

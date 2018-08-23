@@ -205,12 +205,16 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
     if(param.eigen_param.Nvecs > 0){
 
       dtime = - dclock();
+#ifdef CGTIME
       node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
+#endif
       
       deflate(dst, tmp, mass, param.eigen_param.Nvecs, EVEN);
       
       dtime += dclock();
+#ifdef CGTIME
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
+#endif
     }
       
     /* dst_e <- (M_adj M)^-1 temp_e  (even sites only) */
@@ -220,12 +224,16 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
     if(param.eigen_param.Nvecs > 0){
 
       dtime = - dclock();
+#ifdef CGTIME
       node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
+#endif
       
       deflate(dst, tmp, mass, param.eigen_param.Nvecs, ODD);
       
       dtime += dclock();
+#ifdef CGTIME
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
+#endif
     }
 
     /* dst_o <- (M_adj M)^-1 temp_o  (odd sites only) */
@@ -302,7 +310,7 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
       M^-1 = ( 2m A          - A D_eo )
              ( - B D_oe        2m B   )
 
-where  A = (4m^2+D_eo D_eo^adj)^-1 and B = (4m^2+D_oe^adj D_oe)^-1
+where  A = (4m^2+D_eo D_eo^adj)^-1 and B = (4m^2+D_eo^adj D_eo)^-1
 
     Note: -D_oe = D_eo^adj and  B D_eo^adj = D_eo^adj A
 
@@ -409,16 +417,15 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
   for(is = 0; is < nsrc; is++){
     ks_dirac_adj_op( src[is], tmp[is], mass, EVENANDODD, fn );
     
-#if EIGMODE == DEFLATION
-    
-    dtime = - dclock();
-    node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
-    
-    deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, EVEN);
-    
-    dtime += dclock();
-    node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
-#endif
+    if(param.eigen_param.Nvecs > 0){
+      dtime = - dclock();
+      node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
+      
+      deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, EVEN);
+      
+      dtime += dclock();
+      node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
+    }
   }
   
   /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
@@ -434,16 +441,16 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
       sub_su3_vector( src[is]+i, ttt+i, dst[is]+i);
       scalar_mult_su3_vector( dst[is]+i, 1.0/(2.0*mass), dst[is]+i );
     }
-    
-#if EIGMODE == DEFLATION
-    dtime = - dclock();
-    node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
-    
-    deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, ODD);
-    
-    dtime += dclock();
-    node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
-#endif
+
+    if(param.eigen_param.Nvecs > 0){
+      dtime = - dclock();
+      node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
+      
+      deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, ODD);
+      
+      dtime += dclock();
+      node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
+    }
   }
   
   /* Polish off odd sites to correct for possible roundoff error */
