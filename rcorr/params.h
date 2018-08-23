@@ -6,7 +6,7 @@
 #define MAXFILENAME  256   /* ASCII string length for all file names */
 
 #define MAXBIN 120  /* Maximum number of correlator bins */
-#define RMAX 5      /* Start binning for r > RMAX */
+#define RMAX param.r_max //10      /* Start binning for r > RMAX */ //5
 #define MAXRAND 64  /* Maximum number of random sources in a file */
 #define NMU 4       /* Number of vector current components per site */
 #define MAXFLAV 4   /* Max number of flavors */
@@ -36,10 +36,12 @@ typedef struct {
   int nflav;
   int nrand_sloppy;           
   int nrand_diff;           
+  int r_max;
   int nblock;
   int block_size[MAXBLOCK];
   char fname_sloppy[MAXFLAV][MAXFILENAME];
   char fname_diff[MAXFLAV][MAXFILENAME];
+  char fname_curr[MAXFILENAME];
   char corrfile[MAXFILENAME];
   Real charges[MAXFLAV];
   Real mass[MAXFLAV];   /* Filled in later only on node 0 */
