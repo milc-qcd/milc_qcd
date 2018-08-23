@@ -161,7 +161,9 @@ print_result(Real *q[], Real *q2[], int nblock, int block_size[]){
 	    }
 	  }
 
-	  /* Collect values on all nodes (only node 0 needed) */
+	  /* Collect values on all nodes by broadcasting the values 
+	     at each node to all other nodes (only the values at node 0 
+	     needed for printing them) */
 	  g_intsum(&mult);
 	  g_vecdoublesum(myqb, nblock);
 	  g_vecdoublesum(myqb2, nblock);
@@ -218,8 +220,8 @@ print_result(Real *q[], Real *q2[], int nblock, int block_size[]){
 	  }
 	}  
 
-  /* Collect results on all nodes (need node 0) */
-  
+  /* Collect values on all nodes by broadcasting the values
+     at each node to all other nodes (only node 0 needed) */
   g_vecdoublesum(rvsr, MAXBIN);
   for(i = 0; i < MAXBIN; i++){
     g_intsum(&nvsr[i]);
@@ -239,7 +241,7 @@ print_result(Real *q[], Real *q2[], int nblock, int block_size[]){
 	  sd[ib] = sqrt(corrvsr2[i][ib])/nvsr[i];
 	}
 	chisq = linearlsq(&m, &dm, &myq, &dmyq, bsinv, &corrvsr[i][0], sd, nblock);
-	
+
 	/* DEBUG */
 	for(ib = 0; ib < nblock; ib++){
 	  fprintf(fp, "%.8e %.8e ", corrvsr[i][ib], sd[ib]);
@@ -260,6 +262,44 @@ print_result(Real *q[], Real *q2[], int nblock, int block_size[]){
     for(ib = 0; ib < nblock; ib++)
       node0_printf("qtot2[%d] = %e  mult = %d\n", ib, qtot[ib], totmult[ib]);
   }
+  
+} /* print_corr.c */
+
+void
+print_result_time(Real *q[], Real *q2[], int nblock, int block_size[]){
+  double myq, dmyq;
+  double myqb[nblock], myqb2[nblock];
+  double bsinv[nblock];
+  double m, dm, chisq;
+  int t, ib;
+  FILE *fp;
+
+  fp = open_corr_file();
+
+  for(ib = 0; ib < nblock; ib++)
+    bsinv[ib] = 1./((double) block_size[ib]);
+
+  for(t=0;t<nt;t++){
+    for(ib=0;ib<nblock;ib++){
+      myqb[ib]=q[ib][t];
+      myqb2[ib]=sqrt(q2[ib][t]);
+    }
+    if(this_node == 0){
+      chisq = linearlsq(&m, &dm, &myq, &dmyq, bsinv, myqb, myqb2, nblock);
+
+      /* DEBUG */
+      for(ib = 0; ib < nblock; ib++){
+	fprintf(fp, "%.8e %.8e ", myqb[ib], myqb2[ib]);
+      }
+      fprintf(fp, "\n");
+      
+      fprintf(fp, "%2d %15.8e %15.8e %7.3f \n",t,myq,dmyq,chisq);
+    }
+  }
+
+  
+  if(this_node == 0)
+    close_corr_file(fp);
     
 } /* print_corr.c */
 
