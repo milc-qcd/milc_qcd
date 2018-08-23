@@ -238,6 +238,7 @@ int readin(int prompt) {
     IF_OK status += get_i(stdin, prompt, "ape_iter",
 			  &param.ape_iter);
 
+    IF_OK param.eigen_param.Nvecs = 0;
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
     IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
     IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
