@@ -36,6 +36,8 @@ double linearlsq(Real *m, Real *sdm, Real *b, Real *sdb,
 /* print_corr.c */
 void
 print_result(Real *q[], Real *q2[], int nb, int rb[]);
+void
+print_result_time(Real *q[], Real *q2[], int nblock, int block_size[]);
 
 /* rcorr.c */
 void
@@ -43,6 +45,21 @@ rcorr(Real *qblock[], Real *qblock2[],
       complex *qin_sloppy[], int nrand_sloppy, 
       complex *qin_diff[], int nrand_diff,
       int nblock, int rand_block[]);
+void
+rcorr_time(Real *qblock[], Real *q2block[],
+           complex *qin_sloppy[], int nrand_sloppy,
+           complex *qin_diff[], int nrand_diff,
+           int nblock, int block_size[]);
+void
+rcorr_t2tfrmpt2pt(Real *qblock[], Real *q2block[],
+		  complex *qin_sloppy[], int nrand_sloppy,
+		  complex *qin_diff[], int nrand_diff,
+		  int nblock, int block_size[]);
+
+void 
+compute_current_density_and_print(complex *qin_sloppy[], int nrand_sloppy,
+				  complex *qin_diff[], int nrand_diff,
+				  char *filename );
 
 /* symmetrize.c */
 void
