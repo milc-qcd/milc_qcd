@@ -48,10 +48,8 @@ accumulate_current_density(char *filename, complex *qin[],
   QIO_String *recxml = QIO_string_create();
 
   QIO_verbose(QIO_VERB_OFF);
-
   infile = r_open_scidac_file(filename, QIO_SERIAL);
   if(infile == NULL)terminate(1);
-
   /* Read the lattice fields for nrand random sources in this file */
   /* Accumulate the result in dest */
   tmp = create_r_array_field(NMU);
@@ -76,3 +74,4 @@ accumulate_current_density(char *filename, complex *qin[],
   r_close_scidac_file(infile);
 
 } /* accumulate_density.c */
+
