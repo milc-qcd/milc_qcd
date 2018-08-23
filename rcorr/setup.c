@@ -120,13 +120,22 @@ int readin(int prompt) {
 			  &param.nrand_sloppy);
     IF_OK status += get_i(stdin, prompt, "number_of_diff_random_sources",
 			  &param.nrand_diff);
+    IF_OK status += get_i(stdin, prompt, "R_max",
+                          &param.r_max);
     IF_OK status += get_i(stdin, prompt, "number_of_random_block_sizes",
 			  &param.nblock);
+
     for(int i = 0; i < param.nblock; i++){
       IF_OK status += get_i(stdin, prompt, "block_size", &param.block_size[i]);
+      if(param.nrand_sloppy%param.block_size[i] != 0){ // || param.nrand_sloppy == param.block_size[i]){
+	node0_printf("The number of sloppy random sources must be divisible by the block sizes at least twice\n");
+	status++;
+      }
     }
 
     IF_OK status += get_i(stdin, prompt, "number_of_flavors", &param.nflav);
+
+    IF_OK status += get_s(stdin, prompt, "file_curr", param.fname_curr);
 
     for(jflav = 0; jflav < param.nflav; jflav++){
       IF_OK status += get_f(stdin, prompt, "charge", &param.charges[jflav]);
