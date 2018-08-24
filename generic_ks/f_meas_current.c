@@ -18,7 +18,7 @@
 
 */
 
-#define DIFF
+//#define MASS_DIFF
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/fn_links.h"
@@ -647,7 +647,7 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
   /* Calculate and write at intervals of nwrite random values */
   for(int jrand = 0; jrand < nrand; jrand += nwrite){
 
-#ifndef DIFF
+#ifndef MASS_DIFF
     block_current_diff(n_masses, j_mu, masses, fn_mass, nwrite, thinning, 
 		       qic_precise, qic_sloppy);
 #else
@@ -1047,7 +1047,7 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 
   /* Compute exact low-mode current density if we have eigenvectors to do it */
   if(Nvecs > 0){
-#ifndef DIFF
+#ifndef MASS_DIFF
     exact_currents(n_masses, jlow_mu, masses, fn_mass);
 #else
     if(n_masses < 3){
@@ -1063,7 +1063,7 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
   /* Calculate and write at intervals of nwrite random values */
   for(int jrand = 0; jrand < nrand; jrand += nwrite){
 
-#ifndef DIFF
+#ifndef MASS_DIFF
     block_current( n_masses, j_mu, masses, fn_mass, nwrite, thinning, qic );
 #else
     block_current_01diff( j_mu[0], j_mu[2], masses[0], masses[1], masses[2],
