@@ -75,7 +75,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   int iteration;	/* counter for iterations */
   int num_offsets_now; /* number of offsets still being worked on */
   double c1, c2, rsq, oldrsq, pkp;		/* pkp = cg_p.K.cg_p */
-  double relrsq;
+  double relrsq = 0.;
   double source_norm;	/* squared magnitude of source vector */
   double rsqstop;	/* stopping residual normalized by source norm */
   int l_parity=0;	/* parity we are currently doing */
