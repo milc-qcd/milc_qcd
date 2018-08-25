@@ -1254,12 +1254,19 @@ int readin(int prompt) {
     /* malloc for eigenpairs */
     eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
     eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
-    for(i=0; i < param.eigen_param.Nvecs; i++)
+    for(i=0; i < param.eigen_param.Nvecs; i++){
       eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+      if(eigVec[i] == NULL){
+	printf("No room for eigenvector\n");
+	terminate(1);
+      }
+    }
     
     /* Do whatever is needed to get eigenpairs */
+    node0_printf("Calling reload_ks_eigen\n"); fflush(stdout);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			     &param.eigen_param.Nvecs, eigVal, eigVec, 1);
+    node0_printf("Return from reload_ks_eigen\n"); fflush(stdout);
     if(param.fixflag != NO_GAUGE_FIX){
       node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
     }
