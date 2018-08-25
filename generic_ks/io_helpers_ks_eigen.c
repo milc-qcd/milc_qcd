@@ -441,7 +441,7 @@ int ask_starting_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
   else if(strcmp("reload_parallel_ks_eigen", savebuf) == 0)
     *flag = RELOAD_PARALLEL;
   else{
-    printf("ERROR IN INPUT: ks_eigen command is invalid\n");
+    printf("ERROR IN INPUT: %s command is invalid\n", savebuf);
     return(1);
   }
 
