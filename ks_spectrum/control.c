@@ -91,6 +91,7 @@ int main(int argc, char *argv[])
   prompt = setup();
   ENDTIME("setup");
 
+  printf("Node %d reports\n", this_node);fflush(stdout);
   /* loop over input sets */
 
   while( readin(prompt) == 0){
@@ -629,10 +630,10 @@ int main(int argc, char *argv[])
     
 #if EIGMODE == EIGCG
 
+    Nvecs_curr = param.eigcgp.Nvecs_curr;
+      
     if(param.eigcgp.Nvecs_max > 0){
       STARTTIME;
-      
-      Nvecs_curr = param.eigcgp.Nvecs_curr;
       
       imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
       resid = (double *)malloc(Nvecs_curr*sizeof(double));
