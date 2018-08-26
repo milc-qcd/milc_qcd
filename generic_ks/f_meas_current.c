@@ -19,7 +19,8 @@
 */
 
 #define MASS_UDLSC
-
+#define OPT_UDLSC
+//#define WRITE_VC_BINARY
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/fn_links.h"
 #include "../include/io_scidac.h"
@@ -49,6 +50,7 @@ get_spin_taste(void){
   return spin_taste;
 }
 
+#ifdef WRITE_VC_BINARY
 /* Open file for writing */
 static QIO_Writer *
 open_vector_current_file(char *filename){
@@ -76,6 +78,7 @@ static void
 close_vector_current_file(QIO_Writer *outfile){
   QIO_close_write(outfile);
 }
+#endif
 
 /* Thin the random source */
 static void
@@ -118,7 +121,7 @@ average_vector_current_and_sum(int nwrite, Real *j_mu, Real *jadd_mu){
 /*Write current record for the accumulated average over random sources */
 static void
 write_tslice_values(char *tag, int jrand, int nwrite, Real mass, Real *j_mu){
-  node0_printf("JTMU%s source %d mass %g\n", tag, jrand, mass);
+  node0_printf("JTMU%s RANDOM_SOURCE %d MASS %g\n", tag, jrand, mass);
   double *jtmu = (double *)malloc(sizeof(double)*4*param.nt);
   for(int tmu = 0; tmu < 4*param.nt; tmu++)
     jtmu[tmu] = 0.;
@@ -138,6 +141,7 @@ write_tslice_values(char *tag, int jrand, int nwrite, Real mass, Real *j_mu){
   }
 }
 
+#ifdef WRITE_VC_BINARY
 /*Write current record for the accumulated average over random sources */
 static int
 write_vector_current_record(QIO_Writer *outfile, char *filename, int jrand,
@@ -159,6 +163,7 @@ write_vector_current_record(QIO_Writer *outfile, char *filename, int jrand,
   
   return status;
 }
+#endif
 
 /*****************************************************************************/
 /* Returns the dot product of two fermion vectors */
@@ -433,6 +438,117 @@ block_current_stochastic_deltam( Real *j_mu01, Real mass0, Real mass1,
 } /* block_current_stochastic_deltam */
       
 /************************************************************************/
+/* Calculate three cobinations of current densities based on four sets of
+   masses: u, d, l, s using a list of thinned stochastic
+   estimators. Do this for a given parity.
+   In particular, calculate J_u - J_d and  J_l - J_s
+   nsrc sources in gr.  Results in j_mu[0], j_mu[2] 
+*/
+
+static void
+block_current_stochastic_delta_udls( Real *j_mu[], Real masses[],
+				     imp_ferm_links_t *fn[], int nsrc,
+				     int sign, int parity, 
+				     quark_invert_control qic[],
+				     su3_vector *gr[]){
+  
+  char myname[] = "block_current_stochastic_delta_udlsc";
+
+  /* Offset for staggered phases in the current definition */
+  int r_offset[4] = {0, 0, 0, 0};
+
+  Real mu = masses[0];
+  Real md = masses[1];
+  Real ml = masses[2];
+  Real ms = masses[3];
+  Real *jmu_ud = j_mu[0];
+  Real *jmu_ls = j_mu[2];
+  imp_ferm_links_t *fn_ud = fn[0];
+  imp_ferm_links_t *fn_ls = fn[2];
+  Real dm2_ud4 = 4*(md*md - mu*mu);
+  Real dm2_ls4 = 4*(ms*ms - ml*ml);
+  quark_invert_control *qic_ud = &qic[0];
+  quark_invert_control *qic_ls = &qic[2];
+
+  su3_vector *Mls_inv_gr[nsrc];
+  su3_vector *Mud_inv_gr[nsrc];
+  for(int is = 0; is < nsrc; is++){
+    Mls_inv_gr[is] = create_v_field();
+    Mud_inv_gr[is] = create_v_field();
+  }
+
+  int otherparity;
+  if(parity == EVEN)
+    otherparity=ODD;
+  else
+    otherparity=EVEN;
+
+  /* Current spin-taste list */
+  int *spin_taste = get_spin_taste();
+
+  su3_vector *Ml_inv_gr[nsrc];
+  for(int is = 0; is < nsrc; is++){
+    Ml_inv_gr[is] = create_v_field();
+  }
+
+  qic->parity = parity;
+  /* Ml_inv_gr = 1/[D^2 + 4*ml^2] gr */
+  ks_congrad_block_field(nsrc, gr, Ml_inv_gr, qic, ml, fn_ls);
+  /* Mud_inv_gr = 1/[D^2 + 4*ml^2] Ml_inv_gr */
+  /* NOTE: we are approximating ud here */
+  ks_congrad_block_field(nsrc, Ml_inv_gr, Mud_inv_gr, qic, ml, fn_ud);
+  /* Mls_inv_gr = 1/[D^2 + 4*ms^2] Ml_inv_gr */
+  ks_congrad_block_field(nsrc, Ml_inv_gr, Mls_inv_gr, qic, ms, fn_ls);
+
+  for(int is = 0; is < nsrc; is++){
+      destroy_v_field(Ml_inv_gr[is]);
+  }
+  
+  /* Might be better to use a block dslash here?? */
+  for(int is = 0; is < nsrc; is++){
+    dslash_fn_field( Mls_inv_gr[is], Mls_inv_gr[is], otherparity, fn_ls);
+    dslash_fn_field( Mud_inv_gr[is], Mud_inv_gr[is], otherparity, fn_ud);
+  }
+  
+  /* For each source, apply current in various directions at the sink */
+  su3_vector *gr_ls_mu = create_v_field();
+  su3_vector *gr_ud_mu = create_v_field();
+  for(int is = 0; is < nsrc; is++)
+    for(int mu = 0; mu < NMU; mu++){
+      
+      /* Apply the appropriate spin_taste operator for
+	 a nearly conserved current.  */
+      spin_taste_op_fn(fn_ls, spin_taste[mu], r_offset, gr_ls_mu, Mls_inv_gr[is]);
+      spin_taste_op_fn(fn_ls, spin_taste_index("pion05"), r_offset, gr_ls_mu, gr_ls_mu);
+      spin_taste_op_fn(fn_ls, spin_taste[mu], r_offset, gr_ud_mu, Mud_inv_gr[is]);
+      spin_taste_op_fn(fn_ud, spin_taste_index("pion05"), r_offset, gr_ud_mu, gr_ud_mu);
+      
+      /* J_mu = -imag[gr * Mls_inv_gr] */
+      /* Multiply result by the mass difference squared times four */
+      int i;
+      FORSOMEFIELDPARITY(i, parity){
+	complex cc = su3_dot( gr[is]+i, gr_ls_mu+i );
+	jmu_ls[NMU*i + mu] += -sign*cc.imag*dm2_ls4;
+	cc = su3_dot( gr[is]+i, gr_ud_mu+i );
+	jmu_ud[NMU*i + mu] += -sign*cc.imag*dm2_ud4;
+#if 0
+	printf("j_mu src[%d] %d %d %d %d %d %g %g\n", is,
+	       lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu,
+	       jmu_ls[NMU*i + mu], jmu_ud[NMU*i + mu]);
+#endif
+      }
+    } /* is, mu */
+  destroy_v_field(gr_ud_mu);
+  destroy_v_field(gr_ls_mu);
+
+  for(int is = 0; is < nsrc; is++){
+    destroy_v_field(Mud_inv_gr[is]);
+    destroy_v_field(Mls_inv_gr[is]);
+  }
+
+} /* block_current_stochastic_delta_udlsc */
+      
+/************************************************************************/
 
 /* Calculate the current density difference between fine and sloppy
    solves separately for all masses */
@@ -610,6 +726,13 @@ block_currents_diff_delta_udlsc(Real *j_mu[], Real masses[],
   quark_invert_control *qic_precise_c  = &qic_precise[4];
 
   /* The sloppy high-mode solution on even sites */
+  
+#ifdef OPT_UDLSC
+  node0_printf("Solving sloppily for all EVEN displacements for mass diff %g %g and %g %g\n",
+	       mu, md, ml, ms);
+  block_current_stochastic_delta_udls( j_mu, masses, fn, nsrc, -1, EVEN, qic_sloppy,
+				       gr_even);
+#else
   node0_printf("Solving sloppily for all EVEN displacements for mass diff %g %g\n",
 	       mu, md);
   block_current_stochastic_deltam( jmu_ud, mu, md, dm2_ud4, fn_ud, nsrc, -1, EVEN,
@@ -618,11 +741,20 @@ block_currents_diff_delta_udlsc(Real *j_mu[], Real masses[],
 	       ml, ms);
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc, -1, EVEN,
 				   qic_sloppy_ls, gr_even);
+#endif
+  
   node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", mc);
   block_current_stochastic( jmu_c, mc, nsrc, -1, EVEN, qic_sloppy_c, fn_c, gr_even);
 
 
   /* The sloppy high-mode solution on odd sites */
+
+#ifdef OPT_UDLSC
+  node0_printf("Solving sloppily for all ODD displacements for mass diff %g %g and %g %g\n",
+	       mu, md, ml, ms);
+  block_current_stochastic_delta_udls( j_mu, masses, fn, nsrc, -1, ODD, qic_sloppy,
+				       gr_odd);
+#else
   node0_printf("Solving sloppily for all ODD displacements for mass diff %g %g\n",
 	       mu, md);
   block_current_stochastic_deltam( jmu_ud, mu, md, dm2_ud4, fn_ud, nsrc, -1, ODD,
@@ -631,10 +763,18 @@ block_currents_diff_delta_udlsc(Real *j_mu[], Real masses[],
 	       ml, ms);
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc, -1, ODD,
 				   qic_sloppy_ls, gr_odd);
+#endif
   node0_printf("Solving sloppily for all ODD displacements for mass %g\n", mc);
   block_current_stochastic( jmu_c, mc, nsrc, -1, ODD, qic_sloppy_c, fn_c, gr_odd);
   
   /* The "precise" solution from the same sources on even sites */
+
+#ifdef OPT_UDLSC
+  node0_printf("Solving precisely for all EVEN displacements for mass diff %g %g and %g %g\n",
+	       mu, md, ml, ms);
+  block_current_stochastic_delta_udls( j_mu, masses, fn, nsrc, +1, EVEN, qic_precise,
+				       gr_even);
+#else
   node0_printf("Solving precisely for all EVEN displacements for mass diff %g %g\n",
 	       mu, md);
   block_current_stochastic_deltam( jmu_ud, mu, md, dm2_ud4, fn_ud, nsrc, +1, EVEN,
@@ -643,9 +783,18 @@ block_currents_diff_delta_udlsc(Real *j_mu[], Real masses[],
 	       ml, ms);
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc, +1, EVEN,
 				   qic_precise_ls, gr_even);
+#endif
   node0_printf("Solving precisely for all EVEN displacements for mass %g\n", mc);
   block_current_stochastic( jmu_c, mc, nsrc, +1, EVEN, qic_precise_c, fn_c, gr_even);
+
   /* The "precise" solution from the same sources on odd sites */
+
+#ifdef OPT_UDLSC
+  node0_printf("Solving precisely for all ODD displacements for mass diff %g %g and %g %g\n",
+	       mu, md, ml, ms);
+  block_current_stochastic_delta_udls( j_mu, masses, fn, nsrc, +1, ODD, qic_precise,
+				       gr_odd);
+#else
   node0_printf("Solving precisely for all ODD displacements for mass diff %g %g\n",
 	       mu, md);
   block_current_stochastic_deltam( jmu_ud, mu, md, dm2_ud4, fn_ud, nsrc, +1, ODD,
@@ -654,6 +803,7 @@ block_currents_diff_delta_udlsc(Real *j_mu[], Real masses[],
 	       ml, ms);
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc, +1, ODD,
 				   qic_precise_ls, gr_odd);
+#endif
   node0_printf("Solving precisely for all ODD displacements for mass %g\n", mc);
   block_current_stochastic( jmu_c, mc, nsrc, +1, ODD, qic_precise_c, fn_c, gr_odd);
   
@@ -739,13 +889,16 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
   char myname[] = "f_meas_current_diff";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
+#ifdef WRITE_BINARY_CURRENT
   double wtime = 0.;
+#endif
   
   /* Create fields for current densities, one for each mass */
   Real *j_mu[n_masses];
   for(int j = 0; j < n_masses; j++)
     j_mu[j] = create_r_array_field(NMU);
 
+#ifdef WRITE_VC_BINARY
   /* Open file(s) for writing */
   QIO_Writer *outfile[n_masses];
   for(int j = 0; j < n_masses; j++){
@@ -755,6 +908,7 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
       exit(1);
     }
   }
+#endif
 
   /* Load arrays with masses and the HISQ link structure for each */
   imp_ferm_links_t *fn_mass[n_masses];
@@ -785,7 +939,6 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
 #endif
     
    
-    wtime -= dclock();
     for(int j = 0; j < n_masses; j++){
 #if 0      
       /* DEBUG */
@@ -796,8 +949,9 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
 	printf("\n");
       }
 #endif
-      node0_printf("For rand %d and mass %g\n", jrand, mass);
       average_vector_current(nwrite, j_mu[j]);
+#ifdef WRITE_VC_BINARY
+      wtime -= dclock();
       int status = write_vector_current_record(outfile[j], filenames[j], jrand,
 					       nwrite, masses[j], j_mu[j]);
       wtime += dclock();
@@ -805,18 +959,21 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
 	node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
 	terminate(1);
       } 
+#endif
       write_tslice_values("DIFF", jrand, nwrite, masses[j], j_mu[j]);
       clear_r_array_field(j_mu[j], NMU);
     } /* j */
   } /* jrand */
 
+#ifdef WRITE_VC_BINARY
   for(int j = 0; j < n_masses; j++){
     close_vector_current_file(outfile[j]);
     destroy_r_array_field(j_mu[j], NMU);
   }
+#endif
   
 
-#ifdef CGTIME
+#ifdef WRITE_VC_BINARY
   node0_printf("Time to write %d records for %d masses = %e sec\n",
 	       nrand/nwrite, n_masses, wtime);
 #endif
@@ -1213,6 +1370,13 @@ block_currents_delta_udlsc( Real *j_mu[], Real masses[],
   quark_invert_control *qic_c  = &qic[4];
 
   /* Construct current density from the list of sources */
+
+#ifdef OPT_UDLSC
+  node0_printf("Solving for all EVEN displacements for mass diff %g %g and %g %g\n",
+	       mu, md, ml, ms);
+  block_current_stochastic_delta_udls( j_mu, masses, fn, nsrc, +1, EVEN, qic,
+				       gr_even);
+#else
   node0_printf("Solving for all EVEN displacements for mass diff  %g %g\n",
 	       mu, md);
   block_current_stochastic_deltam( jmu_ud, mu, md, dm2_ud4, fn_ud, nsrc,
@@ -1221,10 +1385,17 @@ block_currents_delta_udlsc( Real *j_mu[], Real masses[],
 	       ml, ms);
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc,
 				   +1, EVEN, qic_ls, gr_even);
+#endif
   node0_printf("Solving for all EVEN displacements for mass %g\n", mc);
   block_current_stochastic( jmu_c, mc, nsrc, +1, EVEN, qic_c, fn_c, gr_even);
   
   
+#ifdef OPT_UDLSC
+  node0_printf("Solving sloppily for all ODD displacements for mass diff %g %g and %g %g\n",
+	       mu, md, ml, ms);
+  block_current_stochastic_delta_udls( j_mu, masses, fn, nsrc, +1, ODD, qic,
+				       gr_odd);
+#else
   node0_printf("Solving for all ODD displacements for mass diff  %g %g\n",
 	       mu, md);
   block_current_stochastic_deltam( jmu_ud, mu, md, dm2_ud4, fn_ud, nsrc,
@@ -1233,6 +1404,7 @@ block_currents_delta_udlsc( Real *j_mu[], Real masses[],
 	       ml, ms);
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc,
 				   +1, ODD, qic_ls, gr_odd);
+#endif
   node0_printf("Solving for all ODD displacements for mass %g\n", mc);
   block_current_stochastic( jmu_c, mc, nsrc, +1, ODD, qic_c, fn_c, gr_odd);
 }
@@ -1316,7 +1488,9 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   int i;
+#ifdef WRITE_VC_BINARY
   double wtime = 0.;
+#endif
   su3_vector *gr_mu = create_v_field();
   int Nvecs = param.eigen_param.Nvecs;
 
@@ -1343,6 +1517,7 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
       jlow_mu[j] = NULL;
   }
 
+#ifdef WRITE_VC_BINARY
   /* Open file(s) for writing */
   QIO_Writer *outfile[n_masses];
   for(int j = 0; j < n_masses; j++){
@@ -1352,6 +1527,7 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
       exit(1);
     }
   }
+#endif
 
   /* Load arrays with masses and the HISQ link structure for each */
   imp_ferm_links_t *fn_mass[n_masses];
@@ -1397,7 +1573,6 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
     block_current( n_masses, j_mu, masses, fn_mass, qic, nwrite, thinning );
 #endif
       
-    wtime -= dclock();
     for(int j = 0; j < n_masses; j++){
 #if 0
       /* DEBUG */
@@ -1413,6 +1588,9 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 	average_vector_current_and_sum(nwrite, j_mu[j], jlow_mu[j]);
       else
 	average_vector_current(nwrite, j_mu[j]);
+
+#ifdef WRITE_VC_BINARY
+      wtime -= dclock();
       int status = write_vector_current_record(outfile[j], filenames[j], jrand,
 					       nwrite, masses[j], j_mu[j]);
       wtime += dclock();
@@ -1420,18 +1598,21 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 	node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
 	terminate(1);
       }
+#endif
       write_tslice_values("", jrand, nwrite, masses[j], j_mu[j]);
       clear_r_array_field(j_mu[j], NMU);
     } /* j */
   } /* jrand */
   
+#ifdef WRITE_VC_BINARY
   for(int j = 0; j < n_masses; j++){
     close_vector_current_file(outfile[j]);
     destroy_r_array_field(j_mu[j], NMU);
     destroy_r_array_field(jlow_mu[j], NMU);
   }
+#endif
   
-#ifdef CGTIME
+#ifdef WRITE_VC_BINARY
   node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
 #endif
   
@@ -1477,7 +1658,9 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
   imp_ferm_links_t *fn_multi[n_masses];
   QIO_Writer *outfile[n_masses];
   imp_ferm_links_t **fn = get_fm_links(fl);
+#ifdef WRITE_VCIBINARY
   double wtime = 0.;
+#endif
 
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
  
@@ -1485,6 +1668,7 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
   for(j = 0; j < n_masses; j++)
     j_mu[j] = create_r_array_field(NMU);
 
+#ifdef WRITE_VC_BINARY
   /* Open file(s) for writing */
   for(j = 0; j < n_masses; j++){
     outfile[j] = open_vector_current_file(filenames[j]);
@@ -1493,6 +1677,7 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
       exit(1);
     }
   }
+#endif
 
   /* Loop over random sources */
   for(jrand = 0; jrand < nrand; jrand++){
@@ -1586,7 +1771,6 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
 
     /* Write at intervals of nwrite random values */
     if((jrand+1) % nwrite == 0){
-      wtime -= dclock();
       for(j = 0; j < n_masses; j++){
 	Real mass = ksp[j].mass;
 #if 0
@@ -1598,8 +1782,9 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
 	  printf("\n");
 	}
 #endif
-	node0_printf("For rand %d and mass %g\n", jrand, mass);
 	average_vector_current(nwrite, j_mu[j]);
+#ifdef WRITE_VC_BINARY
+	wtime -= dclock();
 	int status = write_vector_current_record(outfile[j], filenames[j], jrand,
 						 nwrite, ksp[j].mass, j_mu[j]);
 	wtime += dclock();
@@ -1607,18 +1792,21 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
 	  node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
 	  terminate(1);
 	}
+#endif
 	write_tslice_values("DIFF", jrand, nwrite, ksp[j].mass, j_mu[j]);
 	clear_r_array_field(j_mu[j], NMU);
       } /* j */
     } /* if write */
   } /* jrand */
   
+#ifdef WRITE_VC_BINARY
   for(j = 0; j < n_masses; j++){
     close_vector_current_file(outfile[j]);
     destroy_r_array_field(j_mu[j], NMU);
   }
+#endif
   
-#ifdef CGTIME
+#ifdef WRITE_VC_BINARY
   node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
 #endif
   
@@ -1661,7 +1849,9 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
   imp_ferm_links_t *fn_multi[n_masses];
   QIO_Writer *outfile[n_masses];
   imp_ferm_links_t **fn = get_fm_links(fl);
+#ifdef WRITE_VC_BINARY
   double wtime = 0.;
+#endif
   int Nvecs = param.eigen_param.Nvecs;
 
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
@@ -1687,6 +1877,7 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
       jlow_mu[j] = NULL;
   }
 
+#ifdef WRITE_VC_BINARY
   /* Open file(s) for writing */
   for(j = 0; j < n_masses; j++){
     outfile[j] = open_vector_current_file(filenames[j]);
@@ -1695,6 +1886,7 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
       exit(1);
     }
   }
+#endif
 
   /* Load masses from ks_param */
   for(j = 0; j < n_masses; j++)
@@ -1753,12 +1945,14 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
   if(nrand == 0){
     for(j = 0; j < n_masses; j++){
       average_vector_current_and_sum(1, j_mu[j], jlow_mu[j]);
+#ifdef WRITE_VC_BINARY
       int status = write_vector_current_record(outfile[j], filenames[j], 0,
 					       1, ksp[j].mass, j_mu[j]);
       if(status != QIO_SUCCESS){
 	node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
 	terminate(1);
       } 
+#endif
       write_tslice_values("", jrand, nwrite, ksp[j].mass, j_mu[j]);
       clear_r_array_field(j_mu[j], NMU);
     }
@@ -1838,7 +2032,6 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 
     /* Write at intervals of nwrite random values */
     if((jrand+1) % nwrite == 0){
-      wtime -= dclock();
       for(j = 0; j < n_masses; j++){
 #if 0
 	/* DEBUG */
@@ -1854,27 +2047,31 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 	  average_vector_current_and_sum(nwrite, j_mu[j], jlow_mu[j]);
 	else
 	  average_vector_current(nwrite, j_mu[j]);
+#ifdef WRITE_VC_BINARY
+	wtime -= dclock();
 	int status = write_vector_current_record(outfile[j], filenames[j], jrand,
 						 nwrite, mass[j], j_mu[j]);
+	wtime += dclock();
+#endif
 	if(Nvecs > 0)
 	  clear_r_array_field(j_mu[j], NMU);
-	wtime += dclock();
 	if(status != QIO_SUCCESS){
 	  node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
 	}
-	wtime += dclock();
       } /* j */
     } /* if write */
   } /* jrand */
 
+#ifdef WRITE_VC_BINARY
   for(j = 0; j < n_masses; j++){
     close_vector_current_file(outfile[j]);
     destroy_r_array_field(j_mu[j], NMU);
     if(Nvecs > 0)
       destroy_r_array_field(jlow_mu[j], NMU);
   }
+#endif
   
-#ifdef CGTIME
+#ifdef WRITE_VC_BINARY
   node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
 #endif
   
