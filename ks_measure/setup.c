@@ -361,16 +361,12 @@ int readin(int prompt) {
       /* Number of pbp masses in this set */
       IF_OK status += get_i(stdin, prompt, "number_of_pbp_masses",
 			    &param.num_pbp_masses[k]);
-      if(param.num_pbp_masses[k] > MAX_MASS_PBP){
-	printf("Number of masses exceeds dimension %d\n",MAX_MASS_PBP);
-	status++;
-      }
 
       /* Indexing range for set */
       param.begin_pbp_masses[k] = npbp_masses;
       param.end_pbp_masses[k] = npbp_masses + param.num_pbp_masses[k] - 1;
-      if(param.end_pbp_masses[k] > MAX_PBP_MASSES){
-	printf("Total number of masses must be <= %d!\n", MAX_PBP_MASSES);
+      if(param.end_pbp_masses[k] > MAX_MASS_PBP){
+	printf("Total number of masses must be <= %d!\n", MAX_MASS_PBP);
 	status++;
       }
 
