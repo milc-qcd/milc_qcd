@@ -22,17 +22,16 @@
 enum accel_type { NO_POLY, POLY_X , MSQ_POLY , CHEBY , POLY_INV , NO_POLY_SQRT , CHEBY_ORG  }  ;
 
 /* Include files */
+
 #include "generic_ks_includes.h"
 
 #ifdef ARPACK
-
 #include "../include/arpack.h"
-#include "../include/dslash_ks_redefine.h"
 #include <string.h>
 
-#include<mpi.h>
-
-//static imp_ferm_links_t **fn;
+#ifdef MPI_COMMS
+#include <mpi.h>
+#endif
 
 /***  coefficients of polynomial interpolataion **/
 static Real *poly ;
@@ -668,11 +667,7 @@ void dump_poloynomA(int n, double a, double b, double poly_param_1)
 **/
 
 
-void ks_dirac_op( su3_vector *src, su3_vector *dst, Real mass, 
-		  int parity, imp_ferm_links_t *fn)  ;
-
-
-static void my_check_eigen(su3_vector **eigVec, double *eigVal, int Nvecs, Real mass, 
+static void my_check_eigen(su3_vector **eigVec, double *eigVal, int Nvecs,
 			   int naik_term_epsilon_index, ks_eigen_param *eigen_param,
 			   imp_ferm_links_t *fn)
 {
@@ -691,21 +686,16 @@ static void my_check_eigen(su3_vector **eigVec, double *eigVal, int Nvecs, Real 
   eigen_param->parity = EVEN ;
 
   M_eigvec = create_v_field();
-  /** fn = get_fm_links(fn_links);  again **/
   
-  /**  imp_ferm_links_t* fnn = get_fm_links(fn)[naik_term_epsilon_index];   **/
-  
-  node0_printf("Checking linear eigenvalues for mass = %g\n", mass) ; 
+  node0_printf("Checking linear eigenvalues\n") ; 
   for(ieig= 0 ; ieig < Nvecs ; ++ieig )
     {
-      /**           ks_dirac_op(eigVec[ieig], M_eigvec, mass,  pp, fn[0])  ;  **/
       Matrix_Vec_mult(eigVec[ieig],M_eigvec,eigen_param,fn);  
       
       eigVal_est_re = 0.0 ;
       eigVal_est_im = 0.0 ;
       
       bot = 0.0 ;
-      /**	FORALLFIELDSITES(i)   **/
       
       
       FOREVENFIELDSITES(i)
@@ -860,7 +850,7 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
   
   //#define PARPACK 1
   
-#if defined(MPI) && defined(PARPACK)
+#if defined(MPI_COMMS) && defined(PARPACK)
   MPI_Comm comm; //communicator used when we call PARPACK
   int comm_err ;
 #endif
@@ -1041,7 +1031,7 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
     }
   
   
-#if defined(MPI) && defined(PARPACK)
+#if defined(MPI_COMMS) && defined(PARPACK)
   /****   parallel stuff  ***********/
   //duplicate the MPI_COMM_WORLD to create a communicator to be used with arpack
   comm_err = MPI_Comm_dup(MPI_COMM_WORLD,&comm); 
@@ -1223,7 +1213,7 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
     int naik_term_epsilon_index = 0 ;
     if( which_poly != NO_POLY_SQRT  )
       {
-	my_check_eigen(eigVec,eigVal,eigen_param->Nvecs, mass, 
+	my_check_eigen(eigVec,eigVal,eigen_param->Nvecs,
 		       naik_term_epsilon_index, eigen_param, fn) ;
       }
     
@@ -1255,7 +1245,7 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
 
 
 
-#else
+#else  /* ifdef ARPACK */
 
 /* Stub to allow compilation (but not execution) in case ARPACK is not available */
 
@@ -1268,4 +1258,4 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
   return 0;
 }
 
-#endif
+#endif /* ifdef ARPACK */

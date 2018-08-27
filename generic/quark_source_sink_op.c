@@ -131,10 +131,6 @@ void init_qss_op(quark_source_sink_op *qss_op){
   qss_op->dcp.Kappa        = 0;
   qss_op->dcp.Clov_c       = 1.;
   qss_op->dcp.U0           = 1.;
-  qss_op->co[0]            = 0;
-  qss_op->co[1]            = 0;
-  qss_op->co[2]            = 0;
-  qss_op->co[3]            = 0;
   qss_op->bp[0]            = 0.;
   qss_op->bp[1]            = 0.;
   qss_op->bp[2]            = 0.;
@@ -1202,7 +1198,7 @@ static int apply_ks_inverse(su3_vector *v, quark_source_sink_op *qss_op,
   ks_param *my_ksp             = &qss_op->ksp;
   int inaik                    = my_ksp->naik_term_epsilon_index;
   Real *bdry_phase             = qss_op->bp;
-  int *r0                      = qss_op->co;
+  int *r0                      = qss_op->r_offset;
   Real mybdry_phase[4];
   imp_ferm_links_t *fn;
 
@@ -1387,7 +1383,7 @@ static int apply_dirac_inverse(wilson_vector *wv,
   quark_invert_control *my_qic = &qss_op->qic;
   dirac_clover_param *my_dcp   = &qss_op->dcp;
   Real *bdry_phase             = qss_op->bp;
-  int *r0                      = qss_op->co;
+  int *r0                      = qss_op->r_offset;
   Real mybdry_phase[4];
 
   if(src == NULL){
@@ -2441,14 +2437,9 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK qss_op->qic.min = 0;
     IF_OK qss_op->qic.start_flag = 0;
     IF_OK qss_op->qic.nsrc = 1;
-    IF_OK status += get_vi(stdin, prompt, "coordinate_origin", qss_op->co, 4);
+    /* The coordinate origin and time boundary conditions are now set
+       globally by the setup.c routines */
     IF_OK status += get_vf(stdin, prompt, "momentum_twist", qss_op->bp, 3);
-    IF_OK status += get_s(stdin, prompt,"time_bc", savebuf);
-    IF_OK {
-      /* NOTE: The Dirac built-in bc is periodic. */
-      if(strcmp(savebuf,"antiperiodic") == 0)qss_op->bp[3] = 1;
-      else if(strcmp(savebuf,"periodic") == 0)qss_op->bp[3] = 0;
-    }
   }
   else if( op_type == FAT_COVARIANT_GAUSSIAN){
     /* Parameters for covariant Gaussian */
@@ -2514,7 +2505,7 @@ static int get_field_op(int *status_p, FILE *fp,
 
   else if( op_type == KS_INVERSE){
     char savebuf[128];
-    /* Parameters for Dirac inverse */
+    /* Parameters for KS inverse */
     IF_OK status += get_s(stdin, prompt,"mass", qss_op->mass_label);
     IF_OK qss_op->ksp.mass = atof(qss_op->mass_label);
     IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", &qss_op->eps_naik );
@@ -2532,15 +2523,9 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK qss_op->qic.min = 0;
     IF_OK qss_op->qic.start_flag = 0;
     IF_OK qss_op->qic.nsrc = 1;
-    IF_OK status += get_vi(stdin, prompt, "coordinate_origin", qss_op->co, 4);
+    /* The coordinate origin and time boundary conditions are now set
+       globally by the setup.c routines */
     IF_OK status += get_vf(stdin, prompt, "momentum_twist", qss_op->bp, 3);
-    IF_OK status += get_s(stdin, prompt,"time_bc", savebuf);
-    IF_OK {
-      /* NOTE: The KS built-in bc is antiperiodic. */
-      /* This is the reverse of the Dirac clover convention */
-      if(strcmp(savebuf,"antiperiodic") == 0)qss_op->bp[3] = 0;
-      else if(strcmp(savebuf,"periodic") == 0)qss_op->bp[3] = 1;
-    }
   }
   else {
     return 0;
@@ -2722,15 +2707,8 @@ static int print_single_op_info(FILE *fp, char prefix[],
     fprintf(fp,"%s%s,\n", make_tag(prefix, "kappa"), qss_op->kappa_label);
     fprintf(fp,"%s%g,\n", make_tag(prefix, "clov_c"), qss_op->dcp.Clov_c);
     fprintf(fp,"%s%g,\n", make_tag(prefix, "u0"), qss_op->dcp.U0);
-    fprintf(fp,"%s[%d, %d, %d, %d],\n", make_tag(prefix, "coordinate_origin"), 
-	    qss_op->co[0], qss_op->co[1], qss_op->co[2], qss_op->co[3]);
     fprintf(fp,"%s[%f, %f, %f],\n", make_tag(prefix, "momentum_twist"), 
 	    qss_op->bp[0], qss_op->bp[1], qss_op->bp[2]);
-    if(qss_op->bp[3] == 1)
-      fprintf(fp,"%s%s\n", make_tag(prefix, "time_bc"), "antiperiodic");
-    else
-      fprintf(fp,"%s%s\n", make_tag(prefix, "time_bc"), "periodic");
-      
   }
   else if( op_type == FAT_COVARIANT_GAUSSIAN){
     fprintf(fp,",\n");
@@ -2761,15 +2739,8 @@ static int print_single_op_info(FILE *fp, char prefix[],
     fprintf(fp,",\n");
     fprintf(fp,"%s%s,\n", make_tag(prefix, "mass"), qss_op->mass_label);
     fprintf(fp,"%s%g,\n", make_tag(prefix, "eps_naik"), qss_op->eps_naik);
-    fprintf(fp,"%s[%d, %d, %d, %d],\n", make_tag(prefix, "coordinate_origin"), 
-	    qss_op->co[0], qss_op->co[1], qss_op->co[2], qss_op->co[3]);
     fprintf(fp,"%s[%f, %f, %f],\n", make_tag(prefix, "momentum_twist"), 
 	    qss_op->bp[0], qss_op->bp[1], qss_op->bp[2]);
-    if(qss_op->bp[3] == 1)
-      fprintf(fp,"%s%s\n", make_tag(prefix, "time_bc"), "antiperiodic");
-    else
-      fprintf(fp,"%s%s\n", make_tag(prefix, "time_bc"), "periodic");
-      
   }
   else if ( op_type == ROTATE_3D ){
     fprintf(fp,",\n");

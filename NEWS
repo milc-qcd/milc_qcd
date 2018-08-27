@@ -1,0 +1,22 @@
+===========================================================================
+2018-04-18      commit 9052af6
+===========================================================================
+Update ks_eigen to Version 7 standards.  Modify input parameters files.
+See the ks_eigen/test directory for examples of the new format.
+
+===========================================================================
+2018-04-12      commit 3f56829 
+===========================================================================
+With a series of commits we now set the time boundary condition globally
+and use the coordinate origin uniformly to set the location of the boundary.
+
+We also now implement deflation by default in the staggered inverter
+if eigenvectors are supplied
+
+These changes require changes in the parameter inputs. In ks_spectrum
+and clover_invert2 applications, the time_bc line is removed from
+propagator stanzas and appears together with the coordinate_origin
+line at the top.  In ks_spectrum and ks_measure applications a
+max_number_of_eigenpairs line must be inserted before the
+number_of_pbp_masses line.  I/O specifications must follow if the
+desired number is nonzero.

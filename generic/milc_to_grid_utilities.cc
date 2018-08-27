@@ -94,19 +94,26 @@ initialize_grid(void){
   int mpiT = machsize[3];
 
   int  argc = MAXARG;
+  char **argv = (char **)malloc(MAXARG*sizeof(char *));
+
   char tag_grid[] = "--grid";
   char val_grid[MAXARGSTR];
+  snprintf (val_grid, MAXARGSTR, "%d.%d.%d.%d\0", nx, ny, nz, nt);
   char tag_mpi[] = "--mpi";
   char val_mpi[MAXARGSTR];
-  char tag_foo[] = "";
-  char val_foo[MAXARGSTR];
-  snprintf (val_grid, MAXARGSTR, "%d.%d.%d.%d\0", nx, ny, nz, nt);
   snprintf (val_mpi, MAXARGSTR, "%d.%d.%d.%d\0",  mpiX,   mpiY,   mpiZ,   mpiT);
-  snprintf (val_foo, MAXARGSTR, "");
-  char **argv = (char **)malloc(MAXARG*sizeof(char *));
+  char val_shm[MAXARGSTR];
+#ifdef GRID_SHMEM_MAX
+  snprintf (val_shm, MAXARGSTR, "%d\0", GRID_SHMEM_MAX);
+  char tag_shm[] = "--shm";
+#else
+  snprintf (val_shm, MAXARGSTR, "");
+  char tag_shm[] = "";
+#endif  
   argv[0] = tag_grid; argv[1] = val_grid;
   argv[2] = tag_mpi;  argv[3] = val_mpi;
-  argv[4] = tag_foo;  argv[5] = val_foo;
+  argv[4] = tag_shm;  argv[5] = val_shm;
+
   node0_printf("Calling Grid_init with %s %s %s %s %s %s\n",argv[0],argv[1],argv[2],argv[3],argv[4],argv[5]);
   Grid_init(&argc, &argv);
 
@@ -116,8 +123,6 @@ initialize_grid(void){
   std::vector<int> latt_size   = GridDefaultLatt();
   std::vector<int> simd_layout = GridDefaultSimd(Nd,vComplex::Nsimd());
   std::vector<int> mpi_layout  = GridDefaultMpi();
-//  CGrid  = new GridCartesian(latt_size,simd_layout,mpi_layout);
-//  RBGrid = new GridRedBlackCartesian(CGrid);
 
   node0_printf("milc_to_grid_utilities: Initialized Grid with args\n%s %s\n%s %s\n%s %s\n",
 	       argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);

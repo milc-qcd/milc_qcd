@@ -75,11 +75,6 @@ path coefficients: npath  path_coeff  multiplicity
                     3      1.562500e-02     192
                     4      -2.604167e-03     384
                     5      -6.250000e-02     48
-Time to APE smear 9.799004e-05 sec
- OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 25
- OK converged final_rsq= 1.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 5
-PBP: mass 1.000000e-01     1.581236e-01  5.834140e-02  2.211805e-03  2.211716e-03 ( 1 of 1 )
-FACTION: mass = 1.000000e-01,  1.522603e+00 ( 1 of 1 )
 Eigenvalues after diagonalization at iteration 20
 BEGIN RESULTS
 Eigenvalue(0) = 0.03344212592034225 +/- 2.994400e-14	 cvg? 1  
@@ -184,6 +179,7 @@ eigVal[29] = 2.347222e+00 ( resid = 2.602849e-04 , |eigVec[29]|-1 = -3.330669e-1
 eigVal[30] = 2.421365e+00 ( resid = 8.729117e-05 , |eigVec[30]|-1 = 0.000000e+00 )
 eigVal[31] = 2.421366e+00 ( resid = 3.478172e-04 , |eigVec[31]|-1 = 2.220446e-16 )
 End of eigensolutions
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 The above were eigenvalues of -Dslash^2 in MILC normalization
 Here we also list eigenvalues of iDslash in continuum normalization
 eigenval(0):  0.0914359
@@ -218,44 +214,11 @@ eigenval(28):   0.766032
 eigenval(29):   0.766032
 eigenval(30):   0.778037
 eigenval(31):   0.778037
-Chirality(0) -- even, odd, total:  -0.357523,  -0.342227,  -0.349875
-Chirality(1) -- even, odd, total:  -0.357523,  -0.342227,  -0.349875
-Chirality(2) -- even, odd, total:  0.0619333,  0.0525576,  0.0572455
-Chirality(3) -- even, odd, total:   0.061939,  0.0525538,  0.0572464
-Chirality(4) -- even, odd, total:  -0.166682,   0.276204,   0.054761
-Chirality(5) -- even, odd, total:  -0.166671,   0.276193,   0.054761
-Chirality(6) -- even, odd, total: -0.0982702,   0.195167,  0.0484483
-Chirality(7) -- even, odd, total: -0.0982673,   0.195161,  0.0484469
-Chirality(8) -- even, odd, total:   0.428103,  -0.333826,  0.0471385
-Chirality(9) -- even, odd, total:   0.428106,  -0.333829,  0.0471383
-Chirality(10) -- even, odd, total:   0.119863, -0.0563042,  0.0317794
-Chirality(11) -- even, odd, total:   0.119861, -0.0563011,    0.03178
-Chirality(12) -- even, odd, total: 0.00738143,  0.0322859,  0.0198337
-Chirality(13) -- even, odd, total: 0.00738525,  0.0322828,   0.019834
-Chirality(14) -- even, odd, total:  0.0532126, -0.0532126,  3.724e-13
-Chirality(15) -- even, odd, total:  -0.198609,   0.198609, 1.94053e-13
-Chirality(16) -- even, odd, total:  -0.162484,   0.162484, 7.20876e-12
-Chirality(17) -- even, odd, total: -0.0563129,  0.0563129, 3.78163e-13
-Chirality(18) -- even, odd, total: -0.0743199,  0.0743199, 1.05675e-10
-Chirality(19) -- even, odd, total:   0.189772,  -0.189772, 2.94747e-10
-Chirality(20) -- even, odd, total:  -0.184573,   0.184573, -2.38742e-10
-Chirality(21) -- even, odd, total:  -0.233169,   0.233169, -7.59364e-10
-Chirality(22) -- even, odd, total:  -0.287179,   0.287179, -1.516e-09
-Chirality(23) -- even, odd, total:   0.377653,  -0.377653, 1.09917e-10
-Chirality(24) -- even, odd, total:   0.132783,  -0.132783, -5.28395e-10
-Chirality(25) -- even, odd, total:  -0.229025,   0.229025, -2.34461e-09
-Chirality(26) -- even, odd, total:  0.0455375, -0.0455375, -3.03349e-09
-Chirality(27) -- even, odd, total:   0.240118,  -0.240118, -3.74434e-09
-Chirality(28) -- even, odd, total:   0.110555,  -0.110555, -2.35419e-09
-Chirality(29) -- even, odd, total:   0.276041,  -0.276041, -2.81396e-09
-Chirality(30) -- even, odd, total:   0.138124,  -0.186271,  -0.024073
-Chirality(31) -- even, odd, total:   0.137111,   -0.18525, -0.0240697
 RUNNING COMPLETED
-Time = 4.506519e+01 seconds
-total_iters = 32
-total Rayleigh iters = 18582
+Time = 4.163229e-01 seconds
+total Rayleigh iters = 2443
 
 
-get_f(0): EOF on input.
-exit: Sun Feb 14 16:35:51 2016
+ask_starting_lattice(0): EOF on input.
+exit: Thu May 31 16:07:17 2018
 

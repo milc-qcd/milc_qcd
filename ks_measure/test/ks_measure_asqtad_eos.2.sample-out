@@ -76,6 +76,7 @@ path coefficients: npath  path_coeff  multiplicity
                     4      -6.022150e-03     384
                     5      -1.092954e-01     48
 Time to APE smear 1.550198e-03 sec
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
  OK converged final_rsq= 6.9e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 45
  OK converged final_rsq= 5.2e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 11
  OK converged final_rsq= 9.8e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 44
@@ -128,6 +129,8 @@ TR_MM_INV: mass 5.000000e-02,  -4.449048e-01 ( 2 of 2 )
  OK converged final_rsq= 8.8e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 46
  OK converged final_rsq= 9.9e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 9
 TR_MidM_MidM: mass 5.000000e-02,  3.617430e-01 ( 2 of 2 )
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
  OK converged final_rsq= 5.3e-23 (cf 0) rel = 7.7e-11 (cf 1e-10) restarts = 1 iters= 70
  OK converged final_rsq= 7.1e-23 (cf 0) rel = 8.7e-11 (cf 1e-10) restarts = 1 iters= 8
 PB_DMDU_P: mass 7.000000e-02  -5.328994e+00  -5.204878e+00 ( 1 of 1 )
@@ -138,7 +141,7 @@ PB_D2MDMU2_P: mass 7.000000e-02  7.177377e-01  6.993885e-01  -3.593782e-02  -7.4
  OK converged final_rsq= 2.2e-22 (cf 0) rel = 9.1e-11 (cf 1e-10) restarts = 1 iters= 70
  OK converged final_rsq= 2.8e-22 (cf 0) rel = 9.9e-11 (cf 1e-10) restarts = 1 iters= 8
 TR_MidM_MidM: mass 7.000000e-02,  4.103172e-01 ( 1 of 1 )
-Time to calculate observables 6.483582e+00
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 RUNNING COMPLETED
 Time = 7.617388e+00 seconds
 total_iters = 1083

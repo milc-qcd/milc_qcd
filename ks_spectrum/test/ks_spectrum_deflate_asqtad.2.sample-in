@@ -19,13 +19,19 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0
+time_bc antiperiodic
 
 # Dirac eigenpair calculation
 
 # Number of eigenvalues to compute (storage required for all eigenvectors)
-Number_of_eigenvals 10
+max_number_of_eigenpairs 10
 
 # CG for Rayleigh-Ritz minimization
+
+# eigenvector I/O
+fresh_ks_eigen
+save_serial_ks_eigen ks_eigen_deflate.test-out
+
 Max_Rayleigh_iters 1000
 Restart_Rayleigh 10
 
@@ -37,10 +43,6 @@ eigenval_tolerance 1.0e-12
 
 # See README.ks_eigen - For optimizing the RR CG
 error_decrease .3
-
-# eigenvector I/O
-fresh_ks_eigen
-save_serial_ks_eigen ks_eigen_deflate.test-out
 
 # Chiral condensate and related measurements
 
@@ -89,7 +91,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 0
@@ -115,7 +116,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 1
@@ -141,7 +141,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 2
@@ -219,24 +218,14 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0
+time_bc antiperiodic
 
 # Dirac eigenpair calculation
 
 # Number of eigenvalues to compute (storage required for all eigenvectors)
-Number_of_eigenvals 5
+max_number_of_eigenpairs 5
 
 # CG for Rayleigh-Ritz minimization
-Max_Rayleigh_iters 100
-Restart_Rayleigh 10
-
-# Outer loop iterations
-Kalkreuter_iters 20
-
-# Eigenvalue tolerance
-eigenval_tolerance 1.0e-12
-
-# See README.ks_eigen - For optimizing the RR CG
-error_decrease .3
 
 # eigenvector I/O
 reload_serial_ks_eigen ks_eigen_deflate.test-out
@@ -290,7 +279,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 0
@@ -316,7 +304,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 1
@@ -342,7 +329,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 2

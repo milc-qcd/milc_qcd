@@ -133,10 +133,11 @@ setup(void)
   
   /* print banner, get volume, seed */
   prompt = initial_set();
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   node0_printf("Made lattice\n"); fflush(stdout);
@@ -162,7 +163,7 @@ static double eps_naik[MAX_NAIK];
 static int 
 initial_set(void)
 {
-  int prompt,status,i,tmporder;
+  int prompt=0,status,i,tmporder;
   Real current_naik_epsilon;
 
   /* On node zero, read lattice size, seed, and send to others */
@@ -197,64 +198,68 @@ initial_set(void)
 #endif
 
     status=get_prompt(stdin, &prompt);
-    IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
-    IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
-    IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
-    IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+    IF_OK status += get_i(stdin, prompt,"nx", &param.nx );
+    IF_OK status += get_i(stdin, prompt,"ny", &param.ny );
+    IF_OK status += get_i(stdin, prompt,"nz", &param.nz );
+    IF_OK status += get_i(stdin, prompt,"nt", &param.nt );
 #ifdef FIX_NODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "node_geometry", 
-			   par_buf.node_geometry, 4);
+			   param.node_geometry, 4);
 #ifdef FIX_IONODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
-			   par_buf.ionode_geometry, 4);
+			   param.ionode_geometry, 4);
 #endif
 #endif
-    IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
+    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
     /* Number of pseudofermions */
-    IF_OK status += get_i(stdin, prompt,"n_pseudo", &par_buf.n_pseudo );
-    if(par_buf.n_pseudo > MAX_N_PSEUDO){
+    IF_OK status += get_i(stdin, prompt,"n_pseudo", &param.n_pseudo );
+    if(param.n_pseudo > MAX_N_PSEUDO){
       printf("Error:  Too many pseudofermion fields.  Recompile. Current max is %d\n"
 	     ,MAX_N_PSEUDO);
       terminate(1);
     }
     /* get name of file containing rational function parameters */
     IF_OK status += get_s(stdin, prompt, "load_rhmc_params", 
-			  par_buf.rparamfile);
+			  param.rparamfile);
     /* beta, quark masses */
-    IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
+    IF_OK status += get_f(stdin, prompt,"beta", &param.beta );
 
-    IF_OK status += get_i(stdin, prompt,"n_dyn_masses", &par_buf.n_dyn_masses );
-    IF_OK status += get_vf(stdin, prompt, "dyn_mass", par_buf.dyn_mass, par_buf.n_dyn_masses);
-    IF_OK status += get_vi(stdin, prompt, "dyn_flavors", par_buf.dyn_flavors, par_buf.n_dyn_masses);
+    IF_OK status += get_i(stdin, prompt,"n_dyn_masses", &param.n_dyn_masses );
+    IF_OK status += get_vf(stdin, prompt, "dyn_mass", param.dyn_mass, param.n_dyn_masses);
+    IF_OK status += get_vi(stdin, prompt, "dyn_flavors", param.dyn_flavors, param.n_dyn_masses);
 
-    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+    IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
 
-    if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
+    /* Use antiperiodic boundary conditions */
+    for(int k = 0; k < 4; k++)
+      param.coord_origin[k] = 0;
+    param.time_bc = 0;
+
+    if(status>0) param.stopflag=1; else param.stopflag=0;
   } /* end if(mynode()==0) */
   
     /* Node 0 broadcasts parameter buffer to all other nodes */
-  broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+  broadcast_bytes((char *)&param,sizeof(param));
   
-  if( par_buf.stopflag != 0 )
+  if( param.stopflag != 0 )
     normal_exit(0);
   
-  nx        = par_buf.nx;
-  ny        = par_buf.ny;
-  nz        = par_buf.nz;
-  nt        = par_buf.nt;
+  nx        = param.nx;
+  ny        = param.ny;
+  nz        = param.nz;
+  nt        = param.nt;
 #ifdef FIX_NODE_GEOM
   for(i = 0; i < 4; i++)
-    node_geometry[i] = par_buf.node_geometry[i];
+    node_geometry[i] = param.node_geometry[i];
 #ifdef FIX_IONODE_GEOM
   for(i = 0; i < 4; i++)
-    ionode_geometry[i] = par_buf.ionode_geometry[i];
+    ionode_geometry[i] = param.ionode_geometry[i];
 #endif
 #endif
-  iseed     = par_buf.iseed;
-  n_pseudo  = par_buf.n_pseudo;
-  strcpy(rparamfile,par_buf.rparamfile);
+  iseed     = param.iseed;
+  n_pseudo  = param.n_pseudo;
+  strcpy(rparamfile,param.rparamfile);
   
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   total_iters=0;
@@ -345,14 +350,14 @@ initial_set(void)
   }
 #endif /* HISQ */
 
-  beta = par_buf.beta;
+  beta = param.beta;
   
-  n_dyn_masses = par_buf.n_dyn_masses;
+  n_dyn_masses = param.n_dyn_masses;
   for(i = 0; i < n_dyn_masses; i++){
-    dyn_mass[i] = par_buf.dyn_mass[i];
-    dyn_flavors[i] = par_buf.dyn_flavors[i];
+    dyn_mass[i] = param.dyn_mass[i];
+    dyn_flavors[i] = param.dyn_flavors[i];
   }
-  u0 = par_buf.u0;
+  u0 = param.u0;
 
   return(prompt);
 }
@@ -374,137 +379,140 @@ readin(int prompt)
     status=0;
     
     /* warms, trajecs */
-    IF_OK status += get_i(stdin, prompt,"warms", &par_buf.warms );
-    IF_OK status += get_i(stdin, prompt,"trajecs", &par_buf.trajecs );
+    IF_OK status += get_i(stdin, prompt,"warms", &param.warms );
+    IF_OK status += get_i(stdin, prompt,"trajecs", &param.trajecs );
     
     /* trajectories between propagator measurements */
     IF_OK status += 
-      get_i(stdin, prompt,"traj_between_meas", &par_buf.propinterval );
+      get_i(stdin, prompt,"traj_between_meas", &param.propinterval );
     
     /* microcanonical time step */
     IF_OK status += 
-      get_f(stdin, prompt,"microcanonical_time_step", &par_buf.epsilon );
+      get_f(stdin, prompt,"microcanonical_time_step", &param.epsilon );
     
     /*microcanonical steps per trajectory */
-    IF_OK status += get_i(stdin, prompt,"steps_per_trajectory", &par_buf.steps );
+    IF_OK status += get_i(stdin, prompt,"steps_per_trajectory", &param.steps );
     
     /* Data for each pseudofermion */
 
-    for(i = 0; i < par_buf.n_pseudo; i++){
+    for(i = 0; i < param.n_pseudo; i++){
       Real tmp[3]; int itmp[3];
 
       /* Residuals for multicg solves */
       IF_OK status += get_vf(stdin, prompt,"cgresid_md_fa_gr", tmp, 3 );
       /* rsqmin is r**2 in conjugate gradient */
       IF_OK {
-	par_buf.rsqmin_md[i] = tmp[0]*tmp[0];
-	par_buf.rsqmin_fa[i] = tmp[1]*tmp[1];
-	par_buf.rsqmin_gr[i] = tmp[2]*tmp[2];
+	param.rsqmin_md[i] = tmp[0]*tmp[0];
+	param.rsqmin_fa[i] = tmp[1]*tmp[1];
+	param.rsqmin_gr[i] = tmp[2]*tmp[2];
       }
 
       /* Max CG iterations for multicg solves */
       IF_OK status += get_vi(stdin, prompt, "max_multicg_md_fa_gr", itmp, 3);
       IF_OK {
-	par_buf.niter_md[i] = itmp[0];
-	par_buf.niter_fa[i] = itmp[1];
-	par_buf.niter_gr[i] = itmp[2];
+	param.niter_md[i] = itmp[0];
+	param.niter_fa[i] = itmp[1];
+	param.niter_gr[i] = itmp[2];
       }
 
       /* Precision for multicg solves */
       IF_OK status += get_vi(stdin, prompt, "cgprec_md_fa_gr", itmp, 3);
       IF_OK {
-	par_buf.prec_md[i] = itmp[0];
-	par_buf.prec_fa[i] = itmp[1];
-	par_buf.prec_gr[i] = itmp[2];
+	param.prec_md[i] = itmp[0];
+	param.prec_fa[i] = itmp[1];
+	param.prec_gr[i] = itmp[2];
       }
     }
 
     /* Max restarts for cleanup solves */
-    IF_OK par_buf.nrestart = 5;
+    IF_OK param.nrestart = 5;
     
     /* Precision for fermion force calculation */
-    IF_OK status = get_i(stdin, prompt, "prec_ff", &par_buf.prec_ff);
+    IF_OK status = get_i(stdin, prompt, "prec_ff", &param.prec_ff);
 
     /*------------------------------------------------------------*/
     /* Chiral condensate and related quantities                   */
     /*------------------------------------------------------------*/
+
+    /* Eigenpairs for HMC not supported at present */
+    param.eigen_param.Nvecs = 0;  
     
     IF_OK status += get_i(stdin, prompt, "number_of_pbp_masses",
-			  &par_buf.num_pbp_masses);
-    if(par_buf.num_pbp_masses > MAX_MASS_PBP){
+			  &param.num_pbp_masses);
+    if(param.num_pbp_masses > MAX_MASS_PBP){
       printf("Number of masses exceeds dimension %d\n",MAX_MASS_PBP);
       status++;
     }
-    IF_OK if(par_buf.num_pbp_masses > 0){
+    IF_OK if(param.num_pbp_masses > 0){
       IF_OK status += get_i(stdin, prompt, "max_cg_prop",
-			    &par_buf.qic_pbp[0].max);
+			    &param.qic_pbp[0].max);
       IF_OK status += get_i(stdin, prompt, "max_cg_prop_restarts",
-			    &par_buf.qic_pbp[0].nrestart);
-      IF_OK status += get_i(stdin, prompt, "npbp_reps", &par_buf.npbp_reps );
-      IF_OK status += get_i(stdin, prompt, "prec_pbp", &par_buf.prec_pbp);
-      IF_OK for(i = 0; i < par_buf.num_pbp_masses; i++){
-	IF_OK status += get_f(stdin, prompt, "mass", &par_buf.ksp_pbp[i].mass);
+			    &param.qic_pbp[0].nrestart);
+      IF_OK status += get_i(stdin, prompt, "npbp_reps", &param.npbp_reps );
+      IF_OK status += get_i(stdin, prompt, "prec_pbp", &param.prec_pbp);
+      IF_OK for(i = 0; i < param.num_pbp_masses; i++){
+	IF_OK status += get_f(stdin, prompt, "mass", &param.ksp_pbp[i].mass);
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
 	IF_OK status += get_f(stdin, prompt, "naik_term_epsilon", 
-			      &par_buf.ksp_pbp[i].naik_term_epsilon);
+			      &param.ksp_pbp[i].naik_term_epsilon);
 #endif
-	par_buf.qic_pbp[i].min = 0;
-	par_buf.qic_pbp[i].start_flag = 0;
-	par_buf.qic_pbp[i].nsrc = 1;
-	par_buf.qic_pbp[i].max = par_buf.qic_pbp[0].max;
-	par_buf.qic_pbp[i].nrestart = par_buf.qic_pbp[0].nrestart;
-	par_buf.qic_pbp[i].prec = par_buf.prec_pbp;
-	IF_OK status += get_f(stdin, prompt, "error_for_propagator", &par_buf.qic_pbp[i].resid);
-	IF_OK status += get_f(stdin, prompt, "rel_error_for_propagator", &par_buf.qic_pbp[i].relresid );
+	param.qic_pbp[i].min = 0;
+	param.qic_pbp[i].start_flag = 0;
+	param.qic_pbp[i].nsrc = 1;
+	param.qic_pbp[i].max = param.qic_pbp[0].max;
+	param.qic_pbp[i].nrestart = param.qic_pbp[0].nrestart;
+	param.qic_pbp[i].prec = param.prec_pbp;
+	IF_OK status += get_f(stdin, prompt, "error_for_propagator", &param.qic_pbp[i].resid);
+	IF_OK status += get_f(stdin, prompt, "rel_error_for_propagator", &param.qic_pbp[i].relresid );
       }
     }
 
     /* find out what kind of starting lattice to use */
-    IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
-					 par_buf.startfile );
+    IF_OK status += ask_starting_lattice(stdin,  prompt, &(param.startflag),
+					 param.startfile );
     
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
-				       par_buf.savefile );
-    IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
-				 par_buf.stringLFN );
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.saveflag),
+				       param.savefile );
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
+				 param.stringLFN );
     
-    if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
+    if( status > 0)param.stopflag=1; else param.stopflag=0;
   } /* end if(this_node==0) */
   
     /* Node 0 broadcasts parameter buffer to all other nodes */
-  broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+  broadcast_bytes((char *)&param,sizeof(param));
   
-  if( par_buf.stopflag != 0 )return par_buf.stopflag;
+  if( param.stopflag != 0 )return param.stopflag;
   
-  warms = par_buf.warms;
-  trajecs = par_buf.trajecs;
-  steps = par_buf.steps;
-  propinterval = par_buf.propinterval;
-  niter = par_buf.niter;
-  nrestart = par_buf.nrestart;
+  warms = param.warms;
+  trajecs = param.trajecs;
+  steps = param.steps;
+  propinterval = param.propinterval;
+  niter = param.niter;
+  nrestart = param.nrestart;
   for(i = 0; i< n_pseudo; i++){
-    niter_md[i] = par_buf.niter_md[i];
-    niter_fa[i] = par_buf.niter_fa[i];
-    niter_gr[i] = par_buf.niter_gr[i];
+    niter_md[i] = param.niter_md[i];
+    niter_fa[i] = param.niter_fa[i];
+    niter_gr[i] = param.niter_gr[i];
 
-    rsqmin_md[i] = par_buf.rsqmin_md[i];
-    rsqmin_fa[i] = par_buf.rsqmin_fa[i];
-    rsqmin_gr[i] = par_buf.rsqmin_gr[i];
+    rsqmin_md[i] = param.rsqmin_md[i];
+    rsqmin_fa[i] = param.rsqmin_fa[i];
+    rsqmin_gr[i] = param.rsqmin_gr[i];
 
-    prec_md[i] = par_buf.prec_md[i];
-    prec_fa[i] = par_buf.prec_fa[i];
-    prec_gr[i] = par_buf.prec_gr[i];
+    prec_md[i] = param.prec_md[i];
+    prec_fa[i] = param.prec_fa[i];
+    prec_gr[i] = param.prec_gr[i];
   }
-  prec_ff = par_buf.prec_ff;
-  rsqprop = par_buf.rsqprop;
-  epsilon = par_buf.epsilon;
-  n_pseudo = par_buf.n_pseudo;
-  startflag = par_buf.startflag;
-  saveflag = par_buf.saveflag;
-  strcpy(startfile,par_buf.startfile);
-  strcpy(savefile,par_buf.savefile);
-  strcpy(stringLFN, par_buf.stringLFN);
+  prec_ff = param.prec_ff;
+  rsqprop = param.rsqprop;
+  epsilon = param.epsilon;
+  n_pseudo = param.n_pseudo;
+  startflag = param.startflag;
+  saveflag = param.saveflag;
+  strcpy(startfile,param.startfile);
+  strcpy(savefile,param.savefile);
+  strcpy(stringLFN, param.stringLFN);
 
 #ifdef MILC_GLOBAL_DEBUG
 #ifdef HISQ_REUNITARIZATION_DEBUG
@@ -537,10 +545,10 @@ readin(int prompt)
      its Naik epsilon index */
 
   /* Contribution from the chiral condensate epsilons */
-  for(i = 0; i < par_buf.num_pbp_masses; i++){
-    par_buf.ksp_pbp[i].naik_term_epsilon_index = 
+  for(i = 0; i < param.num_pbp_masses; i++){
+    param.ksp_pbp[i].naik_term_epsilon_index = 
       fill_eps_naik(eps_naik, &n_naiks, 
-		    par_buf.ksp_pbp[i].naik_term_epsilon);
+		    param.ksp_pbp[i].naik_term_epsilon);
   }
 
 #endif

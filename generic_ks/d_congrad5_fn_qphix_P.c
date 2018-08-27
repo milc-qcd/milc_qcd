@@ -382,7 +382,7 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
 	   "%d mflops = %e "
 	   "\n"
 	   , tot_cg_time
-	   , prec_label[MILC_PRECISION-1], iters
+	   , prec_label[QPHIX_PrecisionInt-1], iters
 	   , (double)(nflop*volume*iters/(1.0e6*tot_cg_time*numnodes()))
 	   );
     fflush(stdout);
@@ -405,7 +405,7 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
 	   "mflops(ignore data-conv.) = %e "
 	   "\n"
 	   , dtime
-	   , prec_label[MILC_PRECISION-1], iters
+	   , prec_label[QPHIX_PrecisionInt-1], iters
 	   , (double)(nflop*volume*iters/(1.0e6*dtime*numnodes()))
 	   );
     fflush(stdout);

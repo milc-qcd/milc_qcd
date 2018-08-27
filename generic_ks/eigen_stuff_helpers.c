@@ -355,15 +355,17 @@ void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
   double *norm = (double *)malloc(Nvecs*sizeof(double));
   ttt = create_v_field();
   for(i = 0; i < Nvecs; i++){
-    resid[i] = (double)0.0;
-    norm[i]  = (double)0.0;
+    double rsd = (double)0.0;
+    double nrm  = (double)0.0;
     dslash_fn_field(eigVec[i], ttt, otherparity, fn);
     dslash_fn_field(ttt, ttt, parity, fn);
-    FORSOMEFIELDPARITY_OMP(j,parity, reduction(+:resid[i],norm[i])){
+    FORSOMEFIELDPARITY_OMP(j,parity, reduction(+:rsd,nrm)){
       scalar_mult_sum_su3_vector(ttt+j, eigVec[i]+j, eigVal[i]);
-      resid[i] += magsq_su3vec(ttt+j);
-      norm[i] += magsq_su3vec(eigVec[i]+j);
+      rsd += magsq_su3vec(ttt+j);
+      nrm += magsq_su3vec(eigVec[i]+j);
     } END_LOOP_OMP;
+    resid[i] = rsd;
+    norm[i] = nrm;
   }
   destroy_v_field(ttt);
   g_vecdoublesum(resid, Nvecs);
@@ -388,10 +390,11 @@ static void dvecmagsq(double magsq[], su3_vector *vec[], int parity, int n) {
   int i,j;
   
   for(j = 0; j < n; j++){
-    magsq[j] = 0.;
-    FORSOMEFIELDPARITY_OMP(i,parity,reduction(+:magsq[j])){
-      magsq[j] += magsq_su3vec( vec[j]+i );
+    double mgsq = 0.;
+    FORSOMEFIELDPARITY_OMP(i,parity,reduction(+:mgsq)){
+      mgsq += magsq_su3vec( vec[j]+i );
     } END_LOOP_OMP;
+    magsq[j] = mgsq;
   }
 
   g_vecdoublesum(magsq, n);

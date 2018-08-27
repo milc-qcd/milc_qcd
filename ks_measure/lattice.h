@@ -131,10 +131,8 @@ EXTERN fermion_links_t    *fn_links;
 //EXTERN ks_action_paths ks_act_paths_dmdu0;
 
 /* For eigenpair calculation */
-#if EIGMODE == EIGCG || EIGMODE == DEFLATION
 EXTERN int Nvecs_tot;
 EXTERN double *eigVal; /* eigenvalues of M^adj M */
 EXTERN su3_vector **eigVec; /* eigenvectors */
-#endif
 
 #endif /* _LATTICE_H */

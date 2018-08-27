@@ -273,7 +273,7 @@ restore_fermion_links(fermion_links_t *fl, int precision, int phases_in, su3_mat
 			    myname, MILC_PRECISION);
 
   if( phases_in != 1){
-    if(mynode() == 0)printf("BOTCH: %s needs phases in\n",myname); terminate(1);
+    if(mynode() == 0){printf("BOTCH: %s needs phases in\n",myname); terminate(1);}
   }
   
   restore_milc_fm_links_t(&info, fl->flg, links, fl->options.want_back);

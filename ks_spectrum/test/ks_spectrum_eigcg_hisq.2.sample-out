@@ -41,6 +41,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0 
+time_bc antiperiodic
 # EigCG
 # restart for Lanczos 
 restart_lanczos 50
@@ -84,7 +85,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 0
 number_of_propagators 1
@@ -103,7 +103,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 1
 number_of_propagators 1
@@ -122,7 +121,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 2
 number_of_propagators 1
@@ -220,42 +218,21 @@ Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Mass= 0.01 source point residue= 1e-09 rel= 0
 Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 solve_ksprop: color = 0
-CONGRAD5: time = 7.977672e-01 time_eig = 2.262330e-01 (fn D) masses = 1 iters = 124
-INC_EIGCG: time for init-CG           0.000000e+00
-INC_EIGCG: time for eigCG             7.977800e-01
-INC_EIGCG: time for orthogonalization 4.175901e-03
-INC_EIGCG: time for extending H       5.068302e-02
-INC_EIGCG: total time                 8.568959e-01
  OK converged final_rsq= 7.7e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 124
-CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.123905e-03
  OK converged final_rsq= 7.7e-19 (cf 1e-18) rel = 1 (cf 0) restarts = -1 iters= 0
 save_ksprop_c_from_field color vector source is missing
 save_ksprop_c_from_field File will be written with a dummy zero source
 Time to save prop color 0 = 2.956152e-03
 solve_ksprop: color = 1
-CONGRAD5: time = 7.544470e-01 time_eig = 2.253218e-01 (fn D) masses = 1 iters = 116
-INC_EIGCG: time for init-CG           5.464077e-03
-INC_EIGCG: time for eigCG             7.544570e-01
-INC_EIGCG: time for orthogonalization 1.243496e-02
-INC_EIGCG: time for extending H       5.782199e-02
-INC_EIGCG: total time                 8.301780e-01
  OK converged final_rsq= 9.7e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 116
-CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.132250e-03
  OK converged final_rsq= 9.5e-19 (cf 1e-18) rel = 1 (cf 0) restarts = -1 iters= 0
 save_ksprop_c_from_field color vector source is missing
 save_ksprop_c_from_field File will be written with a dummy zero source
 Time to save prop color 1 = 2.898932e-03
 solve_ksprop: color = 2
-CONGRAD5: time = 6.773629e-01 time_eig = 1.784053e-01 (fn D) masses = 1 iters = 109
-INC_EIGCG: time for init-CG           6.527185e-03
-INC_EIGCG: time for eigCG             6.773729e-01
-INC_EIGCG: time for orthogonalization 2.081394e-02
-INC_EIGCG: time for extending H       6.730413e-02
-INC_EIGCG: total time                 7.720182e-01
  OK converged final_rsq= 8.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 109
-CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.162052e-03
  OK converged final_rsq= 8.5e-19 (cf 1e-18) rel = 1 (cf 0) restarts = -1 iters= 0
 save_ksprop_c_from_field color vector source is missing
@@ -266,36 +243,15 @@ Saved propagator to test_prop
 Mass= 0.01 source point/spin_taste residue= 1e-09 rel= 0
 Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 solve_ksprop: color = 0
-CONGRAD5: time = 5.924501e-01 time_eig = 1.628909e-01 (fn D) masses = 1 iters = 92
-INC_EIGCG: time for init-CG           7.843018e-03
-INC_EIGCG: time for eigCG             5.924602e-01
-INC_EIGCG: time for orthogonalization 2.918887e-02
-INC_EIGCG: time for extending H       7.345009e-02
-INC_EIGCG: total time                 7.029421e-01
  OK converged final_rsq= 7.9e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 92
-CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.120090e-03
  OK converged final_rsq= 7.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = -1 iters= 0
 solve_ksprop: color = 1
-CONGRAD5: time = 4.849570e-01 time_eig = 1.113427e-01 (fn D) masses = 1 iters = 81
-INC_EIGCG: time for init-CG           8.900881e-03
-INC_EIGCG: time for eigCG             4.849691e-01
-INC_EIGCG: time for orthogonalization 3.752589e-02
-INC_EIGCG: time for extending H       8.167815e-02
-INC_EIGCG: total time                 6.130750e-01
  OK converged final_rsq= 9.1e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 81
-CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.125097e-03
  OK converged final_rsq= 9e-19 (cf 1e-18) rel = 1 (cf 0) restarts = -1 iters= 0
 solve_ksprop: color = 2
-CONGRAD5: time = 4.688990e-01 time_eig = 1.080012e-01 (fn D) masses = 1 iters = 78
-INC_EIGCG: time for init-CG           1.006913e-02
-INC_EIGCG: time for eigCG             4.689090e-01
-INC_EIGCG: time for orthogonalization 4.608297e-02
-INC_EIGCG: time for extending H       8.888888e-02
-INC_EIGCG: total time                 6.139510e-01
  OK converged final_rsq= 9.4e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 78
-CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.119137e-03
  OK converged final_rsq= 9.1e-19 (cf 1e-18) rel = 1 (cf 0) restarts = -1 iters= 0
 Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
@@ -393,6 +349,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0 
+time_bc antiperiodic
 # EigCG
 # restart for Lanczos 
 restart_lanczos 50
@@ -437,7 +394,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 0
 number_of_propagators 1
@@ -456,7 +412,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 1
 number_of_propagators 1
@@ -475,7 +430,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 2
 number_of_propagators 1
@@ -828,42 +782,21 @@ Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Mass= 0.01 source point residue= 1e-09 rel= 0
 Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 solve_ksprop: color = 0
-CONGRAD5: time = 2.954271e-01 time_eig = 0.000000e+00 (fn D) masses = 1 iters = 65
-INC_EIGCG: time for init-CG           1.164794e-02
-INC_EIGCG: time for eigCG             2.954371e-01
-INC_EIGCG: time for orthogonalization 0.000000e+00
-INC_EIGCG: time for extending H       0.000000e+00
-INC_EIGCG: total time                 3.070869e-01
  OK converged final_rsq= 9.4e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 65
-CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.147985e-03
  OK converged final_rsq= 9.4e-19 (cf 1e-18) rel = 1 (cf 0) restarts = -1 iters= 0
 save_ksprop_c_from_field color vector source is missing
 save_ksprop_c_from_field File will be written with a dummy zero source
 Time to save prop color 0 = 2.974987e-03
 solve_ksprop: color = 1
-CONGRAD5: time = 2.885618e-01 time_eig = 0.000000e+00 (fn D) masses = 1 iters = 64
-INC_EIGCG: time for init-CG           1.121211e-02
-INC_EIGCG: time for eigCG             2.885728e-01
-INC_EIGCG: time for orthogonalization 0.000000e+00
-INC_EIGCG: time for extending H       0.000000e+00
-INC_EIGCG: total time                 2.997849e-01
  OK converged final_rsq= 8.4e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 64
-CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.124859e-03
  OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 1 (cf 0) restarts = -1 iters= 0
 save_ksprop_c_from_field color vector source is missing
 save_ksprop_c_from_field File will be written with a dummy zero source
 Time to save prop color 1 = 2.938032e-03
 solve_ksprop: color = 2
-CONGRAD5: time = 3.208139e-01 time_eig = 0.000000e+00 (fn D) masses = 1 iters = 70
-INC_EIGCG: time for init-CG           1.111889e-02
-INC_EIGCG: time for eigCG             3.208251e-01
-INC_EIGCG: time for orthogonalization 0.000000e+00
-INC_EIGCG: time for extending H       0.000000e+00
-INC_EIGCG: total time                 3.319440e-01
  OK converged final_rsq= 8.5e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 70
-CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.129150e-03
  OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 1 (cf 0) restarts = -1 iters= 0
 save_ksprop_c_from_field color vector source is missing
@@ -874,36 +807,15 @@ Saved propagator to test_prop
 Mass= 0.01 source point/spin_taste residue= 1e-09 rel= 0
 Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 solve_ksprop: color = 0
-CONGRAD5: time = 2.935700e-01 time_eig = 0.000000e+00 (fn D) masses = 1 iters = 65
-INC_EIGCG: time for init-CG           1.140094e-02
-INC_EIGCG: time for eigCG             2.935798e-01
-INC_EIGCG: time for orthogonalization 0.000000e+00
-INC_EIGCG: time for extending H       0.000000e+00
-INC_EIGCG: total time                 3.049819e-01
  OK converged final_rsq= 9.4e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 65
-CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.122952e-03
  OK converged final_rsq= 9.4e-19 (cf 1e-18) rel = 1 (cf 0) restarts = -1 iters= 0
 solve_ksprop: color = 1
-CONGRAD5: time = 2.905550e-01 time_eig = 0.000000e+00 (fn D) masses = 1 iters = 64
-INC_EIGCG: time for init-CG           1.134896e-02
-INC_EIGCG: time for eigCG             2.905650e-01
-INC_EIGCG: time for orthogonalization 0.000000e+00
-INC_EIGCG: time for extending H       0.000000e+00
-INC_EIGCG: total time                 3.019159e-01
  OK converged final_rsq= 8.4e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 64
-CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.106024e-03
  OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 1 (cf 0) restarts = -1 iters= 0
 solve_ksprop: color = 2
-CONGRAD5: time = 3.239262e-01 time_eig = 0.000000e+00 (fn D) masses = 1 iters = 70
-INC_EIGCG: time for init-CG           1.124096e-02
-INC_EIGCG: time for eigCG             3.239369e-01
-INC_EIGCG: time for orthogonalization 0.000000e+00
-INC_EIGCG: time for extending H       0.000000e+00
-INC_EIGCG: total time                 3.351779e-01
  OK converged final_rsq= 8.5e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 70
-CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.111984e-03
  OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 1 (cf 0) restarts = -1 iters= 0
 Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0

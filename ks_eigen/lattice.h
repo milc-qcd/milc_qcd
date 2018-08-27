@@ -116,17 +116,27 @@ typedef struct {
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
+#ifdef FIX_NODE_GEOM
+EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
+			    hypercubes) for the compute nodes in each
+			    coordinate direction.  Must be divisors of
+			    the lattice dimensions */
+#ifdef FIX_IONODE_GEOM
+EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
+			     partitions in each coordinate direction,
+			     one I/O node for each square.  The I/O
+			     node is at the origin of the square.
+			     Must be divisors of the node_geometry. */
+#endif
+#endif
 EXTERN	int niter,nrestart,nflavors;
-EXTERN  Real mass,u0;
+EXTERN  Real u0;
 EXTERN	Real rsqmin,rsqprop;
-EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
-			   RELOAD_CHECKPOINT, FRESH */
-EXTERN	char startfile[MAXFILENAME];
 EXTERN  params param;           /* user input parameters */
+EXTERN	int total_iters;
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
-EXTERN	int total_iters;
 EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
         /* source time, increment for it, and number of source slices */
 
@@ -144,6 +154,7 @@ EXTERN  int this_node;		/* node number of this node */
    generator state */
 EXTERN double_prn node_prn ;
 
+EXTERN  gauge_file *savelat_p;
 EXTERN  char utc_date_time[64];
 EXTERN  char hostname[128];
 
@@ -164,5 +175,10 @@ EXTERN fermion_links_t    *fn_links;
 
 EXTERN int n_naiks;	/* Only one (dummy) Naik correction (for HISQ) */
 EXTERN double eps_naik[1];	/* Naik correction */
+
+/* For eigenpair calculation */
+EXTERN int Nvecs_tot;
+EXTERN double *eigVal; /* eigenvalues of D^dag D */
+EXTERN su3_vector **eigVec; /* eigenvectors */
 
 #endif /* _LATTICE_H */
