@@ -607,6 +607,7 @@ load_hisq_fn_links(info_t *info, fn_links_t **fn, fn_links_t *fn_deps,
     for( inaik = 1; inaik < n_naiks; inaik++ ) {
       add_fn( fn[inaik], fn[0], fn[inaik] );
       final_flop += 18.*volume/numnodes();
+      fn[inaik]->eps_naik = eps_naik[inaik];
     }
   }
   else {
