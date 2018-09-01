@@ -847,7 +847,7 @@ int readin(int prompt) {
       }
       
       /* Sample format for correlator line:
-	 correlator  A1_P5 p200 -i * 1 2 0 0 E E E */
+	 correlator P5-P5_V1-S_T13_m0.5744 p211 -1 / 4608.0 GX-G1 -2 -1 -1 EO EO EO */
       
       param.num_corr_report[ipair] = 0;
       IF_OK for(i = 0; i < param.num_corr_m[ipair]; i++){
@@ -1254,12 +1254,19 @@ int readin(int prompt) {
     /* malloc for eigenpairs */
     eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
     eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
-    for(i=0; i < param.eigen_param.Nvecs; i++)
+    for(i=0; i < param.eigen_param.Nvecs; i++){
       eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+      if(eigVec[i] == NULL){
+	printf("No room for eigenvector\n");
+	terminate(1);
+      }
+    }
     
     /* Do whatever is needed to get eigenpairs */
+    node0_printf("Calling reload_ks_eigen\n"); fflush(stdout);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			     &param.eigen_param.Nvecs, eigVal, eigVec, 1);
+    node0_printf("Return from reload_ks_eigen\n"); fflush(stdout);
     if(param.fixflag != NO_GAUGE_FIX){
       node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
     }
