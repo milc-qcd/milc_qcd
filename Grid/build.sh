@@ -3,7 +3,7 @@
 ARCH=$1
 PK_CC=$2
 PK_CXX=$3
-GIT_BRANCH=develop
+GIT_BRANCH=feature/staggered-comms-compute
 
 if [ -z ${PK_CXX} ]
 then
@@ -58,57 +58,69 @@ then
             --enable-precision=double \
             --enable-simd=GEN \
             --enable-comms=none \
-	    --with-lime=${HOME}/scidac/install/qio-single/lib \
-	    --with-fftw=${HOME}/fftw/build-gcc \
+	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc \
+            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
             CXX="${PK_CXX}" \
             CXXFLAGS="-std=c++11" \
 
+# 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
+
+       status=$?
              ;;
-
-
-#	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
 
     avx2)
 
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
-            --enable-mkl=yes \
             --enable-precision=double \
             --enable-simd=GEN \
             --enable-comms=mpi \
-	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
-	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc/lib \
+	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc \
+            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++11 -xMIC-AVX512" \
+            CXXFLAGS="-std=c++11 -xCORE-AVX2" \
 
+#	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
+#            --enable-mkl=yes \
+
+       status=$?
              ;;
     avx512)
+
+       INCMKL="-I/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/include"
+       LIBMKL="-L/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64_lin"
 
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
             --enable-precision=double \
             --enable-simd=KNL \
-            --enable-comms=mpit \
+            --enable-comms=mpi \
             --host=x86_64-unknown-linux-gnu \
-	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc/lib \
+	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc \
+            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
             CXX="${PK_CXX}" CC="${PK_CC}" \
             CXXFLAGS="-std=c++11 -xMIC-AVX512" \
 
-
 	    # --with-hdf5=/opt/cray/pe/hdf5/1.10.0.3/INTEL/16.0 \
-	    #            --enable-mkl=yes \
 
+       status=$?
+       echo "Configure exit status $status"
              ;;
     *)
     echo "Unsupported ARCH ${ARCH}"
           exit 1;
   esac
 
-  echo "Building in ${BUILDDIR}"
-  ${MAKE} -j4
+  if [ $status -ne 0 ]
+  then
+      echo "Quitting because of configure errors"
+  else
+    echo "Building in ${BUILDDIR}"
+    ${MAKE} -j4
 
-  echo "Installing in ${INSTALLDIR}"
-  ${MAKE} install
+    echo "Installing in ${INSTALLDIR}"
+    ${MAKE} install
+  fi
 
 fi     
 popd

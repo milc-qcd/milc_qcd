@@ -18,6 +18,7 @@ void periodic_bc();
     prompt=initial_set();
         /* Initialize the layout functions, which decide where sites live */
     setup_layout();
+    this_node = mynode();
         /* allocate space for lattice, set up coordinate fields */
     make_lattice();
     node0_printf("Made lattice\n"); fflush(stdout);
@@ -49,7 +50,7 @@ static double eps_naik[MAX_NAIK];
 
 /* SETUP ROUTINES */
 int initial_set(){
-int prompt,status;
+int prompt=0,status;
 
     /* On node zero, read lattice size and send to others */
     if(mynode()==0){
@@ -86,7 +87,6 @@ if( par_buf.stopflag != 0 )
     nz=par_buf.nz;
     nt=par_buf.nt;
     
-    this_node = mynode();
     number_of_nodes = numnodes();
     volume=nx*ny*nz*nt;
     return(prompt);

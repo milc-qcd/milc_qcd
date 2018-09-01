@@ -9,9 +9,8 @@
 #include "../include/gammatypes.h"
 #include "../include/imp_ferm_links.h"
 
-#define MAX_MASS_PBP 8
 #define MAX_SET 8
-#define MAX_PBP_MASSES 32
+#define MAX_MASS_PBP 32  /* Max altogether */
 
 /* structure for passing simulation parameters to each node */
 typedef struct {
@@ -63,9 +62,9 @@ typedef struct {
   int nwrite[MAX_SET];        /* For some cumulative stochastic applications: 
 				 number of random sources per write */
   int thinning[MAX_SET];        /* Interval between nonzero stochastic sources */
+  int truncate_diff[MAX_SET];
   quark_invert_control qic_pbp[MAX_MASS_PBP];
   quark_invert_control qic_pbp_sloppy[MAX_MASS_PBP];
-  int truncate_diff[MAX_MASS_PBP];
   ks_param ksp_pbp[MAX_MASS_PBP];
   char pbp_filenames[MAX_MASS_PBP][MAXFILENAME];
   int set[MAX_MASS_PBP];  /* The set to which the propagator belongs */

@@ -25,9 +25,8 @@ sum_c_field_mask(complex *dest, Real *src, Real wt, int count){
 static void
 sum_c_field(complex *dest, Real *src, Real wt, int count){
   int i, j;
-  site *s;
 
-  FOREVENFIELDSITES(i){
+  FORALLFIELDSITES(i){
     for(j = 0; j < count; j++){
       dest[count*i+j].real += src[count*i+j]*wt;
     }
@@ -61,7 +60,9 @@ accumulate_current_density(char *filename, complex *qin[],
 
     /* Parse metadata */
     /* Format is "source index %d mass %g" */
-    sscanf(QIO_string_ptr(recxml),"%*s %*s %d %*s %lf", &jrand, mass);
+    double mass_in;
+    sscanf(QIO_string_ptr(recxml),"%*s %*s %d %*s %lf", &jrand, &mass_in);
+    *mass = mass_in;
 
     if(k != jrand){
       fprintf(stderr, "Got random source index %d but wanted %d\n", jrand, k);

@@ -201,7 +201,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
 	   "mflops = %e "
 	   "\n"
 	   , tot_cg_time
-	   , prec_label[MILC_PRECISION-1], iters
+	   , prec_label[GRID_PrecisionInt-1], iters
 	   , (double)(nflop*volume*iters/(1.0e6*tot_cg_time*numnodes()))
 	   );
     fflush(stdout);
@@ -225,7 +225,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
 	   "mflops(ignore data-conv.) = %e "
 	   "\n"
 	   , dtimeinv
-	   , prec_label[MILC_PRECISION-1], iters
+	   , prec_label[GRID_PrecisionInt-1], iters
 	   , (double)(nflop*volume*iters/(1.0e6*dtimeinv*numnodes()))
 	   );
     fflush(stdout);
@@ -360,7 +360,7 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
 	   "mflops = %e "
 	   "\n"
 	   , tot_cg_time
-	   , prec_label[MILC_PRECISION-1], iters, nrhs
+	   , prec_label[GRID_PrecisionInt-1], iters, nrhs
 	   , (double)(nflop*nrhs*volume*iters/(1.0e6*tot_cg_time*numnodes()))
 	   );
     fflush(stdout);
@@ -384,7 +384,7 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
 	   "mflops(ignore data-conv.) = %e "
 	   "\n"
 	   , dtimeinv
-	   , prec_label[MILC_PRECISION-1], iters, nrhs
+	   , prec_label[GRID_PrecisionInt-1], iters, nrhs
 	   , (double)(nflop*nrhs*volume*iters/(1.0e6*dtimeinv*numnodes()))
 	   );
     fflush(stdout);

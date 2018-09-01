@@ -44,10 +44,11 @@ int setup()   {
   /* print banner, get volume */
   prompt=initial_set();
   if(prompt == 2)return prompt;
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
 #ifdef U1_FIELD
@@ -73,7 +74,7 @@ int setup()   {
 
 /* SETUP ROUTINES */
 static int initial_set(){
-  int prompt,status;
+  int prompt=0,status;
   /* On node zero, read lattice size, seed, and send to others */
   if(mynode()==0){
     /* print banner */
@@ -144,7 +145,6 @@ static int initial_set(){
 #endif
 #endif
 
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   return(prompt);
@@ -283,10 +283,6 @@ int readin(int prompt) {
 
     /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));
-
-  if( param.stopflag != 0 )
-    normal_exit(0);
-
 
   u0 = param.u0;
   if( param.stopflag != 0 )return param.stopflag;

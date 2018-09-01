@@ -133,10 +133,11 @@ setup(void)
   
   /* print banner, get volume, seed */
   prompt = initial_set();
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   node0_printf("Made lattice\n"); fflush(stdout);
@@ -162,7 +163,7 @@ static double eps_naik[MAX_NAIK];
 static int 
 initial_set(void)
 {
-  int prompt,status,i,tmporder;
+  int prompt=0,status,i,tmporder;
   Real current_naik_epsilon;
 
   /* On node zero, read lattice size, seed, and send to others */
@@ -259,7 +260,6 @@ initial_set(void)
   n_pseudo  = param.n_pseudo;
   strcpy(rparamfile,param.rparamfile);
   
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   total_iters=0;

@@ -189,12 +189,14 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
 
   out = create_nV<ImprovedStaggeredFermion5D>(n, milc_parity, grid_5D, grid_5Drb,  grid_full, grid_rb);
 
+  std::cout << "size of ImprovedStaggeredFermion5DF::FermionFieldtypename is " << sizeof(typename ImprovedStaggeredFermion5DF::FermionField) << "\n" << std::flush;
+  std::cout << "size of ImprovedStaggeredFermion5DD::FermionFieldtypename is " << sizeof(typename ImprovedStaggeredFermion5DD::FermionField) << "\n" << std::flush;
   int loopend= (milc_parity)==EVEN ? even_sites_on_node : sites_on_node ;
   int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
 
 
-  //  std::cout << "create_nv_from_vecs: ColourVector size * Nsimd = " << sizeof(ColourVector)*Nsimd <<
-  //	    << "ColourVectorField size =", << sizeof(*(out->cv)) << "\n" << std::flush;
+  std::cout << "create_nv_from_vecs: ColourVector size  = " << sizeof(ColourVector)  
+	    << " ColourVectorField size =" << sizeof(*(out->cv)) << "\n" << std::flush;
   auto start = std::chrono::system_clock::now();
   PARALLEL_FOR_LOOP
     for( uint64_t idx = loopstart; idx < loopend; idx++){

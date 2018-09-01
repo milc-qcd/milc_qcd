@@ -30,8 +30,8 @@ accumulate_current_density(char *filename, complex *qin[],
 			   Real charge, Real *mass, int nrand);
 
 /* linearlsq2 */
-double linearlsq(Real *m, Real *sdm, Real *b, Real *sdb,
-		 Real x[], Real y[], Real sd[], int n);
+double linearlsq(double *m, double *sdm, double *b, double *sdb,
+		 double x[], double y[], double sd[], int n);
 
 /* print_corr.c */
 void

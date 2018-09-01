@@ -8,8 +8,8 @@
 
 #include "rcorr_includes.h"
 
-double linearlsq(Real *m, Real *sdm, Real *b, Real *sdb,
-		 Real x[], Real y[], Real sd[], int n)
+double linearlsq(double *m, double *sdm, double *b, double *sdb,
+		 double x[], double y[], double sd[], int n)
 {
   double sd2inv;
   double sumx,sumx2,sum1,sumxy,sumy,sumy2,denom;
