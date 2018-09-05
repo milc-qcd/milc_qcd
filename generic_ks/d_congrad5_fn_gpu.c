@@ -119,6 +119,14 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
     node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", myname);
   }
 
+  inv_args.naik_epsilon = fn->eps_naik;
+
+#if (FERM_ACTION==HISQ)
+  inv_args.tadpole = 1.0;
+#else
+  inv_args.tadpole = u0;
+#endif
+
   qudaInvert(MILC_PRECISION,
 	     quda_precision, 
 	     mass,
@@ -127,7 +135,6 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 	     qic->relresid,
 	     fatlink, 
 	     longlink,
-             u0,
 	     t_src, 
 	     t_dest,
 	     &residual,
@@ -251,6 +258,14 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
     node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", myname);
   }
 
+  inv_args.naik_epsilon = fn->eps_naik;
+
+#if (FERM_ACTION==HISQ)
+  inv_args.tadpole = 1.0;
+#else
+  inv_args.tadpole = u0;
+#endif
+
   qudaInvertMsrc(MILC_PRECISION,
                  quda_precision,
                  mass,
@@ -259,7 +274,6 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
                  qic->relresid,
                  fatlink,
                  longlink,
-                 u0,
                  (void**)t_src,
 		 (void**)t_dest,
                  &residual,

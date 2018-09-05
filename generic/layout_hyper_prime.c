@@ -124,7 +124,7 @@ static void set_qmp_logical_topology(const int *geom, int n){
   if(geom == NULL)return;
   /* If so, then pass the grid dimensions to QMP now */
   if(QMP_declare_logical_topology(geom, n) != QMP_SUCCESS){
-    node0_printf("setup_layout: QMP_declare_logical_topology failed on %d %d %d %d \n",
+    if(mynode()==0)printf("setup_layout: QMP_declare_logical_topology failed on %d %d %d %d \n",
 		 geom[0], geom[1], geom[2], geom[3] );
     terminate(1);
   }
@@ -157,7 +157,7 @@ static void setup_qmp_grid(const int *nsquares2, int ndim2){
 
   for(i=0; i<ndim; i++) {
     if(len[i]%nsquares[i] != 0) {
-      node0_printf("LATTICE SIZE DOESN'T FIT GRID\n");
+      if(mynode()==0)printf("LATTICE SIZE DOESN'T FIT GRID\n");
       QMP_abort(0);
     }
     squaresize[i] = len[i]/nsquares[i];
@@ -221,7 +221,7 @@ void setup_fixed_geom(int const *geom, int n){
 
 #ifdef FIX_NODE_GEOM
   if(geom != NULL){
-      node0_printf("setup_layout: Preallocated machine geometry overrides request\n");
+      if(mynode()==0)printf("setup_layout: Preallocated machine geometry overrides request\n");
   }
 #endif
 
@@ -237,16 +237,16 @@ void setup_fixed_geom(int const *geom, int n){
   }
 
   if(node_count != numnodes()){
-    node0_printf("/nsetup_fixed_geom: Requested geometry %d %d %d %d ",
+    if(mynode()==0)printf("/nsetup_fixed_geom: Requested geometry %d %d %d %d ",
 		 geom[0], geom[1], geom[2], geom[3]);
-    node0_printf("does not match number of nodes %d\n",numnodes());
+    if(mynode()==0)printf("does not match number of nodes %d\n",numnodes());
     terminate(1);
   }
 
   if(status){
-    node0_printf("setup_fixed_geom: Requested geometry %d %d %d %d ",
+    if(mynode()==0)printf("setup_fixed_geom: Requested geometry %d %d %d %d ",
 		 geom[0], geom[1], geom[2], geom[3]);
-    node0_printf("is not commensurate with the lattice dims %d %d %d %d\n",
+    if(mynode()==0)printf("is not commensurate with the lattice dims %d %d %d %d\n",
 		 nx, ny, nz, nt);
     terminate(1);
   }
@@ -265,7 +265,7 @@ static void init_io_node(){
   if(ionodegeom() == NULL){
     ionodegeomvals = ionode_geometry;
   } else {
-    node0_printf("init_io_node: Command line ionode geometry overrides request\n");
+    if(mynode()==0)printf("init_io_node: Command line ionode geometry overrides request\n");
     ionodegeomvals = ionodegeom();
   }
 
@@ -278,10 +278,10 @@ static void init_io_node(){
   }
   
   if(status){
-    node0_printf("init_io_node: ionode geometry %d %d %d %d \n",
+    if(mynode()==0)printf("init_io_node: ionode geometry %d %d %d %d \n",
 		 ionodegeomvals[0], ionodegeomvals[1],
 		 ionodegeomvals[2], ionodegeomvals[3]);
-    node0_printf("is incommensurate with node geometry %d %d %d %d\n",
+    if(mynode()==0)printf("is incommensurate with node geometry %d %d %d %d\n",
 		 nsquares[0], nsquares[1], nsquares[2], nsquares[3]);
     terminate(1);
   }
@@ -317,26 +317,26 @@ static void set_topology(){
     /* Use job geometry */
     geom = QMP_get_job_geometry();
     setup_qmp_grid(geom, nd);
-    node0_printf("QMP using job_geometry_dimensions\n");
+    if(mynode()==0)printf("QMP using job_geometry_dimensions\n");
   } else {
     nd = QMP_get_allocated_number_of_dimensions();
     if(nd > 0) {
       geom = QMP_get_allocated_dimensions();
       /* use allocated geometry */
       setup_qmp_grid(geom, nd);
-      node0_printf("QMP using allocated_dimension\n");
+      if(mynode()==0)printf("QMP using allocated_dimension\n");
     } else {
 #ifdef FIX_NODE_GEOM
       nd = 4;
       geom = node_geometry;
       /* take geometry from input parameter node_geometry line */
       setup_fixed_geom(geom, nd);
-      node0_printf("QMP with specified node_geometry\n");
+      if(mynode()==0)printf("QMP with specified node_geometry\n");
 #endif
       setup_hyper_prime();
       nd = 4;
       geom = nsquares;
-      node0_printf("QMP with automatic hyper_prime layout\n");
+      if(mynode()==0)printf("QMP with automatic hyper_prime layout\n");
     }
   }
 
@@ -365,12 +365,12 @@ static void set_topology(){
   
   if(geom != NULL){
     /* Set the sublattice dimensions according to the specified geometry */
-    node0_printf("with fixed node_geometry\n");
+    if(mynode()==0)printf("with fixed node_geometry\n");
     setup_fixed_geom(geom, nd);
   } else {
     /* Set the sublattice dimensions according to the hyper_prime algorithm */
     setup_hyper_prime();
-    node0_printf("automatic hyper_prime layout\n");
+    if(mynode()==0)printf("automatic hyper_prime layout\n");
   }
   
 #endif
