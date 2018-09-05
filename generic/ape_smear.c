@@ -346,14 +346,18 @@ void ape_smear_field_dir(
   
   /* project links onto SU(3) if nhits > 0 */
   if(nhits > 0){
+    int status = 0;
     FORALLSITES_OMP(i,s,private(tmat1)){
       /* Use partially reunitarized link for guess */
       tmat1 = dest[4*i+dir1];
       reunit_su3(&tmat1);
-      project_su3(&tmat1, &dest[4*i+dir1], nhits, tol);
+      status += project_su3(&tmat1, &dest[4*i+dir1], nhits, tol);
       /* Copy projected matrix to dest */
       dest[4*i+dir1] = tmat1;
     } END_LOOP_OMP;
+    g_intsum(&status);
+    if(this_node == 0 && status > 0)
+      printf("WARNING %d sites report no convergence in project_su3\n", status);
   }
   
   free(temp);
