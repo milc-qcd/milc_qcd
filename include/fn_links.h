@@ -15,6 +15,7 @@ typedef struct {
   su3_matrix *lng;
   su3_matrix *fatback;  // NULL if unused
   su3_matrix *lngback;  // NULL if unused
+  double eps_naik;
   int notify_quda_new_links;
 } fn_links_t;
 
