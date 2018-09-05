@@ -374,6 +374,16 @@ int readin(int prompt) {
 	param.qic_pbp[i].max = param.qic_pbp[0].max;
 	param.qic_pbp[i].nrestart = param.qic_pbp[0].nrestart;
 	param.qic_pbp[i].prec = param.qic_pbp[0].prec;
+	/* Should we be deflating? */
+	param.qic_pbp[i].deflate = 0;
+	IF_OK {
+	  if(param.eigen_param.Nvecs > 0){  /* Need eigenvectors to deflate */
+	    IF_OK status += get_s(stdin, prompt,"deflate", savebuf);
+	    IF_OK {
+	      if(strcmp(savebuf,"yes") == 0)param.qic_pbp[i].deflate = 1;
+	    }
+	  }
+	}
 	IF_OK status += get_f(stdin, prompt, "error_for_propagator", &param.qic_pbp[i].resid);
 	IF_OK status += get_f(stdin, prompt, "rel_error_for_propagator", &param.qic_pbp[i].relresid );
 #ifdef HALF_MIXED
@@ -628,6 +638,17 @@ int readin(int prompt) {
 	/* maximum no. of conjugate gradient restarts */
 	param.qic[nprop].nrestart = max_cg_restarts;
       
+	/* Should we be deflating? */
+	param.qic[nprop].deflate = 0;
+	IF_OK {
+	  if(param.eigen_param.Nvecs > 0){  /* Need eigenvectors to deflate */
+	    IF_OK status += get_s(stdin, prompt,"deflate", savebuf);
+	    IF_OK {
+	      if(strcmp(savebuf,"yes") == 0)param.qic[nprop].deflate = 1;
+	    }
+	  }
+	}
+
 	/* error for clover propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
 			      &param.qic[nprop].resid );
