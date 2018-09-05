@@ -253,10 +253,15 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   dtimec = -dclock();
 #endif
 
-  /* call the actual EV finder*/
+  /* set PRIMME parameters */
   ret = zprimme(NULL, NULL, NULL, &primme);
-  printf("PRIMME workspace int = %d long int = %ld\n", primme.intWorkSize, primme.realWorkSize); fflush(stdout);
-  primme_display_params(primme);
+  if(this_node == 0){
+    printf("PRIMME workspace int = %d long int = %ld\n", primme.intWorkSize, primme.realWorkSize);
+    primme_display_params(primme);
+    fflush(stdout);
+  }
+
+  /* call the actual EV finder*/
   ret = zprimme(evals, (Complex_Z*)evecs, rnorms, &primme);
 
   if (ret!=0){ /*check return value */
