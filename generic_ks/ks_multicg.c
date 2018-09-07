@@ -797,13 +797,13 @@ int mat_invert_multi(
     for(i = 0; i < num_masses; i++)
       qic[i].parity = EVEN;
 
-    node0_printf("Solving for %d masses on even sites\n");
+    node0_printf("Solving for %d masses on even sites\n", num_masses);
     tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn_multi);
 
     for(i = 0; i < num_masses; i++)
       qic[i].parity = ODD;
 
-    node0_printf("Solving for %d masses on odd sites\n");
+    node0_printf("Solving for %d masses on odd sites\n", num_masses);
     tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn_multi);
 
     /* Multiply all solutions by Madjoint to get dst = M^-1 * src */
