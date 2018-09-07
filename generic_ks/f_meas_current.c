@@ -18,8 +18,8 @@
 
 */
 
-#define MASS_UDLSC
-#define OPT_UDLSC
+#define MASS_UDLSC /* Calculate densities with ud and ls mass differences */
+#define OPT_UDLSC  /* If defined, approximate the u-d difference using a sequential propagator based on ml */
 //#define WRITE_VC_BINARY
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/fn_links.h"
@@ -120,8 +120,12 @@ average_vector_current_and_sum(int nwrite, Real *j_mu, Real *jadd_mu){
 
 /*Write current record for the accumulated average over random sources */
 static void
-write_tslice_values(char *tag, int jrand, int nwrite, Real mass, Real *j_mu){
-  node0_printf("JTMU%s RANDOM_SOURCE %d MASS %g\n", tag, jrand, mass);
+write_tslice_values(char *tag, int jrand, int nwrite, Real mass1, Real mass2, Real *j_mu){
+  if(mass2 == 0){
+    node0_printf("JTMU%s RANDOM_SOURCE %d MASS %g\n", tag, jrand, mass1);
+  } else {
+    node0_printf("JTMU%s RANDOM_SOURCE %d MASS %g minus MASS %g\n", tag, jrand, mass1, mass2);
+  }
   double *jtmu = (double *)malloc(sizeof(double)*4*param.nt);
   for(int tmu = 0; tmu < 4*param.nt; tmu++)
     jtmu[tmu] = 0.;
@@ -634,7 +638,7 @@ block_current_diff(int n_masses, Real *j_mu[], Real masses[],
 */
 
 static void
-block_currents_diff_delta_lsc( Real *j_mu[], Real masses[],
+block_currents_diff_delta_lsc( int n_masses, Real *j_mu[], Real masses[],
 			       imp_ferm_links_t *fn[], int nsrc,
 			       quark_invert_control qic_precise[],
 			       quark_invert_control qic_sloppy[],
@@ -661,29 +665,38 @@ block_currents_diff_delta_lsc( Real *j_mu[], Real masses[],
 	       ml, ms);
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc, -1, EVEN,
 				   qic_sloppy_ls, gr_even);
-  node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", mc);
-  block_current_stochastic( jmu_c, mc, nsrc, -1, EVEN, qic_sloppy_c, fn_c, gr_even);
+  if(n_masses == 3){
+    node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", mc);
+    block_current_stochastic( jmu_c, mc, nsrc, -1, EVEN, qic_sloppy_c, fn_c, gr_even);
+  }
 
   node0_printf("Solving sloppily for all ODD displacements for mass diff %g %g\n",
 	       ml, ms);
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc, -1, ODD,
 				   qic_sloppy_ls, gr_odd);
-  node0_printf("Solving sloppily for all ODD displacements for mass %g\n", mc);
-  block_current_stochastic( jmu_c, mc, nsrc, -1, ODD, qic_sloppy_c, fn_c, gr_odd);
+  if(n_masses == 3){
+    node0_printf("Solving sloppily for all ODD displacements for mass %g\n", mc);
+    block_current_stochastic( jmu_c, mc, nsrc, -1, ODD, qic_sloppy_c, fn_c, gr_odd);
+  }
   
   /* Next, continue to a "precise" solution from the same sources */
   node0_printf("Solving precisely for all EVEN displacements for mass diff %g %g\n",
 	       ml, ms);
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc, +1, EVEN,
 				   qic_precise_ls, gr_even);
-  node0_printf("Solving precisely for all EVEN displacements for mass %g\n", mc);
-  block_current_stochastic( jmu_c, mc, nsrc, +1, EVEN, qic_precise_c, fn_c, gr_even);
+  if(n_masses == 3){
+    node0_printf("Solving precisely for all EVEN displacements for mass %g\n", mc);
+    block_current_stochastic( jmu_c, mc, nsrc, +1, EVEN, qic_precise_c, fn_c, gr_even);
+  }
+
   node0_printf("Solving precisely for all ODD displacements for mass diff %g %g\n",
 	       ml, ms);
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc, +1, ODD,
 				   qic_precise_ls, gr_odd);
-  node0_printf("Solving precisely for all ODD displacements for mass %g\n", mc);
-  block_current_stochastic( jmu_c, mc, nsrc, +1, ODD, qic_precise_c, fn_c, gr_odd);
+  if(n_masses == 3){
+    node0_printf("Solving precisely for all ODD displacements for mass %g\n", mc);
+    block_current_stochastic( jmu_c, mc, nsrc, +1, ODD, qic_precise_c, fn_c, gr_odd);
+  }
   
 } /* block_currents_diff_delta_lsc */
 
@@ -696,7 +709,7 @@ block_currents_diff_delta_lsc( Real *j_mu[], Real masses[],
 */
 
 static void
-block_currents_diff_delta_udlsc(Real *j_mu[], Real masses[],
+block_currents_diff_delta_udlsc(int n_masses, Real *j_mu[], Real masses[],
 				imp_ferm_links_t *fn[], int nsrc,
 				quark_invert_control qic_precise[],
 				quark_invert_control qic_sloppy[],
@@ -743,8 +756,10 @@ block_currents_diff_delta_udlsc(Real *j_mu[], Real masses[],
 				   qic_sloppy_ls, gr_even);
 #endif
   
-  node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", mc);
-  block_current_stochastic( jmu_c, mc, nsrc, -1, EVEN, qic_sloppy_c, fn_c, gr_even);
+  if(n_masses == 5){
+    node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", mc);
+    block_current_stochastic( jmu_c, mc, nsrc, -1, EVEN, qic_sloppy_c, fn_c, gr_even);
+  }
 
 
   /* The sloppy high-mode solution on odd sites */
@@ -764,8 +779,10 @@ block_currents_diff_delta_udlsc(Real *j_mu[], Real masses[],
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc, -1, ODD,
 				   qic_sloppy_ls, gr_odd);
 #endif
-  node0_printf("Solving sloppily for all ODD displacements for mass %g\n", mc);
-  block_current_stochastic( jmu_c, mc, nsrc, -1, ODD, qic_sloppy_c, fn_c, gr_odd);
+  if(n_masses == 5){
+    node0_printf("Solving sloppily for all ODD displacements for mass %g\n", mc);
+    block_current_stochastic( jmu_c, mc, nsrc, -1, ODD, qic_sloppy_c, fn_c, gr_odd);
+  }
   
   /* The "precise" solution from the same sources on even sites */
 
@@ -784,8 +801,10 @@ block_currents_diff_delta_udlsc(Real *j_mu[], Real masses[],
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc, +1, EVEN,
 				   qic_precise_ls, gr_even);
 #endif
-  node0_printf("Solving precisely for all EVEN displacements for mass %g\n", mc);
-  block_current_stochastic( jmu_c, mc, nsrc, +1, EVEN, qic_precise_c, fn_c, gr_even);
+  if(n_masses == 5){
+    node0_printf("Solving precisely for all EVEN displacements for mass %g\n", mc);
+    block_current_stochastic( jmu_c, mc, nsrc, +1, EVEN, qic_precise_c, fn_c, gr_even);
+  }
 
   /* The "precise" solution from the same sources on odd sites */
 
@@ -804,8 +823,10 @@ block_currents_diff_delta_udlsc(Real *j_mu[], Real masses[],
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc, +1, ODD,
 				   qic_precise_ls, gr_odd);
 #endif
-  node0_printf("Solving precisely for all ODD displacements for mass %g\n", mc);
-  block_current_stochastic( jmu_c, mc, nsrc, +1, ODD, qic_precise_c, fn_c, gr_odd);
+  if(n_masses == 5){
+    node0_printf("Solving precisely for all ODD displacements for mass %g\n", mc);
+    block_current_stochastic( jmu_c, mc, nsrc, +1, ODD, qic_precise_c, fn_c, gr_odd);
+  }
   
 } /* block_currents_diff_delta_udlsc */
 
@@ -852,11 +873,13 @@ block_currents_diff_deltam(int n_masses, Real *j_mu[], Real masses[],
     /* Create sources in gr_even and gr_odd */
     collect_sources(gr_even, gr_odd, nr, d, evol);
 
-    if(n_masses == 3){
-      block_currents_diff_delta_lsc(j_mu, masses, fn_mass, nsrc, qic_precise,
+    if(n_masses <= 3){
+      /* Take the difference between the first two masses, but not the third */
+      block_currents_diff_delta_lsc(n_masses, j_mu, masses, fn_mass, nsrc, qic_precise,
 				    qic_sloppy, gr_even, gr_odd);
-    } else if(n_masses == 5){
-      block_currents_diff_delta_udlsc(j_mu, masses, fn_mass, nsrc, qic_precise,
+    } else {
+      /* Take the difference between the first two masses, and the next two, but not fifth */
+      block_currents_diff_delta_udlsc(n_masses, j_mu, masses, fn_mass, nsrc, qic_precise,
 				      qic_sloppy, gr_even, gr_odd);
     }      
   } /* jrand */
@@ -923,19 +946,16 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
   for(int jrand = 0; jrand < nrand; jrand += nwrite){
 
 #ifdef MASS_UDLSC
-    if(n_masses != 5 && n_masses != 3){
-      node0_printf("WARNING: MASS_UDLSC requires three or five masses, not %d\n", n_masses);
-      node0_printf("Not using mass-difference method\n");
+    if(n_masses <= 1){
       block_current_diff(n_masses, j_mu, masses, fn_mass, 
 			 qic_precise, qic_sloppy, nwrite, thinning);
     } else {
-      
       block_currents_diff_deltam(n_masses, j_mu, masses, fn_mass, 
 				 qic_precise, qic_sloppy, nwrite, thinning);
     }
 #else
     block_current_diff(n_masses, j_mu, masses, fn_mass, 
-		       qic_precise, qic_sloppy, nwrite, thinning);
+                       qic_precise, qic_sloppy, nwrite, thinning);
 #endif
     
    
@@ -960,7 +980,16 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
 	terminate(1);
       } 
 #endif
-      write_tslice_values("DIFF", jrand, nwrite, masses[j], j_mu[j]);
+#ifdef MASS_UDLSC
+      if((j == 0 && n_masses > 1) || (j == 2 && n_masses > 3)){
+	  write_tslice_values("DIFF", jrand, nwrite, masses[j], masses[j+1], j_mu[j]);
+      }
+      else if((j == 0 && n_masses == 1) || (j == 2 && n_masses <= 3) || j == 4 ){
+	write_tslice_values("DIFF", jrand, nwrite, masses[j], 0., j_mu[j]);
+      }
+#else
+      write_tslice_values("DIFF", jrand, nwrite, masses[j], 0., j_mu[j]);
+#endif
       clear_r_array_field(j_mu[j], NMU);
     } /* j */
   } /* jrand */
@@ -1184,13 +1213,12 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
 		      imp_ferm_links_t *fn_mass[]){
 
   /* Compute the difference in exact low-mode current densities 
-     If three massees, take the difference for 
-     mass0 and mass1 and compute for mass2
+     If two or three masses, take the difference for 
+     mass0 and mass1 and if three, also compute for mass2
      Results in jlow_mu[0], jlow_mu[2]
-     If five masses, take the difference for
+     If four or five masses, take the difference for
      mass0 and mass1 and the difference for mass0 and mass3
-     and compute for mass 4. 
-     Ignore mass2
+     and if five, also compute for mass 4. 
      Results in jlow_mu[0], jlow_mu[2], and jlow_mu[4]
 */
 
@@ -1198,13 +1226,25 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
   
   double dtime = -dclock();
 
-  if(n_masses == 3){
+  switch(n_masses){
+  case(1):
+    exact_current(jlow_mu[0], masses[0], fn_mass[0]);
+    break;
+  case(2):
+    exact_current_delta_ls(jlow_mu, masses,fn_mass);
+    break;
+  case(3):
     exact_current_delta_ls(jlow_mu, masses,fn_mass);
     exact_current(jlow_mu[2], masses[2], fn_mass[2]);
-  } else if (n_masses == 5){
+    break;
+  case(4):
+    exact_current_delta_udus(jlow_mu, masses, fn_mass);
+    break;
+  case(5):
     exact_current_delta_udus(jlow_mu, masses, fn_mass);
     exact_current(jlow_mu[4], masses[4], fn_mass[4]);
-  } else {
+    break;
+  default:
     node0_printf("%s: wrong number of masses %d\n", myname, n_masses);
     terminate(1);
   }
@@ -1302,11 +1342,11 @@ block_current( int n_masses, Real *j_mu[], Real masses[],
    Results in j_mu[0] and j_mu[2]
 */
 static void 
-block_currents_delta_lsc( Real *j_mu[], Real masses[], 
+block_currents_delta_lsc( int n_masses, Real *j_mu[], Real masses[], 
 			  imp_ferm_links_t *fn[], int nsrc,
 			  quark_invert_control qic[],
 			  su3_vector **gr_even, su3_vector **gr_odd){
-  char myname[] = "block_current_delta_lsc";
+  char myname[] = "block_currents_delta_lsc";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
   
   Real ml = masses[0];
@@ -1325,15 +1365,19 @@ block_currents_delta_lsc( Real *j_mu[], Real masses[],
 	       ml, ms);
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls,
 				   nsrc, +1, EVEN, qic_ls, gr_even);
-  node0_printf("Solving for all EVEN displacements for mass %g\n", mc);
-  block_current_stochastic( jmu_c, mc, nsrc, +1, EVEN, qic_c, fn_c, gr_even);
+  if(n_masses == 3){
+    node0_printf("Solving for all EVEN displacements for mass %g\n", mc);
+    block_current_stochastic( jmu_c, mc, nsrc, +1, EVEN, qic_c, fn_c, gr_even);
+  }
 
   node0_printf("Solving for all ODD displacements for mass diff %g %g\n",
 	       ml, ms);
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls,
 				   nsrc, +1, ODD, qic_ls, gr_odd);
-  node0_printf("Solving for all ODD displacements for mass %g\n", mc);
-  block_current_stochastic( jmu_c, mc, nsrc, +1, ODD, qic_c, fn_c, gr_odd);
+  if(n_masses == 3){
+    node0_printf("Solving for all ODD displacements for mass %g\n", mc);
+    block_current_stochastic( jmu_c, mc, nsrc, +1, ODD, qic_c, fn_c, gr_odd);
+  }
 }
 
 /*********************************************************************/
@@ -1344,7 +1388,7 @@ block_currents_delta_lsc( Real *j_mu[], Real masses[],
 */
 
 static void 
-block_currents_delta_udlsc( Real *j_mu[], Real masses[], 
+block_currents_delta_udlsc( int n_masses, Real *j_mu[], Real masses[], 
 			    imp_ferm_links_t *fn[], int nsrc,
 			    quark_invert_control qic[],
 			    su3_vector **gr_even, su3_vector **gr_odd){
@@ -1386,9 +1430,10 @@ block_currents_delta_udlsc( Real *j_mu[], Real masses[],
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc,
 				   +1, EVEN, qic_ls, gr_even);
 #endif
-  node0_printf("Solving for all EVEN displacements for mass %g\n", mc);
-  block_current_stochastic( jmu_c, mc, nsrc, +1, EVEN, qic_c, fn_c, gr_even);
-  
+  if(n_masses == 5){
+    node0_printf("Solving for all EVEN displacements for mass %g\n", mc);
+    block_current_stochastic( jmu_c, mc, nsrc, +1, EVEN, qic_c, fn_c, gr_even);
+  }
   
 #ifdef OPT_UDLSC
   node0_printf("Solving sloppily for all ODD displacements for mass diff %g %g and %g %g\n",
@@ -1405,8 +1450,10 @@ block_currents_delta_udlsc( Real *j_mu[], Real masses[],
   block_current_stochastic_deltam( jmu_ls, ml, ms, dm2_ls4, fn_ls, nsrc,
 				   +1, ODD, qic_ls, gr_odd);
 #endif
-  node0_printf("Solving for all ODD displacements for mass %g\n", mc);
-  block_current_stochastic( jmu_c, mc, nsrc, +1, ODD, qic_c, fn_c, gr_odd);
+  if(n_masses == 5){
+    node0_printf("Solving for all ODD displacements for mass %g\n", mc);
+    block_current_stochastic( jmu_c, mc, nsrc, +1, ODD, qic_c, fn_c, gr_odd);
+  }
 }
 
 
@@ -1458,10 +1505,10 @@ block_currents_deltam( int n_masses, Real *j_mu[], Real masses[],
     /* Create sources in gr_even and gr_odd */
     collect_sources(gr_even, gr_odd, nr, d, evol);
 
-    if(n_masses == 3){
-      block_currents_delta_lsc(j_mu, masses, fn, nsrc, qic, gr_even, gr_odd);
-    } else if(n_masses == 5){
-      block_currents_delta_udlsc(j_mu, masses, fn, nsrc, qic, gr_even, gr_odd);
+    if(n_masses <= 3){
+      block_currents_delta_lsc(n_masses, j_mu, masses, fn, nsrc, qic, gr_even, gr_odd);
+    } else {
+      block_currents_delta_udlsc(n_masses, j_mu, masses, fn, nsrc, qic, gr_even, gr_odd);
     }      
   } /* jrand */
 
@@ -1541,10 +1588,7 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
   /* Compute exact low-mode current density if we have eigenvectors to do it */
 #ifdef MASS_UDLSC
   if(Nvecs > 0){
-    if(n_masses != 5 && n_masses != 3){
-      node0_printf("WARNING: MASS_UDLSC requires three or five masses, not %d\n",
-		   n_masses);
-      node0_printf("Not using mass-difference method\n");
+    if(n_masses <= 1){
       exact_currents(n_masses, jlow_mu, masses, fn_mass);
     } else {
       exact_currents_deltam(n_masses, jlow_mu, masses, fn_mass);
@@ -1562,13 +1606,12 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
   for(int jrand = 0; jrand < nrand; jrand += nwrite){
 
 #ifdef MASS_UDLSC
-    if(n_masses != 5 && n_masses != 3){
-      node0_printf("WARNING: MASS_UDLSC requires three or five masses, not %d\n", n_masses);
-      node0_printf("Not using mass-difference method\n");
+    if(n_masses <= 1){
       block_current( n_masses, j_mu, masses, fn_mass, qic, nwrite, thinning );
+    } else {
+      block_currents_deltam( n_masses, j_mu, masses, fn_mass, qic,
+			     nwrite, thinning);
     }
-    block_currents_deltam( n_masses, j_mu, masses, fn_mass, qic,
-			   nwrite, thinning);
 #else
     block_current( n_masses, j_mu, masses, fn_mass, qic, nwrite, thinning );
 #endif
@@ -1599,7 +1642,16 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 	terminate(1);
       }
 #endif
-      write_tslice_values("", jrand, nwrite, masses[j], j_mu[j]);
+#ifdef MASS_UDLSC
+      if((j == 0 && n_masses > 1) || (j == 2 && n_masses > 3)){
+	  write_tslice_values("", jrand, nwrite, masses[j], masses[j+1], j_mu[j]);
+      }
+      else if((j == 0 && n_masses == 1) || (j == 2 && n_masses <= 3) || j == 4 ){
+	write_tslice_values("", jrand, nwrite, masses[j], 0., j_mu[j]);
+      }
+#else
+      write_tslice_values("", jrand, nwrite, masses[j], 0., j_mu[j]);
+#endif
       clear_r_array_field(j_mu[j], NMU);
     } /* j */
   } /* jrand */
@@ -1793,7 +1845,7 @@ f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
 	  terminate(1);
 	}
 #endif
-	write_tslice_values("DIFF", jrand, nwrite, ksp[j].mass, j_mu[j]);
+	write_tslice_values("DIFF", jrand, nwrite, ksp[j].mass, 0., j_mu[j]);
 	clear_r_array_field(j_mu[j], NMU);
       } /* j */
     } /* if write */
@@ -1953,7 +2005,7 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 	terminate(1);
       } 
 #endif
-      write_tslice_values("", jrand, nwrite, ksp[j].mass, j_mu[j]);
+      write_tslice_values("", jrand, nwrite, ksp[j].mass, 0., j_mu[j]);
       clear_r_array_field(j_mu[j], NMU);
     }
   }
