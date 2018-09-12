@@ -13,7 +13,7 @@
 #ifdef PRIMME
 
 /* NOTE: The PRIMME release version has clashing definitions for complex functions, so we provide
-   a stripped-down version.  This must be checked against future releases. 
+   a modifie version.  This must be checked against future releases. 
    Also, watch out for the definition of PRIMME_INT = long? */
 #include "../include/primme.h"
 #include "../include/dslash_ks_redefine.h"
@@ -29,7 +29,7 @@ static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme
 //static void ks_mxv(void *x, void *y, int *blockSize, primme_params *primme){
 
 /* The matrix times vector routine given to PRIMME */
-static void ks_mxv(void *x, long *ldx, void *y, long *ldy,
+static void ks_mxv(void *x, PRIMME_INT *ldx, void *y, PRIMME_INT *ldy,
 		   int *blockSize, struct primme_params *primme, int *ierr){
   site* s;
   int i,j,iblock;
@@ -75,7 +75,7 @@ static void ks_mxv(void *x, long *ldx, void *y, long *ldy,
 
 
 /* The matrix times vector preconditioning routine given to PRIMME */
-static void ks_precond_mxv(void *x, long *ldx, void *y, long *ldy,
+static void ks_precond_mxv(void *x, PRIMME_INT *ldx, void *y, PRIMME_INT *ldy,
 			   int *blockSize, struct primme_params *primme, 
 			   int *ierr){
   site* s;
@@ -212,7 +212,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 
   primme.n=maxn*number_of_nodes;		/* global size of matrix */
   primme.nLocal=maxn;				/* local volume */
-  primme.maxOuterIterations=MaxIter;
+  //  primme.maxOuterIterations=MaxIter;
 
   primme.numProcs=number_of_nodes;          
   primme.procID=this_node;
@@ -223,7 +223,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   //  ret = primme_set_method(PRIMME_DEFAULT_MIN_MATVECS, &primme);
   ret = primme_set_method(PRIMME_DYNAMIC, &primme);
 
-  primme.printLevel=2;
+  primme.printLevel=3;
 #ifdef MATVEC_PRECOND
   primme.target=primme_largest;
 #else
@@ -259,7 +259,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   }
 
   /* call the actual EV finder*/
-  ret = zprimme(evals, (Complex_Z*)evecs, rnorms, &primme);
+  ret = zprimme(evals, (PRIMME_COMPLEX_DOUBLE *)evecs, rnorms, &primme);
 
   if (ret!=0){ /*check return value */
     node0_printf("ks_eigensolve_PRIMME: zprimme error\nCall stack:\n");
@@ -298,6 +298,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   for(i=0;i<Nvecs;i++){
     node0_printf("Eigenvalue(%i) = %g \n", i,eigVal[i]);
   }
+  fflush(stdout);
 
   free(evals);
   free(evecs);
