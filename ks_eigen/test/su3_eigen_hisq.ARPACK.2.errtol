@@ -31,7 +31,7 @@ Eigenvalue(28) = 0.0005 +/- 0 Im = 0.0002
 Eigenvalue(29) = 0.0005 +/- 0 Im = 0.0002
 Eigenvalue(30) = 0.0005 +/- 0 Im = 0.0002
 Eigenvalue(31) = 0.0005 +/- 0 Im = 0.0002
-Checking linear eigenvalues for mass = 0.0002
+Checking linear eigenvalues
 Even site residuals
 Checking eigensolutions
 eigVal[0] = 0.0002 ( resid = 0.0002 , |eigVec[0]|-1 = 0.0002 )

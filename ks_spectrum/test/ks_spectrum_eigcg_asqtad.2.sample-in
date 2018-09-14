@@ -19,21 +19,21 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0
+time_bc antiperiodic
+
+max_number_of_eigenpairs 500
 
 # EigCG
+
+# eigenvector I/O
+fresh_ks_eigen
+save_serial_ks_eigen ks_eigen_eigcg.test-out
 
 # restart for Lanczos 
 restart_lanczos 50
 
 # Number of eigenvalues to compute
-Number_of_eigenvals 10
-
-# Max number of eigenvalues
-Max_Number_of_eigenvals 500
-
-# eigenvector I/O
-fresh_ks_eigen
-save_serial_ks_eigen ks_eigen_eigcg.test-out
+Number_of_eigenvals_per_inversion 10
 
 # Chiral condensate and related measurements
 
@@ -82,7 +82,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 0
@@ -108,7 +107,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 1
@@ -134,7 +132,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 2
@@ -210,17 +207,11 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0
+time_bc antiperiodic
+
+max_number_of_eigenpairs 100
 
 # EigCG
-
-# restart for Lanczos 
-restart_lanczos 50
-
-# Number of eigenvalues to compute
-Number_of_eigenvals 10
-
-# Max number of eigenvalues
-Max_Number_of_eigenvals 100
 
 # eigenvector I/O
 reload_serial_ks_eigen ks_eigen_eigcg.test-out
@@ -274,7 +265,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 0
@@ -300,7 +290,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 1
@@ -326,7 +315,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision 2
 
 source 2

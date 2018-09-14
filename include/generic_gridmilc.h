@@ -1,5 +1,6 @@
 #ifndef _GENERIC_GRIDMILC_H
 #define _GENERIC_GRIDMILC_H
+OBSOLETE!!
 /******************** generic_gridmilc.h *****************************
 *  MIMD version 7 	 				            *
 */

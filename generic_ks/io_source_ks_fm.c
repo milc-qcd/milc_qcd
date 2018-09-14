@@ -309,7 +309,7 @@ r_source_ks_fm(ks_fm_source_file *kssf,
     } /* rcv_rank */
   
   
-  if(vbuff != NULL)free(vbuff); vbuff = NULL;
+  if(vbuff != NULL){free(vbuff); vbuff = NULL;}
 }
 
 /*----------------------------------------------------------------------*/

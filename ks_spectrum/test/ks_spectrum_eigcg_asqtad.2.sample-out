@@ -38,6 +38,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0 
+time_bc antiperiodic
 # EigCG
 # restart for Lanczos 
 restart_lanczos 50
@@ -81,7 +82,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 0
 number_of_propagators 1
@@ -100,7 +100,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 1
 number_of_propagators 1
@@ -119,7 +118,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 2
 number_of_propagators 1
@@ -376,6 +374,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0 
+time_bc antiperiodic
 # EigCG
 # restart for Lanczos 
 restart_lanczos 50
@@ -420,7 +419,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 0
 number_of_propagators 1
@@ -439,7 +437,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 1
 number_of_propagators 1
@@ -458,7 +455,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 2
 number_of_propagators 1

@@ -168,7 +168,8 @@ print_result(Real *q[], Real *q2[], int nblock, int block_size[]){
 
 	  if(this_node == 0)
 	    //	    if(r <= RMAX && x%2==0 && y%2==0 && z%2==0 && t%2==0){
-	    if(r <= RMAX && (x+y+z+t)%2 == 0){
+	    //	    if(r <= RMAX && (x+y+z+t)%2 == 0){
+	    if(r <= RMAX){
 	      /* Get stdev of mean over symmetry-related sites */
 	      /* Assumes statistical independence  - not assured */
 	      for(ib = 0; ib < nblock; ib++)

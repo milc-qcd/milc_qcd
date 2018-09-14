@@ -16,6 +16,7 @@ forget
 staple_weight 0.1
 ape_iter 15
 coordinate_origin 0 0 0 0
+time_bc periodic
 
 # Inversion control
 
@@ -98,7 +99,6 @@ error_for_propagator 0
 rel_error_for_propagator 5e-7
 precision 2
 momentum_twist 0 0 0
-time_bc periodic
 
 source 1
 
@@ -117,7 +117,6 @@ error_for_propagator 0
 rel_error_for_propagator 5e-7
 precision 2
 momentum_twist 0 0 0
-time_bc periodic
 
 source 4
 
@@ -134,7 +133,6 @@ error_for_propagator 0
 rel_error_for_propagator 5e-7
 precision 2
 momentum_twist 0 0 0
-time_bc periodic
 
 source 5
 

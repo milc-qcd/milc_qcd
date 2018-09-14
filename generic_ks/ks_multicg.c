@@ -774,21 +774,16 @@ int mat_invert_multi(
      twice the slowest of them.
   */
 
-#if EIGMODE == DEFLATION || EIGMODE == EIGCG || defined(HAVE_GRID)
-
-  for(i = 0; i < num_masses; i++)
-    tot_iters += mat_invert_uml_field(src, dst[i], &qic[i], ksp[i].mass, fn_multi[i] );
-  
-#else
-
-  if (num_masses <= 2)
-  {
-    for(i = 0; i < num_masses; i++){
+  /* If we are deflating or doing eigCG, we can't do multimass */
+  /* Fewer than three masses are not worth doing with multimass */
+  if(param.eigen_param.Nvecs > 0 || num_masses <= 2){
+    
+    for(i = 0; i < num_masses; i++)
       tot_iters += mat_invert_uml_field(src, dst[i], &qic[i], ksp[i].mass, fn_multi[i] );
-    }
-  }
-  /* For num_masses > 2, use the multimass inverter */
-  else {
+
+  } else {
+
+    /* For num_masses > 2, use the multimass inverter */
 
     /* Convert masses to offsets for ks_multicg_mass_field */
     for(i = 0; i < num_masses; i++){
@@ -812,8 +807,6 @@ int mat_invert_multi(
       ks_dirac_adj_op_inplace( dst[i], ksp[i].mass, EVENANDODD, fn_multi[i]);
     }
   }
-
-#endif
 
   return tot_iters;
 }

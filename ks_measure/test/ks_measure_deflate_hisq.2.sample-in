@@ -17,11 +17,17 @@ u0 1.0
 forget
 staple_weight 0
 ape_iter 0
-
-# Dirac eigenpair calculation
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
 
 # Number of eigenvalues to compute (storage required for all eigenvectors)
-Number_of_eigenvals 10
+max_number_of_eigenpairs 10
+
+# eigenvector I/O
+fresh_ks_eigen
+save_serial_ks_eigen ./eigen_serial.out
+
+# Dirac eigenpair calculation
 
 # CG for Rayleigh-Ritz minimization
 Max_Rayleigh_iters 100
@@ -35,10 +41,6 @@ eigenval_tolerance 1.0e-6
 
 # See README.ks_eigen - For optimizing the RR CG
 error_decrease .3
-
-# eigenvector I/O
-fresh_ks_eigen
-save_serial_ks_eigen ./eigen_serial.out
 
 # Chiral condensate and related measurements
 
@@ -74,20 +76,7 @@ ape_iter 0
 # Dirac eigenpair calculation
 
 # Number of eigenvalues to compute (storage required for all eigenvectors)
-Number_of_eigenvals 5
-
-# CG for Rayleigh-Ritz minimization
-Max_Rayleigh_iters 100
-Restart_Rayleigh 10
-
-# Outer loop iterations
-Kalkreuter_iters 20
-
-# Eigenvalue tolerance
-eigenval_tolerance 1.0e-6
-
-# See README.ks_eigen - For optimizing the RR CG
-error_decrease .3
+max_number_of_eigenpairs 5
 
 # eigenvector I/O
 reload_serial_ks_eigen ./eigen_serial.out

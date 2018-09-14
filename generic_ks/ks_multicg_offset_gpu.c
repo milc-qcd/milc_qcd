@@ -185,6 +185,19 @@ int ks_multicg_offset_field_gpu(
     node0_printf("%s: naik_epsilon: Signal QUDA to refresh links\n", myname);
   }
 
+  inv_args.naik_epsilon = ksp[0].naik_term_epsilon;
+  if (inv_args.naik_epsilon != fn->eps_naik) {
+    node0_printf("%s: naik_epsilon in action (%e) does not match value in link (%e)\n",
+                 myname, inv_args.naik_epsilon, fn->eps_naik);
+    terminate(1);
+  }
+
+#if (FERM_ACTION==HISQ)
+  inv_args.tadpole = 1.0;
+#else
+  inv_args.tadpole = u0;
+#endif
+
   qudaMultishiftInvert(
 		       MILC_PRECISION,
 		       qic[0].prec,
@@ -195,7 +208,6 @@ int ks_multicg_offset_field_gpu(
 		       relative_residual,
 		       fatlink,
 		       longlink,
-                       u0,
 		       (void *)src,
 		       (void **)psim,
 		       final_residual,

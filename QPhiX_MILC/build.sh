@@ -1,13 +1,22 @@
 #! /bin/bash
 
-ARCH=$1     # Choices: scalar, avx, avx512
+# Usage
+
+#  build.sh <scalar|knl|hsw|skx> <CC> <CXX>
+
+# where CC is the C compiler (currently ignored)
+#       CXX is the C++ compiler
+
+# You may also need to edit milc-qphix/Makefile_qphixlib
+
+ARCH=$1     # Choices: scalar, knl, hsw
 PK_CC=$2
 PK_CXX=$3
 GIT_BRANCH=gauge_force
 
 if [ -z "${ARCH}" ]
 then
-   echo "Usage $0 <scalar|knl|hsw> <CC> <CXX>"
+   echo "Usage $0 <scalar|knl|skx|hsw> <CC> <CXX>"
    exit 1
 fi
 
@@ -18,6 +27,14 @@ then
 elif [ ${ARCH} = "knl" ]
 then
   modecmd="mode=mic"
+  TARGET=avx512
+elif [ ${ARCH} = "skx" ]
+then
+  modecmd="mode=mic"
+  TARGET=avx512
+elif [ ${ARCH} = "hsw" ]
+then
+  modecmd="mode=hsw"
   TARGET=avx512
 else
   modecmd="mode=mic"
@@ -59,7 +76,7 @@ fi
 
 pushd ${dir}
 
-${MAKE} -f Makefile_qphixlib ${modecmd}
+${MAKE} -f Makefile_qphixlib ${modecmd} "ARCH=${ARCH}" "PK_CXX=${PK_CXX}"
 
 popd
 

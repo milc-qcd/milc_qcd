@@ -173,6 +173,7 @@ PBP: mass 1.000000e-02     1.575225e-03  1.675720e-02  -3.914159e-03  -3.914158e
 FACTION: mass = 1.000000e-02,  1.497186e+00 ( 10 of 10 )
 PBP: mass 1.000000e-01     8.120337e-02  9.732981e-02  -4.078290e-03  -4.078291e-03 ( 10 of 10 )
 FACTION: mass = 1.000000e-01,  1.495725e+00 ( 10 of 10 )
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Checking eigensolutions
 eigVal[0] = 1.333053e-01 ( resid = 3.238685e-07 , |eigVec[0]|-1 = 2.442491e-15 )
 eigVal[1] = 1.366105e-01 ( resid = 1.240524e-07 , |eigVec[1]|-1 = -1.110223e-16 )
@@ -917,6 +918,7 @@ PBP: mass 1.000000e-02     3.544613e-03  1.430209e-02  1.584907e-03  1.584907e-0
 FACTION: mass = 1.000000e-02,  1.493654e+00 ( 10 of 10 )
 PBP: mass 1.000000e-01     8.209725e-02  9.234753e-02  1.500093e-03  1.500093e-03 ( 10 of 10 )
 FACTION: mass = 1.000000e-01,  1.492736e+00 ( 10 of 10 )
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Checking eigensolutions
 eigVal[0] = 1.333053e-01 ( resid = 3.238685e-07 , |eigVec[0]|-1 = 2.442491e-15 )
 eigVal[1] = 1.366105e-01 ( resid = 1.240524e-07 , |eigVec[1]|-1 = -1.110223e-16 )

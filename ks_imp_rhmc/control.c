@@ -115,19 +115,19 @@ main( int argc, char **argv )
 	/* Make fermion links if not already done */
 	
 	STARTTIME;
-	restore_fermion_links_from_site(fn_links, par_buf.prec_pbp);
-	for(i = 0; i < par_buf.num_pbp_masses; i++){
+	restore_fermion_links_from_site(fn_links, param.prec_pbp);
+	for(i = 0; i < param.num_pbp_masses; i++){
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-	  naik_index = par_buf.ksp_pbp[i].naik_term_epsilon_index;
+	  naik_index = param.ksp_pbp[i].naik_term_epsilon_index;
 #else
 	  naik_index = 0;
 #endif
- 	  f_meas_imp_field( par_buf.npbp_reps, &par_buf.qic_pbp[i], 
- 			    par_buf.ksp_pbp[i].mass, naik_index, fn_links);
+ 	  f_meas_imp_field( param.npbp_reps, &param.qic_pbp[i], 
+ 			    param.ksp_pbp[i].mass, naik_index, fn_links);
 	  
 #ifdef D_CHEM_POT
-	  Deriv_O6_field( par_buf.npbp_reps, &par_buf.qic_pbp[i],
-			  par_buf.ksp_pbp[i].mass, naik_index, fn_links);
+	  Deriv_O6_field( param.npbp_reps, &param.qic_pbp[i],
+			  param.ksp_pbp[i].mass, naik_index, fn_links);
 #endif
 	}
 	ENDTIME("do pbp measurements");

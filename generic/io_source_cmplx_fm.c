@@ -322,7 +322,7 @@ r_source_cmplx_fm(cmplx_source_file *csf, field_offset dest_site,
       
     }  /* rcv_rank, irecord */
   
-  if(cbuff != NULL)free(cbuff); cbuff = NULL;
+  if(cbuff != NULL){free(cbuff); cbuff = NULL;}
 }
 
 /*----------------------------------------------------------------------*/

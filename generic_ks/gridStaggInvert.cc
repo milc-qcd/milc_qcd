@@ -2,19 +2,18 @@
 
 #include "../include/mGrid/mGrid_internal.h"
 #include "../include/mGrid/mGrid.h"
+#include "../include/milc_datatypes.h"
 
-extern "C" {
-#include "generic_ks_includes.h"
-}
+#define GRID_5DCG    0
+#define GRID_MRHSCG  1
+#define GRID_BLOCKCG 2
 
 #include "../include/mGrid/mGrid_assert.h"
 #include "../include/mGrid/mGrid_internal.h"
+#include "../include/macros.h"
 
 using namespace Grid;
 using namespace Grid::QCD;
-
-// extern Grid::GridCartesian         *CGrid;
-// extern Grid::GridRedBlackCartesian *RBGrid;
 
 template<typename FT, typename LatticeGaugeField, typename ImprovedStaggeredFermion>
 static void
@@ -35,10 +34,10 @@ asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGa
   GridCartesian *CGrid = grid_full->grid;
   GridRedBlackCartesian *RBGrid = grid_rb->grid;
 
-  // Note: the first argument is ignored here
   auto start = std::chrono::system_clock::now();
-  ImprovedStaggeredFermion Ds(*(asqtad->lnglinks), *(asqtad->lnglinks), *(asqtad->fatlinks), 
-			      *CGrid, *RBGrid, 2.*mass);
+  // Call using c1 = c2 = 2. and u0 = 1. to neutralize link rescaling -- probably ignored anyway.
+  ImprovedStaggeredFermion Ds(*CGrid, *RBGrid, 2.*mass, 2., 2., 1.);
+  Ds.ImportGaugeSimple(*(asqtad->lnglinks), *(asqtad->fatlinks));
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
   std::cout << "Instantiate ImprovedStaggeredFermion Ds " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
@@ -132,8 +131,8 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
   Shifts.tolerances = tolerances;
 
   auto start = std::chrono::system_clock::now();
-  ImprovedStaggeredFermion Ds(*(asqtad->lnglinks), *(asqtad->lnglinks), *(asqtad->fatlinks), 
-			      *CGrid, *RBGrid, 0.);
+  ImprovedStaggeredFermion Ds(*CGrid, *RBGrid, 0., 2., 2., 1.);
+  Ds.ImportGaugeSimple(*(asqtad->lnglinks), *(asqtad->fatlinks));
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
   std::cout << "Instantiate ImprovedStaggeredFermion Ds " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
@@ -141,6 +140,9 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
   info->misc_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
 	
   ConjugateGradientMultiShift<FermionField> MSCG(inv_arg->max*inv_arg->nrestart, Shifts);
+
+  GRID_ASSERT(inv_arg->parity == GRID_EVENODD || inv_arg->parity == GRID_EVEN || 
+	      inv_arg->parity == GRID_ODD, GRID_FAIL);
 
   switch (inv_arg->parity)
     {
@@ -176,6 +178,8 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
 	// and the checkerboards is the same
 	GRID_ASSERT(in->cv->_grid == RBGrid, GRID_FAIL);
 	std::vector<FermionField> outvec(nmass, RBGrid);
+	for(int i = 0; i < nmass; i++)
+	  outvec[i].checkerboard = inv_arg->parity == EVEN ? Even : Odd ;
 	SchurStaggeredOperator<ImprovedStaggeredFermion,FermionField> HermOp(Ds);
 	
 	// Do the solve
@@ -205,11 +209,6 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
 		  << "\n";
 	break;
       }
-    default:
-      {
-	node0_printf("asqtadInvertMulti: Unrecognized parity %d\n", inv_arg->parity);
-	terminate(1);
-      }
     }
   
 }
@@ -236,9 +235,9 @@ asqtadInvertBlock (GRID_info_t *info,
   typedef typename ImprovedStaggeredFermion5D::FermionField FermionField; 
   typedef typename ImprovedStaggeredFermion5D::ComplexField ComplexField; 
 
-  // Call using c1 = c2 = 2. and u0 = 1. to neutralize link rescaling
-  ImprovedStaggeredFermion5D Ds(*(asqtad->lnglinks), *(asqtad->fatlinks), *FCGrid, *FRBGrid, 
-				*CGrid, *RBGrid, mass, 2., 2., 1.);
+  // Call using c1 = c2 = 2. and u0 = 1. to neutralize link rescaling -- probably ignored anyway.
+  ImprovedStaggeredFermion5D Ds(*FCGrid, *FRBGrid, *CGrid, *RBGrid, 2.*mass, 2., 2., 1.);
+  Ds.ImportGaugeSimple(*(asqtad->lnglinks), *(asqtad->fatlinks));
   std::cout << "instantiating 5D CG with resid " << res_arg->resid << " and " << inv_arg->max*inv_arg->nrestart << " iters\n" << std::flush;
   ConjugateGradient<FermionField> CG(res_arg->resid, inv_arg->max*inv_arg->nrestart, false);
 
@@ -247,6 +246,9 @@ asqtadInvertBlock (GRID_info_t *info,
   BlockConjugateGradient<FermionField>    BCGrQ(BlockCGrQ, blockDim, res_arg->resid, inv_arg->max*inv_arg->nrestart);
   BlockConjugateGradient<FermionField>    BCG  (BlockCG, blockDim, res_arg->resid, inv_arg->max*inv_arg->nrestart);
   BlockConjugateGradient<FermionField>    mCG  (CGmultiRHS, blockDim, res_arg->resid, inv_arg->max*inv_arg->nrestart);
+
+  GRID_ASSERT(inv_arg->parity == GRID_EVENODD || inv_arg->parity == GRID_EVEN || 
+	      inv_arg->parity == GRID_ODD, GRID_FAIL);
 
   switch (inv_arg->parity)
     {
@@ -267,12 +269,12 @@ asqtadInvertBlock (GRID_info_t *info,
 
 	int blockDim = 0;
 
-	std::cout << "Calling 5D CG for " << nrhs << " sources\n" << std::flush;
+#if GRID_MULTI_CG == GRID_5DCG
 
 	// 5D CG
+
 	Ds.ZeroCounters();
-	//	*(out->cv) = zero;
-	std::cout << "Running CG\n" << std::flush;
+	std::cout << "Running 5D CG for " << nrhs << " sources\n" << std::flush;
 	auto start = std::chrono::system_clock::now();
 	CG(HermOp, *(in->cv), *(out->cv));
 	auto end = std::chrono::system_clock::now();
@@ -283,27 +285,40 @@ asqtadInvertBlock (GRID_info_t *info,
 	std::cout << "Inverted in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
 		  << "\n";
 	Ds.Report();
-	
-#if 0
+
+#elif GRID_MULTI_CG == GRID_MRHSCG
+
 	// multiRHS
 	Ds.ZeroCounters();
-	*(out->cv) = zero;
+	std::cout << "Running multiRHS CG for " << nrhs << " sources\n" << std::flush;
+	auto start = std::chrono::system_clock::now();
 	mCG(HermOp, *(in->cv), *(out->cv));
+	auto end = std::chrono::system_clock::now();
+	res_arg->final_iter = mCG.IterationsToComplete;
+	res_arg->final_rsq = mCG.TrueResidual*mCG.TrueResidual;
+	auto elapsed = end - start;
+	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
+	std::cout << "Inverted in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+		  << "\n";
 	Ds.Report();
-	
+
+#else
+
 	// Block CG
 	Ds.ZeroCounters();
-	*(out->cv) = zero;
+	std::cout << "Running Block CG for " << nrhs << " sources\n" << std::flush;
+        auto start = std::chrono::system_clock::now();
 	BCGrQ(HermOp, *(in->cv), *(out->cv));
+        auto end = std::chrono::system_clock::now();
+	res_arg->final_iter = BCGrQ.IterationsToComplete;
+        res_arg->final_rsq = BCGrQ.TrueResidual*mCG.TrueResidual;
+        auto elapsed = end - start;
+	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
+	std::cout << "Inverted in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+		  << "\n";
 	Ds.Report();
 #endif	
 	break;
-      }
-
-    default:
-      {
-	node0_printf("asqtadInvertBlock: Unrecognized parity %d\n", inv_arg->parity);
-	terminate(1);
       }
     }
 

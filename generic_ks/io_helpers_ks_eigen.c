@@ -16,11 +16,13 @@
 */
 
 #include "generic_ks_includes.h"
-#include "../include/io_ks_eigen.h"
-#ifdef EIGEN_QIO
-#include "../include/io_scidac_ks.h"
-#endif
 #include <string.h>
+
+/* Non-SciDAC file formats are deprecated. These non-QIO procedures are kept temporarily */
+
+#ifndef HAVE_QIO
+
+#include "../include/io_ks_eigen.h"
 
 /* Restore the ODD (EVEN) part of KS eigenvectors from the EVEN (ODD) part */
 void restore_eigVec(int Nvecs, double *eigVal, su3_vector **eigVec, int parity,
@@ -142,10 +144,13 @@ void w_close_ks_eigen(int flag, ks_eigen_file *kseigf){
   }
 } /* w_close_ks_eigen */
 
-#ifdef EIGEN_QIO
+#endif
+
+#ifdef HAVE_QIO
+
 /* QIO version */
 
-#include <qio.h>
+#include "../include/io_scidac_ks.h"
 
 /*---------------------------------------------------------------*/
 
@@ -224,7 +229,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
    0 is normal exit code
    >1 for seek, read error, or missing data error 
 */
-int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
+int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
 		    su3_vector **eigVec, int timing){
 
   register int i, j;
@@ -237,7 +242,7 @@ int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
 
   switch(flag){
   case FRESH:
-    for(i = 0; i < Nvecs; i++){
+    for(i = 0; i < *Nvecs; i++){
       FORALLFIELDSITES(j){
 	clearvec(eigVec[i]+j);
       }
@@ -245,12 +250,12 @@ int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
     break;
   case RELOAD_ASCII:
     kseigf = r_open_ks_eigen(flag, eigfile);
-    status = r_ascii_ks_eigen(kseigf, Nvecs, eigVal, eigVec);
+    status = r_ascii_ks_eigen(kseigf, *Nvecs, eigVal, eigVec);
     r_close_ks_eigen(flag, kseigf);
     break;
   case RELOAD_SERIAL:
     kseigf = r_open_ks_eigen(flag, eigfile);
-    status = r_serial_ks_eigen(kseigf, Nvecs, eigVal, eigVec);
+    status = r_serial_ks_eigen(kseigf, *Nvecs, eigVal, eigVec);
     r_close_ks_eigen(flag, kseigf);
     break;
   default:
@@ -260,7 +265,7 @@ int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
   
   if(timing && flag != FRESH){
     dtime += dclock();
-    node0_printf("Time to reload %d eigenvectors = %e\n", Nvecs, dtime);
+    node0_printf("Time to reload %d eigenvectors = %e\n", *Nvecs, dtime);
   }
 
   if(kseigf != NULL && kseigf->parity == EVENANDODD){
@@ -273,10 +278,8 @@ int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
  
 #endif
  
-#ifdef EIGEN_QIO
+#ifdef HAVE_QIO
 /* QIO version */
- 
-#include <qio.h>
  
 /*---------------------------------------------------------------*/
  
@@ -438,7 +441,7 @@ int ask_starting_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
   else if(strcmp("reload_parallel_ks_eigen", savebuf) == 0)
     *flag = RELOAD_PARALLEL;
   else{
-    printf("ERROR IN INPUT: ks_eigen command is invalid\n");
+    printf("ERROR IN INPUT: %s command is invalid\n", savebuf);
     return(1);
   }
 
@@ -460,7 +463,7 @@ int ask_starting_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
 
 static void print_save_options(void){
 
-  printf("'forget_ks_eigen', 'save_ascii_ks_eigen' or 'save_serial_ks_eigen' or 'save_parallel_ks_eigen'");
+  printf("'forget_ks_eigen', 'save_ascii_ks_eigen', 'save_serial_ks_eigen', or 'save_parallel_ks_eigen'");
 }
 
 /*--------------------------------------------------------------------*/
@@ -492,6 +495,8 @@ int ask_ending_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
     *flag = SAVE_ASCII;
   else if(strcmp("save_serial_ks_eigen",savebuf) == 0)
     *flag = SAVE_SERIAL;
+  else if(strcmp("save_parallel_ks_eigen",savebuf) == 0)
+    *flag = SAVE_PARALLEL;
   else{
     printf("ERROR IN INPUT: ks_eigen command is invalid.\n");
     printf("Choices are ");

@@ -131,10 +131,8 @@ EXTERN Real *u1_A;
 EXTERN Real g_splaq,g_tplaq;	/* global U(1) plaquette measures */
 
 /* For eigenpair calculation */
-#if EIGMODE == EIGCG || EIGMODE == DEFLATION
 EXTERN int Nvecs_tot;
 EXTERN double *eigVal; /* eigenvalues of D^dag D */
 EXTERN su3_vector **eigVec; /* eigenvectors */
-#endif
 
 #endif /* _LATTICE_H */

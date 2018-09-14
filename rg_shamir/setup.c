@@ -46,10 +46,11 @@ setup()
   
   /* print banner, get volume, nflavors1,nflavors2, nflavors, seed */
   prompt = initial_set();
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   node0_printf("Made lattice\n"); fflush(stdout);
@@ -89,7 +90,7 @@ setup()
 int 
 initial_set()
 {
-  int prompt,status;
+  int prompt=0,status;
   /* On node zero, read lattice size, seed, nflavors1, nflavors2,
      nflavors, and send to others */
   if(mynode()==0){
@@ -120,7 +121,6 @@ initial_set()
   nt=par_buf.nt;
   iseed=par_buf.iseed;
   nflavors=par_buf.nflavors;
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   total_iters=0;
