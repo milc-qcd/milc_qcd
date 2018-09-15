@@ -67,6 +67,16 @@ else ifeq ($(strip ${COMPILER}),gnu)
     CXX ?= g++
   endif
 
+else ifeq ($(strip ${COMPILER}),ibm)
+
+  ifeq ($(strip ${MPP}),true)
+    CC = mpixlc_r
+    CXX = mpixlcxx_r
+  else
+    CC = bgxlc_r
+    CXX = bgxlc++_r
+  endif
+
 endif
 
 # Override the above definitions
@@ -123,8 +133,15 @@ endif
 
 ifeq ($(strip ${COMPILER}),ibm)
 
-  OCFLAGS = -qarch=450 -qlanglvl=stdc99 # BG/P BG/Q
-  OCXXFLAGS += -qarch=450 -qlanglvl=stdc++11
+  OCFLAGS = -std=gnu99
+  OCXXFLAGS += -std=c++11
+
+  # consider running with XLSMPOPTS=stack=10M or higher
+  ifeq ($(strip ${OMP}),true)
+    OCFLAGS += -qsmp=omp
+    OCXXFLAGS += -qsmp=omp
+    LDFLAGS += -qsmp=omp
+  endif
 
 endif
 
@@ -394,7 +411,7 @@ ifeq ($(strip ${WANTQUDA}),true)
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
+  LIBQUDA += -L${CUDA_HOME}/lib64 -lcufft -lcudart -lcuda
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
