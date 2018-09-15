@@ -261,14 +261,18 @@ int readin(int prompt) {
 	
 #ifdef POLY_EIGEN
 	/* Chebyshev preconditioner */
+#ifdef ARPACK
 	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
+#endif
 	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
 	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
 	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
 	
+#ifdef ARPACK
 	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
 	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
 	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
+#endif
 #endif
       } else {
 	param.eigen_param.MaxIter = 0;

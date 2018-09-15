@@ -158,6 +158,7 @@ typedef struct {
   int parity;         /* EVEN, ODD, or EVENANDODD (for some inverters) */
   int start_flag;     /* 0: use a zero initial guess; 1: use dest */
   int nsrc;           /* Number of source vectors */
+  int deflate;        /* True if we want to deflate. False if not. */
   Real resid;         /* desired residual - NOT SQUARED!
 			 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
   Real relresid;      /* desired relative residual - NOT SQUARED! */
