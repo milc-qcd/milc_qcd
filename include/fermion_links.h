@@ -271,11 +271,11 @@ void f_meas_imp( int npbp_reps, int prec,
 		 int naik_term_epsilon_index, fermion_links_t *fl);
 
 /* f_meas_current.c */
-void f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
+void f_meas_current( int n_masses, int nrand, int thinning,
 		     quark_invert_control *qic, ks_param *ksp,
 		     fermion_links_t *fl, char filenames[][MAXFILENAME]);
 
-void f_meas_current_diff( int n_masses, int nrand, int nwrite, int thinning,
+void f_meas_current_diff( int n_masses, int nrand, int thinning,
 			  quark_invert_control *qic_precise,
 			  quark_invert_control *qic_sloppy,
 			  ks_param *ksp, fermion_links_t *fl, 
