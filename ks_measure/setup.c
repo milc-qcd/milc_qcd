@@ -309,7 +309,6 @@ int readin(int prompt) {
 
 #ifdef CURRENT_DISC
       /* For some applications.  Random source count between writes */
-      IF_OK status += get_i(stdin, prompt, "nwrite", &param.nwrite[k] );
       IF_OK status += get_i(stdin, prompt, "source_spacing", &param.thinning[k] );
       /* For truncated solver Take difference of sloppy and precise?*/
       char savebuf[128];
