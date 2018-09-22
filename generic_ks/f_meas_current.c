@@ -19,7 +19,7 @@
 */
 
 #define MASS_UDLSC /* Calculate densities with ud and ls mass differences */
-#define OPT_UDLSC  /* If defined, approximate the u-d difference using a sequential propagator based on ml */
+#define OPT_UDLSC  /* If defined, approximate the u-d difference using a sequential propagator based on ml instead of mu or md */
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/fn_links.h"
 #include "../include/io_scidac.h"
@@ -226,9 +226,9 @@ collect_sources(su3_vector *gr_even[], su3_vector *gr_odd[], int nr,
     z2rsource_plain_field( gr0, EVENANDODD );
 #endif
     //    node0_printf("EVEN sources\n");
-    collect_evenodd_sources(gr_even + jr*evol, nr*evol, EVEN, thinning, gr0);
+    collect_evenodd_sources(gr_even + jr*evol, evol, EVEN, thinning, gr0);
     //    node0_printf("ODD sources\n");
-    collect_evenodd_sources(gr_odd  + jr*evol, nr*evol, ODD,  thinning, gr0);
+    collect_evenodd_sources(gr_odd  + jr*evol, evol, ODD,  thinning, gr0);
   } /* jr */
 
   destroy_v_field(gr0);
@@ -509,35 +509,11 @@ block_current_diff(int n_masses, Real **j_mu[], Real masses[],
 		   imp_ferm_links_t *fn_mass[], 
 		   quark_invert_control *qic_precise,
 		   quark_invert_control *qic_sloppy,
-		   int nr, int thinning){
+		   int nsrc, int nr, su3_vector *gr_even[], su3_vector *gr_odd[]){
 
   char myname[] = "block_current_diff";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
-  /* Offset for staggered phases in the current definition */
-  int r_offset[4] = {0, 0, 0, 0};
-
-  /* Current spin-taste list */
-  int *spin_taste = get_spin_taste();
-
-  /* Block solver parameters -- temporary */
-  int d = thinning;
-  int evol = d*d*d*d/2;
-  int nsrc = evol*nr;
-
-  su3_vector **gr_even = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
-  su3_vector **gr_odd = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
-  for(int is = 0; is < nsrc; is++){
-    gr_even[is] = create_v_field();
-    gr_odd[is] = create_v_field();
-  }
-
-  /* Loop over random sources in groups of nr */
-  su3_vector *gr_mu = create_v_field();
-
-  /* Create sources in gr_even and gr_odd */
-  collect_sources(gr_even, gr_odd, nr, d, evol);
-  
   /* Construct current density from the list of sources */
   for(int j = 0; j < n_masses; j++){
     
@@ -562,14 +538,6 @@ block_current_diff(int n_masses, Real **j_mu[], Real masses[],
 			      qic_precise + j, fn_mass[j], gr_odd);
   } /* j */
   
-  for(int is = 0; is < nsrc; is++){
-    destroy_v_field(gr_even[is]);
-    destroy_v_field(gr_odd[is]);
-  }
-  
-  free(gr_even); gr_even = NULL;
-  free(gr_odd); gr_odd = NULL;
-  destroy_v_field(gr_mu); gr_mu = NULL;
 } /* block_current_diff */
 
 /************************************************************************/
@@ -789,36 +757,12 @@ static void
 block_currents_diff_deltam(int n_masses, Real **j_mu[], Real masses[],
 			   imp_ferm_links_t *fn_mass[], 
 			   quark_invert_control *qic_precise,
-			   quark_invert_control *qic_sloppy,
-			   int nr, int thinning){
+			   quark_invert_control *qic_sloppy, int nsrc,
+			   int nr, su3_vector **gr_even, su3_vector **gr_odd){
 
   char myname[] = "block_currents_diff_deltam";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
-  /* Offset for staggered phases in the current definition */
-  int r_offset[4] = {0, 0, 0, 0};
-
-  /* Current spin-taste list */
-  int *spin_taste = get_spin_taste();
-
-  /* Block solver parameters -- temporary */
-  int d = thinning;
-  int evol = d*d*d*d/2;
-  int nsrc = evol*nr;
-
-  su3_vector **gr_even = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
-  su3_vector **gr_odd = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
-  for(int is = 0; is < nsrc; is++){
-    gr_even[is] = create_v_field();
-    gr_odd[is] = create_v_field();
-  }
-
-  /* Loop over random sources in groups of nr */
-  su3_vector *gr_mu = create_v_field();
-
-  /* Create sources in gr_even and gr_odd */
-  collect_sources(gr_even, gr_odd, nr, d, evol);
-  
   if(n_masses <= 3){
     /* Take the difference between the first two masses, but not the third */
     block_currents_diff_delta_lsc(n_masses, j_mu, masses, fn_mass, nsrc, nr,
@@ -829,16 +773,7 @@ block_currents_diff_deltam(int n_masses, Real **j_mu[], Real masses[],
 				    qic_precise, qic_sloppy, gr_even, gr_odd);
   }
   
-  for(int is = 0; is < nsrc; is++){
-    destroy_v_field(gr_even[is]);
-    destroy_v_field(gr_odd[is]);
-  }
-  
-  free(gr_even); gr_even = NULL;
-  free(gr_odd); gr_odd = NULL;
-  destroy_v_field(gr_mu); gr_mu = NULL;
-
-} /* block_current_diff_deltam */
+} /* block_currents_diff_deltam */
 
 /************************************************************************/
 /* Entry point for multiple masses with deflation and iterated single-mass inverter.
@@ -879,20 +814,35 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
     fn_mass[j] = fn[ksp[j].naik_term_epsilon_index];
   }
 
+  /* Block solver parameters */
+  int d = thinning;
+  int evol = d*d*d*d/2;
+  int nsrc = evol*nr;
+  
+  su3_vector **gr_even = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  su3_vector **gr_odd = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  for(int is = 0; is < nsrc; is++){
+    gr_even[is] = create_v_field();
+    gr_odd[is] = create_v_field();
+  }
+
   /* Loop over random sources in groups of nr */
   for(int jrand = 0; jrand < nrand; jrand += nr){
 
+    /* Create sources in gr_even and gr_odd */
+    collect_sources(gr_even, gr_odd, nr, d, evol);
+    
 #ifdef MASS_UDLSC
     if(n_masses <= 1){
       block_current_diff(n_masses, j_mu, masses, fn_mass, 
-			 qic_precise, qic_sloppy, nr, thinning);
+			 qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
     } else {
       block_currents_diff_deltam(n_masses, j_mu, masses, fn_mass, 
-				 qic_precise, qic_sloppy, nr, thinning);
+				 qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
     }
 #else
     block_current_diff(n_masses, j_mu, masses, fn_mass, 
-                       qic_precise, qic_sloppy, nr, thinning);
+                       qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
 #endif
     
    
@@ -924,11 +874,13 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
 
   } /* jrand */
 
-  for(int j = 0; j < n_masses; j++){
-    for(int ir = 0; ir < nr; ir++)
-      destroy_r_array_field(j_mu[j][ir], NMU);
-    free(j_mu[j]);
+  for(int is = 0; is < nsrc; is++){
+    destroy_v_field(gr_even[is]);
+    destroy_v_field(gr_odd[is]);
   }
+  
+  free(gr_even); gr_even = NULL;
+  free(gr_odd); gr_odd = NULL;
 
   fflush(stdout);
   
@@ -1207,54 +1159,20 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
 static void 
 block_current( int n_masses, Real **j_mu[], Real masses[],
 	       imp_ferm_links_t *fn_mass[], quark_invert_control *qic,
-	       int nr, int thinning){
+	       int nsrc, int nr, su3_vector *gr_even[], su3_vector *gr_odd[]){
 
   char myname[] = "block_current";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
-  /* Offset for staggered phases in the current definition */
-  int r_offset[4] = {0, 0, 0, 0};
-
-  /* Current spin-taste list */
-  int *spin_taste = get_spin_taste();
-
-  /* Block solver parameters -- temporary */
-  int d = thinning;
-  int evol = d*d*d*d/2;
-  int nsrc = evol*nr;
-
-  su3_vector **gr_even = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
-  su3_vector **gr_odd = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
-  for(int is = 0; is < nsrc; is++){
-    gr_even[is] = create_v_field();
-    gr_odd[is] = create_v_field();
-  }
-
-  /* Loop over random sources in groups of nr */
-  su3_vector *gr_mu = create_v_field();
-
-  for(int ir = 0; ir < nr; ir++){
-    
-    /* Create sources in gr_even and gr_odd */
-    collect_sources(gr_even, gr_odd, nr, d, evol);
-
-    /* Construct current density from the list of sources */
-    for(int j = 0; j < n_masses; j++){
-      node0_printf("Solving for all EVEN displacements for mass %g\n", masses[j]);
-      block_current_stochastic( nr, j_mu[j], masses[j], nsrc, +1, EVEN,
-				qic + j, fn_mass[j], gr_even);
-      node0_printf("Solving for all ODD displacements for mass %g\n", masses[j]);
-      block_current_stochastic( nr, j_mu[j], masses[j], nsrc, +1, ODD,
-				qic + j, fn_mass[j], gr_odd);
-    } /* j */
-  } /* ir */
-
-  for(int is = 0; is < nsrc; is++){
-    destroy_v_field(gr_even[is]);
-    destroy_v_field(gr_odd[is]);
-  }
-  
-  destroy_v_field(gr_mu); gr_mu = NULL;
+  /* Construct current density from the list of sources */
+  for(int j = 0; j < n_masses; j++){
+    node0_printf("Solving for all EVEN displacements for mass %g\n", masses[j]);
+    block_current_stochastic( nr, j_mu[j], masses[j], nsrc, +1, EVEN,
+			      qic + j, fn_mass[j], gr_even);
+    node0_printf("Solving for all ODD displacements for mass %g\n", masses[j]);
+    block_current_stochastic( nr, j_mu[j], masses[j], nsrc, +1, ODD,
+			      qic + j, fn_mass[j], gr_odd);
+  } /* j */
 }
 
 /*********************************************************************/
@@ -1398,35 +1316,11 @@ block_currents_delta_udlsc( int n_masses, Real **j_mu[], Real masses[],
 static void 
 block_currents_deltam( int n_masses, Real **j_mu[], Real masses[], 
 		       imp_ferm_links_t *fn[], quark_invert_control qic[],
-		       int nr, int thinning){
+		       int nsrc, int nr, su3_vector *gr_even[], su3_vector *gr_odd[]){
 
   char myname[] = "block_currents_deltam";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
-  /* Offset for staggered phases in the current definition */
-  int r_offset[4] = {0, 0, 0, 0};
-
-  /* Current spin-taste list */
-  int *spin_taste = get_spin_taste();
-
-  /* Block solver parameters -- temporary */
-  int d = thinning;
-  int evol = d*d*d*d/2;
-  int nsrc = evol*nr;
-
-  su3_vector **gr_even = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
-  su3_vector **gr_odd = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
-  for(int is = 0; is < nsrc; is++){
-    gr_even[is] = create_v_field();
-    gr_odd[is] = create_v_field();
-  }
-
-  /* Loop over random sources in groups of nr */
-  su3_vector *gr_mu = create_v_field();
-
-  /* Create sources in gr_even and gr_odd */
-  collect_sources(gr_even, gr_odd, nr, d, evol);
-  
   if(n_masses <= 3){
     block_currents_delta_lsc(n_masses, j_mu, masses, fn, nsrc, nr,
 			     qic, gr_even, gr_odd);
@@ -1434,13 +1328,6 @@ block_currents_deltam( int n_masses, Real **j_mu[], Real masses[],
     block_currents_delta_udlsc(n_masses, j_mu, masses, fn, nsrc, nr,
 			       qic, gr_even, gr_odd);
   }      
-
-  for(int is = 0; is < nsrc; is++){
-    destroy_v_field(gr_even[is]);
-    destroy_v_field(gr_odd[is]);
-  }
-  
-  destroy_v_field(gr_mu); gr_mu = NULL;
 }
 
 
@@ -1458,7 +1345,6 @@ f_meas_current( int n_masses, int nrand, int thinning,
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   int i;
-  su3_vector *gr_mu = create_v_field();
   int Nvecs = param.eigen_param.Nvecs;
   int nr = 2;  /* Number of random sources to block */
   if(nrand < nr)
@@ -1537,20 +1423,35 @@ f_meas_current( int n_masses, int nrand, int thinning,
     } /* j */
 
 
+  /* Block solver parameters */
+  int d = thinning;
+  int evol = d*d*d*d/2;
+  int nsrc = evol*nr;
+  
+  su3_vector **gr_even = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  su3_vector **gr_odd = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  for(int is = 0; is < nsrc; is++){
+    gr_even[is] = create_v_field();
+    gr_odd[is] = create_v_field();
+  }
+
   /* Construct high-mode current density stochastically.  Collect
      random sources for block solves */
 
   for(int jrand = 0; jrand < nrand; jrand += nr){
 
+    /* Create sources in gr_even and gr_odd */
+    collect_sources(gr_even, gr_odd, nr, d, evol);
+    
 #ifdef MASS_UDLSC
     if(n_masses <= 1){
-      block_current( n_masses, j_mu, masses, fn_mass, qic, nr, thinning );
+      block_current( n_masses, j_mu, masses, fn_mass, qic, nsrc, nr, gr_even, gr_odd);
     } else {
       block_currents_deltam( n_masses, j_mu, masses, fn_mass, qic,
-			     nr, thinning);
+			     nsrc, nr, gr_even, gr_odd);
     }
 #else
-    block_current( n_masses, j_mu, masses, fn_mass, qic, thinning );
+    block_current( n_masses, j_mu, masses, fn_mass, qic, nsrc, nr, gr_even, gr_odd);
 #endif
       
     for(int j = 0; j < n_masses; j++){
@@ -1591,6 +1492,14 @@ f_meas_current( int n_masses, int nrand, int thinning,
   if(Nvecs > 0)
     for(int j = 0; j < n_masses; j++)
       destroy_r_array_field(jlow_mu[j], NMU);
+
+  for(int is = 0; is < nsrc; is++){
+    destroy_v_field(gr_even[is]);
+    destroy_v_field(gr_odd[is]);
+  }
+  
+  free(gr_even); gr_even = NULL;
+  free(gr_odd); gr_odd = NULL;
 
   fflush(stdout);
   
