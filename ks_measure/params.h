@@ -59,8 +59,6 @@ typedef struct {
   int prec_pbp[MAX_SET];         /* Precision of the pbp calculation (1 or 2) */
   int prec_pbp_sloppy[MAX_SET];   /* Precision of the sloppy pbp calculation (1 or 2) */
   int npbp_reps[MAX_SET];     /* Number of random sources for pbp calculation */
-  int nwrite[MAX_SET];        /* For some cumulative stochastic applications: 
-				 number of random sources per write */
   int thinning[MAX_SET];        /* Interval between nonzero stochastic sources */
   int truncate_diff[MAX_SET];
   quark_invert_control qic_pbp[MAX_MASS_PBP];

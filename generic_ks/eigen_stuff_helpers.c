@@ -57,14 +57,15 @@ opposite_parity(int parity){
 
 /************************************************************************/
 static void 
-DdagD( su3_vector *res, su3_vector *src, ks_eigen_param *eigen_param, imp_ferm_links_t *fn )
+DdagD( su3_vector *res, su3_vector *src, int ds, msg_tag *t1[], msg_tag *t2[], 
+       ks_eigen_param *eigen_param, imp_ferm_links_t *fn )
 {
   int i;
   int parity = eigen_param->parity;
   otherparity = opposite_parity(parity);
   
-  dslash_fn_field_special(src , temp, otherparity, tags1, dslash_start, fn) ;
-  dslash_fn_field_special(temp, res , parity     , tags2, dslash_start, fn) ;
+  dslash_fn_field_special(src , temp, otherparity, t1, ds, fn) ;
+  dslash_fn_field_special(temp, res , parity     , t2, ds, fn) ;
   
   FORSOMEFIELDPARITY_OMP(i,parity, ){ 
     scalar_mult_su3_vector( &(res[i]), -1.0, &(res[i])) ;
@@ -133,7 +134,7 @@ PDdagD( su3_vector *res, su3_vector *src, ks_eigen_param *eigen_param, imp_ferm_
   double sig0  = d1*delta;
   double d2    = 1.0;
   double d3    = 0.0;
-  
+  msg_tag *tags3[16],*tags4[16];
   /* double x0    = 1; */
   su3_vector *x0 = create_v_field();
   copy_v_field(x0, src);
@@ -141,8 +142,9 @@ PDdagD( su3_vector *res, su3_vector *src, ks_eigen_param *eigen_param, imp_ferm_
   /* double x1    = d1*x + d2; */
   su3_vector *x1 = create_v_field();
   su3_vector *y1 = create_v_field();
-  DdagD(y1, src, eigen_param, fn);
+  DdagD(y1, src, 1, tags3, tags4, eigen_param, fn);
   saxpby_v_field( x1, d1, y1, d2, x0);
+  cleanup_gathers(tags3,tags4);
 
   /* double x2    = x1; */
   su3_vector *x2 = create_v_field();
@@ -150,7 +152,8 @@ PDdagD( su3_vector *res, su3_vector *src, ks_eigen_param *eigen_param, imp_ferm_
   
   double sig1  = sig0;
   double sigma = 0.0;
-  
+
+  int dslash_start2 = 1;
   for (int i=2; i<=p; i++) {
     sigma = 1.0/(2.0/sig0 - sig1);
     
@@ -159,7 +162,8 @@ PDdagD( su3_vector *res, su3_vector *src, ks_eigen_param *eigen_param, imp_ferm_
     d3 = -sigma*sig1;
     
     /* x2 = theta*(d3*x0 + d2*x1 + d1*x*x1); */
-    DdagD(y1, x1, eigen_param, fn);
+    DdagD(y1, x1, dslash_start2, tags3, tags4, eigen_param, fn);
+    dslash_start2 = 0; /* So we do restart_gathers when we loop again */
     saxpbypcz_v_field( x2, d3, x0, d2, x1, d1, y1);
 
     /* x0 = x1; */
@@ -170,7 +174,10 @@ PDdagD( su3_vector *res, su3_vector *src, ks_eigen_param *eigen_param, imp_ferm_
     
     sig1 = sigma;
   }
-  
+
+  if(!dslash_start2)
+    cleanup_gathers(tags3,tags4);
+
   /* return x2; */
   copy_v_field(res, x2);
 
@@ -190,8 +197,8 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res,
   /* store last source so that we know when to reinitialize the message tags */
   static su3_vector *last_src=NULL ;
 
-  if(dslash_start){
-    temp = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+  if(temp == NULL){
+    temp = create_v_field();
   }
 
   /*reinitialize the tags if we have a new source */
@@ -204,10 +211,10 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res,
 #ifdef MATVEC_PRECOND
   PDdagD(res, src, eigen_param, fn);
 #else
-  DdagD(res, src, eigen_param, fn);
+  DdagD(res, src, dslash_start, tags1, tags2, eigen_param, fn);
+  dslash_start = 0 ;  /* Signals that tags1 and tags2 are initialized */
 #endif
 
-  dslash_start = 0 ;
 }
 
 /*****************************************************************************/
@@ -243,9 +250,10 @@ void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *e
 void cleanup_Matrix(){
   if(!dslash_start) {
     cleanup_gathers(tags1,tags2); 
-    cleanup_dslash_temps() ;
-    destroy_v_field(temp) ;
   }
+  cleanup_dslash_temps() ;
+  destroy_v_field(temp) ;
+  temp == NULL;
   dslash_start = 1 ;
 #ifdef DEBUG
   node0_printf("cleanup_Matrix(): done!\n") ; fflush(stdout) ;
@@ -321,9 +329,9 @@ void reset_eigenvalues(su3_vector *eigVec[], double *eigVal,
 
   node0_printf("Resetting eigenvalues\n");
 
-  double norm = 0., expect = 0.;
 
   for(i = 0; i < Nvecs; i++){
+    double norm = 0., expect = 0.;
     dslash_fn_field(eigVec[i], ttt, otherparity, fn);
     dslash_fn_field(ttt, ttt, parity, fn);
     FORSOMEFIELDPARITY_OMP(j,parity,reduction(+:expect,norm)){
