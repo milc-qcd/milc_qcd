@@ -108,6 +108,9 @@ int main(int argc, char *argv[])
     
     /**************************************************************/
     /* Compute Dirac eigenpairs           */
+
+    Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
+      
     if(param.eigen_param.Nvecs > 0){
       
 #if EIGMODE != EIGCG
@@ -124,8 +127,6 @@ int main(int argc, char *argv[])
       set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
       /* Apply the operation */
       boundary_twist_fn(fn, ON);
-      
-      Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
       
       /* compute eigenpairs if requested */
       if(param.ks_eigen_startflag == FRESH){
