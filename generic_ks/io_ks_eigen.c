@@ -1188,7 +1188,7 @@ int r_ascii_ks_eigen(ks_eigen_file *kseigf, int Nvecs, double *eigVal, su3_vecto
       if(this_node == 0){
 	for(j = 0; j < 3; j++){
 	  double tmpreal, tmpimag;
-	  if(fscanf(fp, "%lf%lf\n",&tmpreal, &emiag) != 2){
+	  if(fscanf(fp, "%lf%lf\n",&tmpreal, &tmpimag) != 2){
 	    if(status == 0) printf("%s: Error reading su3_vector\n", myname); 
 	    status++;
 	  }
