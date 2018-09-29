@@ -276,7 +276,7 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 
     cgn = mat_invert_cg_field( tsrc, tdest, &qic, mass, fn );
 
-    FORALLFIELDSITES_OMP(i,){
+    FORALLSITES_OMP(i,s,){
       su3vec_copy(tdest+i, (su3_vector *)F_PT(s,dest));
     } END_LOOP_OMP;
 
