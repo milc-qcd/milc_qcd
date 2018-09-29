@@ -253,7 +253,7 @@ void cleanup_Matrix(){
   }
   cleanup_dslash_temps() ;
   destroy_v_field(temp) ;
-  temp == NULL;
+  temp = NULL;
   dslash_start = 1 ;
 #ifdef DEBUG
   node0_printf("cleanup_Matrix(): done!\n") ; fflush(stdout) ;
