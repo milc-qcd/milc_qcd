@@ -387,7 +387,7 @@ block_current_stochastic_deltam( Real *j_mu01[], Real mass0, Real mass1,
 } /* block_current_stochastic_deltam */
       
 /************************************************************************/
-/* Calculate three cobinations of current densities based on four sets of
+/* Calculate three combinations of current densities based on four sets of
    masses: u, d, l, s using a list of thinned stochastic
    estimators. Do this for a given parity.
    In particular, calculate J_u - J_d and  J_l - J_s
