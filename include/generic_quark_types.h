@@ -121,7 +121,7 @@ typedef struct {
 
 /* Same for plain KS case */
 typedef struct {
-  int charge;
+  Real charge;
   Real mass;
   Real offset;
   int naik_term_epsilon_index;
