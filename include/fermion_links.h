@@ -271,64 +271,23 @@ void f_meas_imp( int npbp_reps, int prec,
 		 int naik_term_epsilon_index, fermion_links_t *fl);
 
 /* f_meas_current.c */
-void f_meas_current( int nrand, int nwrite, int thinning, quark_invert_control *qic, 
-		     Real mass, int naik_term_epsilon_index, fermion_links_t *fl, 
-		     char *filename);
-void f_meas_current_diff( int nrand, int nwrite, int thinning, 
-			  quark_invert_control *qic_precise, 
-			  quark_invert_control *qic_sloppy, 
-			  Real mass, int naik_term_epsilon_index, fermion_links_t *fl, 
-			  char *filename);
-void f_meas_current_pt2pt( quark_invert_control *qic, 
-			   Real mass, int naik_term_epsilon_index, fermion_links_t *fl,
-			   char *filename);
-void f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
-			   quark_invert_control *qic, ks_param *ksp, 
-			   fermion_links_t *fl, 
+void f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
+		     quark_invert_control *qic,
+		     su3_vector **eigVec, double *eigVal, int Nvecs,
+		     ks_param *ksp, fermion_links_t *fl,
+		     Real *precs_sloppy, int n_slp,
+		     char filenames[][MAXFILENAME],
+		     int parity, int numMassPair, int isColorThin);
+void f_meas_current_diff( int n_masses, int const nrand, int nwrite, int thinning,
+			  quark_invert_control *qic_precise,
+			  quark_invert_control *qic_sloppy,
+			  su3_vector **eigVec, double *eigVal, int Nvecs, ks_param *ksp,
+			  fermion_links_t *fl, Real *precs_sloppy, int n_slp,
+			  char filenames[][MAXFILENAME],
+			  int parity, int isCorr, int numMassPair, int isColorThin);
+void f_meas_current_pt2pt( int n_masses, quark_invert_control *qic,
+			   ks_param *ksp, fermion_links_t *fl,
 			   char filenames[][MAXFILENAME]);
-void f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
-			       quark_invert_control *qic,
-			       su3_vector **eigVec, double *eigVal, int Nvecs,
-			       ks_param *ksp, fermion_links_t *fl, 
-			       char filenames[][MAXFILENAME]);
-void f_meas_current_multi_eig_eo( int n_masses, int nrand, int nwrite, int thinning,
-				  quark_invert_control *qic,
-				  su3_vector **eigVec, double *eigVal, int Nvecs,
-				  ks_param *ksp, fermion_links_t *fl,
-				  char filenames[][MAXFILENAME]);
-void f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
-				quark_invert_control *qic_precise,
-				quark_invert_control *qic_sloppy, 
-				ks_param *ksp, fermion_links_t *fl, 
-				char filenames[][MAXFILENAME]);
-void f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning,
-				    quark_invert_control *qic_precise,
-				    quark_invert_control *qic_sloppy, 
-				    su3_vector **eigVec, double *eigVal, int Nvecs,
-				    ks_param *ksp, fermion_links_t *fl, 
-				    char filenames[][MAXFILENAME]);
-void f_meas_current_multi_diff_eig_eo( int n_masses, int nrand, int nwrite, int thinning,
-				       quark_invert_control *qic_precise,
-				       quark_invert_control *qic_sloppy,
-				       su3_vector **eigVec, double *eigVal, int Nvecs,
-				       ks_param *ksp, fermion_links_t *fl,
-				       char filenames[][MAXFILENAME]);
-void f_meas_current_multi_diff_eig_corr( int n_masses, int nrand, int nwrite, int thinning,
-					 quark_invert_control *qic_precise,
-					 quark_invert_control *qic_sloppy,
-					 su3_vector **eigVec, double *eigVal, int Nvecs, ks_param *ksp,
-					 fermion_links_t *fl, Real *precs_sloppy, int n_slp,
-					 char filenames[][MAXFILENAME]);
-void f_meas_current_multi_eig_multi_solve( int n_masses, int nrand, int nwrite, int thinning,
-					   quark_invert_control *qic,
-					   su3_vector **eigVec, double *eigVal, int Nvecs,
-					   ks_param *ksp, fermion_links_t *fl,
-					   Real *precs_sloppy, int n_slp,
-					   char filenames[][MAXFILENAME]);
-void f_meas_current_multi_pt2pt( int n_masses, quark_invert_control *qic,
-				 ks_param *ksp, fermion_links_t *fl,
-				 char filenames[][MAXFILENAME]);
-
 /* mu.c and mu_fast.c */
 void M_derivatives(field_offset phi_off, field_offset xxx_off, 
 		   field_offset xxx1_off, Real mass,
