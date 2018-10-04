@@ -464,76 +464,6 @@ int mat_invert_uml_field_projected(su3_vector *src, su3_vector *dst,
 }
 
 /*****************************************************************************/
-/* This algorithm solves even sites, reconstructs odd, and then polishes
-   to compensate for loss of significance in the reconstruction.
-   Finally, it uses the last result to obtain odd solutions with
-   higher precision.
-   Assume: low-mode part already projected out
- */
-int mat_invert_uml_projected_field_mult_prec(su3_vector *src, su3_vector **dst,
-					     quark_invert_control *qic, int extp,
-					     Real mass, imp_ferm_links_t *fn ){
-  int cgn;
-  register int i;
-  register site *s;
-  su3_vector *tmp = create_v_field();
-  su3_vector *ttt = create_v_field();
-  int even_iters,odd_iters=0;
-
-  /* "Precondition" both even and odd sites */
-  /* tmp <- M_adj * src */
-  ks_dirac_adj_op( src, tmp, mass, EVENANDODD, fn );
-
-#if EIGMODE == DEFLATION
-  /* Precondition even sites */
-  project_out(tmp, param.Nvecs, EVEN);
-  for(i=0;i < extp;i++) project_out(dst[i], param.Nvecs, EVEN);
-#endif
-
-  /* dst_e <- (M_adj M)^-1 tmp_e  (work only with even sites) */
-  qic->parity = EVEN;
-#if EIGMODE == EIGCG
-  cgn = ks_inc_eigCG_parity(tmp, dst[0], eigVal, eigVec, &param.eigcgp, qic, mass, fn);
-  report_status(qic);
-#else
-  cgn = ks_congrad_field( tmp, dst[0], qic, mass, fn );
-#endif
-  even_iters = qic->final_iters;
-
-  /* reconstruct odd site solution */
-  /* dst_o <-  1/2m (src_o - Dslash_oe*dst_e) = 1/2m (src_o - Dslash_oe*(cong. grad.)*[M^dagger*src]_e) */
-  /* our dst_e comes with extra minus sign, making subtraction necessary */
-  dslash_field( dst[0], ttt, ODD, fn );
-  FORODDSITES(i,s){
-    sub_su3_vector( src+i, ttt+i, dst[0]+i);
-    scalar_mult_su3_vector( dst[0]+i, 1.0/(2.0*mass), dst[0]+i );
-  }
-
-#if EIGMODE == DEFLATION
-  /* Precondition odd sites */
-  project_out(tmp, param.Nvecs, ODD);
-  for(i=0;i < extp;i++) project_out(dst[i], param.Nvecs, ODD);
-#endif
-
-  /* Polish off odd sites to correct for possible roundoff error */
-  /* dst_o <- (M_adj M)^-1 tmp_o */
-  qic->parity = ODD;
-  for(int n=0; n < extp; n++){
-    cgn += ks_congrad_field( tmp, dst[n], qic, mass, fn );
-    if(n<extp-1) copy_v_field(dst[n+1], dst[n]);
-    qic->resid++;//<-?
-    odd_iters+=qic->final_iters;
-  }
-  qic->final_iters = even_iters + odd_iters;
-
-  //    check_invert_field( dst, src, mass, 1e-6, fn);                                                                                                                             
-  destroy_v_field(tmp);
-  destroy_v_field(ttt);
-
-  return cgn;
-}
-
-/*****************************************************************************/
 /* This algorithm solves even sites, reconstructs odd and then polishes
    to compensate for loss of significance in the reconstruction
    BLOCKCG version
@@ -608,6 +538,61 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
   free(tmp);
   destroy_v_field(ttt);
   
+  return cgn;
+}
+
+/*****************************************************************************/
+int mat_invert_block_uml_field_projected(int nsrc, su3_vector **src, su3_vector **dst,
+					 quark_invert_control *qic, int parity,
+					 Real mass, imp_ferm_links_t *fn ){
+  int cgn;
+  register int i, is;
+  register site *s;
+  su3_vector **tmp = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  su3_vector *ttt = create_v_field();
+  int even_iters=0;
+
+  /* "Precondition" both even and odd sites */
+  /* tmp <- M_adj * src */
+  for(is = 0; is < nsrc; is++){
+    tmp[is] = create_v_field();
+    ks_dirac_adj_op( src[is], tmp[is], mass, EVENANDODD, fn );
+  }
+  
+  /* dst_e <- (M_adj M)^-1 tmp_e  (work only with even sites) */
+  qic->parity = EVEN;
+  cgn = ks_congrad_block_field( nsrc, tmp, dst, qic, mass, fn );
+  even_iters = qic->final_iters;
+
+  /* reconstruct odd site solution */
+  /* dst_o <-  1/2m (src_o - Dslash_oe*dst_e) = 1/2m (src_o - Dslash_oe*(cong. grad.)*[M^dagger]*src_e) */
+  /* our dst_e comes with extra minus sign, making subtraction necessary */
+  if(parity==EVEN || parity== EVENANDODD){
+    for(is = 0; is < nsrc; is++){
+      dslash_field( dst[is], ttt, ODD, fn );
+      FORODDSITES(i,s){
+	sub_su3_vector( src[is]+i, ttt+i, dst[is]+i);
+	scalar_mult_su3_vector( dst[is]+i, 1.0/(2.0*mass), dst[is]+i );
+      }
+    }
+    
+    /* Precondition odd sites */
+    //project_out(tmp, param.Nvecs, ODD); // odd eigenvectors are not precise enough.
+    
+    /* Polish off odd sites to correct for possible roundoff error */
+    /* dst_o <- (M_adj M)^-1 tmp_o */
+    qic->parity = ODD;
+    cgn += ks_congrad_block_field( nsrc, tmp, dst, qic, mass, fn );
+    qic->final_iters += even_iters;
+    
+    //    check_invert_field( dst, src, mass, 1e-6, fn);
+  }
+
+  for(is = 0; is < nsrc; is++)
+    destroy_v_field(tmp[is]);
+  free(tmp);
+  destroy_v_field(ttt);
+
   return cgn;
 }
 
