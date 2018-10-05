@@ -134,8 +134,8 @@ EXTERN fermion_links_t    *fn_links;
 #if EIGMODE == EIGCG || EIGMODE == DEFLATION
 EXTERN int active_parity ; /* parity used in eigenvalue calculation */
 EXTERN int Nvecs_tot;
+#endif
 EXTERN double *eigVal; /* eigenvalues of M^adj M */
 EXTERN su3_vector **eigVec; /* eigenvectors */
-#endif
 
 #endif /* _LATTICE_H */
