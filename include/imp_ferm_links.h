@@ -395,12 +395,12 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
 int mat_invert_uml_field_projected(su3_vector *src, su3_vector *dst,
 				   quark_invert_control *qic, int parity,
 				   Real mass, imp_ferm_links_t *fn );
-int mat_invert_uml_projected_field_mult_prec(su3_vector *src, su3_vector **dst,
-					     quark_invert_control *qic, int extp,
-					     Real mass, imp_ferm_links_t *fn );
 int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst, 
 			       quark_invert_control *qic,
 			       Real mass, imp_ferm_links_t *fn );
+int mat_invert_block_uml_field_projected(int nsrc, su3_vector **src, su3_vector **dst,
+                                         quark_invert_control *qic, int parity,
+                                         Real mass, imp_ferm_links_t *fn );
 void check_invert( field_offset src, field_offset dest, Real mass,
 		   Real tol, imp_ferm_links_t *fn );
 void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,
