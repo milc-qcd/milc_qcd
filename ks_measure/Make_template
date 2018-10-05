@@ -234,7 +234,27 @@ ks_measure_current_deflate_hisq::
 ks_measure_current_deflate_hisq_eo::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
-	-DEIGMODE=DEFLATION -DEIGEN_QIO -DBOTH_PARITY" \
+	-DEIGMODE=DEFLATION -DEIGEN_QIO -DPARITY=EVENANDODD" \
+	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
+
+ks_measure_current_deflate_hisq_eo_t::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC -DTIME_CURR \
+	-DEIGMODE=DEFLATION -DEIGEN_QIO -DPARITY=EVENANDODD" \
+	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
+
+ks_measure_current_deflate_hisq_eo_r::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
+	-DEIGMODE=DEFLATION -DEIGEN_QIO -DPARITY=EVENANDODD \
+	-DISCORR" \
+	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
+
+ks_measure_current_deflate_hisq_eo_clthin::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
+	-DEIGMODE=DEFLATION -DEIGEN_QIO -DPARITY=EVENANDODD \
+	-DIsColorThin=3"\
 	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
 
 ks_measure_current_hisq_pt2pt::
@@ -259,6 +279,18 @@ ks_measure_current_block_deflate_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
 	-DEIGMODE=DEFLATION -DEIGEN_QIO -DBLOCKCG" \
+	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
+
+ks_measure_current_block_deflate_hisq_eo::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
+	-DEIGMODE=DEFLATION -DEIGEN_QIO -DBLOCKCG -DPARITY=EVENANDODD" \
+	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
+
+ks_measure_current_block_deflate_hisq_eo_t::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC -DTIME_CURR \
+	-DEIGMODE=DEFLATION -DEIGEN_QIO -DBLOCKCG -DPARITY=EVENANDODD" \
 	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
 
 ks_measure_current_eigcg_hisq::
