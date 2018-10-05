@@ -261,7 +261,7 @@ int readin(int prompt) {
       status++;
     }
 
-    npbp_masses = 0;
+    npbp_masses = 0; // npbp_masses ranges from 0 to (sum_k num_pbp_masses[k])-1
     IF_OK for(k = 0; k < param.num_set; k++){
       int max_cg_iterations, max_cg_restarts, prec_pbp;
       Real error_for_propagator, rel_error_for_propagator;
@@ -339,34 +339,21 @@ int readin(int prompt) {
 	status++;
       }
 
+      /* Number of pbp mass pairs in the array of input masses */
+      IF_OK status += get_i(stdin, prompt, "number_of_pbp_mass_pairs",
+                            &param.numMassPair[k]);
+      if(param.numMassPair[k] > MAX_MASS_PBP/2){
+        printf("Number of mass pairs exceeds dimension %d\n",MAX_MASS_PBP/2);
+        status++;
+      }
+
       /* Nuber of sets of sloppy solve precisions */
       IF_OK status += get_i(stdin, prompt, "number_of_pbp_slp_prec_sets",
 			    &param.num_pbp_slp_prec_sets[k]);
 
-      /* Specification of sloppy solve precision for multi solver */
+      /* Specification of sloppy solve mode */
       IF_OK status += get_s(stdin, prompt, "repeated_sloppy_cg_mode",
 			    param.repeated_sloppy_cg_mode[k]);
-      IF_OK {
-	if(strstr(param.repeated_sloppy_cg_mode[k],"multi")!=NULL){
-	  if(strstr(param.repeated_sloppy_cg_mode[k],"manual")!=NULL){
-	    IF_OK for(i=0;i< param.num_pbp_masses[k] * param.num_pbp_slp_prec_sets[k]; i++){
-	      IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy",
-				    param.slp_prec[k]+i );
-	    }
-	  }else if(strstr(param.repeated_sloppy_cg_mode[k],"param")!=NULL){
-	    for(i=0;i< param.num_pbp_masses[k]; i++){
-	      IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy",
-				    param.slp_prec[k]+i );
-	    }
-	    IF_OK for(i=param.num_pbp_masses[k];i<param.num_pbp_masses[k]*param.num_pbp_slp_prec_sets[k];i++){
-	      int ind = i/param.num_pbp_masses[k];
-	      if(ind%2==0) param.slp_prec[k][i] = param.slp_prec[k][i-param.num_pbp_masses[k]]*0.2;
-	      else if(ind%2==1) param.slp_prec[k][i] = param.slp_prec[k][i-param.num_pbp_masses[k]]*0.5;
-	      node0_printf("%e\n",param.slp_prec[k][i]);fflush(stdout);
-	    }
-	  }
-	}
-      }
 
       /* Indexing range for set */
       param.begin_pbp_masses[k] = npbp_masses;
@@ -376,23 +363,43 @@ int readin(int prompt) {
 	status++;
       }
 
-      int charges[5] = {1,-1,2,-1,2};// charge in the increasing order of quark mass; the first number is the sum of light charges.
+      Real charges[5] = {1.5,1.5,1,1};// charge in the increasing order of quark mass; the first number is the sum of light charges.
       IF_OK for(i = 0; i < param.num_pbp_masses[k]; i++){
     
 	/* PBP mass parameters */
 	
 	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[npbp_masses] );
 	IF_OK param.ksp_pbp[npbp_masses].mass = atof(param.mass_label[npbp_masses]);
-	param.ksp_pbp[npbp_masses].charge = charges[npbp_masses];
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
 	IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 			      &param.ksp_pbp[npbp_masses].naik_term_epsilon );
 #else
 	IF_OK param.ksp_pbp[npbp_masses].naik_term_epsilon = 0.0;
 #endif
+#if 0 // charges taken from the input
+	IF_OK status += get_f(stdin, prompt,"charge",
+                              &param.ksp_pbp[npbp_masses].charge );
+#else // hardcoded charges
+	param.ksp_pbp[npbp_masses].charge = charges[npbp_masses];
+#endif
 	/* error for staggered propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
 			      &error_for_propagator );
+	param.slp_prec[k][i]=error_for_propagator;
+	/* take additional residuals  if param.num_pbp_prec_sets[k] > 1 & if error_for_propagator is a sloppy residual */
+	// note: we can change slp_prec[num_set][num_pbp_prec_set*num_pbp_masses] to [npbp_masses][num_pbp_prec_sets] */
+	if(!param.truncate_diff[k]){
+	  if(strstr(param.repeated_sloppy_cg_mode[k],"manual")!=NULL){
+	    for(int j=1;j< param.num_pbp_slp_prec_sets[k]; j++)
+	      IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy", param.slp_prec[k]+i+j*param.num_pbp_masses[k] );
+	  }
+	  else if(strstr(param.repeated_sloppy_cg_mode[k],"param")!=NULL){
+	    for(int j=1;j<param.num_pbp_slp_prec_sets[k];j++){
+	      param.slp_prec[k][i+j*param.num_pbp_masses[k]] = param.slp_prec[k][i+(j-1)*param.num_pbp_masses[k]]*(j%2==0?0.2:0.5);
+	      node0_printf("%e\n",param.slp_prec[k][i+j*param.num_pbp_masses[k]]);fflush(stdout);
+	    }
+	  }
+	}
 	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
 			      &rel_error_for_propagator );
 	
@@ -401,6 +408,19 @@ int readin(int prompt) {
 	  /* error for staggered propagator conjugate gradient */
 	  IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy", 
 				&error_for_propagator_sloppy );
+	  param.slp_prec[k][i]=error_for_propagator_sloppy;
+	  /* take additional residuals if param.num_pbp_prec_sets[k] > 1 */
+	  if(strstr(param.repeated_sloppy_cg_mode[k],"manual")!=NULL){
+	    for(int j=1;j< param.num_pbp_slp_prec_sets[k]; j++)
+	      IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy", param.slp_prec[k]+i+j*param.num_pbp_masses[k] );
+	  }
+	  else if(strstr(param.repeated_sloppy_cg_mode[k],"param")!=NULL){
+	    for(int j=1;j<param.num_pbp_slp_prec_sets[k];j++){
+	      param.slp_prec[k][i+j*param.num_pbp_masses[k]] = param.slp_prec[k][i+(j-1)*param.num_pbp_masses[k]]*(j%2==0?0.2:0.5);
+	      node0_printf("%e\n",param.slp_prec[k][i+j*param.num_pbp_masses[k]]);fflush(stdout);
+	    }
+	  }
+	
 	  IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator_sloppy", 
 				&rel_error_for_propagator_sloppy );
 	}
@@ -457,8 +477,8 @@ int readin(int prompt) {
 #endif
 	
 	npbp_masses++;
-      }
-    }
+      }/* i: pram.pbp_masses */
+    } /* k: param.num_set*/
     
     /* End of input fields */
     if( status > 0)param.stopflag=1; else param.stopflag=0;
