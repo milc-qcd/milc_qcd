@@ -56,9 +56,14 @@
 #include <quda_milc_interface.h>
 #endif
 
-#ifdef BOTH_PARITY
-#define f_meas_current_multi_diff_eig f_meas_current_multi_diff_eig_eo
-#define f_meas_current_multi_eig f_meas_current_multi_eig_eo
+#ifndef PARITY
+#define PARITY EVEN /* Default value */
+#endif 
+#ifndef ISCORR
+#define ISCORR 0
+#endif
+#ifndef IsColorThin
+#define IsColorThin 0
 #endif
 
 int main(int argc, char *argv[])
@@ -74,6 +79,8 @@ int main(int argc, char *argv[])
   int Nvecs_curr;
   double *resid = NULL;
   imp_ferm_links_t **fn;
+#else
+  int Nvecs_curr = 0;
 #endif
   
   initialize_machine(&argc,&argv);
@@ -172,116 +179,47 @@ int main(int argc, char *argv[])
 
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i0].prec);
 
-      /* Single Mass */
-      if(num_pbp_masses == 1){
-#ifdef CURRENT_DISC
-#ifdef PT2PT /* Pt. to Pt. sources */
-        f_meas_current_pt2pt( &param.qic_pbp[i0],
-			      param.ksp_pbp[i0].mass, 
-			      param.ksp_pbp[i0].naik_term_epsilon_index,
-			      fn_links, param.pbp_filenames[i0]);
-#else // NOT PT2PT
-	if(strstr(param.repeated_sloppy_cg_mode[k], "none")!=NULL);
-	else if(param.truncate_diff[k])
-#ifdef DEFLATION
-	  f_meas_current_multi_diff_eig( 1, param.npbp_reps[k], param.nwrite[k],
-					 param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
-					 eigVec, eigVal, Nvecs_curr,
-					 &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
-#else
-	  f_meas_current_diff( param.npbp_reps[k], param.nwrite[k], param.thinning[k],
-			       &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
-			       param.ksp_pbp[i0].mass, 
-			       param.ksp_pbp[i0].naik_term_epsilon_index, 
-			       fn_links, param.pbp_filenames[i0] );
-#endif
-	else
-#ifdef DEFLATION
-	  f_meas_current_multi_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k],
-				    param.thinning[k], &param.qic_pbp[i0],
-				    eigVec, eigVal, Nvecs_curr,
-				    &param.ksp_pbp[i0],
-				    fn_links, &param.pbp_filenames[i0] );
-#else
-	  f_meas_current( param.npbp_reps[k], param.nwrite[k], param.thinning[k],
-			  &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
-			  param.ksp_pbp[i0].naik_term_epsilon_index, 
-			  fn_links, param.pbp_filenames[i0] );
-#endif
-#endif //END: PT2PT
-#else // NOT CURRENT_DISC
-	f_meas_imp_field( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
-			  param.ksp_pbp[i0].naik_term_epsilon_index, fn_links);
-#endif
-	
-#ifdef D_CHEM_POT
-	Deriv_O6_field(param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass,
-		       fn_links, param.ksp_pbp[i0].naik_term_epsilon_index, 
-		       param.ksp_pbp[i0].naik_term_epsilon);
-#endif
-      /* Multiple Masses */
-      } else {
 #ifdef CURRENT_DISC
 	
 	// initialize_site_prn_from_seed(iseed); /* Use the same random number sequence for all sets */
 
-#if EIGMODE == DEFLATION
-	
-	/* Compute the bias correction current */
-	if(param.truncate_diff[k]){
-	  if(strstr(param.repeated_sloppy_cg_mode[k], "none")!=NULL);
-	  else if(strstr(param.repeated_sloppy_cg_mode[k], "single")!=NULL)
-	    f_meas_current_multi_diff_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
-					   param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
-					   eigVec, eigVal, Nvecs_curr,
-					   &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
-	  else if(strstr(param.repeated_sloppy_cg_mode[k],"multi")!=NULL)
-	    f_meas_current_multi_diff_eig_corr( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k],
-						param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
-						eigVec, eigVal, Nvecs_curr,
-						&param.ksp_pbp[i0], fn_links, param.slp_prec[k], param.num_pbp_slp_prec_sets[k],
-						&param.pbp_filenames[i0]);
-	}
-	/* Compute the sloppy current */
-	else{
-	  if(strstr(param.repeated_sloppy_cg_mode[k], "none")!=NULL);
-	  else if(strstr(param.repeated_sloppy_cg_mode[k], "single")!=NULL)
-	    f_meas_current_multi_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
-				      param.thinning[k], &param.qic_pbp[i0], 
-				      eigVec, eigVal, Nvecs_curr,
-				      &param.ksp_pbp[i0], 
-				      fn_links, &param.pbp_filenames[i0] );
-	  else if(strstr(param.repeated_sloppy_cg_mode[k],"multi")!=NULL)
-	    f_meas_current_multi_eig_multi_solve( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k],
-						  param.thinning[k], &param.qic_pbp[i0],
-						  eigVec, eigVal, Nvecs_curr,
-						  &param.ksp_pbp[i0], fn_links, param.slp_prec[k], param.num_pbp_slp_prec_sets[k],
-						  &param.pbp_filenames[i0]);
-	}
-#else /* Case: Not using deflation */
-#ifdef PT2PT /* Pt. to Pt. sources */
-	f_meas_current_multi_pt2pt( param.num_pbp_masses[k], &param.qic_pbp[i0], &param.ksp_pbp[i0], fn_links,
-				    &param.pbp_filenames[i0]);
+#ifdef PT2PT /* Exact computation using pt. to pt. sources */
+      f_meas_current_pt2pt( param.num_pbp_masses[k], &param.qic_pbp[i0], &param.ksp_pbp[i0], fn_links,
+			    &param.pbp_filenames[i0]);
 #else /* Stochastic estimation */
-	if(param.truncate_diff[k])
-	  f_meas_current_multi_diff( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
-				     param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
-				     &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
-	else
-	  f_meas_current_multi( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
-				param.thinning[k], &param.qic_pbp[i0], &param.ksp_pbp[i0], 
-				fn_links, &param.pbp_filenames[i0] );
+      
+      /* Compute the bias correction current */
+      if(param.truncate_diff[k]){
+	if(strstr(param.repeated_sloppy_cg_mode[k], "none")!=NULL);
+	else 
+	  f_meas_current_diff( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], param.thinning[k], 
+			       &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+			       eigVec, eigVal, Nvecs_curr,
+			       &param.ksp_pbp[i0], fn_links, 
+			       param.slp_prec[k], param.num_pbp_slp_prec_sets[k],
+			       &param.pbp_filenames[i0], 
+			       PARITY, ISCORR, param.numMassPair[k], IsColorThin);
+      }
+      else {
+	/* Compute the sloppy current */
+	if(strstr(param.repeated_sloppy_cg_mode[k], "none")!=NULL);
+	else 
+	  f_meas_current( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k],	param.thinning[k], &param.qic_pbp[i0],
+			  eigVec, eigVal, Nvecs_curr,
+			  &param.ksp_pbp[i0], fn_links, 
+			  param.slp_prec[k], param.num_pbp_slp_prec_sets[k],
+			  &param.pbp_filenames[i0],
+			  PARITY, param.numMassPair[k], IsColorThin);
+      }
 #endif
-#endif // END: EIGMODE == DEFLATION
 #else // Not CURRENT_DISK
-	f_meas_imp_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
-			  &param.ksp_pbp[i0], fn_links);
+      f_meas_imp_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
+			&param.ksp_pbp[i0], fn_links);
 #endif //END: CURRENT_DISC
 #ifdef D_CHEM_POT
-	Deriv_O6_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0],
-			&param.ksp_pbp[i0], fn_links);
+      Deriv_O6_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0],
+		      &param.ksp_pbp[i0], fn_links);
 #endif
-      }
     } /* k num_set */
 
 #ifdef HISQ_SVD_COUNTER
