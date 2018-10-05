@@ -70,6 +70,7 @@ typedef struct {
 #endif
   int num_set;                  /* Number of sets */
   int num_pbp_masses[MAX_SET];   /* Number of masses for pbp calculation */
+  int numMassPair[MAX_SET]; /* Number of mass pairs for mass-difference trick */
   int num_pbp_slp_prec_sets[MAX_SET]; /* Nuber of sets of sloppy solve precisions */
   char repeated_sloppy_cg_mode[MAX_SET][MAXFILENAME]; /* Specification of sets of sloppy solve precisions */
   Real slp_prec[MAX_SET][MAX_MASS_PBP*MAX_SLP_SET]; /* sets of sloppy precisions for each set of masses */
