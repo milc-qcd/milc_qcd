@@ -306,8 +306,8 @@ rcorr(Real *qblock[], Real *q2block[],
       /* The forward FT is done separately for each current component */
       restrict_fourier_field((complex *)qtmp, NMU*sizeof(complex), FORWARDS);
       
-      /* Square and sum over components to get the correlator */
-      dot_corr(outf, qtmp, NMU);
+      /* Square and sum over spatial components to get the correlator */
+      dot_corr(outf, qtmp, NMU-1);
 
       /* Consistency check */
       double qtot = 0.;
@@ -418,7 +418,7 @@ rcorr(Real *qblock[], Real *q2block[],
 	node0_printf("cube_size=%d&disp=%d) %.16e at (%d,%d,%d,%d)\n",csizes[ibc],disp,x,cx,cy,cz,ct);
       }
       int ncubes = (int) volume/pow(csizes[ibc],4);
-      node0_printf("cube_size=%d&disp=%d) mean: %.16e sd: %.16e\n", csizes[ibc],disp,c_mean/ncubes,sqrt((c_var-c_mean*c_mean/ncubes)/ncubes));fflush(stdout);
+      node0_printf("cube_size=%d&disp=%d) mean: %.16e sd: %.16e\n",csizes[ibc],disp,c_mean/ncubes,sqrt((c_var-c_mean*c_mean/ncubes)/ncubes));fflush(stdout);
     }
   }
   destroy_r_field(corr);
@@ -460,7 +460,6 @@ rcorr_time(Real *qblock[], Real *q2block[],
     node0_printf("Not enough memory space.\n");
     exit(1);
   }
-
 
   qtmp = create_c_array_field(NMU);
   qcorr = create_c_array_field(NMU);
@@ -505,14 +504,14 @@ rcorr_time(Real *qblock[], Real *q2block[],
 	}
       }
       g_vecfloatsum(j_t,nt*NMU);
-      for(t=0;t<nt*NMU;t++) j_t[t]/=(Real)nx*ny*nz; //node0_printf("j_t[%d]_0= %f\n",t,j_t[t]);}
+      for(t=0;t<nt*NMU;t++) j_t[t]/=(Real)nx*ny*nz;
 
       for(t=0;t<nt;t++) out[t]=0;
       for(int dt=0;dt<nt;dt++){
 	for(t=0;t<nt;t++)
 	  for(mu=0;mu<NMU-1;mu++) out[dt]+=j_t[((t+dt)%nt)*NMU+mu]*j_t[t*NMU+mu];
 	  //COMPSUM(mu,MU0,MUF) out[dt]+=j_t[((t+dt)%nt)*NMU+mu]*j_t[t*NMU+mu];
-	out[dt]/=nt;
+	out[dt]/=nt; //volume*3;
       }
       
 
@@ -729,14 +728,12 @@ compute_current_density_and_print(complex *qin_sloppy[], int nrand_sloppy,
   int x,y,z,t;
   double msg[NMU];
   FORALLSITESLIN(x,y,z,t,nx,ny,nz,nt){
-    if((x+y+z+t)%2==0){
-      for(int mu=0;mu<NMU;mu++) msg[mu]=0;
-      if(this_node==node_number(x,y,z,t))
-	for(int mu=0;mu<NMU;mu++) msg[mu]= (double) qcurr[NMU*node_index(x,y,z,t)+mu].real;
-      g_vecdoublesum(msg,NMU);
-      if(this_node==0) for(int mu=0;mu<NMU;mu++) fprintf(fp,"j(%d,%d,%d,%d)_%d= %.16e\n",x,y,z,t,mu,msg[mu]);
-      g_sync();
-    }
+    for(int mu=0;mu<NMU;mu++) msg[mu]=0;
+    if(this_node==node_number(x,y,z,t))
+      for(int mu=0;mu<NMU;mu++) msg[mu]= (double) qcurr[NMU*node_index(x,y,z,t)+mu].real;
+    g_vecdoublesum(msg,NMU);
+    if(this_node==0) for(int mu=0;mu<NMU;mu++) fprintf(fp,"j(%d,%d,%d,%d)_%d= %.16e\n",x,y,z,t,mu,msg[mu]);
+    g_sync();
   }
 
   if(this_node==0 && fclose(fp) == EOF) node0_printf("closing vcj file, %s, failed\n",filename);
