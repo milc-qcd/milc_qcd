@@ -77,15 +77,15 @@ main(int argc, char *argv[])
     q2block = (Real **)malloc(sizeof(Real *)*param.nblock);
     for(ib = 0; ib < param.nblock; ib++){
 #if defined(TIME_TO_TIME) || defined(T2TFRMPT2PT)
-      qblock[ib] = create_r_field();
-      q2block[ib] = create_r_field();
-#else
       qblock[ib]=(Real *)malloc(sizeof(Real)*nt);
       q2block[ib]=(Real *)malloc(sizeof(Real)*nt);
       for(int t=0;t<nt;t++){
 	qblock[ib][t]=0;
 	q2block[ib][t]=0;
       }
+#else
+      qblock[ib] = create_r_field();
+      q2block[ib] = create_r_field();
 #endif
     }
 
