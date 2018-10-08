@@ -128,7 +128,7 @@ int readin(int prompt) {
     for(int i = 0; i < param.nblock; i++){
       IF_OK status += get_i(stdin, prompt, "block_size", &param.block_size[i]);
       if(param.nrand_sloppy%param.block_size[i] != 0){ // || param.nrand_sloppy == param.block_size[i]){
-	node0_printf("The number of sloppy random sources must be divisible by the block sizes at least twice\n");
+	node0_printf("The number of sloppy random sources must be divisible by the block sizes\n");
 	status++;
       }
     }
