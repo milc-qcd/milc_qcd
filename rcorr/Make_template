@@ -121,17 +121,17 @@ current_rcorr_bf_fft::
 # Computes time-slice to time-slice correlator C(t)
 current_rcorr_t2t::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DNO_GAUGE_FIELD -DTIME_TO_TIME"
+	"DEFINES= -DNO_GAUGE_FIELD -DFFT -DTIME_TO_TIME"
 
 # Computes time-slice to time-slice correlator C(t) & current densities
 current_rcorr_t2t_jmu::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DNO_GAUGE_FIELD -DTIME_TO_TIME -DOPT"
+	"DEFINES= -DNO_GAUGE_FIELD -DFFT -DTIME_TO_TIME -DOPT"
 
 # Computes time-slice to time-slice correlator C_\mu(t)
 current_rcorr_t2t_mu::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DNO_GAUGE_FIELD -DTIME_TO_TIME -DCOMPY"
+	"DEFINES= -DNO_GAUGE_FIELD -DFFT -DTIME_TO_TIME -DCOMPY"
 
 # Computes time-slice to time-slice correlator C(t) from pt2pt correlator
 current_rcorr_t2tfrmpt2pt::
