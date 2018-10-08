@@ -27,16 +27,13 @@ sum_c_field(complex *dest, Real *src, Real wt, int count){
   int i, j;
   site *s;
 
-  FOREVENFIELDSITES(i){
+  FORALLFIELDSITES(i){
     for(j = 0; j < count; j++){
       dest[count*i+j].real += src[count*i+j]*wt;
     }
   }
 }
 
-//void 
-//accumulate_current_density(char *filename, complex *qin[], 
-//			   Real charge, Real *mass, int nrand)
 void 
 accumulate_current_density(char *filename, complex *qin[], 
 			   Real charge, Real *mass, int nrand)
@@ -65,11 +62,10 @@ accumulate_current_density(char *filename, complex *qin[],
       fprintf(stderr, "Got random source index %d but wanted %d\n", jrand, k);
       terminate(1);
     }
-
-    /* Add in the new values, but only for even coordinates */
-    // sum_c_field_mask(qin[k], tmp, charge, NMU);
+    /* Add in the new values for both even and odd sites */
     sum_c_field(qin[k], tmp, charge, NMU);
   }
+  
   destroy_r_array_field(tmp, NMU);
   r_close_scidac_file(infile);
 
