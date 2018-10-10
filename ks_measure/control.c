@@ -167,13 +167,13 @@ int main(int argc, char *argv[])
 #ifdef CURRENT_DISC
       if(param.truncate_diff[k])
 	f_meas_current_diff( num_pbp_masses, param.npbp_reps[k],
-			     param.nwrite[k], param.thinning[k],
+			     param.thinning[k],
 			     &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
 			     &param.ksp_pbp[i0],
 			     fn_links, &param.pbp_filenames[i0] );
 	else
 	  f_meas_current( num_pbp_masses, param.npbp_reps[k],
-			  param.nwrite[k], param.thinning[k],
+			  param.thinning[k],
 			  &param.qic_pbp[i0], &param.ksp_pbp[i0],
 			  fn_links, &param.pbp_filenames[i0] );
 #else
