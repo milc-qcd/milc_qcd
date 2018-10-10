@@ -356,7 +356,7 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
   char *prec_label[2] = {"F", "D"};
   if(this_node==0) {
     printf("CONGRAD5: time = %e "
-	   "(Grid %s) masses = 1 iters = %d rhs = %d "
+	   "(Grid-block %s) masses = 1 iters = %d rhs = %d "
 	   "mflops = %e "
 	   "\n"
 	   , tot_cg_time
