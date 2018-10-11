@@ -399,6 +399,9 @@ WANT_FL_GPU ?= #true
 WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 
+# enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
+WANT_MIXED_PRECISION_GPU ?= 0
+
 ifeq ($(strip ${WANTQUDA}),true)
 
   QUDA_HOME ?= ${HOME}/quda
@@ -411,7 +414,7 @@ ifeq ($(strip ${WANTQUDA}),true)
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcufft -lcudart -lcuda
+  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
@@ -441,6 +444,17 @@ ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${WANT_FF_GPU}),true)
     HAVE_FF_GPU = true
     CGPU += -DUSE_FF_GPU
+  endif
+
+  ifeq ($(strip ${WANT_FF_GPU}),true)
+    HAVE_FF_GPU = true
+    CGPU += -DUSE_FF_GPU
+  endif
+
+  ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
+    CGPU += -DHALF_MIXED # use single precision where appropriate
+  else ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),2)
+    CGPU += -DMAX_MIXED # use half precision where appropriate
   endif
 
 # Verbosity choices: 
@@ -821,8 +835,11 @@ CPREFETCH = #
 # KS_MULTICG=REVERSE Iterate in reverse order
 # KS_MULTICG=REVHYB  Same as HYBRID but with vectors in reverse order.
 
-# HALF_MIXED         If PRECISION=2, do multimass solve in single precision
+# HALF_MIXED         (not QUDA) If PRECISION=2, do multimass solve in single precision
 #                    and single-mass refinements in double
+# HALF_MIXED         (QUDA) If PRECISION=2, use double-single mixed-precision solvers
+# MAX_MIXED          (QUDA) Use double-half or single-half mixed-precision solvers
+#                    (for multi-shift, behavior is as HALF_MIXED)
 # NO_REFINE          No refinements except for masses with nonzero Naik eps
 # CPU_REFINE         Refine on CPU only (if at all), not GPU
 # PRIMME_PRECOND
