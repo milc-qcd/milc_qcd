@@ -551,7 +551,7 @@ f_meas_current_diff( int n_masses, int const nrand, int nwrite, int thinning,
 #endif	      
 	    if(isCorr)
 	      /* The factor of 2 comes from correcting for MILC normalization convention of M */
-	      jp_mur[is/evol][NMU*i + mu] += 2*charge[j]*cc.imag/3;
+	      jp_mur[is/evol][NMU*i + mu] += 2*charge[j+shift]*cc.imag/3;
 	  }/* i:field sites*/
 	} /* mu */
 #ifdef FINDVAR
@@ -1021,7 +1021,7 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 	    /* J_mu = imag[gr.M_inv_gr] */
 	    FORALLFIELDSITES(i){
 	      complex cc = su3_dot( gr[is]+i, gr_mu+i );
-	      if(j<numMassPair) cc.imag*=4*(mass[j+1]*mass[j+1]-mass[j]*mass[j]);
+	      if(j<numMassPair) cc.imag*=4*(mass[j+shift]*mass[j+shift]-mass[j+shift-1]*mass[j+shift-1]);
 	      j_mu[n_jmu*ns+j][NMU*i + mu] += cc.imag;
 #ifdef TESTEO
 	      if(cc.real!=0 || cc.imag!=0) printf("j_mu_%d %d %d %d %d %d %g %g\n",ns, lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, cc.real, cc.imag);
@@ -1248,10 +1248,8 @@ f_meas_current_diff( int n_masses, int const nrand, int nwrite, int thinning,
 #ifdef FINDVAR
     for(j = 0; j < n_jmu; j++){
       jd_mur[ns][j] = create_r_array_field(NMU);
-#ifdef FINDVAR
       jt2_mu[ns][j] = (Real *) malloc(nt*NMU*sizeof(Real));
       for(i=0;i<nt*NMU;i++) jt2_mu[ns][j][i]=0;
-#endif
     }
 #endif  
   }
@@ -1363,14 +1361,14 @@ f_meas_current_diff( int n_masses, int const nrand, int nwrite, int thinning,
 	  /* ADD the precise result, which then gives the difference */
 	  FORALLFIELDSITES(i){
 	    complex cc = su3_dot( gr+i, gr_mu+i );
-	    if(j<numMassPair) cc.imag*=4*(mass[j+1]*mass[j+1]-mass[j]*mass[j]);
+	    if(j<numMassPair) cc.imag*=4*(mass[j+shift]*mass[j+shift]-mass[j+shift-1]*mass[j+shift-1]);
 	    for(ns=0;ns<n_slp;ns++) jd_mu[ns][j][NMU*i + mu] += cc.imag;
 #ifdef FINDVAR
 	    for(ns=0;ns<n_slp;ns++) jd_mur[ns][j][NMU*i + mu] += cc.imag;
 #endif	      
 	    if(isCorr)
 	      /* The factor of 2 comes from correcting for MILC normalization convention of M */
-	      jp_mu[NMU*i + mu] += 2*charge[j]*cc.imag/3;
+	      jp_mu[NMU*i + mu] += 2*charge[j+shift]*cc.imag/3;
 	  }/* i:field sites*/
 	} /* mu */
       } /* j: n_jmu */
@@ -1380,19 +1378,19 @@ f_meas_current_diff( int n_masses, int const nrand, int nwrite, int thinning,
     if(isCorr){
       for(mu=0;mu<NMU;mu++){
 	//node0_printf("j(jrand=%d)_%d: ",jrand,mu);
-	for(ns=0;ns<n_slp;ns++){
-	  FORALLFIELDSITES(i){
+	FORALLFIELDSITES(i){
+	  for(ns=0;ns<n_slp;ns++){
 	    cov_mu[ns][NMU*i+mu] += js_mu[ns][NMU*i + mu]*jp_mu[NMU*i + mu];
 	    jsa_mu[ns][NMU*i + mu] += js_mu[ns][NMU*i + mu];
 	    js_mu_var[ns][NMU*i + mu] += js_mu[ns][NMU*i + mu]*js_mu[ns][NMU*i + mu];
 	    //if(i==node_index(0,0,0,0)) node0_printf("%.16e  ",js_mu[ns][NMU*i + mu]);
 	    js_mu[ns][NMU*i + mu]=0;
 	  }
+	  jpa_mu[NMU*i + mu] += jp_mu[NMU*i + mu];
+	  jp_mu_var[NMU*i + mu] += jp_mu[NMU*i + mu]*jp_mu[NMU*i + mu];
+	  //if(i==node_index(0,0,0,0)) node0_printf("%.16e at the origin\n",jp_mu[NMU*i + mu]);
+	  jp_mu[NMU*i + mu]=0;
 	}
-	jpa_mu[NMU*i + mu] += jp_mu[NMU*i + mu];
-	jp_mu_var[NMU*i + mu] += jp_mu[NMU*i + mu]*jp_mu[NMU*i + mu];
-	//if(i==node_index(0,0,0,0)) node0_printf("%.16e at the origin\n",jp_mu[NMU*i + mu]);
-	jp_mu[NMU*i + mu]=0;
       }
     } /* closed: isCorr */
     
@@ -1871,7 +1869,7 @@ f_meas_current( int n_masses, int nrand, int nwrite, int thinning,
 	    /* J_mu = imag[gr.M_inv_gr] */
 	    FORALLFIELDSITES(i){
 	      complex cc = su3_dot( gr+i, gr_mu+i );
-	      if(j<numMassPair) cc.imag*=4*(mass[j+1]*mass[j+1]-mass[j]*mass[j]);
+	      if(j<numMassPair) cc.imag*=4*(mass[j+shift]*mass[j+shift]-mass[j+shift-1]*mass[j+shift-1]);
 	      j_mu[n_jmu*ns+j][NMU*i + mu] += cc.imag;
 #ifdef TESTEO
 	      if(cc.real!=0 || cc.imag!=0) printf("j_mu_%d %d %d %d %d %d %g %g\n",ns, lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, cc.real, cc.imag);
