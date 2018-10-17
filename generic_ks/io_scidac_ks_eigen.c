@@ -250,12 +250,24 @@ read_ks_eigenvector(QIO_Reader *infile, su3_vector *eigVec, double *eigVal){
   int status;
   char *xml;
   QIO_String *recxml = QIO_string_create();
+  QIO_RecordInfo recinfo;
 
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status != QIO_SUCCESS){
+    QIO_string_destroy(recxml);
+    return status;
+  }
 
-  if(MILC_PRECISION == 1)
+  int typesize = QIO_get_typesize(&recinfo);
+  if(typesize == 24)
     status = read_F3_V_to_field(infile, recxml, eigVec, 1);
-  else
+  else if (typesize == 48 )
     status = read_D3_V_to_field(infile, recxml, eigVec, 1);
+  else
+    {
+      node0_printf("read_ks_eigenvector: Bad typesize %d\n",typesize);
+      terminate(1);
+    }
 
   if(status != QIO_EOF){
     xml = QIO_string_ptr(recxml);
