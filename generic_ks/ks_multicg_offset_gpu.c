@@ -142,6 +142,7 @@ int ks_multicg_offset_field_gpu(
      if (residue[i] != 0) {
        // scale the shifted residual relative to the residue
        residual[i] = fabs(residue[0] / residue[i]) * residual[0];
+       if (residual[i] < 1e-14) residual[i] = 1e-14;
      } else {
 #if defined(MAX_MIXED) || defined(HALF_MIXED)
        residual[i] = qic[i].resid; // for a mixed-precision solver use residual for higher shifts
