@@ -179,8 +179,6 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
 
   out = create_nV<ImprovedStaggeredFermion5D>(n, milc_parity, FCGrid, FRBGrid, CGrid, RBGrid);
 
-  std::cout << "size of ImprovedStaggeredFermion5DF::FermionFieldtypename is " << sizeof(typename ImprovedStaggeredFermion5DF::FermionField) << "\n" << std::flush;
-  std::cout << "size of ImprovedStaggeredFermion5DD::FermionFieldtypename is " << sizeof(typename ImprovedStaggeredFermion5DD::FermionField) << "\n" << std::flush;
   int loopend= (milc_parity)==EVEN ? even_sites_on_node : sites_on_node ;
   int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
 
