@@ -15,6 +15,28 @@
 using namespace Grid;
 using namespace Grid::QCD;
 
+template<typename Field>
+static void
+restartCG (int nrestart, GRID_resid_arg_t *res_arg, 
+	   ConjugateGradient<Field> &CG, LinearOperatorBase<Field> &LinOp,
+	   const Field &in, Field &out)
+{
+#ifdef CG_DEBUG
+  GridLogIterative.Active(1);   // Turns on iterative logging. Normally off.
+#endif
+  res_arg->final_iter = 0;
+  for(int i = 0; i < nrestart; i++){
+    CG(LinOp, in, out);
+    res_arg->final_iter += CG.IterationsToComplete;
+    res_arg->final_rsq = CG.TrueResidual*CG.TrueResidual;
+    if(CG.TrueResidual < res_arg->resid)break;
+    std::cout << "Restart " << i << " after iteration " 
+	      << res_arg->final_iter << ", true residual is "
+	      << CG.TrueResidual << " target " << res_arg->resid << "\n";
+  }
+  res_arg->final_restart = i;
+}
+
 template<typename FT, typename LatticeGaugeField, typename ImprovedStaggeredFermion>
 static void
 asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *asqtad, 
@@ -41,7 +63,7 @@ asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGa
 	    << "\n";
 
   // Instantiate the inverter. The last arg = false says don't abort if no convergence 
-  ConjugateGradient<FermionField> CG(res_arg->resid, inv_arg->max*inv_arg->nrestart, false);
+  ConjugateGradient<FermionField> CG(res_arg->resid, inv_arg->max, false);
 
   switch (inv_arg->parity)
     {
@@ -52,10 +74,9 @@ asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGa
 	std::cout << "WARNING: inversion with EVENODD is untested.\n";
 	MdagMLinearOperator<ImprovedStaggeredFermion,FermionField> HermOp(Ds);
 	auto start = std::chrono::system_clock::now();
-	CG(HermOp, *(in->cv), *(out->cv));
+	restartCG<FermionField>(inv_arg->nrestart, res_arg, CG, HermOp, 
+				*(in->cv), *(out->cv));
 	auto end = std::chrono::system_clock::now();
-	res_arg->final_iter = CG.IterationsToComplete;
-	res_arg->final_rsq = CG.TrueResidual*CG.TrueResidual;
 	auto elapsed = end - start;
 	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
 	std::cout << "Inverted in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
@@ -74,12 +95,10 @@ asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGa
 	SchurStaggeredOperator<ImprovedStaggeredFermion,FermionField> HermOp(Ds);
 	
 	auto start = std::chrono::system_clock::now();
-	CG(HermOp, *(in->cv), *(out->cv));
+	restartCG<FermionField>(inv_arg->nrestart, res_arg, CG, HermOp, 
+				*(in->cv), *(out->cv));
 	auto end = std::chrono::system_clock::now();
-	res_arg->final_iter = CG.IterationsToComplete;
-	res_arg->final_rsq = CG.TrueResidual*CG.TrueResidual;
 	auto elapsed = end - start;
-	std::cout << "iters = " << CG.IterationsToComplete << "\n" << std::flush;
 	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
 	std::cout << "Inverted in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
 		  << "\n";
@@ -226,8 +245,8 @@ asqtadInvertBlock (GRID_info_t *info,
   // Call using c1 = c2 = 2. and u0 = 1. to neutralize link rescaling -- probably ignored anyway.
   ImprovedStaggeredFermion5D Ds(*FCGrid, *FRBGrid, *CGrid, *RBGrid, 2.*mass, 2., 2., 1.);
   Ds.ImportGaugeSimple(*(asqtad->lnglinks), *(asqtad->fatlinks));
-  std::cout << "instantiating 5D CG with resid " << res_arg->resid << " and " << inv_arg->max*inv_arg->nrestart << " iters\n" << std::flush;
-  ConjugateGradient<FermionField> CG(res_arg->resid, inv_arg->max*inv_arg->nrestart, false);
+  std::cout << "Instantiating 5D CG with resid " << res_arg->resid << " and " << inv_arg->max << " iters\n" << std::flush;
+  ConjugateGradient<FermionField> CG(res_arg->resid, inv_arg->max, false);
 
   int blockDim = 0;
 
@@ -244,8 +263,9 @@ asqtadInvertBlock (GRID_info_t *info,
       {
 
 	MdagMLinearOperator<ImprovedStaggeredFermion5D,FermionField> HermOp(Ds);
-	CG(HermOp, *(in->cv), *(out->cv));
-
+	restartCG<FermionField>(inv_arg->nrestart, res_arg, CG, HermOp, 
+				*(in->cv), *(out->cv));
+	
 	break;
       }
       
@@ -264,10 +284,9 @@ asqtadInvertBlock (GRID_info_t *info,
 	Ds.ZeroCounters();
 	std::cout << "Running 5D CG for " << nrhs << " sources\n" << std::flush;
 	auto start = std::chrono::system_clock::now();
-	CG(HermOp, *(in->cv), *(out->cv));
+	restartCG<FermionField>(inv_arg->nrestart, res_arg, CG, HermOp, 
+				*(in->cv), *(out->cv));
 	auto end = std::chrono::system_clock::now();
-	res_arg->final_iter = CG.IterationsToComplete;
-	res_arg->final_rsq = CG.TrueResidual*CG.TrueResidual;
 	auto elapsed = end - start;
 	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
 	std::cout << "Inverted in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
@@ -310,7 +329,6 @@ asqtadInvertBlock (GRID_info_t *info,
       }
     }
 
-  std::cout << "Leaving asqtadInvertBlock\n" << std::flush;
 }
 	
 //====================================================================//
