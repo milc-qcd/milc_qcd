@@ -92,10 +92,10 @@ initialize_qphix(int precision){
   layout.this_node = this_node;
   layout.even_sites_on_node = even_sites_on_node;
   layout.sites_on_node = sites_on_node;
+  layout.mpi_comm = mycomm();   /* void * pointer to the MPI communicator */
 
   node0_printf("Initializing QPhiX for precision %d\n", precision);
   node0_printf("NumCores = %d, ThreadsPerCore = %d, minCt = %d\n", numCores, threads_per_core, minCt);
-
   status = QPHIX_init(&layout);
 
   if(status){

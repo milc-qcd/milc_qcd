@@ -269,7 +269,7 @@ static int n_gathers, gather_array_len;
  *                BASIC COMMUNICATIONS FUNCTIONS                      *
  **********************************************************************/
 
-void
+static void
 err_func(MPI_Comm *comm, int *stat, ...)
 {
   int len;
@@ -694,6 +694,15 @@ mynode(void)
   int node;
   MPI_Comm_rank( MPI_COMM_THISJOB, &node );
   return(node);
+}
+
+/*
+**  Return a pointer to my MPI communicator
+*/
+void *
+mycomm(void)
+{
+  return (void *)&MPI_COMM_THISJOB;
 }
 
 /*
