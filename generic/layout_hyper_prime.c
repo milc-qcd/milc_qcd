@@ -327,16 +327,21 @@ static void set_topology(){
       if(mynode()==0)printf("QMP using allocated_dimension\n");
     } else {
 #ifdef FIX_NODE_GEOM
-      nd = 4;
-      geom = node_geometry;
-      /* take geometry from input parameter node_geometry line */
-      setup_fixed_geom(geom, nd);
-      if(mynode()==0)printf("QMP with specified node_geometry\n");
+      if(node_geometry != NULL){
+	nd = 4;
+	geom = node_geometry;
+	/* take geometry from input parameter node_geometry line */
+	setup_fixed_geom(geom, nd);
+	if(mynode()==0)printf("QMP with specified node_geometry\n");
+      } else {
 #endif
-      setup_hyper_prime();
-      nd = 4;
-      geom = nsquares;
-      if(mynode()==0)printf("QMP with automatic hyper_prime layout\n");
+	setup_hyper_prime();
+	nd = 4;
+	geom = nsquares;
+	if(mynode()==0)printf("QMP with automatic hyper_prime layout\n");
+#ifdef FIX_NODE_GEOM
+      }
+#endif
     }
   }
 
@@ -447,7 +452,12 @@ int node_number(int x, int y, int z, int t) {
 #ifdef HAVE_GRID
   i = grid_rank_from_processor_coor(x, y, z, t);
 #else
+#ifdef HAVE_QMP
+  int proc_coords[4] = {x, y, z, t};
+  i = QMP_get_node_number_from(proc_coords);
+#else
   i = x + nsquares[XUP]*( y + nsquares[YUP]*( z + nsquares[ZUP]*( t )));
+#endif
 #endif
   return i;
 }
@@ -497,7 +507,11 @@ void get_coords(int coords[], int node, int index){
 #ifdef HAVE_GRID
   grid_coor_from_processor_rank(mc, k);
 #else
+#ifdef HAVE_QMP
+  QMP_comm_get_logical_coordinates_from2(QMP_comm_get_default(), mc, k);
+#else
   lex_coords(mc, 4, nsquares, k);
+#endif
 #endif
 
   /* meo = the parity of the machine coordinate */

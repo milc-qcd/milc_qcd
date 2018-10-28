@@ -8,10 +8,10 @@ using namespace Grid::QCD;
 
 // Containers for grid definitions
 
-struct GRID_4Dgrid_struct { GridCartesian *grid; };
-struct GRID_4DRBgrid_struct { GridRedBlackCartesian *grid; };
-struct GRID_5Dgrid_struct { GridCartesian *grid; };
-struct GRID_5DRBgrid_struct { GridRedBlackCartesian *grid; };
+struct GRID_4Dgrid_struct { GridCartesian *gridF; GridCartesian *gridD; };
+struct GRID_4DRBgrid_struct { GridRedBlackCartesian *gridF; GridRedBlackCartesian *gridD; };
+struct GRID_5Dgrid_struct { GridCartesian *gridF; GridCartesian *gridD; };
+struct GRID_5DRBgrid_struct { GridRedBlackCartesian *gridF; GridRedBlackCartesian *gridD; };
 
 // The color-vector and gauge field objects used in the interface
 

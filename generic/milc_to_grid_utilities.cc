@@ -121,7 +121,6 @@ initialize_grid(void){
   grid_rb = GRID_create_RBgrid(grid_full);
 
   std::vector<int> latt_size   = GridDefaultLatt();
-  std::vector<int> simd_layout = GridDefaultSimd(Nd,vComplex::Nsimd());
   std::vector<int> mpi_layout  = GridDefaultMpi();
 
   if(mynode()==0){
