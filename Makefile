@@ -284,7 +284,8 @@ WANTQIO ?= # true # or blank.  Implies HAVEQMP.
 
 WANTQMP ?= # true or blank.
 
-QMP_BACKEND = QMP_MPI  /* or QMP_SPI */
+# QMP_MPI or QMP_SPI
+QMP_BACKEND = QMP_MPI
 
 # Edit these locations for the installed SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
