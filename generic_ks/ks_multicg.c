@@ -764,10 +764,6 @@ int mat_invert_multi(
 {
   int i, tot_iters = 0;
 
-  // /* Use the single-mass inverter if there is only one mass */
-  //  if(num_masses == 1)
-  //    return mat_invert_uml_field(src, dst[0], qic+0, ksp->mass, fn_multi[0] );
-
   /* Use preconditioned single-mass inverter if there are 2 or fewer masses 
      or for any number of masses if we are doing deflation */
   /* EO preconditioning doesn't work with multimass solvers as the residual depends on m.

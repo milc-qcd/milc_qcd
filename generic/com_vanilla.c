@@ -223,6 +223,15 @@ machine_type(void)
 }
 
 /*
+**  Return NULL because we have no MPI communicator
+*/
+void *
+mycomm(void)
+{
+  return NULL;
+}
+
+/*
 **  Return my node number
 */
 int
