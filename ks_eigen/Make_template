@@ -131,6 +131,12 @@ su3_eigen_hisq::
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS = ${HISQ_OBJECTS}"
 
+su3_eigen_hisq_pack::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \
+	"DEFINES = -DFN -DEIGEN_QIO -DPACK_EIGEN" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS = ${HISQ_OBJECTS}"
+
 # HISQ + U(1) targets WARNING: Naive implementation
 
 su3_u1_eigen_hisq::

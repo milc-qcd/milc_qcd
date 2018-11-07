@@ -174,6 +174,8 @@ int write_F_C_from_field(QIO_Writer *outfile,
 		 QIO_String *xml_record_out,  complex *src, int count);
 int write_F3_V_from_field(QIO_Writer *outfile, 
 		  QIO_String *xml_record_out, su3_vector *src, int count);
+int write_F3_V_from_half_field(QIO_Writer *outfile, 
+		  QIO_String *xml_record_out, su3_vector *src, int count);
 int write_F3_M_from_field(QIO_Writer *outfile, 
 		  QIO_String *xml_record_out, su3_matrix *src, int count);
 int write_F3_D_from_field(QIO_Writer *outfile, 
@@ -184,6 +186,8 @@ int write_D_R_from_field(QIO_Writer *outfile,
 int write_D_C_from_field(QIO_Writer *outfile, 
 		 QIO_String *xml_record_out,  complex *src, int count);
 int write_D3_V_from_field(QIO_Writer *outfile, 
+		  QIO_String *xml_record_out, su3_vector *src, int count);
+int write_D3_V_from_half_field(QIO_Writer *outfile, 
 		  QIO_String *xml_record_out, su3_vector *src, int count);
 int write_D3_D_from_field(QIO_Writer *outfile, 
 		  QIO_String *xml_record_out, wilson_vector *src, int count);
