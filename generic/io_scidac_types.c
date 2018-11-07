@@ -412,6 +412,34 @@ int write_##P##C##_##T##_timeslice_from_field(QIO_Writer *outfile, \
   return 0; \
 }
 
+#define make_write_from_half_field(P, PSTRING, C, CVAL, SVAL, T, \
+           TYPESTRING, FIXTYPE, VARTYPE, MYREAL) \
+int write_##P##C##_##T##_from_half_field(QIO_Writer *outfile, \
+          QIO_String *xml_record_out, VARTYPE *src, int count){ \
+  int status; \
+  QIO_RecordInfo *rec_info; \
+  char qdptype[] = TYPESTRING; \
+  char prec[] = PSTRING; \
+  int datum_size = sizeof(FIXTYPE); \
+  int word_size = sizeof(MYREAL); \
+  int lower[4] = {0, 0, 0, 0}; \
+  int upper[4] = {nx-1, ny-1, nz-1, nt/2-1}; \
+ \
+  /* Create the record info for the field */ \
+  rec_info = QIO_create_record_info(QIO_HYPER, lower, upper, 4, qdptype, \
+				    prec, CVAL, SVAL, datum_size, count); \
+ \
+  /* Write the record for the field */ \
+  status = QIO_write(outfile, rec_info, xml_record_out,  \
+		     vget_##P##C##_##T##_from_field,  \
+		     count*datum_size, word_size, (void *)src); \
+  if(status != QIO_SUCCESS)return 1; \
+ \
+  QIO_destroy_record_info(rec_info); \
+ \
+  return 0; \
+}
+
 #define make_write_all(P, PSTRING, C, CVAL, SVAL, T, TYPESTRING, \
 		     FIXTYPE, VARTYPE, MYREAL) \
   make_write_all_from_site(P, PSTRING, C, CVAL, SVAL, T, TYPESTRING, \
@@ -426,6 +454,12 @@ int write_##P##C##_##T##_timeslice_from_field(QIO_Writer *outfile, \
   make_write_tslice_from_field(P, PSTRING, C, CVAL, SVAL, T, TYPESTRING, \
  		       FIXTYPE, VARTYPE, MYREAL);
 
+#define make_write_half(P, PSTRING, C, CVAL, SVAL, T, \
+			TYPESTRING, FIXTYPE, VARTYPE, MYREAL)	\
+  make_write_from_half_field(P, PSTRING, C, CVAL, SVAL, T, TYPESTRING, \
+			     FIXTYPE, VARTYPE, MYREAL);
+
+
 /* Single precision */
 
 make_write_all(F, "F",  , 0, 0, R, "QLA_F_Real", float, Real, float);
@@ -438,6 +472,7 @@ make_write_tslice(F, "F",  , 0, 0, R, "QLA_F_Real", float, Real, float);
 make_write_tslice(F, "F",  , 0, 0, C, "QLA_F_Complex", fcomplex, complex, float);
 make_write_tslice(F, "F", 3, 3, 0, V, "USQCD_F3_ColorVector", fsu3_vector, su3_vector, float);
 make_write_tslice(F, "F", 3, 3, 4, D, "USQCD_F3_DiracFermion", fwilson_vector, wilson_vector, float);
+make_write_half(F, "F", 3, 3, 0, V, "USQCD_F3_ColorVector", fsu3_vector, su3_vector, float);
 
 /* Double precision */
 
@@ -449,6 +484,7 @@ make_write_all(D, "D", 3, 3, 4, D, "USQCD_D3_DiracFermion", dwilson_vector, wils
 make_write_tslice(D, "D",  , 0, 0, C, "QLA_D_Complex", dcomplex, complex, double);
 make_write_tslice(D, "D", 3, 3, 0, V, "USQCD_D3_ColorVector", dsu3_vector, su3_vector, double);
 make_write_tslice(D, "D", 3, 3, 4, D, "USQCD_D3_DiracFermion", dwilson_vector, wilson_vector, double);
+make_write_half(D, "D", 3, 3, 0, V, "USQCD_D3_ColorVector", dsu3_vector, su3_vector, double);
 
 
 /* Read MILC site structure data */
