@@ -436,7 +436,7 @@ static size_t my_index(int x, int y, int z, int t, int *latdim) {
 	return( i/2 );
     }
     else {
-	return( (i + sites_on_node)/2 );
+	return( (i + volume)/2 );
     }
 }
 
@@ -449,7 +449,6 @@ static void my_coords(int coords[], size_t index, int *latdim){
 
   /* neven = the number of even sites on the whole lattice */
   size_t neven = volume/2;
-  int dim[4] = {nx, ny, nz, nt};
   
   /* ir = the even part of the lexicographic index within the
      sublattice on node k */
@@ -462,7 +461,7 @@ static void my_coords(int coords[], size_t index, int *latdim){
   }
 
   /* coords = the sublattice coordinate */
-  lex_coords(coords, 4, dim, ir);
+  lex_coords(coords, 4, latdim, ir);
 
   /* Adjust coordinate according to parity */
   if( coord_parity(coords) != xeo ){
@@ -490,28 +489,31 @@ static void pack_map_layouts(int x, int y, int z, int t, int *args, int fb,
   int latdimhalf[4] = {nx, ny, nz, nt/2};
   int coords[4];
   size_t neven = volume/2;
+  size_t index;
 
   if(fb == FORWARDS){
-    /* Map fot packing even sites into a half lattice with t < nt/2 */
+    /* Map for packing even sites into a half lattice with t < nt/2 */
     /* The site index if we had only one rank */
-    size_t index = my_index(x, y, z, t, latdim);
+    index = my_index(x, y, z, t, latdim);
     if(index < neven){
-      /* Even sites go into lower t half */
+      /* Even sites go into lower x half */
       lex_coords(coords, 4, latdimhalf, index);
     } else {
-      /* Odd sites go into upper t half */
+      /* Odd sites go into upper x half */
       lex_coords(coords, 4, latdimhalf, index - neven);
       coords[3] += nt/2;
     }
   } else {  /* BACKWARDS */
-    size_t index;
+    coords[0] = x; coords[1] = y; coords[2] = z; coords[3] = t;
     /* Map for unpacking half lattices to even and odd sites */
     if(t < nt/2)
-      /* Lower t half goes back to even */
-      index = my_index(x, y, z, t, latdimhalf);
-    else
-      /* Upper t half goes back to odd */
-      index = neven + my_index(x, y, z, t - nt/2, latdimhalf);
+      /* Lower x half goes back to even */
+      index = lex_rank(coords, 4, latdimhalf);
+    else{
+      coords[0] -= nt/2;
+      /* Upper x half goes back to odd */
+      index = neven + lex_rank(coords, 4, latdimhalf);
+    }
 
     /* Convert index to coordinates */
     my_coords(coords, index, latdim);
@@ -520,6 +522,7 @@ static void pack_map_layouts(int x, int y, int z, int t, int *args, int fb,
   *yp = coords[1];
   *zp = coords[2];
   *tp = coords[3];
+  printf("pack_map_layouts(%d): %d %d %d %d --> %d %d %d %d index %d\n",fb,x,y,z,t,*xp,*yp,*zp,*tp, index);
 }
 
 int pack_dir;
