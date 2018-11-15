@@ -496,10 +496,10 @@ static void pack_map_layouts(int x, int y, int z, int t, int *args, int fb,
     /* The site index if we had only one rank */
     index = my_index(x, y, z, t, latdim);
     if(index < neven){
-      /* Even sites go into lower x half */
+      /* Even sites go into lower t half */
       lex_coords(coords, 4, latdimhalf, index);
     } else {
-      /* Odd sites go into upper x half */
+      /* Odd sites go into upper t half */
       lex_coords(coords, 4, latdimhalf, index - neven);
       coords[3] += nt/2;
     }
@@ -507,11 +507,11 @@ static void pack_map_layouts(int x, int y, int z, int t, int *args, int fb,
     coords[0] = x; coords[1] = y; coords[2] = z; coords[3] = t;
     /* Map for unpacking half lattices to even and odd sites */
     if(t < nt/2)
-      /* Lower x half goes back to even */
+      /* Lower t half goes back to even */
       index = lex_rank(coords, 4, latdimhalf);
     else{
-      coords[0] -= nt/2;
-      /* Upper x half goes back to odd */
+      coords[3] -= nt/2;
+      /* Upper t half goes back to odd */
       index = neven + lex_rank(coords, 4, latdimhalf);
     }
 
