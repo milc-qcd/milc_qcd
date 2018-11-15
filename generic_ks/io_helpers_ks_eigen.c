@@ -522,7 +522,7 @@ static void pack_map_layouts(int x, int y, int z, int t, int *args, int fb,
   *yp = coords[1];
   *zp = coords[2];
   *tp = coords[3];
-  printf("pack_map_layouts(%d): %d %d %d %d --> %d %d %d %d index %d\n",fb,x,y,z,t,*xp,*yp,*zp,*tp, index);
+  //  printf("pack_map_layouts(%d): %d %d %d %d --> %d %d %d %d index %d\n",fb,x,y,z,t,*xp,*yp,*zp,*tp, index);
 }
 
 int pack_dir;
@@ -534,6 +534,7 @@ static void pack_make_gather(void){
   pack_dir =  make_gather(pack_map_layouts, NULL, WANT_INVERSE,
 			  ALLOW_EVEN_ODD, SCRAMBLE_PARITY);
   unpack_dir = pack_dir + 1;  /* Convention for the inverse map */
+  pack_unpack_initialized = 1;
 }
 
 /* Packing and unpacking routines -- done in place */
