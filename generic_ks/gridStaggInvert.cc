@@ -21,11 +21,12 @@ restartCG (int nrestart, GRID_resid_arg_t *res_arg,
 	   ConjugateGradient<Field> &CG, LinearOperatorBase<Field> &LinOp,
 	   const Field &in, Field &out)
 {
+  int i;
 #ifdef CG_DEBUG
   GridLogIterative.Active(1);   // Turns on iterative logging. Normally off.
 #endif
   res_arg->final_iter = 0;
-  for(int i = 0; i < nrestart; i++){
+  for(i = 0; i < nrestart; i++){
     CG(LinOp, in, out);
     res_arg->final_iter += CG.IterationsToComplete;
     res_arg->final_rsq = CG.TrueResidual*CG.TrueResidual;
