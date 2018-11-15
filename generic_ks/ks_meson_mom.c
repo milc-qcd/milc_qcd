@@ -309,35 +309,35 @@ void ks_meson_cont_mom(
 	/* Apply sink spin-taste operator to src1 */
 	spin_taste_op_fn(fn_src1, spin_taste, r0, antiquark, src1);
       }
-	
+      
       int *p_ind = (int*)malloc(sizeof(int)*num_corr_mom[g]);
-	
+      
       /* Do FT on "meson" for momentum projection - 
 	 Result in meson_q.  We use a dumb FT because there 
 	 are usually very few momenta needed. */
-	for(k=0; k<num_corr_mom[g]; k++) {
-	    c = corr_table[g][k];
-	    p = p_index[c];
-	    p_ind[k] = p;
-	}
-    for(mythread=0; mythread<max_threads; mythread++) {
-      for(t = 0; t < nt; t++){   /* SG shouldn't this t loop just include the meson_q initializations below?? */
-	for(k=0; k<num_corr_mom[g]; k++)
-	  {   
-		p = p_ind[k];
-	    	meson_q[mythread*nt+t].e[p].real = 0.;
-	    	meson_q[mythread*nt+t].e[p].imag = 0.;
-	    }
-	  }
+      for(k=0; k<num_corr_mom[g]; k++) {
+	c = corr_table[g][k];
+	p = p_index[c];
+	p_ind[k] = p;
       }
-
-      FORALLSITES_OMP(i,s,private(k,c,p,fourier_fact,mythread)) {
+      for(mythread=0; mythread<max_threads; mythread++) {
+	for(t = 0; t < nt; t++){   /* SG shouldn't this t loop just include the meson_q initializations below?? */
+	  for(k=0; k<num_corr_mom[g]; k++)
+	    {   
+	      p = p_ind[k];
+	      meson_q[mythread*nt+t].e[p].real = 0.;
+	      meson_q[mythread*nt+t].e[p].imag = 0.;
+	    }
+	}
+      }
+      
+      FORALLSITES_OMP(i,s,private(k,p,fourier_fact,mythread)) {
 #ifdef OMP
  	mythread=omp_get_thread_num();
 #else
  	mythread=0;
 #endif
-
+	
         /* Take dot product of propagators */
 	/* Special treatment for vector-current fn spin_taste operators */
 	if(is_rhosfn_index(spin_taste) || is_rhosape_index(spin_taste)){
@@ -353,7 +353,7 @@ void ks_meson_cont_mom(
 	} else {
 	  meson[i] = su3_dot(antiquark+i, src2+i);
 	}
-  
+	
 	/* To save steps below, in case this node doesn't have all
 	   time slices */
 	int st = s->t;
@@ -361,7 +361,7 @@ void ks_meson_cont_mom(
 	double imag = meson[i].imag;
 	nonzero[st] = 1;
 	st += mythread*nt;
-
+	
 	for(k=0; k<num_corr_mom[g]; k++)
 	  {
 	    p = p_ind[k];
@@ -377,19 +377,19 @@ void ks_meson_cont_mom(
       } END_LOOP_OMP;
 #ifdef OMP
       /* need to sum meson_q over all the threads */
-	    
-	    for(mythread=1; mythread<max_threads; mythread++) {
-	    for(t = 0; t < nt; t++){
-	for(k=0; k<num_corr_mom[g]; k++)
-	  {
-	    p = p_ind[k];
-            meson_q[t].e[p].real += meson_q[mythread*nt+t].e[p].real;
-            meson_q[t].e[p].imag += meson_q[mythread*nt+t].e[p].imag;
-            meson_q[mythread*nt+t].e[p].real = meson_q[mythread*nt+t].e[p].imag = 0.; // Prevent re-add
-	      }
+      
+      for(mythread=1; mythread<max_threads; mythread++) {
+	for(t = 0; t < nt; t++){
+	  for(k=0; k<num_corr_mom[g]; k++)
+	    {
+	      p = p_ind[k];
+	      meson_q[t].e[p].real += meson_q[mythread*nt+t].e[p].real;
+	      meson_q[t].e[p].imag += meson_q[mythread*nt+t].e[p].imag;
+	      meson_q[mythread*nt+t].e[p].real = meson_q[mythread*nt+t].e[p].imag = 0.; // Prevent re-add
 	    }
-	  }
-
+	}
+      }
+      
 #endif
       
       flops += (double)sites_on_node*8*num_corr_mom[g];
@@ -411,11 +411,11 @@ void ks_meson_cont_mom(
 	      prop[m][t].imag += tr[k].imag;
 	    }
 	}
-	free(p_ind);
+      free(p_ind);
     }  /**** end of the loop over the spin-taste table ******/
-
+  
   free(meson);  free(meson_q);  free(nonzero);  free(ftfact);
-
+  
   destroy_v_field(quark);
   destroy_v_field(antiquark);
   
