@@ -493,36 +493,42 @@ static void pack_map_layouts(int x, int y, int z, int t, int *args, int fb,
 
   if(fb == FORWARDS){
     /* Map for packing even sites into a half lattice with t < nt/2 */
-    /* The site index if we had only one rank */
-    index = my_index(x, y, z, t, latdim);
-    if(index < neven){
-      /* Even sites go into lower t half */
-      lex_coords(coords, 4, latdimhalf, index);
+    if((x+y+z+t)%2 == 0){
+      /* Even sites for t < nt/2 stay in place */
+      if(t < nt/2){
+	*xp = x; *yp = y; *zp = z; *tp = t;
+      }  else {
+	/* Even sites for t >= nt/2 map to odd sites with t < nt/2 */
+	*xp = (x + 1)%nx; *yp = y; *zp = z; *tp = t - nt/2;
+      }
     } else {
-      /* Odd sites go into upper t half */
-      lex_coords(coords, 4, latdimhalf, index - neven);
-      coords[3] += nt/2;
+      /* Odd sites for t >= nt/2 stay in place */
+      if(t >= nt/2){
+	*xp = x; *yp = y; *zp = z; *tp = t;
+      } else {
+	/* Odd sites for t < nt/2 map to even sites with t >= nt/2 */
+	*xp = (x + 1)%nx; *yp = y; *zp = z; *tp = t + nt/2;
+      }
     }
   } else {  /* BACKWARDS */
-    coords[0] = x; coords[1] = y; coords[2] = z; coords[3] = t;
-    /* Map for unpacking half lattices to even and odd sites */
-    if(t < nt/2)
-      /* Lower t half goes back to even */
-      index = lex_rank(coords, 4, latdimhalf);
-    else{
-      coords[3] -= nt/2;
-      /* Upper t half goes back to odd */
-      index = neven + lex_rank(coords, 4, latdimhalf);
+    if((x+y+z+t)%2 == 0){
+      /* Even sites for t < nt/2 stay in place */
+      if(t < nt/2){
+	*xp = x; *yp = y; *zp = z; *tp = t;
+      } else {
+	/* Even sites for t >= nt/2 map to odd sites for t < nt/2 */
+	*xp = (x - 1 + nx)%nx; *yp = y; *zp = z; *tp = t - nt/2;
+      }
+    } else {
+      /* Odd sites for t >= nt/2 stay in place */
+      if(t >= nt/2){
+	*xp = x; *yp = y; *zp = z; *tp = t;
+      } else {
+	/* Odd sites for t < nt/2 map to even sites for t >= nt/2 */
+	*xp = (x - 1 + nx)%nx; *yp = y; *zp = z; *tp = t + nt/2;
+      }
     }
-
-    /* Convert index to coordinates */
-    my_coords(coords, index, latdim);
   }
-  *xp = coords[0];
-  *yp = coords[1];
-  *zp = coords[2];
-  *tp = coords[3];
-  //  printf("pack_map_layouts(%d): %d %d %d %d --> %d %d %d %d index %d\n",fb,x,y,z,t,*xp,*yp,*zp,*tp, index);
 }
 
 int pack_dir;
@@ -535,6 +541,24 @@ static void pack_make_gather(void){
 			  ALLOW_EVEN_ODD, SCRAMBLE_PARITY);
   unpack_dir = pack_dir + 1;  /* Convention for the inverse map */
   pack_unpack_initialized = 1;
+
+  /* Debug */
+  printf("Checking map\n");
+  int i;
+  FORALLFIELDSITES(i){
+    int x = lattice[i].x;
+    int y = lattice[i].y;
+    int z = lattice[i].z;
+    int t = lattice[i].t;
+    int xp, yp, zp ,tp;
+    pack_map_layouts(x,y,z,t,NULL,FORWARDS,&xp,&yp,&zp,&tp);
+    int xpp, ypp, zpp ,tpp;
+    pack_map_layouts(xp,yp,zp,tp,NULL,BACKWARDS,&xpp,&ypp,&zpp,&tpp);
+    if(xpp != x || ypp != y || zpp != z || tpp != t)
+      printf("ERROR ");
+      printf("%d %d %d %d -> %d %d %d %d -> %d %d %d %d\n",
+	     x, y, z, t, xp, yp, zp, tp, xpp, ypp, zpp, tpp);
+  }
 }
 
 /* Packing and unpacking routines -- done in place */
