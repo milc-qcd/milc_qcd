@@ -66,9 +66,15 @@ EXTERN  int niter, nrestart;
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 #ifdef FIX_NODE_GEOM
 EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
-			    hypercubes) for the compute nodes in each
+			    hypercubes) for the nodes in each
 			    coordinate direction.  Must be divisors of
-			    the lattice dimensions */
+			    the lattice dimension */
+#ifdef FIX_SUBNODE_GEOM
+EXTERN  int subnode_geometry[4];  /* Specifies fixed "nsubsquares" (i.e. 4D
+			    hypercubes) for the PE ranks on each node in each
+			    coordinate direction.  Must be divisors of
+			    the node sublattice dimensions -- that is
+			    full lattice dims divided by node_geometry */
 #ifdef FIX_IONODE_GEOM
 EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 			     partitions in each coordinate direction,
