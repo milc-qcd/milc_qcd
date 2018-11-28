@@ -542,6 +542,7 @@ static void pack_make_gather(void){
   unpack_dir = pack_dir + 1;  /* Convention for the inverse map */
   pack_unpack_initialized = 1;
 
+#if 0
   /* Debug */
   printf("Checking map\n");
   int i;
@@ -560,6 +561,7 @@ static void pack_make_gather(void){
 	     x, y, z, t, xp, yp, zp, tp, xpp, ypp, zpp, tpp);
     }
   }
+#endif
 }
 
 /* Packing and unpacking routines -- done in place */
