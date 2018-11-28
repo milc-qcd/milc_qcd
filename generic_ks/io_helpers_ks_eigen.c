@@ -554,10 +554,11 @@ static void pack_make_gather(void){
     pack_map_layouts(x,y,z,t,NULL,FORWARDS,&xp,&yp,&zp,&tp);
     int xpp, ypp, zpp ,tpp;
     pack_map_layouts(xp,yp,zp,tp,NULL,BACKWARDS,&xpp,&ypp,&zpp,&tpp);
-    if(xpp != x || ypp != y || zpp != z || tpp != t)
+    if(xpp != x || ypp != y || zpp != z || tpp != t){
       printf("ERROR ");
       printf("%d %d %d %d -> %d %d %d %d -> %d %d %d %d\n",
 	     x, y, z, t, xp, yp, zp, tp, xpp, ypp, zpp, tpp);
+    }
   }
 }
 
