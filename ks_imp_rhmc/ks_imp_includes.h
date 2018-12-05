@@ -56,7 +56,7 @@ int readin(int prompt);
 /* update_rhmc.c */
 
 enum int_alg_t { INT_LEAPFROG, INT_OMELYAN, INT_2EPS_3TO1, INT_2EPS_2TO1, 
-		 INT_2G1F, INT_3G1F, INT_4MN4FP, INT_4MN5FV, INT_FOURSTEP, 
+                 INT_2G1F, INT_3G1F, INT_5G1F, INT_6G1F, INT_4MN4FP, INT_4MN5FV, INT_FOURSTEP, 
 		 INT_PLAY };
 
 /* Set default integration algorithm */
