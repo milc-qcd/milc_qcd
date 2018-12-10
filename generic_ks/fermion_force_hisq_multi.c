@@ -2189,8 +2189,8 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
   Real* three_hop_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
 
   for(i=0; i<n_orders_naik_current; ++i){
-    one_hop_coeff[i] = 2.0*eps*residues[i];
-    three_hop_coeff[i] = ap->p2.act_path_coeff.naik*2.0*eps*residues[i];
+    one_hop_coeff[i] = 2.0*residues[i];
+    three_hop_coeff[i] = ap->p2.act_path_coeff.naik*2.0*residues[i];
   }
 
   n_orders_naik_current = 0;
@@ -2203,8 +2203,8 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
   int n_naik_shift = n_orders_naik[0];
   for(int inaik=1; inaik<n_naiks; ++inaik){
     for(int j=0; j<n_orders_naik[inaik]; j++){
-      one_hop_naik_coeff[i] = ap->p3.act_path_coeff.one_link*eps_naik[inaik]*2.0*eps*residues[n_naik_shift+j];
-      three_hop_naik_coeff[i++] = ap->p3.act_path_coeff.naik*eps_naik[inaik]*2.0*eps*residues[n_naik_shift+j];
+      one_hop_naik_coeff[i] = ap->p3.act_path_coeff.one_link*eps_naik[inaik]*2.0*residues[n_naik_shift+j];
+      three_hop_naik_coeff[i++] = ap->p3.act_path_coeff.naik*eps_naik[inaik]*2.0*residues[n_naik_shift+j];
     }
     n_naik_shift += n_orders_naik[inaik];
   }
@@ -2264,7 +2264,7 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
   Real* momentum = (Real*)qudaAllocatePinned(sites_on_node*4*sizeof(anti_hermitmat));
 
   qudaHisqParamsInit(params);
-  qudaHisqForce(MILC_PRECISION, n_order_naik_total, n_orders_naik_current, coeff, (void**)multi_x,
+  qudaHisqForce(MILC_PRECISION, n_order_naik_total, n_orders_naik_current, eps, coeff, (void**)multi_x,
                 level2_coeff, fat7_coeff, W_unitlink, V_link, U_link, momentum);
 
   // append result
