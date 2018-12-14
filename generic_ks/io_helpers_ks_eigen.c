@@ -543,7 +543,6 @@ static void pack_make_gather(void){
   pack_unpack_initialized = 1;
 
   /* Debug */
-  printf("Checking map\n");
   int i;
   FORALLFIELDSITES(i){
     int x = lattice[i].x;
