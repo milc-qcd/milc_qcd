@@ -15,13 +15,36 @@
 using namespace Grid;
 using namespace Grid::QCD;
 
+template<typename Field>
+static void
+restartCG (int nrestart, GRID_resid_arg_t *res_arg, 
+	   ConjugateGradient<Field> &CG, LinearOperatorBase<Field> &LinOp,
+	   const Field &in, Field &out)
+{
+  int i;
+#ifdef CG_DEBUG
+  GridLogIterative.Active(1);   // Turns on iterative logging. Normally off.
+#endif
+  res_arg->final_iter = 0;
+  for(i = 0; i < nrestart; i++){
+    CG(LinOp, in, out);
+    res_arg->final_iter += CG.IterationsToComplete;
+    res_arg->final_rsq = CG.TrueResidual*CG.TrueResidual;
+    if(CG.TrueResidual < res_arg->resid)break;
+    std::cout << "Restart " << i << " after iteration " 
+	      << res_arg->final_iter << ", true residual is "
+	      << CG.TrueResidual << " target " << res_arg->resid << "\n";
+  }
+  res_arg->final_restart = i;
+}
+
 template<typename FT, typename LatticeGaugeField, typename ImprovedStaggeredFermion>
 static void
 asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *asqtad, 
 	      GRID_invert_arg_t *inv_arg, GRID_resid_arg_t *res_arg, FT mass, 
 	      struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *out, 
 	      struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *in,
-	      GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb)
+	      GridCartesian *CGrid, GridRedBlackCartesian *RBGrid)
 {
   typedef typename ImprovedStaggeredFermion::FermionField FermionField;
 
@@ -30,9 +53,6 @@ asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGa
 	      (inv_arg->parity  == GRID_ODD), GRID_FAIL);
   // In and out fields must be on the same lattice
   GRID_ASSERT(in->cv->_grid == out->cv->_grid,  GRID_FAIL);
-
-  GridCartesian *CGrid = grid_full->grid;
-  GridRedBlackCartesian *RBGrid = grid_rb->grid;
 
   auto start = std::chrono::system_clock::now();
   // Call using c1 = c2 = 2. and u0 = 1. to neutralize link rescaling -- probably ignored anyway.
@@ -44,7 +64,7 @@ asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGa
 	    << "\n";
 
   // Instantiate the inverter. The last arg = false says don't abort if no convergence 
-  ConjugateGradient<FermionField> CG(res_arg->resid, inv_arg->max*inv_arg->nrestart, false);
+  ConjugateGradient<FermionField> CG(res_arg->resid, inv_arg->max, false);
 
   switch (inv_arg->parity)
     {
@@ -55,10 +75,9 @@ asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGa
 	std::cout << "WARNING: inversion with EVENODD is untested.\n";
 	MdagMLinearOperator<ImprovedStaggeredFermion,FermionField> HermOp(Ds);
 	auto start = std::chrono::system_clock::now();
-	CG(HermOp, *(in->cv), *(out->cv));
+	restartCG<FermionField>(inv_arg->nrestart, res_arg, CG, HermOp, 
+				*(in->cv), *(out->cv));
 	auto end = std::chrono::system_clock::now();
-	res_arg->final_iter = CG.IterationsToComplete;
-	res_arg->final_rsq = CG.TrueResidual*CG.TrueResidual;
 	auto elapsed = end - start;
 	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
 	std::cout << "Inverted in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
@@ -77,12 +96,10 @@ asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGa
 	SchurStaggeredOperator<ImprovedStaggeredFermion,FermionField> HermOp(Ds);
 	
 	auto start = std::chrono::system_clock::now();
-	CG(HermOp, *(in->cv), *(out->cv));
+	restartCG<FermionField>(inv_arg->nrestart, res_arg, CG, HermOp, 
+				*(in->cv), *(out->cv));
 	auto end = std::chrono::system_clock::now();
-	res_arg->final_iter = CG.IterationsToComplete;
-	res_arg->final_rsq = CG.TrueResidual*CG.TrueResidual;
 	auto elapsed = end - start;
-	std::cout << "iters = " << CG.IterationsToComplete << "\n" << std::flush;
 	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
 	std::cout << "Inverted in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
 		  << "\n";
@@ -103,12 +120,8 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
 		   FT mass[], int nmass, 
 		   struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *out[], 
 		   struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *in,
-		   GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb)
+		   GridCartesian *CGrid, GridRedBlackCartesian *RBGrid)
 {
-
-  GridCartesian *CGrid = grid_full->grid;
-  GridRedBlackCartesian *RBGrid = grid_rb->grid;
-
   // In and out fields must be on the same lattice
 
   for(int i = 0; i < nmass; i++){
@@ -221,16 +234,11 @@ asqtadInvertBlock (GRID_info_t *info,
 		   FT mass, int nrhs, 
 		   struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *out, 
 		   struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *in,
-		   GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
-		   GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb)
+		   GridCartesian *FCGrid, GridRedBlackCartesian *FRBGrid,
+		   GridCartesian *CGrid, GridRedBlackCartesian *RBGrid)
 {
   // In and out fields must be on the same lattice
   GRID_ASSERT(in->cv->_grid == out->cv->_grid,  GRID_FAIL);
-
-  GridCartesian *FCGrid = grid_5D->grid;
-  GridRedBlackCartesian *FRBGrid = grid_5Drb->grid;
-  GridCartesian *CGrid = grid_full->grid;
-  GridRedBlackCartesian *RBGrid = grid_rb->grid;
 
   typedef typename ImprovedStaggeredFermion5D::FermionField FermionField; 
   typedef typename ImprovedStaggeredFermion5D::ComplexField ComplexField; 
@@ -238,8 +246,8 @@ asqtadInvertBlock (GRID_info_t *info,
   // Call using c1 = c2 = 2. and u0 = 1. to neutralize link rescaling -- probably ignored anyway.
   ImprovedStaggeredFermion5D Ds(*FCGrid, *FRBGrid, *CGrid, *RBGrid, 2.*mass, 2., 2., 1.);
   Ds.ImportGaugeSimple(*(asqtad->lnglinks), *(asqtad->fatlinks));
-  std::cout << "instantiating 5D CG with resid " << res_arg->resid << " and " << inv_arg->max*inv_arg->nrestart << " iters\n" << std::flush;
-  ConjugateGradient<FermionField> CG(res_arg->resid, inv_arg->max*inv_arg->nrestart, false);
+  std::cout << "Instantiating 5D CG with resid " << res_arg->resid << " and " << inv_arg->max << " iters\n" << std::flush;
+  ConjugateGradient<FermionField> CG(res_arg->resid, inv_arg->max, false);
 
   int blockDim = 0;
 
@@ -256,8 +264,9 @@ asqtadInvertBlock (GRID_info_t *info,
       {
 
 	MdagMLinearOperator<ImprovedStaggeredFermion5D,FermionField> HermOp(Ds);
-	CG(HermOp, *(in->cv), *(out->cv));
-
+	restartCG<FermionField>(inv_arg->nrestart, res_arg, CG, HermOp, 
+				*(in->cv), *(out->cv));
+	
 	break;
       }
       
@@ -276,10 +285,9 @@ asqtadInvertBlock (GRID_info_t *info,
 	Ds.ZeroCounters();
 	std::cout << "Running 5D CG for " << nrhs << " sources\n" << std::flush;
 	auto start = std::chrono::system_clock::now();
-	CG(HermOp, *(in->cv), *(out->cv));
+	restartCG<FermionField>(inv_arg->nrestart, res_arg, CG, HermOp, 
+				*(in->cv), *(out->cv));
 	auto end = std::chrono::system_clock::now();
-	res_arg->final_iter = CG.IterationsToComplete;
-	res_arg->final_rsq = CG.TrueResidual*CG.TrueResidual;
 	auto elapsed = end - start;
 	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
 	std::cout << "Inverted in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
@@ -322,7 +330,6 @@ asqtadInvertBlock (GRID_info_t *info,
       }
     }
 
-  std::cout << "Leaving asqtadInvertBlock\n" << std::flush;
 }
 	
 //====================================================================//
@@ -339,7 +346,8 @@ void GRID_F3_asqtad_invert(GRID_info_t *info,
 			   GRID_F3_ColorVector *in,
 			   GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb)
 {
-  asqtadInvert<float, LatticeGaugeFieldF, ImprovedStaggeredFermionF>(info, asqtad, inv_arg, res_arg, mass, out, in, grid_full, grid_rb);
+  asqtadInvert<float, LatticeGaugeFieldF, ImprovedStaggeredFermionF>(info, asqtad, inv_arg,
+			  res_arg, mass, out, in, grid_full->gridF, grid_rb->gridF);
 }
 
 void GRID_D3_asqtad_invert(GRID_info_t *info,
@@ -351,7 +359,8 @@ void GRID_D3_asqtad_invert(GRID_info_t *info,
 			   GRID_D3_ColorVector *in,
 			   GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb)
 {
-  asqtadInvert<double, LatticeGaugeFieldD, ImprovedStaggeredFermionD>(info, asqtad, inv_arg, res_arg, mass, out, in, grid_full, grid_rb);
+  asqtadInvert<double, LatticeGaugeFieldD, ImprovedStaggeredFermionD>(info, asqtad, inv_arg,
+			   res_arg, mass, out, in, grid_full->gridD, grid_rb->gridD);
 }
 
 // Multimass inverter
@@ -365,7 +374,8 @@ void GRID_F3_asqtad_invert_multi(GRID_info_t *info,
 				 GRID_F3_ColorVector *in,
 				 GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb)
 {
-  asqtadInvertMulti<float, LatticeGaugeFieldF, ImprovedStaggeredFermionF>(info, asqtad, inv_arg, res_arg, mass, nmass, out, in, grid_full, grid_rb);
+  asqtadInvertMulti<float, LatticeGaugeFieldF, ImprovedStaggeredFermionF>(info, asqtad, inv_arg,
+			       res_arg, mass, nmass, out, in, grid_full->gridF, grid_rb->gridF);
 }
 
 
@@ -378,7 +388,8 @@ void GRID_D3_asqtad_invert_multi(GRID_info_t *info,
 				 GRID_D3_ColorVector *in,
 				 GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb)
 {
-  asqtadInvertMulti<double, LatticeGaugeFieldD, ImprovedStaggeredFermionD>(info, asqtad, inv_arg, res_arg, mass, nmass, out, in, grid_full, grid_rb);
+  asqtadInvertMulti<double, LatticeGaugeFieldD, ImprovedStaggeredFermionD>(info, asqtad, inv_arg,
+				res_arg, mass, nmass, out, in, grid_full->gridD, grid_rb->gridD);
 }
 
 // Block CG inverter
@@ -393,7 +404,9 @@ void GRID_F3_asqtad_invert_block(GRID_info_t *info,
 				 GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
 				 GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb)
 {
-  asqtadInvertBlock<float, LatticeGaugeFieldF, ImprovedStaggeredFermion5DF>(info, asqtad, inv_arg, res_arg, mass, nrhs, out, in, grid_5D, grid_5Drb, grid_full, grid_rb);
+  asqtadInvertBlock<float, LatticeGaugeFieldF, ImprovedStaggeredFermion5DF>(info, asqtad, inv_arg,
+			       res_arg, mass, nrhs, out, in, grid_5D->gridF, grid_5Drb->gridF,
+			       grid_full->gridF, grid_rb->gridF);
 }
 
 
@@ -407,5 +420,7 @@ void GRID_D3_asqtad_invert_block(GRID_info_t *info,
 				 GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
 				 GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb)
 {
-  asqtadInvertBlock<double, LatticeGaugeFieldD, ImprovedStaggeredFermion5DD>(info, asqtad, inv_arg, res_arg, mass, nrhs, out, in, grid_5D, grid_5Drb, grid_full, grid_rb);
+  asqtadInvertBlock<double, LatticeGaugeFieldD, ImprovedStaggeredFermion5DD>(info, asqtad, inv_arg,
+			        res_arg, mass, nrhs, out, in, grid_5D->gridD, grid_5Drb->gridD,
+			        grid_full->gridD, grid_rb->gridD);
 }

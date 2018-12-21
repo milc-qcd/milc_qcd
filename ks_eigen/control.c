@@ -154,7 +154,7 @@ int main( int argc, char **argv ){
     node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
     tottime += dclock();
     if(this_node==0){
-      printf("Time = %e seconds\n",dtime);
+      printf("Time = %e seconds\n",tottime);
       printf("total Rayleigh iters = %d\n",total_R_iters);
 #ifdef HISQ_SVD_COUNTER
       printf("hisq_svd_counter = %d\n",hisq_svd_counter);
