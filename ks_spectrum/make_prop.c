@@ -238,8 +238,8 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	    }
 	  } else {
 
-	  /* Multimass inversion */
-	  mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
+	    /* Multimass inversion */
+	    mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
 
 	  }
 	}

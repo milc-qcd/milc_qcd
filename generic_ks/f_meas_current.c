@@ -1258,22 +1258,22 @@ block_currents_delta_udlsc( int n_masses, Real **j_mu[], Real masses[],
   /* Construct current density from the list of sources */
 
 #ifdef OPT_UDLSC
-  node0_printf("Solving for all EVEN displacements for mass diff %g %g and %g %g\n",
+  node0_printf("Solving sloppily for all EVEN displacements for mass diff %g %g and %g %g\n",
 	       m_u, m_d, m_l, m_s);
   block_current_stochastic_delta_udls( j_mu, masses, fn, nsrc, +1, EVEN, nr, 
 				       qic, gr_even);
 #else
-  node0_printf("Solving for all EVEN displacements for mass diff  %g %g\n",
+  node0_printf("Solving sloppily for all EVEN displacements for mass diff  %g %g\n",
 	       m_u, m_d);
   block_current_stochastic_deltam( j_mu_ud, m_u, m_d, dm2_ud4, fn_ud, nsrc,
 				   +1, EVEN, nr, qic_ud, gr_even);
-  node0_printf("Solving for all EVEN displacements for mass diff  %g %g\n",
+  node0_printf("Solving sloppily for all EVEN displacements for mass diff  %g %g\n",
 	       m_l, m_s);
   block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls, nsrc,
 				   +1, EVEN, nr, qic_ls, gr_even);
 #endif
   if(n_masses == 5){
-    node0_printf("Solving for all EVEN displacements for mass %g\n", m_c);
+    node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", m_c);
     block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, EVEN,
 			      qic_c, fn_c, gr_even);
   }
@@ -1284,17 +1284,17 @@ block_currents_delta_udlsc( int n_masses, Real **j_mu[], Real masses[],
   block_current_stochastic_delta_udls( j_mu, masses, fn, nsrc, +1, ODD, nr, 
 				       qic, gr_odd);
 #else
-  node0_printf("Solving for all ODD displacements for mass diff  %g %g\n",
+  node0_printf("Solving sloppily for all ODD displacements for mass diff  %g %g\n",
 	       m_u, m_d);
   block_current_stochastic_deltam( j_mu_ud, m_u, m_d, dm2_ud4, fn_ud, nsrc,
 				   +1, ODD, nr, qic_ud, gr_odd);
-  node0_printf("Solving for all ODD displacements for mass diff  %g %g\n",
+  node0_printf("Solving sloppily for all ODD displacements for mass diff  %g %g\n",
 	       m_l, m_s);
   block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls, nsrc,
 				   +1, ODD, nr, qic_ls, gr_odd);
 #endif
   if(n_masses == 5){
-    node0_printf("Solving for all ODD displacements for mass %g\n", m_c);
+    node0_printf("Solving sloppily for all ODD displacements for mass %g\n", m_c);
     block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, ODD,
 			      qic_c, fn_c, gr_odd);
   }
@@ -1827,7 +1827,7 @@ f_meas_current( int n_masses, int nrand, int thinning,
 
 	      /* First, the sloppy high-mode solution */
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
-	      node0_printf("Solving for %d %d %d %d mass %g\n", ex, ey, ez, et, mass[j]);
+	      node0_printf("Solving sloppily for %d %d %d %d mass %g\n", ex, ey, ez, et, mass[j]);
 	      clear_v_field(M_inv_gr);
 	      qic[j].parity = parity;
 	      ks_congrad_field( gr, M_inv_gr, qic + j, mass[j], fn_multi[j]);
