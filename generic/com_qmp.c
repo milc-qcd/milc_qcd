@@ -507,6 +507,28 @@ machine_type(void)
 }
 
 /*
+**  Return a pointer to my MPI communicator
+*/
+
+#ifdef QMP_MPI
+QMP_status_t QMP_get_mpi_comm(QMP_comm_t comm, void** mpicomm);
+
+void *
+mycomm(void)
+{
+  void *comm;
+  QMP_get_mpi_comm(QMP_comm_get_default(), &comm);
+  return comm;
+}
+#else
+void *
+mycomm(void)
+{
+  return NULL;
+}
+#endif
+
+/*
 **  Return my node number
 */
 int

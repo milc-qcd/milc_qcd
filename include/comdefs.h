@@ -50,6 +50,7 @@ void reset_machine_rank(int peRank);
 void normal_exit(int status);
 void terminate(int status);
 char *machine_type(void);
+void *mycomm(void);
 int mynode(void);
 int numnodes(void);
 int myjobid(void);

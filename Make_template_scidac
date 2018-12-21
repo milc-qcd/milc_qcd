@@ -39,6 +39,9 @@ endif
 
 ifeq ($(strip ${HAVEQMP}),true)
   CSCIDAC += -DHAVE_QMP
+  ifneq ($(strip ${QMP_BACKEND}),)
+    CSCIDAC += -D${QMP_BACKEND}
+  endif
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
