@@ -25,7 +25,7 @@ COMPILER ?= gnu # intel, ibm, portland, cray-intel
 # 3. MPP vs Scalar
 
 # Compiling for a parallel machine?  blank for a scalar machine
-MPP ?= true
+MPP ?= false
 
 #----------------------------------------------------------------------
 # 4. Precision 
@@ -40,44 +40,47 @@ PRECISION ?= 1
 ifeq ($(strip ${COMPILER}),intel)
 
   ifeq ($(strip ${MPP}),true)
-    CC ?= mpiicc
-    CXX ?= mpiicpc
+    MY_CC ?= mpiicc
+    MY_CXX ?= mpiicpc
   else
-    CC  ?= icc
-    CXX ?= icpc
+    MY_CC  ?= icc
+    MY_CXX ?= icpc
   endif
 
 else ifeq ($(strip ${COMPILER}),cray-intel)
 
   ifeq ($(strip ${MPP}),true)
-    CC ?= cc
-    CXX ?= CC
+    MY_CC ?= cc
+    MY_CXX ?= CC
   else
-    CC  ?= icc
-    CXX ?= icpc
+    MY_CC  ?= icc
+    MY_CXX ?= icpc
   endif
 
 else ifeq ($(strip ${COMPILER}),gnu)
 
   ifeq ($(strip ${MPP}),true)
-    CC ?= mpicc
-    CXX ?= mpiCC
+    MY_CC ?= mpicc
+    MY_CXX ?= mpiCC
   else
-    CC  ?= gcc
-    CXX ?= g++
+    MY_CC  ?= gcc
+    MY_CXX ?= g++
   endif
 
 else ifeq ($(strip ${COMPILER}),ibm)
 
   ifeq ($(strip ${MPP}),true)
-    CC = mpixlc_r
-    CXX = mpixlcxx_r
+    MY_CC ?= mpixlc_r
+    MY_CXX ?= mpixlcxx_r
   else
-    CC = bgxlc_r
-    CXX = bgxlc++_r
+    MY_CC ?= bgxlc_r
+    MY_CXX ?= bgxlc++_r
   endif
 
 endif
+
+CC = ${MY_CC}
+CXX = ${MY_CXX}
 
 # Override the above definitions
 

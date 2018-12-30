@@ -130,6 +130,9 @@ static int initial_set(void){
 #ifdef FIX_NODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "node_geometry", 
 			   param.node_geometry, 4);
+#ifdef FIX_SUBNODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "subnode_geometry", 
+			   param.subnode_geometry, 4);
 #ifdef FIX_IONODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
 			   param.ionode_geometry, 4);

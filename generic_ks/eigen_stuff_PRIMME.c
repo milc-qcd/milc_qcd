@@ -180,6 +180,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 
   /* Initiallize evecs from the input eigenvectors
    * (convert to double precision) */
+  node0_printf("Using %d eigenvectors as starting vectors for PRIMME\n", Nvecs_in);
   for(j=0;j<Nvecs_in;j++) {
     evals[j] = eigVal[j];
     xx = (double*)&(evecs[0].real)+2*j*maxn;
@@ -209,7 +210,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   primme_initialize(&primme);
 
   primme.initSize = Nvecs_in;                   /* use input vectors as initial guesses */
-
+  // primme.initBasisMode = primme_init_user;
   primme.n=maxn*number_of_nodes;		/* global size of matrix */
   primme.nLocal=maxn;				/* local volume */
   //  primme.maxOuterIterations=MaxIter;
@@ -223,7 +224,9 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   //  ret = primme_set_method(PRIMME_DEFAULT_MIN_MATVECS, &primme);
   ret = primme_set_method(PRIMME_DYNAMIC, &primme);
 
-  primme.printLevel=3;
+  /* primme.printLevel=3; */
+  primme.printLevel=1;
+  
 #ifdef MATVEC_PRECOND
   primme.target=primme_largest;
 #else
