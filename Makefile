@@ -593,7 +593,7 @@ ifeq ($(strip ${WANTQPHIXJ}), true)
 
   QPHIXJ_HOME = ../QPhiX_JLab/install/dslash-${QPHIXJ_ARCH}-s${QPHIXJ_SOALEN}
   QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/lib
-  LIBQPHIXJ = -L${QPHIXJ_LIBRARIES} -lqphix_solver 
+  LIBQPHIXJ = -L${QPHIXJ_LIBRARIES} -lqphix_solver -lqphix_codegen
   QPHIXJ_HEADERS = ${QPHIXJ_HOME}/include
   INCQPHIXJ = -I${QPHIXJ_HEADERS}
 
