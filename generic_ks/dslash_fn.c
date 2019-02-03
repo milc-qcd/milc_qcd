@@ -326,12 +326,12 @@ void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
     default: printf("%s: Unrecognised parity\n",__func__); terminate(2);
     }
 
-    qudaDslash(MILC_PRECISION, MILC_PRECISION, inv_args, fatlink, longlink, u0, src, dest, &num_iters);
+    qudaDslash(MILC_PRECISION, MILC_PRECISION, inv_args, fatlink, longlink, src, dest, &num_iters);
   } else { // do both parities as separate calls
     inv_args.evenodd = QUDA_EVEN_PARITY;
-    qudaDslash(MILC_PRECISION, MILC_PRECISION, inv_args, fatlink, longlink, u0, src, dest, &num_iters);
+    qudaDslash(MILC_PRECISION, MILC_PRECISION, inv_args, fatlink, longlink, src, dest, &num_iters);
     inv_args.evenodd = QUDA_ODD_PARITY;
-    qudaDslash(MILC_PRECISION, MILC_PRECISION, inv_args, fatlink, longlink, u0, src, dest, &num_iters);
+    qudaDslash(MILC_PRECISION, MILC_PRECISION, inv_args, fatlink, longlink, src, dest, &num_iters);
   }
 
 }

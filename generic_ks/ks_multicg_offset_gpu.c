@@ -191,7 +191,6 @@ int ks_multicg_offset_field_gpu(
 		       relative_residual,
 		       fatlink,
 		       longlink,
-                       u0,
 		       (void *)src,
 		       (void **)psim,
 		       final_residual,
