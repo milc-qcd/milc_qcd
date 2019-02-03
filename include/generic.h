@@ -427,7 +427,7 @@ complex ploop( void );
 complex ploop_staple(Real alpha_fuzz);
 
 /* project_su3_hit.c */
-void project_su3(
+int project_su3(
    su3_matrix *w,         /* input initial guess. output resulting
                              SU(3) matrix */
    su3_matrix *q,         /* starting 3 x 3 complex matrix */

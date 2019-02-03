@@ -143,7 +143,10 @@ int main(int argc, char *argv[])
     for(k = 0; k < param.num_set; k++){
 
 #if 0 /* If needed for debugging */
-      /* (The Kalkreuter routine uses the random number generator to                                    initialize the eigenvector search, so, if you want to compare                                  first results with and without deflation, you need to                                          re-initialize here.) */
+      /* (The Kalkreuter routine uses the random number generator to
+	 initialize the eigenvector search, so, if you want to compare
+	 results with and without deflation, you need to re-initialize
+	 here.) */
       initialize_site_prn_from_seed(iseed);
 #endif
 
@@ -164,13 +167,13 @@ int main(int argc, char *argv[])
 #ifdef CURRENT_DISC
       if(param.truncate_diff[k])
 	f_meas_current_diff( num_pbp_masses, param.npbp_reps[k],
-			     param.nwrite[k], param.thinning[k],
+			     param.thinning[k],
 			     &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
 			     &param.ksp_pbp[i0],
 			     fn_links, &param.pbp_filenames[i0] );
 	else
 	  f_meas_current( num_pbp_masses, param.npbp_reps[k],
-			  param.nwrite[k], param.thinning[k],
+			  param.thinning[k],
 			  &param.qic_pbp[i0], &param.ksp_pbp[i0],
 			  fn_links, &param.pbp_filenames[i0] );
 #else

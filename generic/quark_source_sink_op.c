@@ -2514,6 +2514,14 @@ static int get_field_op(int *status_p, FILE *fp,
 			  &qss_op->qic.max );
     IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
 			  &qss_op->qic.nrestart );
+    /* Should we be deflating? */
+    qss_op->qic.deflate = 0;
+    IF_OK {
+      IF_OK status += get_s(stdin, prompt,"deflate", savebuf);
+      IF_OK {
+	if(strcmp(savebuf,"yes") == 0)qss_op->qic.deflate = 1;
+      }
+    }
     IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
 			  &qss_op->qic.resid );
     IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 

@@ -213,6 +213,7 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
     if(fn_multi[i] == fn_multi[0])
       continue;
 #endif
+    node0_printf("Refining solution for mass %g\n", 0.5*sqrt(ksp[i].offset));
 #ifdef CPU_REFINE
     ks_congrad_field_cpu( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
 #else
@@ -220,6 +221,7 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
        or ks_congrad_parity_qphix */
     ks_congrad_parity( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
 #endif
+    report_status(qic+i);
     iters += qic[i].final_iters;
     qic[i].final_iters += multi_iters;
   }
@@ -762,10 +764,6 @@ int mat_invert_multi(
 {
   int i, tot_iters = 0;
 
-  // /* Use the single-mass inverter if there is only one mass */
-  //  if(num_masses == 1)
-  //    return mat_invert_uml_field(src, dst[0], qic+0, ksp->mass, fn_multi[0] );
-
   /* Use preconditioned single-mass inverter if there are 2 or fewer masses 
      or for any number of masses if we are doing deflation */
   /* EO preconditioning doesn't work with multimass solvers as the residual depends on m.
@@ -795,11 +793,13 @@ int mat_invert_multi(
     for(i = 0; i < num_masses; i++)
       qic[i].parity = EVEN;
 
+    node0_printf("Solving for %d masses on even sites\n", num_masses);
     tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn_multi);
 
     for(i = 0; i < num_masses; i++)
       qic[i].parity = ODD;
 
+    node0_printf("Solving for %d masses on odd sites\n", num_masses);
     tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn_multi);
 
     /* Multiply all solutions by Madjoint to get dst = M^-1 * src */

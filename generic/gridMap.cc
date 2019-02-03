@@ -7,17 +7,19 @@
 #include "../include/mGrid/mGrid_assert.h"
 
 extern "C" {
-#include "generic_includes.h"
-#include "../include/openmp_defs.h"
+  void get_coords(int coords[], int node, int index);
 }
 
+#include "../include/milc_datatypes.h"
+#include "../include/openmp_defs.h"
+extern	int sites_on_node;		/* number of sites on this node */
+extern	int even_sites_on_node;	/* number of even sites on this node */
+extern  int this_node;
 
 using namespace Grid;
 using namespace Grid::QCD;
 using namespace std;
 
-// extern GridCartesian         *CGrid;
-// extern GridRedBlackCartesian *RBGrid;
 extern std::vector<int> squaresize;
 
 static void
@@ -38,10 +40,7 @@ indexToCoords(uint64_t idx, std::vector<int> &x){
 
 template<typename ImprovedStaggeredFermion>
 static struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *
-create_V(int milc_parity, GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb){
-
-  GridCartesian *CGrid = grid_full->grid;
-  GridRedBlackCartesian *RBGrid = grid_rb->grid;
+create_V(int milc_parity, GridCartesian *CGrid, GridRedBlackCartesian *RBGrid){
 
   struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *out;
 
@@ -81,13 +80,8 @@ create_V(int milc_parity, GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb){
 template<typename ImprovedStaggeredFermion5D>
 static struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *
 create_nV(int n, int milc_parity,
-	  GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
-	  GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
-
-  GridCartesian *CGrid = grid_full->grid;
-  GridRedBlackCartesian *RBGrid = grid_rb->grid;
-  GridCartesian *FCGrid = grid_5D->grid;
-  GridRedBlackCartesian *FRBGrid = grid_5Drb->grid;
+	  GridCartesian *FCGrid, GridRedBlackCartesian *FRBGrid,
+	  GridCartesian *CGrid, GridRedBlackCartesian *RBGrid ){
 
   struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *out;
   out = (struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *) 
@@ -138,11 +132,11 @@ destroy_nV( struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *V )
 template<typename ImprovedStaggeredFermion, typename ColourVector, typename Complex>
 static struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *
 create_V_from_vec( su3_vector *src, int milc_parity,
-		   GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb){
+		   GridCartesian *CGrid, GridRedBlackCartesian *RBGrid){
 
   struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *out;
 
-  out = create_V<ImprovedStaggeredFermion>(milc_parity, grid_full, grid_rb);
+  out = create_V<ImprovedStaggeredFermion>(milc_parity, CGrid, RBGrid);
 
   int loopend= (milc_parity)==EVEN ? even_sites_on_node : sites_on_node ;
   int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
@@ -178,16 +172,19 @@ create_V_from_vec( su3_vector *src, int milc_parity,
 template<typename ImprovedStaggeredFermion5D, typename ColourVector, typename Complex>
 static struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *
 create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
-		     GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb,
-		     GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
+		     GridCartesian *FCGrid, GridRedBlackCartesian *FRBGrid,
+		     GridCartesian *CGrid, GridRedBlackCartesian *RBGrid){
 
   struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *out;
 
-  out = create_nV<ImprovedStaggeredFermion5D>(n, milc_parity, grid_5D, grid_5Drb,  grid_full, grid_rb);
+  out = create_nV<ImprovedStaggeredFermion5D>(n, milc_parity, FCGrid, FRBGrid, CGrid, RBGrid);
 
   int loopend= (milc_parity)==EVEN ? even_sites_on_node : sites_on_node ;
   int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
 
+
+  std::cout << "create_nv_from_vecs: ColourVector size  = " << sizeof(ColourVector)  
+	    << " ColourVectorField size =" << sizeof(*(out->cv)) << "\n" << std::flush;
   auto start = std::chrono::system_clock::now();
   PARALLEL_FOR_LOOP
     for( uint64_t idx = loopstart; idx < loopend; idx++){
@@ -326,13 +323,12 @@ static void dumpGrid(ColourMatrix out){
 template<typename LatticeGaugeField, typename LatticeColourMatrix, typename Complex>
 static struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField>  *
 asqtad_create_L_from_MILC( su3_matrix *thn, su3_matrix *fat, 
-			   su3_matrix *lng, GRID_4Dgrid *grid_full ){
-
-  GridCartesian *CGrid = grid_full->grid;
+			   su3_matrix *lng, GridCartesian *CGrid ){
 
   struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *out;
 
-  out = (struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *) malloc(sizeof(struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField>));
+  out = (struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *)
+    malloc(sizeof(struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField>));
   GRID_ASSERT(out != NULL, GRID_MEM_ERROR);
 
 
@@ -376,26 +372,33 @@ asqtad_destroy_L( struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *Link
 // Create a 4D, full-grid wrapper
 GRID_4Dgrid *
 GRID_create_grid(void){
-  std::vector<int> latt_size   = GridDefaultLatt();
-  std::vector<int> simd_layout = GridDefaultSimd(Nd,vComplex::Nsimd());
-  std::vector<int> mpi_layout  = GridDefaultMpi();
+  std::vector<int> latt_size    = GridDefaultLatt();
+  std::vector<int> simd_layoutF = GridDefaultSimd(Nd,vComplexF::Nsimd());
+  std::vector<int> simd_layoutD = GridDefaultSimd(Nd,vComplexD::Nsimd());
+  std::vector<int> mpi_layout   = GridDefaultMpi();
 
-  GridCartesian *CGrid  = new GridCartesian(latt_size,simd_layout,mpi_layout);
-  GRID_ASSERT(CGrid != NULL, GRID_MEM_ERROR);
+  GridCartesian *CGridF  = new GridCartesian(latt_size,simd_layoutF,mpi_layout);
+  GRID_ASSERT(CGridF != NULL, GRID_MEM_ERROR);
+  GridCartesian *CGridD  = new GridCartesian(latt_size,simd_layoutD,mpi_layout);
+  GRID_ASSERT(CGridD != NULL, GRID_MEM_ERROR);
   GRID_4Dgrid *g4D = (GRID_4Dgrid *)malloc(sizeof(struct GRID_4Dgrid_struct));
   GRID_ASSERT(g4D != NULL, GRID_MEM_ERROR);
-  g4D->grid = CGrid;
+  g4D->gridF = CGridF;
+  g4D->gridD = CGridD;
   return g4D;
 }
 
 // Create a 4D red-black-grid wrapper
 GRID_4DRBgrid *
 GRID_create_RBgrid(GRID_4Dgrid *grid_full){
-  GridRedBlackCartesian *RBGrid = new GridRedBlackCartesian(grid_full->grid);
-  GRID_ASSERT(RBGrid != NULL, GRID_MEM_ERROR);
+  GridRedBlackCartesian *RBGridF = new GridRedBlackCartesian(grid_full->gridF);
+  GRID_ASSERT(RBGridF != NULL, GRID_MEM_ERROR);
+  GridRedBlackCartesian *RBGridD = new GridRedBlackCartesian(grid_full->gridD);
+  GRID_ASSERT(RBGridD != NULL, GRID_MEM_ERROR);
   GRID_4DRBgrid *g4D = (GRID_4DRBgrid *)malloc(sizeof(struct GRID_4DRBgrid_struct));
   GRID_ASSERT(g4D != NULL, GRID_MEM_ERROR);
-  g4D->grid = RBGrid;
+  g4D->gridF = RBGridF;
+  g4D->gridD = RBGridD;
   return g4D;
 }
 
@@ -404,8 +407,10 @@ GRID_5Dgrid *
 GRID_create_5Dgrid(int n, GRID_4Dgrid *grid_full){
   GRID_5Dgrid *g5D = (GRID_5Dgrid *)malloc(sizeof(struct GRID_5Dgrid_struct));
   GRID_ASSERT(g5D != NULL, GRID_MEM_ERROR);
-  GridCartesian *FGrid = SpaceTimeGrid::makeFiveDimGrid(n, grid_full->grid);
-  g5D->grid = FGrid;
+  GridCartesian *FGridF = SpaceTimeGrid::makeFiveDimGrid(n, grid_full->gridF);
+  GridCartesian *FGridD = SpaceTimeGrid::makeFiveDimGrid(n, grid_full->gridD);
+  g5D->gridF = FGridF;
+  g5D->gridD = FGridD;
   return g5D;
 }
 
@@ -416,20 +421,24 @@ GRID_create_5DRBgrid(int n, GRID_4Dgrid *grid_full){
   GRID_ASSERT(g5D != NULL, GRID_MEM_ERROR);
   std::cout << "Constructing 5D grid for " << n << " fields\n" << std::flush;
   auto start = std::chrono::system_clock::now();
-  GridRedBlackCartesian *FRBGrid = SpaceTimeGrid::makeFiveDimRedBlackGrid(n, grid_full->grid);
+  GridRedBlackCartesian *FRBGridF = SpaceTimeGrid::makeFiveDimRedBlackGrid(n, grid_full->gridF);
+  GridRedBlackCartesian *FRBGridD = SpaceTimeGrid::makeFiveDimRedBlackGrid(n, grid_full->gridD);
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
   std::cout << "Construct 5D grids in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
 	    << "\n" << std::flush;
-  g5D->grid = FRBGrid;
+  g5D->gridF = FRBGridF;
+  g5D->gridD = FRBGridD;
   return g5D;
 }
 
 void 
 GRID_destroy_4Dgrid(GRID_4Dgrid *grid){
   if(grid){
-    if(grid->grid)
-      delete grid->grid;
+    if(grid->gridF)
+      delete grid->gridF;
+    if(grid->gridD)
+      delete grid->gridD;
     free(grid);
   }
 }
@@ -437,8 +446,10 @@ GRID_destroy_4Dgrid(GRID_4Dgrid *grid){
 void 
 GRID_destroy_4DRBgrid(GRID_4DRBgrid *grid){
   if(grid){
-    if(grid->grid)
-      delete grid->grid;
+    if(grid->gridF)
+      delete grid->gridF;
+    if(grid->gridD)
+      delete grid->gridD;
     free(grid);
   }
 }
@@ -446,8 +457,10 @@ GRID_destroy_4DRBgrid(GRID_4DRBgrid *grid){
 void 
 GRID_destroy_5Dgrid(GRID_5Dgrid *grid){
   if(grid){
-    if(grid->grid)
-      delete grid->grid;
+    if(grid->gridF)
+      delete grid->gridF;
+    if(grid->gridD)
+      delete grid->gridD;
     free(grid);
   }
 }
@@ -455,8 +468,10 @@ GRID_destroy_5Dgrid(GRID_5Dgrid *grid){
 void 
 GRID_destroy_5DRBgrid(GRID_5DRBgrid *grid){
   if(grid){
-    if(grid->grid)
-      delete grid->grid;
+    if(grid->gridF)
+      delete grid->gridF;
+    if(grid->gridD)
+      delete grid->gridD;
     free(grid);
   }
 }
@@ -464,7 +479,7 @@ GRID_destroy_5DRBgrid(GRID_5DRBgrid *grid){
 // create color vector
 GRID_F3_ColorVector *
 GRID_F3_create_V( int milc_parity, GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
-  create_V<ImprovedStaggeredFermionF>( milc_parity, grid_full, grid_rb );
+  create_V<ImprovedStaggeredFermionF>( milc_parity, grid_full->gridF, grid_rb->gridF );
 }
 
 // create block color vector
@@ -472,13 +487,14 @@ GRID_F3_ColorVectorBlock *
 GRID_F3_create_nV( int n, int milc_parity, 
 		   GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb,
 		   GRID_4Dgrid *grid_full,GRID_4DRBgrid *grid_rb ){
-  create_nV<ImprovedStaggeredFermion5DF>( n, milc_parity, grid_5D, grid_5Drb, grid_full, grid_rb );
+  create_nV<ImprovedStaggeredFermion5DF>( n, milc_parity, grid_5D->gridF, grid_5Drb->gridF,
+					  grid_full->gridF, grid_rb->gridF );
 }
 
 // create color vector
 GRID_D3_ColorVector *
 GRID_D3_create_V( int milc_parity, GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
-  create_V<ImprovedStaggeredFermionD>( milc_parity, grid_full, grid_rb );
+  create_V<ImprovedStaggeredFermionD>( milc_parity, grid_full->gridD, grid_rb->gridD );
 }
 
 // ceate block color vector
@@ -486,7 +502,8 @@ GRID_D3_ColorVectorBlock *
 GRID_D3_create_nV( int n, int milc_parity,
                    GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
                    GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
-  create_nV<ImprovedStaggeredFermion5DD>( n, milc_parity, grid_5D, grid_5Drb, grid_full, grid_rb );
+  create_nV<ImprovedStaggeredFermion5DD>( n, milc_parity, grid_5D->gridD, grid_5Drb->gridD,
+					  grid_full->gridD, grid_rb->gridD );
 }
 
 // free color vector
@@ -518,7 +535,7 @@ GRID_F3_ColorVector  *
 GRID_F3_create_V_from_vec( su3_vector *src, int milc_parity,
 			   GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb){
   return create_V_from_vec<ImprovedStaggeredFermionF, ColourVectorF, ComplexF>( src, milc_parity,
-								grid_full, grid_rb);
+							grid_full->gridF, grid_rb->gridF);
 }
   
 // Map a Dirac vector field from MILC layout to GRID layout
@@ -526,8 +543,9 @@ GRID_F3_ColorVectorBlock *
 GRID_F3_create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
 			     GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
 			     GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
-  return create_nV_from_vecs<ImprovedStaggeredFermion5DF, ColourVectorF, ComplexF>( src, n, milc_parity,
-						    grid_5D, grid_5Drb, grid_full,grid_rb );
+  return create_nV_from_vecs<ImprovedStaggeredFermion5DF, ColourVectorF,
+			     ComplexF>( src, n, milc_parity,
+			     grid_5D->gridF, grid_5Drb->gridF, grid_full->gridF,grid_rb->gridF );
 }
   
 // Map a Dirac vector field from MILC layout to QPhiX layout
@@ -535,7 +553,7 @@ GRID_D3_ColorVector *
 GRID_D3_create_V_from_vec( su3_vector *src, int milc_parity,
 			   GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb){
   return create_V_from_vec<ImprovedStaggeredFermionD, ColourVectorD, ComplexD>( src, milc_parity,
-								grid_full, grid_rb);
+							grid_full->gridD, grid_rb->gridD);
 }
   
 // Map a blocked Dirac vector field from MILC layout to QPhiX layout
@@ -543,8 +561,10 @@ GRID_D3_ColorVectorBlock *
 GRID_D3_create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
                              GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb,
                              GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
-  return create_nV_from_vecs<ImprovedStaggeredFermion5DD, ColourVectorD, ComplexD>( src, n, milc_parity,
-							    grid_5D, grid_5Drb, grid_full, grid_rb );
+  return create_nV_from_vecs<ImprovedStaggeredFermion5DD, ColourVectorD,
+			     ComplexD>( src, n, milc_parity,
+					grid_5D->gridD, grid_5Drb->gridD,
+					grid_full->gridD, grid_rb->gridD );
 }
   
 // Map a color vector field from GRID layout to MILC layout
@@ -576,7 +596,7 @@ GRID_F3_FermionLinksAsqtad  *
 GRID_F3_asqtad_create_L_from_MILC( su3_matrix *thnlinks, su3_matrix *fatlinks, su3_matrix *lnglinks, 
 				   GRID_4Dgrid *grid_full ){
   return asqtad_create_L_from_MILC<LatticeGaugeFieldF, LatticeColourMatrixF, ComplexF>( thnlinks, 
-                  fatlinks, lnglinks, grid_full );
+                  fatlinks, lnglinks, grid_full->gridF );
 }
 
 // create asqtad fermion links from MILC
@@ -584,7 +604,7 @@ GRID_D3_FermionLinksAsqtad  *
 GRID_D3_asqtad_create_L_from_MILC( su3_matrix *thnlinks, su3_matrix *fatlinks, su3_matrix *lnglinks, 
 				   GRID_4Dgrid *grid_full ){
   return asqtad_create_L_from_MILC<LatticeGaugeFieldD, LatticeColourMatrixD, ComplexD>( thnlinks, 
-		   fatlinks, lnglinks, grid_full );
+		   fatlinks, lnglinks, grid_full->gridD );
 }
 
 // free asqtad fermion links

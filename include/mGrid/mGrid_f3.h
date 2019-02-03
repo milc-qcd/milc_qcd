@@ -19,7 +19,7 @@ extern "C" {
 #define STRUCT struct
 #endif
 
-#include "../include/generic_ks.h"
+#include "../include/milc_datatypes.h"
 
 
 typedef STRUCT GRID_F3_ColorVector_struct		GRID_F3_ColorVector;

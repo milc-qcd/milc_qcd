@@ -199,6 +199,7 @@ void hyp_block_stage1(register int dir1, register int dir2, int parity,
   cleanup_gather(tag2);
   cleanup_gather(tag3);
   cleanup_general_gather(tag4);
+  int status = 0;
   FORSOMEPARITY(i,st,parity){
     scalar_mult_su3_matrix( &(tempmat1[i]), 
 			    (hc->alpha3/2.0), &(tempmat1[i]) );
@@ -218,7 +219,7 @@ void hyp_block_stage1(register int dir1, register int dir2, int parity,
         /* take original link as guess for projected */
         (Wiggly_link[nWiggly*i+count])=(U_link[4*i+dir1]);
         /* Project fatq onto SU(3) - result in Wiggly_link[count] */
-        project_su3( &(Wiggly_link[nWiggly*i+count]), &fatq, hc->hits, 0.);
+        status += project_su3( &(Wiggly_link[nWiggly*i+count]), &fatq, hc->hits, 0.);
 //AB DEBUGGING
 //if(i==0 && dir1==1 && dir2==2 ) {
 //  dumpmat_hp( &(Wiggly_link[nWiggly*0+count]) );
@@ -230,7 +231,9 @@ void hyp_block_stage1(register int dir1, register int dir2, int parity,
         terminate(1);
     }
   }
-
+  g_intsum(&status);
+  if(this_node == 0 && status > 0)
+    printf("WARNING %d sites report no convergence in project_su3\n", status);
 
   /* free temporary storage */
   destroy_mn_special(tempmat1);
@@ -344,6 +347,7 @@ void hyp_block_stage2(register int dir1, register int dir3, int parity,
     cleanup_gather(tag3);
     cleanup_general_gather(tag4);
   }
+  int status = 0;
   FORSOMEPARITY(i,st,parity){
     scalar_mult_su3_matrix( &(tempmat1[i]),
 			    (hc->alpha2/4.0), &(tempmat1[i]));
@@ -363,7 +367,7 @@ void hyp_block_stage2(register int dir1, register int dir3, int parity,
         /* take original link as guess for projected */
         Doubly_link[nDoubly*i+count]=U_link[4*i+dir1];
         /* Project fatq onto SU(3) - result in blocked_link[8+count] */
-        project_su3( &(Doubly_link[nDoubly*i+count]), &fatq, hc->hits, 0.);
+        status += project_su3( &(Doubly_link[nDoubly*i+count]), &fatq, hc->hits, 0.);
 //AB DEBUGGING
 //if(i==0 && dir1==0 && dir3==3 ) {
 //  dumpmat_hp( &(Doubly_link[nDoubly*i+count]) );
@@ -375,6 +379,9 @@ void hyp_block_stage2(register int dir1, register int dir3, int parity,
         terminate(1);
     }
   }
+  g_intsum(&status);
+  if(this_node == 0 && status > 0)
+    printf("WARNING %d sites report no convergence in project_su3\n", status);
 
   /* free temporary storage */
   destroy_mn_special(tempmat1);
@@ -562,6 +569,7 @@ void load_hyp_links(su3_matrix *U_link, su3_matrix *hyp_link,
         /* compute the decorated staple in "staple" */
         hyp_block_doubly_staple(dir, parity, Doubly_link, staple, hc );
       
+	int status = 0;
         FORSOMEPARITY( i,st,parity ) {
 
 
@@ -584,7 +592,7 @@ void load_hyp_links(su3_matrix *U_link, su3_matrix *hyp_link,
               /* take original link as guess for projected */
               hyp_link[4*i+dir] = U_link[4*i+dir];
               /* Project fatq onto SU(3) - result in hyp_link[dir] */
-              project_su3( &(hyp_link[4*i+dir]), &fatq, hc->hits, 0.);
+              status += project_su3( &(hyp_link[4*i+dir]), &fatq, hc->hits, 0.);
               break;
             default:
               printf( "Wrong HYP projection method\n" );
@@ -592,6 +600,9 @@ void load_hyp_links(su3_matrix *U_link, su3_matrix *hyp_link,
           }
 
         } /* site */
+	g_intsum(&status);
+	if(this_node == 0 && status > 0)
+	  printf("WARNING %d sites report no convergence in project_su3\n", status);
       } /* direction */
     } /* parity */
   } // 3D/4D branching

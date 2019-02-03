@@ -227,9 +227,21 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 				fn_multi[0]);
 	  }
 	} else {
-	  
-	  /* Multimass inversion */
-	  mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
+
+	  /* If we have restored any propagator, we use the single-mass inverter */
+	  /* In most use cases they are either all restored, or all fresh */
+
+	  if(startflag[0] != FRESH){
+	    for(j = 0; j < num_prop; j++){
+	      mat_invert_cg_field(src, dst[j], my_qic+j, my_ksp[j].mass, 
+				  fn_multi[j]);
+	    }
+	  } else {
+
+	    /* Multimass inversion */
+	    mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
+
+	  }
 	}
 	
 	

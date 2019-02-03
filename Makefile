@@ -14,24 +14,24 @@ MAKEFILE = Makefile
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH = # knl knc hsw pow8
+ARCH = # skx knl knc hsw pow8
 
 #----------------------------------------------------------------------
 # 2. Compiler family
 
-COMPILER = gnu # intel, ibm, portland, cray-intel
+COMPILER ?= gnu # intel, ibm, portland, cray-intel
 
 #----------------------------------------------------------------------
 # 3. MPP vs Scalar
 
 # Compiling for a parallel machine?  blank for a scalar machine
-MPP = #true
+MPP ?= false
 
 #----------------------------------------------------------------------
 # 4. Precision 
 
 # 1 = single precision; 2 = double
-PRECISION = 1
+PRECISION ?= 1
 
 #----------------------------------------------------------------------
 # 5. Compiler
@@ -40,34 +40,47 @@ PRECISION = 1
 ifeq ($(strip ${COMPILER}),intel)
 
   ifeq ($(strip ${MPP}),true)
-    CC = mpiicc
-    CXX = mpiicpc
+    MY_CC ?= mpiicc
+    MY_CXX ?= mpiicpc
   else
-    CC  = icc
-    CXX = icpc
+    MY_CC  ?= icc
+    MY_CXX ?= icpc
   endif
 
 else ifeq ($(strip ${COMPILER}),cray-intel)
 
   ifeq ($(strip ${MPP}),true)
-    CC = cc
-    CXX = CC
+    MY_CC ?= cc
+    MY_CXX ?= CC
   else
-    CC  = icc
-    CXX = icpc
+    MY_CC  ?= icc
+    MY_CXX ?= icpc
   endif
 
 else ifeq ($(strip ${COMPILER}),gnu)
 
   ifeq ($(strip ${MPP}),true)
-    CC = mpicc
-    CXX = mpiCC
+    MY_CC ?= mpicc
+    MY_CXX ?= mpiCC
   else
-    CC  = gcc
-    CXX = g++
+    MY_CC  ?= gcc
+    MY_CXX ?= g++
+  endif
+
+else ifeq ($(strip ${COMPILER}),ibm)
+
+  ifeq ($(strip ${MPP}),true)
+    MY_CC ?= mpixlc_r
+    MY_CXX ?= mpixlcxx_r
+  else
+    MY_CC ?= bgxlc_r
+    MY_CXX ?= bgxlc++_r
   endif
 
 endif
+
+CC = ${MY_CC}
+CXX = ${MY_CXX}
 
 # Override the above definitions
 
@@ -90,7 +103,7 @@ OPT              = -O3
 
 # OpenMP?
 
-OMP = #true
+OMP ?= #true
 
 #----------------------------------------------------------------------
 # 7. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -123,8 +136,15 @@ endif
 
 ifeq ($(strip ${COMPILER}),ibm)
 
-  OCFLAGS = -qarch=450 -qlanglvl=stdc99 # BG/P BG/Q
-  OCXXFLAGS += -qarch=450 -qlanglvl=stdc++11
+  OCFLAGS = -std=gnu99
+  OCXXFLAGS += -std=c++11
+
+  # consider running with XLSMPOPTS=stack=10M or higher
+  ifeq ($(strip ${OMP}),true)
+    OCFLAGS += -qsmp=omp
+    OCXXFLAGS += -qsmp=omp
+    LDFLAGS += -qsmp=omp
+  endif
 
 endif
 
@@ -142,7 +162,7 @@ ifeq ($(strip ${COMPILER}),intel)
   ARCH_FLAG = -mmic
   BINEXT=.knc
   else ifeq ($(strip ${ARCH}),skx)
-  ARCH_FLAG = -xCORE-AVX512
+  ARCH_FLAG = -xCORE-AVX512 -qopt-zmm-usage=high
   BINEXT=.skx
   else ifeq ($(strip ${ARCH}),hsw)
   ARCH_FLAG = -xCORE-AVX2
@@ -261,11 +281,14 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 
 # Edit these "wants"
 
-WANTQOP = # true # or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
+WANTQOP ?= # true # or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
 
-WANTQIO = true # or blank.  Implies HAVEQMP.
+WANTQIO ?= # true # or blank.  Implies HAVEQMP.
 
-WANTQMP = # true or blank.
+WANTQMP ?= # true or blank.
+
+# QMP_MPI or QMP_SPI
+QMP_BACKEND = QMP_MPI
 
 # Edit these locations for the installed SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
@@ -292,6 +315,14 @@ QOP = ${QOPQDP}
 # CSCIDAC (List of compiler macros for SciDAC modules)
 
 include ../Make_template_scidac
+
+#----------------------------------------------------------------------
+# 12. Intel MKL for FFTW and LAPACK
+
+ifeq ($(strip ${COMPILER}),intel)
+  INCFFTW = -mkl
+  LIBFFTW = -mkl
+endif
 
 #----------------------------------------------------------------------
 # 12. FFTW3 Options
@@ -376,17 +407,17 @@ WANT_GF_GPU ?= #true
 
 ifeq ($(strip ${WANTQUDA}),true)
 
-  QUDA_HOME = ${HOME}/quda
+  QUDA_HOME ?= ${HOME}/quda
 
   INCQUDA = -I${QUDA_HOME}/include -I${QUDA_HOME}/tests
   PACKAGE_HEADERS += ${QUDA_HOME}/include
   LIBQUDA = -L${QUDA_HOME}/lib -lquda
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
 
-  CUDA_HOME = /usr/local/cuda
+  CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
+  LIBQUDA += -L${CUDA_HOME}/lib64 -lcufft -lcudart -lcuda
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
@@ -452,7 +483,8 @@ ifeq ($(strip ${WANTQPHIX}), true)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_mic -lrt
   else ifeq ($(strip ${ARCH}),hsw)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx2 -lrt
-  else
+  else ifeq ($(strip ${ARCH}),skx)
+    LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_skx -lrt
   endif
 
   else
@@ -465,7 +497,8 @@ ifeq ($(strip ${WANTQPHIX}), true)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_mic_single -lrt
   else ifeq ($(strip ${ARCH}),hsw)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx2_single -lrt
-  else
+  else ifeq ($(strip ${ARCH}),skx)
+    LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_skx_single -lrt
   endif
 
   endif
@@ -494,10 +527,15 @@ WANTGRID = #true
 ifeq ($(strip ${WANTGRID}), true)
 
   HAVE_GRID = true
-  CPHI = -DHAVE_GRID
+  CPHI += -DHAVE_GRID
+
+  CPHI += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
+  CPHI += -DGRID_SHMEM_MAX=2048
 
   ifeq ($(strip ${MPP}),true)
     ifeq ($(strip ${ARCH}),knl)
+      GRID_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),skx)
       GRID_ARCH = avx512
     else ifeq ($(strip ${ARCH}),hsw)
       GRID_ARCH = avx2
@@ -555,7 +593,7 @@ ifeq ($(strip ${WANTQPHIXJ}), true)
 
   QPHIXJ_HOME = ../QPhiX_JLab/install/dslash-${QPHIXJ_ARCH}-s${QPHIXJ_SOALEN}
   QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/lib
-  LIBQPHIXJ = -L${QPHIXJ_LIBRARIES} -lqphix_solver 
+  LIBQPHIXJ = -L${QPHIXJ_LIBRARIES} -lqphix_solver -lqphix_codegen
   QPHIXJ_HEADERS = ${QPHIXJ_HOME}/include
   INCQPHIXJ = -I${QPHIXJ_HEADERS}
 

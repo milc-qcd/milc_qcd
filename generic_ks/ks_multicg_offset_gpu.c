@@ -92,8 +92,8 @@ int ks_multicg_offset_field_gpu(
 #ifdef CGTIME
   dtimec += dclock();
   if(this_node==0){
-    printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
-	   dtimec, prec_label[MILC_PRECISION-1], qic->final_iters, 
+    printf("CONGRAD5: time = %e (multicg_offset_QUDA %s) masses = %d iters = %d mflops = %e\n",
+	   dtimec, prec_label[qic[0].prec-1], num_offsets, qic->final_iters, 
 	   (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
 #endif
@@ -181,6 +181,19 @@ int ks_multicg_offset_field_gpu(
     node0_printf("%s: naik_epsilon: Signal QUDA to refresh links\n", myname);
   }
 
+  inv_args.naik_epsilon = ksp[0].naik_term_epsilon;
+  if (inv_args.naik_epsilon != fn->eps_naik) {
+    node0_printf("%s: naik_epsilon in action (%e) does not match value in link (%e)\n",
+                 myname, inv_args.naik_epsilon, fn->eps_naik);
+    terminate(1);
+  }
+
+#if (FERM_ACTION==HISQ)
+  inv_args.tadpole = 1.0;
+#else
+  inv_args.tadpole = u0;
+#endif
+
   qudaMultishiftInvert(
 		       MILC_PRECISION,
 		       qic[0].prec,
@@ -223,9 +236,8 @@ int ks_multicg_offset_field_gpu(
   dtimec += dclock();
   if(this_node==0){
     printf("CONGRAD5: time = %e (multicg_offset_QUDA %s) masses = %d iters = %d mflops = %e\n",
-	   dtimec,prec_label[qic[0].prec-1],num_offsets,num_iters,
-	   (double)(nflop)*volume*
-	   num_iters/(1.0e6*dtimec*numnodes()));
+	   dtimec, prec_label[qic[0].prec-1], num_offsets, num_iters,
+	   (double)(nflop)*volume*num_iters/(1.0e6*dtimec*numnodes()));
     fflush(stdout);}
 #endif
 

@@ -136,19 +136,16 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   double t_sp1, t_sp2, t_l;
   t_sp1 = -dclock();
   
-  node0_printf("Calling GRID_create_V_from_vec\n"); fflush(stdout);
   grid_src = GRID_create_V_from_vec( src, qic->parity, grid_full, grid_rb);
   
   t_sp1 += dclock();
   t_sp2 = -dclock();
   
-  node0_printf("Calling GRID_create_V_from_vec\n"); fflush(stdout);
   grid_sol = GRID_create_V_from_vec( sol, qic->parity, grid_full, grid_rb);
   
   t_sp2 += dclock();
   t_l   = -dclock(); 
   
-  node0_printf("Calling GRID_asqtad_create_L_from_MILC\n"); fflush(stdout);
   /* For now we are taking the thin links from the site structure, so the first parameter is NULL */
   links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), grid_full );
 
@@ -157,7 +154,6 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
   
   double dtimegridinv = -dclock();
   
-  node0_printf("Calling GRID_asqtad_invert\n"); fflush(stdout);
   GRID_asqtad_invert( &info, links, &grid_invert_arg, 
 		      grid_resid_arg, (MYREAL)mass, grid_sol, grid_src, grid_full, grid_rb );
   iters = grid_resid_arg->final_iter;
@@ -201,7 +197,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
 	   "mflops = %e "
 	   "\n"
 	   , tot_cg_time
-	   , prec_label[MILC_PRECISION-1], iters
+	   , prec_label[GRID_PrecisionInt-1], iters
 	   , (double)(nflop*volume*iters/(1.0e6*tot_cg_time*numnodes()))
 	   );
     fflush(stdout);
@@ -209,13 +205,13 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
 #ifdef REMAP
   if(this_node==0) {
     printf("MILC<-->Grid data layout conversion timings\n"
-	   "\t src-spinor   = %e\n"
-	   "\t dest-spinors = %e\n"
-	   "\t soln-spinor  = %e\n"
-	   "\t links        = %e\n"
-	   "\t Grid remap   = %e\n"
+	   "\t src-spinor    = %e\n"
+	   "\t dest-spinors  = %e\n"
+	   "\t soln-spinor   = %e\n"
+	   "\t links         = %e\n"
+	   "\t Grid overhead = %e\n"
 	   "\t ---------------------------\n"
-	   "\t total remap  = %e\n"
+	   "\t total remap   = %e\n"
 	   , t_sp1, t_sp2, t_l, t_sl, t_gr
 	   , t_sp1 + t_sp2 + t_l + t_sl + t_gr
 	   );
@@ -225,7 +221,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src,
 	   "mflops(ignore data-conv.) = %e "
 	   "\n"
 	   , dtimeinv
-	   , prec_label[MILC_PRECISION-1], iters
+	   , prec_label[GRID_PrecisionInt-1], iters
 	   , (double)(nflop*volume*iters/(1.0e6*dtimeinv*numnodes()))
 	   );
     fflush(stdout);
@@ -278,21 +274,18 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
   double t_sp1, t_sp2, t_l;
   t_sp1 = -dclock();
   
-  node0_printf("Calling GRID_create_nV_from_vec\n"); fflush(stdout);
   grid_src = GRID_create_nV_from_vecs( src, nrhs, qic->parity, 
 				       grid_5D, grid_5Drb, grid_full, grid_rb);
   
   t_sp1 += dclock();
   t_sp2 = -dclock();
   
-  node0_printf("Calling GRID_create_nV_from_vec\n"); fflush(stdout);
   grid_sol = GRID_create_nV_from_vecs( sol, nrhs, qic->parity,
 				       grid_5D, grid_5Drb, grid_full, grid_rb);
   
   t_sp2 += dclock();
   t_l   = -dclock(); 
   
-  node0_printf("Calling GRID_asqtad_create_L_from_MILC\n"); fflush(stdout);
   /* For now we are taking the thin links from the site structure, so the first parameter is NULL */
   links = GRID_asqtad_create_L_from_MILC( NULL, get_fatlinks(fn), get_lnglinks(fn), grid_full);
 
@@ -301,7 +294,6 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
   
   double dtimegridinv = -dclock();
   
-  node0_printf("Calling GRID_asqtad_invert_block\n"); fflush(stdout);
   GRID_asqtad_invert_block( &info, links, &grid_invert_arg, 
 			    grid_resid_arg, (MYREAL)mass, nrhs, grid_sol, grid_src,
 			    grid_5D, grid_5Drb, grid_full, grid_rb);
@@ -318,7 +310,6 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
   destroy_grid_resid_arg(grid_resid_arg);
   
   /* Copy results back to su3_vector */
-  node0_printf("Calling GRID_extract_nV_to_vecs\n"); fflush(stdout);
   double t_sl = -dclock();
   GRID_extract_nV_to_vecs( sol, nrhs, grid_sol, qic->parity);
   t_sl += dclock();
@@ -333,21 +324,14 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
   } END_LOOP_OMP;
 #endif
   
-  node0_printf("Cleaning up\n"); fflush(stdout);
-
   /* Free GRID fields  */
   
-  node0_printf("destroy_nV\n"); fflush(stdout);
   GRID_destroy_nV(grid_src);    
-  node0_printf("destroy_nV\n"); fflush(stdout);
   GRID_destroy_nV(grid_sol);     
-  node0_printf("destroy_L\n"); fflush(stdout);
   GRID_asqtad_destroy_L(links);
   
   /* Free 5D lattice */
-  node0_printf("destroy_5Dgrid\n"); fflush(stdout);
   GRID_destroy_5Dgrid(grid_5D);
-  node0_printf("destroy_5DRBgrid\n"); fflush(stdout);
   GRID_destroy_5DRBgrid(grid_5Drb);
 
   tot_cg_time +=dclock();
@@ -356,11 +340,11 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
   char *prec_label[2] = {"F", "D"};
   if(this_node==0) {
     printf("CONGRAD5: time = %e "
-	   "(Grid %s) masses = 1 rhs = %d iters = %d "
+	   "(Grid-block %s) masses = 1 iters = %d rhs = %d "
 	   "mflops = %e "
 	   "\n"
 	   , tot_cg_time
-	   , prec_label[MILC_PRECISION-1], iters, nrhs
+	   , prec_label[GRID_PrecisionInt-1], iters, nrhs
 	   , (double)(nflop*nrhs*volume*iters/(1.0e6*tot_cg_time*numnodes()))
 	   );
     fflush(stdout);
@@ -368,13 +352,13 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
 #ifdef REMAP
   if(this_node==0) {
     printf("MILC<-->Grid data layout conversion timings\n"
-	   "\t src-spinor   = %e\n"
-	   "\t dest-spinors = %e\n"
-	   "\t soln-spinor  = %e\n"
-	   "\t links        = %e\n"
-	   "\t Grid remap   = %e\n"
+	   "\t src-spinor    = %e\n"
+	   "\t dest-spinors  = %e\n"
+	   "\t soln-spinor   = %e\n"
+	   "\t links         = %e\n"
+	   "\t Grid overhead = %e\n"
 	   "\t ---------------------------\n"
-	   "\t total remap  = %e\n"
+	   "\t total remap   = %e\n"
 	   , t_sp1, t_sp2, t_l, t_sl, t_gr
 	   , t_sp1 + t_sp2 + t_l + t_sl + t_gr
 	   );
@@ -384,7 +368,7 @@ KS_CONGRAD_BLOCK_PARITY_GRID ( int nrhs,
 	   "mflops(ignore data-conv.) = %e "
 	   "\n"
 	   , dtimeinv
-	   , prec_label[MILC_PRECISION-1], iters, nrhs
+	   , prec_label[GRID_PrecisionInt-1], iters, nrhs
 	   , (double)(nflop*nrhs*volume*iters/(1.0e6*dtimeinv*numnodes()))
 	   );
     fflush(stdout);

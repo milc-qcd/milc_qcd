@@ -35,7 +35,8 @@ MY_HEADERS = \
   ks_measure_includes.h \
   quark_action.h
 
-HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} \
+  ${QUDA_HEADERS} ${QPHIX_HEADERS} ${GRID_HEADERS} ${SCIDAC_HEADERS}
 
 # All required object files
 # Basic set from current directory
@@ -218,12 +219,6 @@ ks_measure_eigcg_hisq::
 ks_measure_current_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC" \
-	"EXTRA_OBJECTS += f_meas_current.o"
-
-ks_measure_current_block_hisq::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
-	-DBLOCKCG" \
 	"EXTRA_OBJECTS += f_meas_current.o"
 
 ks_measure_current_eigcg_hisq::

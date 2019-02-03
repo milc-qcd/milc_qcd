@@ -16,7 +16,7 @@
 
 #define Nc 3
 
-void project_su3(
+int project_su3(
    su3_matrix *w,         /* input initial guess. output resulting
                              SU(3) matrix */
    su3_matrix *q,         /* 3 x 3 complex matrix to be projected */
@@ -81,16 +81,9 @@ void project_su3(
       }
       
    } /* hits */
-   
-   int nodes = 0;
-   if( Nhit > 0 && tol > 0 && conver > tol )
-     nodes = 1;
 
-   g_intsum(&nodes);
-   g_doublemax(&conver);
-   if(this_node == 0)
-     if(nodes > 0){
-       printf("project_su3: %d nodes report no convergence: max conver = %e tol = %e\n",
-	      nodes, (double)conver, tol);
-     }
+   int status = 0;
+   if( Nhit > 0 && tol > 0 && conver > tol )
+     status = 1;
+   return status;
 }

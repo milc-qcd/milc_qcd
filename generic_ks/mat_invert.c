@@ -10,6 +10,7 @@
 */
 #include "generic_ks_includes.h"
 #include "../include/dslash_ks_redefine.h"
+#include "../include/openmp_defs.h"
 
 /*****************************************************************************/
 /* dst = M src. With parity selection */
@@ -20,9 +21,9 @@ void ks_dirac_op( su3_vector *src, su3_vector *dst, Real mass,
     register site *s;
 
     dslash_field( src, dst, parity, fn);
-    FORSOMEPARITYDOMAIN(i,s,parity){
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,){
       scalar_mult_add_su3_vector( dst+i, src+i, +2.0*mass, dst+i);
-    }
+    } END_LOOP_OMP;
 }
 
 /*****************************************************************************/
@@ -34,10 +35,10 @@ void ks_dirac_adj_op( su3_vector *src, su3_vector *dst, Real mass,
     register site *s;
 
     dslash_field( src, dst, parity, fn);
-    FORSOMEPARITYDOMAIN(i,s,parity){
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,){
       scalar_mult_su3_vector( dst+i, -1.0, dst+i);
       scalar_mult_add_su3_vector( dst+i, src+i, 2.0*mass, dst+i);
-    }
+    } END_LOOP_OMP;
 }
 
 /*****************************************************************************/
@@ -50,10 +51,10 @@ void ks_dirac_adj_op_inplace( su3_vector *dst, Real mass,
     su3_vector *tvec = create_v_field();
 
     dslash_field( dst, tvec, parity, fn);
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEFIELDPARITY_OMP(i,parity,){
       scalar_mult_su3_vector( dst+i, 2.0*mass, dst+i);
       scalar_mult_add_su3_vector( dst+i, tvec+i, -1.0, dst+i);
-    }
+    } END_LOOP_OMP;
     destroy_v_field(tvec);
 }
 
@@ -82,10 +83,10 @@ void ks_dirac_opsq( su3_vector *src, su3_vector *dst, Real mass, int parity,
 
     dslash_field( src, tmp, otherparity, fn);
     dslash_field( tmp, dst, parity, fn);
-    FORSOMEPARITYDOMAIN(i,s,parity){
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,){
       scalar_mult_su3_vector( dst+i, -1.0, dst+i);
       scalar_mult_sum_su3_vector( dst+i, src+i, msq_x4 );
-    }
+    } END_LOOP_OMP;
 
     free(tmp);
 }
@@ -96,14 +97,13 @@ static void dot_product(su3_vector *vec1, su3_vector *vec2,
 			double_complex *dot, int parity) {
   register double re,im ;
   register  int i;
-  complex cc ;
   
   re=im=0.0;
-  FORSOMEFIELDPARITY(i,parity){
-    cc = su3_dot( &(vec1[i]), &(vec2[i]) );
+  FORSOMEFIELDPARITY_OMP(i,parity,reduction(+:re,im)){
+    complex cc = su3_dot( &(vec1[i]), &(vec2[i]) );
     re += cc.real ;
     im += cc.imag ;
-  }
+  } END_LOOP_OMP;
   dot->real = re ; 
   dot->imag = im ;
   g_dcomplexsum(dot);
@@ -120,9 +120,9 @@ static void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1,
   sc.real= (Real)(cc->real) ; 
   sc.imag= (Real)(cc->imag) ;
 
-  FORSOMEFIELDPARITY(i,parity){
+  FORSOMEFIELDPARITY_OMP(i,parity,){
     c_scalar_mult_sub_su3vec(&(vec2[i]), (&sc), &(vec1[i])) ;
-  }
+  } END_LOOP_OMP;
 }
 
 /*****************************************************************************/
@@ -160,19 +160,22 @@ static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int pa
 
   c = (double_complex *)malloc(Num*sizeof(double_complex));
   for( j = 0; j < Num; j++){
-    c[j] = dcmplx((double)0.0,(double)0.0);
-    FORSOMEFIELDPARITY(i,parity){
+    double re = 0.0;
+    double im = 0.0;
+    FORSOMEFIELDPARITY_OMP(i,parity,reduction(+:re,im)){
       complex cc = su3_dot( eigVec[j]+i, src+i );
-      CSUM( c[j], cc );
-    }
+      re += cc.real;
+      im += cc.imag;
+    } END_LOOP_OMP;
+    c[j] = dcmplx(re, im);
   }
   g_vecdcomplexsum( c, Num );
   for( j = 0; j < Num; j++){
     CDIVREAL( c[j], eigVal[j]+4.0*mass*mass, c[j] );
     complex ctmp = cmplx(c[j].real, c[j].imag);
-    FORSOMEFIELDPARITY(i,parity){
+    FORSOMEFIELDPARITY_OMP(i,parity,){
       c_scalar_mult_add_su3vec( dst+i, &ctmp, eigVec[j]+i );
-    }
+    } END_LOOP_OMP;
   }
   free(c);
 }
@@ -202,7 +205,9 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
     /* We don't call with EVENANDODD anymore because we are
        transitioning to the QOP/QDP standard */
 
-    if(param.eigen_param.Nvecs > 0){
+    /* Do deflation if we have eigenvectors and the deflate parameter is true */
+
+    if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
       dtime = - dclock();
 #ifdef CGTIME
@@ -221,7 +226,7 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
     qic->parity = EVEN;
     cgn = ks_congrad_field( tmp, dst, qic, mass, fn );
 
-    if(param.eigen_param.Nvecs > 0){
+    if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
       dtime = - dclock();
 #ifdef CGTIME
@@ -271,9 +276,9 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 
     cgn = mat_invert_cg_field( tsrc, tdest, &qic, mass, fn );
 
-    FORALLSITES(i,s){
+    FORALLSITES_OMP(i,s,){
       su3vec_copy(tdest+i, (su3_vector *)F_PT(s,dest));
-    }
+    } END_LOOP_OMP;
 
     destroy_v_field(tdest);
     destroy_v_field(tsrc);
@@ -338,12 +343,17 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     ks_dirac_adj_op( src, tmp, mass, EVENANDODD, fn );
 
 #if EIGMODE != EIGCG
-    if(param.eigen_param.Nvecs > 0){
+    if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
       dtime = - dclock();
       node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
       
       deflate(dst, tmp, mass, param.eigen_param.Nvecs, EVEN);
+
+      dtime += dclock();
+#ifdef CGTIME
+      node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
+#endif
     }
 #endif
 
@@ -360,13 +370,13 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     /* reconstruct odd site solution */
     /* dst_o <-  1/2m (Dslash_oe*dst_e + src_o) */
     dslash_field( dst, ttt, ODD, fn );
-    FORODDSITES(i,s){
+    FORODDFIELDSITES_OMP(i,){
       sub_su3_vector( src+i, ttt+i, dst+i);
       scalar_mult_su3_vector( dst+i, 1.0/(2.0*mass), dst+i );
-    }
+    } END_LOOP_OMP;
 
 #if EIGMODE != EIGCG
-    if(param.eigen_param.Nvecs > 0){
+    if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
       dtime = - dclock();
       node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
@@ -417,7 +427,7 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
   for(is = 0; is < nsrc; is++){
     ks_dirac_adj_op( src[is], tmp[is], mass, EVENANDODD, fn );
     
-    if(param.eigen_param.Nvecs > 0){
+    if(param.eigen_param.Nvecs > 0 && qic->deflate){
       dtime = - dclock();
       node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
       
@@ -437,12 +447,12 @@ int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst,
   /* dst_o <-  1/2m (Dslash_oe*dst_e + src_o) */
   for(is = 0; is < nsrc; is++){
     dslash_field( dst[is], ttt, ODD, fn );
-    FORODDSITES(i,s){
+    FORODDFIELDSITES_OMP(i,){
       sub_su3_vector( src[is]+i, ttt+i, dst[is]+i);
       scalar_mult_su3_vector( dst[is]+i, 1.0/(2.0*mass), dst[is]+i );
-    }
+    } END_LOOP_OMP;
 
-    if(param.eigen_param.Nvecs > 0){
+    if(param.eigen_param.Nvecs > 0 && qic->deflate){
       dtime = - dclock();
       node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
       
@@ -489,9 +499,9 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 
     cgn = mat_invert_uml_field(tsrc, tdest, &qic, mass, fn);
 
-    FORALLSITES(i,s){
+    FORALLSITES_OMP(i,s,){
       su3vec_copy(tdest+i, (su3_vector *)F_PT(s,dest));
-    }
+    } END_LOOP_OMP;
 
     // check_invert( dest, src, mass, 1e-6, fn);
 
@@ -537,7 +547,7 @@ void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,
 	}
 	sum2 += magsq_su3vec( dest+i );
 	if(flag > 200)break;  // Don't write too many lines for debugging
-    }
+    } END_LOOP;
     g_doublesum( &sum );
     g_doublesum( &sum2 );
     dflag=flag;
@@ -608,7 +618,7 @@ void check_invert_field2( su3_vector *src, su3_vector *dest, Real mass,
  	    sum += derr;
 	}
 	sum2 += magsq_su3vec( dest+i );
-    }
+    } END_LOOP;
     g_doublesum( &sum );
     g_doublesum( &sum2 );
     dflag=flag;

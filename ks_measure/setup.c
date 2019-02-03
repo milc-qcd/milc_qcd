@@ -34,10 +34,11 @@ int setup()   {
   prompt=initial_set();
   if(prompt == 2)return prompt;
 
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   /* Initialize fermion links as unallocated */
@@ -59,7 +60,7 @@ static double eps_naik[MAX_NAIK];
 /* SETUP ROUTINES */
 static int 
 initial_set(){
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
@@ -130,7 +131,6 @@ initial_set(){
 #endif
 #endif
 
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
 
@@ -261,14 +261,18 @@ int readin(int prompt) {
 	
 #ifdef POLY_EIGEN
 	/* Chebyshev preconditioner */
+#ifdef ARPACK
 	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
+#endif
 	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
 	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
 	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
 	
+#ifdef ARPACK
 	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
 	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
 	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
+#endif
 #endif
       } else {
 	param.eigen_param.MaxIter = 0;
@@ -305,7 +309,6 @@ int readin(int prompt) {
 
 #ifdef CURRENT_DISC
       /* For some applications.  Random source count between writes */
-      IF_OK status += get_i(stdin, prompt, "nwrite", &param.nwrite[k] );
       IF_OK status += get_i(stdin, prompt, "source_spacing", &param.thinning[k] );
       /* For truncated solver Take difference of sloppy and precise?*/
       char savebuf[128];
@@ -361,16 +364,12 @@ int readin(int prompt) {
       /* Number of pbp masses in this set */
       IF_OK status += get_i(stdin, prompt, "number_of_pbp_masses",
 			    &param.num_pbp_masses[k]);
-      if(param.num_pbp_masses[k] > MAX_MASS_PBP){
-	printf("Number of masses exceeds dimension %d\n",MAX_MASS_PBP);
-	status++;
-      }
 
       /* Indexing range for set */
       param.begin_pbp_masses[k] = npbp_masses;
       param.end_pbp_masses[k] = npbp_masses + param.num_pbp_masses[k] - 1;
-      if(param.end_pbp_masses[k] > MAX_PBP_MASSES){
-	printf("Total number of masses must be <= %d!\n", MAX_PBP_MASSES);
+      if(param.end_pbp_masses[k] > MAX_MASS_PBP){
+	printf("Total number of masses must be <= %d!\n", MAX_MASS_PBP);
 	status++;
       }
 

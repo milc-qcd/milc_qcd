@@ -319,6 +319,13 @@ void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
   }
 
   QudaInvertArgs_t inv_args;
+  inv_args.naik_epsilon = fn->eps_naik;
+#if (FERM_ACTION==HISQ)
+  inv_args.tadpole = 1.0;
+#else
+  inv_args.tadpole = u0;
+#endif
+
   if (parity != EVENANDODD) {
     switch(parity) {
     case EVEN: inv_args.evenodd = QUDA_EVEN_PARITY; break;
