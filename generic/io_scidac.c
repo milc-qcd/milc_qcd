@@ -108,7 +108,7 @@ QIO_Writer *open_scidac_output(char *filename, int volfmt,
 #ifdef QIO_TRELEASE
   QIO_set_trelease(0,QIO_TRELEASE);
 #endif
-  QIO_verbose(QIO_VERB_DEBUG);
+  QIO_verbose(QIO_VERB_REG);
   outfile = QIO_open_write(xml_write_file, filename, volfmt, layout, 
 			   fs, &oflag);
   if(outfile == NULL){
