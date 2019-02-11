@@ -180,12 +180,12 @@ initial_set(void)
     time_stamp("start");
 
     /* Print list of options selected */
-    node0_printf("Options selected...\n");
+    printf("Options selected...\n");
     show_generic_opts();
     show_generic_ks_opts();
     show_generic_ks_md_opts();
 #ifdef INT_ALG
-    node0_printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
+    printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
 #endif
 #if FERM_ACTION == HISQ
     show_su3_mat_opts();
@@ -290,7 +290,7 @@ initial_set(void)
     if(rparam[i].GR.order > max_rat_order)max_rat_order = rparam[i].GR.order;
     if(rparam[i].FA.order > max_rat_order)max_rat_order = rparam[i].FA.order;
   }
-  node0_printf("Maximum rational func order is %d\n",max_rat_order);
+  if(mynode()==0)printf("Maximum rational func order is %d\n",max_rat_order);
 
   /* Determine the number of different Naik masses
      and fill in n_orders_naik and n_pseudo_naik        */
@@ -321,31 +321,31 @@ initial_set(void)
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   // calculate epsilon corrections for different Naik terms
   if( 0 != eps_naik[0] ) {
-    node0_printf("IN HISQ AND HYPISQ ACTIONS FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");
+    if(mynode()==0)printf("IN HISQ AND HYPISQ ACTIONS FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");
     terminate(1);
   }
 #endif
-  node0_printf("Naik term correction structure of multi_x:\n");
-  node0_printf("n_naiks %d\n",n_naiks);
+  if(mynode()==0)printf("Naik term correction structure of multi_x:\n");
+  if(mynode()==0)printf("n_naiks %d\n",n_naiks);
   for( i=0; i<n_naiks; i++ ) {
-    node0_printf("n_pseudo_naik[%d]=%d\n", i, n_pseudo_naik[i]);
-    node0_printf("n_orders_naik[%d]=%d\n", i, n_orders_naik[i]);
+    if(mynode()==0)printf("n_pseudo_naik[%d]=%d\n", i, n_pseudo_naik[i]);
+    if(mynode()==0)printf("n_orders_naik[%d]=%d\n", i, n_orders_naik[i]);
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-    node0_printf("eps_naik[%d]=%f\n", i, eps_naik[i]);
+    if(mynode()==0)printf("eps_naik[%d]=%f\n", i, eps_naik[i]);
 #endif
   }
-  node0_printf("n_order_naik_total %d\n",n_order_naik_total);
+  if(mynode()==0)printf("n_order_naik_total %d\n",n_order_naik_total);
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   if( n_naiks+1 > MAX_NAIK ) {
-    node0_printf("MAX_NAIK=%d < n_naiks+1=%d\n", MAX_NAIK, n_naiks+1 );
-    node0_printf("Increase MAX_NAIK\n");
+    if(mynode()==0)printf("MAX_NAIK=%d < n_naiks+1=%d\n", MAX_NAIK, n_naiks+1 );
+    if(mynode()==0)printf("Increase MAX_NAIK\n");
     terminate(1);
   }
 #else /* non HISQ */
   if( n_naiks>1 ) {
-    node0_printf("FOR ACTIONS OTHER THAN HISQ AND HYPISQ EPSILON CORRECTION IS NOT USED.\n");
-    node0_printf("ONLY ONE SET OF X LINKS IS USED.\n");
-    node0_printf("SET ALL naik_mass TO 0 IN RATIONAL FUNCTION FILE.\n");
+    if(mynode()==0)printf("FOR ACTIONS OTHER THAN HISQ AND HYPISQ EPSILON CORRECTION IS NOT USED.\n");
+    if(mynode()==0)printf("ONLY ONE SET OF X LINKS IS USED.\n");
+    if(mynode()==0)printf("SET ALL naik_mass TO 0 IN RATIONAL FUNCTION FILE.\n");
     terminate(1);
   }
 #endif /* HISQ */
