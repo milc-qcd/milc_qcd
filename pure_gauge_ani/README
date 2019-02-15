@@ -1,2 +1,10 @@
 This is a work directory for anisotropic pure gauge.
-Once it is done, it will be joined with pure_gauge appication.
+
+PLAN:
+
+First pass: clone pure_gauge here, then incrementally change to add
+anisotropy (compile-time switch). Should reproduce isotropic case
+from pure_gauge at all times.
+
+Second pass: replace pure_gauge with this version.
+
