@@ -138,6 +138,11 @@ su3_ora::
 	"DEFINES= -DORA_ALGORITHM -DONLY_GLUON_FILES" \
 	"EXTRA_OBJECTS= update_ora.o dsdu_qhb.o relax.o monte.o gaugefix2.o"
 
+su3_ora_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DORA_ALGORITHM -DONLY_GLUON_FILES -DANISOTROPY" \
+	"EXTRA_OBJECTS= update_ora.o dsdu_qhb.o relax.o monte.o gaugefix2.o"
+
 su3_ora_glue::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DORA_ALGORITHM -DGBALL -DONLY_GLUON_FILES" \

@@ -72,7 +72,11 @@ EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;			/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,stepsQ,propinterval;
+#ifndef ANISOTROPY
 EXTERN	Real beta;
+#else
+EXTERN	Real beta[2]; // beta[0] - space, beta[1] - time
+#endif
 EXTERN	Real epsilon;
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 EXTERN  double g_ssplaq, g_stplaq;
