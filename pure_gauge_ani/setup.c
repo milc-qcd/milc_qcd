@@ -105,7 +105,12 @@ char savebuf[128];
     
 	/* get couplings and broadcast to nodes	*/
 	/* beta, mass */
+#ifndef ANISOTROPY
 	IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
+#else
+    /* beta[0] - space, beta[1] - time */
+    IF_OK status += get_vf(stdin, prompt,"beta", &par_buf.beta, 2 );
+#endif
 
 #if ( defined HMC_ALGORITHM || defined RMD_ALGORITHM )
         /* microcanonical time step */
