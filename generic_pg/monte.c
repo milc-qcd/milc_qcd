@@ -31,9 +31,8 @@ Nhit = 3;
 pi2= 2.0*PI;
 #ifndef ANISOTROPY
 b3=beta/3.0;
-#else //ABTODO: TEMPORARY FIX, WILL CHANGE ONCE THIS FILE IS UPDATED
-//FOR NOW THIS MIMICS ISOTROPIC CODE
-b3=beta[0]/3.0;
+#else
+b3=1/(Real)3;
 #endif
 
 /* fix bug by adding loop over NumTrj; before 1 (and only 1) heat bath

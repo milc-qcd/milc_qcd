@@ -35,6 +35,14 @@ typedef struct {
     /* Now come the physical fields, program dependent */
 	/* gauge field */
 	su3_matrix link[4];
+#ifdef ANISOTROPY
+        su3_matrix staple_a[2];
+        /* NOTE: a) staple_a[0] - spatial, staple_a[1] - temporal
+                 b) the "staple" variable below is different from isotropic
+                    case: here staple=beta[0]*staple_a[0]+beta[1]*staple_a[1],
+                    while in the isotropic case it would be simply
+                    staple=staple_a[0]+staple_a[1] */
+#endif
 	su3_matrix tempmat1,staple;
 #ifdef HMC_ALGORITHM
  	su3_matrix old_link[4];
