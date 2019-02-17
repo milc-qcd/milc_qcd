@@ -402,6 +402,10 @@ int dirs[MAX_LENGTH], length;
 int path_dir[MAX_LENGTH], path_length;
 su3_matrix tmat1, *tempmat1;
 int fsubl;
+#ifdef ANISOTROPY
+int is_temporal; /* to decide what kind of staple we have:
+                    0 - spatial, 1 - temporal */
+#endif
 
  assert(NREPS==1);   /* This procedure designed only for NREPS = 1 */
 
@@ -413,6 +417,10 @@ int fsubl;
 
     FORSOMESUBLATTICE(i,st,subl) {
 	clear_su3mat(&(st->staple));
+#ifdef ANISOTROPY
+	clear_su3mat(&(st->staple_a[0]));
+	clear_su3mat(&(st->staple_a[1]));
+#endif
     }
 
     for(iloop=0;iloop<NLOOP;iloop++){
@@ -420,6 +428,10 @@ int fsubl;
 	for(ln=0;ln<loop_num[iloop];ln++){
 	    /* set up dirs.  we are looking at loop starting in "XUP"
 	       direction, rotate so it starts in "dir" direction. */
+#ifdef ANISOTROPY
+            /* initialize staple flag as spatial */
+            is_temporal = 0;
+#endif
 	    for(k=0;k<length;k++){
 		if( GOES_FORWARDS(loop_table[iloop][ln][k]) ){
 		    dirs[k]=(dir+loop_table[iloop][ln][k] )% 4;
@@ -428,6 +440,11 @@ int fsubl;
 		    dirs[k]=OPP_DIR(
 			(dir+OPP_DIR(loop_table[iloop][ln][k]))%4 );
 		}
+#ifdef ANISOTROPY
+		/* flip the flag if a temporal link is encountered */
+		if( is_temporal==0 && ( dirs[k]==TUP || dirs[k]==TDOWN ) )
+		    is_temporal=1;
+#endif
 	    }
 
 	    path_length = length-1;	/* generalized "staple" */
@@ -451,13 +468,29 @@ int fsubl;
 		   So now take adjoint */
 		FORSOMESUBLATTICE(i,st,subl) {
 		    su3_adjoint( &tempmat1[i], &tmat1 );
+#ifndef ANISOTROPY
 		    scalar_mult_add_su3_matrix(&(st->staple), &tmat1,
 			loop_coeff[iloop][0], &(st->staple) );
+#else
+		    scalar_mult_add_su3_matrix(&(st->staple_a[is_temporal]),
+			&tmat1, loop_coeff[iloop][0],
+			&(st->staple_a[is_temporal]) );
+#endif
 		}
 	    } /* k (location in path) */
 	} /* ln */
     } /* iloop */
 
+#ifdef ANISOTROPY
+    /* Add spatial and temporal staples weighted by betas to the
+       "staple" variable */
+    FORSOMESUBLATTICE(i,st,subl) {
+	scalar_mult_add_su3_matrix(&(st->staple), &(st->staple_a[0]),
+	    beta[0], &(st->staple) );
+	scalar_mult_add_su3_matrix(&(st->staple), &(st->staple_a[1]),
+	    beta[1], &(st->staple) );
+    }
+#endif
     special_free(tempmat1);
     g_sync();
 
