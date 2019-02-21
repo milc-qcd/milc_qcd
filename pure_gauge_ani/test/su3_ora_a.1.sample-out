@@ -2,7 +2,7 @@ Pure gauge SU3
 MIMD version 7
 Machine = Scalar processor, with 1 nodes
 Overrelaxed/quasi-heat bath algorithm
-start: Sat Feb 16 11:55:58 2019
+start: Thu Feb 21 13:56:39 2019
 
 type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nx 4
@@ -29,14 +29,14 @@ unit gauge configuration loaded
 CHECK PLAQ: 3.000000e+00 3.000000e+00
 CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
 Unitarity checked.  Max deviation 0.00e+00
-Time to check unitarity = 6.818771e-05
+Time to check unitarity = 8.296967e-05
 WARMUPS COMPLETED
-GMES 9.990000e+01 9.990000e+01 9.990000e+01 1.710902e+00 1.928869e+00
-GMES 9.990000e+01 9.990000e+01 9.990000e+01 1.667726e+00 1.896038e+00
+GMES 5.028567e-01 3.555177e-03 9.990000e+01 1.710902e+00 1.928869e+00
+GMES 3.209192e-02 -8.661655e-02 9.990000e+01 1.667726e+00 1.896038e+00
 RUNNING COMPLETED
-Time = 2.845502e-02 seconds
+Time = 2.722096e-02 seconds
 
 
 get_i(0): EOF on input.
-exit: Sat Feb 16 11:55:58 2019
+exit: Thu Feb 21 13:56:40 2019
 
