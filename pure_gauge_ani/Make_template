@@ -48,6 +48,7 @@ G_OBJECTS =          \
   io_lat_utils.o \
   make_lattice.o \
   nersc_cksum.o \
+  ploop2.o \
   remap_stdio_from_args.o \
   reunitarize2.o     \
   ranstuff.o
