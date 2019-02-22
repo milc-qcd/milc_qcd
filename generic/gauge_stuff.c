@@ -279,8 +279,14 @@ double imp_gauge_action() {
 #ifndef ANISOTROPY
         	total_action= (double)loop_coeff[iloop][0]*action;
 #else
+		/* NOTE: for anisotropic case every loop is multiplied by
+		   the corresponding spatial (beta[0]) or temporal (beta[1])
+		   coupling, while in the isotropic case all loops are
+		   added together and then multiplied by beta outside
+                   of this function */
         	total_action= (double)loop_coeff[iloop][0]*action
                               *beta[loop_st[iloop][ln]];
+		/* loop_st[iloop][ln] is either 0 or 1 */
 #endif
         	act2=action;
 		for(rep=1;rep<NREPS;rep++){
