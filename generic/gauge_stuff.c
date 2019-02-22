@@ -51,6 +51,11 @@ static Real **loop_coeff;
     /* for each rotation/reflection, an integer distinct for each starting
 	point, or each cyclic permutation of the links */
 int loop_char[MAX_NUM];
+#ifdef ANISOTROPY
+    /* for each rotation/reflection, an integer indicating if the path
+       is spatial (=0) or temporal (=1) */
+static int **loop_st;
+#endif
 
 static void char_num( int *dig, int *chr, int length);
 
@@ -271,7 +276,12 @@ double imp_gauge_action() {
 		trace=trace_su3( &tempmat1[i] );
 		action =  3.0 - (double)trace.real;
 		/* need the "3 -" for higher characters */
+#ifndef ANISOTROPY
         	total_action= (double)loop_coeff[iloop][0]*action;
+#else
+        	total_action= (double)loop_coeff[iloop][0]*action
+                              *beta[loop_st[iloop][ln]];
+#endif
         	act2=action;
 		for(rep=1;rep<NREPS;rep++){
 		    act2 *= action;
@@ -378,6 +388,49 @@ void printpath( int *path, int length ){
     for(i=0;i<length;i++)node0_printf("%d ",path[i]);
     node0_printf(",  L = %d )\n", length );
 }
+
+#ifdef ANISOTROPY
+/* Auxilliary function that goes through all possible paths rotations
+   and reflections and records if the path is spatial or temporal.
+   The results are stored in loop_st[NLOOP][MAX_NUM] array */
+void path_determine_st() {
+
+    int iloop, count, i;
+    char myname[] = "path_determine_st";
+
+    /* Allocate as if loop_st[NLOOP][MAX_NUM] */
+
+    loop_st = (int **)malloc(sizeof(int *)*NLOOP);
+    if(loop_st == NULL){
+      printf("%s(%d): No room for loop_st\n",myname,this_node);
+      terminate(1);
+    }
+
+    for(iloop = 0; iloop < NLOOP; iloop++){
+      loop_st[iloop] = (int *)malloc(sizeof(int)*MAX_NUM);
+      if(loop_st[iloop] == NULL){
+        printf("%s(%d): No room for loop_st\n",myname,this_node);
+        terminate(1);
+      }
+
+      /* loop over rotations/reflections */
+      for(count = 0; count < loop_num[iloop]; count++){
+
+        /* set initially as a spatial path */
+        loop_st[iloop][count] = 0;
+
+        /* loop over directions in the path */
+        for(i = 0; i < loop_length[iloop]; i++){
+          if( loop_table[iloop][count][i]==TUP ||
+              loop_table[iloop][count][i]==TDOWN ) {
+            loop_st[iloop][count] = 1;
+            break;
+          }
+        }
+      }
+    }
+}
+#endif
 
 #ifdef N_SUBL32
 /*** code from symanzik_sl32/dsdu_qhb.c  -- compute the staple ***/
