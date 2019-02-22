@@ -140,6 +140,12 @@ su3_hmc_symzk1::
         "GAUGE = symanzik_1loop_action.h" \
 	"EXTRA_OBJECTS= update.o update_u.o update_h.o ranmom.o d_action.o"
 
+su3_hmc_symzk1_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES =  -DHMC_ALGORITHM -DANISOTROPY" \
+        "GAUGE = symanzik_1loop_action.h" \
+	"EXTRA_OBJECTS= update.o update_u.o update_h.o ranmom.o d_action.o"
+
 su3_ora_symzk1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES =  -DORA_ALGORITHM " \
