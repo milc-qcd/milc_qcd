@@ -344,7 +344,7 @@ block_current_stochastic_deltam( Real *j_mu01[], Real mass0, Real mass1,
   qic->parity = parity;
   /* M0_inv_gr = 1/[D^2 + 4*mass0^2] gr */
   ks_congrad_block_field(nsrc, gr, M0_inv_gr, qic, mass0, fn01);
-  /* M_inv_gr = 1/[D^2 + 4*mass0^2] M0_inv_gr */
+  /* M_inv_gr = 1/[D^2 + 4*mass1^2] M0_inv_gr */
   ks_congrad_block_field(nsrc, M0_inv_gr, M_inv_gr, qic, mass1, fn01);
 
   for(int is = 0; is < nsrc; is++)

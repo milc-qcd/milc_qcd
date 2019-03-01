@@ -55,9 +55,7 @@ my_relative_residue(su3_vector *p, su3_vector *q, int parity)
     return sqrt(2*residue/volume);
 }
 
-#ifdef CGTIME
 static const char *prec_label[2] = {"F", "D"};
-#endif
 
 int
 ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest, 
@@ -102,8 +100,10 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
   }
   
   dtimec = -dclock(); 
+  double dsltime = 0.;
+  int ndsltime = 0;
 
-  msq_x4 = 4.0*mass*mass;
+    msq_x4 = 4.0*mass*mass;
 
   switch(parity){
   case(EVEN): otherparity=ODD; break;
@@ -258,6 +258,9 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 #endif
     /* sum of neighbors */
     
+#ifdef DSLASHTIME
+    dsltime -= dclock();
+#endif
     if(special_started==0){
       dslash_fn_field_special( cg_p, ttt, otherparity, tags2, 1, fn );
       dslash_fn_field_special( ttt, ttt, parity, tags1, 1, fn);
@@ -267,6 +270,10 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
       dslash_fn_field_special( cg_p, ttt, otherparity, tags2, 0, fn );
       dslash_fn_field_special( ttt, ttt, parity, tags1, 0, fn);
     }
+#ifdef DSLASHTIME
+    dsltime += dclock();
+    ndsltime += 2;
+#endif
     
     /* finish computation of M_adjoint*m*p and p*M_adjoint*m*Kp */
     /* ttt  <- ttt - msq_x4*cg_p	(msq = mass squared) */
@@ -385,6 +392,14 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
     printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
 	   dtimec, prec_label[MILC_PRECISION-1], qic->final_iters, 
 	   (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
+    fflush(stdout);}
+#endif
+#ifdef DSLASHTIME
+  if(this_node==0){
+    if(ndsltime > 0)dsltime /= ndsltime;
+    else dsltime = 0.;
+    printf("DSLASHTIME: time = %e ms (fn %s) per call for %d calls.\n",
+	   dsltime*1e6, prec_label[MILC_PRECISION-1],ndsltime);
     fflush(stdout);}
 #endif
 

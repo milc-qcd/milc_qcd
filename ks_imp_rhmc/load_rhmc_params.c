@@ -135,8 +135,8 @@ params_rhmc *load_rhmc_params(char filename[], int n_pseudo)
   /* Read rational function parameters for each pseudofermion field */
   
   for(i = 0; i < n_pseudo; i++){
-    node0_printf("Loading rational function parameters for phi field %d\n",i);
     if(mynode()==0) { 
+      printf("Loading rational function parameters for phi field %d\n",i);
       IF_OK status += get_f(fp, prompt, "naik_term_epsilon",&p[i].naik_term_epsilon);
     }
     broadcast_bytes((char *)&(p[i].naik_term_epsilon), sizeof(Real));
