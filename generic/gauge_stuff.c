@@ -357,8 +357,20 @@ void g_measure( ){
 		trace=trace_su3( &tempmat1[i] );
 		average[0] += (double)trace.real;
 		action =  3.0 - (double)trace.real;
+#ifndef ANISOTROPY
 		total_action += (double)loop_coeff[iloop][0]*action;
 		/* need the "3 -" for higher characters */
+#else
+		/* NOTE: in the total action calculation
+                   for anisotropic case every loop is multiplied by
+		   the corresponding spatial (beta[0]) or temporal (beta[1])
+		   coupling, while in the isotropic case all loops are
+		   added together and are NOT multiplied by beta in
+		   this function */
+		total_action += (double)loop_coeff[iloop][0]*action
+				*beta[loop_st[iloop][ln]];
+		/* loop_st[iloop][ln] is either 0 or 1 */
+#endif
         	act2=action;
 		for(rep=1;rep<NREPS;rep++){
 		    act2 *= action;
