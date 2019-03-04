@@ -50,6 +50,7 @@ typedef struct {
 			    coordinate direction.  Must be divisors of
 			    the node sublattice dimensions -- that is
 			    full lattice dims divided by node_geometry */
+#endif
 #ifdef FIX_IONODE_GEOM
   int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 			     partitions in each coordinate direction,
