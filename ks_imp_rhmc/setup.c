@@ -298,6 +298,7 @@ initial_set(void)
   }
   if(mynode()==0)printf("Maximum rational func order is %d\n",max_rat_order);
   fflush(stdout);
+
   /* Determine the number of different Naik masses
      and fill in n_orders_naik and n_pseudo_naik        */
   current_naik_epsilon = rparam[0].naik_term_epsilon;
@@ -341,6 +342,7 @@ initial_set(void)
 #endif
   }
   fflush(stdout);
+
   if(mynode()==0)printf("n_order_naik_total %d\n",n_order_naik_total);
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   if( n_naiks+1 > MAX_NAIK ) {
