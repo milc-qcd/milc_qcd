@@ -33,7 +33,11 @@ int prompt,status;
     /* On node zero, read lattice size, seed, nflavors and send to others */
     if(mynode()==0){
         /* print banner */
+#ifndef ANISOTROPY
         printf("Pure gauge SU3\n");
+#else
+        printf("Anisotropic pure gauge SU3\n");
+#endif
 #ifdef RMD_ALGORITHM
         printf("Microcanonical simulation with refreshing\n");
 #endif
