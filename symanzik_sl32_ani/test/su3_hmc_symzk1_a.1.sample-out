@@ -1,4 +1,4 @@
-Pure gauge SU3
+Anisotropic pure gauge SU3
 Hybrid Monte Carlo algorithm
 MIMD version 7
 Machine = Scalar processor, with 1 nodes
@@ -27,7 +27,7 @@ unit gauge configuration loaded
 CHECK PLAQ: 3.000000e+00 3.000000e+00
 CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
 Unitarity checked.  Max deviation 0.00e+00
-Time to check unitarity = 4.005432e-05
+Time to check unitarity = 4.100800e-05
 Symanzik 1x1 + 1x2 + 1x1x1 action
 gauge_action: total_dyn_flavors = 0
 loop coefficients: nloop rep loop_coeff  multiplicity
@@ -54,9 +54,9 @@ ACTION: g,h = 2.804145e+03  3.527429e+03  6.331574e+03
 ACCEPT: delta S = -8.482258e+00
 GMES 1.035351e+00 -7.091898e-02 9.990000e+01 1.609214e+00 1.864149e+00
 RUNNING COMPLETED
-Time = 1.906049e-01 seconds
+Time = 1.950290e-01 seconds
 
 
 get_i(0): EOF on input.
-exit: Thu Feb 21 19:31:03 2019
+exit: Sat Mar  9 11:39:00 2019
 

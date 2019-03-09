@@ -27,21 +27,20 @@ unit gauge configuration loaded
 CHECK PLAQ: 3.000000e+00 3.000000e+00
 CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
 Unitarity checked.  Max deviation 0.00e+00
-Time to check unitarity = 4.601479e-05
-Symanzik 1x1 + 1x2 + 1x1x1 action
+Time to check unitarity = 4.291534e-05
+Symanzik 1x1 + 1x2 action
 gauge_action: total_dyn_flavors = 0
 loop coefficients: nloop rep loop_coeff  multiplicity
                     0 0      1.000000e+00     6
-                    1 0      -7.182149e-02     12
-                    2 0      -7.975969e-03     16
+                    1 0      -6.605893e-02     12
 WARMUPS COMPLETED
-GMES 1.472984e+00 -4.831488e-02 9.990000e+01 1.753628e+00 1.907251e+00
-GMES 8.415793e-01 1.301178e-02 9.990000e+01 1.446041e+00 1.686284e+00
-GMES 5.856229e-01 -7.072970e-02 9.990000e+01 1.257150e+00 1.556861e+00
+GMES 1.583933e+00 -4.606774e-02 9.990000e+01 1.821010e+00 1.964936e+00
+GMES 8.258254e-01 3.158196e-02 9.990000e+01 1.501452e+00 1.721655e+00
+GMES 4.400871e-01 -1.629362e-02 9.990000e+01 1.335442e+00 1.644592e+00
 RUNNING COMPLETED
-Time = 3.315501e-01 seconds
+Time = 1.686761e-01 seconds
 
 
 get_i(0): EOF on input.
-exit: Sat Mar  9 11:40:24 2019
+exit: Sat Mar  9 11:43:35 2019
 
