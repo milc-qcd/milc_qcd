@@ -1,8 +1,8 @@
-Pure gauge SU3
+Anisotropic pure gauge SU3
 Microcanonical simulation with refreshing
 MIMD version 7
 Machine = Scalar processor, with 1 nodes
-start: Thu Feb 21 15:43:34 2019
+start: Sat Mar  9 11:59:05 2019
 
 type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nx 4
@@ -28,7 +28,7 @@ unit gauge configuration loaded
 CHECK PLAQ: 3.000000e+00 3.000000e+00
 CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
 Unitarity checked.  Max deviation 0.00e+00
-Time to check unitarity = 8.106232e-05
+Time to check unitarity = 7.081032e-05
 WARMUPS COMPLETED
 GMES 2.946920e+00 3.340570e-04 9.990000e+01 2.975361e+00 2.975060e+00
 GMES 2.887677e+00 8.236088e-04 9.990000e+01 2.951193e+00 2.949354e+00
@@ -41,9 +41,9 @@ GMES 2.644506e+00 -2.288492e-03 9.990000e+01 2.819544e+00 2.819141e+00
 GMES 2.596446e+00 -2.432653e-03 9.990000e+01 2.799484e+00 2.801217e+00
 GMES 2.546647e+00 4.034179e-03 9.990000e+01 2.778606e+00 2.783614e+00
 RUNNING COMPLETED
-Time = 7.118702e-02 seconds
+Time = 7.975388e-02 seconds
 
 
 get_i(0): EOF on input.
-exit: Thu Feb 21 15:43:34 2019
+exit: Sat Mar  9 11:59:05 2019
 
