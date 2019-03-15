@@ -323,6 +323,7 @@ static void set_topology(){
   int k = mynode();
   int nd = 0;
   int const *geom;
+  int j;
 
   if(k == 0) printf("LAYOUT = Hypercubes, options = ");
 
