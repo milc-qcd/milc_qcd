@@ -11,6 +11,10 @@
 
 #include "ks_spectrum_includes.h"
 #include "../include/fermion_links.h"
+#include "../db/io_string_stream.h"
+#ifdef HAVE_SQLITE
+#include "../db/db.h"
+#endif
 #include <string.h>
 #include <time.h>
 
@@ -599,6 +603,264 @@ int get_ancestors(int h[], int *n, int iq){
   
   return param.prop_for_qk[h[i]];
 }
+
+/*--------------------------------------------------------------------*/
+
+
+
+/*--------------------------------------------------------------------*/
+
+int io_JSON_quark_source_sink_op(io_string_stream *json, quark_source_sink_op *qss_op); // TODO: prototype to header
+int io_JSON_source_info(io_string_stream *json, quark_source *qs); // TODO: prototype to header
+int io_JSON_field_op_info_list(io_string_stream *json, quark_source_sink_op *qss_op[], int n); // TODO: prototype to header
+
+int extract_tsrc(int qtuple, char hadron)
+{
+  int tsrc[3];
+  int nh0;
+  int ih0[MAX_HISTORY];
+  int *iq = NULL;
+  int nquark = 0;
+  switch(hadron) {
+  case 'm': case 'M': // meson
+    nquark = 2;
+    iq = &param.qkpair[qtuple][0];
+    break;
+  case 'b': case 'B': // baryon
+    nquark = 3;
+    iq = &param.qktriplet[qtuple][0];
+    break;
+  default:
+    fprintf(stderr,"ERROR: unknown hadron type\n");
+    break;
+  }
+
+  int qi;
+  for(qi=0; qi<nquark; ++qi)
+    {
+      int iq0 = 0;
+      iq0 = iq[qi];
+      int ip0 = get_ancestors(ih0, &nh0, iq0);
+      int is0 = param.set[ip0];
+      tsrc[qi] = param.src_qs[is0].t0;
+    }
+  if(tsrc[0] != tsrc[1])
+    {
+      fprintf(stderr, "WARNING: ambiguous mismatched tsrc values quarks! %d %d\n",tsrc[0],tsrc[1]);
+    }
+  if((nquark > 2) && (tsrc[0] != tsrc[2]))
+    {
+      fprintf(stderr, "WARNING: ambiguous mismatched tsrc values quarks! %d %d\n",tsrc[0],tsrc[2]);
+    }
+  return tsrc[0];
+}
+
+/* TODO: remove
+int extract_tsrc_b(int qtriplet)
+{
+  int tsrc[3];
+  int nh0;
+  int ih0[MAX_HISTORY];
+  int qi;
+  for(qi=0; qi<3; ++qi)
+    {
+      int iq0 = param.qktriplet[qtriplet][qi];
+      int ip0 = get_ancestors(ih0, &nh0, iq0);
+      int is0 = param.set[ip0];
+      tsrc[qi] = param.src_qs[is0].t0;
+    }
+  if( (tsrc[0] != tsrc[1]) || (tsrc[0] != tsrc[2]) )
+    {
+      fprintf(stderr, "WARNING: ambiguous mismatched tsrc values quarks! %d %d %d\n",tsrc[0],tsrc[1],tsrc[2]);
+    }
+  return tsrc[0];
+}
+*/
+
+int io_JSON_quark_meta(io_string_stream *json, const char* qtype, char hadron, int qtuple, int qi)
+{
+  size_t len0 = strlen(json->base);
+  int nh0;
+  int ih0[MAX_HISTORY];
+  int iq0 = 0;
+  switch(hadron) {
+  case 'm': case 'M': // meson
+    iq0 = param.qkpair[qtuple][qi];
+    break;
+  case 'b': case 'B': // baryon
+    iq0 = param.qktriplet[qtuple][qi];
+    break;
+  default:
+    fprintf(stderr,"ERROR: unknown hadron type\n");
+    break;
+  }
+  int ip0 = get_ancestors(ih0, &nh0, iq0);
+  int is0 = param.set[ip0];
+  io_JSON_begin_set(json); io_JSON_key(json,"type"); io_JSON_quoted(json,qtype);
+  io_JSON_sep(json); io_JSON_key(json,"source"); io_JSON_source_info(json,&param.src_qs[is0]);
+  io_JSON_sep(json); io_JSON_key(json,"sink"); io_JSON_begin_set(json);
+  io_JSON_key(json,"label"); io_JSON_quoted(json,param.snk_qs_op[iq0].label);
+  io_JSON_sep(json); io_JSON_key(json,"ops");
+  {
+    int k;
+    quark_source_sink_op **op_list = static_cast(quark_source_sink_op**,malloc(sizeof(quark_source_sink_op*)*nh0));
+    for(k = 0; k < nh0; k++) {
+      op_list[k] = &param.snk_qs_op[ih0[nh0-1-k]];
+    }
+    io_JSON_field_op_info_list(json,op_list,nh0);
+    free(op_list);
+  } io_JSON_end_set(json);
+  io_JSON_sep(json); io_JSON_key(json,"mass"); io_JSON_quoted(json,param.mass_label[ip0]);
+  #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+  io_JSON_sep(json); io_JSON_key(json,"epsilon"); io_JSON_as_text(json,32,"%.6g",param.ksp[ip0].naik_term_epsilon);
+  #endif
+  #if U1_FIELD
+  io_JSON_sep(json); io_JSON_key(json,"charge"); io_JSON_quoted(json,param.charge_label[is0]);
+  #endif
+  io_JSON_end_set(json);
+  return(static_cast(int,strlen(json->base)-len0));
+}
+
+/*--------------------------------------------------------------------*/
+
+int io_JSON_meson_unique_key(io_string_stream *json, int qpair, int jmeson)
+{
+  int nh0, nh1;
+  int ih0[MAX_HISTORY], ih1[MAX_HISTORY];
+  int iq0 = param.qkpair[qpair][0];
+  int iq1 = param.qkpair[qpair][1];
+  int ip0 = get_ancestors(ih0, &nh0, iq0);
+  int ip1 = get_ancestors(ih1, &nh1, iq1);
+  int is0 = param.set[ip0];
+  int is1 = param.set[ip1];
+
+  size_t len0 = strlen(json->base);
+  io_JSON_as_text(json,strlen(param.meson_label[qpair][jmeson]),"%s",param.meson_label[qpair][jmeson]);
+  int k;
+  k = strlen(param.src_qs[is0].label)+1; if(k>0) io_JSON_as_text(json,k,"_%s",param.src_qs[is0].label);
+  k = strlen(param.src_qs[is1].label)+1; if(k>0) io_JSON_as_text(json,k,"_%s",param.src_qs[is1].label);
+  k = strlen(param.snk_qs_op[iq0].label)+1; if(k>0) io_JSON_as_text(json,k,"_%s",param.snk_qs_op[iq0].label);
+  k = strlen(param.snk_qs_op[iq1].label)+1; if(k>0) io_JSON_as_text(json,k,"_%s",param.snk_qs_op[iq1].label);
+  io_JSON_as_text(json,strlen(param.mass_label[ip0])+2,"_m%s", param.mass_label[ip0]);
+  #if U1_FIELD
+  io_JSON_as_text(json,strlen(param.charge_label[is0])+2,"_q%s",param.charge_label[is0]);
+  #endif
+  io_JSON_as_text(json,strlen(param.mass_label[ip1])+2,"_m%s", param.mass_label[ip1]);
+  #if U1_FIELD
+  io_JSON_as_text(json,strlen(param.charge_label[is1])+2,"_q%s",param.charge_label[is1]);
+  #endif
+  io_JSON_as_text(json,strlen(param.mom_label[qpair][jmeson])+2,"_%s",param.mom_label[qpair][jmeson]);
+  return(static_cast(int,strlen(json->base)-len0));
+}
+
+static int lookup_corr_index(int pair, int m); // foward reference
+
+int prepare_meson_JSON_metadata(io_string_stream *json, int qpair, int jmeson)
+{
+  size_t len0 = strlen(json->base);
+  io_JSON_begin_set(json); io_JSON_key(json,"antiquark"); io_JSON_quark_meta(json,"staggered",'M',qpair,0);
+  io_JSON_sep(json); io_JSON_key(json,"quark"); io_JSON_quark_meta(json,"staggered",'M',qpair,1);
+  io_JSON_sep(json); io_JSON_key(json,"correlator"); io_JSON_quoted(json,param.meson_label[qpair][jmeson]);
+  io_JSON_sep(json); io_JSON_key(json,"momentum"); io_JSON_quoted(json,param.mom_label[qpair][jmeson]);
+  io_JSON_sep(json); io_JSON_key(json,"spin_taste_sink"); io_JSON_quoted(json,spin_taste_label(param.spin_taste_snk[qpair][jmeson]));
+  io_JSON_sep(json); io_JSON_key(json,"correlator_key");
+  io_JSON_quote(json); io_JSON_meson_unique_key(json,qpair,jmeson); io_JSON_quote(json);
+  io_JSON_end_set(json);
+  return(static_cast(int,strlen(json->base)-len0));
+}
+
+/* TODO: remove
+int io_JSON_quark_meta_baryon(io_string_stream *json, const char* qtype, int triplet, int qi)
+{
+  size_t len0 = strlen(json->base);
+  int iq0 = param.qktriplet[triplet][qi];
+  int ih0[MAX_HISTORY];
+  int nh0;
+  int i;
+  int ip0 = get_ancestors(ih0, &nh0, iq0);
+  int is0 = param.set[ip0];
+  io_JSON_begin_set(json); io_JSON_key(json,"type"); io_JSON_quoted(json,qtype);
+  io_JSON_sep(json); io_JSON_key(json,"source"); io_JSON_source_info(json,&param.src_qs[is0]);
+  io_JSON_sep(json); io_JSON_key(json,"sink"); io_JSON_begin_set(json);
+  io_JSON_key(json,"label"); io_JSON_quoted(json,param.snk_qs_op[iq0].label);
+  io_JSON_sep(json); io_JSON_key(json,"ops");
+  {
+    int k;
+    quark_source_sink_op **op_list = static_cast(quark_source_sink_op**,malloc(sizeof(quark_source_sink_op*)*nh0));
+    for(k = 0; k < nh0; k++) {
+      op_list[k] = &param.snk_qs_op[ih0[nh0-1-k]];
+    }
+    io_JSON_field_op_info_list(json,op_list,nh0);
+    free(op_list);
+  } io_JSON_end_set(json);
+  io_JSON_sep(json); io_JSON_key(json,"mass"); io_JSON_quoted(json,param.mass_label[ip0]);
+  #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+  io_JSON_sep(json); io_JSON_key(json,"epsilon"); io_JSON_as_text(json,32,"%.6g",param.ksp[ip0].naik_term_epsilon);
+  #endif
+  #if U1_FIELD
+  io_JSON_sep(json); io_JSON_key(json,"charge"); io_JSON_quoted(json,param.charge_label[is0]);
+  #endif
+  io_JSON_end_set(json);
+  return(static_cast(int,strlen(json->base)-len0));
+}
+*/
+
+int io_JSON_baryon_unique_key(io_string_stream *json, int triplet, int jbaryon)
+{
+  size_t len0 = strlen(json->base);
+  int iq0 = param.qktriplet[triplet][0];
+  int iq1 = param.qktriplet[triplet][1];
+  int iq2 = param.qktriplet[triplet][2];
+  int ih0[MAX_HISTORY], ih1[MAX_HISTORY], ih2[MAX_HISTORY];
+  int nh0, nh1, nh2;
+  int ip0 = get_ancestors(ih0, &nh0, iq0);
+  int ip1 = get_ancestors(ih1, &nh1, iq1);
+  int ip2 = get_ancestors(ih2, &nh2, iq2);
+  int is0 = param.set[ip0];
+  int is1 = param.set[ip1];
+  int is2 = param.set[ip2];
+  int len;
+
+  io_JSON_as_text(json,strlen(param.baryon_label[triplet][jbaryon]),"%s",param.baryon_label[triplet][jbaryon]);
+  // source labels
+  len=strlen(param.src_qs[is0].label); if(len>0) io_JSON_as_text(json,len+1,"_%s",param.src_qs[is0].label);
+  len=strlen(param.src_qs[is1].label); if(len>0) io_JSON_as_text(json,len+1,"_%s",param.src_qs[is1].label);
+  len=strlen(param.src_qs[is2].label); if(len>0) io_JSON_as_text(json,len+1,"_%s",param.src_qs[is2].label);
+  // sink labels
+  len=strlen(param.snk_qs_op[iq0].label); if(len>0) io_JSON_as_text(json,len+1,"_%s",param.snk_qs_op[iq0].label);
+  len=strlen(param.snk_qs_op[iq1].label); if(len>0) io_JSON_as_text(json,len+1,"_%s",param.snk_qs_op[iq1].label);
+  len=strlen(param.snk_qs_op[iq2].label); if(len>0) io_JSON_as_text(json,len+1,"_%s",param.snk_qs_op[iq2].label);
+  // masses and charges
+  io_JSON_as_text(json,strlen(param.mass_label[ip0])+1,"_%s",param.mass_label[ip0]);
+  #if U1_FIELD
+  io_JSON_as_text(json,strlen(param.charge_label[is0])+2,"_q%s",param.charge_label[is0]);
+  #endif
+  io_JSON_as_text(json,strlen(param.mass_label[ip1])+1,"_%s",param.mass_label[ip1]);
+  #if U1_FIELD
+  io_JSON_as_text(json,strlen(param.charge_label[is1])+2,"_q%s",param.charge_label[is1]);
+  #endif
+  io_JSON_as_text(json,strlen(param.mass_label[ip2])+1,"_%s",param.mass_label[ip2]);
+  #if U1_FIELD
+  io_JSON_as_text(json,strlen(param.charge_label[is2])+2,"_q%s",param.charge_label[is2]);
+  #endif
+  io_JSON_as_text(json,5,"%s","_p000");
+  return(static_cast(int,strlen(json->base)-len0));
+}
+
+int prepare_baryon_JSON_metadata(io_string_stream *json, int triplet, int jbaryon)
+{
+  size_t len0 = strlen(json->base);
+  io_JSON_begin_set(json); io_JSON_key(json,"quark0"); io_JSON_quark_meta(json,"staggered",'B',triplet,0);
+  io_JSON_sep(json); io_JSON_key(json,"quark1"); io_JSON_quark_meta(json,"staggered",'B',triplet,1);
+  io_JSON_sep(json); io_JSON_key(json,"quark2"); io_JSON_quark_meta(json,"staggered",'B',triplet,2);
+  io_JSON_sep(json); io_JSON_key(json,"correlator"); io_JSON_quoted(json,param.baryon_label[triplet][jbaryon]);
+  io_JSON_sep(json); io_JSON_key(json,"baryon_type"); io_JSON_quoted(json,baryon_type_label(param.baryon_type_snk[triplet][jbaryon]));
+  io_JSON_sep(json); io_JSON_key(json,"momentum"); io_JSON_quoted(json,"p000");
+  io_JSON_sep(json); io_JSON_key(json,"correlator_key");
+  io_JSON_quote(json); io_JSON_baryon_unique_key(json,triplet,jbaryon); io_JSON_quote(json);
+  io_JSON_end_set(json);
+  return(static_cast(int,strlen(json->base)-len0));
+}
   
 /*--------------------------------------------------------------------*/
 static FILE* open_fnal_meson_file(int pair){
@@ -613,8 +875,8 @@ static FILE* open_fnal_meson_file(int pair){
   int is1 = param.set[ip1];
   FILE *fp;
 
-  /* Only node 0 writes, and only if we want the file. */
-  if(this_node != 0 || param.saveflag_m[pair] == FORGET )
+  /* Only node 0 writes, and only if 'SAVE_ASCII' we want the file. */
+  if(this_node != 0 || param.saveflag_m[pair] != SAVE_ASCII )
     return NULL;
 
   /* Always append */
@@ -626,6 +888,8 @@ static FILE* open_fnal_meson_file(int pair){
   }
   fprintf(fp,"---\n");
   fprintf(fp,"JobID:                        %s\n",param.job_id);
+  fprintf(fp,"series:                       %s\n",param.series);
+  fprintf(fp,"trajectory:                   %d\n",param.trajectory);
   fprintf(fp,"date:                         \"%s UTC\"\n",utc_date_time);
   fprintf(fp,"lattice_size:                 %d,%d,%d,%d\n", nx, ny, nz, nt);
   //  fprintf(fp,"spatial volume:        %g\n",((float)nx)*ny*nz);
@@ -730,7 +994,7 @@ static FILE* open_fnal_baryon_file(int triplet){
   FILE *fp;
 
   /* Only node 0 writes, and only if we want the file. */
-  if(this_node != 0 || param.saveflag_b[triplet] == FORGET )
+  if(this_node != 0 || param.saveflag_b[triplet] != SAVE_ASCII )
     return NULL;
 
   /* Always append */
@@ -742,6 +1006,8 @@ static FILE* open_fnal_baryon_file(int triplet){
   }
   fprintf(fp,"---\n");
   fprintf(fp,"JobID:                       %s\n",param.job_id);
+  fprintf(fp,"series:                      %s\n",param.series);
+  fprintf(fp,"trajectory:                  %d\n",param.trajectory);
   fprintf(fp,"date:                        \"%s UTC\"\n",utc_date_time);
   fprintf(fp,"lattice_size:                %d,%d,%d,%d\n", nx, ny, nz, nt);
 
@@ -830,7 +1096,7 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
   int is1 = param.set[ip1];
   int i   = lookup_corr_index(pair,m);
 
-  if(this_node != 0 || param.saveflag_m[pair] == FORGET)return;
+  if(this_node != 0 || param.saveflag_m[pair] != SAVE_ASCII)return;
 
   fprintf(fp,"---\n");
   fprintf(fp,"correlator:                   %s\n",param.meson_label[pair][m]);
@@ -916,7 +1182,7 @@ static void print_start_fnal_baryon_prop(FILE *fp, int triplet, int b)
   int is1 = param.set[ip1];
   int is2 = param.set[ip2];
 
-  if(this_node != 0 || param.saveflag_b[triplet] == FORGET)return;
+  if(this_node != 0 || param.saveflag_b[triplet] != SAVE_ASCII)return;
 
   fprintf(fp,"---\n");
   fprintf(fp,"correlator:                  %s\n",param.baryon_label[triplet][b]);
@@ -995,52 +1261,254 @@ static void print_start_baryon_prop(int triplet, int b)
 /*--------------------------------------------------------------------*/
 static void print_meson_prop(int pair, int t, complex c)
 {
-  if(param.saveflag_m[pair] != FORGET)return;
-  node0_printf("%d %e %e\n",t,(double)c.real,(double)c.imag);
+  if(param.saveflag_m[pair] == FORGET) { node0_printf("%d %e %e\n",t,(double)c.real,(double)c.imag); }
 }
 /*--------------------------------------------------------------------*/
 static void print_baryon_prop(int triplet, int t, complex c)
 {
-  if(param.saveflag_b[triplet] != FORGET)return;
-  node0_printf("%d %e %e\n",t,(double)c.real,(double)c.imag);
+  if(param.saveflag_b[triplet] == FORGET ) { node0_printf("%d %e %e\n",t,(double)c.real,(double)c.imag); }
 }
 /*--------------------------------------------------------------------*/
 static void print_fnal_meson_prop(FILE *fp, int pair, int t, complex c)
 {
-  if(this_node != 0 || param.saveflag_m[pair] == FORGET)return;
-  fprintf(fp, "%d\t%e\t%e\n", t, (double)c.real, (double)c.imag);
+  if(this_node == 0 && param.saveflag_m[pair] == SAVE_ASCII) {
+    fprintf(fp, "%d\t%e\t%e\n", t, (double)c.real, (double)c.imag); }
 }
 /*--------------------------------------------------------------------*/
 static void print_fnal_baryon_prop(FILE *fp, int triplet, int t, complex c)
 {
-  if(this_node != 0 || param.saveflag_b[triplet] == FORGET)return;
-  fprintf(fp, "%d\t%e\t%e\n", t, (double)c.real, (double)c.imag);
+  if(this_node == 0 && param.saveflag_b[triplet] == SAVE_ASCII) {
+    fprintf(fp, "%d\t%e\t%e\n", t, (double)c.real, (double)c.imag); }
 }
 /*--------------------------------------------------------------------*/
 static void print_end_meson_prop(int pair){
-  if(param.saveflag_m[pair] != FORGET)return;
-  node0_printf("ENDPROP\n");
+  if(param.saveflag_m[pair] == FORGET) { node0_printf("ENDPROP\n"); }
 }
 /*--------------------------------------------------------------------*/
 static void print_end_baryon_prop(int pair){
-  if(param.saveflag_b[pair] != FORGET)return;
-  node0_printf("ENDPROP\n");
+  if(param.saveflag_b[pair] == FORGET) { node0_printf("ENDPROP\n"); }
 }
 /*--------------------------------------------------------------------*/
 static void print_end_fnal_meson_prop(FILE *fp, int pair){
-  if(this_node != 0 || param.saveflag_m[pair] == FORGET)return;
+  //if(this_node != 0 || param.saveflag_m[pair] == FORGET)return;
   //  fprintf(fp, "&\n");
 }
 /*--------------------------------------------------------------------*/
 static void close_fnal_meson_file(FILE *fp, int pair){
-  if(this_node != 0 || param.saveflag_m[pair] == FORGET)return;
-  if(fp != NULL)fclose(fp);
+  if(this_node == 0 && param.saveflag_m[pair] == SAVE_ASCII)
+    if(fp != NULL)fclose(fp);
 }
 /*--------------------------------------------------------------------*/
 static void close_fnal_baryon_file(FILE *fp, int triplet){
-  if(this_node != 0 || param.saveflag_b[triplet] == FORGET)return;
-  if(fp != NULL)fclose(fp);
+  if(this_node == 0 && param.saveflag_b[triplet] == SAVE_ASCII)
+    if(fp != NULL)fclose(fp);
 }
+
+/*--------------------------------------------------------------------*/
+#ifdef HAVE_SQLITE
+
+int sql_spectrum_ks(sqlite3 *db, int pair, unsigned long epoch_secs)
+{
+  if(!param.do_meson_spect[pair]) return(0);
+
+  complex *prop = NULL;
+  io_string_stream ckey; ckey.base=NULL;ckey.length=0;
+  // JSON arrays of re and im parts of the correlator
+  io_string_stream json_re; json_re.base=NULL;json_re.length=0;
+  io_string_stream json_im; json_im.base=NULL;json_im.length=0;
+  if(this_node == 0){
+    prop = static_cast(complex*,calloc(nt,sizeof(complex))); // corr vector
+    const int max_keysize = 1000; // starting key size
+    io_string_stream_alloc(&ckey,max_keysize); // key space
+    const int prec = 6; // default precision for format %e
+    const int elem_sz = prec + 7; //  v: +f.ppppppe+dd
+    const int sz = nt*(elem_sz + 1)+3;
+    io_string_stream_alloc(&json_re, sz); // starting JSON array size for string "[v,v,...,v]"
+    io_string_stream_alloc(&json_im, sz);
+  }
+
+  int num_report = param.num_corr_report[pair];
+  int rc = SQLITE_OK;
+  int m;
+  for(m=0;m<num_report;m++) {
+    // empty correlator object
+    db_correlator corr; corr.id = 0; corr.name = NULL; corr.metadata = NULL;
+    int free_corr = 0;
+    if(this_node == 0)
+      {
+	// make correlator unique key
+	ckey.base[0] = '\0'; // reset string
+	io_JSON_meson_unique_key(&ckey,pair,m);
+
+	// lookup key
+	rc = db_query_correlator_by_name(db, ckey.base, &corr);
+	if(rc != SQLITE_OK) break;
+	free_corr = 1; // do free corr pointers
+	if(corr.id < 1)
+	  {
+	    // ckey not found in db, so insert as a new correlator
+	    free_corr = 0; // do not free corr pointers
+	    corr.name = ckey.base; //copy pointer we manage
+	    // generate correlator metadata
+	    const int est_meta_size = 4000; // starting size
+	    io_string_stream meta; meta.base=NULL;meta.length=0;
+	    io_string_stream_alloc(&meta,est_meta_size);
+	    prepare_meson_JSON_metadata(&meta,pair,m);
+	    corr.metadata = meta.base; // copy pointer we manage
+	    // insert new correlator
+	    rc = db_insert_correlator(db,&corr);
+	    if(rc != SQLITE_OK) break;
+	    printf("INSERT name=%s id=%d\n",corr.name,corr.id);
+	  }
+      }
+
+    // corr complex vector
+    Real norm_fac = num_corr_occur[m];
+    int t, tp;
+    for(t=0; t<nt; t++)
+      {
+	tp = (t + param.r_offset_m[pair][3]) % nt;
+	complex prop_t = pmes_prop[m][tp];
+	g_complexsum( &prop_t );
+	CDIVREAL(prop_t, norm_fac, prop_t);
+	if(this_node == 0) prop[t] = prop_t;
+      }
+
+    if(this_node == 0)
+      {
+	int tsrc = extract_tsrc(pair,'M');
+	json_re.base[0] = '\0'; // reset string
+	json_im.base[0] = '\0';
+	io_JSON_complex_array(&json_re, &json_im, prop, nt);
+
+	db_data data; data.id=0; // unique, will be assigned by db
+	data.correlator_id = corr.id;
+	data.series=param.series; // copy char pointer
+	data.trajectory=param.trajectory;
+	data.tsrc=tsrc;
+	data.jobid=param.job_id; // copy char pointer
+	data.timestamp=epoch_secs;
+	data.c_re=json_re.base ;data.c_im=json_im.base; // copy pointers
+
+	// INSERT OR REPLACE numeric data
+	rc = db_update_data(db, &data);
+	if(free_corr) db_correlator_free(&corr);
+	if(rc != SQLITE_OK) break;
+      }
+  }
+  if(this_node == 0)
+    {
+      // free resources
+      io_string_stream_free(&json_im);
+      io_string_stream_free(&json_re);
+      io_string_stream_free(&ckey);
+      free(prop);
+    }
+  return(rc);
+}
+
+int sql_spectrum_ks_baryon(sqlite3 *db, int triplet, unsigned long epoch_secs)
+{
+  int rc = SQLITE_OK;
+  if(!param.do_baryon_spect[triplet]) return(rc);
+
+  complex *prop = NULL;
+  io_string_stream ckey; ckey.base=NULL;ckey.length=0;
+  // JSON arrays of re and im parts of the correlator
+  io_string_stream json_re; json_re.base=NULL;json_re.length=0;
+  io_string_stream json_im; json_im.base=NULL;json_im.length=0;
+  if(this_node == 0){
+    prop = static_cast(complex*,calloc(nt,sizeof(complex))); // corr vector
+    const int max_keysize = 1000; // starting key size
+    io_string_stream_alloc(&ckey,max_keysize); // key space
+    const int prec = 6; // default precision for format %e
+    const int elem_sz = prec + 7; //  v: +f.ppppppe+dd
+    const int sz = nt*(elem_sz + 1)+3;
+    io_string_stream_alloc(&json_re, sz); // starting JSON array size for string "[v,v,...,v]"
+    io_string_stream_alloc(&json_im, sz);
+  }
+
+  int num_report = param.num_corr_b[triplet];
+  int m;
+  for(m=0;m<num_report;m++) {
+    // empty correlator object
+    db_correlator corr; corr.id = 0; corr.name = NULL; corr.metadata = NULL;
+    int free_corr = 0;
+    if(this_node == 0)
+      {
+	// make correlator unique key
+	ckey.base[0] = '\0'; // reset string
+	io_JSON_baryon_unique_key(&ckey,triplet,m);
+
+	// lookup key
+	db_query_correlator_by_name(db, ckey.base, &corr);
+	free_corr = 1; // do free corr pointers
+	if(corr.id < 1)
+	  {
+	    // ckey not found in db, so insert as a new correlator
+	    free_corr = 0; // do not free corr pointers
+	    corr.name = ckey.base; //copy pointer we manage
+	    // generate correlator metadata
+	    const int est_meta_size = 4000; // starting size
+	    io_string_stream meta; meta.base=NULL;meta.length=0;
+	    io_string_stream_alloc(&meta,est_meta_size);
+	    prepare_baryon_JSON_metadata(&meta,triplet,m);
+	    corr.metadata = meta.base; // copy pointer we manage
+	    // insert new correlator
+	    rc = db_insert_correlator(db,&corr);
+	    if(rc != SQLITE_OK) break;
+	    printf("INSERT name=%s id=%d\n",corr.name,corr.id);
+	  }
+      }
+
+    // corr complex vector
+    int t, tp;
+    int r_off_b = param.r_offset_b[triplet][3];
+    for(t=0; t<nt; t++)
+      {
+	tp = (t + param.r_offset_b[triplet][3]) % nt;
+	complex prop_t = baryon_prop[m][tp];
+	g_complexsum( &prop_t );
+	// fix sign for antiperiodic bc
+	if( ( ((t+r_off_b)/nt - r_off_b/nt) % 2 ) == 1 ){ CMULREAL(prop_t,-1.,prop_t) };
+	if(this_node == 0) prop[t] = prop_t;
+      }
+
+    if(this_node == 0)
+      {
+	int tsrc = extract_tsrc(triplet,'B');
+	json_re.base[0] = '\0'; // reset string
+	json_im.base[0] = '\0';
+	io_JSON_complex_array(&json_re, &json_im, prop, nt);
+
+	db_data data; data.id=0; // unique, will be assigned by db
+	data.correlator_id = corr.id;
+	data.series=param.series; // copy char pointer
+	data.trajectory=param.trajectory;
+	data.tsrc=tsrc;
+	data.jobid=param.job_id; // copy char pointer
+	data.timestamp=epoch_secs;
+	data.c_re=json_re.base ;data.c_im=json_im.base; // copy pointers
+
+	// INSERT OR REPLACE numeric data
+	rc = db_update_data(db, &data);
+	if(free_corr) db_correlator_free(&corr);
+	if(rc != SQLITE_OK) break;
+      }
+  }
+  if(this_node == 0)
+    {
+      // free resources
+      io_string_stream_free(&json_im);
+      io_string_stream_free(&json_re);
+      io_string_stream_free(&ckey);
+      free(prop);
+    }
+  return(0);
+}
+
+#endif
+
 /*--------------------------------------------------------------------*/
 static void spectrum_ks_print_diag(int pair){
 
@@ -1058,8 +1526,6 @@ static void spectrum_ks_print_diag(int pair){
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);
-    if(this_node == 0 && corr_fp == NULL)
-      param.saveflag_m[pair] = FORGET;
     
     for(m=0;m<num_report;m++) {
       norm_fac = num_corr_occur[m];
@@ -1099,8 +1565,6 @@ static void spectrum_ks_print_offdiag(int pair){
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);
-    if(this_node == 0 && corr_fp == NULL)
-      param.saveflag_m[pair] = FORGET;
 
     /* print meson propagators */
     for(m=0;m<num_report;m++) {
@@ -1139,8 +1603,6 @@ static void spectrum_ks_print_baryon(int triplet){
   /* print baryon propagator */
   if(param.do_baryon_spect[triplet]){
     corr_fp = open_fnal_baryon_file(triplet);
-    if(this_node == 0 && corr_fp == NULL)
-      param.saveflag_b[triplet] = FORGET;
 
     for(b=0;b<num_corr;b++){
 
@@ -1189,53 +1651,114 @@ void spectrum_ks_baryon_cleanup(int triplet){
 void spectrum_ks(ks_prop_field *qp0, int naik_index0, 
 		 ks_prop_field *qp1, int naik_index1, int pair)
 {
-
+  int ret;
   int *qkpair = param.qkpair[pair];
   double dtime;
 
   spectrum_ks_init(pair);
 
-  if(qkpair[0] == qkpair[1]){
-
-    if(param.do_meson_spect[pair]){
+  if(param.do_meson_spect[pair]){
+    if(qkpair[0] == qkpair[1]){
       spectrum_ks_diag_meson(qp0, naik_index0, pair);
-      
-      dtime = start_timing();
-      spectrum_ks_print_diag(pair);
-      print_timing(dtime, "printing correlator");
-    }
-
-  } else {
-
-    if(param.do_meson_spect[pair]){
+    } else {
       spectrum_ks_offdiag_meson(qp0, naik_index0, qp1, naik_index1, pair);
+    }      
+    dtime = start_timing();
+    spectrum_ks_print_diag(pair);
+    print_timing(dtime, "printing correlator");
 
-      dtime = start_timing();
-      spectrum_ks_print_offdiag(pair);
-      print_timing(dtime, "printing correlator");
-    }
-  }    
+    if(param.saveflag_m[pair] == SAVE_SQLITE)
+      #ifdef HAVE_SQLITE
+      {
+	const char *dbName = &param.savefile_m[pair][0];
+	sqlite3 *db = NULL;
+	// timestamp: seconds since the epoch
+	time_t epoch_secs = time(NULL);
+	if(this_node == 0)
+	  {
+	    // connect to db
+	    ret = db_connect(&db,dbName);
+	    // init tables if they do not exist
+	    ret = db_init_tables(db);
+	    // begin transaction
+	    ret = db_begin_transaction(db);
+	  }
+	// insert correlators
+	ret = sql_spectrum_ks(db,pair,epoch_secs); // must be called from all nodes to do tie-ups 
+	if(this_node == 0)
+	  {
+	    // end transaction
+	    if(ret == SQLITE_OK){
+	      ret = db_commit_transaction(db);
+	    } else {
+	      ret = db_rollback_transaction(db);
+	    }
+	    // disconnect from db
+	    ret = db_disconnect(db);
+	  }
+      }
+      #else
+      {
+	node0_printf("WARNING: enable sqlite3 in build and recompile to use option 'save_corr_sqlite'\n");
+      }
+      #endif
+  }
 	    
   spectrum_ks_cleanup(pair);
 }
 /*--------------------------------------------------------------------*/
 void spectrum_ks_baryon(ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *qp2, int triplet)
 {
-
+  int ret;
   int do_baryon = param.do_baryon_spect[triplet];
 
   spectrum_ks_baryon_init(triplet);
 
-  if(do_baryon)
+  if(do_baryon) {
     spectrum_ks_baryon_nd(param.num_corr_b[triplet], 
 			  param.baryon_type_snk[triplet],
 			  qp0, qp1, qp2, triplet);
 
-  if(do_baryon){
     double dtime = start_timing();
     spectrum_ks_print_baryon(triplet);
     print_timing(dtime, "printing correlator");
   }
+
+  if(do_baryon && param.saveflag_b[triplet]==SAVE_SQLITE)
+    #ifdef HAVE_SQLITE
+    {
+    const char *dbName = &param.savefile_b[triplet][0];
+    sqlite3 *db = NULL;
+    // timestamp: seconds since the epoch
+    time_t epoch_secs = time(NULL);
+    if(this_node == 0)
+      {
+	// connect to db
+	ret = db_connect(&db,dbName);
+	// init tables if they do not exist
+	ret = db_init_tables(db);
+	// begin transaction
+	ret = db_begin_transaction(db);
+      }
+    // insert correlators
+    ret= sql_spectrum_ks_baryon(db,triplet,epoch_secs); // must be called from all nodes to do tie-ups
+    if(this_node == 0)
+      {
+	// end transaction
+	if(ret == SQLITE_OK){
+	  ret = db_commit_transaction(db);
+	} else {
+	  ret = db_rollback_transaction(db);
+	}
+	// disconnect from db
+	ret = db_disconnect(db);
+      }
+    }
+    #else
+    {
+      node0_printf("WARNING: enable sqlite3 in build and recompile to use option 'save_corr_sqlite'\n");
+    }
+    #endif
 
   spectrum_ks_baryon_cleanup(triplet);
 }
