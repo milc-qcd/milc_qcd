@@ -13,6 +13,8 @@ job_id 203696.kaon2.fnal.gov
 # Gauge field description
 
 reload_serial ../../binary_samples/lat.sample.l4448.gf
+series b
+trajectory 1012
 u0 1.0
 coulomb_gauge_fix
 forget

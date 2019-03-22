@@ -89,6 +89,7 @@
 #include "../include/io_ksprop.h"
 #include "../include/io_wprop.h"
 #include "../include/gammatypes.h"
+#include "../db/io_string_stream.h"
 #include <string.h>
 #ifdef HAVE_QIO
 #include <qio.h>
@@ -2666,6 +2667,220 @@ static char *make_tag(char prefix[], char tag[]){
 }
 
 /*--------------------------------------------------------------------*/
+/* TODO: missing(?) ops
+COMPLEX_FIELD_STORE CORNER_WALL CUTOFF_GAUSSIAN CUTOFF_GAUSSIAN_WEYL DIRAC_FIELD_FILE DIRAC_FIELD_FM_FILE
+DIRAC_FIELD_STORE DIRAC_PROPAGATOR_FILE KS_GAMMA KS_GAMMA_INV POINT POINT_WEYL RANDOM_COMPLEX_WALL RANDOM_COLOR_WALL
+VECTOR_FIELD_FILE VECTOR_FIELD_FM_FILE VECTOR_FIELD_STORE VECTOR_PROPAGATOR_FILE
+ */
+
+int io_JSON_quark_source_sink_op(io_string_stream *json, quark_source_sink_op *qss_op)
+{
+  size_t len0 = strlen(json->base);
+  int op_type = qss_op->type;
+  switch(op_type)
+    {
+    case IDENTITY:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_end_set(json);
+      break;
+    case COVARIANT_GAUSSIAN:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"stride"); io_JSON_as_text(json,3,"%d",qss_op->stride);
+      io_JSON_sep(json); io_JSON_key(json,"r0"); io_JSON_as_text(json,16,"%g",qss_op->r0);
+      io_JSON_sep(json); io_JSON_key(json,"iters"); io_JSON_as_text(json,4,"%d",qss_op->iters);
+      io_JSON_end_set(json);
+      break;
+    case COMPLEX_FIELD_FILE:
+    case COMPLEX_FIELD_FM_FILE:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"file"); io_JSON_quoted(json,qss_op->source_file);
+      io_JSON_end_set(json);
+      break;
+    case DERIV1:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"dir"); io_JSON_quoted(json,encode_dir(qss_op->dir1));
+      io_JSON_sep(json); io_JSON_key(json,"disp"); io_JSON_as_text(json,3,"%d",qss_op->disp);
+      io_JSON_sep(json); io_JSON_key(json,"weights"); io_JSON_begin_array(json);
+      { int k; for(k=0; k<qss_op->disp; ++k)
+	{
+	  io_JSON_as_text(json,14,"%g",qss_op->weights[k]);
+	  if(k<qss_op->disp-1) io_JSON_sep(json);
+	}}
+      io_JSON_end_array(json);
+      io_JSON_end_set(json);
+      break;
+    case DERIV2_D:
+    case DERIV2_B:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"dir");io_JSON_begin_array(json);
+      io_JSON_quoted(json,encode_dir(qss_op->dir1)); io_JSON_sep(json); io_JSON_quoted(json,encode_dir(qss_op->dir2)); io_JSON_end_array(json);
+      io_JSON_sep(json); io_JSON_key(json,"disp"); io_JSON_as_text(json,3,"%d",qss_op->disp);
+      io_JSON_sep(json); io_JSON_key(json,"weights"); io_JSON_begin_array(json);
+      { int k; for(k=0; k<qss_op->disp; ++k) {
+	  io_JSON_as_text(json,14,"%g",qss_op->weights[k]);
+	  if(k<qss_op->disp-1) io_JSON_sep(json);
+	}}
+      io_JSON_end_array(json);
+      io_JSON_end_set(json);
+      break;
+    case DERIV3_A:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"disp"); io_JSON_as_text(json,3,"%d",qss_op->disp);
+      io_JSON_sep(json); io_JSON_key(json,"weights"); io_JSON_begin_array(json);
+      { int k; for(k=0; k<qss_op->disp; ++k) {
+	  io_JSON_as_text(json,14,"%g",qss_op->weights[k]);
+	  if(k<qss_op->disp-1) io_JSON_sep(json);
+	}}
+      io_JSON_end_array(json);
+      io_JSON_end_set(json);
+      break;
+    case DIRAC_INVERSE:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"kappa"); io_JSON_quoted(json,qss_op->kappa_label);
+      io_JSON_sep(json); io_JSON_key(json,"clov_c"); io_JSON_as_text(json,15,"%g",qss_op->dcp.Clov_c);
+      io_JSON_sep(json); io_JSON_key(json,"u0"); io_JSON_as_text(json,15,"%g",qss_op->dcp.U0);
+      io_JSON_sep(json); io_JSON_key(json,"momentum_twist"); io_JSON_as_text(json,64,"[%f,%f,%f]",qss_op->bp[0],qss_op->bp[1],qss_op->bp[2]);
+      io_JSON_end_set(json);
+      break;
+    case FAT_COVARIANT_GAUSSIAN:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"stride"); io_JSON_as_text(json,3,"%d",qss_op->stride);
+      io_JSON_sep(json); io_JSON_key(json,"r0"); io_JSON_as_text(json,16,"%g",qss_op->r0);
+      io_JSON_sep(json); io_JSON_key(json,"iters"); io_JSON_as_text(json,4,"%d",qss_op->iters);
+      io_JSON_end_set(json);
+      break;
+    case FAT_COVARIANT_LAPLACIAN:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"stride"); io_JSON_as_text(json,3,"%d",qss_op->stride);
+      io_JSON_end_set(json);
+      break;
+    case GAUSSIAN:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"r0"); io_JSON_as_text(json,16,"%g",qss_op->r0);
+      io_JSON_end_set(json);
+      break;
+    case HOPPING:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"derivs"); io_JSON_as_text(json,3,"%d",qss_op->dhop);
+      #if  FERM_ACTION == HISQ
+      io_JSON_sep(json); io_JSON_key(json,"derivs"); io_JSON_quoted(json,encode_sign_dir(qss_op->fb, qss_op->dir1));
+      io_JSON_sep(json); io_JSON_key(json,"eps_naik"); io_JSON_as_text(json,16,"%g",qss_op->eps_naik);
+      #else
+      io_JSON_sep(json); io_JSON_key(json,"dir"); io_JSON_quoted(json,encode_dir(qss_op->dir1));
+      #endif
+      io_JSON_end_set(json);
+      break;
+    case KS_INVERSE:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"mass"); io_JSON_quoted(json,qss_op->mass_label);
+      io_JSON_sep(json); io_JSON_key(json,"eps_naik"); io_JSON_as_text(json,16,"%g",qss_op->eps_naik);
+      io_JSON_sep(json); io_JSON_key(json,"momentum_twist"); io_JSON_as_text(json,32,"[%f,%f,%f]",qss_op->bp[0],qss_op->bp[1],qss_op->bp[2]);
+      io_JSON_end_set(json);
+      break;
+    case ROTATE_3D:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"d1"); io_JSON_as_text(json,16,"%g",qss_op->d1);
+      io_JSON_end_set(json);
+      break;
+    case WAVEFUNCTION_FILE:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"file"); io_JSON_quoted(json,qss_op->source_file);
+      io_JSON_sep(json); io_JSON_key(json,"stride"); io_JSON_as_text(json,3,"%d",qss_op->stride);
+      io_JSON_sep(json); io_JSON_key(json,"a"); io_JSON_as_text(json,16,"%g",qss_op->a);
+      io_JSON_end_set(json);
+      break;
+    case MODULATION_FILE:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"file"); io_JSON_quoted(json,qss_op->source_file);
+      io_JSON_end_set(json);
+      break;
+    case MOMENTUM:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"momentum"); io_JSON_as_text(json,16,"[%d,%d,%d]",qss_op->mom[0],qss_op->mom[1],qss_op->mom[2]);
+      io_JSON_end_set(json);
+      break;
+    case PROJECT_T_SLICE:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"t0"); io_JSON_as_text(json,4,"%d",qss_op->t0);
+      io_JSON_end_set(json);
+      break;
+    case GAMMA:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"gamma"); io_JSON_quoted(json,gamma_label(qss_op->gamma));
+      io_JSON_end_set(json);
+      break;
+    case EXT_SRC_DIRAC:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"gamma"); io_JSON_quoted(json,gamma_label(qss_op->gamma));
+      io_JSON_sep(json); io_JSON_key(json,"momentum"); io_JSON_as_text(json,16,"[%d,%d,%d]",qss_op->mom[0],qss_op->mom[1],qss_op->mom[2]);
+      io_JSON_sep(json); io_JSON_key(json,"t0"); io_JSON_as_text(json,4,"%d",qss_op->t0);
+      io_JSON_end_set(json);
+      break;
+    case EVEN_WALL:
+    case EVENANDODD_WALL:
+    case EVENMINUSODD_WALL:
+    case FUNNYWALL1:
+    case FUNNYWALL2:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"t0"); io_JSON_as_text(json,4,"%d",qss_op->t0);
+      break;
+    #ifdef HAVE_KS
+    case SPIN_TASTE:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"spin_taste"); io_JSON_quoted(json,spin_taste_label(qss_op->spin_taste));
+      io_JSON_end_set(json);
+      break;
+    case SPIN_TASTE_EXTEND:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"spin_taste_extend"); io_JSON_quoted(json,spin_taste_label(qss_op->spin_taste));
+      io_JSON_end_set(json);
+      break;
+    case EXT_SRC_KS:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"spin_taste_extend"); io_JSON_quoted(json,spin_taste_label(qss_op->spin_taste));
+      io_JSON_sep(json); io_JSON_key(json,"momentum"); io_JSON_as_text(json,16,"[%d,%d,%d]",qss_op->mom[0],qss_op->mom[1],qss_op->mom[2]);
+      io_JSON_sep(json); io_JSON_key(json,"t0"); io_JSON_as_text(json,4,"%d",qss_op->t0);
+      io_JSON_end_set(json);
+      break;
+    case  ASLASH_KS_FILE:
+      io_JSON_begin_set(json); io_JSON_key(json,"operation"); io_JSON_quoted(json,qss_op->descrp);
+      io_JSON_sep(json); io_JSON_key(json,"file"); io_JSON_quoted(json,qss_op->source_file);
+      io_JSON_sep(json); io_JSON_key(json,"t0"); io_JSON_as_text(json,4,"%d",qss_op->t0);
+      io_JSON_end_set(json);
+      break;
+    #endif
+    case UNKNOWN:
+    default:
+      fprintf(stderr,"unknown source operation %d %s\n",op_type,qss_op->descrp);
+      break;
+    }
+  return(static_cast(int,strlen(json->base)-len0));
+}
+
+int io_JSON_field_op_info_list(io_string_stream *json, quark_source_sink_op *qss_op[], int n)
+{
+  int len0 = strlen(json->base);
+  io_JSON_begin_array(json);
+  int i;
+  for(i = 0; i < n; i++){
+    if(i>0) io_JSON_sep(json);
+    io_JSON_quark_source_sink_op(json,qss_op[i]);
+  }
+  io_JSON_end_array(json);
+  return(static_cast(int,strlen(json->base)-len0));
+}
+
+int io_JSON_field_op_info(io_string_stream *json, quark_source_sink_op *qss_op)
+{
+  int len0 = strlen(json->base);
+  io_JSON_begin_array(json);
+  io_JSON_quark_source_sink_op(json,qss_op);
+  io_JSON_end_array(json);
+  return(static_cast(int,strlen(json->base)-len0));
+}
+
+/*--------------------------------------------------------------------*/
+
 static int print_single_op_info(FILE *fp, char prefix[], 
 				quark_source_sink_op *qss_op){
   int op_type = qss_op->type;
@@ -2803,7 +3018,7 @@ static int print_single_op_info(FILE *fp, char prefix[],
     fprintf(fp,"%s%s\n", make_tag(prefix, "gamma"), 
 	    gamma_label(qss_op->gamma));
   }
-  else if ( op_type == MOMENTUM ){
+  else if ( op_type == MOMENTUM ){ // NEVER REACHED
     fprintf(fp,",\n");
     fprintf(fp,"%s%d %d %d\n", make_tag(prefix, "momentum"), 
 	    qss_op->mom[0], qss_op->mom[1], qss_op->mom[2]);

@@ -36,6 +36,9 @@
 #define SAVE_MULTIDUMP                   55
 #define SAVE_SERIAL_ARCHIVE              56
 
+/* For correlator file / data base */
+#define SAVE_SQLITE                      57
+
 /* Format for NERSC archive files */
 #define ARCHIVE_3x2   0
 #define ARCHIVE_3x3   1

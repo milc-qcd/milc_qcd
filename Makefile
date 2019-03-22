@@ -351,6 +351,22 @@ endif
 endif
 
 #----------------------------------------------------------------------
+# 12a. sqlite3 Options
+
+WANTSQLITE = # true
+
+ifeq ($(strip ${WANTSQLITE}),true)
+OCFLAGS += -DHAVE_SQLITE
+SQLITE_PREFIX= /usr/local/sqlite3
+SQLITE_HEADERS = ${SQLITE_PREFIX}/include
+SQLITE_INCLUDES = -I${SQLITE_HEADERS}
+SQLITE_LIBDIRS = -L${SQLITE_PREFIX}/lib
+SQLITE_LIBS = -lsqlite3
+SQLITE_LDFLAGS = ${SQLITE_LIBDIRS} ${SQLITE_LIBS}
+DBOBJS = db.o
+endif
+
+#----------------------------------------------------------------------
 # 13. LAPACK Options (for qopqdp-lapack and arb_overlap )
 
 #LIBLAPACK = -L/opt/ibmcmp/xlf/bg/11.1/lib /soft/apps/LAPACK/liblapack_bgp.a /soft/apps/LIBGOTO/libgoto.a -lxlf90 -lxlsmp # LAPACK on BG/P
@@ -922,12 +938,12 @@ CLMEM = #-DCLOV_LEAN
 #----------------------------------------------------------------------
 # Extra include paths
 
-INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCQPHIXJ} ${INCGRID} ${INCVTUNE}
+INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCQPHIXJ} ${INCGRID} ${INCVTUNE} -I../db -I../include ${SQLITE_INCLUDES}
 
 #----------------------------------------------------------------------
 #  Extra libraries
 
-LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBARPACK} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBQPHIXJ} ${LIBGRID} ${LIBVTUNE}
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBARPACK} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBQPHIXJ} ${LIBGRID} ${LIBVTUNE} ${SQLITE_LDFLAGS}
 
 #------------------------------
 # Summary

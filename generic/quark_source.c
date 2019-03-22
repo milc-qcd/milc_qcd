@@ -93,6 +93,7 @@
 #include "generic_includes.h"
 #include "../include/io_ksprop.h"
 #include "../include/io_wprop.h"
+#include "../db/io_string_stream.h"
 #include <string.h>
 #ifdef HAVE_QIO
 #include <qio.h>
@@ -1585,6 +1586,94 @@ static char *make_tag(char prefix[], char tag[]){
   memset(full_tag+strlen(full_tag), ' ', NTAG-1-strlen(full_tag));
   full_tag[NTAG-1] = '\0';
   return full_tag;
+}
+
+/*--------------------------------------------------------------------*/
+
+int io_JSON_quark_source_sink_op(io_string_stream *json, quark_source_sink_op *qss_op); // TODO: prototype to header
+
+int io_JSON_source_info(io_string_stream *json, quark_source *qs)
+{
+  size_t len0 = strlen(json->base);
+  int source_type = qs->orig_type;
+  io_JSON_begin_set(json); io_JSON_key(json,"type"); io_JSON_quoted(json,qs->descrp);
+  io_JSON_sep(json); io_JSON_key(json,"label"); io_JSON_quoted(json,qs->label);
+  io_JSON_sep(json); io_JSON_key(json,"subset"); io_JSON_quoted(json,decode_mask(qs->subset));
+  switch(source_type)
+    {
+    case POINT:
+      io_JSON_sep(json); io_JSON_key(json,"origin"); io_JSON_as_text(json,32,"[%d,%d,%d,%d]",qs->x0,qs->y0,qs->z0,qs->t0);
+      break;
+    case CORNER_WALL:
+    case EVEN_WALL:
+    case EVENANDODD_WALL:
+    case EVENMINUSODD_WALL:
+      io_JSON_sep(json); io_JSON_key(json,"t0"); io_JSON_as_text(json,5,"%d",qs->t0);
+      break;
+    case COMPLEX_FIELD_FILE:
+    case COMPLEX_FIELD_FM_FILE:
+      io_JSON_sep(json); io_JSON_key(json,"origin"); io_JSON_as_text(json,32,"[%d,%d,%d,%d]",qs->x0,qs->y0,qs->z0,qs->t0);
+      io_JSON_sep(json); io_JSON_key(json,"file"); io_JSON_quoted(json,qs->source_file);
+      io_JSON_sep(json); io_JSON_key(json,"momentum"); io_JSON_as_text(json,32,"[%d,%d,%d,%d]",qs->mom[0],qs->mom[1],qs->mom[2]);
+      break;
+    case GAUSSIAN:
+      io_JSON_sep(json); io_JSON_key(json,"origin"); io_JSON_as_text(json,32,"[%d,%d,%d,%d]",qs->x0,qs->y0,qs->z0,qs->t0);
+      io_JSON_sep(json); io_JSON_key(json,"r0"); io_JSON_as_text(json,16,"%g",qs->r0);
+      break;
+    case RANDOM_COMPLEX_WALL:
+      io_JSON_sep(json); io_JSON_key(json,"t0"); io_JSON_as_text(json,5,"%d",qs->t0);
+      io_JSON_sep(json); io_JSON_key(json,"momentum"); io_JSON_as_text(json,32,"[%d,%d,%d,%d]",qs->mom[0],qs->mom[1],qs->mom[2]);
+      break;
+    case WAVEFUNCTION_FILE:
+      io_JSON_sep(json); io_JSON_key(json,"origin"); io_JSON_as_text(json,32,"[%d,%d,%d,%d]",qs->x0,qs->y0,qs->z0,qs->t0);
+      io_JSON_sep(json); io_JSON_key(json,"file"); io_JSON_quoted(json,qs->source_file);
+      io_JSON_sep(json); io_JSON_key(json,"a"); io_JSON_as_text(json,16,"%g",qs->a);
+      io_JSON_sep(json); io_JSON_key(json,"momentum"); io_JSON_as_text(json,32,"[%d,%d,%d,%d]",qs->mom[0],qs->mom[1],qs->mom[2]);
+      break;
+    case RANDOM_COLOR_WALL:
+      io_JSON_sep(json); io_JSON_key(json,"t0"); io_JSON_as_text(json,5,"%d",qs->t0);
+      io_JSON_sep(json); io_JSON_key(json,"ncolor"); io_JSON_as_text(json,5,"%d",qs->ncolor);
+      io_JSON_sep(json); io_JSON_key(json,"momentum"); io_JSON_as_text(json,32,"[%d,%d,%d,%d]",qs->mom[0],qs->mom[1],qs->mom[2]);
+      break;
+    case VECTOR_FIELD_FILE:
+    case VECTOR_FIELD_FM_FILE:
+      io_JSON_sep(json); io_JSON_key(json,"origin"); io_JSON_as_text(json,32,"[%d,%d,%d,%d]",qs->x0,qs->y0,qs->z0,qs->t0);
+      io_JSON_sep(json); io_JSON_key(json,"file"); io_JSON_quoted(json,qs->source_file);
+      io_JSON_sep(json); io_JSON_key(json,"ncolor"); io_JSON_as_text(json,5,"%d",qs->ncolor);
+      io_JSON_sep(json); io_JSON_key(json,"momentum"); io_JSON_as_text(json,32,"[%d,%d,%d,%d]",qs->mom[0],qs->mom[1],qs->mom[2]);
+      break;
+    case VECTOR_PROPAGATOR_FILE:
+      io_JSON_sep(json); io_JSON_key(json,"t0"); io_JSON_as_text(json,5,"%d",qs->t0);
+      io_JSON_sep(json); io_JSON_key(json,"ncolor"); io_JSON_as_text(json,5,"%d",qs->ncolor);
+      break;
+    case DIRAC_FIELD_FILE:
+    case DIRAC_FIELD_FM_FILE:
+      io_JSON_sep(json); io_JSON_key(json,"origin"); io_JSON_as_text(json,32,"[%d,%d,%d,%d]",qs->x0,qs->y0,qs->z0,qs->t0);
+      io_JSON_sep(json); io_JSON_key(json,"file"); io_JSON_quoted(json,qs->source_file);
+      io_JSON_sep(json); io_JSON_key(json,"nsource"); io_JSON_as_text(json,5,"%d",qs->nsource);
+      io_JSON_sep(json); io_JSON_key(json,"momentum"); io_JSON_as_text(json,32,"[%d,%d,%d,%d]",qs->mom[0],qs->mom[1],qs->mom[2]);
+      break;
+    case DIRAC_PROPAGATOR_FILE:
+      io_JSON_sep(json); io_JSON_key(json,"t0"); io_JSON_as_text(json,5,"%d",qs->t0);
+      io_JSON_sep(json); io_JSON_key(json,"file"); io_JSON_quoted(json,qs->source_file);
+      io_JSON_sep(json); io_JSON_key(json,"nsource"); io_JSON_as_text(json,5,"%d",qs->nsource);
+      break;
+    default:
+      fprintf(stderr,"unknown source type %d\n",source_type);
+      break;
+    }
+  if(qs->op) {
+    io_JSON_sep(json); io_JSON_key(json,"ops"); io_JSON_begin_array(json);
+    int j;
+    quark_source_sink_op *op;
+    for(j=0, op=qs->op; op != NULL; op = op->op, ++j) {
+      if(j) io_JSON_sep(json);
+      io_JSON_quark_source_sink_op(json,op);
+    }
+    io_JSON_end_array(json);
+  }
+  io_JSON_end_set(json);
+  return(static_cast(int,strlen(json->base)-len0));
 }
 
 /*--------------------------------------------------------------------*/

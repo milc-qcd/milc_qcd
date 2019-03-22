@@ -769,41 +769,6 @@ int prepare_meson_JSON_metadata(io_string_stream *json, int qpair, int jmeson)
   return(static_cast(int,strlen(json->base)-len0));
 }
 
-/* TODO: remove
-int io_JSON_quark_meta_baryon(io_string_stream *json, const char* qtype, int triplet, int qi)
-{
-  size_t len0 = strlen(json->base);
-  int iq0 = param.qktriplet[triplet][qi];
-  int ih0[MAX_HISTORY];
-  int nh0;
-  int i;
-  int ip0 = get_ancestors(ih0, &nh0, iq0);
-  int is0 = param.set[ip0];
-  io_JSON_begin_set(json); io_JSON_key(json,"type"); io_JSON_quoted(json,qtype);
-  io_JSON_sep(json); io_JSON_key(json,"source"); io_JSON_source_info(json,&param.src_qs[is0]);
-  io_JSON_sep(json); io_JSON_key(json,"sink"); io_JSON_begin_set(json);
-  io_JSON_key(json,"label"); io_JSON_quoted(json,param.snk_qs_op[iq0].label);
-  io_JSON_sep(json); io_JSON_key(json,"ops");
-  {
-    int k;
-    quark_source_sink_op **op_list = static_cast(quark_source_sink_op**,malloc(sizeof(quark_source_sink_op*)*nh0));
-    for(k = 0; k < nh0; k++) {
-      op_list[k] = &param.snk_qs_op[ih0[nh0-1-k]];
-    }
-    io_JSON_field_op_info_list(json,op_list,nh0);
-    free(op_list);
-  } io_JSON_end_set(json);
-  io_JSON_sep(json); io_JSON_key(json,"mass"); io_JSON_quoted(json,param.mass_label[ip0]);
-  #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-  io_JSON_sep(json); io_JSON_key(json,"epsilon"); io_JSON_as_text(json,32,"%.6g",param.ksp[ip0].naik_term_epsilon);
-  #endif
-  #if U1_FIELD
-  io_JSON_sep(json); io_JSON_key(json,"charge"); io_JSON_quoted(json,param.charge_label[is0]);
-  #endif
-  io_JSON_end_set(json);
-  return(static_cast(int,strlen(json->base)-len0));
-}
-*/
 
 int io_JSON_baryon_unique_key(io_string_stream *json, int triplet, int jbaryon)
 {
@@ -831,15 +796,15 @@ int io_JSON_baryon_unique_key(io_string_stream *json, int triplet, int jbaryon)
   len=strlen(param.snk_qs_op[iq1].label); if(len>0) io_JSON_as_text(json,len+1,"_%s",param.snk_qs_op[iq1].label);
   len=strlen(param.snk_qs_op[iq2].label); if(len>0) io_JSON_as_text(json,len+1,"_%s",param.snk_qs_op[iq2].label);
   // masses and charges
-  io_JSON_as_text(json,strlen(param.mass_label[ip0])+1,"_%s",param.mass_label[ip0]);
+  io_JSON_as_text(json,strlen(param.mass_label[ip0])+2,"_m%s",param.mass_label[ip0]);
   #if U1_FIELD
   io_JSON_as_text(json,strlen(param.charge_label[is0])+2,"_q%s",param.charge_label[is0]);
   #endif
-  io_JSON_as_text(json,strlen(param.mass_label[ip1])+1,"_%s",param.mass_label[ip1]);
+  io_JSON_as_text(json,strlen(param.mass_label[ip1])+2,"_m%s",param.mass_label[ip1]);
   #if U1_FIELD
   io_JSON_as_text(json,strlen(param.charge_label[is1])+2,"_q%s",param.charge_label[is1]);
   #endif
-  io_JSON_as_text(json,strlen(param.mass_label[ip2])+1,"_%s",param.mass_label[ip2]);
+  io_JSON_as_text(json,strlen(param.mass_label[ip2])+2,"_m%s",param.mass_label[ip2]);
   #if U1_FIELD
   io_JSON_as_text(json,strlen(param.charge_label[is2])+2,"_q%s",param.charge_label[is2]);
   #endif
@@ -1307,206 +1272,164 @@ static void close_fnal_baryon_file(FILE *fp, int triplet){
 /*--------------------------------------------------------------------*/
 #ifdef HAVE_SQLITE
 
+#include "../db/Wtimer.h"
+#include "../db/Wtimer.c"  // Inline function implementations
+
 int sql_spectrum_ks(sqlite3 *db, int pair, unsigned long epoch_secs)
 {
-  if(!param.do_meson_spect[pair]) return(0);
-
-  complex *prop = NULL;
   io_string_stream ckey; ckey.base=NULL;ckey.length=0;
   // JSON arrays of re and im parts of the correlator
   io_string_stream json_re; json_re.base=NULL;json_re.length=0;
   io_string_stream json_im; json_im.base=NULL;json_im.length=0;
-  if(this_node == 0){
-    prop = static_cast(complex*,calloc(nt,sizeof(complex))); // corr vector
-    const int max_keysize = 1000; // starting key size
-    io_string_stream_alloc(&ckey,max_keysize); // key space
-    const int prec = 6; // default precision for format %e
-    const int elem_sz = prec + 7; //  v: +f.ppppppe+dd
-    const int sz = nt*(elem_sz + 1)+3;
-    io_string_stream_alloc(&json_re, sz); // starting JSON array size for string "[v,v,...,v]"
-    io_string_stream_alloc(&json_im, sz);
-  }
-
+  complex *prop = static_cast(complex*,calloc(nt,sizeof(complex))); // corr vector
+  const int max_keysize = 1000; // starting key size
+  io_string_stream_alloc(&ckey,max_keysize); // key space
+  const int prec = 6; // default precision for format %e
+  const int elem_sz = prec + 7; //  v: +f.ppppppe+dd
+  const int sz = nt*(elem_sz + 1)+3;
+  io_string_stream_alloc(&json_re, sz); // starting JSON array size for string "[v,v,...,v]"
+  io_string_stream_alloc(&json_im, sz);
   int num_report = param.num_corr_report[pair];
   int rc = SQLITE_OK;
   int m;
-  for(m=0;m<num_report;m++) {
-    // empty correlator object
-    db_correlator corr; corr.id = 0; corr.name = NULL; corr.metadata = NULL;
-    int free_corr = 0;
-    if(this_node == 0)
-      {
-	// make correlator unique key
-	ckey.base[0] = '\0'; // reset string
-	io_JSON_meson_unique_key(&ckey,pair,m);
-
-	// lookup key
-	rc = db_query_correlator_by_name(db, ckey.base, &corr);
-	if(rc != SQLITE_OK) break;
-	free_corr = 1; // do free corr pointers
-	if(corr.id < 1)
-	  {
-	    // ckey not found in db, so insert as a new correlator
-	    free_corr = 0; // do not free corr pointers
-	    corr.name = ckey.base; //copy pointer we manage
-	    // generate correlator metadata
-	    const int est_meta_size = 4000; // starting size
-	    io_string_stream meta; meta.base=NULL;meta.length=0;
-	    io_string_stream_alloc(&meta,est_meta_size);
-	    prepare_meson_JSON_metadata(&meta,pair,m);
-	    corr.metadata = meta.base; // copy pointer we manage
-	    // insert new correlator
-	    rc = db_insert_correlator(db,&corr);
-	    if(rc != SQLITE_OK) break;
-	    printf("INSERT name=%s id=%d\n",corr.name,corr.id);
-	  }
-      }
-
-    // corr complex vector
-    Real norm_fac = num_corr_occur[m];
-    int t, tp;
-    for(t=0; t<nt; t++)
-      {
-	tp = (t + param.r_offset_m[pair][3]) % nt;
-	complex prop_t = pmes_prop[m][tp];
-	g_complexsum( &prop_t );
-	CDIVREAL(prop_t, norm_fac, prop_t);
-	if(this_node == 0) prop[t] = prop_t;
-      }
-
-    if(this_node == 0)
-      {
-	int tsrc = extract_tsrc(pair,'M');
-	json_re.base[0] = '\0'; // reset string
-	json_im.base[0] = '\0';
-	io_JSON_complex_array(&json_re, &json_im, prop, nt);
-
-	db_data data; data.id=0; // unique, will be assigned by db
-	data.correlator_id = corr.id;
-	data.series=param.series; // copy char pointer
-	data.trajectory=param.trajectory;
-	data.tsrc=tsrc;
-	data.jobid=param.job_id; // copy char pointer
-	data.timestamp=epoch_secs;
-	data.c_re=json_re.base ;data.c_im=json_im.base; // copy pointers
-
-	// INSERT OR REPLACE numeric data
-	rc = db_update_data(db, &data);
-	if(free_corr) db_correlator_free(&corr);
-	if(rc != SQLITE_OK) break;
-      }
-  }
-  if(this_node == 0)
+  for(m=0;m<num_report;m++)
     {
-      // free resources
-      io_string_stream_free(&json_im);
-      io_string_stream_free(&json_re);
-      io_string_stream_free(&ckey);
-      free(prop);
+      // empty correlator object
+      db_correlator corr; corr.id = 0; corr.name = NULL; corr.metadata = NULL;
+      int free_corr = 0;
+      // make correlator unique key
+      ckey.base[0] = '\0'; // reset string
+      io_JSON_meson_unique_key(&ckey,pair,m);
+      // lookup key
+      rc = db_query_correlator_by_name(db, ckey.base, &corr);
+      if(rc != SQLITE_OK) break;
+      free_corr = 1; // do free corr pointers
+      if(corr.id < 1)
+	{
+	  // ckey not found in db, so insert as a new correlator
+	  free_corr = 0; // do not free corr pointers
+	  corr.name = ckey.base; //copy pointer we manage
+	  // generate correlator metadata
+	  const int est_meta_size = 4000; // starting size
+	  io_string_stream meta; meta.base=NULL;meta.length=0;
+	  io_string_stream_alloc(&meta,est_meta_size);
+	  prepare_meson_JSON_metadata(&meta,pair,m);
+	  corr.metadata = meta.base; // copy pointer we manage
+	  // insert new correlator
+	  rc = db_insert_correlator(db,&corr);
+	  io_string_stream_free(&meta);
+	  if(rc != SQLITE_OK) break;
+	  printf("INSERT name=%s id=%d\n",corr.name,corr.id);
+	}
+      // time translate complex vector for output
+      int t;
+      for(t=0; t<nt; ++t)
+	{
+	  int tp = (t + param.r_offset_m[pair][3]) % nt;
+	  prop[t] = pmes_prop[m][tp];
+	}
+      int tsrc = extract_tsrc(pair,'M');
+      json_re.base[0] = '\0'; // reset string
+      json_im.base[0] = '\0';
+      io_JSON_complex_array(&json_re, &json_im, prop, nt);
+      db_data data; data.id=0; // unique, will be assigned by db
+      data.correlator_id = corr.id;
+      data.series=param.series; // copy char pointer
+      data.trajectory=param.trajectory;
+      data.tsrc=tsrc;
+      data.jobid=param.job_id; // copy char pointer
+      data.timestamp=epoch_secs;
+      data.c_re=json_re.base ;data.c_im=json_im.base; // copy pointers
+      // INSERT OR REPLACE numeric data
+      rc = db_update_data(db, &data);
+      if(free_corr) db_correlator_free(&corr);
+      if(rc != SQLITE_OK) break;
     }
+  // free resources
+  io_string_stream_free(&json_im);
+  io_string_stream_free(&json_re);
+  io_string_stream_free(&ckey);
+  free(prop);
   return(rc);
 }
 
 int sql_spectrum_ks_baryon(sqlite3 *db, int triplet, unsigned long epoch_secs)
 {
-  int rc = SQLITE_OK;
-  if(!param.do_baryon_spect[triplet]) return(rc);
-
   complex *prop = NULL;
   io_string_stream ckey; ckey.base=NULL;ckey.length=0;
   // JSON arrays of re and im parts of the correlator
   io_string_stream json_re; json_re.base=NULL;json_re.length=0;
   io_string_stream json_im; json_im.base=NULL;json_im.length=0;
-  if(this_node == 0){
-    prop = static_cast(complex*,calloc(nt,sizeof(complex))); // corr vector
-    const int max_keysize = 1000; // starting key size
-    io_string_stream_alloc(&ckey,max_keysize); // key space
-    const int prec = 6; // default precision for format %e
-    const int elem_sz = prec + 7; //  v: +f.ppppppe+dd
-    const int sz = nt*(elem_sz + 1)+3;
-    io_string_stream_alloc(&json_re, sz); // starting JSON array size for string "[v,v,...,v]"
-    io_string_stream_alloc(&json_im, sz);
-  }
-
+  prop = static_cast(complex*,calloc(nt,sizeof(complex))); // corr vector
+  const int max_keysize = 1000; // starting key size
+  io_string_stream_alloc(&ckey,max_keysize); // key space
+  const int prec = 6; // default precision for format %e
+  const int elem_sz = prec + 7; //  v: +f.ppppppe+dd
+  const int sz = nt*(elem_sz + 1)+3;
+  io_string_stream_alloc(&json_re, sz); // starting JSON array size for string "[v,v,...,v]"
+  io_string_stream_alloc(&json_im, sz);
   int num_report = param.num_corr_b[triplet];
+  int rc = SQLITE_OK;
   int m;
   for(m=0;m<num_report;m++) {
     // empty correlator object
     db_correlator corr; corr.id = 0; corr.name = NULL; corr.metadata = NULL;
     int free_corr = 0;
-    if(this_node == 0)
+    // make correlator unique key
+    ckey.base[0] = '\0'; // reset string
+    io_JSON_baryon_unique_key(&ckey,triplet,m);
+    // lookup key
+    db_query_correlator_by_name(db, ckey.base, &corr);
+    if(rc != SQLITE_OK) break;
+    free_corr = 1; // do free corr pointers
+    if(corr.id < 1)
       {
-	// make correlator unique key
-	ckey.base[0] = '\0'; // reset string
-	io_JSON_baryon_unique_key(&ckey,triplet,m);
-
-	// lookup key
-	db_query_correlator_by_name(db, ckey.base, &corr);
-	free_corr = 1; // do free corr pointers
-	if(corr.id < 1)
-	  {
-	    // ckey not found in db, so insert as a new correlator
-	    free_corr = 0; // do not free corr pointers
-	    corr.name = ckey.base; //copy pointer we manage
-	    // generate correlator metadata
-	    const int est_meta_size = 4000; // starting size
-	    io_string_stream meta; meta.base=NULL;meta.length=0;
-	    io_string_stream_alloc(&meta,est_meta_size);
-	    prepare_baryon_JSON_metadata(&meta,triplet,m);
-	    corr.metadata = meta.base; // copy pointer we manage
-	    // insert new correlator
-	    rc = db_insert_correlator(db,&corr);
-	    if(rc != SQLITE_OK) break;
-	    printf("INSERT name=%s id=%d\n",corr.name,corr.id);
-	  }
-      }
-
-    // corr complex vector
-    int t, tp;
-    int r_off_b = param.r_offset_b[triplet][3];
-    for(t=0; t<nt; t++)
-      {
-	tp = (t + param.r_offset_b[triplet][3]) % nt;
-	complex prop_t = baryon_prop[m][tp];
-	g_complexsum( &prop_t );
-	// fix sign for antiperiodic bc
-	if( ( ((t+r_off_b)/nt - r_off_b/nt) % 2 ) == 1 ){ CMULREAL(prop_t,-1.,prop_t) };
-	if(this_node == 0) prop[t] = prop_t;
-      }
-
-    if(this_node == 0)
-      {
-	int tsrc = extract_tsrc(triplet,'B');
-	json_re.base[0] = '\0'; // reset string
-	json_im.base[0] = '\0';
-	io_JSON_complex_array(&json_re, &json_im, prop, nt);
-
-	db_data data; data.id=0; // unique, will be assigned by db
-	data.correlator_id = corr.id;
-	data.series=param.series; // copy char pointer
-	data.trajectory=param.trajectory;
-	data.tsrc=tsrc;
-	data.jobid=param.job_id; // copy char pointer
-	data.timestamp=epoch_secs;
-	data.c_re=json_re.base ;data.c_im=json_im.base; // copy pointers
-
-	// INSERT OR REPLACE numeric data
-	rc = db_update_data(db, &data);
-	if(free_corr) db_correlator_free(&corr);
+	// ckey not found in db, so insert as a new correlator
+	free_corr = 0; // do not free corr pointers
+	corr.name = ckey.base; //copy pointer we manage
+	// generate correlator metadata
+	const int est_meta_size = 4000; // starting size
+	io_string_stream meta; meta.base=NULL;meta.length=0;
+	io_string_stream_alloc(&meta,est_meta_size);
+	prepare_baryon_JSON_metadata(&meta,triplet,m);
+	corr.metadata = meta.base; // copy pointer we manage
+	// insert new correlator
+	rc = db_insert_correlator(db,&corr);
+	io_string_stream_free(&meta);
 	if(rc != SQLITE_OK) break;
+	printf("INSERT name=%s id=%d\n",corr.name,corr.id);
       }
+    // time translate complex vector for output
+    int t;
+    for(t=0; t<nt; ++t)
+      {
+	int tp = (t + param.r_offset_b[triplet][3]) % nt;
+	prop[t] = baryon_prop[m][tp];
+      }
+    int tsrc = extract_tsrc(triplet,'B');
+    json_re.base[0] = '\0'; // reset string
+    json_im.base[0] = '\0';
+    io_JSON_complex_array(&json_re, &json_im, prop, nt);
+    db_data data; data.id=0; // unique, will be assigned by db
+    data.correlator_id = corr.id;
+    data.series=param.series; // copy char pointer
+    data.trajectory=param.trajectory;
+    data.tsrc=tsrc;
+    data.jobid=param.job_id; // copy char pointer
+    data.timestamp=epoch_secs;
+    data.c_re=json_re.base ;data.c_im=json_im.base; // copy pointers
+    // INSERT OR REPLACE numeric data
+    rc = db_update_data(db, &data);
+    if(free_corr) db_correlator_free(&corr);
+    if(rc != SQLITE_OK) break;
   }
-  if(this_node == 0)
-    {
-      // free resources
-      io_string_stream_free(&json_im);
-      io_string_stream_free(&json_re);
-      io_string_stream_free(&ckey);
-      free(prop);
-    }
-  return(0);
+  // free resources
+  io_string_stream_free(&json_im);
+  io_string_stream_free(&json_re);
+  io_string_stream_free(&ckey);
+  free(prop);
+  return(rc);
 }
-
 #endif
 
 /*--------------------------------------------------------------------*/
@@ -1609,7 +1532,7 @@ static void spectrum_ks_print_baryon(int triplet){
       print_start_baryon_prop(triplet, b);
       print_start_fnal_baryon_prop(corr_fp, triplet, b);
       for(t=0; t<nt; t++){
-	tp = (t + param.r_offset_b[triplet][3]) % nt;
+ 	tp = (t + param.r_offset_b[triplet][3]) % nt;
 	prop = baryon_prop[b][tp];
 	g_complexsum( &prop );
 	// CDIVREAL(prop, space_vol, prop);
@@ -1668,42 +1591,60 @@ void spectrum_ks(ks_prop_field *qp0, int naik_index0,
     print_timing(dtime, "printing correlator");
 
     if(param.saveflag_m[pair] == SAVE_SQLITE)
-      #ifdef HAVE_SQLITE
       {
+        #ifdef HAVE_SQLITE
 	const char *dbName = &param.savefile_m[pair][0];
 	sqlite3 *db = NULL;
-	// timestamp: seconds since the epoch
-	time_t epoch_secs = time(NULL);
+	// init db tables from node0
 	if(this_node == 0)
 	  {
 	    // connect to db
 	    ret = db_connect(&db,dbName);
 	    // init tables if they do not exist
 	    ret = db_init_tables(db);
-	    // begin transaction
-	    ret = db_begin_transaction(db);
 	  }
-	// insert correlators
-	ret = sql_spectrum_ks(db,pair,epoch_secs); // must be called from all nodes to do tie-ups 
+	if(param.do_meson_spect[pair])
+	  {
+	    // do global sums over pmes_prop[m][t] and normalize
+	    int num_report = param.num_corr_report[pair];
+	    int m;
+	    for(m=0; m<num_report; ++m)
+	      {
+		Real norm_fac = num_corr_occur[m];
+		complex *prop = &pmes_prop[m][0];
+		g_veccomplexsum(prop,nt);
+		int t;
+		for(t=0; t<nt; ++t){ CDIVREAL(prop[t],norm_fac,prop[t]); }
+	      }
+	    if(this_node == 0)
+	      {
+		// timestamp: seconds since the epoch
+		time_t epoch_secs = time(NULL);
+		// begin transaction
+		Wtimer_t elapsed; Wtimer_start(&elapsed);
+		int wait_if_busy_ms = 1000;
+		ret = db_begin_transaction(db,wait_if_busy_ms);
+		// insert correlators
+		ret = sql_spectrum_ks(db,pair,epoch_secs);
+		// end transaction
+		if(ret == SQLITE_OK){
+		  ret = db_commit_transaction(db);
+		} else {
+		  ret = db_rollback_transaction(db);
+		}
+		node0_printf("SQL transaction time %.3f sec\n",Wtimer_stop(&elapsed));
+	      }
+	  }
 	if(this_node == 0)
 	  {
-	    // end transaction
-	    if(ret == SQLITE_OK){
-	      ret = db_commit_transaction(db);
-	    } else {
-	      ret = db_rollback_transaction(db);
-	    }
 	    // disconnect from db
 	    ret = db_disconnect(db);
 	  }
+        #else
+	node0_printf("WARNING: FAILED TO WRITE CORRELATOR TO DB. Enable sqlite3 in build and recompile to use option 'save_corr_sqlite'\n");
+        #endif
       }
-      #else
-      {
-	node0_printf("WARNING: enable sqlite3 in build and recompile to use option 'save_corr_sqlite'\n");
-      }
-      #endif
   }
-	    
   spectrum_ks_cleanup(pair);
 }
 /*--------------------------------------------------------------------*/
@@ -1723,42 +1664,64 @@ void spectrum_ks_baryon(ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *q
     spectrum_ks_print_baryon(triplet);
     print_timing(dtime, "printing correlator");
   }
-
   if(do_baryon && param.saveflag_b[triplet]==SAVE_SQLITE)
-    #ifdef HAVE_SQLITE
     {
-    const char *dbName = &param.savefile_b[triplet][0];
-    sqlite3 *db = NULL;
-    // timestamp: seconds since the epoch
-    time_t epoch_secs = time(NULL);
-    if(this_node == 0)
-      {
-	// connect to db
-	ret = db_connect(&db,dbName);
-	// init tables if they do not exist
-	ret = db_init_tables(db);
-	// begin transaction
-	ret = db_begin_transaction(db);
-      }
-    // insert correlators
-    ret= sql_spectrum_ks_baryon(db,triplet,epoch_secs); // must be called from all nodes to do tie-ups
-    if(this_node == 0)
-      {
-	// end transaction
-	if(ret == SQLITE_OK){
-	  ret = db_commit_transaction(db);
-	} else {
-	  ret = db_rollback_transaction(db);
+      #ifdef HAVE_SQLITE
+      const char *dbName = &param.savefile_b[triplet][0];
+      sqlite3 *db = NULL;
+      // timestamp: seconds since the epoch
+      time_t epoch_secs = time(NULL);
+      if(this_node == 0)
+	{
+	  // connect to db
+	  ret = db_connect(&db,dbName);
+	  // init tables if they do not exist
+	  ret = db_init_tables(db);
 	}
-	// disconnect from db
-	ret = db_disconnect(db);
+      // do global sums over baryon_prop[m][t], normalize, and fix sign for antiperiodic bc
+      int num_corr = param.num_corr_b[triplet];
+      int m;
+      for(m=0; m<num_corr; m++)
+	{
+	  Real norm_fac = 1.0;
+	  int r_off_b = param.r_offset_b[triplet][3];
+	  complex *prop = &baryon_prop[m][0];
+	  g_veccomplexsum(prop,nt);
+	  int t;
+	  for(t=0; t<nt; ++t)
+	    {
+	      CDIVREAL(prop[t],norm_fac,prop[t]);
+	      int tp = (t + r_off_b) % nt;
+	      if( ( ( (t+r_off_b)/nt - r_off_b/nt ) % 2 ) == 1 ){ CMULREAL(prop[tp],-1.,prop[tp]); }
+	    }
+	}
+      if(this_node == 0)
+	{
+	  // timestamp: seconds since the epoch
+	  time_t epoch_secs = time(NULL);
+	  // begin transaction
+	  Wtimer_t elapsed; Wtimer_start(&elapsed);
+	  int wait_if_busy_ms = 1000;
+	  ret = db_begin_transaction(db,wait_if_busy_ms);
+	  // insert correlators
+	  ret= sql_spectrum_ks_baryon(db,triplet,epoch_secs);
+	  // end transaction
+	  if(ret == SQLITE_OK){
+	    ret = db_commit_transaction(db);
+	  } else {
+	    ret = db_rollback_transaction(db);
+	  }
+	  node0_printf("SQL transaction time %.3f sec\n",Wtimer_stop(&elapsed));
+	  // disconnect from db
+	  ret = db_disconnect(db);
+	}
+      #else
+      {
+	node0_printf("WARNING: enable sqlite3 in build and recompile to use option 'save_corr_sqlite'\n");
       }
+      #endif
     }
-    #else
-    {
-      node0_printf("WARNING: enable sqlite3 in build and recompile to use option 'save_corr_sqlite'\n");
-    }
-    #endif
 
   spectrum_ks_baryon_cleanup(triplet);
+
 }

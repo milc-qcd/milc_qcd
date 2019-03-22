@@ -13,7 +13,7 @@
 
 
 MYINCLUDEDIR = .
-INCLUDEDIR = ../include ../include/mGrid
+INCLUDEDIR = ../include ../include/mGrid ../db
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
@@ -43,7 +43,9 @@ MY_OBJECTS =         \
   ksprop_info.o      \
   make_prop.o        \
   setup.o            \
-  spectrum_ks.o
+  spectrum_ks.o      \
+  io_string_stream.o
+
 
 G_U1_OBJECTS =       \
   io_u1lat.o         \
@@ -56,7 +58,7 @@ G_U1_OBJECTS =       \
 
 LAYOUT = layout_hyper_prime.o # Choices possible here
 
-ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG}
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${DBOBJS}
 
 # Always use PRIMME if it is provided
 ifeq ($(strip ${HAVEPRIMME}),true)
@@ -263,6 +265,14 @@ include ../generic_u1/Make_template
 
 # Rules for generic_wilson routines
 include ../generic_wilson/Make_template
+
+# Actions for io_string and database functions
+
+io_string_stream.o: ../db/io_string_stream.c ../db/io_string_stream.h
+	${CC} -c ${CFLAGS} $<
+
+db.o: ../db/db.c ../db/db.h
+	${CC} -c ${CFLAGS} ../db/db.c
 
 # Rules for packages
 Grid:

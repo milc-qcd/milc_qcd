@@ -465,7 +465,7 @@ int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename){
   char myname[] = "ask_corr_file";
 
   if (prompt==1)
-    printf("'forget_corr', 'save_corr_fnal' for correlator file type\n");
+    printf("'forget_corr', 'save_corr_fnal', or 'save_corr_sqlite' for correlator file type\n");
 
   savebuf = get_next_tag(fp, "output correlator file command", myname);
   if (savebuf == NULL)return 1;
@@ -477,6 +477,9 @@ int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename){
   }
   else if(strcmp("save_corr_fnal",savebuf) == 0 ) {
     *flag = SAVE_ASCII;  /* Lazy borrowing of lattice flags! */
+  }
+  else if(strcmp("save_corr_sqlite",savebuf) == 0 ) {
+    *flag = SAVE_SQLITE;  /* Lazy borrowing of lattice flags! */
   }
   else{
     printf("is not a save correlator command. INPUT ERROR\n");

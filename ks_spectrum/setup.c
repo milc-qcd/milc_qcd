@@ -201,6 +201,10 @@ int readin(int prompt) {
 
     IF_OK status += ask_starting_lattice(stdin,  prompt, &param.startflag,
 	param.startfile );
+    if(param.startflag != CONTINUE) {
+      IF_OK status += get_s(stdin, prompt,"series",param.series);
+      IF_OK status += get_i(stdin, prompt,"trajectory",&param.trajectory);
+    }
     IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
 
     IF_OK if (prompt==1) 

@@ -65,6 +65,8 @@ typedef struct {
   /*  REPEATING BLOCK */
   int startflag;	/* what to do for beginning lattice */
   int start_u1flag;	/* what to do for beginning u(1) lattice */
+  char series[16];      /* ensemble series, e.g., "a", "b", ... */
+  int trajectory;       /* trajectory number of current gauge configuration */
   Real u0;
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
   int time_bc;          /* 0 for antiperiodic, 1 for periodic */
