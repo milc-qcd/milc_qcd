@@ -1,14 +1,5 @@
 *.o
-*.a
 *~
-*#*
-*.optrpt
-*.bak
-*.sav
-*.log
-.lastmake.*
-localmake
-*.sample-tmp
-*.test-diff
-*.test-tmp
-*.test-out
+*.a
+*.swp
+*.bin
