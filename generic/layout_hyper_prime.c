@@ -351,7 +351,7 @@ static void set_topology(){
     setup_qmp_grid(geom, nd);
     if(mynode()==0){
       printf("QMP using job_geometry_dimensions");
-      for(j = 0; j < nd; j++)
+      for(int j = 0; j < nd; j++)
 	printf(" %d",geom[j]);
       printf("\n");
       fflush(stdout);
