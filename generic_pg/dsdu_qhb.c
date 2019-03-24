@@ -10,6 +10,12 @@
    architectures, provided we were willing to compile with EVENFIRST
    always. */
 
+#ifdef SCHROED_FUN
+#ifdef ANISOTROPY
+#error "Anisotropic gauge couplings are not supported for Schroedinger functional"
+#endif
+#endif
+
 void dsdu_qhb(int dir1,int parity)
 {
 register int i,dir2,otherparity=0;
@@ -17,7 +23,10 @@ register site *st;
 msg_tag *tag0,*tag1,*tag2,*tag3;
 int start;
 su3_matrix tmat1,tmat2;
-
+#ifdef ANISOTROPY
+int is_temporal; /* to decide what kind of staple we have:
+                    0 - spatial, 1 - temporal */
+#endif
     switch(parity) {
 	case EVEN:		otherparity=ODD;	break;
 	case ODD:		otherparity=EVEN;	break;
@@ -30,6 +39,11 @@ su3_matrix tmat1,tmat2;
 
     for(dir2=XUP;dir2<=TUP;dir2++)if(dir2 != dir1)
     {
+#ifdef ANISOTROPY
+        /* find out what kind of staple we have: 0 - spatial, 1 - temporal */
+        is_temporal = (dir1==TUP) ? 1 : ( (dir2==TUP) ? 1 : 0 );
+#endif
+
 	/* get link[dir2] from direction dir1 on other parity */
 	tag0 = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    dir1, otherparity, gen_pt[0] );
@@ -98,7 +112,13 @@ su3_matrix tmat1,tmat2;
 		mult_su3_nn( &(st->link[dir2]),
 		    (su3_matrix *)gen_pt[2][i], &tmat1 );
 		mult_su3_na( &tmat1, (su3_matrix *)gen_pt[1][i],
+#ifndef ANISOTROPY
 		    &(st->staple) );
+#else
+		    &(st->staple_a[is_temporal]) );
+		    // zero out the other staple
+		    clear_su3mat( &(st->staple_a[1-is_temporal]) );
+#endif
 	    } END_LOOP
 #endif
 	    start=0; 
@@ -128,7 +148,12 @@ su3_matrix tmat1,tmat2;
 		mult_su3_nn( &(st->link[dir2]),
 		    (su3_matrix *)gen_pt[2][i], &tmat1 );
 		mult_su3_na( &tmat1, (su3_matrix *)gen_pt[1][i], &tmat2 );
+#ifndef ANISOTROPY
 		add_su3_matrix( &(st->staple), &tmat2, &(st->staple));
+#else
+		add_su3_matrix( &(st->staple_a[is_temporal]), &tmat2,
+		    &(st->staple_a[is_temporal]));
+#endif
 	    } END_LOOP
 #endif
 	} /* upper staple */
@@ -142,10 +167,28 @@ su3_matrix tmat1,tmat2;
 #else
 	FORSOMEPARITY(i,st,parity){
 #endif
+
+#ifndef ANISOTROPY
 	    add_su3_matrix( &(st->staple), (su3_matrix *)gen_pt[3][i],
 		&(st->staple));
+#else
+	    add_su3_matrix( &(st->staple_a[is_temporal]),
+                (su3_matrix *)gen_pt[3][i],
+	        &(st->staple_a[is_temporal]));
+#endif
 	}  END_LOOP	/* lower staple */
 	cleanup_gather(tag3);
     }
+
+#ifdef ANISOTROPY
+    /* Add spatial and temporal staples weighted by betas to the
+       "staple" variable */
+    FORSOMEPARITY(i,st,parity){
+	scalar_mult_su3_matrix( &(st->staple_a[0]), beta[0], &tmat1 );
+	scalar_mult_su3_matrix( &(st->staple_a[1]), beta[1], &tmat2 );
+	add_su3_matrix( &tmat1, &tmat2, &(st->staple) );
+    } END_LOOP
+#endif
+
 }
 

@@ -1,0 +1,49 @@
+Pure gauge SU3
+Microcanonical simulation with refreshing
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
+start: Sun Feb 14 16:35:52 2016
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 8352
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 0.4 MBytes per node for lattice
+
+
+warms 0
+trajecs 10
+traj_between_meas 1
+beta 6
+microcanonical_time_step 0.01
+steps_per_trajectory 4
+fresh 
+forget 
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 2.381802e-04
+WARMUPS COMPLETED
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.975384e+00 2.975037e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.951300e+00 2.949240e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.928383e+00 2.926061e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.905796e+00 2.905231e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.881439e+00 2.882157e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.860144e+00 2.858562e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.841166e+00 2.837580e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.821207e+00 2.817427e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.801562e+00 2.799117e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.781146e+00 2.781104e+00
+RUNNING COMPLETED
+Time = 5.534928e-01 seconds
+
+
+get_i(0): EOF on input.
+exit: Sun Feb 14 16:35:52 2016
+
