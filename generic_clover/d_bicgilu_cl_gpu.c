@@ -180,7 +180,10 @@ int bicgilu_cl_field_gpu ( // Return value is number of iterations taken
   inv_args.mixed_precision = 0;
 #endif
 #endif
-  
+  node0_printf("inv_args.mixed_precision is set to %d\n",
+	       inv_args.mixed_precision);
+  inv_args.solver_type = QUDA_BICGSTAB_INVERTER;
+
   int dir;
   for(dir=0; dir<4; ++dir) inv_args.boundary_phase[dir] = boundary_phase[dir]; // boundary_phase is a global array
   const int quda_precision   = qic->prec;

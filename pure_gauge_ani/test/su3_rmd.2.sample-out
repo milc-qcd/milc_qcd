@@ -1,0 +1,46 @@
+Pure gauge SU3
+Microcanonical simulation with refreshing
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 8352
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+warms 0
+trajecs 10
+traj_between_meas 1
+beta 6
+microcanonical_time_step 0.01
+steps_per_trajectory 4
+gauge configuration to be saved in gdummy
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked
+Time to check unitarity = 5.000000e-02
+START 3.000000e+00 3.000000e+00
+WARMUPS COMPLETED
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.974522e+00 2.974798e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.948748e+00 2.949873e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.923510e+00 2.925846e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.900676e+00 2.903250e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.879547e+00 2.882946e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.858542e+00 2.861345e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.837686e+00 2.840232e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.818257e+00 2.820853e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.798278e+00 2.800890e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.781878e+00 2.783925e+00
+RUNNING COMPLETED
+Time = 1.253000e+01 seconds
+Saved gauge configuration serially to binary file gdummy
+Time stamp Sun Oct 19 09:59:14 1997
+Checksums ac9faa50 137733df
+Wrote info file gdummy.info
+Time to save = 7.000000e-02
+CHECK PLAQ: 2.781878e+00 2.783925e+00
+
+

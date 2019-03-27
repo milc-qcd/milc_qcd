@@ -1,0 +1,16 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 8352
+
+warms 0
+trajecs 10
+traj_between_meas 1
+beta 6.0
+microcanonical_time_step .01
+steps_per_trajectory 4
+fresh
+forget
+

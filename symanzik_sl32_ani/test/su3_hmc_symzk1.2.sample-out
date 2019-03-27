@@ -1,0 +1,52 @@
+Pure gauge SU3
+Hybrid Monte Carlo algorithm
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 9435
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+warms 0
+trajecs 3
+traj_between_meas 1
+beta 6.8
+u0 0.87
+steps_per_trajectory 10
+microcanonical_time_step 0.1
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked
+Time to check unitarity = 2.000000e-02
+Symanzik 1x1 + 1x2 + 1x1x1 action
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.182149e-02     12
+                    2 0      -7.975969e-03     16
+WARMUPS COMPLETED
+PLAQUETTE ACTION: -1.044480e+04
+ACTION: g,h = 0.000000e+00  4.044105e+03  4.044105e+03
+PLAQUETTE ACTION: -8.529559e+03
+ACTION: g,h = 1.359716e+03  2.636543e+03  3.996259e+03
+ACCEPT: delta S = -4.784619e+01
+GMES 1.409494e+00 1.525527e-02 9.990000e+01 2.459239e+00 2.440553e+00
+PLAQUETTE ACTION: -8.529559e+03
+ACTION: g,h = 1.359716e+03  4.046720e+03  5.406436e+03
+PLAQUETTE ACTION: -7.533881e+03
+ACTION: g,h = 2.100390e+03  3.287484e+03  5.387875e+03
+ACCEPT: delta S = -1.856160e+01
+GMES 8.093960e-01 5.133837e-02 9.990000e+01 2.158099e+00 2.169728e+00
+PLAQUETTE ACTION: -7.533881e+03
+ACTION: g,h = 2.100390e+03  4.165066e+03  6.265456e+03
+PLAQUETTE ACTION: -6.868630e+03
+ACTION: g,h = 2.602320e+03  3.652916e+03  6.255235e+03
+ACCEPT: delta S = -1.022053e+01
+GMES 6.518019e-01 1.106149e-01 9.990000e+01 1.968749e+00 1.976926e+00
+RUNNING COMPLETED
+Time = 5.238000e+01 seconds
+
+

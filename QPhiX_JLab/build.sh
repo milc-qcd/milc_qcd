@@ -17,7 +17,7 @@ TOPDIR=`pwd`
 SRCDIR=${TOPDIR}/qphix
 INSTALL_PREFIX=${TOPDIR}/install
 
-QMP_DIR=${HOME}/scidac/install/qmp-cori-omp-knl-icc
+QMP_DIR=${HOME}/scidac/install/qmp
 
 if [ ! -d ${SRCDIR} ]
 then

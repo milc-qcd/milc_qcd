@@ -133,7 +133,7 @@ ks_imp_utilities
       Test code for the staggered fermion force and staggered inverter.
 
 ks_measure
-	Scalar operators, mainly used for the equation of state ahd
+	Scalar operators, mainly used for the equation of state and
 	quark number suscptibilities.
 
 ks_spectrum

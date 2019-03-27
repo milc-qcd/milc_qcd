@@ -14,7 +14,7 @@ MAKEFILE = Makefile
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH = # skx knl knc hsw pow8
+ARCH = # skx knl knc hsw pow8 pow9
 
 #----------------------------------------------------------------------
 # 2. Compiler family
@@ -73,8 +73,8 @@ else ifeq ($(strip ${COMPILER}),ibm)
     MY_CC ?= mpixlc_r
     MY_CXX ?= mpixlcxx_r
   else
-    MY_CC ?= bgxlc_r
-    MY_CXX ?= bgxlc++_r
+    MY_CC ?= xlc_r
+    MY_CXX ?= xlc++_r
   endif
 
 endif
@@ -117,6 +117,10 @@ ifeq ($(strip ${COMPILER}),gnu)
 
   ifeq ($(strip ${ARCH}),pow8)
     ARCH_FLAG = -mcpu=power8
+  endif
+
+  ifeq ($(strip ${ARCH}),pow9)
+    ARCH_FLAG = -mcpu=power9
   endif
 
   ifeq ($(strip ${OMP}),true)
@@ -593,7 +597,7 @@ ifeq ($(strip ${WANTQPHIXJ}), true)
 
   QPHIXJ_HOME = ../QPhiX_JLab/install/dslash-${QPHIXJ_ARCH}-s${QPHIXJ_SOALEN}
   QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/lib
-  LIBQPHIXJ = -L${QPHIXJ_LIBRARIES} -lqphix_solver 
+  LIBQPHIXJ = -L${QPHIXJ_LIBRARIES} -lqphix_solver -lqphix_codegen
   QPHIXJ_HEADERS = ${QPHIXJ_HOME}/include
   INCQPHIXJ = -I${QPHIXJ_HEADERS}
 
