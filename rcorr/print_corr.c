@@ -161,8 +161,8 @@ print_result(Real *q[], Real *q2[], int nblock, int block_size[]){
 	    }
 	  }
 
-	  /* Collect values on all nodes (only node 0 needed) */
-	  g_intsum(&mult);
+	  /* Global sums (only node 0 needed) */
+	  g_intsum(&mult); 
 	  g_vecdoublesum(myqb, nblock);
 	  g_vecdoublesum(myqb2, nblock);
 
@@ -190,15 +190,14 @@ print_result(Real *q[], Real *q2[], int nblock, int block_size[]){
 	}
 
   /* Binned output for r > RMAX */
-  /* We have output only for stride 2 */
   
   for(i = 0; i < MAXBIN; i++){
-    nvsr[i] = 0;
+    nvsr[i] = 0; // # of lattice sites falling onto the bin indexed by i
     for(ib = 0; ib < nblock; ib++){
-      corrvsr[i][ib] = 0.;
-      corrvsr2[i][ib] = 0.;
+      corrvsr[i][ib] = 0.;  // avg of correlation at the sites in the bin#i with nblock^th block size 
+      corrvsr2[i][ib] = 0.; // variance
     }
-    rvsr[i] = 0.;
+    rvsr[i] = 0.; // avg of r of the lattice sites in the bin #i
   }
 
   for(x = 0; x < nx; x++)
