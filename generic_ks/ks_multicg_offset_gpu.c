@@ -138,18 +138,18 @@ int ks_multicg_offset_field_gpu(
   for(i=0; i<num_offsets; ++i){
 
    residual[i]          = qic[i].resid;
-   if (i>0){
+   if (i>0) {
+#if defined(MAX_MIXED) || defined(HALF_MIXED)
      if (residue[i] != 0) {
        // scale the shifted residual relative to the residue
        residual[i] = fabs(residue[0] / residue[i]) * residual[0];
        if (residual[i] < 1e-14) residual[i] = 1e-14;
      } else {
-#if defined(MAX_MIXED) || defined(HALF_MIXED)
        residual[i] = qic[i].resid; // for a mixed-precision solver use residual for higher shifts
-#else
-       residual[i] = 0; // a unmixed solver should iterate until breakdown to agree with CPU behavior
-#endif
      }
+#else
+     residual[i] = 0; // a unmixed solver should iterate until breakdown to agree with CPU behavior
+#endif
    }
    relative_residual[i] = qic[i].relresid;
 
