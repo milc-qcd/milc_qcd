@@ -173,13 +173,12 @@ int bicgilu_cl_field_gpu ( // Return value is number of iterations taken
   inv_args.max_iter          = qic->max*qic->nrestart;
 #ifdef MAX_MIXED
   inv_args.mixed_precision = 2;
-#else
-#ifdef HALF_MIXED
+#elif defined(HALF_MIXED)
   inv_args.mixed_precision = 1;
 #else
   inv_args.mixed_precision = 0;
 #endif
-#endif
+
   node0_printf("inv_args.mixed_precision is set to %d\n",
 	       inv_args.mixed_precision);
   inv_args.solver_type = QUDA_BICGSTAB_INVERTER;

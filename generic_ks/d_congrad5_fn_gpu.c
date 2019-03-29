@@ -98,7 +98,9 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   }
 
   inv_args.max_iter = qic->max*qic->nrestart;
-#if defined(MAX_MIXED) || defined(HALF_MIXED)
+#if defined(MAX_MIXED)
+  inv_args.mixed_precision = 2;
+#elif defined(HALF_MIXED)
   inv_args.mixed_precision = 1;
 #else
   inv_args.mixed_precision = 0;
