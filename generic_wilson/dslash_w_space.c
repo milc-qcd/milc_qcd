@@ -225,7 +225,6 @@ Compute SUM_dirs_xyz (
 
 void dslash_w_3D_site( field_offset src, field_offset dest, int isign, 
 		       int parity) {
-half_wilson_vector hwvx,hwvy,hwvz;
 
 register int i;
 register site *s;
@@ -261,6 +260,7 @@ msg_tag *tag[8];
         /* Take Wilson projection for src displaced in down direction,
         multiply it by adjoint link matrix, gather it "up" */
     FORSOMEPARITY(i,s,otherparity){
+      half_wilson_vector hwvx,hwvy,hwvz;
       wp_shrink_3dir2( (wilson_vector *)F_PT(s,src),
 		       &hwvx, &hwvy, &hwvz,-isign);
 	mult_adj_su3_mat_hwvec( &(s->link[XUP]), &hwvx, htmp[XDOWN]+i);
@@ -285,6 +285,7 @@ msg_tag *tag[8];
 	wait_gather(tag[dir]);
     }
     FORSOMEPARITY(i,s,parity){
+      half_wilson_vector hwvx,hwvy,hwvz;
 	mult_su3_mat_hwvec( &(s->link[XUP]), 
 		(half_wilson_vector * )(gen_pt[XUP][i]), &hwvx ); 
 	mult_su3_mat_hwvec( &(s->link[YUP]), 
