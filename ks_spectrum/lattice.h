@@ -69,6 +69,7 @@ EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
 			    hypercubes) for the nodes in each
 			    coordinate direction.  Must be divisors of
 			    the lattice dimension */
+#endif
 #ifdef FIX_SUBNODE_GEOM
 EXTERN  int subnode_geometry[4];  /* Specifies fixed "nsubsquares" (i.e. 4D
 			    hypercubes) for the PE ranks on each node in each
@@ -82,7 +83,6 @@ EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 			     one I/O node for each square.  The I/O
 			     node is at the origin of the square.
 			     Must be divisors of the node_geometry. */
-#endif
 #endif
 EXTERN  params param;           /* user input parameters */
 EXTERN  double g_ssplaq, g_stplaq;

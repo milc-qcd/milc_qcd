@@ -1,0 +1,83 @@
+/****** dsdu_qhb.c  -- compute the staple ******************/
+/* MIMD version 5 */
+
+#include "symanzik_sl32_includes.h"
+
+void dsdu_qhb(int dir1, int subl) 
+{
+register int i,dir2;
+register site *st;
+msg_tag *tag0,*tag1,*tag2,*tag3;
+int start, downsubl;
+su3_matrix tmat1,tmat2;
+
+	/* Loop over other directions, computing force from plaquettes in
+	   the dir1,dir2 plane */
+	start=1; /* indicates staple sum not initialized */
+	for(dir2=XUP;dir2<=TUP;dir2++)if(dir2 != dir1)
+	{
+	    /* sublattice in the downward direction */
+	    downsubl = neighsubl[subl][OPP_DIR(dir2)];
+	    /* get link[dir2] from direction dir1 */
+	    tag0 = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+		dir1, downsubl, gen_pt[0] );
+
+	    /* get link[dir1] from direction dir2 */
+	    tag1 = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+		dir2, subl, gen_pt[1] );
+
+	    /* get link[dir2] from direction dir1 */
+	    tag2 = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+		dir1, subl, gen_pt[2] );
+
+	    /* Start lower staple at downward site */
+	    FORSOMESUBLATTICE(i,st,downsubl){
+		mult_su3_an( &(st->link[dir2]), &(st->link[dir1]),
+		    &(st->tempmat1) );
+	    }
+
+	    /* Finish lower staple at downward site */
+	    wait_gather(tag0);
+	    FORSOMESUBLATTICE(i,st,downsubl){
+		mult_su3_nn( &(st->tempmat1), (su3_matrix *)gen_pt[0][i],
+		    &(st->tempmat2) );
+	    }
+	    cleanup_gather(tag0);
+
+	    /* Now gather up */
+	    tag3 = start_gather( F_OFFSET(tempmat2), sizeof(su3_matrix),
+		OPP_DIR(dir2), subl, gen_pt[3] );
+
+	    /* Upper staple */
+	    wait_gather(tag1);
+	    wait_gather(tag2);
+	    if(start){  /* this is the first contribution to staple */
+		FORSOMESUBLATTICE(i,st,subl){
+		    mult_su3_nn( &(st->link[dir2]), (su3_matrix *)gen_pt[1][i],
+			&tmat1 );
+		    mult_su3_na( &tmat1, (su3_matrix *)gen_pt[2][i],
+			&(st->staple));
+		}
+		start=0; 
+	    }
+	    else{
+		FORSOMESUBLATTICE(i,st,subl){
+		    mult_su3_nn( &(st->link[dir2]), (su3_matrix *)gen_pt[1][i],
+			&tmat1 );
+		    mult_su3_na( &tmat1, (su3_matrix *)gen_pt[2][i], &tmat2 );
+		    add_su3_matrix( &(st->staple), &tmat2, &(st->staple));
+		}
+	    } /* upper staple */
+	    cleanup_gather(tag1);
+	    cleanup_gather(tag2);
+
+	    /* Now add lower staple */
+	    wait_gather(tag3);
+	    FORSOMESUBLATTICE(i,st,subl){
+		add_su3_matrix( &(st->staple), (su3_matrix *)gen_pt[3][i],
+		    &(st->staple));
+	    } /* lower staple */
+	    cleanup_gather(tag3);
+	}
+}
+

@@ -19,7 +19,11 @@ Real fs,ft;
     ft = beta*(Real)(volume);
     g_action = -fs*ssplaq-ft*stplaq;
 #else
+#ifndef ANISOTROPY
     g_action = -beta*volume*(ssplaq+stplaq);
+#else
+    g_action = -(beta[0]*ssplaq+beta[1]*stplaq)*volume;
+#endif
 #endif
     h_action = hmom_action();
     if(this_node==0)printf("ACTION: g,h = %e  %e  %e\n",

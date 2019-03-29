@@ -56,6 +56,11 @@ static Real **loop_coeff;
     /* for each rotation/reflection, an integer distinct for each starting
 	point, or each cyclic permutation of the links */
 int loop_char[MAX_NUM];
+#ifdef ANISOTROPY
+    /* for each rotation/reflection, an integer indicating if the path
+       is spatial (=0) or temporal (=1) */
+static int **loop_st;
+#endif
 
 static void char_num( int *dig, int *chr, int length);
 
@@ -276,7 +281,18 @@ double imp_gauge_action() {
 		trace=trace_su3( &tempmat1[i] );
 		action =  3.0 - (double)trace.real;
 		/* need the "3 -" for higher characters */
+#ifndef ANISOTROPY
         	total_action= (double)loop_coeff[iloop][0]*action;
+#else
+		/* NOTE: for anisotropic case every loop is multiplied by
+		   the corresponding spatial (beta[0]) or temporal (beta[1])
+		   coupling, while in the isotropic case all loops are
+		   added together and then multiplied by beta outside
+                   of this function */
+        	total_action= (double)loop_coeff[iloop][0]*action
+                              *beta[loop_st[iloop][ln]];
+		/* loop_st[iloop][ln] is either 0 or 1 */
+#endif
         	act2=action;
 		for(rep=1;rep<NREPS;rep++){
 		    act2 *= action;
@@ -285,7 +301,7 @@ double imp_gauge_action() {
 
         	g_action  += total_action;
 
-	    } END_LOOP_OMP /* sites */
+	    } END_LOOP_OMP; /* sites */
 	} /* ln */
     } /* iloop */
 
@@ -349,15 +365,27 @@ void g_measure( ){
 		trace=trace_su3( &tempmat1[i] );
 		average[0] += (double)trace.real;
 		action =  3.0 - (double)trace.real;
+#ifndef ANISOTROPY
 		this_total_action += (double)loop_coeff[iloop][0]*action;
 		/* need the "3 -" for higher characters */
+#else
+		/* NOTE: in the total action calculation
+                   for anisotropic case every loop is multiplied by
+		   the corresponding spatial (beta[0]) or temporal (beta[1])
+		   coupling, while in the isotropic case all loops are
+		   added together and are NOT multiplied by beta in
+		   this function */
+		this_total_action += (double)loop_coeff[iloop][0]*action
+		 		*beta[loop_st[iloop][ln]];
+		/* loop_st[iloop][ln] is either 0 or 1 */
+#endif
         	act2=action;
 		for(rep=1;rep<NREPS;rep++){
 		    act2 *= action;
 		    average[rep] += act2;
 		    this_total_action += (double)loop_coeff[iloop][rep]*act2;
 		} /* reps */
-		//	    } END_LOOP_OMP /* sites */
+		//	    } END_LOOP_OMP; /* sites */
 	    } /* sites */
 	    g_vecdoublesum( average, NREPS );
 	    total_action += this_total_action;
@@ -389,6 +417,49 @@ void printpath( int *path, int length ){
     node0_printf(",  L = %d )\n", length );
 }
 
+#ifdef ANISOTROPY
+/* Auxilliary function that goes through all possible paths rotations
+   and reflections and records if the path is spatial or temporal.
+   The results are stored in loop_st[NLOOP][MAX_NUM] array */
+void path_determine_st() {
+
+    int iloop, count, i;
+    char myname[] = "path_determine_st";
+
+    /* Allocate as if loop_st[NLOOP][MAX_NUM] */
+
+    loop_st = (int **)malloc(sizeof(int *)*NLOOP);
+    if(loop_st == NULL){
+      printf("%s(%d): No room for loop_st\n",myname,this_node);
+      terminate(1);
+    }
+
+    for(iloop = 0; iloop < NLOOP; iloop++){
+      loop_st[iloop] = (int *)malloc(sizeof(int)*MAX_NUM);
+      if(loop_st[iloop] == NULL){
+        printf("%s(%d): No room for loop_st\n",myname,this_node);
+        terminate(1);
+      }
+
+      /* loop over rotations/reflections */
+      for(count = 0; count < loop_num[iloop]; count++){
+
+        /* set initially as a spatial path */
+        loop_st[iloop][count] = 0;
+
+        /* loop over directions in the path */
+        for(i = 0; i < loop_length[iloop]; i++){
+          if( loop_table[iloop][count][i]==TUP ||
+              loop_table[iloop][count][i]==TDOWN ) {
+            loop_st[iloop][count] = 1;
+            break;
+          }
+        }
+      }
+    }
+}
+#endif
+
 #ifdef N_SUBL32
 /*** code from symanzik_sl32/dsdu_qhb.c  -- compute the staple ***/
 /* This is a version for extended actions where 32 sublattices are
@@ -412,6 +483,10 @@ int dirs[MAX_LENGTH], length;
 int path_dir[MAX_LENGTH], path_length;
 su3_matrix tmat1, *tempmat1;
 int fsubl;
+#ifdef ANISOTROPY
+int is_temporal; /* to decide what kind of staple we have:
+                    0 - spatial, 1 - temporal */
+#endif
 
  assert(NREPS==1);   /* This procedure designed only for NREPS = 1 */
 
@@ -423,13 +498,21 @@ int fsubl;
 
     FORSOMESUBLATTICE_OMP(i,st,subl,default(shared)) {
 	clear_su3mat(&(st->staple));
-    } END_LOOP_OMP
+#ifdef ANISOTROPY
+	clear_su3mat(&(st->staple_a[0]));
+	clear_su3mat(&(st->staple_a[1]));
+#endif
+    } END_LOOP_OMP;
 
     for(iloop=0;iloop<NLOOP;iloop++){
 	length=loop_length[iloop];
 	for(ln=0;ln<loop_num[iloop];ln++){
 	    /* set up dirs.  we are looking at loop starting in "XUP"
 	       direction, rotate so it starts in "dir" direction. */
+#ifdef ANISOTROPY
+            /* initialize staple flag as spatial */
+            is_temporal = 0;
+#endif
 	    for(k=0;k<length;k++){
 		if( GOES_FORWARDS(loop_table[iloop][ln][k]) ){
 		    dirs[k]=(dir+loop_table[iloop][ln][k] )% 4;
@@ -438,6 +521,11 @@ int fsubl;
 		    dirs[k]=OPP_DIR(
 			(dir+OPP_DIR(loop_table[iloop][ln][k]))%4 );
 		}
+#ifdef ANISOTROPY
+		/* flip the flag if a temporal link is encountered */
+		if( is_temporal==0 && ( dirs[k]==TUP || dirs[k]==TDOWN ) )
+		    is_temporal=1;
+#endif
 	    }
 
 	    path_length = length-1;	/* generalized "staple" */
@@ -461,13 +549,29 @@ int fsubl;
 		   So now take adjoint */
 		FORSOMESUBLATTICE_OMP(i,st,subl,private(tmat1)) {
 		    su3_adjoint( &tempmat1[i], &tmat1 );
+#ifndef ANISOTROPY
 		    scalar_mult_add_su3_matrix(&(st->staple), &tmat1,
 			loop_coeff[iloop][0], &(st->staple) );
-		} END_LOOP_OMP
+#else
+		    scalar_mult_add_su3_matrix(&(st->staple_a[is_temporal]),
+			&tmat1, loop_coeff[iloop][0],
+			&(st->staple_a[is_temporal]) );
+#endif
+		} END_LOOP_OMP;
 	    } /* k (location in path) */
 	} /* ln */
     } /* iloop */
 
+#ifdef ANISOTROPY
+    /* Add spatial and temporal staples weighted by betas to the
+       "staple" variable */
+    FORSOMESUBLATTICE(i,st,subl) {
+	scalar_mult_add_su3_matrix(&(st->staple), &(st->staple_a[0]),
+	    beta[0], &(st->staple) );
+	scalar_mult_add_su3_matrix(&(st->staple), &(st->staple_a[1]),
+	    beta[1], &(st->staple) );
+    }
+#endif
     special_free(tempmat1);
     g_sync();
 

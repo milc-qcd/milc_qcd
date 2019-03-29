@@ -29,7 +29,11 @@ register site *st;
 su3_matrix action;  su2_matrix h;
 Nhit = 3;
 pi2= 2.0*PI;
+#ifndef ANISOTROPY
 b3=beta/3.0;
+#else
+b3=1/(Real)3;
+#endif
 
 /* fix bug by adding loop over NumTrj; before 1 (and only 1) heat bath
     hit was dome, regardless of NumStp    */

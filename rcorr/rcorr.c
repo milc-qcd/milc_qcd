@@ -135,7 +135,7 @@ rcorr(Real *qblock[], Real *q2block[],
     clear_r_field(qblock[ib]);
     clear_r_field(q2block[ib]);
     int bs = block_size[ib];   /* Size of one block */
-    int nsamp = 0;  /* Number of blocks */
+    int nsamp = 0;  /* Number of blocks of the given size */
 
     for(jrand = 0; jrand < nrand_sloppy; jrand += bs){
 
@@ -181,5 +181,3 @@ rcorr(Real *qblock[], Real *q2block[],
   destroy_c_field(out);
 
 } /* rcorr.c */
-
-
