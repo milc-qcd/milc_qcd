@@ -39,7 +39,7 @@
 #endif
 #endif
 
-#define DEBUG_TIMING
+//#define DEBUG_TIMING
 
 /* Data structure for the layout */
 
@@ -312,8 +312,8 @@ void make_fftw_plans(int size, ft_data *ftd){
   double dtime = start_timing();
 #endif
 
-  //  flags = FFTW_ESTIMATE;  /* Could try FFTW_MEASURE */
-  flags = FFTW_MEASURE;
+  flags = FFTW_ESTIMATE;  /* Could try FFTW_MEASURE */
+  //  flags = FFTW_MEASURE;
 
   rank = 1;
   /* Number of complex values in a 4D site datum */
