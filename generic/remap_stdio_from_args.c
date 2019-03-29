@@ -22,6 +22,8 @@
 //   Allow to append to stdout, stderr files, if defined
 //#define REMAP_STDIO_APPEND
 
+//#define OPEN_ALL
+
 #include "generic_includes.h"
 #include <string.h>
 
