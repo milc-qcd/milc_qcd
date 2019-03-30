@@ -1274,7 +1274,7 @@ make_send_receive_list(
     }
   }
 
-  double dtime = -dclock();
+  //  double dtime = -dclock();
 
   /* sort the lists of links according to the ordering of their
      even neighbors in the lower numbered node.  The list of sites
@@ -1289,8 +1289,8 @@ make_send_receive_list(
 		      compt->sitelist[subl], func, args, i );
   }
 
-  dtime += dclock();
-  printf("(%d): sort site list %g\n",this_node,dtime);
+  //  dtime += dclock();
+  //  printf("(%d): sort site list %g\n",this_node,dtime);
 
   /* free temporary storage */
   free(combuf);
