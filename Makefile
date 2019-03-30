@@ -457,11 +457,6 @@ ifeq ($(strip ${WANTQUDA}),true)
     CGPU += -DUSE_FF_GPU
   endif
 
-  ifeq ($(strip ${WANT_FF_GPU}),true)
-    HAVE_FF_GPU = true
-    CGPU += -DUSE_FF_GPU
-  endif
-
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
     CGPU += -DHALF_MIXED # use single precision where appropriate
   else ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),2)
