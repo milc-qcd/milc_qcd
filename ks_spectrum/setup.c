@@ -139,7 +139,6 @@ static int initial_set(void){
 			   param.ionode_geometry, 4);
 #endif
 #endif
-#endif
     IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
     IF_OK status += get_s(stdin, prompt,"job_id",param.job_id);
     
