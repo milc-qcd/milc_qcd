@@ -32,7 +32,7 @@ int db_connect(sqlite3 **db, const char* dbName);
 
 int db_disconnect(sqlite3 *db);
 
-int db_init_tables(sqlite3* db);
+int db_init_tables(sqlite3* db, int wait_if_busy_ms);
 
 int db_begin_transaction(sqlite3* db, int wait_if_busy_ms);
 

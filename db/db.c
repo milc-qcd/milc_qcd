@@ -74,13 +74,14 @@ int db_rollback_transaction(sqlite3* db)
 return(rc);
 }
 
-int db_init_tables(sqlite3* db)
+int db_init_tables(sqlite3* db, int wait_if_busy_ms)
 {
   int rc;
   char *err;
   
-  int wait_ms = 250;
-  rc = db_begin_transaction(db, wait_ms);
+  rc = db_begin_transaction(db,wait_if_busy_ms);
+  if( rc != SQLITE_OK )
+    return(rc);
 
   const char *correlators = 
     "CREATE TABLE IF NOT EXISTS correlators ( -- correlator names and metadata\n\
@@ -94,6 +95,7 @@ int db_init_tables(sqlite3* db)
       fprintf(stderr, "db_init_tables: %s\n", correlators);
       fprintf(stderr, "db_init_tables: ERROR %s\n", err);
       sqlite3_free(err);
+      rc = db_rollback_transaction(db);
       return(rc);
     }
 
@@ -116,6 +118,7 @@ int db_init_tables(sqlite3* db)
       fprintf(stderr, "db_init_tables: %s\n", data);
       fprintf(stderr, "db_init_tables: ERROR %s\n", err);
       sqlite3_free(err);
+      rc = db_rollback_transaction(db);
       return(rc);
     }
 
@@ -127,6 +130,7 @@ int db_init_tables(sqlite3* db)
       fprintf(stderr, "db_init_tables: %s\n", cindx);
       fprintf(stderr, "db_init_tables: ERROR %s\n", err);
       sqlite3_free(err);
+      rc = db_rollback_transaction(db);
       return(rc);
     }
 
@@ -138,11 +142,11 @@ int db_init_tables(sqlite3* db)
       fprintf(stderr, "db_init_tables: %s\n", dindx);
       fprintf(stderr, "db_init_tables: ERROR %s\n", err);
       sqlite3_free(err);
+      rc = db_rollback_transaction(db);
       return(rc);
     }
 
-  db_commit_transaction(db);
-
+  rc = db_commit_transaction(db);
   return(rc);
 }
 

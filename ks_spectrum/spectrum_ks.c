@@ -1601,7 +1601,8 @@ void spectrum_ks(ks_prop_field *qp0, int naik_index0,
 	    // connect to db
 	    ret = db_connect(&db,dbName);
 	    // init tables if they do not exist
-	    ret = db_init_tables(db);
+	    int max_wait_ms = 4000;
+	    ret = db_init_tables(db,max_wait_ms);
 	  }
 	if(param.do_meson_spect[pair])
 	  {
@@ -1622,7 +1623,7 @@ void spectrum_ks(ks_prop_field *qp0, int naik_index0,
 		time_t epoch_secs = time(NULL);
 		// begin transaction
 		Wtimer_t elapsed; Wtimer_start(&elapsed);
-		int wait_if_busy_ms = 1000;
+		int wait_if_busy_ms = 2000;
 		ret = db_begin_transaction(db,wait_if_busy_ms);
 		// insert correlators
 		ret = sql_spectrum_ks(db,pair,epoch_secs);
@@ -1676,7 +1677,8 @@ void spectrum_ks_baryon(ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *q
 	  // connect to db
 	  ret = db_connect(&db,dbName);
 	  // init tables if they do not exist
-	  ret = db_init_tables(db);
+	  int max_wait_ms = 4000;
+	  ret = db_init_tables(db,max_wait_ms);
 	}
       // do global sums over baryon_prop[m][t], normalize, and fix sign for antiperiodic bc
       int num_corr = param.num_corr_b[triplet];
@@ -1701,7 +1703,7 @@ void spectrum_ks_baryon(ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *q
 	  time_t epoch_secs = time(NULL);
 	  // begin transaction
 	  Wtimer_t elapsed; Wtimer_start(&elapsed);
-	  int wait_if_busy_ms = 1000;
+	  int wait_if_busy_ms = 2000;
 	  ret = db_begin_transaction(db,wait_if_busy_ms);
 	  // insert correlators
 	  ret= sql_spectrum_ks_baryon(db,triplet,epoch_secs);
