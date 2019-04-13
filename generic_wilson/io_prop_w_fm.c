@@ -910,7 +910,7 @@ void r_serial_w_fm(w_prop_file *wpf, field_offset dest_site,
 	}
     } /* rcv_rank */
 
-  if(pbuff != NULL)free(pbuff);  pbuff = NULL;
+  if(pbuff != NULL){free(pbuff);  pbuff = NULL;}
 
   /**  if(this_node==0)
     {
@@ -1083,7 +1083,7 @@ void r_serial_w_fm_sc(w_prop_file *wpf, field_offset dest_site,
 		   test_wpc.sum29, test_wpc.sum31);
     } /* source color, spin */
   
-  if(pbuff != NULL)free(pbuff);  pbuff = NULL;
+  if(pbuff != NULL){free(pbuff);  pbuff = NULL;}
 
   /**  if(this_node==0)
     {

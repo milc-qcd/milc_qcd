@@ -1,0 +1,61 @@
+Pure gauge SU3
+Hybrid Monte Carlo algorithm
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 9435
+LAYOUT = Hypercubes, options = hyper_sl32,
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 0.2 MBytes per node for lattice
+
+
+warms 0
+trajecs 3
+traj_between_meas 1
+beta 6.8
+u0 0.87
+steps_per_trajectory 10
+microcanonical_time_step 0.1
+fresh 
+forget 
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 1.230240e-04
+Symanzik 1x1 + 1x2 + 1x1x1 action
+gauge_action: total_dyn_flavors = 0
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.182149e-02     12
+                    2 0      -7.975969e-03     16
+WARMUPS COMPLETED
+PLAQUETTE ACTION: -1.044480e+04
+ACTION: g,h = 0.000000e+00  4.085961e+03  4.085961e+03
+PLAQUETTE ACTION: -8.482369e+03
+ACTION: g,h = 1.383070e+03  2.655283e+03  4.038352e+03
+ACCEPT: delta S = -4.760813e+01
+GMES 1.381128e+00 -3.696191e-03 9.990000e+01 2.442383e+00 2.430301e+00
+PLAQUETTE ACTION: -8.482369e+03
+ACTION: g,h = 1.383070e+03  4.233089e+03  5.616159e+03
+PLAQUETTE ACTION: -7.440725e+03
+ACTION: g,h = 2.174230e+03  3.421563e+03  5.595793e+03
+ACCEPT: delta S = -2.036625e+01
+GMES 8.765234e-01 -8.186379e-02 9.990000e+01 2.131575e+00 2.142738e+00
+PLAQUETTE ACTION: -7.440725e+03
+ACTION: g,h = 2.174230e+03  4.048888e+03  6.223118e+03
+PLAQUETTE ACTION: -6.798812e+03
+ACTION: g,h = 2.664152e+03  3.548915e+03  6.213068e+03
+ACCEPT: delta S = -1.004989e+01
+GMES 1.019913e+00 -7.620458e-02 9.990000e+01 1.937561e+00 1.968007e+00
+RUNNING COMPLETED
+Time = 2.295433e+00 seconds
+
+
+get_i(0): EOF on input.
+exit: Sun Feb 14 17:02:08 2016
+

@@ -2,83 +2,86 @@
 /* MIMD version 7 */
 /* ROUTINES WHICH DETERMINE THE DISTRIBUTION OF SITES ON NODES */
 
-/* This version divides the lattice by factors of prime numbers in any of the
-   four directions.  It prefers to divide the longest dimensions,
-   which mimimizes the area of the surfaces.  Similarly, it prefers
-   to divide dimensions which have already been divided, thus not
-   introducing more off-node directions.
+/* The machine is viewed as a Cartesian grid of nodes.  Each node is,
+   in turn, a Cartesian grid of MPI PEs (processor elements in MPI
+   jargon), one rank per PE.  The combined subdivisions result
+   in a overall Cartesian grid of MPI PEs.  Lattice sites are
+   distributed uniformly in hypercubic sublattices across the MPI PEs.
+   This file contains the procedures that define the mapping between a
+   site coordinate and its MPI PE rank plus linear index within that
+   rank.
 
-	S. Gottlieb, May 18, 1999
-	The code will start trying to divide with the largest prime factor
-	and then work its way down to 2.  The current maximum prime is 53.
-	The array of primes on line 46 may be extended if necessary.
+   The division of the node sublattices and the further local
+   subdivision within a node can be controlled by command-line
+   parameters or by input parameters.  By default, the division is
+   done automatically according to the hyper_prime algorithm by
+   S. Gottlieb.
 
-   This requires that the lattice volume be divisible by the number
-   of nodes.  Each dimension must be divisible by a suitable factor
-   such that the product of the four factors is the number of nodes.
+   NOTE: Some of the traditional terminology is apt to confuse.  The
+   original versions of the code equated "node" with MPI rank.  For
+   backward compatibility we have kept that terminology in global
+   names.  See below.
+   
+   GLOBAL NAMES DEFINED HERE
 
-   3/29/00 EVENFIRST is the rule now. CD.
-   12/10/00 Fixed so k = MAXPRIMES-1 DT
+   setup_layout() is the initialization call.  Determines which sites
+                  go on which PE ranks and and sets the global
+                  variables "sites_on_node", "even_sites_on_node",
+                  "odd_sites_on_node"
+
+   num_sites(rank) returns the number of sites on a PE rank
+
+   node_number(x,y,z,t) returns the PE rank on which the site with
+                        coordinates x,y,z,t lives.  Old-style name. 
+			This procedure should be called "pe_rank_from_coords".
+
+   node_index(x,y,z,t) returns the index of the site on its PE rank -
+                       ie the site is lattice[node_index(x,y,z,t)].
+                       Old-style name.  This procedure should be
+                       called "site_index_from_coords"
+
+   get_logical_dimensions() returns the dimensions of the PE grid.
+
+   get_logical_coordinates() returns the PE grid coordinates of this
+                           MPI rank
+
+   get_coords() returns the site coordinates for a given PE rank and index
+                         (the inverse of node_number + node_index)
+
+   io_node(rank) maps a PE rank to its I/O rank (used if there are I/O
+                    partitions).  Old-style name.  Should be called
+		    "io_pe_rank".
+
+   sites_on_node       Number of sites on this PE
+   even_sites_on_node  Number of even sites on this PE
+   odd_sites_on_node   Number of odd sites on this PE
+
 */
 
-// $Log: layout_hyper_prime.c,v $
-// Revision 1.18  2012/11/24 04:43:47  detar
-// Fix nsquares print out.
-//
-// Revision 1.17  2012/01/21 21:28:12  detar
-// Support new QMP
-//
-// Revision 1.16  2011/11/29 20:11:30  detar
-// Cosmetic fix to initialization
-//
-// Revision 1.15  2008/04/18 15:36:46  detar
-// Permit odd number of lattice sites per node
-//
-// Revision 1.14  2008/04/11 15:36:00  detar
-// Allow an odd number of sites per node
-//
-
-/*
-   setup_layout() does any initial setup.  When it is called the
-     lattice dimensions nx,ny,nz and nt have been set.
-     This routine sets the global variables "sites_on_node",
-     "even_sites_on_node" and "odd_sites_on_node".
-   num_sites(node) returns the number of sites on a node
-   node_number(x,y,z,t) returns the node number on which a site lives.
-   node_index(x,y,z,t) returns the index of the site on the node - ie the
-     site is lattice[node_index(x,y,z,t)].
-   get_logical_dimensions() returns the machine dimensions
-   get_logical_coordinates() returns the mesh coordinates of this node
-   get_coords() returns the coordinates for a given node and index
-       (the inverse of node_number + node_index)
-   io_node(node) maps nodes to their I/O node (for I/O partitions)
-   These routines will change as we change our minds about how to distribute
-     sites among the nodes.  Hopefully the setup routines will work for any
-     consistent choices. (ie node_index should return a different value for
-     each site on the node.)
-*/
 #include "generic_includes.h"
 #ifdef HAVE_GRID
 #include "../include/generic_grid.h"
-//DEBUG
-void check_create(void);
 #endif
 #ifdef HAVE_QMP
 #include <qmp.h>
 #endif
 
-static int squaresize[4];	   /* dimensions of hypercubes */
-static int nsquares[4];	           /* number of hypercubes in each direction */
-static int machine_coordinates[4]; /* logical machine coordinates */ 
+static int squaresize[4];	   /* local dimensions (number of
+				      sites) of the sublattice on one
+				      node (hypercube) */
+static int nsquares[4];	           /* number of site hypercubes in each direction, one hypercube per
+				      node */
+static int machine_coordinates[4]; /* logical machine (MPI PE rank) coordinates for this MPI rank */ 
 
-static int nodes_per_ionode[4];    /* dimensions of ionode partition */
-static int *ionodegeomvals = NULL; /* ionode partitions */
+static int pes_per_iopartition[4];    /* dimensions (number of MPI PEs) in one 
+				      I/O partition. Must be a divisor of nsquares */
+static int *ionodegeomvals = NULL; /* number of I/O partitions in each direction */
 
 int prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53};
 # define MAXPRIMES ( sizeof(prime) / sizeof(int) )
 
 /*------------------------------------------------------------------*/
-/* Convert rank to coordinates */
+/* Convert PE rank to coordinates */
 static void lex_coords(int coords[], const int dim, const int size[], 
 	   const size_t rank)
 {
@@ -98,7 +101,7 @@ static int coord_parity(int r[]){
 }
 
 /*------------------------------------------------------------------*/
-/* Convert coordinate to linear lexicographic rank (inverse of
+/* Convert coordinate to linear lexicographic PE rank (inverse of
    lex_coords) */
 
 static size_t lex_rank(const int coords[], int dim, int size[])
@@ -115,13 +118,14 @@ static size_t lex_rank(const int coords[], int dim, int size[])
 #ifdef HAVE_QMP
 
 /*--------------------------------------------------------------------*/
-/* Sets the QMP logical topology if we need one */
+/* Sets the QMP logical topology from "geom" */
 static void set_qmp_logical_topology(const int *geom, int n){
 
   /* Has a geometry already been specified by the -geom command-line
      argument or on the input parameter line "node_geometry"? */
   /* If not, don't set the grid geometry here */
   if(geom == NULL)return;
+
   /* If so, then pass the grid dimensions to QMP now */
   if(QMP_declare_logical_topology(geom, n) != QMP_SUCCESS){
     if(mynode()==0)printf("setup_layout: QMP_declare_logical_topology failed on %d %d %d %d \n",
@@ -158,6 +162,7 @@ static void setup_qmp_grid(const int *nsquares2, int ndim2){
   for(i=0; i<ndim; i++) {
     if(len[i]%nsquares[i] != 0) {
       if(mynode()==0)printf("LATTICE SIZE DOESN'T FIT GRID\n");
+      fflush(stdout);
       QMP_abort(0);
     }
     squaresize[i] = len[i]/nsquares[i];
@@ -166,6 +171,18 @@ static void setup_qmp_grid(const int *nsquares2, int ndim2){
 #endif
 
 /*--------------------------------------------------------------------*/
+/* This version divides the lattice by factors of prime numbers in any of the
+   four directions.  It prefers to divide the longest dimensions,
+   which mimimizes the area of the surfaces.  Similarly, it prefers
+   to divide dimensions which have already been divided, thus not
+   introducing more off-node directions.
+
+	S. Gottlieb, May 18, 1999
+	The code will start trying to divide with the largest prime factor
+	and then work its way down to 2.  The current maximum prime is 53.
+	The array of primes on line 46 may be extended if necessary.
+*/
+
 static void setup_hyper_prime(){
   int i,j,k,dir;
 
@@ -218,12 +235,13 @@ void setup_fixed_geom(int const *geom, int n){
   int node_count;
   int len[4];
   int status;
+  char myname[] = "setup_fixed_geom";
 
-#ifdef FIX_NODE_GEOM
-  if(geom != NULL){
-      if(mynode()==0)printf("setup_layout: Preallocated machine geometry overrides request\n");
-  }
-#endif
+// #ifdef FIX_NODE_GEOM
+//   if(geom != NULL){
+//     if(mynode()==0)printf("%s: Preallocated machine geometry overrides request\n", myname);
+//   }
+// #endif
 
   len[0] = nx; len[1] = ny; len[2] = nz; len[3] = nt;
 
@@ -237,14 +255,14 @@ void setup_fixed_geom(int const *geom, int n){
   }
 
   if(node_count != numnodes()){
-    if(mynode()==0)printf("/nsetup_fixed_geom: Requested geometry %d %d %d %d ",
+    if(mynode()==0)printf("/n%s: Requested geometry %d %d %d %d ", myname,
 		 geom[0], geom[1], geom[2], geom[3]);
     if(mynode()==0)printf("does not match number of nodes %d\n",numnodes());
     terminate(1);
   }
 
   if(status){
-    if(mynode()==0)printf("setup_fixed_geom: Requested geometry %d %d %d %d ",
+    if(mynode()==0)printf("%s: Requested geometry %d %d %d %d ", myname,
 		 geom[0], geom[1], geom[2], geom[3]);
     if(mynode()==0)printf("is not commensurate with the lattice dims %d %d %d %d\n",
 		 nx, ny, nz, nt);
@@ -255,30 +273,39 @@ void setup_fixed_geom(int const *geom, int n){
 /*------------------------------------------------------------------*/
 /* Initialize io_node function */
 
-
 #ifdef FIX_IONODE_GEOM
 
 static void init_io_node(){
   int i;
   int status = 0;
+  char myname[] = "init_io_node";
+
+  /* 1. If FIX_IONODE_GEOM is in force, use the ionode_geometry in the parameter
+        input file.
+
+     2. Otherwise, if -ionodes is specified on the command line, use it 
+
+     3. Otherwise, all PEs write parallel I/O.
+  */
 
   if(ionodegeom() == NULL){
     ionodegeomvals = ionode_geometry;
   } else {
-    if(mynode()==0)printf("init_io_node: Command line ionode geometry overrides request\n");
+    if(mynode()==0)printf("%s: Using command line -ionodes geometry\n", myname);
     ionodegeomvals = ionodegeom();
   }
 
   if(ionodegeomvals == NULL)return;
 
-  /* Compute the number of nodes per I/O node along each direction */
+  /* Compute the dimensions (number of PE ranks) for one I/O
+     partition along each direction */
   for(i = 0; i < 4; i++){
     if(nsquares[i] % ionodegeomvals[i] != 0)status++;
-    nodes_per_ionode[i] = nsquares[i]/ionodegeomvals[i];
+    pes_per_iopartition[i] = nsquares[i]/ionodegeomvals[i];
   }
   
   if(status){
-    if(mynode()==0)printf("init_io_node: ionode geometry %d %d %d %d \n",
+    if(mynode()==0)printf("%s: ionode geometry %d %d %d %d \n", myname,
 		 ionodegeomvals[0], ionodegeomvals[1],
 		 ionodegeomvals[2], ionodegeomvals[3]);
     if(mynode()==0)printf("is incommensurate with node geometry %d %d %d %d\n",
@@ -289,8 +316,8 @@ static void init_io_node(){
 #endif
 
 /*------------------------------------------------------------------*/
-/* Sets nsquares, squaresize */
-/* For QMP, declares logical topology */
+/* Sets the MPI PE layout nsquares, squaresize */
+/* For QMP, declares logical "topology" */
 
 static void set_topology(){
   int k = mynode();
@@ -299,25 +326,36 @@ static void set_topology(){
 
   if(k == 0) printf("LAYOUT = Hypercubes, options = ");
 
+  /*--------------------------------*/
 #ifdef HAVE_QMP
 
   /* QMP treatment */
 
-  /* The layout dimensions (geometry) are set as follows:
-     1. If the command line has both -qmp-geom and -job-geom we use
-        the job geometry. 
-     2. Otherwise if -qmp-geom is specified use the allocated geometry
-     3. Otherwise if FIX_NODE_GEOM is in force and node_geometry is defined
-        use node_geometry
+  /* The PE layout dimensions (geometry) are set as follows:
+
+     1. If -qmp-geom is specified on the command line, use the QMP allocated geometry
+
+     2. Otherwise, if -qmp-alloc-map is specificed on the command
+     line, use the allocated dimensions.
+
+     3. Otherwise if FIX_NODE_GEOM is in force and node_geometry (from
+        the parameter input) is defined, use node_geometry
+
      4. Otherwise use the layout_hyper_prime algorithm to set the geometry
   */
   
   nd = QMP_get_number_of_job_geometry_dimensions();
   if(nd > 0){
-    /* Use job geometry */
+    /* Use QMP job geometry */
     geom = QMP_get_job_geometry();
     setup_qmp_grid(geom, nd);
-    if(mynode()==0)printf("QMP using job_geometry_dimensions\n");
+    if(mynode()==0){
+      printf("QMP using job_geometry_dimensions");
+      for(int j = 0; j < nd; j++)
+	printf(" %d",geom[j]);
+      printf("\n");
+      fflush(stdout);
+    }
   } else {
     nd = QMP_get_allocated_number_of_dimensions();
     if(nd > 0) {
@@ -325,36 +363,39 @@ static void set_topology(){
       /* use allocated geometry */
       setup_qmp_grid(geom, nd);
       if(mynode()==0)printf("QMP using allocated_dimension\n");
+      fflush(stdout);
     } else {
 #ifdef FIX_NODE_GEOM
-      if(node_geometry != NULL){
-	nd = 4;
-	geom = node_geometry;
-	/* take geometry from input parameter node_geometry line */
-	setup_fixed_geom(geom, nd);
-	if(mynode()==0)printf("QMP with specified node_geometry\n");
-      } else {
-#endif
-	setup_hyper_prime();
-	nd = 4;
-	geom = nsquares;
-	if(mynode()==0)printf("QMP with automatic hyper_prime layout\n");
-#ifdef FIX_NODE_GEOM
-      }
+      nd = 4;
+      geom = node_geometry;
+      /* take geometry from input parameter node_geometry line */
+      setup_fixed_geom(geom, nd);
+      if(mynode()==0)printf("QMP with input parameter node_geometry\n");
+      fflush(stdout);
+#else
+      setup_hyper_prime();
+      nd = 4;
+      geom = nsquares;
+      if(mynode()==0)printf("QMP with automatic hyper_prime layout\n");
+      fflush(stdout);
 #endif
     }
   }
 
   set_qmp_logical_topology(geom, nd);
   
+  /*--------------------------------*/
 #else
   
   /* Non QMP treatment */
   
   /* The layout dimensions (geometry) are set as follows:
-     1. If the command line has -geom use it
-     2. Otherwise, if FIX_NODE_GEOM is in force and the
-     node_geometry parameters are specified, use them
+
+     1. If the command line has -geom use that geometry
+
+     2. Otherwise, if FIX_NODE_GEOM is in force and the node_geometry
+     parameters are specified as input parameters, use them.
+
      3. Otherwise set the geometry with the layout_hyper_prime 
      algorithm
   */
@@ -370,7 +411,7 @@ static void set_topology(){
   
   if(geom != NULL){
     /* Set the sublattice dimensions according to the specified geometry */
-    if(mynode()==0)printf("with fixed node_geometry\n");
+    if(mynode()==0)printf("with fixed input-parameter node_geometry\n");
     setup_fixed_geom(geom, nd);
   } else {
     /* Set the sublattice dimensions according to the hyper_prime algorithm */
@@ -398,13 +439,10 @@ void setup_layout(){
 
   /* Grid assigns its own machine coordinates */
 
-  /* Find my rank, according to Grid */
+  /* Find my PE rank, according to Grid */
   setup_grid_communicator(nsquares);
   int *pePos = query_grid_node_mapping();
-  //  int peRank = (int)lex_rank(pePos, 4, nsquares);
   int peRank = grid_rank_from_processor_coor(pePos[0], pePos[1], pePos[2], pePos[3]);
-
-  fflush(stdout);
 
   /* Reassign my rank with the communicator */
   reset_machine_rank(peRank);
@@ -428,7 +466,7 @@ void setup_layout(){
     squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
 
   if( mynode()==0)
-    printf("ON EACH NODE %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
+    printf("ON EACH NODE (RANK) %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
 	   squaresize[ZUP],squaresize[TUP]);
   even_sites_on_node = sites_on_node/2;
 
@@ -445,6 +483,8 @@ void setup_layout(){
 }
 
 /*------------------------------------------------------------------*/
+/* Return the MPI PE rank that contains the site x, y, z, t */
+
 int node_number(int x, int y, int z, int t) {
   register int i;
   x /= squaresize[XUP]; y /= squaresize[YUP];
@@ -463,6 +503,9 @@ int node_number(int x, int y, int z, int t) {
 }
 
 /*------------------------------------------------------------------*/
+/* Return the serialized site index for the site x, y, z, t on the PE
+   that has it */
+
 int node_index(int x, int y, int z, int t) {
 register int i,xr,yr,zr,tr;
     xr = x%squaresize[XUP]; yr = y%squaresize[YUP];
@@ -494,7 +537,7 @@ const int *get_logical_coordinate(){
 }
 
 /*------------------------------------------------------------------*/
-/* Map node number and index to coordinates  */
+/* Map PE rank number and serialize site index to coordinates */
 /* (The inverse of node_number and node_index) */
 /* Assumes even sites come first */
 void get_coords(int coords[], int node, int index){
@@ -571,34 +614,34 @@ void get_coords(int coords[], int node, int index){
   }
 }
 
-/* io_node(node) maps a node to its I/O node.  The nodes are placed on
-   a node lattice with dimensions nsquares.  The I/O partitions are
-   hypercubes of the node lattice.  The dimensions of the hypercube are
-   given by nodes_per_ionode.  The I/O node is at the origin of that
-   hypercube. */
-
-
 /*------------------------------------------------------------------*/
-/* Map any node to its I/O node */
+/* Map any PE rank to its I/O PE rank */
+
+/* io_node(node) maps an MPI PE rank to its I/O PE rank.  The ranks
+   are placed on a PE lattice with dimensions nsquares.  The I/O
+   partitions are hypercubes of the PE lattice.  The dimensions of
+   the hypercube are given by pes_per_iopartition.  The I/O PE is at
+   the origin of that hypercube. */
+
 int io_node(const int node){
   int i; 
   int io_node_coords[4];
 
-  /* If we don't have I/O partitions, each node does its own I/O */
+  /* If we don't have I/O partitions, each MPI rank does its own I/O */
   if(ionodegeomvals == NULL)
     return node;
 
-  /* Get the machine coordinates for the specified node */
+  /* Get the PE coordinates for the specified PE rank */
 #ifdef HAVE_GRID
   grid_coor_from_processor_rank(io_node_coords, node);
 #else
   lex_coords(io_node_coords, 4, nsquares, node);
 #endif
 
-  /* Round the node coordinates down to get the io_node coordinate */
+  /* Round the PE coordinates down to get the io_node coordinate */
   for(i = 0; i < 4; i++)
-    io_node_coords[i] = nodes_per_ionode[i] * 
-      (io_node_coords[i]/nodes_per_ionode[i]);
+    io_node_coords[i] = pes_per_iopartition[i] * 
+      (io_node_coords[i]/pes_per_iopartition[i]);
   
   /* Return the linearized machine coordinates of the I/O node */
 #ifdef HAVE_GRID

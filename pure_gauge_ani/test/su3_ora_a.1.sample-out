@@ -1,0 +1,42 @@
+Anisotropic pure gauge SU3
+MIMD version 7
+Machine = Scalar processor, with 1 nodes
+Overrelaxed/quasi-heat bath algorithm
+start: Sat Mar  9 11:59:38 2019
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 8352
+LAYOUT = Hypercubes, options = with fixed node_geometry
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 0.4 MBytes per node for lattice
+WARNING!!: Resetting random seed
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5 7 
+steps_per_trajectory 4
+qhb_steps 4
+fresh 
+NOT fixing the gauge
+forget 
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 6.890297e-05
+WARMUPS COMPLETED
+GMES 5.028567e-01 3.555177e-03 9.990000e+01 1.710902e+00 1.928869e+00
+GMES 3.209192e-02 -8.661655e-02 9.990000e+01 1.667726e+00 1.896038e+00
+RUNNING COMPLETED
+Time = 2.871108e-02 seconds
+
+
+get_i(0): EOF on input.
+exit: Sat Mar  9 11:59:38 2019
+
