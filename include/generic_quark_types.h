@@ -123,6 +123,7 @@ typedef struct {
 typedef struct {
   Real mass;
   Real offset;
+  Real residue;
   int naik_term_epsilon_index;
   Real naik_term_epsilon;
 

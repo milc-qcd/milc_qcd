@@ -89,6 +89,7 @@
 #include "../include/io_ksprop.h"
 #include "../include/io_wprop.h"
 #include "../include/gammatypes.h"
+#include "../include/openmp_defs.h"
 #include <string.h>
 #ifdef HAVE_QIO
 #include <qio.h>
@@ -273,6 +274,7 @@ static void smear_v_field(su3_vector *v, complex *chi_cs){
   
   restrict_fourier_field((complex *)v, sizeof(su3_vector), 
 			 FORWARDS);
+
   print_timing(dtime,"FFT");
 
   dtime = start_timing();
@@ -307,6 +309,7 @@ static void smear_v_field(su3_vector *v, complex *chi_cs){
 			 BACKWARDS);
 
   print_timing(dtime,"FFT");
+
   cleanup_restrict_fourier();
 }   /* smear_v_field */
 
@@ -765,12 +768,12 @@ static void rotate_3D_wvec(wilson_vector *src, Real d1)
   dslash_w_3D_field(src, mp,  PLUS, EVENANDODD);
   dslash_w_3D_field(src, tmp, MINUS, EVENANDODD);
   
-  FORALLFIELDSITES(i){
+  FORALLFIELDSITES_OMP(i,){
     /* tmp <- mp - tmp = 2*Dslash*src */
     sub_wilson_vector(mp + i, tmp + i, tmp + i);
     /* src <- d1/4 * tmp + src */
     scalar_mult_add_wvec(src + i, tmp + i, d1/4., src + i);
-  }
+  } END_LOOP_OMP;
 
   cleanup_dslash_w_3D_temps();
   destroy_wv_field(mp); 

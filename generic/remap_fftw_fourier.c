@@ -39,7 +39,7 @@
 #endif
 #endif
 
-#define DEBUG_TIMING
+//#define DEBUG_TIMING
 
 /* Data structure for the layout */
 
@@ -312,8 +312,8 @@ void make_fftw_plans(int size, ft_data *ftd){
   double dtime = start_timing();
 #endif
 
-  //  flags = FFTW_ESTIMATE;  /* Could try FFTW_MEASURE */
-  flags = FFTW_MEASURE;
+  flags = FFTW_ESTIMATE;  /* Could try FFTW_MEASURE */
+  //  flags = FFTW_MEASURE;
 
   rank = 1;
   /* Number of complex values in a 4D site datum */
@@ -826,17 +826,6 @@ void restrict_fourier_field(
    int isign)	 /* 1 for x -> k, -1 for k -> x */
 {
   ft_data *ftd;
-  static int got_wisdom = 0;
-  const char wisdom_file[] = "fftw_wisdom";
-
-  /* Do we have a wisdom file? If so, use it. */
-  FILE *wp;
-  if((wp = fopen(wisdom_file, "r"))){
-    fclose(wp);
-    got_wisdom = 1;
-    fftw_import_wisdom_from_filename(wisdom_file);    
-    printf("Using wisdom file %s\n", wisdom_file);
-  }
 
   /* Set up ft_data structure */
 
@@ -860,12 +849,6 @@ void restrict_fourier_field(
   /* Copy result back to src */
 
   ft_copy_to_milc(src, ftd->data, size);
-
-  /* Save wisdom if we didn't have it before now */
-  if(!got_wisdom && this_node == 0){
-    fftw_export_wisdom_to_filename(wisdom_file);
-    printf("Save wisdom to %s\n", wisdom_file);
-  }
 
   destroy_fftw_plans();
   destroy_ft_data(ftd);
