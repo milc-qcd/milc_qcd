@@ -43,7 +43,7 @@ struct site {
 	int index;
 	double_prn site_prn;
 #ifndef NO_GAUGE_FIELD
-	su3_matrix link[4];
+	su3_matrix link[4] __attribute__((aligned(ARRAY_ALIGN)));
 #endif
 };
 typedef struct site site;

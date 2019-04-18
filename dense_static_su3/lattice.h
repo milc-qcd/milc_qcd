@@ -37,7 +37,7 @@ typedef struct {
 
 /* ---------------------The physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4];  /* connection */
+	su3_matrix link[4] __attribute__((aligned(ARRAY_ALIGN)));  /* connection */
 
 	/* temporary matrices */
 	/* P-loop */

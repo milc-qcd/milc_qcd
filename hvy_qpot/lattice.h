@@ -26,7 +26,7 @@ struct site {
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4];
+	su3_matrix link[4] __attribute__((aligned(ARRAY_ALIGN)));
 
   /*	su3_matrix s_link,s_link_f,t_link_f; */
 #ifndef COULOMB

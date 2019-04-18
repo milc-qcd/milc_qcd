@@ -48,7 +48,7 @@ typedef struct {
 /*   Now come the physical fields, program dependent            */
 /* ------------------------------------------------------------ */
 	/* gauge field */
-	su3_matrix link[4];	/* the fundamental field */
+	su3_matrix link[4] __attribute__((aligned(ARRAY_ALIGN)));	/* the fundamental field */
 #if  defined(HYBRIDS)
 	su3_matrix tmplink[4];	/* three link straight paths */
 #endif
@@ -59,7 +59,7 @@ typedef struct {
 #endif
 
 	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4];
+ 	anti_hermitmat mom[4] __attribute__((aligned(ARRAY_ALIGN)));
 
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */

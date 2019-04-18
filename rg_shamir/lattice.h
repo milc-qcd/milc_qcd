@@ -56,7 +56,7 @@ typedef struct {
         su3_vector tempvecg;       
 
 	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4];
+ 	anti_hermitmat mom[4] __attribute__((aligned(ARRAY_ALIGN)));
 
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */

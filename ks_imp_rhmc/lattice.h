@@ -48,17 +48,11 @@ typedef struct {
 /*   Now come the physical fields, program dependent            */
 /* ------------------------------------------------------------ */
 
-#ifndef HAVE_QUDA
         /* gauge field */
-        su3_matrix link[4];	/* the fundamental field */
+        su3_matrix link[4] __attribute__((aligned(ARRAY_ALIGN)));	/* the fundamental field */
 
 	/* antihermitian momentum matrices in each direction */
-        anti_hermitmat mom[4];
-#else
-        /* For optimal GPU reading / writing  we align onto 32-byte boundaries */
-        su3_matrix link[4] __attribute__((aligned(32)));
-        anti_hermitmat mom[4] __attribute__((aligned(32)));
-#endif
+        anti_hermitmat mom[4] __attribute__((aligned(ARRAY_ALIGN)));
 
 #ifdef HMC
  	su3_matrix old_link[4];
