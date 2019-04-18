@@ -34,12 +34,12 @@ typedef struct {
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4];
+	su3_matrix link[4] ALIGNMENT;
 #ifdef HMC_ALGORITHM
 	su3_matrix old_link[4];
 	/* For accept/reject */
 	/* antihermitian momentum matrices in each direction */
-	anti_hermitmat mom[4];
+	anti_hermitmat mom[4] ALIGNMENT;
 #endif
 	/* temporary matrices */
 	su3_matrix staple;
