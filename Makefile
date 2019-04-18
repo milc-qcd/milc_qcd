@@ -301,15 +301,15 @@ QMP_BACKEND = QMP_MPI
 SCIDAC = ${HOME}/scidac/install
 TAG=
 # Parallel versions
-QMPPAR = ${SCIDAC}/qmp${TAG}
-QIOPAR = $(SCIDAC)/qio${TAG}
+QMPPAR ?= ${SCIDAC}/qmp${TAG}
+QIOPAR ?= $(SCIDAC)/qio${TAG}
 # Single processor versions
-QMPSNG = ${SCIDAC}/qmp-single${TAG}
-QIOSNG = $(SCIDAC)/qio-single${TAG}
-QLA = ${SCIDAC}/qla${TAG}
+QMPSNG ?= ${SCIDAC}/qmp-single${TAG}
+QIOSNG ?= $(SCIDAC)/qio-single${TAG}
+QLA ?= ${SCIDAC}/qla${TAG}
 # Either version
-QDP = ${SCIDAC}/qdp${TAG}
-QOPQDP = ${SCIDAC}/qopqdp${TAG}
+QDP ?= ${SCIDAC}/qdp${TAG}
+QOPQDP ?= ${SCIDAC}/qopqdp${TAG}
 
 QOP = ${QOPQDP}
 
