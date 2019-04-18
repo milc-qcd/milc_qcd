@@ -38,7 +38,7 @@ typedef struct {
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4] __attribute__((aligned(ARRAY_ALIGN)));
+	su3_matrix link[4] ALIGNMENT;
 
 	/* wilson complex vectors */
  	wilson_vector psi;   /* solution vector for mrilu, cgilu or jacobi */

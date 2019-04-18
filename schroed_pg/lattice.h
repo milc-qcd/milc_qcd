@@ -34,18 +34,18 @@ typedef struct {
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4] __attribute__((aligned(ARRAY_ALIGN)));
+	su3_matrix link[4] ALIGNMENT;
 	su3_matrix boundary[3];	/* spatial boundary links (for t=nt) */
 #ifdef HMC_ALGORITHM
  	su3_matrix old_link[4];
 	/* For accept/reject */
 	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4] __attribute__((aligned(ARRAY_ALIGN)));
+ 	anti_hermitmat mom[4] ALIGNMENT;
 #endif
 #ifdef RMD_ALGORITHM
 
 	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4] __attribute__((aligned(ARRAY_ALIGN)));
+ 	anti_hermitmat mom[4] ALIGNMENT;
 	/* temporary matrices */
 	su3_matrix tempmat1,tempmat2,staple;
 #else

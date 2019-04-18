@@ -26,7 +26,7 @@ typedef struct {
 /* ------------------------------------------------------------ */
 /*   Now come the physical fields, program dependent            */
 /* ------------------------------------------------------------ */
-  su3_matrix link[4] __attribute__((aligned(ARRAY_ALIGN))); /* gauge field */
+  su3_matrix link[4] ALIGNMENT; /* gauge field */
 
   /* Temporary matricies for staple, smoothing, and field strength */
   su3_matrix staple[4]; /* staple for each link */

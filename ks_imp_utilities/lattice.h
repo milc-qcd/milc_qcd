@@ -50,10 +50,10 @@ typedef struct {
 /*   Now come the physical fields, program dependent            */
 /* ------------------------------------------------------------ */
 	/* gauge field */
-	su3_matrix link[4] __attribute__((aligned(ARRAY_ALIGN)));	/* the fundamental field */
+	su3_matrix link[4] ALIGNMENT;	/* the fundamental field */
 
 	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4] __attribute__((aligned(ARRAY_ALIGN)));
+ 	anti_hermitmat mom[4] ALIGNMENT;
 #ifdef FERMION_FORCE
         su3_matrix ansmom[4];
 #endif

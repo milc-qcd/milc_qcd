@@ -49,10 +49,10 @@ typedef struct {
 /* ------------------------------------------------------------ */
 
         /* gauge field */
-        su3_matrix link[4] __attribute__((aligned(ARRAY_ALIGN)));	/* the fundamental field */
+        su3_matrix link[4] ALIGNMENT;	/* the fundamental field */
 
 	/* antihermitian momentum matrices in each direction */
-        anti_hermitmat mom[4] __attribute__((aligned(ARRAY_ALIGN)));
+        anti_hermitmat mom[4] ALIGNMENT;
 
 #ifdef HMC
  	su3_matrix old_link[4];

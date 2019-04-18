@@ -468,13 +468,6 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   CGPU += -DSET_QUDA_SUMMARIZE
 
-# When using QUDA, we need to set the site struct member arrays alignment to a multiple of 16 bytes
-  CGPU += -DARRAY_ALIGN=16
-else
-
-# Leave default alignment at 8 bytes
-  CGPU += -DARRAY_ALIGN=8
-
 endif
 
 
