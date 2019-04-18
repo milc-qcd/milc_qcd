@@ -14,7 +14,7 @@ MAKEFILE = Makefile
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH = # skx knl knc hsw pow8 pow9
+ARCH ?= # skx knl knc hsw pow8 pow9
 
 #----------------------------------------------------------------------
 # 2. Compiler family
@@ -100,7 +100,7 @@ CXX = ${MY_CXX}
 # Choices include -g -O, etc
 # Power9 recommendations are -Ofast
 
-OPT              = -O3
+OPT              ?= -O3
 
 # OpenMP?
 
@@ -770,7 +770,7 @@ CCOMPAT += #-DOLD_STAGGERED2NAIVE
 #     and extra list of dimensions in the parameter input file.
 #     See e.g. ks_imp_rhmc.
 
-CGEOM =#-DFIX_NODE_GEOM
+CGEOM ?=#-DFIX_NODE_GEOM
 
 #------------------------------
 # I/O node grid layout
