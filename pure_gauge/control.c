@@ -59,9 +59,8 @@ if(this_node==0)printf("Fat Polyakov loop parameter %f\n",ALPHA_FUZZ);
                 /* call plaquette measuring process */
                 d_plaquette(&dssplaq,&dstplaq);
 
-                /* don't bother to */
                 /* call the Polyakov loop measuring program */
-                /* plp = ploop(); */
+                plp = ploop();
 #ifdef FUZZ
                 plp_fuzzy = ploop_staple((Real)ALPHA_FUZZ);
 #endif
