@@ -112,6 +112,7 @@ QIO_Writer *open_scidac_output(char *filename, int volfmt,
 			   fs, &oflag);
   if(outfile == NULL){
     printf("open_scidac_output(%d): QIO_open_write returned NULL\n",this_node);
+    fflush(stdout);
     return NULL;
   }
   return outfile;
