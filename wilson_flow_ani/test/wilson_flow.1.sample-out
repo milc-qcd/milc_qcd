@@ -1,0 +1,51 @@
+Wilson/Symanzik Flow application
+MIMD version 7
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 8
+LAYOUT = Hypercubes, options = with fixed node_geometry
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 0.6 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Finished setup
+
+
+reload_serial ../../binary_samples/lat.sample.l4448
+wilson
+set staple to wilson
+exp_order 8
+stepsize 0.1
+stoptime 1
+forget 
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4448
+Time stamp Wed Oct 10 14:27:08 2001
+Checksums 13f3b413 161f7dde OK
+Time to reload gauge configuration = 5.908012e-04
+CHECK PLAQ: 1.723748e+00 1.690586e+00
+CHECK NERSC LINKTR: 6.921659e-02 CKSUM: b3be9b3b
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 1.878738e-04
+#LABEL time Et Es charge
+WFLOW 0 1.05787 1.03094 0.0955429
+WFLOW 0.1 0.790042 0.76505 0.0389772
+WFLOW 0.2 0.506125 0.481396 0.0166373
+WFLOW 0.3 0.321384 0.294125 0.0106751
+WFLOW 0.4 0.214891 0.186857 0.0080155
+WFLOW 0.5 0.152452 0.125636 0.00570391
+WFLOW 0.6 0.11377 0.0890839 0.00380684
+WFLOW 0.7 0.0884234 0.0660664 0.00243419
+WFLOW 0.8 0.0710114 0.0508605 0.00150337
+WFLOW 0.9 0.0585831 0.0404036 0.000886915
+Number of steps = 9
+Time to complete flow = 8.332300e-02 seconds
+
+
+ask_starting_lattice(0): EOF on input.
+RUNNING COMPLETED
+Time = 8.558512e-02 seconds
+exit: Sat Jun  1 09:04:00 2013
+
