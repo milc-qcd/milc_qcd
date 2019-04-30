@@ -41,6 +41,10 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
     register Real eb3;
     register anti_hermitmat* momentum;
     su3_matrix *staple, *tempmat1;
+#ifdef ANISOTROPY
+    int is_temporal; /* to decide what kind of staple we have:
+                      0 - spatial, 1 - temporal */
+#endif
 
     /* lengths of various kinds of loops */
     int *loop_length = get_loop_length();
@@ -96,7 +100,11 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
       terminate(1);
     }
 
+#ifndef ANISOTROPY
     eb3 = eps*beta/3.0;
+#else
+    eb3 = eps/3.0;
+#endif
     links = create_G_from_site();
 
     /* Loop over directions, update mom[dir] */
@@ -113,6 +121,10 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
 /**printf("UPD:  "); printpath( loop_table[iloop][ln], length );**/
 		/* set up dirs.  we are looking at loop starting in "XUP"
 		   direction, rotate so it starts in "dir" direction. */
+#ifdef ANISOTROPY
+		/* initialize staple flag as spatial */
+		is_temporal = 0;
+#endif
 		for(k=0;k<length;k++){
                     if( GOES_FORWARDS(loop_table[iloop][ln][k]) ){
                 	dirs[k]=(dir+loop_table[iloop][ln][k] )% 4;
@@ -121,6 +133,11 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
                         dirs[k]=OPP_DIR(
 			    (dir+OPP_DIR(loop_table[iloop][ln][k]))%4 );
 		    }
+#ifdef ANISOTROPY
+		    /* flip the flag if a temporal link is encountered */
+		    if( is_temporal==0 && ( dirs[k]==TUP || dirs[k]==TDOWN ) )
+			is_temporal=1;
+#endif
 		}
 
 		path_length= length-1;  /* generalized "staple" */
@@ -148,6 +165,12 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
 			su3_adjoint( &(tempmat1[i]), &tmat1 );
 			/* first we compute the fundamental term */
 			new_term = loop_coeff[iloop][0];
+#ifdef ANISOTROPY
+			/* multiply the coefficient by the coupling -
+                           this weighs spatial and temporal paths
+                           differently */
+			new_term *= beta[is_temporal];
+#endif
 
 			/* now we add in the higher representations */
 			if(nreps > 1){

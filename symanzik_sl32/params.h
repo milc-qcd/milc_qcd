@@ -17,7 +17,11 @@ typedef struct {
 	int propinterval;     /* number of trajectories between measurements */
 	int startflag;  /* what to do for beginning lattice */
 	int saveflag;   /* what to do with lattice at end */
+#ifndef ANISOTROPY
 	Real beta;	/* gauge coupling */
+#else
+        Real beta[2];   /* gauge coupling: 0 - space, 1 - time */
+#endif
 	Real u0;	/* <Tr(U_p)>^{1/4} */
 	Real epsilon;	/* time step */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];

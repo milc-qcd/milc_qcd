@@ -1,0 +1,80 @@
+Anisotropic pure gauge SU3
+Microcanonical simulation with refreshing
+MIMD version 7
+Machine = Scalar processor, with 1 nodes
+Hybrid Monte Carlo algorithm
+start: Sat Apr 20 06:44:57 2019
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 8352
+LAYOUT = Hypercubes, options = with fixed input-parameter node_geometry
+ON EACH NODE (RANK) 4 x 4 x 4 x 8
+Mallocing 1.1 MBytes per node for lattice
+WARNING!!: Resetting random seed
+
+
+warms 0
+trajecs 10
+traj_between_meas 1
+beta 5 7 
+microcanonical_time_step 0.01
+steps_per_trajectory 4
+fresh 
+forget 
+unit gauge configuration loaded
+CHECK PLAQ: 3.0000000000000000e+00 3.0000000000000000e+00
+CHECK NERSC LINKTR: 1.0000000000000000e+00 CKSUM: 0
+Reunitarized for double precision. Max deviation 0.00e+00 changed to 0.00e+00
+Time to check unitarity = 4.251003e-04
+WARMUPS COMPLETED
+ACTION: g,h = -1.843200e+04  8.047865e+03  -1.038414e+04
+ACTION: g,h = -1.827954e+04  7.895318e+03  -1.038422e+04
+ACCEPT: delta S = -8.559673e-02
+GMES 2.946921e+00 3.340547e-04 9.990000e+01 2.975361e+00 2.975060e+00
+ACTION: g,h = -1.827954e+04  8.237278e+03  -1.004226e+04
+ACTION: g,h = -1.812554e+04  8.083191e+03  -1.004235e+04
+ACCEPT: delta S = -8.768016e-02
+GMES 2.887677e+00 8.236165e-04 9.990000e+01 2.951193e+00 2.949354e+00
+ACTION: g,h = -1.812554e+04  8.266889e+03  -9.858650e+03
+ACTION: g,h = -1.798399e+04  8.125263e+03  -9.858727e+03
+ACCEPT: delta S = -7.780247e-02
+GMES 2.839801e+00 2.379190e-03 9.990000e+01 2.928138e+00 2.926327e+00
+ACTION: g,h = -1.798399e+04  8.191817e+03  -9.792173e+03
+ACTION: g,h = -1.785170e+04  8.059455e+03  -9.792244e+03
+ACCEPT: delta S = -7.087262e-02
+GMES 2.806852e+00 2.234768e-03 9.990000e+01 2.905357e+00 2.905688e+00
+ACTION: g,h = -1.785170e+04  8.249297e+03  -9.602402e+03
+ACTION: g,h = -1.770687e+04  8.104390e+03  -9.602481e+03
+ACCEPT: delta S = -7.906159e-02
+GMES 2.761050e+00 1.225877e-03 9.990000e+01 2.880752e+00 2.882853e+00
+ACTION: g,h = -1.770687e+04  8.287365e+03  -9.419506e+03
+ACTION: g,h = -1.756811e+04  8.148533e+03  -9.419580e+03
+ACCEPT: delta S = -7.439870e-02
+GMES 2.705523e+00 1.042190e-03 9.990000e+01 2.859163e+00 2.859558e+00
+ACTION: g,h = -1.756811e+04  8.201142e+03  -9.366971e+03
+ACTION: g,h = -1.744476e+04  8.077721e+03  -9.367035e+03
+ACCEPT: delta S = -6.342549e-02
+GMES 2.679012e+00 3.676279e-04 9.990000e+01 2.839865e+00 2.838924e+00
+ACTION: g,h = -1.744476e+04  8.189356e+03  -9.255400e+03
+ACTION: g,h = -1.732183e+04  8.066373e+03  -9.255461e+03
+ACCEPT: delta S = -6.186885e-02
+GMES 2.644505e+00 -2.288479e-03 9.990000e+01 2.819544e+00 2.819141e+00
+ACTION: g,h = -1.732183e+04  8.285879e+03  -9.035956e+03
+ACTION: g,h = -1.720624e+04  8.170226e+03  -9.036014e+03
+ACCEPT: delta S = -5.791602e-02
+GMES 2.596445e+00 -2.432656e-03 9.990000e+01 2.799484e+00 2.801217e+00
+ACTION: g,h = -1.720624e+04  8.084950e+03  -9.121289e+03
+ACTION: g,h = -1.708970e+04  7.968360e+03  -9.121344e+03
+ACCEPT: delta S = -5.508901e-02
+GMES 2.546647e+00 4.034159e-03 9.990000e+01 2.778606e+00 2.783614e+00
+RUNNING COMPLETED
+Time = 1.575232e-01 seconds
+
+
+get_i(0): EOF on input.
+exit: Sat Apr 20 06:44:57 2019
+

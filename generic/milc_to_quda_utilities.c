@@ -30,6 +30,9 @@ int initialize_quda(void){
   init_args.layout.device = 0; 								// only valid for single-gpu build
   init_args.layout.latsize = dim;
   init_args.layout.machsize = get_logical_dimensions();
+
+  /* Tell QUDA which communicator we are using, in case we have split it */
+  qudaSetMPICommHandle(mycomm());
   qudaInit(init_args);
 
   if(status == 0)

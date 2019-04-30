@@ -1,3 +1,12 @@
 exec su3_rmd 1 - - WARMUPS RUNNING
+exec su3_rmd 2 - - WARMUPS RUNNING
 exec su3_hmc 1 - - WARMUPS RUNNING
+exec su3_hmc 2 - - WARMUPS RUNNING
 exec su3_ora 1 - - WARMUPS RUNNING
+exec su3_ora 2 - - WARMUPS RUNNING
+exec su3_rmd_a 1 - - WARMUPS RUNNING
+exec su3_rmd_a 2 - - WARMUPS RUNNING
+exec su3_hmc_a 1 - - WARMUPS RUNNING
+exec su3_hmc_a 2 - - WARMUPS RUNNING
+exec su3_ora_a 1 - - WARMUPS RUNNING
+exec su3_ora_a 2 - - WARMUPS RUNNING

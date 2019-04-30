@@ -90,6 +90,7 @@ EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
 EXTERN gauge_file *startlat_p;
+EXTERN char hostname[128];
 
 /* Each node maintains a structure with the pseudorandom number
    generator state */

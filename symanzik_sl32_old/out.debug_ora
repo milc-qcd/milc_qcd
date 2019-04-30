@@ -1,0 +1,44 @@
+Pure gauge SU3
+Overrelaxed/quasi-heat bath algorithm
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 8352
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+warms 0
+trajecs 10
+traj_between_meas 1
+beta 6
+u0 0.87
+steps_per_trajectory 4
+qhb_steps 1
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked
+Time to check unitarity = 3.000000e-02
+Symanzik 1x1 + 1x2 + 1x1x1 action
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.182149e-02     12
+                    2 0      -7.975969e-03     16
+WARMUPS COMPLETED
+GMES 9.307309e-01 2.216363e-02 9.990000e+01 2.081080e+00 2.079506e+00
+GMES 2.286601e-01 8.767967e-02 9.990000e+01 1.892296e+00 1.908707e+00
+GMES 2.400738e-01 1.100362e-01 9.990000e+01 1.822634e+00 1.828120e+00
+GMES 1.716229e-01 9.834594e-02 9.990000e+01 1.823262e+00 1.811326e+00
+GMES 1.012360e-01 1.537896e-02 9.990000e+01 1.818021e+00 1.774515e+00
+GMES 2.543672e-01 4.224074e-02 9.990000e+01 1.802790e+00 1.792356e+00
+GMES 3.070474e-01 3.259685e-02 9.990000e+01 1.806769e+00 1.824796e+00
+GMES 2.946239e-01 6.437397e-02 9.990000e+01 1.793678e+00 1.808570e+00
+GMES 2.937177e-01 5.647589e-02 9.990000e+01 1.764039e+00 1.787038e+00
+GMES 1.465030e-01 9.144183e-02 9.990000e+01 1.791187e+00 1.784854e+00
+RUNNING COMPLETED
+Time = 1.659000e+01 seconds
+
+

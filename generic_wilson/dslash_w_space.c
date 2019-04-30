@@ -2,6 +2,7 @@
 /* MIMD version 7 */
 
 #include "generic_wilson_includes.h"
+#include "../include/openmp_defs.h"
 
 /* Temporary work space for dslash_w_field and dslash_w_field_special */ 
 static half_wilson_vector *htmp[8] ;
@@ -224,7 +225,6 @@ Compute SUM_dirs_xyz (
 
 void dslash_w_3D_site( field_offset src, field_offset dest, int isign, 
 		       int parity) {
-half_wilson_vector hwvx,hwvy,hwvz;
 
 register int i;
 register site *s;
@@ -255,11 +255,12 @@ msg_tag *tag[8];
     for( dir=XUP; dir <= ZUP; dir++) {
 	tag[dir]=start_gather_field( htmp[dir], sizeof(half_wilson_vector),
 	    dir, parity, gen_pt[dir] );
-    }
+    } END_LOOP;
 
         /* Take Wilson projection for src displaced in down direction,
         multiply it by adjoint link matrix, gather it "up" */
     FORSOMEPARITY(i,s,otherparity){
+      half_wilson_vector hwvx,hwvy,hwvz;
       wp_shrink_3dir2( (wilson_vector *)F_PT(s,src),
 		       &hwvx, &hwvy, &hwvz,-isign);
 	mult_adj_su3_mat_hwvec( &(s->link[XUP]), &hwvx, htmp[XDOWN]+i);
@@ -267,7 +268,7 @@ msg_tag *tag[8];
 	mult_adj_su3_mat_hwvec( &(s->link[ZUP]), &hwvz, htmp[ZDOWN]+i);
 	//if(i==258)printf("i = %d, U+(1-gx)G = %e\n", i, s->htmp[XDOWN].h[1].c[0].real);
 
-    }
+    } END_LOOP;
 
     for( dir=XUP; dir <= ZUP; dir++) {
 	tag[OPP_DIR(dir)]=start_gather_field(htmp[OPP_DIR(dir)], 
@@ -284,6 +285,7 @@ msg_tag *tag[8];
 	wait_gather(tag[dir]);
     }
     FORSOMEPARITY(i,s,parity){
+      half_wilson_vector hwvx,hwvy,hwvz;
 	mult_su3_mat_hwvec( &(s->link[XUP]), 
 		(half_wilson_vector * )(gen_pt[XUP][i]), &hwvx ); 
 	mult_su3_mat_hwvec( &(s->link[YUP]), 
@@ -295,7 +297,7 @@ msg_tag *tag[8];
 	/* printf("(%d %d %d %d) up[YUP] %e %e\n", s->x,s->y,s->z,s->t, s->link[YUP].e[0][0].real,s->link[YUP].e[0][0].imag); */
 	grow_add_three_wvecs2( (wilson_vector *)F_PT(s,dest),
 	    &hwvx, &hwvy, &hwvz, isign, 0 ); /* "0" is NOSUM */
-    }
+    } END_LOOP;
     for( dir=XUP; dir <= ZUP; dir++) {
 	cleanup_gather(tag[dir]);
     }
@@ -316,14 +318,12 @@ msg_tag *tag[8];
     }
     for( dir=XUP; dir <= ZUP; dir++) {
 	cleanup_gather(tag[OPP_DIR(dir)]);
-    }
+    } END_LOOP;
 
 } /* end (of dslash_w_space() ) */
 
 void dslash_w_3D_field( wilson_vector *src, wilson_vector *dest, 
 			int isign, int parity) {
-half_wilson_vector hwvx,hwvy,hwvz;
-
 register int i;
 register site *s;
 register int dir,otherparity=0;
@@ -346,9 +346,9 @@ msg_tag *tag[8];
 
     /* Take Wilson projection for src displaced in up direction, gather
        it to "our site" */
-    FORSOMEPARITY(i,s,otherparity){
+    FORSOMEPARITY_OMP(i,s,otherparity,){
       wp_shrink_3dir2( src+i, htmp[XUP]+i, htmp[YUP]+i, htmp[ZUP]+i, isign);
-    }
+    } END_LOOP_OMP;
     for( dir=XUP; dir <= ZUP; dir++) {
 	tag[dir]=start_gather_field( htmp[dir], sizeof(half_wilson_vector),
 	    dir, parity, gen_pt[dir] );
@@ -356,12 +356,13 @@ msg_tag *tag[8];
 
         /* Take Wilson projection for src displaced in down direction,
         multiply it by adjoint link matrix, gather it "up" */
-    FORSOMEPARITY(i,s,otherparity){
+    FORSOMEPARITY_OMP(i,s,otherparity,){
+      half_wilson_vector hwvx,hwvy,hwvz;
       wp_shrink_3dir2( src+i, &hwvx, &hwvy, &hwvz,-isign);
 	mult_adj_su3_mat_hwvec( &(s->link[XUP]), &hwvx, &(htmp[XDOWN][i]));
 	mult_adj_su3_mat_hwvec( &(s->link[YUP]), &hwvy, &(htmp[YDOWN][i]));
 	mult_adj_su3_mat_hwvec( &(s->link[ZUP]), &hwvz, &(htmp[ZDOWN][i]));
-    }
+    } END_LOOP_OMP;
 
     for( dir=XUP; dir <= ZUP; dir++) {
 	tag[OPP_DIR(dir)]=start_gather_field(htmp[OPP_DIR(dir)], 
@@ -377,16 +378,17 @@ msg_tag *tag[8];
     for( dir=XUP; dir <= ZUP; dir++) {
 	wait_gather(tag[dir]);
     }
-    FORSOMEPARITY(i,s,parity){
-	mult_su3_mat_hwvec( &(s->link[XUP]), 
+    FORSOMEPARITY_OMP(i,s,parity,){
+      half_wilson_vector hwvx,hwvy,hwvz;
+      mult_su3_mat_hwvec( &(s->link[XUP]), 
 		(half_wilson_vector * )(gen_pt[XUP][i]), &hwvx ); 
-	mult_su3_mat_hwvec( &(s->link[YUP]), 
+      mult_su3_mat_hwvec( &(s->link[YUP]), 
 		(half_wilson_vector * )(gen_pt[YUP][i]), &hwvy ); 
-	mult_su3_mat_hwvec( &(s->link[ZUP]), 
+      mult_su3_mat_hwvec( &(s->link[ZUP]), 
 		(half_wilson_vector * )(gen_pt[ZUP][i]), &hwvz ); 
-	grow_add_three_wvecs2( dest+i,
+      grow_add_three_wvecs2( dest+i,
 	    &hwvx, &hwvy, &hwvz, isign, 0 ); /* "0" is NOSUM */
-    }
+    } END_LOOP_OMP;
     for( dir=XUP; dir <= ZUP; dir++) {
 	cleanup_gather(tag[dir]);
     }
@@ -397,13 +399,13 @@ msg_tag *tag[8];
 	wait_gather(tag[OPP_DIR(dir)]);
     }
 
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
       grow_add_three_wvecs2( dest+i,
 	    (half_wilson_vector *)(gen_pt[XDOWN][i]),
 	    (half_wilson_vector *)(gen_pt[YDOWN][i]),
 	    (half_wilson_vector *)(gen_pt[ZDOWN][i]),
 	    -isign, 1 );	/* "1" SUMs in current dest */
-    }
+    } END_LOOP_OMP;
     for( dir=XUP; dir <= ZUP; dir++) {
 	cleanup_gather(tag[OPP_DIR(dir)]);
     }
