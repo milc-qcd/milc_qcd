@@ -109,6 +109,9 @@ ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 wilson_flow::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 
+wilson_flow_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+
 clean:
 	-/bin/rm -f *.o
 
