@@ -401,7 +401,7 @@ initialize_machine(int *argc, char ***argv)
     terminate(1);
   }
   if(provided != required){
-  printf("com_qmp: required thread-safety level %d can't be provided %d.\n", required, provided);
+    printf("com_qmp: required thread-safety level %d can't be provided %d.\n", required, provided);
     fflush(stdout);
     terminate(1);
   }
