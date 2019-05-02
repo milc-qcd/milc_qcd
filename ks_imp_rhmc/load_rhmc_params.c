@@ -47,7 +47,10 @@ static int read_broadcast_ratfunc(FILE *fp,
 
   /* Bail if a problem thus far */
   broadcast_bytes((char *)&status, sizeof(int));
-  if(status != 0)return status;
+  if(status != 0){
+    printf("(%d) error broadcasting order\n", mynode());
+    return status;
+  }
 
   broadcast_bytes((char *)&(rf->order),sizeof(int));
   
@@ -69,7 +72,10 @@ static int read_broadcast_ratfunc(FILE *fp,
   if(rf->pole == NULL)status = 1;
   /* Poll status and bail if any node failed */
   g_intsum(&status);
-  if(status != 0)return 1;
+  if(status != 0){
+    printf("(%d) error mallocing space\n", mynode());
+    return 1;
+  }
   
   /* Node 0 reads values and broadcasts them */
   if(mynode()==0){
@@ -85,6 +91,9 @@ static int read_broadcast_ratfunc(FILE *fp,
 
   /* Final status check */
   broadcast_bytes((char *)&status, sizeof(int));
+  if(status != 0){
+    printf("(%d) error broadcasting status\n", mynode());
+  }
   return status;
 }
 
@@ -120,7 +129,10 @@ params_rhmc *load_rhmc_params(char filename[], int n_pseudo)
 
   /* Bail here if error */
   broadcast_bytes((char *)&status, sizeof(int));
-  if(status > 0)return NULL;
+  if(status > 0){
+    printf("(%d) error broadcasting status\n", mynode());
+    return NULL;
+  }
   
   /* Make space for the parameters */
   p = (params_rhmc *)malloc(n_pseudo*sizeof(params_rhmc));
@@ -130,13 +142,16 @@ params_rhmc *load_rhmc_params(char filename[], int n_pseudo)
   
   /* Poll nodes for any errors and bail if so */
   g_intsum(&status);  /* We don't have an intsum */
-  if(status != 0)return NULL;
+  if(status != 0){
+    printf("(%d) error mallocing\n", mynode());
+    return NULL;
+  }
 
   /* Read rational function parameters for each pseudofermion field */
   
   for(i = 0; i < n_pseudo; i++){
-    node0_printf("Loading rational function parameters for phi field %d\n",i);
     if(mynode()==0) { 
+      printf("Loading rational function parameters for phi field %d\n",i);
       IF_OK status += get_f(fp, prompt, "naik_term_epsilon",&p[i].naik_term_epsilon);
     }
     broadcast_bytes((char *)&(p[i].naik_term_epsilon), sizeof(Real));
@@ -149,7 +164,10 @@ params_rhmc *load_rhmc_params(char filename[], int n_pseudo)
   g_intsum(&status);  /* We don't have an intsum */
   
   /* Bail out here if there is a problem */
-  if(status != 0)return NULL;
+  if(status != 0){
+    printf("(%d) error setting up the rational function\n", mynode());
+    return NULL;
+  }
 
   return p;
 }

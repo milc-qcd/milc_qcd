@@ -735,6 +735,7 @@ int ks_multicg_mass_site(	/* Return value is number of iterations taken */
   for(i = 0; i < num_masses; i++){
     ksp[i].mass = masses[i];
     ksp[i].offset = 0;
+    ksp[i].residue = 0.0;
   }
 
   iters = ks_multicg_mass_field(in, psim, ksp, num_masses, qic, fn_multi);

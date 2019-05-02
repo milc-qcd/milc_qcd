@@ -1,5 +1,6 @@
 /* Symanzik 1-loop gauge action: 1x1 + 1x2 + 1x1x1 */
 #ifdef GAUGE_ACTION_PART1
+#define SYMANZIK_1LOOP
 /* defines NREPS NLOOP MAX_LENGTH MAX_NUM */
 #undef MAX_LENGTH
 #undef MAX_NUM

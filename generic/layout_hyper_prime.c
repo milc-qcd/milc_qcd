@@ -162,6 +162,7 @@ static void setup_qmp_grid(const int *nsquares2, int ndim2){
   for(i=0; i<ndim; i++) {
     if(len[i]%nsquares[i] != 0) {
       if(mynode()==0)printf("LATTICE SIZE DOESN'T FIT GRID\n");
+      fflush(stdout);
       QMP_abort(0);
     }
     squaresize[i] = len[i]/nsquares[i];
@@ -348,7 +349,13 @@ static void set_topology(){
     /* Use QMP job geometry */
     geom = QMP_get_job_geometry();
     setup_qmp_grid(geom, nd);
-    if(mynode()==0)printf("QMP using job_geometry_dimensions\n");
+    if(mynode()==0){
+      printf("QMP using job_geometry_dimensions");
+      for(int j = 0; j < nd; j++)
+	printf(" %d",geom[j]);
+      printf("\n");
+      fflush(stdout);
+    }
   } else {
     nd = QMP_get_allocated_number_of_dimensions();
     if(nd > 0) {
@@ -356,22 +363,21 @@ static void set_topology(){
       /* use allocated geometry */
       setup_qmp_grid(geom, nd);
       if(mynode()==0)printf("QMP using allocated_dimension\n");
+      fflush(stdout);
     } else {
 #ifdef FIX_NODE_GEOM
-      if(node_geometry != NULL){
-	nd = 4;
-	geom = node_geometry;
-	/* take geometry from input parameter node_geometry line */
-	setup_fixed_geom(geom, nd);
-	if(mynode()==0)printf("QMP with input parameter node_geometry\n");
-      } else {
-#endif
-	setup_hyper_prime();
-	nd = 4;
-	geom = nsquares;
-	if(mynode()==0)printf("QMP with automatic hyper_prime layout\n");
-#ifdef FIX_NODE_GEOM
-      }
+      nd = 4;
+      geom = node_geometry;
+      /* take geometry from input parameter node_geometry line */
+      setup_fixed_geom(geom, nd);
+      if(mynode()==0)printf("QMP with input parameter node_geometry\n");
+      fflush(stdout);
+#else
+      setup_hyper_prime();
+      nd = 4;
+      geom = nsquares;
+      if(mynode()==0)printf("QMP with automatic hyper_prime layout\n");
+      fflush(stdout);
 #endif
     }
   }
@@ -437,8 +443,6 @@ void setup_layout(){
   setup_grid_communicator(nsquares);
   int *pePos = query_grid_node_mapping();
   int peRank = grid_rank_from_processor_coor(pePos[0], pePos[1], pePos[2], pePos[3]);
-
-  fflush(stdout);
 
   /* Reassign my rank with the communicator */
   reset_machine_rank(peRank);

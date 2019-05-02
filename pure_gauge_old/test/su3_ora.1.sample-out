@@ -1,0 +1,42 @@
+Pure gauge SU3
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
+Overrelaxed/quasi-heat bath algorithm
+start: Sun Feb 14 16:36:45 2016
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 8352
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 0.4 MBytes per node for lattice
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 6
+steps_per_trajectory 4
+qhb_steps 4
+fresh 
+NOT fixing the gauge
+forget 
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 6.651807e-02
+WARMUPS COMPLETED
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 1.847285e+00 1.843035e+00
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 1.801442e+00 1.790932e+00
+RUNNING COMPLETED
+Time = 8.250122e-01 seconds
+
+
+get_i(0): EOF on input.
+exit: Sun Feb 14 16:36:46 2016
+

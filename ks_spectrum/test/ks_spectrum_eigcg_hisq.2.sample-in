@@ -94,6 +94,7 @@ number_of_propagators 1
 
 mass 1
 naik_term_epsilon 0
+deflate yes
 error_for_propagator 0
 rel_error_for_propagator 0
 
@@ -119,6 +120,7 @@ number_of_propagators 1
 
 mass 0.01
 naik_term_epsilon 0
+deflate yes
 error_for_propagator 1e-9
 rel_error_for_propagator 0
 
@@ -144,6 +146,7 @@ number_of_propagators 1
 
 mass 0.01
 naik_term_epsilon 0
+deflate yes
 error_for_propagator 1e-9
 rel_error_for_propagator 0
 
@@ -277,6 +280,7 @@ number_of_propagators 1
 
 mass 1
 naik_term_epsilon 0
+deflate yes
 error_for_propagator 0
 rel_error_for_propagator 0
 
@@ -302,6 +306,7 @@ number_of_propagators 1
 
 mass 0.01
 naik_term_epsilon 0
+deflate yes
 error_for_propagator 1e-9
 rel_error_for_propagator 0
 
@@ -327,6 +332,7 @@ number_of_propagators 1
 
 mass 0.01
 naik_term_epsilon 0
+deflate yes
 error_for_propagator 1e-9
 rel_error_for_propagator 0
 

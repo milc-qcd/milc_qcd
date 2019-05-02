@@ -23,6 +23,10 @@
 #include "generic_wilson_includes.h"
 #include <string.h>
 #include "../include/prefetch.h"
+#include "../include/openmp_defs.h"
+#ifdef OMP
+#include <omp.h>
+#endif
 #define FETCH_UP 1
 #define INLINE
 #define loopend sites_on_node   /* No checkerboarding here */
@@ -435,6 +439,11 @@ void meson_cont_mom(
   int sf, si;
   int g,p,t;
   int old_gamma_out;
+  int max_threads,mythread;
+#ifdef OMP
+  int pmax; /* for keeping tract of the maximum number of momenta 
+		in each correlator */
+#endif
   
   double factx = 2.0*PI/(1.0*nx) ; 
   double facty = 2.0*PI/(1.0*ny) ; 
@@ -460,6 +469,12 @@ void meson_cont_mom(
 
   dtime = -dclock();
   flops = 0;
+#ifdef OMP
+  /* max_threads=getenv("OMP_NUM_THREADS"); */
+  max_threads=omp_get_max_threads();
+#else
+  max_threads=1;
+#endif
 
   /* Allocate temporary storage for meson propagator */
   
@@ -476,7 +491,7 @@ void meson_cont_mom(
     terminate(1);
   }
   
-  meson_q = (dirac_matrix_v *)malloc(nt*sizeof(dirac_matrix_v));
+  meson_q = (dirac_matrix_v *)malloc(max_threads*nt*sizeof(dirac_matrix_v));
   if(meson_q == NULL){
     printf("%s(%d): No room for meson_q\n",myname,this_node);
     terminate(1);
@@ -501,7 +516,7 @@ void meson_cont_mom(
      with factors of cos, sin, and exp selected according to the
      requested component parity */
   
-  FORALLSITES(i,s) {
+  FORALLSITES_OMP(i,s,private(p,px,py,pz,ex,ey,ez,tmp) ) {
     for(p=0; p<no_q_momenta; p++)
       {
 	px = q_momstore[p][0];
@@ -521,7 +536,7 @@ void meson_cont_mom(
 	
 	ftfact[p+no_q_momenta*i] = tmp;
       }
-  }      
+  }      END_LOOP_OMP;
   
   flops += (double)sites_on_node*18*no_q_momenta;
   
@@ -573,7 +588,7 @@ void meson_cont_mom(
 	  gamma_adj(&gmoutadj, &gmout);
 	  mult_gamma_by_gamma(&gm5, &gmoutadj, &gm);
 	    
-	  FORALLSITES(i,s) {
+	  FORALLSITES_OMP(i,s,private(localmat, antiquark) ) {
 	    
 	    /* antiquark = gamma_5 adjoint of quark propagator gamma_5 */
 	    /* But we use a complex matrix dot product below, so don't
@@ -590,7 +605,7 @@ void meson_cont_mom(
 	    }
 
 	    /* antiquark = \gamma_5 S_1 \gamma_5 \Gamma_out^\dagger */
-
+	    
 	    mult_sw_by_gamma_l( src1+i, &localmat, G5);    
 	    mult_sw_by_gamma_mat_r( &localmat, &antiquark, &gm);     
 	    
@@ -602,7 +617,7 @@ void meson_cont_mom(
 	    
 	    meson[i] = mult_swv_na( src2+i, &antiquark);
 	    
-	  } /* end FORALLSITES */
+	  } END_LOOP_OMP; /* end FORALLSITES */
 	  flops += (double)sites_on_node*1536;
 	} /* end if not same Gamma_out */
       
@@ -610,39 +625,67 @@ void meson_cont_mom(
 	 Result in meson_q.  We use a dumb FT because there 
          are so few momenta needed. */
       
-      FORALLSITES(i,s) {
-	for(si = 0; si < 4; si++)for(sf = 0; sf < 4; sf++)
-	   for(k=0; k<num_corr_mom[g]; k++)
-	     {
-	       c = corr_table[g][k];
-	       p = p_index[c];
-	       
-	       meson_q[s->t].d[si].d[sf].e[p].real = 0.;
-	       meson_q[s->t].d[si].d[sf].e[p].imag = 0;
-	     }
-      }
+      for(mythread=0; mythread<max_threads; mythread++)
+	for(t = 0; t < nt; t++)
+	  for(si = 0; si < 4; si++)
+	    for(sf = 0; sf < 4; sf++)
+	      for(k=0; k<num_corr_mom[g]; k++){
+		c = corr_table[g][k];
+		p = p_index[c];
+		
+		meson_q[mythread*nt+t].d[si].d[sf].e[p].real = 0.;
+		meson_q[mythread*nt+t].d[si].d[sf].e[p].imag = 0;
+	      }
       
-      FORALLSITES(i,s) {
-	nonzero[s->t] = 1;  /* To save steps below */
+      FORALLSITES_OMP(i,s,private(si,sf,k,c,p,fourier_fact,mythread)) {
+#ifdef OMP
+ 	mythread=omp_get_thread_num();
+#else
+ 	mythread=0;
+#endif
+	int st = s->t;
+	nonzero[st] = 1;  /* To save steps below */
+	st += mythread*nt;
+	
 	for(si = 0; si < 4; si++)
 	  for(sf = 0; sf < 4; sf++)
-	    {
+	    for(k=0; k<num_corr_mom[g]; k++){
+	       c = corr_table[g][k];
+	       p = p_index[c];
+	       fourier_fact = ftfact[p+no_q_momenta*i];
+	       
+	       meson_q[st].d[si].d[sf].e[p].real += 
+		 meson[i].d[si].d[sf].real*fourier_fact.real -  
+		 meson[i].d[si].d[sf].imag*fourier_fact.imag;
+	       meson_q[st].d[si].d[sf].e[p].imag += 
+		 meson[i].d[si].d[sf].real*fourier_fact.imag +  
+		 meson[i].d[si].d[sf].imag*fourier_fact.real;
+            }
+	
+      } END_LOOP_OMP;
+	
+#ifdef OMP
+      /* need to sum meson_q over all the threads */
+      
+      for(mythread=1; mythread<max_threads; mythread++)
+	for(t = 0; t < nt; t++)
+	  for(si = 0; si < 4; si++)
+	    for(sf = 0; sf < 4; sf++)
 	      for(k=0; k<num_corr_mom[g]; k++)
 		{
-		  c = corr_table[g][k];
+	          c = corr_table[g][k];
 		  p = p_index[c];
-		  fourier_fact = ftfact[p+no_q_momenta*i];
+		  meson_q[t].d[si].d[sf].e[p].real += 
+		    meson_q[mythread*nt+t].d[si].d[sf].e[p].real;
+		  meson_q[t].d[si].d[sf].e[p].imag += 
+		    meson_q[mythread*nt+t].d[si].d[sf].e[p].imag;
 
-		  meson_q[s->t].d[si].d[sf].e[p].real += 
-		    meson[i].d[si].d[sf].real*fourier_fact.real -  
-		    meson[i].d[si].d[sf].imag*fourier_fact.imag;
-		  meson_q[s->t].d[si].d[sf].e[p].imag += 
-		    meson[i].d[si].d[sf].real*fourier_fact.imag +  
-		    meson[i].d[si].d[sf].imag*fourier_fact.real;
-		}
-	    }
+		  meson_q[mythread*nt+t].d[si].d[sf].e[p].real = 
+		    meson_q[mythread*nt+t].d[si].d[sf].e[p].imag = 0.; // Prevent re-add
       }
-	
+      
+#endif
+      
       flops += (double)sites_on_node*128*num_corr_mom[g];
       
       /* Complete the propagator by tying in the sink gamma.

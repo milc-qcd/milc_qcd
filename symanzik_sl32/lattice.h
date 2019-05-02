@@ -34,15 +34,23 @@ typedef struct {
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4];
+	su3_matrix link[4] ALIGNMENT;
 #ifdef HMC_ALGORITHM
 	su3_matrix old_link[4];
 	/* For accept/reject */
 	/* antihermitian momentum matrices in each direction */
-	anti_hermitmat mom[4];
+	anti_hermitmat mom[4] ALIGNMENT;
 #endif
 	/* temporary matrices */
 	su3_matrix staple;
+#ifdef ANISOTROPY
+        su3_matrix staple_a[2];
+        /* NOTE: a) staple_a[0] - spatial, staple_a[1] - temporal
+                 b) the "staple" variable below is different from isotropic
+                    case: here staple=beta[0]*staple_a[0]+beta[1]*staple_a[1],
+                    while in the isotropic case it would be simply
+                    staple=staple_a[0]+staple_a[1] */
+#endif
 
 } site;
 
@@ -62,7 +70,11 @@ EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;			/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,stepsQ,propinterval;
+#ifndef ANISOTROPY
 EXTERN	Real beta,u0;
+#else
+EXTERN	Real beta[2],u0;
+#endif
 EXTERN  int n_dyn_masses; // number of dynamical masses (zero here)
 EXTERN  int dyn_flavors[MAX_DYN_MASSES]; 
 EXTERN	Real epsilon;

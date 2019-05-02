@@ -108,7 +108,7 @@ QIO_Writer *open_scidac_output(char *filename, int volfmt,
 #ifdef QIO_TRELEASE
   QIO_set_trelease(0,QIO_TRELEASE);
 #endif
-  QIO_verbose(QIO_VERB_DEBUG);
+  QIO_verbose(QIO_VERB_REG);
   outfile = QIO_open_write(xml_write_file, filename, volfmt, layout, 
 			   fs, &oflag);
   if(outfile == NULL){
@@ -239,7 +239,7 @@ gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
   
   /* Write information */
   if(volfmt == QIO_SINGLEFILE){
-    node0_printf("Saved gauge configuration serially to binary file %s\n",
+    node0_printf("Saved gauge configuration as a single binary file %s\n",
 		 filename);
   }
   else if(volfmt == QIO_MULTIFILE){

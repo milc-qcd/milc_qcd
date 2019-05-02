@@ -14,7 +14,7 @@ MAKEFILE = Makefile
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH = # skx knl knc hsw pow8
+ARCH ?= # skx knl knc hsw pow8 pow9
 
 #----------------------------------------------------------------------
 # 2. Compiler family
@@ -73,8 +73,8 @@ else ifeq ($(strip ${COMPILER}),ibm)
     MY_CC ?= mpixlc_r
     MY_CXX ?= mpixlcxx_r
   else
-    MY_CC ?= bgxlc_r
-    MY_CXX ?= bgxlc++_r
+    MY_CC ?= xlc_r
+    MY_CXX ?= xlc++_r
   endif
 
 endif
@@ -98,8 +98,9 @@ CXX = ${MY_CXX}
 #----------------------------------------------------------------------
 # 6. Compiler optimization level
 # Choices include -g -O, etc
+# Power9 recommendations are -Ofast
 
-OPT              = -O3
+OPT              ?= -O3
 
 # OpenMP?
 
@@ -117,6 +118,10 @@ ifeq ($(strip ${COMPILER}),gnu)
 
   ifeq ($(strip ${ARCH}),pow8)
     ARCH_FLAG = -mcpu=power8
+  endif
+
+  ifeq ($(strip ${ARCH}),pow9)
+    ARCH_FLAG = -mcpu=power9 -mtune=power9
   endif
 
   ifeq ($(strip ${OMP}),true)
@@ -296,15 +301,15 @@ QMP_BACKEND = QMP_MPI
 SCIDAC = ${HOME}/scidac/install
 TAG=
 # Parallel versions
-QMPPAR = ${SCIDAC}/qmp${TAG}
-QIOPAR = $(SCIDAC)/qio${TAG}
+QMPPAR ?= ${SCIDAC}/qmp${TAG}
+QIOPAR ?= $(SCIDAC)/qio${TAG}
 # Single processor versions
-QMPSNG = ${SCIDAC}/qmp-single${TAG}
-QIOSNG = $(SCIDAC)/qio-single${TAG}
-QLA = ${SCIDAC}/qla${TAG}
+QMPSNG ?= ${SCIDAC}/qmp-single${TAG}
+QIOSNG ?= $(SCIDAC)/qio-single${TAG}
+QLA ?= ${SCIDAC}/qla${TAG}
 # Either version
-QDP = ${SCIDAC}/qdp${TAG}
-QOPQDP = ${SCIDAC}/qopqdp${TAG}
+QDP ?= ${SCIDAC}/qdp${TAG}
+QOPQDP ?= ${SCIDAC}/qopqdp${TAG}
 
 QOP = ${QOPQDP}
 
@@ -405,6 +410,9 @@ WANT_FL_GPU ?= #true
 WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 
+# enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
+WANT_MIXED_PRECISION_GPU ?= 0
+
 ifeq ($(strip ${WANTQUDA}),true)
 
   QUDA_HOME ?= ${HOME}/quda
@@ -417,7 +425,7 @@ ifeq ($(strip ${WANTQUDA}),true)
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcufft -lcudart -lcuda
+  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
@@ -449,12 +457,20 @@ ifeq ($(strip ${WANTQUDA}),true)
     CGPU += -DUSE_FF_GPU
   endif
 
+  ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
+    CGPU += -DHALF_MIXED # use single precision where appropriate
+  else ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),2)
+    CGPU += -DMAX_MIXED # use half precision where appropriate
+  endif
+
 # Verbosity choices: 
 # SET_QUDA_SILENT, SET_QUDA_SUMMARIZE, SET_QUDA_VERBOSE, SET_QUDA_DEBUG_VERBOSE
 
   CGPU += -DSET_QUDA_SUMMARIZE
 
 endif
+
+
 
 #----------------------------------------------------------------------
 # 16. QPhiX Options
@@ -754,7 +770,7 @@ CCOMPAT += #-DOLD_STAGGERED2NAIVE
 #     and extra list of dimensions in the parameter input file.
 #     See e.g. ks_imp_rhmc.
 
-CGEOM =#-DFIX_NODE_GEOM
+CGEOM ?=#-DFIX_NODE_GEOM
 
 #------------------------------
 # I/O node grid layout
@@ -827,8 +843,11 @@ CPREFETCH = #
 # KS_MULTICG=REVERSE Iterate in reverse order
 # KS_MULTICG=REVHYB  Same as HYBRID but with vectors in reverse order.
 
-# HALF_MIXED         If PRECISION=2, do multimass solve in single precision
+# HALF_MIXED         (not QUDA) If PRECISION=2, do multimass solve in single precision
 #                    and single-mass refinements in double
+# HALF_MIXED         (QUDA) If PRECISION=2, use double-single mixed-precision solvers
+# MAX_MIXED          (QUDA) Use double-half or single-half mixed-precision solvers
+#                    (for multi-shift, behavior is as HALF_MIXED)
 # NO_REFINE          No refinements except for masses with nonzero Naik eps
 # CPU_REFINE         Refine on CPU only (if at all), not GPU
 # PRIMME_PRECOND
