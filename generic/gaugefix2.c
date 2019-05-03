@@ -68,7 +68,6 @@
    scratch space. */
 
 #include "generic_includes.h"
-#define LOOPEND
 #include "../include/openmp_defs.h"
 #define REUNIT_INTERVAL 20
 
@@ -96,49 +95,45 @@ void accum_gauge_hit(int gauge_dir,int parity)
 
   /* Clear sumvec and diffmat */
 
-  FORSOMEFIELDPARITY_OMP(i,parity,)
-    {
+  FORSOMEFIELDPARITY_OMP(i,parity,){
       // clear_su3mat(&diffmatp[i]);
-
+    
       /* Threadable version */
-      memset(diffmatp + i, 0, sizeof(su3_matrix));
-    } END_LOOP_OMP;
+    memset(diffmatp + i, 0, sizeof(su3_matrix));
+  } END_LOOP_OMP;
 
-  FORSOMEFIELDPARITY_OMP(i,parity,)
-    {
-      // clearvec(&sumvecp[i]);
-
-      /* Threadable version */
-      memset(sumvecp + i, 0, sizeof(su3_vector));
-    } END_LOOP_OMP;
+  FORSOMEFIELDPARITY_OMP(i,parity,){
+    // clearvec(&sumvecp[i]);
+    
+    /* Threadable version */
+    memset(sumvecp + i, 0, sizeof(su3_vector));
+  } END_LOOP_OMP;
   
   /* Subtract upward link contributions */
 
-  FORSOMEPARITY_OMP(i,s,parity,private(dir,j,m1))
-    {
-      FORALLUPDIRBUT(gauge_dir,dir)
-	{
-	  /* Upward link matrix */
-	  m1 = &(s->link[dir]);
-	  sub_su3_matrix( &diffmatp[i], m1, &diffmatp[i]); 
-	  for(j=0;j<3;j++)CSUM( sumvecp[i].c[j],m1->e[j][j]);
-	}
-    } END_LOOP_OMP;
+  FORSOMEPARITY_OMP(i,s,parity,private(dir,j,m1)){
+    FORALLUPDIRBUT(gauge_dir,dir)
+      {
+	/* Upward link matrix */
+	m1 = &(s->link[dir]);
+	sub_su3_matrix( &diffmatp[i], m1, &diffmatp[i]); 
+	for(j=0;j<3;j++)CSUM( sumvecp[i].c[j],m1->e[j][j]);
+      }
+  } END_LOOP_OMP;
 
   /* Add downward link contributions */
 
-  FORSOMEPARITY_OMP(i,s,parity,private(dir,m2,j))
-    {
-      FORALLUPDIRBUT(gauge_dir,dir)
-	{
-	  /* Downward link matrix */
-	  m2 = (su3_matrix *)gen_pt[dir][i];
-	  add_su3_matrix( &diffmatp[i], m2, &diffmatp[i]);
-	  for(j=0;j<3;j++)CSUM( sumvecp[i].c[j], m2->e[j][j]);
-
-	  /* Add diagonal elements to sumvec  */
-	}
-    } END_LOOP_OMP;
+  FORSOMEPARITY_OMP(i,s,parity,private(dir,m2,j)){
+    FORALLUPDIRBUT(gauge_dir,dir)
+      {
+	/* Downward link matrix */
+	m2 = (su3_matrix *)gen_pt[dir][i];
+	add_su3_matrix( &diffmatp[i], m2, &diffmatp[i]);
+	for(j=0;j<3;j++)CSUM( sumvecp[i].c[j], m2->e[j][j]);
+	
+	/* Add diagonal elements to sumvec  */
+      }
+  } END_LOOP_OMP;
 } /* accum_gauge_hit */
 
 
@@ -163,90 +158,89 @@ void do_hit(int gauge_dir, int parity, int p, int q, Real relax_boost,
 
   /* TODO FOR OMP: There are several procedure calls that prevent vectorization
      so need inline versions */
-  FORSOMEPARITY_OMP(i,s,parity,private(a0,a1,a2,a3,asq,a0sq,x,r,xdr,u,dir,j,htemp))
-    {
-      /* The SU(2) hit matrix is represented as a0 + i * Sum j (sigma j * aj)*/
-      /* The locally optimum unnormalized components a0, aj are determined */
-      /* from the current link in direction dir and the link downlink */
-      /* in the same direction on the neighbor in the direction opposite dir */
-      /* The expression is */
-      /* a0 = Sum dir Tr Re 1       * (downlink dir + link dir) */
-      /* aj = Sum dir Tr Im sigma j * (downlink dir - link dir)  j = 1,2, 3 */
-      /*   where 1, sigma j are unit and Pauli matrices on the p,q subspace */
-
-      a0 =     sumvecp[i].c[p].real +  sumvecp[i].c[q].real;
-      a1 =     diffmatp[i].e[q][p].imag + diffmatp[i].e[p][q].imag;
-      a2 =    -diffmatp[i].e[q][p].real + diffmatp[i].e[p][q].real;
-      a3 =     diffmatp[i].e[p][p].imag - diffmatp[i].e[q][q].imag;
-
-      /* Over-relaxation boost */
-
-      /* This algorithm is designed to give little change for large |a| */
-      /* and to scale up the gauge transformation by a factor of relax_boost*/
-      /* for small |a| */
-
-      asq = a1*a1 + a2*a2 + a3*a3;
-      a0sq = a0*a0;
-      x = (relax_boost*a0sq + asq)/(a0sq + asq);
-      r = sqrt((double)(a0sq + x*x*asq));
-      xdr = x/r;
-      /* Normalize and boost */
-      a0 = a0/r; a1 = a1*xdr; a2 = a2*xdr; a3 = a3*xdr;
-
-      /* Elements of SU(2) matrix */
-
-      //      u.e[0][0] = cmplx( a0, a3);
-      //      u.e[0][1] = cmplx( a2, a1);
-      //      u.e[1][0] = cmplx(-a2, a1);
-      //      u.e[1][1] = cmplx( a0,-a3);
-
-      u.e[0][0].real =  a0;
-      u.e[0][0].imag =  a3;
-      u.e[0][1].real =  a2;
-      u.e[0][1].imag =  a1;
-      u.e[1][0].real = -a2;
-      u.e[1][0].imag =  a1;
-      u.e[1][1].real =  a0;
-      u.e[1][1].imag = -a3;
-
-      /* Do SU(2) hit on all upward links */
-
-      FORALLUPDIR(dir)
-	left_su2_hit_n(&u,p,q,&(s->link[dir]));
+  FORSOMEPARITY_OMP(i,s,parity,private(a0,a1,a2,a3,asq,a0sq,x,r,xdr,u,dir,j,htemp)){
+    /* The SU(2) hit matrix is represented as a0 + i * Sum j (sigma j * aj)*/
+    /* The locally optimum unnormalized components a0, aj are determined */
+    /* from the current link in direction dir and the link downlink */
+    /* in the same direction on the neighbor in the direction opposite dir */
+    /* The expression is */
+    /* a0 = Sum dir Tr Re 1       * (downlink dir + link dir) */
+    /* aj = Sum dir Tr Im sigma j * (downlink dir - link dir)  j = 1,2, 3 */
+    /*   where 1, sigma j are unit and Pauli matrices on the p,q subspace */
+    
+    a0 =     sumvecp[i].c[p].real +  sumvecp[i].c[q].real;
+    a1 =     diffmatp[i].e[q][p].imag + diffmatp[i].e[p][q].imag;
+    a2 =    -diffmatp[i].e[q][p].real + diffmatp[i].e[p][q].real;
+    a3 =     diffmatp[i].e[p][p].imag - diffmatp[i].e[q][q].imag;
+    
+    /* Over-relaxation boost */
+    
+    /* This algorithm is designed to give little change for large |a| */
+    /* and to scale up the gauge transformation by a factor of relax_boost*/
+    /* for small |a| */
+    
+    asq = a1*a1 + a2*a2 + a3*a3;
+    a0sq = a0*a0;
+    x = (relax_boost*a0sq + asq)/(a0sq + asq);
+    r = sqrt((double)(a0sq + x*x*asq));
+    xdr = x/r;
+    /* Normalize and boost */
+    a0 = a0/r; a1 = a1*xdr; a2 = a2*xdr; a3 = a3*xdr;
+    
+    /* Elements of SU(2) matrix */
+    
+    //      u.e[0][0] = cmplx( a0, a3);
+    //      u.e[0][1] = cmplx( a2, a1);
+    //      u.e[1][0] = cmplx(-a2, a1);
+    //      u.e[1][1] = cmplx( a0,-a3);
+    
+    u.e[0][0].real =  a0;
+    u.e[0][0].imag =  a3;
+    u.e[0][1].real =  a2;
+    u.e[0][1].imag =  a1;
+    u.e[1][0].real = -a2;
+    u.e[1][0].imag =  a1;
+    u.e[1][1].real =  a0;
+    u.e[1][1].imag = -a3;
+    
+    /* Do SU(2) hit on all upward links */
+    
+    FORALLUPDIR(dir)
+      left_su2_hit_n(&u,p,q,&(s->link[dir]));
+    
+    /* Do SU(2) hit on all downward links */
+    
+    FORALLUPDIR(dir)
+      right_su2_hit_a(&u,p,q,(su3_matrix *)gen_pt[dir][i]);
+    
+    /* Transform vectors and gauge momentum if requested */
+    
+    for(j = 0; j < nvector; j++)
       
-      /* Do SU(2) hit on all downward links */
+      /* Do SU(2) hit on specified su3 vector for specified parity */
       
-      FORALLUPDIR(dir)
-	right_su2_hit_a(&u,p,q,(su3_matrix *)gen_pt[dir][i]);
-      
-      /* Transform vectors and gauge momentum if requested */
-
-      for(j = 0; j < nvector; j++)
-	  
-	/* Do SU(2) hit on specified su3 vector for specified parity */
-	  
-	/* vector <- u * vector */
-	if(vector_parity[j] == EVENANDODD || vector_parity[j] == parity)
-	  mult_su2_mat_vec_elem_n(&u, 
-		 &((su3_vector *)F_PT(s,vector_offset[j]))->c[p],
-		 &((su3_vector *)F_PT(s,vector_offset[j]))->c[q]);
-
-      /* Transform antihermitian matrices if requested */
-
-      for(j = 0; j < nantiherm; j++)
-	/* antiherm <- u * antiherm * u^dagger */
-	if(antiherm_parity[j] == EVENANDODD || antiherm_parity[j] == parity)
-	  {
-	    uncompress_anti_hermitian( 
-		     (anti_hermitmat *)F_PT(s,antiherm_offset[j]), &htemp);
-	    /* If the next 2 steps prove too time consuming, */
-	    /* they can be simplified algebraically, and sped up by ~2 */
-	    left_su2_hit_n(&u,p,q,&htemp);
-	    right_su2_hit_a(&u,p,q,&htemp);
-	    make_anti_hermitian( &htemp, 
-		     (anti_hermitmat *)F_PT(s,antiherm_offset[j]));
-	  }
-    } END_LOOP_OMP;  /* do_hit */
+      /* vector <- u * vector */
+      if(vector_parity[j] == EVENANDODD || vector_parity[j] == parity)
+	mult_su2_mat_vec_elem_n(&u, 
+				&((su3_vector *)F_PT(s,vector_offset[j]))->c[p],
+				&((su3_vector *)F_PT(s,vector_offset[j]))->c[q]);
+    
+    /* Transform antihermitian matrices if requested */
+    
+    for(j = 0; j < nantiherm; j++)
+      /* antiherm <- u * antiherm * u^dagger */
+      if(antiherm_parity[j] == EVENANDODD || antiherm_parity[j] == parity)
+	{
+	  uncompress_anti_hermitian( 
+				    (anti_hermitmat *)F_PT(s,antiherm_offset[j]), &htemp);
+	  /* If the next 2 steps prove too time consuming, */
+	  /* they can be simplified algebraically, and sped up by ~2 */
+	  left_su2_hit_n(&u,p,q,&htemp);
+	  right_su2_hit_a(&u,p,q,&htemp);
+	  make_anti_hermitian( &htemp, 
+			       (anti_hermitmat *)F_PT(s,antiherm_offset[j]));
+	}
+  } END_LOOP_OMP;  /* do_hit */
   
   /* Exit with modified downward links left in communications buffer */
 } /* do_hit */
@@ -267,25 +261,24 @@ double get_gauge_fix_action(int gauge_dir,int parity)
   gauge_fix_action = 0.0;
   
   //  FORSOMEPARITY_OMP(i,s,parity,private(dir,m1,m2,trace) reduction(+:gauge_fix_action))
-  FORSOMEPARITY_OMP(i,s,parity,private(dir,m1,m2) reduction(+:gauge_fix_action))
-    {
-      FORALLUPDIRBUT(gauge_dir,dir)
-	{
-	  m1 = &(s->link[dir]);
-	  m2 = (su3_matrix *)gen_pt[dir][i];
-	  
-	  //trace = trace_su3(m1);
-	  //gauge_fix_action += (double)trace.real;
-	  //
-	  //trace = trace_su3(m2); 
- 	  //gauge_fix_action += (double)trace.real;
-
-	  /* Vectorizable (threadable) version */
-	  gauge_fix_action += m1->e[0][0].real + m1->e[1][1].real + m1->e[2][2].real
-	    + m2->e[0][0].real + m2->e[1][1].real + m2->e[2][2].real;
-	}
-    } END_LOOP_OMP;
-
+  FORSOMEPARITY_OMP(i,s,parity,private(dir,m1,m2) reduction(+:gauge_fix_action)){
+    FORALLUPDIRBUT(gauge_dir,dir)
+      {
+	m1 = &(s->link[dir]);
+	m2 = (su3_matrix *)gen_pt[dir][i];
+	
+	//trace = trace_su3(m1);
+	//gauge_fix_action += (double)trace.real;
+	//
+	//trace = trace_su3(m2); 
+	//gauge_fix_action += (double)trace.real;
+	
+	/* Vectorizable (threadable) version */
+	gauge_fix_action += m1->e[0][0].real + m1->e[1][1].real + m1->e[2][2].real
+	  + m2->e[0][0].real + m2->e[1][1].real + m2->e[2][2].real;
+      }
+  } END_LOOP_OMP;
+  
   /* Count number of terms to average */
   ndir = 0; FORALLUPDIRBUT(gauge_dir,dir)ndir++;
   
@@ -366,25 +359,24 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
 	  /* First copy modified link for this dir */
 	  /* from comm buffer or node to diffmat */
 
-	  FORSOMEPARITY_OMP(i,s,parity,)
-	    {
-	      su3mat_copy((su3_matrix *)(gen_pt[dir][i]), &diffmatp[i]);
-	    } END_LOOP_OMP;
+	  FORSOMEPARITY_OMP(i,s,parity,){
+	    su3mat_copy((su3_matrix *)(gen_pt[dir][i]), &diffmatp[i]);
+	  } END_LOOP_OMP;
 	  
 	  /* Now we are finished with gen_pt[dir] */
 	  cleanup_gather(mtag[dir]);
-      
+	  
 	  /* Synchronize to make sure the previous copy happens before the */
 	  /* subsequent gather below  */
 	  g_sync();
-
+	  
 	  /* Gather diffmat onto sites of opposite parity */
 	  mtag[dir] = start_gather_field( diffmatp, sizeof(su3_matrix),
 					  dir, OPP_PAR(parity), gen_pt[dir] );
-
+	  
 	  wait_gather(mtag[dir]);
-
-         /* Copy modified matrices into proper location */
+	  
+	  /* Copy modified matrices into proper location */
 	  FORSOMEPARITY_OMP(i,s,OPP_PAR(parity),){
 	    su3mat_copy((su3_matrix *)(gen_pt[dir][i]),&(s->link[dir]));
 	  } END_LOOP_OMP;

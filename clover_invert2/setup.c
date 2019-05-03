@@ -79,10 +79,11 @@ int setup(void)   {
   prompt=initial_set();
   if(prompt == 2)return prompt;
 
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   FORALLUPDIR(dir){
@@ -105,7 +106,7 @@ int setup(void)   {
 
 /* SETUP ROUTINES */
 static int initial_set(){
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
@@ -172,7 +173,6 @@ static int initial_set(){
 #endif
 #endif
 
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   return(prompt);
@@ -238,6 +238,7 @@ int readin(int prompt) {
     IF_OK status += get_i(stdin, prompt, "ape_iter",
 			  &param.ape_iter);
 
+    IF_OK param.eigen_param.Nvecs = 0;
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
     IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
     IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);

@@ -128,6 +128,7 @@ typedef struct {
 typedef struct {
   Real mass;
   Real offset;
+  Real residue;
   int naik_term_epsilon_index;
   Real naik_term_epsilon;
 
@@ -161,6 +162,7 @@ typedef struct {
   int nrestart;       /* maximum restarts */
   int parity;         /* EVEN, ODD, or EVENANDODD (for some inverters) */
   int nsrc;           /* Number of source vectors */
+  int deflate;        /* True if we want to deflate. False if not. */
   Real resid;         /* desired residual - NOT SQUARED!
 			 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
   Real relresid;      /* desired relative residual - NOT SQUARED! */

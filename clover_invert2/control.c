@@ -688,6 +688,8 @@ int main(int argc, char *argv[])
 
   } /* readin(prompt) */
 
+  free_lattice();
+
 #ifdef HAVE_QUDA
   qudaFinalize();
 #endif

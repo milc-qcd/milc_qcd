@@ -25,6 +25,7 @@ int setup()   {
 
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
 
@@ -40,7 +41,7 @@ int setup()   {
 
 /* SETUP ROUTINES */
 static int initial_set(void){
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
@@ -96,7 +97,6 @@ static int initial_set(void){
 #endif
 #endif
 
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
 
@@ -124,6 +124,10 @@ int readin(int prompt) {
 			  &param.nblock);
     for(int i = 0; i < param.nblock; i++){
       IF_OK status += get_i(stdin, prompt, "block_size", &param.block_size[i]);
+      IF_OK if(param.block_size[i] > param.nrand_sloppy){
+	node0_printf("Block size %d exceeds number of sloppy random sources %d\n", param.block_size[i], param.nrand_sloppy);
+	status++;
+      }
     }
 
     IF_OK status += get_i(stdin, prompt, "number_of_flavors", &param.nflav);

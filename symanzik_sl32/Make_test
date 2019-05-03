@@ -20,7 +20,7 @@
 
 # For comparing test output with sample output
 
-PROJS = su3_hmc_symzk1 su3_ora_symzk1
+PROJS = su3_hmc_symzk1 su3_ora_symzk1 su3_hmc_symzk1_a su3_ora_symzk1_a
 
 PRECLIST = 1
 

@@ -458,7 +458,7 @@ class SolveKS:
         self.source = source
         self.twist = twist
         self.load = load
-        self.save =save
+        self.save = save
         self.residual = residual
         self.precision = precision
         self.check = check
@@ -732,13 +732,14 @@ class KSInverseSink:
     u0 ${u0}
     max_cg_iterations ${maxCG.iters}
     max_cg_restarts ${maxCG.restarts}
+    deflate ${deflate}
     error_for_propagator ${residual.L2}
     rel_error_for_propagator ${residual.R2}
     precision ${precision}
     momentum_twist #echo ' '.join(map(str,$twist))#
     op_label ${label}
     #echo ' '.join($save)#"""
-    def __init__(self,prop,mass,naik_epsilon,u0,maxCG,residual,precision,twist,label,save):
+    def __init__(self,prop,mass,naik_epsilon,u0,maxCG,deflate,residual,precision,twist,label,save):
         self._classType = self.__class__.__name__
         self._objectID = self._classType+'_'+base36(id(self))
         self.prop = prop
@@ -747,6 +748,7 @@ class KSInverseSink:
         self.naik_epsilon = naik_epsilon
         self.u0 = u0
         self.maxCG = maxCG
+        self.deflate = deflate
         self.residual = residual
         self.precision = precision
         self.twist = twist
@@ -1114,12 +1116,15 @@ class KSsolveElement:
     #if $naik is not None
     naik_term_epsilon ${naik}
     #end if
+    #if $deflate is not None:
+    deflate ${deflate}
+    #end if
     error_for_propagator ${residual.L2}
     rel_error_for_propagator ${residual.R2}
     #echo ' '.join($load)#
     #echo ' '.join($save)#
     """
-    def __init__(self,mass,naik,load,save,residual):
+    def __init__(self,mass,naik,load,save,deflate,residual):
         self._classType = self.__class__.__name__
         self._objectID = self._classType+'_'+base36(id(self))
         self.id = None
@@ -1128,6 +1133,7 @@ class KSsolveElement:
         self.naik = naik
         self.load = load
         self.save = save
+        self.deflate = deflate
         self.residual = residual
         self._template = Template(source=textwrap.dedent(self._Template),searchList=vars(self))
         return

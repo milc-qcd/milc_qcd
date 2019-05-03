@@ -114,21 +114,22 @@ initialize_grid(void){
   argv[2] = tag_mpi;  argv[3] = val_mpi;
   argv[4] = tag_shm;  argv[5] = val_shm;
 
-  node0_printf("Calling Grid_init with %s %s %s %s %s %s\n",argv[0],argv[1],argv[2],argv[3],argv[4],argv[5]);
+  if(mynode()==0)printf("Calling Grid_init with %s %s %s %s %s %s\n",argv[0],argv[1],argv[2],argv[3],argv[4],argv[5]);
   Grid_init(&argc, &argv);
 
   grid_full = GRID_create_grid();
   grid_rb = GRID_create_RBgrid(grid_full);
 
   std::vector<int> latt_size   = GridDefaultLatt();
-  std::vector<int> simd_layout = GridDefaultSimd(Nd,vComplex::Nsimd());
   std::vector<int> mpi_layout  = GridDefaultMpi();
 
-  node0_printf("milc_to_grid_utilities: Initialized Grid with args\n%s %s\n%s %s\n%s %s\n",
+  if(mynode()==0){
+    printf("milc_to_grid_utilities: Initialized Grid with args\n%s %s\n%s %s\n%s %s\n",
 	       argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
-  node0_printf("latt_size: %d %d %d %d\n", latt_size[0], latt_size[1], latt_size[2], latt_size[3]);
-  node0_printf("mpi_layout: %d %d %d %d\n", mpi_layout[0], mpi_layout[1], mpi_layout[2], mpi_layout[3]);
-  node0_printf("Grid threads %d\n", Grid::GridThread::GetThreads());
+    printf("latt_size: %d %d %d %d\n", latt_size[0], latt_size[1], latt_size[2], latt_size[3]);
+    printf("mpi_layout: %d %d %d %d\n", mpi_layout[0], mpi_layout[1], mpi_layout[2], mpi_layout[3]);
+    printf("Grid threads %d\n", Grid::GridThread::GetThreads());
+  }
   fflush(stdout);
 
   free(argv);
@@ -159,12 +160,12 @@ void setup_grid_communicator(int peGrid[]){
 int *query_grid_node_mapping(void){
 
   if(! grid_is_initialized){
-    node0_printf("query_grid_node_mapping: Grid must first be initialized\n");
+    if(mynode()==0)printf("query_grid_node_mapping: Grid must first be initialized\n");
     terminate(1);
   }
 
   if(grid_cart == NULL){
-    node0_printf("query_grid_node_mapping: Must call setup_grid_communicator first\n");
+    if(mynode()==0)printf("query_grid_node_mapping: Must call setup_grid_communicator first\n");
     terminate(1);
   }
 
@@ -195,12 +196,12 @@ int *query_grid_node_mapping(void){
 
 int grid_rank_from_processor_coor(int x, int y, int z, int t){
   if(! grid_is_initialized){
-    node0_printf("grid_lexicographic_to_worldrank: Grid must first be initialized\n");
+    if(mynode()==0)printf("grid_lexicographic_to_worldrank: Grid must first be initialized\n");
     terminate(1);
   }
 
   if(grid_cart == NULL){
-    node0_printf("grid_lexicographic_to_worldrank: Must call setup_grid_communicator first\n");
+    if(mynode()==0)printf("grid_lexicographic_to_worldrank: Must call setup_grid_communicator first\n");
     terminate(1);
   }
 
@@ -211,12 +212,12 @@ int grid_rank_from_processor_coor(int x, int y, int z, int t){
 
 void grid_coor_from_processor_rank(int coords[], int worldrank){
   if(! grid_is_initialized){
-    node0_printf("grid_coor_from_processor_rank: Grid must first be initialized\n");
+    if(mynode()==0)printf("grid_coor_from_processor_rank: Grid must first be initialized\n");
     terminate(1);
   }
 
   if(grid_cart == NULL){
-    node0_printf("grid_coor_from_processor_rank: Must call setup_grid_communicator first\n");
+    if(mynode()==0)printf("grid_coor_from_processor_rank: Must call setup_grid_communicator first\n");
     terminate(1);
   }
 

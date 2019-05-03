@@ -59,10 +59,11 @@ int setup()   {
   /* print banner, get volume */
   prompt=initial_set();
   if(prompt == 2)return prompt;
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
 #ifdef U1_FIELD
@@ -91,7 +92,7 @@ static double eps_naik[MAX_NAIK];
 
 /* SETUP ROUTINES */
 static int initial_set(void){
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
@@ -129,6 +130,10 @@ static int initial_set(void){
 #ifdef FIX_NODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "node_geometry", 
 			   param.node_geometry, 4);
+#ifdef FIX_SUBNODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "subnode_geometry", 
+			   param.subnode_geometry, 4);
+#endif
 #ifdef FIX_IONODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
 			   param.ionode_geometry, 4);
@@ -163,7 +168,6 @@ static int initial_set(void){
 #endif
 #endif
 
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
 
@@ -288,14 +292,18 @@ int readin(int prompt) {
 	
 #ifdef POLY_EIGEN
 	/* Chebyshev preconditioner */
+#ifdef ARPACK
 	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
+#endif
 	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
 	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
 	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
 	
+#ifdef ARPACK
 	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
 	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
 	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
+#endif
 #endif
       } else {
 	param.eigen_param.MaxIter = 0;
@@ -373,6 +381,16 @@ int readin(int prompt) {
 	param.qic_pbp[i].max = param.qic_pbp[0].max;
 	param.qic_pbp[i].nrestart = param.qic_pbp[0].nrestart;
 	param.qic_pbp[i].prec = param.qic_pbp[0].prec;
+	/* Should we be deflating? */
+	param.qic_pbp[i].deflate = 0;
+	IF_OK {
+	  if(param.eigen_param.Nvecs > 0){  /* Need eigenvectors to deflate */
+	    IF_OK status += get_s(stdin, prompt,"deflate", savebuf);
+	    IF_OK {
+	      if(strcmp(savebuf,"yes") == 0)param.qic_pbp[i].deflate = 1;
+	    }
+	  }
+	}
 	IF_OK status += get_f(stdin, prompt, "error_for_propagator", &param.qic_pbp[i].resid);
 	IF_OK status += get_f(stdin, prompt, "rel_error_for_propagator", &param.qic_pbp[i].relresid );
 #ifdef HALF_MIXED
@@ -679,6 +697,17 @@ int readin(int prompt) {
 	/* maximum no. of conjugate gradient restarts */
 	param.qic[nprop].nrestart = max_cg_restarts;
       
+	/* Should we be deflating? */
+	param.qic[nprop].deflate = 0;
+	IF_OK {
+	  if(param.eigen_param.Nvecs > 0){  /* Need eigenvectors to deflate */
+	    IF_OK status += get_s(stdin, prompt,"deflate", savebuf);
+	    IF_OK {
+	      if(strcmp(savebuf,"yes") == 0)param.qic[nprop].deflate = 1;
+	    }
+	  }
+	}
+
 	/* error for clover propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
 			      &param.qic[nprop].resid );
@@ -889,7 +918,7 @@ int readin(int prompt) {
       }
       
       /* Sample format for correlator line:
-	 correlator  A1_P5 p200 -i * 1 2 0 0 E E E */
+	 correlator P5-P5_V1-S_T13_m0.5744 p211 -1 / 4608.0 GX-G1 -2 -1 -1 EO EO EO */
       
       param.num_corr_report[ipair] = 0;
       IF_OK for(i = 0; i < param.num_corr_m[ipair]; i++){
@@ -1274,7 +1303,7 @@ int readin(int prompt) {
 			   &Nvecs_tot, eigVal, eigVec, 1);
 
   if(param.fixflag != NO_GAUGE_FIX){
-    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
   }
   if(status != 0) normal_exit(0);
 
@@ -1296,12 +1325,19 @@ int readin(int prompt) {
     /* malloc for eigenpairs */
     eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
     eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
-    for(i=0; i < param.eigen_param.Nvecs; i++)
+    for(i=0; i < param.eigen_param.Nvecs; i++){
       eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+      if(eigVec[i] == NULL){
+	printf("No room for eigenvector\n");
+	terminate(1);
+      }
+    }
     
     /* Do whatever is needed to get eigenpairs */
+    node0_printf("Calling reload_ks_eigen\n"); fflush(stdout);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			     &param.eigen_param.Nvecs, eigVal, eigVec, 1);
+    node0_printf("Return from reload_ks_eigen\n"); fflush(stdout);
     if(param.fixflag != NO_GAUGE_FIX){
       node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
     }

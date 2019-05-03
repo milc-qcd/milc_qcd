@@ -237,6 +237,7 @@ init_ferm_links(fn_links_t *fn){
   fn->lng = NULL;
   fn->fatback = NULL;
   fn->lngback = NULL;
+  fn->eps_naik = 0.0;
   fn->notify_quda_new_links = 1;
 }
 /* The fat/long members are not created */
@@ -263,6 +264,7 @@ create_fn_links(void){
   fn->lng = create_lnglinks();
   fn->fatback = NULL;
   fn->lngback = NULL;
+  fn->eps_naik = 0.0;
 
   return fn;
 }
@@ -331,6 +333,9 @@ copy_fn(fn_links_t *fn_src, fn_links_t *fn_dst){
 	lngbackdst[4*i + dir] = lngbacksrc[4*i + dir];
     }
   }
+
+  fn_dst->eps_naik = fn_src->eps_naik;
+
   END_LOOP_OMP;
 }
 
@@ -367,6 +372,16 @@ scalar_mult_fn(fn_links_t *fn_src, Real s, fn_links_t *fn_dst){
 
 void 
 add_fn(fn_links_t *fn_A, fn_links_t *fn_B, fn_links_t *fn_C){
+
+  char myname[] = "add_fn";
+
+  if (fn_A->eps_naik != fn_B->eps_naik) {
+    node0_printf("%s: eps_naik does not match between the two links", myname);
+    exit(0);
+  }
+
+  fn_C->eps_naik = fn_B->eps_naik;
+
   int i, dir;
 
   su3_matrix *fatA = get_fatlinks(fn_A);

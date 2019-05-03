@@ -1,0 +1,39 @@
+Pure gauge SU3
+Overrelaxed/quasi-heat bath algorithm
+MIMD version 5
+Machine = MPI (portable), with 2 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 9435
+LAYOUT = Hypercubes, options = EVENFIRST,
+make_nn_gathers: Possible overflow of gather message type
+ 1638 > 255 flag 1: Fix the program
+
+
+warms 0
+trajecs 3
+traj_between_meas 1
+beta 6.8
+u0 0.87
+steps_per_trajectory 2
+qhb_steps 1
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked
+Time to check unitarity = 0.000000e+00
+Symanzik 1x1 + 1x2 + 1x1x1 action
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.182149e-02     12
+                    2 0      -7.975969e-03     16
+WARMUPS COMPLETED
+GMES 1.466563e+00 1.299267e-02 9.990000e+01 1.982834e+00 1.951203e+00
+GMES 7.248286e-01 4.164468e-02 9.990000e+01 1.721206e+00 1.733213e+00
+GMES 3.691737e-01 -1.157571e-02 9.990000e+01 1.653397e+00 1.656857e+00
+RUNNING COMPLETED
+Time = 4.080000e+00 seconds
+
+

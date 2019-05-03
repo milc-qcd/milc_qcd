@@ -93,20 +93,20 @@ void make_3n_gathers();
 
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"
-params par_buf;
 
 int
 setup()
 {
   int initial_set();
-  int prompt, dir;
+  int prompt=0, dir;
   
   /* print banner, get volume, nflavors1,nflavors2, nflavors, seed */
   prompt = initial_set();
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   FORALLUPDIR(dir){
@@ -139,7 +139,7 @@ static double eps_naik[MAX_NAIK];
 int 
 initial_set()
 {
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
@@ -185,72 +185,71 @@ initial_set()
 
     status=get_prompt(stdin, &prompt);
 #ifdef ONEMASS
-    IF_OK status += get_i(stdin, prompt,"nflavors", &par_buf.nflavors );
+    IF_OK status += get_i(stdin, prompt,"nflavors", &param.nflavors );
 #else
-    IF_OK status += get_i(stdin, prompt,"nflavors1", &par_buf.nflavors1 );
-    IF_OK status += get_i(stdin, prompt,"nflavors2", &par_buf.nflavors2 );
+    IF_OK status += get_i(stdin, prompt,"nflavors1", &param.nflavors1 );
+    IF_OK status += get_i(stdin, prompt,"nflavors2", &param.nflavors2 );
 #endif
 #ifdef PHI_ALGORITHM
 #ifdef ONEMASS
-    IF_OK if(par_buf.nflavors != 4){
+    IF_OK if(param.nflavors != 4){
       printf("Dummy! Use phi algorithm only for four flavors\n");
       status++;
     }
 #else
-    IF_OK if( par_buf.nflavors1 != 4 || par_buf.nflavors2 != 4 ){
+    IF_OK if( param.nflavors1 != 4 || param.nflavors2 != 4 ){
       printf("Dummy! Use phi algorithm only for four flavors\n");
       status++;
     }
 #endif
 #endif
-    IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
-    IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
-    IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
-    IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+    IF_OK status += get_i(stdin, prompt,"nx", &param.nx );
+    IF_OK status += get_i(stdin, prompt,"ny", &param.ny );
+    IF_OK status += get_i(stdin, prompt,"nz", &param.nz );
+    IF_OK status += get_i(stdin, prompt,"nt", &param.nt );
 #ifdef FIX_NODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "node_geometry", 
-			   par_buf.node_geometry, 4);
+			   param.node_geometry, 4);
 #ifdef FIX_IONODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
-			   par_buf.ionode_geometry, 4);
+			   param.ionode_geometry, 4);
 #endif
 #endif
-    IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
+    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
     
-    if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
+    if(status>0) param.stopflag=1; else param.stopflag=0;
   } /* end if(mynode()==0) */
   
     /* Node 0 broadcasts parameter buffer to all other nodes */
-  broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+  broadcast_bytes((char *)&param,sizeof(param));
   
-  if( par_buf.stopflag != 0 )
+  if( param.stopflag != 0 )
     normal_exit(0);
   
-  nx=par_buf.nx;
-  ny=par_buf.ny;
-  nz=par_buf.nz;
-  nt=par_buf.nt;
+  nx=param.nx;
+  ny=param.ny;
+  nz=param.nz;
+  nt=param.nt;
 #ifdef FIX_NODE_GEOM
   for(i = 0; i < 4; i++)
-    node_geometry[i] = par_buf.node_geometry[i];
+    node_geometry[i] = param.node_geometry[i];
 #ifdef FIX_IONODE_GEOM
   for(i = 0; i < 4; i++)
-    ionode_geometry[i] = par_buf.ionode_geometry[i];
+    ionode_geometry[i] = param.ionode_geometry[i];
 #endif
 #endif
-  iseed=par_buf.iseed;
+  iseed=param.iseed;
 #ifdef ONEMASS
-  nflavors=par_buf.nflavors;
+  nflavors=param.nflavors;
   nlight_flavors = nflavors;  /* In case we need it for the gauge action */
   dyn_flavors[0] = nflavors;
 #else
-  nflavors1=par_buf.nflavors1;
-  nflavors2=par_buf.nflavors2;
+  nflavors1=param.nflavors1;
+  nflavors2=param.nflavors2;
   dyn_flavors[0] = nflavors1;
   dyn_flavors[1] = nflavors2;
 #endif
   
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   total_iters=0;
@@ -295,132 +294,137 @@ readin(int prompt)
     status=0;
     
     /* warms, trajecs */
-    IF_OK status += get_i(stdin, prompt,"warms", &par_buf.warms );
-    IF_OK status += get_i(stdin, prompt,"trajecs", &par_buf.trajecs );
+    IF_OK status += get_i(stdin, prompt,"warms", &param.warms );
+    IF_OK status += get_i(stdin, prompt,"trajecs", &param.trajecs );
     
     /* trajectories between propagator measurements */
     IF_OK status += 
-      get_i(stdin, prompt,"traj_between_meas", &par_buf.propinterval );
+      get_i(stdin, prompt,"traj_between_meas", &param.propinterval );
     
     /* get couplings and broadcast to nodes	*/
     /* beta, mass1, mass2 or mass */
-    IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
+    IF_OK status += get_f(stdin, prompt,"beta", &param.beta );
 #ifdef ONEMASS
-    IF_OK status += get_f(stdin, prompt,"mass", &par_buf.mass );
+    IF_OK status += get_f(stdin, prompt,"mass", &param.mass );
 #else
-    IF_OK status += get_f(stdin, prompt,"mass1", &par_buf.mass1 );
-    IF_OK status += get_f(stdin, prompt,"mass2", &par_buf.mass2 );
+    IF_OK status += get_f(stdin, prompt,"mass1", &param.mass1 );
+    IF_OK status += get_f(stdin, prompt,"mass2", &param.mass2 );
 #if FERM_ACTION == HISQ || FERM_ACTION == HYPISQ
-    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", &par_buf.naik_term_epsilon2 );
+    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", &param.naik_term_epsilon2 );
 #endif
 #endif
-    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+    IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
     
     /* microcanonical time step */
     IF_OK status += 
-      get_f(stdin, prompt,"microcanonical_time_step", &par_buf.epsilon );
+      get_f(stdin, prompt,"microcanonical_time_step", &param.epsilon );
     
     /*microcanonical steps per trajectory */
-    IF_OK status += get_i(stdin, prompt,"steps_per_trajectory", &par_buf.steps );
+    IF_OK status += get_i(stdin, prompt,"steps_per_trajectory", &param.steps );
     
     /* maximum no. of conjugate gradient iterations */
-    IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter );
+    IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &param.niter );
     
     /* maximum no. of conjugate gradient restarts */
-    IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &par_buf.nrestart );
+    IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &param.nrestart );
     
     /* error per site for conjugate gradient */
     IF_OK status += get_f(stdin, prompt,"error_per_site", &x );
-    IF_OK par_buf.rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
+    IF_OK param.rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
     /* New conjugate gradient normalizes rsqmin by norm of source */
     
     /* error for propagator conjugate gradient */
     IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
-    IF_OK par_buf.rsqprop = x*x;
+    IF_OK param.rsqprop = x*x;
+    
+    /* Eigenpairs for HMC not supported at present */
+    param.eigen_param.Nvecs = 0;  
     
     /* number of random sources npbp_reps */
-    IF_OK status += get_i(stdin, prompt,"npbp_reps", &par_buf.npbp_reps_in );
-    IF_OK status += get_i(stdin, prompt,"prec_pbp", &par_buf.prec_pbp );
+    IF_OK status += get_i(stdin, prompt,"npbp_reps", &param.npbp_reps_in );
+    IF_OK status += get_i(stdin, prompt,"prec_pbp", &param.prec_pbp );
     
 #ifdef SPECTRUM
     /* request list for spectral measurments */
     /* prepend and append a comma for ease in parsing */
     IF_OK status += get_s(stdin, prompt,"spectrum_request", request_buf );
-    IF_OK strcpy(par_buf.spectrum_request,",");
-    IF_OK strcat(par_buf.spectrum_request,request_buf);
-    IF_OK strcat(par_buf.spectrum_request,",");
+    IF_OK strcpy(param.spectrum_request,",");
+    IF_OK strcat(param.spectrum_request,request_buf);
+    IF_OK strcat(param.spectrum_request,",");
     
     /* source time slice and increment */
-    IF_OK status += get_i(stdin, prompt,"source_start", &par_buf.source_start );
-    IF_OK status += get_i(stdin, prompt,"source_inc", &par_buf.source_inc );
-    IF_OK status += get_i(stdin, prompt,"n_sources", &par_buf.n_sources );
+    IF_OK status += get_i(stdin, prompt,"source_start", &param.source_start );
+    IF_OK status += get_i(stdin, prompt,"source_inc", &param.source_inc );
+    IF_OK status += get_i(stdin, prompt,"n_sources", &param.n_sources );
     
     /* Additional parameters for spectrum_multimom */
-    if(strstr(par_buf.spectrum_request,",spectrum_multimom,") != NULL){
+    if(strstr(param.spectrum_request,",spectrum_multimom,") != NULL){
       IF_OK status += get_i(stdin, prompt,"spectrum_multimom_nmasses",
-			    &par_buf.spectrum_multimom_nmasses );
+			    &param.spectrum_multimom_nmasses );
       IF_OK status += get_f(stdin, prompt,"spectrum_multimom_low_mass",
-			    &par_buf.spectrum_multimom_low_mass );
+			    &param.spectrum_multimom_low_mass );
       IF_OK status += get_f(stdin, prompt,"spectrum_multimom_mass_step",
-			    &par_buf.spectrum_multimom_mass_step );
+			    &param.spectrum_multimom_mass_step );
     }
     /* Additional parameters for fpi */
-    par_buf.fpi_nmasses = 0;
-    if(strstr(par_buf.spectrum_request,",fpi,") != NULL){
+    param.fpi_nmasses = 0;
+    if(strstr(param.spectrum_request,",fpi,") != NULL){
       IF_OK status += get_i(stdin, prompt,"fpi_nmasses",
-			    &par_buf.fpi_nmasses );
-      if(par_buf.fpi_nmasses > MAX_FPI_NMASSES){
+			    &param.fpi_nmasses );
+      if(param.fpi_nmasses > MAX_FPI_NMASSES){
 	printf("Maximum of %d exceeded.\n",MAX_FPI_NMASSES);
 	terminate(1);
       }
-      for(i = 0; i < par_buf.fpi_nmasses; i++){
+      for(i = 0; i < param.fpi_nmasses; i++){
 	IF_OK status += get_f(stdin, prompt,"fpi_mass",
-			      &par_buf.fpi_mass[i]);
+			      &param.fpi_mass[i]);
       }
     }
     
 #endif /*SPECTRUM*/
     
     /* find out what kind of starting lattice to use */
-    IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
-					  par_buf.startfile );
+    IF_OK status += ask_starting_lattice(stdin,  prompt, &(param.startflag),
+					  param.startfile );
     
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
-					par_buf.savefile );
-    IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
-				  par_buf.stringLFN );
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.saveflag),
+					param.savefile );
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
+				  param.stringLFN );
     
-    if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
+    if( status > 0)param.stopflag=1; else param.stopflag=0;
   } /* end if(this_node==0) */
   
     /* Node 0 broadcasts parameter buffer to all other nodes */
-  broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+  broadcast_bytes((char *)&param,sizeof(param));
+  /* We really should simply change the name so we always use "param" consistently */
+  param = param;
   
-  if( par_buf.stopflag != 0 )return par_buf.stopflag;
+  if( param.stopflag != 0 )return param.stopflag;
   
-  warms = par_buf.warms;
-  trajecs = par_buf.trajecs;
-  steps = par_buf.steps;
-  propinterval = par_buf.propinterval;
-  niter = par_buf.niter;
-  nrestart = par_buf.nrestart;
-  npbp_reps_in = par_buf.npbp_reps_in;
-  prec_pbp = par_buf.prec_pbp;
-  rsqmin = par_buf.rsqmin;
-  rsqprop = par_buf.rsqprop;
-  epsilon = par_buf.epsilon;
-  beta = par_buf.beta;
+  warms = param.warms;
+  trajecs = param.trajecs;
+  steps = param.steps;
+  propinterval = param.propinterval;
+  niter = param.niter;
+  nrestart = param.nrestart;
+  npbp_reps_in = param.npbp_reps_in;
+  prec_pbp = param.prec_pbp;
+  rsqmin = param.rsqmin;
+  rsqprop = param.rsqprop;
+  epsilon = param.epsilon;
+  beta = param.beta;
 #ifdef ONEMASS
-  mass = par_buf.mass;
+  mass = param.mass;
   n_dyn_masses = 1;
 #else
-  mass1 = par_buf.mass1;
-  mass2 = par_buf.mass2;
-  naik_term_epsilon2 = par_buf.naik_term_epsilon2;
+  mass1 = param.mass1;
+  mass2 = param.mass2;
+  naik_term_epsilon2 = param.naik_term_epsilon2;
   n_dyn_masses = 2;
 #endif
-  u0 = par_buf.u0;
+  u0 = param.u0;
 
 #ifdef ONE_MASS
   n_order_naik_total = 1;
@@ -443,23 +447,23 @@ readin(int prompt)
 
 
 #ifdef SPECTRUM
-  strcpy(spectrum_request,par_buf.spectrum_request);
-  source_start = par_buf.source_start;
-  source_inc = par_buf.source_inc;
-  n_sources = par_buf.n_sources;
-  spectrum_multimom_nmasses = par_buf.spectrum_multimom_nmasses;
-  spectrum_multimom_low_mass = par_buf.spectrum_multimom_low_mass;
-  spectrum_multimom_mass_step = par_buf.spectrum_multimom_mass_step;
-  fpi_nmasses = par_buf.fpi_nmasses;
+  strcpy(spectrum_request,param.spectrum_request);
+  source_start = param.source_start;
+  source_inc = param.source_inc;
+  n_sources = param.n_sources;
+  spectrum_multimom_nmasses = param.spectrum_multimom_nmasses;
+  spectrum_multimom_low_mass = param.spectrum_multimom_low_mass;
+  spectrum_multimom_mass_step = param.spectrum_multimom_mass_step;
+  fpi_nmasses = param.fpi_nmasses;
   for(i = 0; i < fpi_nmasses; i++){
-    fpi_mass[i] = par_buf.fpi_mass[i];
+    fpi_mass[i] = param.fpi_mass[i];
   }
 #endif /*SPECTRUM*/
-  startflag = par_buf.startflag;
-  saveflag = par_buf.saveflag;
-  strcpy(startfile,par_buf.startfile);
-  strcpy(savefile,par_buf.savefile);
-  strcpy(stringLFN, par_buf.stringLFN);
+  startflag = param.startflag;
+  saveflag = param.saveflag;
+  strcpy(startfile,param.startfile);
+  strcpy(savefile,param.savefile);
+  strcpy(stringLFN, param.stringLFN);
   
   /* Do whatever is needed to get lattice */
   if( startflag == CONTINUE ){

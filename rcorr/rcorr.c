@@ -37,7 +37,8 @@ dot_corr( complex *dest, complex *src, int count )
 
   FORALLFIELDSITES(i){
     dest[i].real = 0.;
-    for(j = 0; j < count; j++)
+    /* Sum only the spatial components -- hence count-1 */
+    for(j = 0; j < count-1; j++)
       dest[i].real += 
 	(src[i*count+j].real*src[i*count+j].real + src[i*count+j].imag*src[i*count+j].imag)/volume; 
     
@@ -103,7 +104,6 @@ rcorr(Real *qblock[], Real *q2block[],
       complex *qin_diff[], int nrand_diff,
       int nblock, int block_size[]){
   complex *qtmp;
-  Real *q;
   int jrand;
 
   /* Average qin_diff, the differnece between precise and sloppy. */
@@ -135,7 +135,7 @@ rcorr(Real *qblock[], Real *q2block[],
     clear_r_field(qblock[ib]);
     clear_r_field(q2block[ib]);
     int bs = block_size[ib];   /* Size of one block */
-    int nsamp = 0;  /* Number of blocks */
+    int nsamp = 0;  /* Number of blocks of the given size */
 
     for(jrand = 0; jrand < nrand_sloppy; jrand += bs){
 
@@ -181,5 +181,3 @@ rcorr(Real *qblock[], Real *q2block[],
   destroy_c_field(out);
 
 } /* rcorr.c */
-
-

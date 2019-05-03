@@ -183,14 +183,24 @@ int solve_ksprop(int set_type,
 				fn_multi[0]);
 	  }
 	} else {
-	  
-	  if(set_type == MULTIMASS_SET)
-	    /* Multimass inversion */
-	    mat_invert_multi(src[0], dst, my_ksp, num_prop, my_qic, fn_multi);
-	  else {
-	    /* Multisource inversion */
-	    int num_src = num_prop;  /* Should change to num_prop * ncolors */
-	    mat_invert_block_uml(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
+	  /* If we have restored any propagator, we use the single-mass inverter */
+	  /* In most use cases they are either all restored, or all fresh */
+
+	  if(startflag[0] != FRESH){
+	    for(j = 0; j < num_prop; j++){
+	      mat_invert_cg_field(src, dst[j], my_qic+j, my_ksp[j].mass, 
+				  fn_multi[j]);
+	    }
+	  } else {
+
+	    if(set_type == MULTIMASS_SET)
+	      /* Multimass inversion */
+	      mat_invert_multi(src[0], dst, my_ksp, num_prop, my_qic, fn_multi);
+	    else {
+	      /* Multisource inversion */
+	      int num_src = num_prop;  /* Should change to num_prop * ncolors */
+	      mat_invert_block_uml(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
+	    }
 	  }
 	}
 	

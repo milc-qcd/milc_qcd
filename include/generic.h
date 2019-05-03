@@ -312,6 +312,9 @@ void imp_gauge_force_qphix( Real eps, field_offset mom_off );
 double imp_gauge_action(void);
 void g_measure(void);
 void make_loop_table(void);
+#ifdef ANISOTROPY
+void path_determine_st(void);
+#endif
 void dsdu_qhb_subl(int dir, int subl);
 int get_max_length(void);
 int get_nloop(void);
@@ -432,7 +435,7 @@ complex ploop( void );
 complex ploop_staple(Real alpha_fuzz);
 
 /* project_su3_hit.c */
-void project_su3(
+int project_su3(
    su3_matrix *w,         /* input initial guess. output resulting
                              SU(3) matrix */
    su3_matrix *q,         /* starting 3 x 3 complex matrix */

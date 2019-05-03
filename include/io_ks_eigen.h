@@ -143,5 +143,7 @@ int convert_outflag_to_inflag_ks_eigen(int out_flag);
 
 int ask_starting_ks_eigen(FILE *fp, int prompt, int *flag, char *filename );
 int ask_ending_ks_eigen(FILE *fp, int prompt, int *flag, char *filename );
-
+void unpack_field(void *data, int size);
+void pack_field(void *data, int size);
+  
 #endif /* _IO_KS_EIGEN_H */

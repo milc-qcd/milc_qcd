@@ -221,12 +221,6 @@ ks_measure_current_hisq::
 	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC" \
 	"EXTRA_OBJECTS += f_meas_current.o"
 
-ks_measure_current_block_hisq::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
-	-DBLOCKCG" \
-	"EXTRA_OBJECTS += f_meas_current.o"
-
 ks_measure_current_eigcg_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \

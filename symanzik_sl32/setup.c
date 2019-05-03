@@ -42,7 +42,11 @@ int prompt,status;
     /* On node zero, read lattice size, seed, nflavors and send to others */
     if(mynode()==0){
 	/* print banner */
+#ifndef ANISOTROPY
 	printf("Pure gauge SU3\n");
+#else
+	printf("Anisotropic pure gauge SU3\n");
+#endif
 #ifdef HMC_ALGORITHM
         printf("Hybrid Monte Carlo algorithm\n");
 #endif
@@ -170,7 +174,12 @@ int status;
     
 	/* get couplings and broadcast to nodes	*/
 	/* beta */
+#ifndef ANISOTROPY
 	IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
+#else
+	/* beta[0] - space, beta[1] - time */
+	IF_OK status += get_vf(stdin, prompt,"beta", par_buf.beta, 2 );
+#endif
 
 	/* no dynamical masses for pure gauge */
 	n_dyn_masses = 0;
@@ -221,7 +230,12 @@ int status;
     startflag = par_buf.startflag;
     saveflag = par_buf.saveflag;
     epsilon = par_buf.epsilon;
+#ifndef ANISOTROPY
     beta = par_buf.beta;
+#else
+    beta[0] = par_buf.beta[0];
+    beta[1] = par_buf.beta[1];
+#endif
     u0 = par_buf.u0;
     strcpy(startfile,par_buf.startfile);
     strcpy(savefile,par_buf.savefile);

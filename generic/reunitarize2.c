@@ -277,7 +277,7 @@ void reunitarize_cpu() {
 
 void reunitarize() {
 
-#ifdef USE_GF_GPU
+#ifdef USE_GF_GPU // temporarily disable
 
   /* Use QUDA if gauge-force is enabled for GPU, but fallback to CPU
      if Schroedinger functional boundary conditions are enabled */

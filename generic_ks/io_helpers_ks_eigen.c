@@ -166,6 +166,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
   int status = 0;
   int serpar;
   int qio_status;
+  int packed;
   QIO_Reader *infile;
   double dtime = (double)0.0;
   char myname[] = "reload_ks_eigen";
@@ -185,14 +186,14 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
     if(flag == RELOAD_SERIAL)serpar = QIO_SERIAL;
     else serpar = QIO_PARALLEL;
     
-    infile = open_ks_eigen_infile(eigfile, Nvecs, serpar);
+    infile = open_ks_eigen_infile(eigfile, Nvecs, &packed, serpar);
     if(infile == NULL){
       node0_printf("ERROR: Can't open %s for reading\n", eigfile);
       status = 1;
       break;
     }
     for(int i = 0; i < *Nvecs; i++){
-      qio_status = read_ks_eigenvector(infile, eigVec[i], &eigVal[i]);
+      qio_status = read_ks_eigenvector(infile, packed, eigVec[i], &eigVal[i]);
       if(qio_status != QIO_SUCCESS){
 	if(qio_status == QIO_EOF){
 	  node0_printf("WARNING: Premature EOF at %d eigenvectors\n", i);
@@ -386,6 +387,223 @@ int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
 
 #endif
 
+/* We need only even-site eigenvectors, because we can easily
+   reconstruct the odd-site eigenvectors from them. To cut the
+   required disk storage in half, we pack the even site values into a
+   lattice with half the time values.  Then we can read/write half the
+   lattice */
+
+/*------------------------------------------------------------------*/
+/* Convert rank to coordinates */
+static void lex_coords(int coords[], const int dim, const int size[], 
+	   const size_t rank)
+{
+  int d;
+  size_t r = rank;
+
+  for(d = 0; d < dim; d++){
+    coords[d] = r % size[d];
+    r /= size[d];
+  }
+}
+
+/*------------------------------------------------------------------*/
+/* Parity of the coordinate */
+static int coord_parity(int r[]){
+  return (r[0] + r[1] + r[2] + r[3]) % 2;
+}
+
+/*------------------------------------------------------------------*/
+/* Convert coordinate to linear lexicographic rank (inverse of
+   lex_coords) */
+
+static size_t lex_rank(const int coords[], int dim, int size[])
+{
+  int d;
+  size_t rank = coords[dim-1];
+
+  for(d = dim-2; d >= 0; d--){
+    rank = rank * size[d] + coords[d];
+  }
+  return rank;
+}
+
+/*------------------------------------------------------------------*/
+/* Map coordinate to index, even sites first */
+static size_t my_index(int x, int y, int z, int t, int *latdim) {
+    int i = x + latdim[0]*( y + latdim[1]*( z + latdim[2]*t ));
+    if( (x+y+z+t)%2==0 ){	/* even site */
+	return( i/2 );
+    }
+    else {
+	return( (i + volume)/2 );
+    }
+}
+
+/*------------------------------------------------------------------*/
+/* Map index to coordinates  */
+/* (The inverse of my_index) */
+/* Assumes even sites come first */
+static void my_coords(int coords[], size_t index, int *latdim){
+  int ir, xeo;
+
+  /* neven = the number of even sites on the whole lattice */
+  size_t neven = volume/2;
+  
+  /* ir = the even part of the lexicographic index within the
+     sublattice on node k */
+  if(index < neven){
+    ir = 2*index;
+    xeo = 0;
+  } else {
+    ir = 2*(index - neven);
+    xeo = 1;
+  }
+
+  /* coords = the sublattice coordinate */
+  lex_coords(coords, 4, latdim, ir);
+
+  /* Adjust coordinate according to parity */
+  if( coord_parity(coords) != xeo ){
+    coords[XUP]++;
+    if(coords[XUP] >= latdim[XUP]){
+      coords[XUP] -= latdim[XUP];
+      coords[YUP]++;
+      if(coords[YUP] >= latdim[YUP]){
+	coords[YUP] -= latdim[YUP];
+	coords[ZUP]++;
+	if(coords[ZUP] >= latdim[ZUP]){
+	  coords[ZUP] -= latdim[ZUP];
+	  coords[TUP]++;
+	}
+      }
+    }
+  }
+}
+
+/* Define map for packing even sites into half the lattice */
+static void pack_map_layouts(int x, int y, int z, int t, int *args, int fb,
+			     int *xp, int *yp, int *zp, int *tp){
+
+  int latdim[4] = {nx, ny, nz, nt};
+  int latdimhalf[4] = {nx, ny, nz, nt/2};
+  int coords[4];
+  size_t neven = volume/2;
+  size_t index;
+
+  if(fb == FORWARDS){
+    /* Map for packing even sites into a half lattice with t < nt/2 */
+    if((x+y+z+t)%2 == 0){
+      /* Even sites for t < nt/2 stay in place */
+      if(t < nt/2){
+	*xp = x; *yp = y; *zp = z; *tp = t;
+      }  else {
+	/* Even sites for t >= nt/2 map to odd sites with t < nt/2 */
+	*xp = (x + 1)%nx; *yp = y; *zp = z; *tp = t - nt/2;
+      }
+    } else {
+      /* Odd sites for t >= nt/2 stay in place */
+      if(t >= nt/2){
+	*xp = x; *yp = y; *zp = z; *tp = t;
+      } else {
+	/* Odd sites for t < nt/2 map to even sites with t >= nt/2 */
+	*xp = (x + 1)%nx; *yp = y; *zp = z; *tp = t + nt/2;
+      }
+    }
+  } else {  /* BACKWARDS */
+    if((x+y+z+t)%2 == 0){
+      /* Even sites for t < nt/2 stay in place */
+      if(t < nt/2){
+	*xp = x; *yp = y; *zp = z; *tp = t;
+      } else {
+	/* Even sites for t >= nt/2 map to odd sites for t < nt/2 */
+	*xp = (x - 1 + nx)%nx; *yp = y; *zp = z; *tp = t - nt/2;
+      }
+    } else {
+      /* Odd sites for t >= nt/2 stay in place */
+      if(t >= nt/2){
+	*xp = x; *yp = y; *zp = z; *tp = t;
+      } else {
+	/* Odd sites for t < nt/2 map to even sites for t >= nt/2 */
+	*xp = (x - 1 + nx)%nx; *yp = y; *zp = z; *tp = t + nt/2;
+      }
+    }
+  }
+}
+
+int pack_dir;
+int unpack_dir;
+static int pack_unpack_initialized = 0;
+
+/* Make the packing map */
+static void pack_make_gather(void){
+  pack_dir =  make_gather(pack_map_layouts, NULL, WANT_INVERSE,
+			  ALLOW_EVEN_ODD, SCRAMBLE_PARITY);
+  unpack_dir = pack_dir + 1;  /* Convention for the inverse map */
+  pack_unpack_initialized = 1;
+
+#if 0
+  /* Debug */
+  printf("Checking map\n");
+  int i;
+  FORALLFIELDSITES(i){
+    int x = lattice[i].x;
+    int y = lattice[i].y;
+    int z = lattice[i].z;
+    int t = lattice[i].t;
+    int xp, yp, zp ,tp;
+    pack_map_layouts(x,y,z,t,NULL,FORWARDS,&xp,&yp,&zp,&tp);
+    int xpp, ypp, zpp ,tpp;
+    pack_map_layouts(xp,yp,zp,tp,NULL,BACKWARDS,&xpp,&ypp,&zpp,&tpp);
+    if(xpp != x || ypp != y || zpp != z || tpp != t){
+      printf("ERROR ");
+      printf("%d %d %d %d -> %d %d %d %d -> %d %d %d %d\n",
+	     x, y, z, t, xp, yp, zp, tp, xpp, ypp, zpp, tpp);
+    }
+  }
+#endif
+}
+
+/* Packing and unpacking routines -- done in place */
+static void pack_unpack_field(void *data, int size, int dir){
+  msg_tag *mtag;
+  char *temp = (char *)malloc(sites_on_node*size);
+  if(temp==NULL){
+    printf("pack_field: No room\n");
+    terminate(1);
+  }
+  
+  mtag = start_gather_field(data, size, dir, EVENANDODD, gen_pt[0]);
+  wait_gather(mtag);
+
+  /* First copy gathered data to temporary */
+  for(int i = 0; i < sites_on_node; i++)
+    memcpy(temp + size*i, gen_pt[0][i], size);
+
+  cleanup_gather(mtag);
+
+  /* Then copy temp back to field */
+  memcpy((char *)data, temp, sites_on_node*size);
+
+  free(temp);
+}
+
+void pack_field(void *data, int size){
+
+  if(!pack_unpack_initialized)
+    pack_make_gather();
+  
+  pack_unpack_field(data, size, pack_dir);
+}
+
+void unpack_field(void *data, int size){
+
+  if(!pack_unpack_initialized)
+    pack_make_gather();
+  
+  pack_unpack_field(data, size, unpack_dir);
+}
+
 /*---------------------------------------------------------------*/
 /* Translate output flag to the appropriate input flag for restoring
    KS eigenvectors that were temporarily written to disk
@@ -463,7 +681,7 @@ int ask_starting_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
 
 static void print_save_options(void){
 
-  printf("'forget_ks_eigen', 'save_ascii_ks_eigen' or 'save_serial_ks_eigen' or 'save_parallel_ks_eigen'");
+  printf("'forget_ks_eigen', 'save_ascii_ks_eigen', 'save_serial_ks_eigen', or 'save_parallel_ks_eigen'");
 }
 
 /*--------------------------------------------------------------------*/
@@ -495,6 +713,8 @@ int ask_ending_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
     *flag = SAVE_ASCII;
   else if(strcmp("save_serial_ks_eigen",savebuf) == 0)
     *flag = SAVE_SERIAL;
+  else if(strcmp("save_parallel_ks_eigen",savebuf) == 0)
+    *flag = SAVE_PARALLEL;
   else{
     printf("ERROR IN INPUT: ks_eigen outpu command %s is invalid.\n", savebuf);
     printf("Choices are ");

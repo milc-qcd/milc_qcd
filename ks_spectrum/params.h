@@ -13,15 +13,15 @@
 #define MAX_SOURCE 32
 #define MAX_SET 64
 #define MAX_PROP 64
-#define MAX_QK 128
+#define MAX_QK 256
 #define MAX_COMBO 8
-#define MAX_PAIR 1024
+#define MAX_PAIR 3000
 #define MAX_TRIPLET 64
-#define MAX_QKPAIR_LABEL 32
+#define MAX_QKPAIR_LABEL 64
 #define MAX_MESON 32
 #define MAX_SPECTRUM_REQUEST 512
-#define MAX_MESON_LABEL 32
-#define MAX_BARYON_LABEL 32
+#define MAX_MESON_LABEL 64
+#define MAX_BARYON_LABEL 64
 #define MAX_MESON_MOMENTUM 100
 #define MAX_MOM_LABEL 16
 #define MAX_CORR 200
@@ -41,9 +41,16 @@ typedef struct {
   int nx,ny,nz,nt;	/* lattice dimensions */
 #ifdef FIX_NODE_GEOM
   int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
-			    hypercubes) for the compute nodes in each
+			    hypercubes) for the nodes in each
 			    coordinate direction.  Must be divisors of
 			    the lattice dimension */
+#ifdef FIX_SUBNODE_GEOM
+  int subnode_geometry[4];  /* Specifies fixed "nsubsquares" (i.e. 4D
+			    hypercubes) for the PE ranks on each node in each
+			    coordinate direction.  Must be divisors of
+			    the node sublattice dimensions -- that is
+			    full lattice dims divided by node_geometry */
+#endif
 #ifdef FIX_IONODE_GEOM
   int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 			     partitions in each coordinate direction,

@@ -17,11 +17,13 @@ int main( int argc, char **argv ){
   int i,si;
   int prompt;
   double dtime;
+  double tottime;
   //  su3_vector **eigVec ;
   //  double *eigVal ;
   int total_R_iters ;
   double *resid = NULL;
   double chirality, chir_ev, chir_od ;
+  eigVec = NULL;
 
   initialize_machine(&argc,&argv);
   /* Remap standard I/O */
@@ -36,7 +38,9 @@ int main( int argc, char **argv ){
   /* loop over input sets */
   while( readin(prompt) == 0){
     
-    dtime = -dclock();
+    if(prompt == 2)continue;
+
+    tottime = -dclock();
 #ifdef HISQ_SVD_COUNTER
     hisq_svd_counter = 0;
 #endif
@@ -148,9 +152,9 @@ int main( int argc, char **argv ){
 #endif
 
     node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
-    dtime += dclock();
+    tottime += dclock();
     if(this_node==0){
-      printf("Time = %e seconds\n",dtime);
+      printf("Time = %e seconds\n",tottime);
       printf("total Rayleigh iters = %d\n",total_R_iters);
 #ifdef HISQ_SVD_COUNTER
       printf("hisq_svd_counter = %d\n",hisq_svd_counter);
@@ -175,8 +179,10 @@ int main( int argc, char **argv ){
   **/
   
   /* Clean up eigen storage */
-  for(i = 0; i < param.eigen_param.Nvecs; i++) free(eigVec[i]);
-  free(eigVal); free(eigVec); free(resid);
+  if(eigVec != NULL){
+    for(i = 0; i < param.eigen_param.Nvecs; i++) free(eigVec[i]);
+    free(eigVal); free(eigVec); free(resid);
+  }
   invalidate_fermion_links(fn_links);
   
   /* Destroy fermion links (created in readin() */

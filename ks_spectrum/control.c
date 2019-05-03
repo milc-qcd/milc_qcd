@@ -110,6 +110,9 @@ int main(int argc, char *argv[])
     
     /**************************************************************/
     /* Compute Dirac eigenpairs           */
+
+    Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
+      
     if(param.eigen_param.Nvecs > 0){
       
 #if EIGMODE != EIGCG
@@ -126,8 +129,6 @@ int main(int argc, char *argv[])
       set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
       /* Apply the operation */
       boundary_twist_fn(fn, ON);
-      
-      Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
       
       /* compute eigenpairs if requested */
       if(param.ks_eigen_startflag == FRESH){
@@ -714,10 +715,10 @@ int main(int argc, char *argv[])
     
 #if EIGMODE == EIGCG
 
+    Nvecs_curr = param.eigcgp.Nvecs_curr;
+      
     if(param.eigcgp.Nvecs_max > 0){
       STARTTIME;
-      
-      Nvecs_curr = param.eigcgp.Nvecs_curr;
       
       imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
       resid = (double *)malloc(Nvecs_curr*sizeof(double));
@@ -780,6 +781,7 @@ int main(int argc, char *argv[])
     destroy_fermion_links(fn_links);
 #endif
     fn_links = NULL;
+    starttime = endtime;
   } /* readin(prompt) */
   
 

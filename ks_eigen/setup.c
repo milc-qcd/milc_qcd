@@ -44,10 +44,11 @@ int setup()   {
   /* print banner, get volume */
   prompt=initial_set();
   if(prompt == 2)return prompt;
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
 #ifdef U1_FIELD
@@ -73,7 +74,7 @@ int setup()   {
 
 /* SETUP ROUTINES */
 static int initial_set(){
-  int prompt,status;
+  int prompt=0,status;
   /* On node zero, read lattice size, seed, and send to others */
   if(mynode()==0){
     /* print banner */
@@ -144,7 +145,6 @@ static int initial_set(){
 #endif
 #endif
 
-  this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   return(prompt);
@@ -267,14 +267,18 @@ int readin(int prompt) {
 
 #ifdef POLY_EIGEN
     /* Chebyshev preconditioner */
+#ifdef ARPACK
     IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
+#endif
     IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
     IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
     IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
     
+#ifdef ARPACK
     IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
     IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
     IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
+#endif
 #endif
 	
     /* End of input fields */
@@ -283,10 +287,6 @@ int readin(int prompt) {
 
     /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));
-
-  if( param.stopflag != 0 )
-    normal_exit(0);
-
 
   u0 = param.u0;
   if( param.stopflag != 0 )return param.stopflag;
@@ -334,7 +334,15 @@ int readin(int prompt) {
   /* Do whatever is needed to get eigenpairs */
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &param.eigen_param.Nvecs_in, eigVal, eigVec, 1);
-
+#if 1
+  /* Calculate and print the residues and norms of the eigenvectors */
+  double *resid = (double *)malloc(param.eigen_param.Nvecs_in*sizeof(double));
+  imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
+  node0_printf("Even site residuals\n");
+  check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs_in, EVEN, fn );
+  free(resid);
+#endif
+  
   if(param.fixflag != NO_GAUGE_FIX){
     node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
   }

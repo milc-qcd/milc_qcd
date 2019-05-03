@@ -7,12 +7,13 @@
 
 #include "generic_ks_includes.h"
 #ifndef HAVE_QIO
-REQUIRES QIO
+# error REQUIRES QIO
 #else
 #include <qio.h>
 #endif
 #include "../include/io_scidac.h"
 #include "../include/io_scidac_ks.h"
+#include "../include/io_ks_eigen.h"
 #include <string.h>
 
 #define FILEINFOSTRING_MAX 512
@@ -32,12 +33,16 @@ create_file_xml(int Nvecs){
 
   snprintf(xml+bytes, max-bytes, "<Nvecs>%d</Nvecs>", Nvecs);
   bytes = strlen(xml);
+  
+  #ifdef PACK_EIGEN
+  snprintf(xml+bytes, max-bytes, "<format>Packed</format>");
+  bytes = strlen(xml);
+  #endif
 
   snprintf(xml+bytes, max-bytes, "%s", end_xml);
   bytes = strlen(xml);
 
   return xml;
-
 }
 
 /* Extract the number of vectors from the file XML */
@@ -45,7 +50,7 @@ create_file_xml(int Nvecs){
 /* A real XML parser would be nice! */
 
 static void
-parse_file_xml(int *Nvecs, char *xml){
+parse_file_xml_Nvec(int *Nvecs, char *xml){
 
   char begtag[] = "<Nvecs>";
   char endtag[] = "</Nvecs>";
@@ -72,9 +77,52 @@ parse_file_xml(int *Nvecs, char *xml){
 
   /* Read the tagged integer */
   status = sscanf(pb + strlen(begtag), "%d", Nvecs);
+
+  /* Restore the xml */
+  *pe = '<';
   
   if(status != 1)
     *Nvecs = 0;
+}
+
+/* Check whether the eigenvectors are packed */
+
+/* A real XML parser would be nice! */
+
+static void
+parse_file_xml_packed(int *packed, char *xml){
+
+  char begtag[] = "<format>";
+  char endtag[] = "</format>";
+  char *pb, *pe;
+  int status;
+
+  /* Find the end tag */
+  pe = strstr(xml, endtag);
+  if(pe == NULL){
+    *packed = 0;
+    return;
+  }
+
+  /* Truncate the string at the end tag */
+  *pe = '\0';
+
+  /* Find the beginning tag */
+  pb = strstr(xml, begtag);
+  
+  if(pb == NULL){
+    *packed = 0;
+    return;
+  }
+
+  /* Read the tagged integer */
+  status = strcmp(pb + strlen(begtag), "Packed");
+
+  /* Restore the xml */
+  *pe = '<';
+
+  if(status==0) *packed = 1;
+  else *packed = 0;
 }
 
 /* Create the record xml, encoding the eigenvalue */
@@ -182,10 +230,18 @@ write_ks_eigenvector(QIO_Writer *outfile, su3_vector *eigVec, double eigVal,
   xml = create_record_xml(eigVal, resid);
   QIO_string_set(recxml, xml);
 
+#ifdef PACK_EIGEN
+  pack_field(eigVec, sizeof(su3_vector));
+  if(MILC_PRECISION == 1)
+    status = write_F3_V_from_half_field(outfile, recxml, eigVec, 1);
+  else
+    status = write_D3_V_from_half_field(outfile, recxml, eigVec, 1);
+#else
   if(MILC_PRECISION == 1)
     status = write_F3_V_from_field(outfile, recxml, eigVec, 1);
   else
     status = write_D3_V_from_field(outfile, recxml, eigVec, 1);
+#endif
 
   QIO_string_destroy(recxml);
   free(xml);
@@ -203,7 +259,7 @@ close_ks_eigen_outfile(QIO_Writer *outfile){
 /* Open the eigenvector file for reading */
 
 QIO_Reader *
-open_ks_eigen_infile(char *filename, int *Nvecs, int serpar){
+open_ks_eigen_infile(char *filename, int *Nvecs, int *packed, int serpar){
   char *xml;
 
   QIO_String *filexml = QIO_string_create();
@@ -218,14 +274,15 @@ open_ks_eigen_infile(char *filename, int *Nvecs, int serpar){
   /* Define the I/O system */
   build_qio_filesystem(&fs);
 
-  /* Open the file for output */
+  /* Open the file for input */
   infile = open_scidac_input_xml(filename, &layout, &fs, serpar, filexml);
   if(infile == NULL) return infile;
 
   /* Interpret the file XML */
 
   xml = QIO_string_ptr(filexml);
-  parse_file_xml(&Nvecs_test, xml);
+  parse_file_xml_Nvec(&Nvecs_test, xml);
+  parse_file_xml_packed(packed, xml);
   /* Warn if the number of eigenvectors doesn't match expectations,
      and if the number of eigenvectors is less than expected, reduce
      the expected number */
@@ -246,16 +303,31 @@ open_ks_eigen_infile(char *filename, int *Nvecs, int serpar){
 /* Read an eigenvector and its eigenvalue */
 
 int
-read_ks_eigenvector(QIO_Reader *infile, su3_vector *eigVec, double *eigVal){
+read_ks_eigenvector(QIO_Reader *infile, int packed, su3_vector *eigVec, double *eigVal){
   int status;
   char *xml;
   QIO_String *recxml = QIO_string_create();
+  QIO_RecordInfo recinfo;
 
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status != QIO_SUCCESS){
+    QIO_string_destroy(recxml);
+    return status;
+  }
 
-  if(MILC_PRECISION == 1)
+  int typesize = QIO_get_typesize(&recinfo);
+  if(typesize == 24)
     status = read_F3_V_to_field(infile, recxml, eigVec, 1);
-  else
+  else if (typesize == 48 )
     status = read_D3_V_to_field(infile, recxml, eigVec, 1);
+  else
+    {
+      node0_printf("read_ks_eigenvector: Bad typesize %d\n",typesize);
+      terminate(1);
+    }
+
+  if(packed)
+    unpack_field(eigVec, sizeof(su3_vector));
 
   if(status != QIO_EOF){
     xml = QIO_string_ptr(recxml);

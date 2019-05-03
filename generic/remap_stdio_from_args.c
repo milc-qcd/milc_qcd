@@ -22,6 +22,8 @@
 //   Allow to append to stdout, stderr files, if defined
 //#define REMAP_STDIO_APPEND
 
+//#define OPEN_ALL
+
 #include "generic_includes.h"
 #include <string.h>
 
@@ -53,6 +55,8 @@ int remap_stdio_from_args(int argc, char *argv[]){
     free(newfile);
   }
 
+#ifndef OPEN_ALL
+
   if(argc > 2 && mynode()==0){
     char *newfile = (char *)malloc(strlen(argv[2])+16);
     if(num_jobs == 1){
@@ -60,9 +64,27 @@ int remap_stdio_from_args(int argc, char *argv[]){
     } else {
       sprintf(newfile,"%s.j%02d",argv[2],jobid);
 #ifdef JOB_DEBUG
-      printf("(%d:%d) output file is %s\n",jobid,mynode(),newfile);
+      printf("(%d:%d) stdout file is %s\n",jobid,mynode(),newfile);
 #endif
     }
+
+#else /* OPEN_ALL */
+
+  if(argc > 2){
+    char *newfile = (char *)malloc(strlen(argv[2])+16);
+    if(num_jobs == 1){
+      sprintf(newfile,"%s.rank%06d",argv[2],mynode());
+    } else {
+      if(mynode() == 0)
+        sprintf(newfile,"%s.j%02d",argv[2],jobid);
+      else
+        sprintf(newfile,"%s.j%02d.rank%06d",argv[2],jobid,mynode());
+#ifdef JOB_DEBUG
+      printf("(%d:%d) stdout file is %s\n",jobid,mynode(),newfile);
+#endif
+    }
+
+#endif
 
 #ifdef WANT_FREOPEN
 
@@ -88,16 +110,36 @@ int remap_stdio_from_args(int argc, char *argv[]){
     free(newfile);
   }
   
-  if(argc > 3 && mynode()==0){
+#ifndef OPEN_ALL
+
+  if(argc > 3 && mynode()==0){                                                                               
     char *newfile = (char *)malloc(strlen(argv[3])+16);
     if(num_jobs == 1){
       sprintf(newfile,"%s",argv[3]);
     } else {
       sprintf(newfile,"%s.j%02d",argv[3],jobid);
 #ifdef JOB_DEBUG
-      printf("(%d:%d) error file is %s\n",jobid,mynode(),newfile);
+      printf("(%d:%d) stderr file is %s\n",jobid,mynode(),newfile);
 #endif
     }
+
+#else /* OPEN_ALL */
+
+  if(argc > 3){
+    char *newfile = (char *)malloc(strlen(argv[3])+16);
+    if(num_jobs == 1){
+      sprintf(newfile,"%s.rank%06d",argv[2],mynode());
+    } else {
+      if(mynode() == 0)
+	sprintf(newfile,"%s.j%02d",argv[3],jobid);
+      else
+        sprintf(newfile,"%s.j%02d.rank%06d",argv[3],jobid,mynode());
+#ifdef JOB_DEBUG
+      printf("(%d:%d) stderr file is %s\n",jobid,mynode(),newfile);
+#endif
+    }
+
+#endif
 
 #ifdef WANT_FREOPEN
 
