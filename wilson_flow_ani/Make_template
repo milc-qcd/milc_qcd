@@ -111,6 +111,7 @@ wilson_flow::
 
 wilson_flow_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES = -DANISOTROPY"
 
 clean:
 	-/bin/rm -f *.o

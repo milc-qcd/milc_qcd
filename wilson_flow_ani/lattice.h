@@ -22,7 +22,7 @@ typedef struct {
   char parity;
   /* my index in the array */
   int index;
-
+  double_prn site_prn;
 /* ------------------------------------------------------------ */
 /*   Now come the physical fields, program dependent            */
 /* ------------------------------------------------------------ */
@@ -49,6 +49,9 @@ typedef struct {
 /* Initialization parameters */
 EXTERN	int nx,ny,nz,nt; 
 EXTERN  int volume;
+#ifdef ANISOTROPY
+EXTERN  Real ani;
+#endif
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;

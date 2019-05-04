@@ -213,6 +213,9 @@ staple()
   int dir1, dir2;
   Real coeff1x1, coeff1x2;
   field_offset lnk1, lnk2, stp;
+#ifdef ANISOTROPY
+  Real tmp;
+#endif
 
   /* Pick the coefficients for each loop contributing to the staple */
   if( stapleflag==WILSON ) {
@@ -237,12 +240,26 @@ staple()
       lnk2 = F_OFFSET(link[dir2]);
       stp = F_OFFSET(staple[dir1]);
 
+#ifdef ANISOTROPY
+      if(dir2==TUP)
+        tmp=ani*ani;
+      else
+        tmp=1.0;
+      /* Adds 1x1 (Wilson) contributions */
+      wilson_staple(dir1, dir2, lnk1, lnk2, tmp*coeff1x1, stp);
+
+      /* Adds 1x2 (Symanzik tree level) contributions */
+      if( stapleflag!=WILSON )
+        symanzik1x2_staple(dir1, dir2, lnk1, lnk2, tmp*coeff1x2, stp);
+#else
+
       /* Adds 1x1 (Wilson) contributions */
       wilson_staple(dir1, dir2, lnk1, lnk2, coeff1x1, stp);
 
       /* Adds 1x2 (Symanzik tree level) contributions */
       if( stapleflag!=WILSON )
         symanzik1x2_staple(dir1, dir2, lnk1, lnk2, coeff1x2, stp);
+#endif
 
     } /* end: dir2 loop */
   } /* end: dir1 loop */
