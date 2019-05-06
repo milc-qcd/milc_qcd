@@ -188,8 +188,14 @@ int solve_ksprop(int set_type,
 
 	  if(startflag[0] != FRESH){
 	    for(j = 0; j < num_prop; j++){
-	      mat_invert_cg_field(src, dst[j], my_qic+j, my_ksp[j].mass, 
-				  fn_multi[j]);
+	      if(set_type == MULTIMASS_SET)
+		/* Multimass inversion */
+		mat_invert_cg_field(src[0], dst[j], my_qic+j, my_ksp[j].mass, 
+				    fn_multi[j]);
+	      else
+		/* Multisource inversion */
+		mat_invert_cg_field(src[j], dst[j], my_qic+j, my_ksp[0].mass, 
+				    fn_multi[j]);
 	    }
 	  } else {
 
