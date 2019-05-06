@@ -487,6 +487,7 @@ int mat_invert_mrhs_uml(su3_vector **src, su3_vector **dst,
 			imp_ferm_links_t *fn){
   node0_printf("mat_invert_mrhs_uml is not implemented, yet\n");
   terminate(1);
+  return 0;  /* Humor the compiler */
 }
 
 /*****************************************************************************/
