@@ -456,16 +456,16 @@ initialize_machine(int *argc, char ***argv)
 
 #ifdef HAVE_GRID
   required = MPI_THREAD_MULTIPLE;
-  printf("com_mpi: setting required thread-safety level to MPI_THREAD_MULTIPLE = %d\n", MPI_THREAD_MULTIPLE);
+  node0_printf("com_mpi: setting required thread-safety level to MPI_THREAD_MULTIPLE = %d\n", MPI_THREAD_MULTIPLE);
 #else
-  printf("com_mpi: setting required thread-safety level to MPI_THREAD_SINGLE = %d\n", MPI_THREAD_SINGLE);
+  node0_printf("com_mpi: setting required thread-safety level to MPI_THREAD_SINGLE = %d\n", MPI_THREAD_SINGLE);
   required = MPI_THREAD_SINGLE;
 #endif
   
   flag = MPI_Init_thread(argc, argv, required, &provided);
   if(flag != MPI_SUCCESS) err_func(&comm, &flag);
   if(provided != required){
-    printf("com_mpi: required thread-safety level %d can't be provided %d.\n", required, provided);
+    node0_printf("com_mpi: required thread-safety level %d can't be provided %d.\n", required, provided);
     fflush(stdout);
     exit(flag);
   }
