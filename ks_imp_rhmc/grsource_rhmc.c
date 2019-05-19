@@ -40,7 +40,7 @@ void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
   } END_LOOP_OMP
   /*TEMP*/g_doublesum( &sum);  node0_printf("GRSOURCE: sum = %.10e\n",sum);
   dtimec += dclock();
-  ks_ratinv( F_OFFSET(g_rand), multi_x, roots, order, my_niter, 
+  ks_ratinv( F_OFFSET(g_rand), multi_x, roots, residues, order, my_niter,
 	     my_rsqmin, my_prec, parity, &final_rsq, fn, 
 	     naik_term_epsilon_index, naik_term_epsilon );
   dtimec -= dclock();

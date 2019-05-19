@@ -38,7 +38,7 @@ typedef struct {
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4];
+	su3_matrix link[4] ALIGNMENT;
 
         su3_matrix blocked_link[NLINK];
 

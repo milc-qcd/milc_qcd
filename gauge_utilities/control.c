@@ -15,7 +15,7 @@ int
 main( int argc, char **argv )
 {
   int prompt;
-  double dtime, dclock();
+  double dtime, starttime, endtime;
   int overrelax = 1.5;
   
   initialize_machine(&argc,&argv);
@@ -27,14 +27,17 @@ main( int argc, char **argv )
   /* set up */
   prompt = setup();
 
-  dtime = -dclock();
+  starttime = dclock();
 
   /* loop over input sets */
   while( readin(prompt) == 0) {
     
+    if(prompt == 2)continue;
+
     /* gaugefix if requested */
+    STARTTIME;
     if( param.fixflag == COULOMB_GAUGE_FIX){
-      gaugefix(TUP, overrelax, 20000, param.gauge_fix_tol);
+      gaugefix(TUP, overrelax, 500, param.gauge_fix_tol);
       if(this_node==0)printf("FIXED TO COULOMB GAUGE\n");
       fflush(stdout);
     }
@@ -43,6 +46,7 @@ main( int argc, char **argv )
       if(this_node==0)printf("FIXED TO LANDAU GAUGE\n");
       fflush(stdout);
     }
+    ENDTIME("gauge fix");
 
     /* translate the lattice if requested */
     shift_gauge(param.rshift);
@@ -57,9 +61,9 @@ main( int argc, char **argv )
   }	/* end loop over configurations */
   node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
   
-  dtime += dclock();
+  endtime = dclock();
   if(this_node==0){
-    printf("Time = %e seconds\n",dtime);
+    printf("Time = %e seconds\n",(double)(endtime-starttime));
   }
   fflush(stdout);
   

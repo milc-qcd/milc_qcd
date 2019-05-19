@@ -313,6 +313,8 @@ void make_fftw_plans(int size, ft_data *ftd){
 #endif
 
   flags = FFTW_ESTIMATE;  /* Could try FFTW_MEASURE */
+  //  flags = FFTW_MEASURE;
+
   rank = 1;
   /* Number of complex values in a 4D site datum */
   ncmp = size/sizeof(complex);

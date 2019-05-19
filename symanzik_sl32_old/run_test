@@ -1,0 +1,43 @@
+#!/bin/csh
+#
+#  Submit this script using the "bsub" command: bsub < run_test
+#
+#BSUB -q debug                #Name of queue
+#BSUB -o out_test      #Name of output file
+#BSUB -N                          #Send mail when job terminates
+#BSUB -J test                    #Name of job
+
+
+set time=(5 "Phys Mem (peak): %M, CPU: %U+%Ss, Elaps: %E, Util: %P")
+
+set NPROCS = 4
+
+set output = out_test
+
+cd /scratch/$USER                 #cd to machine-local scratch
+set PDIR = /u/ac/uheller/v5/symanzik_sl32
+
+cp $PDIR/sym_ora_ori  sym_ora_ori
+cp $PDIR/sym_ora_sgi  sym_ora_sgi
+cp $PDIR/in.sample.ora in.sample.ora
+
+date >> $output
+(echo -n "Host = " ; hostname ) >> $output
+
+echo "Ori-verion" >> $output
+
+mpirun -np $NPROCS sym_ora_ori < in.sample.ora > outt_batch_ori
+
+date >> $output
+
+cp outt_batch_ori $PDIR/outt_batch_ori
+
+echo "SGI-verion" >> $output
+
+mpirun -np $NPROCS sym_ora_sgi < in.sample.ora > outt_batch_sgi
+
+date >> $output
+
+cp outt_batch_sgi $PDIR/outt_batch_sgi
+cp $output $PDIR/$output
+

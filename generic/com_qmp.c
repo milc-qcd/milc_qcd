@@ -389,8 +389,10 @@ initialize_machine(int *argc, char ***argv)
 
 #ifdef HAVE_GRID
   required = QMP_THREAD_MULTIPLE;
+  if(mynode()==0)printf("com_mpi: setting required thread-safety level to QMP_THREAD_MULTIPLE = %d\n", QMP_THREAD_MULTIPLE);
 #else
   required = QMP_THREAD_SINGLE;
+  if(mynode()==0)printf("com_mpi: setting required thread-safety level to QMP_THREAD_SINGLE = %d\n", QMP_THREAD_SINGLE);
 #endif
   
   i = QMP_init_msg_passing(argc, argv, required, &provided);
@@ -401,7 +403,7 @@ initialize_machine(int *argc, char ***argv)
     terminate(1);
   }
   if(provided != required){
-  printf("com_qmp: required thread-safety level %d can't be provided %d.\n", required, provided);
+  if(mynode()==0)printf("com_qmp: required thread-safety level %d can't be provided %d.\n", required, provided);
     fflush(stdout);
     terminate(1);
   }
