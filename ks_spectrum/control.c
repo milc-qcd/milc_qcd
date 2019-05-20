@@ -91,7 +91,6 @@ int main(int argc, char *argv[])
   prompt = setup();
   ENDTIME("setup");
 
-  printf("Node %d reports\n", this_node);fflush(stdout);
   /* loop over input sets */
 
   while( readin(prompt) == 0){
@@ -698,6 +697,7 @@ int main(int argc, char *argv[])
     destroy_fermion_links(fn_links);
 #endif
     fn_links = NULL;
+    starttime = endtime;
   } /* readin(prompt) */
   
 

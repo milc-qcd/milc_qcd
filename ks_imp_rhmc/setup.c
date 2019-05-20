@@ -134,25 +134,28 @@ setup(void)
   /* print banner, get volume, seed */
   prompt = initial_set();
   /* Initialize the layout functions, which decide where sites live */
+  if(mynode()==0)printf("Calling setup_layout\n"); fflush(stdout);
   setup_layout();
   this_node = mynode();
+  if(mynode()==0)printf("Done with setup_layout\n"); fflush(stdout);
   /* initialize the node random number generator */
   initialize_prn( &node_prn, iseed, volume+mynode() );
+  if(mynode()==0)printf("Initialized the prn\n"); fflush(stdout);
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
-  node0_printf("Made lattice\n"); fflush(stdout);
+  if(mynode()==0)printf("Made lattice\n"); fflush(stdout);
 
   /* set up neighbor pointers and comlink structures */
   make_nn_gathers();
-  node0_printf("Made nn gathers\n"); fflush(stdout);
+  if(mynode()==0)printf("Made nn gathers\n"); fflush(stdout);
   /* set up 3rd nearest neighbor pointers and comlink structures
      code for this routine is below  */
   make_3n_gathers();
-  node0_printf("Made 3nn gathers\n"); fflush(stdout);
+  if(mynode()==0)printf("Made 3nn gathers\n"); fflush(stdout);
   /* set up K-S phase vectors, boundary conditions */
   phaseset();
   
-  node0_printf("Finished setup\n"); fflush(stdout);
+  if(mynode()==0)printf("Finished setup\n"); fflush(stdout);
   return( prompt );
 }
 
@@ -180,12 +183,12 @@ initial_set(void)
     time_stamp("start");
 
     /* Print list of options selected */
-    printf("Options selected...\n");
+    if(mynode()==0)printf("Options selected...\n");
     show_generic_opts();
     show_generic_ks_opts();
     show_generic_ks_md_opts();
 #ifdef INT_ALG
-    printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
+    if(mynode()==0)printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
 #endif
 #if FERM_ACTION == HISQ
     show_su3_mat_opts();
@@ -240,6 +243,8 @@ initial_set(void)
   
     /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));
+
+  fflush(stdout);
   
   if( param.stopflag != 0 )
     normal_exit(0);
@@ -281,6 +286,7 @@ initial_set(void)
 
   /* Load rational function parameters */
   rparam = load_rhmc_params(rparamfile, n_pseudo);  
+  if(mynode()==0)printf("Finished loading rat func params %x\n", rparam); fflush(stdout);
   if(rparam == NULL)terminate(1);
 
   /* Determine the maximum rational fcn order */
@@ -291,6 +297,7 @@ initial_set(void)
     if(rparam[i].FA.order > max_rat_order)max_rat_order = rparam[i].FA.order;
   }
   if(mynode()==0)printf("Maximum rational func order is %d\n",max_rat_order);
+  fflush(stdout);
 
   /* Determine the number of different Naik masses
      and fill in n_orders_naik and n_pseudo_naik        */
@@ -321,7 +328,7 @@ initial_set(void)
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   // calculate epsilon corrections for different Naik terms
   if( 0 != eps_naik[0] ) {
-    if(mynode()==0)printf("IN HISQ AND HYPISQ ACTIONS FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");
+    if(mynode()==0)printf("IN HISQ AND HYPISQ ACTIONS FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");fflush(stdout);
     terminate(1);
   }
 #endif
@@ -334,11 +341,14 @@ initial_set(void)
     if(mynode()==0)printf("eps_naik[%d]=%f\n", i, eps_naik[i]);
 #endif
   }
+  fflush(stdout);
+
   if(mynode()==0)printf("n_order_naik_total %d\n",n_order_naik_total);
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   if( n_naiks+1 > MAX_NAIK ) {
     if(mynode()==0)printf("MAX_NAIK=%d < n_naiks+1=%d\n", MAX_NAIK, n_naiks+1 );
     if(mynode()==0)printf("Increase MAX_NAIK\n");
+    fflush(stdout);
     terminate(1);
   }
 #else /* non HISQ */
@@ -346,6 +356,7 @@ initial_set(void)
     if(mynode()==0)printf("FOR ACTIONS OTHER THAN HISQ AND HYPISQ EPSILON CORRECTION IS NOT USED.\n");
     if(mynode()==0)printf("ONLY ONE SET OF X LINKS IS USED.\n");
     if(mynode()==0)printf("SET ALL naik_mass TO 0 IN RATIONAL FUNCTION FILE.\n");
+    fflush(stdout);
     terminate(1);
   }
 #endif /* HISQ */
@@ -359,6 +370,7 @@ initial_set(void)
   }
   u0 = param.u0;
 
+  if(mynode()==0){printf("Done with initial_set\n"); fflush(stdout);}
   return(prompt);
 }
 
@@ -373,7 +385,7 @@ readin(int prompt)
   int i;
   
   /* On node zero, read parameters and send to all other nodes */
-  if(this_node==0) {
+  if(mynode()==0) {
     
     printf("\n\n");
     status=0;
@@ -478,7 +490,7 @@ readin(int prompt)
 				 param.stringLFN );
     
     if( status > 0)param.stopflag=1; else param.stopflag=0;
-  } /* end if(this_node==0) */
+  } /* end if(mynode()==0) */
   
     /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));

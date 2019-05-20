@@ -1,0 +1,3 @@
+exec su3_rmd 1 - - WARMUPS RUNNING
+exec su3_hmc 1 - - WARMUPS RUNNING
+exec su3_ora 1 - - WARMUPS RUNNING

@@ -35,7 +35,7 @@ typedef struct  {
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4];
+	su3_matrix link[4] ALIGNMENT;
 
 	/* Use unions so smeared gauge fields overlap wilson vectors.
 	   Programmer must use only one at a time!!  In particular, this

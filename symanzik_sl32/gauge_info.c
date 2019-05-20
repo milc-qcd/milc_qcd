@@ -47,7 +47,12 @@ void write_appl_gauge_info(FILE *fp, gauge_file *gf)
 			gauge_action_description,0,0);
   write_gauge_info_item(fp,"gauge.nloops","%d",(char *)&gauge_action_nloops,0,0);
   write_gauge_info_item(fp,"gauge.nreps","%d",(char *)&gauge_action_nreps,0,0);
+#ifndef ANISOTROPY
   write_gauge_info_item(fp,"gauge.beta11","%f",(char *)&beta,0,0);
+#else
+  write_gauge_info_item(fp,"gauge.beta_space","%f",(char *)&(beta[0]),0,0);
+  write_gauge_info_item(fp,"gauge.beta_time", "%f",(char *)&(beta[1]),0,0);
+#endif
   write_gauge_info_item(fp,"gauge.tadpole.u0","%f",(char *)&u0,0,0);
   write_gauge_info_item(fp,"gauge.ssplaq","%f",(char *)&myssplaq,0,0);
   write_gauge_info_item(fp,"gauge.stplaq","%f",(char *)&mystplaq,0,0);
@@ -92,9 +97,18 @@ char *create_MILC_info(){
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.nreps","%d",
 			 (char *)&gauge_action_nreps,0,0);
+#ifndef ANISOTROPY
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.beta11","%f",
 			 (char *)&beta,0,0);
+#else
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.beta_space","%f",
+                         (char *)&(beta[0]),0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.beta_time","%f",
+                         (char *)&(beta[1]),0,0);
+#endif
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.tadpole.u0","%f",
 			 (char *)&u0,0,0);

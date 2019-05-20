@@ -456,16 +456,16 @@ initialize_machine(int *argc, char ***argv)
 
 #ifdef HAVE_GRID
   required = MPI_THREAD_MULTIPLE;
-  printf("com_mpi: setting required thread-safety level to MPI_THREAD_MULTIPLE = %d\n", MPI_THREAD_MULTIPLE);
+  if(mynode()==0)printf("com_mpi: setting required thread-safety level to MPI_THREAD_MULTIPLE = %d\n", MPI_THREAD_MULTIPLE);
 #else
-  printf("com_mpi: setting required thread-safety level to MPI_THREAD_SINGLE = %d\n", MPI_THREAD_SINGLE);
+  if(mynode()==0)printf("com_mpi: setting required thread-safety level to MPI_THREAD_SINGLE = %d\n", MPI_THREAD_SINGLE);
   required = MPI_THREAD_SINGLE;
 #endif
   
   flag = MPI_Init_thread(argc, argv, required, &provided);
   if(flag != MPI_SUCCESS) err_func(&comm, &flag);
   if(provided != required){
-    printf("com_mpi: required thread-safety level %d can't be provided %d.\n", required, provided);
+    if(mynode()==0)printf("com_mpi: required thread-safety level %d can't be provided %d.\n", required, provided);
     fflush(stdout);
     exit(flag);
   }
@@ -493,7 +493,7 @@ initialize_machine(int *argc, char ***argv)
   /* process -geom */
   get_arg(*argc, *argv, "-geom", &first, &last, &c, &a);
   if( c != 0){
-    node0_printf("%s: unknown argument to -geom: %s\n",myname,c);
+    if(mynode()==0)printf("%s: unknown argument to -geom: %s\n",myname,c);
     terminate(1);
   }
   nd = last - first;
@@ -501,7 +501,7 @@ initialize_machine(int *argc, char ***argv)
     geom = NULL;
   } else {
     if (nd != 4){
-      node0_printf("%s: found %d -geom values, but wanted 4\n",myname, nd);
+      if(mynode()==0)printf("%s: found %d -geom values, but wanted 4\n",myname, nd);
       terminate(1);
     }
     
@@ -1931,7 +1931,7 @@ prepare_gather(msg_tag *mtag)
   /* for each node which has neighbors of my sites */
   for(i=0; i<mtag->nrecvs; ++i) {
     if(mrecv[i].msg_size==0) {
-      node0_printf("error: unexpected zero msg_size\n");
+      if(mynode()==0)printf("error: unexpected zero msg_size\n");
       terminate(1);
     }
     mrecv[i].msg_buf = tpt = (char *)malloc( mrecv[i].msg_size+CRCBYTES );

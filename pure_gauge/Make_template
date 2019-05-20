@@ -6,9 +6,14 @@
 #  It is intended to be an include file for other Makefiles.
 #  Don't use it by itself!
 #
-#	"make su3_rmd" used the refreshed molecular dynamics algorithm
+#	"make su3_rmd" uses the refreshed molecular dynamics algorithm
 #	"make su3_hmc" uses hybrid Monte Carlo algorithm.
 #	"make su3_ora" uses overrelaxed/quasi heat bath algorithm. 
+#
+#  Space-time anisotropic counterparts:
+#       "make su3_rmd_a"
+#       "make su3_hmc_a"
+#       "make su3_ora_a"
 #
 
 MYINCLUDEDIR = .
@@ -43,6 +48,7 @@ G_OBJECTS =          \
   io_lat_utils.o \
   make_lattice.o \
   nersc_cksum.o \
+  ploop2.o \
   remap_stdio_from_args.o \
   reunitarize2.o     \
   ranstuff.o
@@ -128,14 +134,29 @@ su3_rmd::
 	"DEFINES= -DRMD_ALGORITHM -DONLY_GLUON_FILES" \
 	"EXTRA_OBJECTS= update.o  update_u.o update_h.o ranmom.o"
 
+su3_rmd_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DRMD_ALGORITHM -DONLY_GLUON_FILES -DANISOTROPY" \
+	"EXTRA_OBJECTS= update.o  update_u.o update_h.o ranmom.o"
+
 su3_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DHMC_ALGORITHM -DONLY_GLUON_FILES" \
 	"EXTRA_OBJECTS= update.o  update_u.o update_h.o ranmom.o d_action.o"
 
+su3_hmc_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DHMC_ALGORITHM -DONLY_GLUON_FILES -DANISOTROPY" \
+	"EXTRA_OBJECTS= update.o  update_u.o update_h.o ranmom.o d_action.o"
+
 su3_ora::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DORA_ALGORITHM -DONLY_GLUON_FILES" \
+	"EXTRA_OBJECTS= update_ora.o dsdu_qhb.o relax.o monte.o gaugefix2.o"
+
+su3_ora_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DORA_ALGORITHM -DONLY_GLUON_FILES -DANISOTROPY" \
 	"EXTRA_OBJECTS= update_ora.o dsdu_qhb.o relax.o monte.o gaugefix2.o"
 
 su3_ora_glue::
