@@ -716,7 +716,8 @@ int readin(int prompt) {
 			      &param.qic[nprop].resid );
 	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
 			      &param.qic[nprop].relresid );
-#ifdef HALF_MIXED
+#if defined(HALF_MIXED) && defined(HAVE_QOP)
+	/* Parameter used by QOPQDP inverter for mixed-precision solves */
 	IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic[nprop].mixed_rsq );
 #endif
 	/* Precision for all members of the set must be the same */
