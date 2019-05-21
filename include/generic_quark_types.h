@@ -122,8 +122,8 @@ typedef struct {
 /* Same for plain KS case */
 typedef struct {
   Real mass;
-  Real offset;
-  Real residue;
+  Real offset;    /* For RHMC, the pole position */
+  Real residue;   /* For RHMC, the pole residue */
   int naik_term_epsilon_index;
   Real naik_term_epsilon;
 
