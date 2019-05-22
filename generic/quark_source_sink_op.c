@@ -2438,7 +2438,6 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_i(stdin, prompt,"precision", &qss_op->qic.prec );
     IF_OK qss_op->qic.parity = EVENANDODD;
     IF_OK qss_op->qic.min = 0;
-    IF_OK qss_op->qic.start_flag = 0;
     IF_OK qss_op->qic.nsrc = 1;
     /* The coordinate origin and time boundary conditions are now set
        globally by the setup.c routines */
@@ -2532,7 +2531,6 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_i(stdin, prompt,"precision", &qss_op->qic.prec );
     IF_OK qss_op->qic.parity = EVENANDODD;
     IF_OK qss_op->qic.min = 0;
-    IF_OK qss_op->qic.start_flag = 0;
     IF_OK qss_op->qic.nsrc = 1;
     /* The coordinate origin and time boundary conditions are now set
        globally by the setup.c routines */

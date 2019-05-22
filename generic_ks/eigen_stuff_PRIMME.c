@@ -225,7 +225,11 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   ret = primme_set_method(PRIMME_DYNAMIC, &primme);
 
   /* primme.printLevel=3; */
-  primme.printLevel=3;
+#ifdef PRIMME_PRINTLEVEL
+  primme.printLevel = PRIMME_PRINTLEVEL;
+#else
+  primme.printLevel = 1;
+#endif
   
 #ifdef MATVEC_PRECOND
   primme.target=primme_largest;

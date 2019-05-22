@@ -252,25 +252,25 @@ void w_close_ksprop(int flag, ks_prop_file *kspf);
 int reload_ksprop_to_field3( int flag, char *filename, quark_source *ksqs,
 			     su3_vector *dest, int timing);
 int reload_ksprop_to_ksp_field( int flag, char *filename, 
-				quark_source *ksqs,
+				quark_source *ksqs, ks_prop_field *src,
 				ks_prop_field *dest, int timing);
 int reload_ksprop_to_site3( int flag, char *filename, quark_source *ksqs,
 			   field_offset dest, int timing);
 int reload_ksprop_c_to_field( int flag, ks_prop_file *kspf, 
-			      quark_source *ksqs, int color, 
+			      quark_source *ksqs, int color, su3_vector *src,
 			      su3_vector *dest, int timing);
 void save_ksprop_from_field3( int flag, char *filename, char *recxml, 
 			      quark_source *ksqs,
 			      su3_vector *src, int timing);
-void save_ksprop_from_ksp_field( int flag, char *filename, char *recxml, 
-				 quark_source *ksqs,
-				 ks_prop_field *src, int timing);
+int save_ksprop_from_ksp_field( int flag, char *filename, char *recxml, 
+				quark_source *ksqs, ks_prop_field *src,
+				ks_prop_field *prop, int timing);
 void save_ksprop_from_site3( int flag, char *filename, char *recxml, 
 			     quark_source *ksqs,
 			     field_offset src, int timing);
 int save_ksprop_c_from_field( int flag, ks_prop_file *kspf, 
-			      quark_source *ksqs,
-			      int color, su3_vector *src, 
+			      quark_source *ksqs, int color,
+			      su3_vector *src, su3_vector *prop,
 			      char *recinfo, int timing);
 int ask_starting_ksprop( FILE *fp, int prompt, int *flag, char *filename );
 int ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename );

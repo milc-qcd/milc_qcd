@@ -320,20 +320,23 @@ w_prop_file *r_open_wprop(int flag, char *filename);
 w_prop_file *w_open_wprop(int flag, char *filename, int source_type);
 int reload_wprop_sc_to_field( int flag, w_prop_file *wpf, 
 			      quark_source *wqs, int spin, int color, 
-			      wilson_vector *dest, int timing);
-int save_wprop_sc_from_field( int flag, w_prop_file *wpf, 
-			      quark_source *wqs, int spin, int color, 
-			      wilson_vector *src, char *recinfo, int timing);
+			      wilson_vector *src, wilson_vector *dest, int timing);
+int save_wprop_sc_from_field( int flag, w_prop_file *wpf, quark_source *wqs,
+			      int spin, int color, wilson_vector *src,
+			      wilson_vector *prop, char *recinfo, int timing);
+int reload_wprop_c_to_field( int flag, w_prop_file *wpf, 
+			     quark_source *wqs, int spin, int color,
+			     spin_wilson_vector *source,
+			     spin_wilson_vector *dest, int timing);
 int reload_wprop_to_field( int flag, char *filename, quark_source *wqs,
 			   wilson_propagator *dest, int timing);
-int reload_wprop_to_wp_field( int flag, char *filename, 
-			      quark_source *wqs,
-			      wilson_prop_field *dest, int timing);
+int reload_wprop_to_wp_field( int flag, char *filename, quark_source *wqs,
+			      wilson_prop_field *source, wilson_prop_field *dest, int timing);
 int save_wprop_from_field( int flag, char *filename, quark_source *wqs,
 			   wilson_propagator *src, char *recxml, int timing);
-int save_wprop_from_wp_field( int flag, char *filename, 
-			      quark_source *wqs,
-			      wilson_prop_field *src, char *recxml, int timing);
+int save_wprop_from_wp_field( int flag, char *filename, char *recxml,
+			      quark_source *wqs, wilson_prop_field *source,
+			      wilson_prop_field *prop,  int timing);
 int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
 			     quark_source *wqs, int spin, int color, 
 			     field_offset dest, int timing);

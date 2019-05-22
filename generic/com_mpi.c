@@ -456,9 +456,7 @@ initialize_machine(int *argc, char ***argv)
 
 #ifdef HAVE_GRID
   required = MPI_THREAD_MULTIPLE;
-  if(mynode()==0)printf("com_mpi: setting required thread-safety level to MPI_THREAD_MULTIPLE = %d\n", MPI_THREAD_MULTIPLE);
 #else
-  if(mynode()==0)printf("com_mpi: setting required thread-safety level to MPI_THREAD_SINGLE = %d\n", MPI_THREAD_SINGLE);
   required = MPI_THREAD_SINGLE;
 #endif
   
