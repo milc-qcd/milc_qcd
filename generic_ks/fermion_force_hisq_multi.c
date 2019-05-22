@@ -24,6 +24,24 @@
  *
  */
 
+#ifdef USE_FF_QPHIX
+#if ( QPHIX_PrecisionInt == 1 )
+#define UNLOAD_F_TO_SITE4         unload_qphix_F_F_to_site4
+#else
+#define UNLOAD_F_TO_SITE4         unload_qphix_D_F_to_site4
+#endif
+#endif
+
+/* Set a suitable function for wrapper */
+#ifdef HISQ_FF_MULTI_WRAPPER
+#ifdef USE_FF_GPU
+#define fn_fermion_force_multi_hisq_wrapper_mx fn_fermion_force_multi_hisq_wrapper_mx_gpu
+#elif USE_FF_QPHIX
+#define fn_fermion_force_multi_hisq_wrapper_mx fn_fermion_force_multi_hisq_wrapper_mx_qphix
+#else 
+#define fn_fermion_force_multi_hisq_wrapper_mx fn_fermion_force_multi_hisq_wrapper_mx_cpu
+#endif
+#endif
 
 #include "generic_ks_includes.h"
 #define SU3_MAT_OP_NO_STORAGE
@@ -34,6 +52,17 @@
 
 #include "../include/openmp_defs.h"
 
+#ifdef USE_FF_QPHIX
+#include "../include/generic_qphix.h"
+#include "../include/generic_qphixmilc.h"
+#include "../include/generic_ks_qphix.h"
+#include "qphix.h"
+#include <qphix_ff_interface.h>
+#endif
+
+#ifdef FF_VTUNE
+#include <ittnotify.h>
+#endif
 
 
 //AB output for debugging
@@ -81,84 +110,35 @@ BOMB THE COMPILE
 #define AB_OUT_ON_LINK 0
 #endif /* MILC_GLOBAL_DEBUG */
 
+/* Wrapper selection for FF */
 
-// Forward declarations
-
+// Default wrapper
 static void 
 fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues, 
 				su3_vector **multi_x, int nterms, 
 				fermion_links_t *fl );
 
-// In the following routines smearing and reunitarization
-// are split into separate routines. This allows for arbitrary levels of
-// smearing and/or reunitarization.
+#ifdef HISQ_FF_MULTI_WRAPPER
+#ifdef USE_FF_GPU
+static void 
+fn_fermion_force_multi_hisq_wrapper_mx_gpu( info_t *info, Real eps, Real *residues,
+    su3_vector **multi_x, int nterms,
+    fermion_links_t *fl);
 
-// Combine smearing level 2 from different multi_x,
-//               use globals from lattice.h
-// HISQ wrapper routine: contribution to the force due to
-//    0) smearing level 0 (outer product |X><Y|)
-//    1) smearing level 2 + smearing level 2 Naik corrected
-//    2) reunitarization
-//    3) smearing level 1
+#elif USE_FF_QPHIX
+static void
+fn_fermion_force_multi_hisq_wrapper_mx_qphix( info_t *info, Real eps, Real *residues,
+    su3_vector **multi_x, int nterms,
+    fermion_links_t *fl);
 
-
-/* GPU code always uses wrapper */
-#if defined(HISQ_FF_MULTI_WRAPPER) || defined(USE_FF_GPU)
-
-#ifndef USE_FF_GPU
+#else
 static void 
 fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residues,
 					su3_vector **multi_x, int nterms,
 					fermion_links_t *fl);
-// Contribution to the force from 0 level of smearing, force contains
-// only |X><Y| terms
-static void 
-fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues, 
-				       su3_vector **multi_x, 
-				       int nterms,
-				       su3_matrix *force_accum[4], 
-				       su3_matrix *force_accum_naik[4]);
 
-// This routine calculates contribution to the force due to i-th level
-// of smearing, as input it uses array of new links and the force from
-// (i-1)-th level of smearing
-static void 
-fn_fermion_force_multi_hisq_smearing( info_t *info, Real eps, 
-				      Real *residues, 
-				      su3_vector **multi_x, 
-				      int nterms, 
-				      su3_matrix *force_accum[4], 
-				      su3_matrix *force_accum_old[4], 
-				      su3_matrix *force_accum_naik_old[4], 
-				      su3_matrix *internal_U_link,
-				      int internal_num_q_paths, 
-				      Q_path *internal_q_paths_sorted, 
-				      int *internal_netbackdir_table);
-// Contribution to the force due to reunitarization of links:
-//   Y=V*(V^+*V)^-1/2, W=Y/(detY)^1/3
-static void 
-fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4], 
-				    su3_matrix *force_accum_old[4], 
-				    fermion_links_t *fl);
-
-#else
-
-static void 
-fn_fermion_force_multi_hisq_wrapper_mx_gpu( info_t *info, Real eps, Real *residues,
-					su3_vector **multi_x, int nterms,
-					fermion_links_t *fl);
-#endif /* ifndef USE_FF_GPU */
-
-
-/* Change wrapper call for GPU */
-
-#ifdef USE_FF_GPU
-#define fn_fermion_force_multi_hisq_wrapper_mx fn_fermion_force_multi_hisq_wrapper_mx_gpu
-#else 
-#define fn_fermion_force_multi_hisq_wrapper_mx fn_fermion_force_multi_hisq_wrapper_mx_cpu
-#endif
-
-#endif /* HISQ_FF_MULTI_WRAPPER || USE_FF_GPU */
+#endif /* USE_FF_GPU / USE_FF_QPHIX*/
+#endif /* HISQ_FF_MULTI_WRAPPER */
 
 /**********************************************************************/
 /*   Wrapper for fermion force routines with multiple sources         */
@@ -343,11 +323,9 @@ static int sort_quark_paths( Q_path *src_table, Q_path *dest_table,
 static int find_backwards_gather( Q_path *path );
 static int first_force=1;	// 1 if force hasn't been called yet
 
-
-
-
-
-
+/********************************************************************/
+/* Default wrapper                                                  */
+/********************************************************************/
 // Fermion force SKETCH:
 // 1) loop on different epsilon corrections to Naik term
 //   a) calculate force from smearing level 2 on full multi_x array
@@ -1163,22 +1141,494 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
 //printf("FF flops = %d\n",tempflops);
 } //fn_fermion_force_multi_hisq_mx
 
-
-
-#if defined(HISQ_FF_MULTI_WRAPPER) || defined(USE_FF_GPU)
-
-#ifndef USE_FF_GPU
-
+#ifdef HISQ_FF_MULTI_WRAPPER
+#ifdef USE_FF_GPU
 /********************************************************************/
-/* Non-GPU wrapper support                                          */
+/* GPU support                                                      */
 /********************************************************************/
+#include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
 
-// HISQ wrapper routine: contribution to the force due to
+static void outer_product_append( Real one_hop_coeff, Real three_hop_coeff, 
+				  Real *residues, 
+				  su3_vector **multi_x, int nterms,
+				  su3_matrix *one_hop_oprod[4], 
+				  su3_matrix *three_hop_oprod[4] )
+{
+  /* note CG_solution and Dslash * solution are combined in "multi_x" */
+  /* New version 1/21/99.  Use forward part of Dslash to get force */
+  /* see long comment at end */
+  /* For each link we need multi_x transported from both ends of path. */
+  int term;
+  int i,k;
+  int dir;
+  su3_matrix tmat;
+  
+  msg_tag *mtag[2];
+  su3_matrix *mat_tmp0;
+  // length N path has N+1 sites!!
+  su3_matrix *oprod_along_path[MAX_PATH_LENGTH+1];
+  
+  
+  if( nterms==0 )return;
+  
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_FF_DEBUG
+  {
+    printf("WRAPPER FORCE smearing0 pseudofermion vector at site (0,0,0,0)\n");
+    dumpvec( &(multi_x[0][0]) );
+    printf("\n");
+    su3_vector su3ab;
+    clearvec( &su3ab );
+    int nnn;
+    for( nnn=0; nnn<nterms;nnn++) {
+      FORALLFIELDSITES(i){
+	add_su3_vector( &su3ab, &(multi_x[nnn][i]), &su3ab );
+      }
+    }
+    printf("WRAPPER FORCE smearing0 pseudofermion vector GLOBAL SUM\n");
+    dumpvec( &su3ab );
+    printf("\n");
+    for( nnn=0; nnn<nterms;nnn++) {
+      printf("residues[%d]=%lf\n",nnn,residues[nnn]);
+    }
+  }
+#endif /* HISQ_FF_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
+  
+  
+  for(i=0;i<=MAX_PATH_LENGTH;i++){
+    oprod_along_path[i] = 
+      (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+  }
+  mat_tmp0 = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
+  if( mat_tmp0 == NULL ){printf("Node %d NO ROOM\n",this_node); exit(0); }
+  
+  
+  
+  
+  // clear force accumulators
+  //  for(dir=XUP;dir<=TUP;dir++)
+  //    FORALLFIELDSITES(i)clear_su3mat( &(one_hop_coeff[dir][i]) );
+  
+  //AB loop on directions, path table is not needed
+  for(dir=XUP;dir<=TUP;dir++){
+    k=0; // which gather we are using
+    //AB netbackdir is just the opposite of dir for 1x1 case
+    mtag[k] = start_gather_field( multi_x[0], sizeof(su3_vector),
+				  OPP_DIR(dir), EVENANDODD, gen_pt[k] );
+    FORALLFIELDSITES(i){
+      clear_su3mat(  &(oprod_along_path[0][i]) ); // actually last site in path
+    }
+    for(term=0;term<nterms;term++){
+      if(term<nterms-1)mtag[1-k] = start_gather_field( multi_x[term+1],
+			       sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1-k] );
+      wait_gather(mtag[k]);
+      
+      FORALLFIELDSITES(i){
+        // build projector as usual
+        su3_projector( &multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
+        // multiply by alpha_l in rational function expansion
+        scalar_mult_add_su3_matrix( &(oprod_along_path[0][i]), &tmat, 
+				    residues[term], &(oprod_along_path[0][i]) );
+      }
+      cleanup_gather(mtag[k]);
+      k=1-k; // swap 0 and 1
+    } /* end loop over terms in rational function expansion */
+    
+    
+    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], 
+				 mat_tmp0, dir );
+    
+    FORALLFIELDSITES(i){
+      scalar_mult_add_su3_matrix( &(one_hop_oprod[dir][i]), 
+				  &(oprod_along_path[1][i]),
+				  one_hop_coeff, &(one_hop_oprod[dir][i]) );
+    }
+    
+  } /* end of loop on directions */
+  
+  
+  /* *** Naik part *** */
+  // clear force accumulators
+  //  for(dir=XUP;dir<=TUP;dir++)
+  //    FORALLFIELDSITES(i)clear_su3mat( &(three_hop_coeff[dir][i]) );
+  
+  for(dir=XUP;dir<=TUP;dir++){ //AB loop on directions, path table is not needed
+    k=0; // which gather we are using
+    mtag[k] = start_gather_field( multi_x[0], sizeof(su3_vector),
+				  OPP_3_DIR( DIR3(dir) ), EVENANDODD, gen_pt[k] );
+    FORALLFIELDSITES(i){
+      clear_su3mat(  &(oprod_along_path[0][i]) );
+    }
+    for(term=0;term<nterms;term++){
+      if(term<nterms-1)mtag[1-k] = start_gather_field( multi_x[term+1],
+	       sizeof(su3_vector), OPP_3_DIR( DIR3(dir) ), EVENANDODD, gen_pt[1-k] );
+      wait_gather(mtag[k]);
+      
+      FORALLFIELDSITES(i){
+        // build projector as usual
+        su3_projector( &multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
+        // multiply by alpha_l in rational function expansion
+        scalar_mult_add_su3_matrix( &(oprod_along_path[0][i]), &tmat, 
+				    residues[term], &(oprod_along_path[0][i]) );
+      }
+      cleanup_gather(mtag[k]);
+      k=1-k; // swap 0 and 1
+    } /* end loop over terms in rational function expansion */
+    
+    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], 
+				 mat_tmp0, DIR3(dir) );
+    
+    FORALLFIELDSITES(i){
+      scalar_mult_add_su3_matrix( &(three_hop_oprod[dir][i]), 
+				  &(oprod_along_path[1][i]),
+				  three_hop_coeff, &(three_hop_oprod[dir][i]) );
+    }
+  } /* end of loop on directions */
+  
+  
+  free( mat_tmp0 );
+  for(i=0;i<=MAX_PATH_LENGTH;i++){
+    free( oprod_along_path[i] );
+  }
+  return;
+} // outer_product_append
+
+
+static void write_path_coeffs_to_array(ks_component_paths paths, double array[6])
+{
+  array[0] = paths.act_path_coeff.one_link; 
+  array[1] = paths.act_path_coeff.naik;
+  array[2] = paths.act_path_coeff.three_staple;
+  array[3] = paths.act_path_coeff.five_staple;
+  array[4] = paths.act_path_coeff.seven_staple;
+  array[5] = paths.act_path_coeff.lepage;
+  return;
+}
+
+
+static void 
+fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residues, 
+					   su3_vector **multi_x, int nterms,
+					   fermion_links_t *fl)
+{
+  // Get the terms we need from the fermion links structure */
+  ks_action_paths_hisq *ap = get_action_paths_hisq(fl);
+  hisq_auxiliary_t *aux = get_hisq_auxiliary(fl);
+  int n_naiks = fermion_links_get_n_naiks(fl);
+  double *eps_naik = fermion_links_get_eps_naik(fl);
+  su3_matrix *U_link = aux->U_link;
+  su3_matrix *V_link = aux->V_link;
+  su3_matrix *W_unitlink = aux->W_unitlink;
+  int i;
+  site *s;
+  
+  initialize_quda();
+  
+  int n_orders_naik_current = n_order_naik_total;
+
+  Real* one_hop_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
+  Real* three_hop_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
+
+  for(i=0; i<n_orders_naik_current; ++i){
+    one_hop_coeff[i] = 2.0*residues[i];
+    three_hop_coeff[i] = ap->p2.act_path_coeff.naik*2.0*residues[i];
+  }
+
+  n_orders_naik_current = 0;
+  for(int inaik=1; inaik<n_naiks; ++inaik) n_orders_naik_current += n_orders_naik[inaik];
+
+  Real* one_hop_naik_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
+  Real* three_hop_naik_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
+
+  i = 0;
+  int n_naik_shift = n_orders_naik[0];
+  for(int inaik=1; inaik<n_naiks; ++inaik){
+    for(int j=0; j<n_orders_naik[inaik]; j++){
+      one_hop_naik_coeff[i] = ap->p3.act_path_coeff.one_link*eps_naik[inaik]*2.0*residues[n_naik_shift+j];
+      three_hop_naik_coeff[i++] = ap->p3.act_path_coeff.naik*eps_naik[inaik]*2.0*residues[n_naik_shift+j];
+    }
+    n_naik_shift += n_orders_naik[inaik];
+  }
+
+  double** coeff = (double**)malloc( (n_order_naik_total + n_orders_naik_current) *sizeof(double*));
+  for(int term=0; term<(n_order_naik_total+n_orders_naik_current); ++term) coeff[term] = (double*)malloc(2*sizeof(double));
+
+  for(int term=0; term<n_order_naik_total; ++term){
+    coeff[term][0] = one_hop_coeff[term];
+    coeff[term][1] = three_hop_coeff[term];
+  }
+  
+  for(int term=0; term<n_orders_naik_current; term++){
+    coeff[term+n_order_naik_total][0] = one_hop_naik_coeff[term];
+    coeff[term+n_order_naik_total][1] = three_hop_naik_coeff[term];
+  }
+
+  double level2_coeff[6];
+  write_path_coeffs_to_array(ap->p2, level2_coeff);
+  double fat7_coeff[6];
+  write_path_coeffs_to_array(ap->p1, fat7_coeff);
+  
+  /* Set HISQ reunitarization parameters for QUDA */
+  /* Compare with default values set in su3_mat_op.c */
+  QudaHisqParams_t params;
+
+#ifndef HISQ_REUNIT_ALLOW_SVD
+  params.reunit_allow_svd = 1;
+#else
+  params.reunit_allow_svd = HISQ_REUNIT_ALLOW_SVD;
+#endif
+
+#ifndef HISQ_REUNIT_SVD_ONLY
+  params.reunit_svd_only = 0;
+#else
+  params.reunit_svd_only = HISQ_REUNIT_SVD_ONLY;
+#endif
+
+#ifndef HISQ_REUNIT_SVD_ABS_ERROR
+  params.reunit_svd_abs_error = 1e-8;
+#else
+  params.reunit_svd_abs_error = HISQ_REUNIT_SVD_ABS_ERROR;
+#endif
+
+#ifndef HISQ_REUNIT_SVD_REL_ERROR
+  params.reunit_svd_rel_error = 1e-8;
+#else
+  params.reunit_svd_rel_error = HISQ_REUNIT_SVD_REL_ERROR;
+#endif
+
+#ifndef HISQ_FORCE_FILTER
+  params.force_filter = 5e-5;
+#else
+  params.force_filter = HISQ_FORCE_FILTER;
+#endif
+
+  Real* momentum = (Real*)qudaAllocatePinned(sites_on_node*4*sizeof(anti_hermitmat));
+
+  qudaHisqParamsInit(params);
+  qudaHisqForce(MILC_PRECISION, n_order_naik_total, n_orders_naik_current, eps, coeff, (void**)multi_x,
+                level2_coeff, fat7_coeff, W_unitlink, V_link, U_link, momentum);
+
+  // append result
+  FORALLSITES_OMP(i,s,){
+    for(int dir=0; dir<4; ++dir){
+      for(int j=0; j<10; ++j){
+	*((Real*)(&(s->mom[dir])) + j) += *(momentum + (4*i+ dir)*10 + j);
+      }
+    }
+  } END_LOOP_OMP
+
+  // free memory
+  qudaFreePinned(momentum);
+
+  for (int term=0; term<(n_order_naik_total+n_orders_naik_current); ++term) free(coeff[term]);
+  free(coeff);
+  free(one_hop_coeff);
+  free(three_hop_coeff);
+  free(one_hop_naik_coeff);
+  free(three_hop_naik_coeff);
+
+  return;
+} //fn_fermion_force_multi_hisq_wrapper_mx_gpu
+
+#elif USE_FF_QPHIX
+/********************************************************************/
+/* QPHIX support                                                      */
+/********************************************************************/
+QPHIX_hisq_coeffs_t * create_hisq_coeffs_qphix(ks_action_paths_hisq *ap);
+void FERMION_FORCE_MULTI(info_t *info, Real eps, Real *residues,
+                         su3_vector **multi_x, int nterms,
+                         fermion_links_t *fl);
+
+QPHIX_hisq_coeffs_t * create_hisq_coeffs_qphix(ks_action_paths_hisq *ap)
+{
+  int i;
+  QPHIX_hisq_coeffs_t *ac;
+  //int n_naiks = get_n_naiks(ap);
+  double *eps_naik = get_eps_naik(ap);
+  int ugroup = get_ugroup(ap);
+  int umethod = get_umethod(ap);
+
+  char myname[] = "create_hisq_coeffs_qphix";
+  ac = (QPHIX_hisq_coeffs_t *)malloc(sizeof(QPHIX_hisq_coeffs_t));
+  if(ac == NULL){
+    printf("%s: no room\n",myname);
+    terminate(1);
+  }
+  *ac = QPHIX_HISQ_COEFFS_ZERO;
+
+  for(i = 0; i < ap->n_naiks; i++)
+    ac->eps_naik[i] = eps_naik[i];
+
+  /* WARNING! We are setting the weight to 1 here.
+   * Then the links are created with the correct conventions for the inverter.
+   * But for the fermion force calculation, any flavor weights, such as
+   * 2*nflavor/4 must be included in the fermion epsilon factors when calling
+   * the fermion force term.
+   */
+  ac->n_naiks = ap->n_naiks;
+  ac->fat7_one_link       = ap->p1.act_path_coeff.one_link ;
+  ac->fat7_three_staple   = ap->p1.act_path_coeff.three_staple ;
+  ac->fat7_five_staple    = ap->p1.act_path_coeff.five_staple ;
+  ac->fat7_seven_staple   = ap->p1.act_path_coeff.seven_staple ;
+
+  ac->asqtad_one_link     = ap->p2.act_path_coeff.one_link ;
+  ac->asqtad_naik         = ap->p2.act_path_coeff.naik ;
+  ac->asqtad_three_staple = ap->p2.act_path_coeff.three_staple ;
+  ac->asqtad_five_staple  = ap->p2.act_path_coeff.five_staple ;
+  ac->asqtad_seven_staple = ap->p2.act_path_coeff.seven_staple ;
+  ac->asqtad_lepage       = ap->p2.act_path_coeff.lepage ;
+
+  ac->difference_one_link = ap->p3.act_path_coeff.one_link ;
+  ac->difference_naik     = ap->p3.act_path_coeff.naik ;
+  ac->ugroup  = ugroup;
+  ac->umethod = umethod;
+
+  return ac;
+}
+
+void FERMION_FORCE_MULTI(info_t *info, Real eps, Real *residues,
+                         su3_vector **multi_x, int nterms,
+                         fermion_links_t *fl)
+{
+  char myname[] = "fermion_force_multi_hisq";
+  int i;
+  Real *epsv;
+  QPHIX_FermionLinksHisq qphix_link;
+  QPHIX_ColorVector **qphix_xxx;
+  QPHIX_ColorMatrix *qmom[4];
+
+  if(initialize_qphix(QPHIX_PrecisionInt) != QPHIX_SUCCESS){
+    node0_printf("%s: Error initializing QPHIX\n",myname);
+    terminate(1);
+  }
+  /* Get the terms we need from the fermion links structure */
+  hisq_auxiliary_t *aux = get_hisq_auxiliary(fl);
+
+  /* get milc links, momentum and coefts to qphix links, momentum and coeft format */
+  for(int i=0; i<4; i++) {
+    QPHIX_create_M(&qphix_link.U_links[i], EVENANDODD);
+    QPHIX_create_M(&qphix_link.V_links[i], EVENANDODD);
+    QPHIX_create_M(&qphix_link.W_unitlinks[i], EVENANDODD);
+    QPHIX_create_M(&qphix_link.Y_unitlinks[i], EVENANDODD);
+//    QPHIX_layout_from_4su3m(qphix_link.U_links[i], (su3_matrix*)&(aux->U_link[i]));
+//    QPHIX_layout_from_4su3m(qphix_link.V_links[i], (su3_matrix*)&(aux->V_link[i]));
+//    QPHIX_layout_from_4su3m(qphix_link.W_unitlinks[i], (su3_matrix*)&(aux->W_unitlink[i]));
+//    QPHIX_layout_from_4su3m(qphix_link.Y_unitlinks[i], (su3_matrix*)&(aux->Y_unitlink[i]));
+
+    QPHIX_create_M(&qmom[i], EVENANDODD);
+//    QPHIX_layout_from_anti_hermitmat((anti_hermitmat*)&(lattice->mom[i]), qmom[i]);
+  }
+  QPHIX_layout_from_4su3m(qphix_link.U_links, (su3_matrix*)&(aux->U_link[0]));
+  QPHIX_layout_from_4su3m(qphix_link.V_links, (su3_matrix*)&(aux->V_link[0]));
+  QPHIX_layout_from_4su3m(qphix_link.W_unitlinks, (su3_matrix*)&(aux->W_unitlink[0]));
+  QPHIX_layout_from_4su3m(qphix_link.Y_unitlinks, (su3_matrix*)&(aux->Y_unitlink[0]));
+  QPHIX_layout_from_anti_hermitmat(qmom,(void*)&(lattice->mom[0]),sizeof(site));
+
+  QPHIX_hisq_coeffs_t *coeff = create_hisq_coeffs_qphix(fl->flg->hisq->ap);
+
+  /*Convert multi_x into qphix format */
+  qphix_xxx = (QPHIX_ColorVector **) malloc(nterms *
+      sizeof(QPHIX_ColorVector *));
+  if (qphix_xxx == NULL) {
+    printf("%s: No room xxx pointers\n", myname);
+    terminate(1);
+  }
+  for(i=0;i<nterms;++i) {
+    qphix_xxx[i] = create_qphix_V_from_field(multi_x[i], EVENANDODD);
+    if (qphix_xxx == NULL) {
+      printf("%s: No room for qphix xxx vectors\n", myname);
+      terminate(1);
+    }
+  }
+
+  /*Compute weights */
+  epsv = (Real *) malloc(nterms * sizeof(Real));
+  for(i=0;i<nterms;++i) epsv[i] = eps * residues[i];
+
+#ifdef FF_VTUNE
+  __itt_resume();
+#endif
+  QPHIX_hisq_force_multi((QPHIX_info_t*)info, &qphix_link, qmom, coeff, epsv, qphix_xxx, n_orders_naik);
+#ifdef FF_VTUNE
+  __itt_pause();
+#endif
+  QPHIX_layout_to_anti_hermitmat((void*)&(lattice->mom[0]),qmom,sizeof(site));
+  //destroy_hisq_coeffs_qphix(ac);
+
+  /* Free qphix_xxx vectors and epsv */
+  for(i=0;i<nterms;++i) {
+    QPHIX_destroy_V(qphix_xxx[i]);
+  }
+  free(qphix_xxx);
+  free(epsv);
+
+  /* Free qmom */
+  for(i=0;i<3;i++) {
+    QPHIX_destroy_M(qmom[i]);
+  }
+}
+
+/*
+ QPhiX wrapper for Fermion Force Computation
+ Copies links, coefficients, multix terms, weights and momentum to QPhiX
+ Gets back updated momentum value.
+*/
+static void fn_fermion_force_multi_hisq_wrapper_mx_qphix(info_t *info, Real eps,
+                                                         Real *residues,
+                                                         su3_vector **multi_x,
+                                                         int nterms,
+                                                         fermion_links_t *fl)
+{
+  FERMION_FORCE_MULTI(info, eps, residues, multi_x, nterms, fl);
+}
+
+#else
+/********************************************************************/
+/* Native MILC CPU wrapper support                                  */
+/********************************************************************/
+// HISQ CPU wrapper routine: contribution to the force due to
 //    0) smearing level 0 (outer product |X><Y|)
 //    1) smearing level 2 + smearing level 2 Naik corrected
 //    2) reunitarization
 //    3) smearing level 1
 
+// In the following routines smearing and reunitarization
+// are split into separate routines. This allows for arbitrary levels of
+// smearing and/or reunitarization.
+// Combine smearing level 2 from different multi_x, use globals from lattice.h
+
+// Contribution to the force from 0 level of smearing, force contains
+// only |X><Y| terms
+static void 
+fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues, 
+				       su3_vector **multi_x, 
+				       int nterms,
+				       su3_matrix *force_accum[4], 
+				       su3_matrix *force_accum_naik[4]);
+
+// This routine calculates contribution to the force due to i-th level of
+// smearing, as input it uses array of new links and the force from (i-1)th
+// level of smearing
+static void 
+fn_fermion_force_multi_hisq_smearing( info_t *info, Real eps, 
+				      Real *residues, 
+				      su3_vector **multi_x, 
+				      int nterms, 
+				      su3_matrix *force_accum[4], 
+				      su3_matrix *force_accum_old[4], 
+				      su3_matrix *force_accum_naik_old[4], 
+				      su3_matrix *internal_U_link,
+				      int internal_num_q_paths, 
+				      Q_path *internal_q_paths_sorted, 
+				      int *internal_netbackdir_table);
+// Contribution to the force due to reunitarization of links:
+// Y=V*(V^+*V)^-1/2, W=Y/(detY)^1/3
+static void 
+fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4], 
+				    su3_matrix *force_accum_old[4], 
+				    fermion_links_t *fl);
 static void 
 fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residues, 
 				     su3_vector **multi_x, int nterms,
@@ -1996,302 +2446,8 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
   rephase_field_offset( internal_Y_link, ON, NULL , r0);
 } // fn_fermion_force_multi_hisq_reunit
 
-#else /* ifndef USE_FF_GPU */
-
-/********************************************************************/
-/* GPU support                                                      */
-/********************************************************************/
-
-#include <quda_milc_interface.h>
-#include "../include/generic_quda.h"
-
-
-static void outer_product_append( Real one_hop_coeff, Real three_hop_coeff, 
-				  Real *residues, 
-				  su3_vector **multi_x, int nterms,
-				  su3_matrix *one_hop_oprod[4], 
-				  su3_matrix *three_hop_oprod[4] )
-{
-  /* note CG_solution and Dslash * solution are combined in "multi_x" */
-  /* New version 1/21/99.  Use forward part of Dslash to get force */
-  /* see long comment at end */
-  /* For each link we need multi_x transported from both ends of path. */
-  int term;
-  int i,k;
-  int dir;
-  su3_matrix tmat;
-  
-  msg_tag *mtag[2];
-  su3_matrix *mat_tmp0;
-  // length N path has N+1 sites!!
-  su3_matrix *oprod_along_path[MAX_PATH_LENGTH+1];
-  
-  
-  if( nterms==0 )return;
-  
-#ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
-  {
-    printf("WRAPPER FORCE smearing0 pseudofermion vector at site (0,0,0,0)\n");
-    dumpvec( &(multi_x[0][0]) );
-    printf("\n");
-    su3_vector su3ab;
-    clearvec( &su3ab );
-    int nnn;
-    for( nnn=0; nnn<nterms;nnn++) {
-      FORALLFIELDSITES(i){
-	add_su3_vector( &su3ab, &(multi_x[nnn][i]), &su3ab );
-      }
-    }
-    printf("WRAPPER FORCE smearing0 pseudofermion vector GLOBAL SUM\n");
-    dumpvec( &su3ab );
-    printf("\n");
-    for( nnn=0; nnn<nterms;nnn++) {
-      printf("residues[%d]=%lf\n",nnn,residues[nnn]);
-    }
-  }
-#endif /* HISQ_FF_DEBUG */
-#endif /* MILC_GLOBAL_DEBUG */
-  
-  
-  for(i=0;i<=MAX_PATH_LENGTH;i++){
-    oprod_along_path[i] = 
-      (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
-  }
-  mat_tmp0 = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
-  if( mat_tmp0 == NULL ){printf("Node %d NO ROOM\n",this_node); exit(0); }
-  
-  
-  
-  
-  // clear force accumulators
-  //  for(dir=XUP;dir<=TUP;dir++)
-  //    FORALLFIELDSITES(i)clear_su3mat( &(one_hop_coeff[dir][i]) );
-  
-  //AB loop on directions, path table is not needed
-  for(dir=XUP;dir<=TUP;dir++){
-    k=0; // which gather we are using
-    //AB netbackdir is just the opposite of dir for 1x1 case
-    mtag[k] = start_gather_field( multi_x[0], sizeof(su3_vector),
-				  OPP_DIR(dir), EVENANDODD, gen_pt[k] );
-    FORALLFIELDSITES(i){
-      clear_su3mat(  &(oprod_along_path[0][i]) ); // actually last site in path
-    }
-    for(term=0;term<nterms;term++){
-      if(term<nterms-1)mtag[1-k] = start_gather_field( multi_x[term+1],
-			       sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1-k] );
-      wait_gather(mtag[k]);
-      
-      FORALLFIELDSITES(i){
-        // build projector as usual
-        su3_projector( &multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
-        // multiply by alpha_l in rational function expansion
-        scalar_mult_add_su3_matrix( &(oprod_along_path[0][i]), &tmat, 
-				    residues[term], &(oprod_along_path[0][i]) );
-      }
-      cleanup_gather(mtag[k]);
-      k=1-k; // swap 0 and 1
-    } /* end loop over terms in rational function expansion */
-    
-    
-    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], 
-				 mat_tmp0, dir );
-    
-    FORALLFIELDSITES(i){
-      scalar_mult_add_su3_matrix( &(one_hop_oprod[dir][i]), 
-				  &(oprod_along_path[1][i]),
-				  one_hop_coeff, &(one_hop_oprod[dir][i]) );
-    }
-    
-  } /* end of loop on directions */
-  
-  
-  /* *** Naik part *** */
-  // clear force accumulators
-  //  for(dir=XUP;dir<=TUP;dir++)
-  //    FORALLFIELDSITES(i)clear_su3mat( &(three_hop_coeff[dir][i]) );
-  
-  for(dir=XUP;dir<=TUP;dir++){ //AB loop on directions, path table is not needed
-    k=0; // which gather we are using
-    mtag[k] = start_gather_field( multi_x[0], sizeof(su3_vector),
-				  OPP_3_DIR( DIR3(dir) ), EVENANDODD, gen_pt[k] );
-    FORALLFIELDSITES(i){
-      clear_su3mat(  &(oprod_along_path[0][i]) );
-    }
-    for(term=0;term<nterms;term++){
-      if(term<nterms-1)mtag[1-k] = start_gather_field( multi_x[term+1],
-	       sizeof(su3_vector), OPP_3_DIR( DIR3(dir) ), EVENANDODD, gen_pt[1-k] );
-      wait_gather(mtag[k]);
-      
-      FORALLFIELDSITES(i){
-        // build projector as usual
-        su3_projector( &multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
-        // multiply by alpha_l in rational function expansion
-        scalar_mult_add_su3_matrix( &(oprod_along_path[0][i]), &tmat, 
-				    residues[term], &(oprod_along_path[0][i]) );
-      }
-      cleanup_gather(mtag[k]);
-      k=1-k; // swap 0 and 1
-    } /* end loop over terms in rational function expansion */
-    
-    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], 
-				 mat_tmp0, DIR3(dir) );
-    
-    FORALLFIELDSITES(i){
-      scalar_mult_add_su3_matrix( &(three_hop_oprod[dir][i]), 
-				  &(oprod_along_path[1][i]),
-				  three_hop_coeff, &(three_hop_oprod[dir][i]) );
-    }
-  } /* end of loop on directions */
-  
-  
-  free( mat_tmp0 );
-  for(i=0;i<=MAX_PATH_LENGTH;i++){
-    free( oprod_along_path[i] );
-  }
-  return;
-} // outer_product_append
-
-
-static void write_path_coeffs_to_array(ks_component_paths paths, double array[6])
-{
-  array[0] = paths.act_path_coeff.one_link; 
-  array[1] = paths.act_path_coeff.naik;
-  array[2] = paths.act_path_coeff.three_staple;
-  array[3] = paths.act_path_coeff.five_staple;
-  array[4] = paths.act_path_coeff.seven_staple;
-  array[5] = paths.act_path_coeff.lepage;
-  return;
-}
-
-
-static void 
-fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residues, 
-					   su3_vector **multi_x, int nterms,
-					   fermion_links_t *fl)
-{
-  // Get the terms we need from the fermion links structure */
-  ks_action_paths_hisq *ap = get_action_paths_hisq(fl);
-  hisq_auxiliary_t *aux = get_hisq_auxiliary(fl);
-  int n_naiks = fermion_links_get_n_naiks(fl);
-  double *eps_naik = fermion_links_get_eps_naik(fl);
-  su3_matrix *U_link = aux->U_link;
-  su3_matrix *V_link = aux->V_link;
-  su3_matrix *W_unitlink = aux->W_unitlink;
-  int i;
-  site *s;
-  
-  initialize_quda();
-  
-  int n_orders_naik_current = n_order_naik_total;
-
-  Real* one_hop_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
-  Real* three_hop_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
-
-  for(i=0; i<n_orders_naik_current; ++i){
-    one_hop_coeff[i] = 2.0*residues[i];
-    three_hop_coeff[i] = ap->p2.act_path_coeff.naik*2.0*residues[i];
-  }
-
-  n_orders_naik_current = 0;
-  for(int inaik=1; inaik<n_naiks; ++inaik) n_orders_naik_current += n_orders_naik[inaik];
-
-  Real* one_hop_naik_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
-  Real* three_hop_naik_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
-
-  i = 0;
-  int n_naik_shift = n_orders_naik[0];
-  for(int inaik=1; inaik<n_naiks; ++inaik){
-    for(int j=0; j<n_orders_naik[inaik]; j++){
-      one_hop_naik_coeff[i] = ap->p3.act_path_coeff.one_link*eps_naik[inaik]*2.0*residues[n_naik_shift+j];
-      three_hop_naik_coeff[i++] = ap->p3.act_path_coeff.naik*eps_naik[inaik]*2.0*residues[n_naik_shift+j];
-    }
-    n_naik_shift += n_orders_naik[inaik];
-  }
-
-  double** coeff = (double**)malloc( (n_order_naik_total + n_orders_naik_current) *sizeof(double*));
-  for(int term=0; term<(n_order_naik_total+n_orders_naik_current); ++term) coeff[term] = (double*)malloc(2*sizeof(double));
-
-  for(int term=0; term<n_order_naik_total; ++term){
-    coeff[term][0] = one_hop_coeff[term];
-    coeff[term][1] = three_hop_coeff[term];
-  }
-  
-  for(int term=0; term<n_orders_naik_current; term++){
-    coeff[term+n_order_naik_total][0] = one_hop_naik_coeff[term];
-    coeff[term+n_order_naik_total][1] = three_hop_naik_coeff[term];
-  }
-
-  double level2_coeff[6];
-  write_path_coeffs_to_array(ap->p2, level2_coeff);
-  double fat7_coeff[6];
-  write_path_coeffs_to_array(ap->p1, fat7_coeff);
-  
-  /* Set HISQ reunitarization parameters for QUDA */
-  /* Compare with default values set in su3_mat_op.c */
-  QudaHisqParams_t params;
-
-#ifndef HISQ_REUNIT_ALLOW_SVD
-  params.reunit_allow_svd = 1;
-#else
-  params.reunit_allow_svd = HISQ_REUNIT_ALLOW_SVD;
 #endif
-
-#ifndef HISQ_REUNIT_SVD_ONLY
-  params.reunit_svd_only = 0;
-#else
-  params.reunit_svd_only = HISQ_REUNIT_SVD_ONLY;
-#endif
-
-#ifndef HISQ_REUNIT_SVD_ABS_ERROR
-  params.reunit_svd_abs_error = 1e-8;
-#else
-  params.reunit_svd_abs_error = HISQ_REUNIT_SVD_ABS_ERROR;
-#endif
-
-#ifndef HISQ_REUNIT_SVD_REL_ERROR
-  params.reunit_svd_rel_error = 1e-8;
-#else
-  params.reunit_svd_rel_error = HISQ_REUNIT_SVD_REL_ERROR;
-#endif
-
-#ifndef HISQ_FORCE_FILTER
-  params.force_filter = 5e-5;
-#else
-  params.force_filter = HISQ_FORCE_FILTER;
-#endif
-
-  Real* momentum = (Real*)qudaAllocatePinned(sites_on_node*4*sizeof(anti_hermitmat));
-
-  qudaHisqParamsInit(params);
-  qudaHisqForce(MILC_PRECISION, n_order_naik_total, n_orders_naik_current, eps, coeff, (void**)multi_x,
-                level2_coeff, fat7_coeff, W_unitlink, V_link, U_link, momentum);
-
-  // append result
-  FORALLSITES_OMP(i,s,){
-    for(int dir=0; dir<4; ++dir){
-      for(int j=0; j<10; ++j){
-	*((Real*)(&(s->mom[dir])) + j) += *(momentum + (4*i+ dir)*10 + j);
-      }
-    }
-  } END_LOOP_OMP
-
-  // free memory
-  qudaFreePinned(momentum);
-
-  for (int term=0; term<(n_order_naik_total+n_orders_naik_current); ++term) free(coeff[term]);
-  free(coeff);
-  free(one_hop_coeff);
-  free(three_hop_coeff);
-  free(one_hop_naik_coeff);
-  free(three_hop_naik_coeff);
-
-  return;
-} //fn_fermion_force_multi_hisq_wrapper_mx_gpu
-
-#endif /* ifndef USE_FF_GPU */
-
-#endif  /* HISQ_FF_MULTI_WRAPPER || USE_FF_GPU */
+#endif  /* HISQ_FF_MULTI_WRAPPER */
 
 int 
 find_backwards_gather( Q_path *path )

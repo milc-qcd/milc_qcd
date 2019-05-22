@@ -54,9 +54,13 @@ then
   git clone https://github.com/JeffersonLab/${dir} -b ${GIT_BRANCH}
 fi
 
+# HACK: Need to copy files from milc-qphix/avx512 to milc-qphix-codegen/avx512
+# Note, These files work only for double precision and avx512
+/bin/cp milc-qphix/avx512/ff_* ${dir}/avx512
+
 pushd ${dir}
 
-${MAKE} ${TARGET} ${modecmd}
+# ${MAKE} ${TARGET} ${modecmd}
 
 popd
 
@@ -71,12 +75,13 @@ MAKE="make -j4"
 if [ ! -d ${dir} ]
 then
   echo "Fetching ${GIT_BRANCH} branch of package from github"
-  git clone https://github.com/JeffersonLab/${dir} -b ${GIT_BRANCH}
+  #git clone https://github.com/JeffersonLab/${dir} -b ${GIT_BRANCH}
 fi
 
 pushd ${dir}
 
-${MAKE} -f Makefile_qphixlib ${modecmd} "ARCH=${ARCH}" "PK_CXX=${PK_CXX}"
+#${MAKE} -f Makefile_qphixlib ${modecmd} "ARCH=${ARCH}" "PK_CXX=${PK_CXX}"
+${MAKE} -f Makefile_ff "ARCH=${ARCH}" "PK_CXX=${PK_CXX}"
 
 popd
 
