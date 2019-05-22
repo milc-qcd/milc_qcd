@@ -35,7 +35,6 @@ int ks_invert( /* Return value is number of iterations taken */
 
       if(qic->converged)break;
 
-      qic->start_flag = 1;
       /* No minimum when restarting */
       qic->min = 0;
     }

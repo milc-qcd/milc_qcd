@@ -25,6 +25,7 @@ void static_prop_wv(wilson_vector *dst, wilson_vector *src, quark_source *my_qs)
 int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[], 
 			  int saveflag, char savefile[],
 			  wilson_prop_field *wp,
+			  wilson_prop_field *source,
 			  quark_source *my_wqs,
 			  quark_invert_control *my_qic,
 			  void *my_dcp,
@@ -38,8 +39,6 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
   int tot_iters = 0;
   int status;
   char *fileinfo;
-  wilson_vector *dst;
-  w_prop_file *fp_in, *fp_out; 
   char myname[] = "get_wprop_to_wp_field";
   Real mybdry_phase[4];
 #ifdef IOTIME
@@ -52,73 +51,37 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
   for(i = 0; i < 4; i++)
     mybdry_phase[i] = bdry_phase[i];
 
-  dst = create_wv_field();
-
-  /* Open files for Wilson propagators, if requested */
-  fp_in  = r_open_wprop(startflag, startfile);
-  fp_out = w_open_wprop(saveflag,  savefile, DIRAC_FIELD_FILE);
-
-  /* Provision for writing the source to a file */
-  if(my_wqs->saveflag != FORGET){
-    fileinfo = create_ws_XML(startfile, my_wqs);
-    if(w_source_open_dirac(my_wqs, fileinfo) != 0){
-      node0_printf("%s: Quitting: Can't open source file for writing\n",myname);
-      terminate(1);
-    }
-    free(fileinfo);
-  }
-  
   /* Apply twist to boundary links of the gauge field in site structure */
   boundary_twist_site(mybdry_phase, r0, +1);
 
-  /* Apply twist to the APE links */
-  mybdry_phase[3] = 0; 
-  momentum_twist_links(mybdry_phase, 1, ape_links);
-  mybdry_phase[3] = bdry_phase[3]; 
+  /* Load the propagator if needed */
+  status = reload_wprop_to_wp_field(startflag, startfile, my_wqs,
+				    source, wp, 1);
+
+  if(status != 0){
+    printf("%s(%d): Error reloading propagator\n", myname, this_node);
+    terminate(1);
+  }
 
   /* Loop over source colors and spins */
   for(ksource = 0; ksource < my_wqs->nsource; ksource++){
     spin = convert_ksource_to_spin(ksource);
     color = convert_ksource_to_color(ksource);
 
-    status = reload_wprop_sc_to_field(startflag, fp_in, my_wqs, 
-				      spin, color, dst, 1);
-    if(status != 0){
-      printf("%s(%d): Error reloading propagator\n", myname, this_node);
-      terminate(1);
-    }
+    node0_printf("%s: spin = %d color = %d\n",myname, spin, color);
+
+    /* Source for this color */
+    wilson_vector *src = create_wv_field();
+    extract_wv_from_swv(src, source->swv[color], spin);
       
-    /* (Re)construct propagator */
-    
-    if(startflag == FRESH)my_qic->start_flag = START_ZERO_GUESS;
-    else                  my_qic->start_flag = START_NONZERO_GUESS;      
-    
     /* Solve for the propagator if the starting guess is zero
        or we didn't say not to solve. */
     if(check != CHECK_NO || startflag == FRESH){
 
-      /* Make the source */
-      wilson_vector *src = create_wv_field();
-      
-      /* Create the source */
-      if(wv_source_field(src, my_wqs)){
-	printf("%s(%d): error getting source\n",myname, this_node);
-	terminate(1);
-      };
+      wilson_vector *dst = create_wv_field();
+      if(startflag != FRESH)
+	extract_wv_from_swv( dst, wp->swv[color], spin);
 
-      /* Cache the source for writing to the propagator file */
-      if(saveflag != FORGET){
-	alloc_cached_wv_source(my_wqs);
-	copy_wv_field(get_cached_wv_source(my_wqs), src);
-      }
-      
-      /* Write the source to a source file, if requested */
-      if(my_wqs->saveflag != FORGET){
-	if(w_source_dirac( src, my_wqs ) != 0){
-	  node0_printf("%s: Error writing source\n",myname);
-	}
-      }
-      
       if(check != CHECK_SOURCE_ONLY){
 
 	/* Apply the momentum twist to the source.  This U(1) gauge
@@ -136,9 +99,18 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
 	rephase_wv_field(src, mybdry_phase, r0, 1);
 	mybdry_phase[3] = bdry_phase[3]; 
 	
+	if(startflag != FRESH){
+
+	  /* Apply the momentum twist to the initial guess */
+	  mybdry_phase[3] = 0; 
+	  rephase_wv_field(dst, mybdry_phase, r0, 1);
+	  mybdry_phase[3] = bdry_phase[3]; 
+	} /* startflag[0] != FRESH */
+
 	/* solve for dst */
 
 	if(prop_type == CLOVER_TYPE){
+
 	  switch (cl_cg) {
 	  case BICG:
 	    avs_iters = bicgilu_cl_field(src, dst, my_qic, my_dcp);
@@ -156,7 +128,9 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
 	    node0_printf("%s(%d): Inverter choice %d not supported\n",
 			 myname, this_node,cl_cg);
 	  }
+
 	} else if(prop_type == IFLA_TYPE){
+
 #ifdef HAVE_QOP
 	  switch (cl_cg) {
 	  case BICG:
@@ -177,61 +151,39 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
 
 	report_status(my_qic);
 	
-	// DEBUG
-	//static_prop_wv(dst, src, my_wqs);
-	
-      } else { /* check != CHECK_SOURCE_ONLY */
+	/* Transform solution, completing the U(1) gauge transformation */
+	mybdry_phase[3] = 0; 
+	rephase_wv_field(dst, mybdry_phase, r0, -1);
+	mybdry_phase[3] = bdry_phase[3];
+
+      } else {
 
 	/* Copy source to solution(s) so we can use it there */
 	copy_wv_field(dst, src);
-	
-      }
+      }  /* check != CHECK_SOURCE_ONLY */
 
-      destroy_wv_field(src);
-    }
+      /* Copy solution to wp */
+      insert_swv_from_wv(wp->swv[color], spin, dst);
+      
+      /* Clean up */
+      destroy_wv_field(dst);
+
+    } /* if(check != CHECK_NO || startflag[0] == FRESH)} */
     
-    /* Transform solution, completing the U(1) gauge transformation */
-    mybdry_phase[3] = 0; 
-    rephase_wv_field(dst, mybdry_phase, r0, -1);
-    mybdry_phase[3] = bdry_phase[3]; 
-    
-    /* Copy solution vector to wilson_prop_field wp */
-    copy_wp_from_wv( wp, dst, color, spin);
-    
-    /* save solution if requested */
-    save_wprop_sc_from_field( saveflag, fp_out, my_wqs, spin, color, dst, 
-			      "", io_timing);
-    
-    tot_iters += avs_iters;
+    destroy_wv_field(src);
+      
   } /* ksource */
+    
+    
+  /* save solution if requested */
+  save_wprop_from_wp_field( saveflag, savefile,"", my_wqs,
+			    source, wp, io_timing);
+    
+  tot_iters += avs_iters;
   
-  /* Unapply twist to the APE links */
-  mybdry_phase[3] = 0; 
-  momentum_twist_links(mybdry_phase, -1, ape_links);
-  mybdry_phase[3] = bdry_phase[3]; 
-
   /* Unapply twist to boundary links in gauge field */
   boundary_twist_site(mybdry_phase, r0, -1);
   
-  /* clean up */
-  if(my_wqs->saveflag != FORGET)
-    w_source_close(my_wqs);
-
-  clear_qs(my_wqs);
-  r_close_wprop(startflag, fp_in);
-  if(startflag != FRESH)
-    node0_printf("Restored propagator from %s\n",startfile);
-
-  w_close_wprop(saveflag,  fp_out);
-  if(saveflag != FORGET)
-    node0_printf("Saved propagator to %s\n",savefile);
-
-  if(my_wqs->saveflag != FORGET){
-    w_source_close(my_wqs);
-  }
-  
-  destroy_wv_field(dst);
-
   return tot_iters;
 }
 
@@ -250,9 +202,13 @@ void static_prop_v(su3_vector *dst, su3_vector *src, quark_source *my_ksqs){
   }
 }
 
+/* In this case we generate a naive propagator from a KS vector
+   source */
+
 int get_ksprop_to_wp_field(int startflag, char startfile[], 
 			   int saveflag, char savefile[],
 			   wilson_prop_field *wp,
+			   ks_prop_field *source,
 			   quark_source *my_ksqs,
 			   quark_invert_control *my_qic,
 			   ks_param *my_ksp,
@@ -265,11 +221,8 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
   int avs_iters = 0;
   int tot_iters = 0;
   int status;
-  int naik_epsilon_index = my_ksp->naik_term_epsilon_index;
-  su3_vector *dst, *src;
-  ks_prop_file *fp_in, *fp_out; 
   char *fileinfo;
-  imp_ferm_links_t **fn = NULL;
+  imp_ferm_links_t *fn = NULL;
   Real mybdry_phase[4];
 #ifdef IOTIME
   int io_timing = 1;
@@ -284,92 +237,67 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
   for(i = 0; i < 4; i++)
     mybdry_phase[i] = bdry_phase[i];
 
-  dst = create_v_field();
-
   /* For ksprop_info */
   ksqstmp = *my_ksqs;
   ksptmp  = *my_ksp;
 
-//  r0[0] = my_ksqs->x0;
-//  r0[1] = my_ksqs->y0;
-//  r0[2] = my_ksqs->z0;
-//  r0[3] = my_ksqs->t0;
-
-  /* Phases must be in before constructing the fermion links */
-  rephase( ON );
-  invalidate_fermion_links(fn_links);
-
   /* Need FN links if we will call the inverter */
   if(check == CHECK_YES || startflag == FRESH){
+
+    rephase( ON );
+    invalidate_fermion_links(fn_links);
+
     if(fn_links == NULL)
       fn_links = create_fermion_links_from_site(my_qic->prec, n_naiks, eps_naik);
     else
       restore_fermion_links_from_site(fn_links, my_qic->prec);
 
-    fn = get_fm_links(fn_links);
+    int naik_epsilon_index = my_ksp->naik_term_epsilon_index;
+    fn = get_fm_links(fn_links)[naik_epsilon_index];
     
-    /* Apply twisted boundary conditions if requested */
+    /* Apply twisted boundary conditions and move KS phases, if
+       requested */
     /* This operation applies the phase to the boundary FN links */
-    set_boundary_twist_fn(fn[naik_epsilon_index], mybdry_phase, r0);
-    boundary_twist_fn(fn[naik_epsilon_index], ON);
-  }
+    set_boundary_twist_fn(fn, mybdry_phase, r0);
+    boundary_twist_fn(fn, ON);
 
+  } /* check != CHECK_NO || startflag[0] == FRESH */
 
-  /* Open files for KS propagators, if requested */
-  fp_in  = r_open_ksprop(startflag, startfile);
-  fp_out = w_open_ksprop(saveflag, savefile, VECTOR_FIELD_FILE);
-
-  /* Provision for writing the source to a file */
-  if(my_ksqs->saveflag != FORGET){
-    fileinfo = create_ks_XML();
-    if(w_source_open_ks(my_ksqs, fileinfo) != 0){
-      node0_printf("%s: Quitting: Can't open source file for writing\n",myname);
-      terminate(1);
-    }
-    free(fileinfo);
-  }
-  
   /* Check (or produce) the solution if requested */
+
+  /* Load the propagator if needed */
+  ks_prop_field *ksprop = NULL;
+  if(startflag != FRESH){
+    ksprop = create_ksp_field(my_ksqs->ncolor);
+    status = reload_ksprop_to_ksp_field(startflag, startfile,
+					my_ksqs, source, ksprop, io_timing);
+    if(status != 0){
+      node0_printf("Failed to reload propagator\n");
+      terminate(1);
+    } else {
+      node0_printf("Restored propagator from %s\n",startfile);
+    }
+  }
+
   /* Loop over source colors */
   for(color=0;color<my_ksqs->ncolor;color++){
     
-    /* Read color vector (and source as appropriate) from file */
-    status = reload_ksprop_c_to_field(startflag, fp_in, my_ksqs, 
-				      color, dst, 1);
-    if(status != 0){
-      printf("%s(%d): Error reloading propagator\n", myname, this_node);
-      terminate(1);
-    }
-      
-    /* (Re)construct propagator */
-    
-    if(startflag == FRESH) my_qic->start_flag = START_ZERO_GUESS;
-    else                   my_qic->start_flag = START_NONZERO_GUESS;      
-    
+    node0_printf("%s: color = %d\n",myname, color);
+
+    /* Source for this color */
+    su3_vector *src = source->v[color];
+
     /* Solve for the propagator if the starting guess is zero
        or we didn't say not to solve. */
     if(check != CHECK_NO || startflag == FRESH){
 
-      /* Create the source common to this inversion */
-      src = create_v_field();
-      
-      if(v_source_field(src, my_ksqs)){
-	printf("%s(%d): error getting source\n",myname,this_node);
-	terminate(1);
-      };
+      su3_vector *dst;
+      if(ksprop == NULL)
+	dst = create_v_field();
+      else
+	dst = ksprop->v[color];
 
-      /* Cache the source for writing to the propagator file */
-      if(saveflag != FORGET){
-	alloc_cached_v_source(my_ksqs);
-	copy_v_field(get_cached_v_source(my_ksqs), src);
-      }
       
-      /* Write the source, if requested */
-      if(my_ksqs->saveflag != FORGET){
-	if(w_source_ks( src, my_ksqs ) != 0)
-	  node0_printf("%s: Error writing source\n",myname);
-      }
-
       if(check != CHECK_SOURCE_ONLY){
 
 	/* Apply the momentum twist to the source.  This U(1) gauge
@@ -387,6 +315,14 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 	rephase_v_field(src, mybdry_phase, r0, 1);
 	mybdry_phase[3] = bdry_phase[3]; 
 	
+	if(startflag != FRESH){
+
+	  /* Apply the momentum twist to the initial guess */
+	  mybdry_phase[3] = 0; 
+	  rephase_v_field(dst, mybdry_phase, r0, 1);
+	  mybdry_phase[3] = bdry_phase[3]; 
+	} /* startflag != FRESH */
+
 	/* In most use cases we will be reading a precomputed staggered
 	   propagator, so we use the less optimized mat_invert_cg_field
 	   algorithm, instead of mat_invert_uml_field here to avoid
@@ -400,69 +336,83 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 	
 	if(startflag == FRESH){
 	  avs_iters += mat_invert_uml_field(src, dst, 
-	    my_qic, my_ksp->mass, fn[naik_epsilon_index]);
+					    my_qic, my_ksp->mass, fn);
 	} else {
 	  avs_iters += mat_invert_cg_field(src, dst,
- 	    my_qic, my_ksp->mass, fn[naik_epsilon_index]);
+					   my_qic, my_ksp->mass, fn);
 	}
 
-	// DEBUG
-	//static_prop_v(dst, src, my_ksqs);
+	/* Transform solution, completing the U(1) gauge transformation */
+	mybdry_phase[3] = 0; 
+	rephase_v_field(dst, mybdry_phase, r0, -1);
+	mybdry_phase[3] = bdry_phase[3]; 
+
+      } else {
+	
+	/* Copy source to solution(s) so we can use it there */
+	copy_v_field(dst, src);
       } /* check != CHECK_SOURCE_ONLY */
 
-      destroy_v_field(src);
-
-      /* Transform solution, completing the U(1) gauge transformation */
-      mybdry_phase[3] = 0; 
-      rephase_v_field(dst, mybdry_phase, r0, -1);
-      mybdry_phase[3] = bdry_phase[3]; 
-
-    } /* check != CHECK_NO || startflag == FRESH */
-    
-    /* save solution if requested */
-    save_ksprop_c_from_field( saveflag, fp_out, my_ksqs, color, dst, "", io_timing);
-    {
-      int ks_source_r[4] = {0,0,0,0};
-      
       /* Convert KS prop to naive prop (su3_vector maps to
 	 spin_wilson_vector) for a given source color,
 	 The conversion depends on the source and sink locations.
-	 For the KS0_TYPE, the source is at the corner of the hypercube. */
+	 
+	 Since the source location is buried by the inversion,
+	 the KS source must have support on only one site in
+	 the source hypercube, and that source location
+	 should be in the same hypercube location as
+	 the my_ksqs coordinate, x0, y0, z0, t0.
+	 
+	 SHOULD CHECK SOURCE TO MAKE SURE IT SATISFIES THESE CRITERIA
+	 
+	 For the KS0_TYPE, we promise that the source is at the corner
+	 of the hypercube. */
+      
+      int ks_source_r[4] = {0,0,0,0};
       if(!is_ks0_type){
 	ks_source_r[0] = my_ksqs->x0;  ks_source_r[1] = my_ksqs->y0;
 	ks_source_r[2] = my_ksqs->z0;  ks_source_r[3] = my_ksqs->t0;
       }
       
       convert_ksprop_to_wprop_swv(wp->swv[color], dst, ks_source_r, r0);
-    }
+
+      if(ksprop == NULL)
+	destroy_v_field(dst);
+    } /* check != CHECK_NO || startflag == FRESH */
     
     tot_iters += avs_iters;
-  } /* source color */
 
-  /* Unapply twisted boundary conditions on the fermion links */
-  if(check || startflag == FRESH)
-      boundary_twist_fn(fn[naik_epsilon_index], OFF);
-
-
-  /* Turn off staggered phases in the gauge links */
-  rephase( OFF );
-  invalidate_fermion_links(fn_links);
-
-  /* clean up */
-  if(my_ksqs->saveflag != FORGET)
-    w_source_close(my_ksqs);
-
-  clear_qs(my_ksqs);
-  r_close_ksprop(startflag, fp_in);
-  w_close_ksprop(saveflag,  fp_out);
+  } /* color */
 
   if(startflag != FRESH)
-    node0_printf("Restored propagator from %s\n",startfile);
+    destroy_ksp_field(ksprop);
+  
+  /* save solutions if requested */
+  /* We don't save the source, because the current file format 
+     is not designed for a KS source and a naive sink propagator */
+  status = save_wprop_from_wp_field( saveflag, savefile, "", my_ksqs,
+				     NULL, wp, io_timing);
 
+  if(status != 0){
+    node0_printf("Failed to write propagator\n");
+    terminate(1);
+  }
   if(saveflag != FORGET)
-    node0_printf("Saved propagator to %s\n",savefile);
+    node0_printf("Saved naive propagator to %s\n",savefile);
 
-  destroy_v_field(dst);
+  if(check != CHECK_NO || startflag == FRESH){
+
+    /* Unapply twisted boundary conditions on the fermion links and
+       restore conventional KS phases and BC, if changed. */
+    boundary_twist_fn(fn, OFF);
+
+    /* Turn off staggered phases in the gauge links */
+    rephase( OFF );
+    invalidate_fermion_links(fn_links);
+  }
+
+  /* Why do this ?? */
+  clear_qs(my_ksqs);
 
   return tot_iters;
 }
@@ -486,13 +436,19 @@ static void add_ksprop4_to_swv(spin_wilson_vector *swv_sum,
   }
 }
 
-/* In this case we generate a naive propagator from a Dirac source */
+/* In this case we generate a naive propagator from a Dirac propagator
+   -- i.e. a Dirac source that carries two spin and two color indices.
+   Such a case arises when we calculate an extended naive propagator
+   from a Dirac propagator and we need to keep track of the spin and
+   color of the Dirac propagator source. */
+
 /* It is assumed that the Dirac source has been prepared in the
    "staggered" basis.  See ext_src/make_ext_src.c */
 
 int get_ksprop4_to_wp_field(int startflag, char startfile[], 
 			    int saveflag, char savefile[],
 			    wilson_prop_field *wp,
+			    ks_prop_field *source,
 			    quark_source *my_qs,
 			    quark_invert_control *my_qic,
 			    ks_param *my_ksp,
@@ -504,11 +460,9 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
   int avs_iters = 0;
   int tot_iters = 0;
   int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
-  int naik_epsilon_index = my_ksp->naik_term_epsilon_index;
-  su3_vector *dst, *src;
+  su3_vector *dst;
   spin_wilson_vector *swv;
-  w_prop_file *fp_out; 
-  imp_ferm_links_t **fn = NULL;
+  imp_ferm_links_t *fn = NULL;
   Real mybdry_phase[4];
 #ifdef IOTIME
   int io_timing = 1;
@@ -523,72 +477,60 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
   for(i = 0; i < 4; i++)
     mybdry_phase[i] = bdry_phase[i];
 
-  dst = create_v_field();
   swv  = create_swv_field();
-  clear_wp_field(wp);
+  clear_wp_field(wp);  /* Is this necessary? */
 
   /* For ksprop_info */
   ksqstmp = *my_qs;
   ksptmp  = *my_ksp;
 
-//  r0[0] = my_qs->x0;
-//  r0[1] = my_qs->y0;
-//  r0[2] = my_qs->z0;
-//  r0[3] = my_qs->t0;
-
-  /* Phases must be in before constructing the fermion links */
-  rephase( ON );
-  invalidate_fermion_links(fn_links);
-
   /* If we will call the inverter, we need the FN links */
   if(check == CHECK_YES || startflag == FRESH){
+    /* Phases must be in before constructing the fermion links */
+    rephase( ON );
+    invalidate_fermion_links(fn_links);
+
     if(fn_links == NULL)
       fn_links = create_fermion_links_from_site(my_qic->prec, n_naiks, eps_naik);
     else
       restore_fermion_links_from_site(fn_links, my_qic->prec);
   
-    fn = get_fm_links(fn_links);
-    /* Apply twisted boundary conditions if requested */
+    int naik_epsilon_index = my_ksp->naik_term_epsilon_index;
+    fn = get_fm_links(fn_links)[naik_epsilon_index];
+
+    /* Apply twisted boundary conditions and move KS phases, if
+       requested */
     /* This operation applies the phase to the boundary FN links */
-    set_boundary_twist_fn(fn[naik_epsilon_index], mybdry_phase, r0);
-    boundary_twist_fn(fn[naik_epsilon_index], ON);
+    set_boundary_twist_fn(fn, mybdry_phase, r0);
+    boundary_twist_fn(fn, ON);
   }
 	
-  /* Open file for Wilson propagator, if requested */
-  fp_out = w_open_wprop(saveflag, savefile, DIRAC_FIELD_FILE);
-
-  /* Check (or produce) the solution if requested */
+  /* We do not load a precomputed propagator here.  We don't have an
+     appropriate file format for a ksprop4 type */
+  
   /* Loop over source colors and spins */
   for(ksource = 0; ksource < my_qs->nsource; ksource++){
-    /* Complete the source structure */
     spin_src = convert_ksource_to_spin(ksource);
     color_src = convert_ksource_to_color(ksource);
     for(spin_snk=0;spin_snk<4;spin_snk++){
+
+      node0_printf("%s: spin_src = %d color_src = %d spin_snk %d\n",
+		   myname, spin_src, color_src, spin_snk);
+
+      /* Complete the source structure */
       my_qs->spin_snk = spin_snk;
+
+      /* Source for this color */
+      su3_vector *src = source->v[color_src];
 
       /* (Re)construct propagator */
       
-      if(startflag == FRESH) my_qic->start_flag = START_ZERO_GUESS;
-      else                   my_qic->start_flag = START_NONZERO_GUESS;      
-    
       /* Solve for the propagator if the starting guess is zero
 	 or we said to solve. */
       if(check == CHECK_YES || startflag == FRESH){
 
-	/* Create the source common to this inversion */
-	src = create_v_field();
-      
-	if(v_source_field(src, my_qs)){
-	  printf("%s(%d): error getting source\n",myname,this_node);
-	  terminate(1);
-	};
+	dst = create_v_field();
 
-	/* Cache the source for writing to the propagator file */
-	if(saveflag != FORGET){
-	  alloc_cached_v_source(my_qs);
-	  copy_v_field(my_qs->v_src, src);
-	}
-      
 	/* Apply the momentum twist to the source.  This U(1) gauge
 	   transformation converts the boundary twist on the gauge field
 	   above into the desired volume twist. We do it this way to
@@ -616,17 +558,11 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
 	   FRESH -> uml and otherwise cg. */
 	
 	if(startflag == FRESH){
-	  avs_iters += mat_invert_uml_field(src, dst, 
-	    my_qic, my_ksp->mass, fn[naik_epsilon_index]);
+	  avs_iters += mat_invert_uml_field(src, dst, my_qic, my_ksp->mass, fn);
 	} else {
-	  avs_iters += mat_invert_cg_field(src, dst,
-	   my_qic, my_ksp->mass, fn[naik_epsilon_index]);
+	  avs_iters += mat_invert_cg_field(src, dst, my_qic, my_ksp->mass, fn);
 	}
 
-	// DEBUG
-	//static_prop_v(dst, src, my_qs);
-	destroy_v_field(src);
-	
 	/* Transform solution, completing the U(1) gauge transformation */
 	mybdry_phase[3] = 0; 
 	rephase_v_field(dst, mybdry_phase, r0, -1);
@@ -644,36 +580,32 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
 		   spin_snk, spin_src, color_src, ksource);
       add_ksprop4_to_swv(wp->swv[color_src], swv, spin_snk, spin_src);
 
+      destroy_v_field(dst);
+
       tot_iters += avs_iters;
     } /* spin_snk */
 
-    /* save solution if requested */
-    if(saveflag != FORGET){
-      wilson_vector *wv = create_wv_field();
-      copy_wv_from_swv(wv, wp->swv[color_src], spin_src);
-      save_wprop_sc_from_field( saveflag, fp_out, my_qs, 
-				spin_src, color_src, wv, "", io_timing);
-      destroy_wv_field(wv);
-    }
   } /* ksource -> color_src, spin_src */
 
+  /* save solution if requested */
+  /* We don't save the source, because the current file format 
+     is not designed for a KS4 source and a naive sink propagator */
+  save_wprop_from_wp_field( saveflag, savefile, "", my_qs, NULL, wp, 
+			    io_timing);
+
   /* Unapply twisted boundary conditions on the fermion links */
-  if(check == CHECK_YES || startflag == FRESH)
-    boundary_twist_fn(fn[naik_epsilon_index], OFF);
+  if(check == CHECK_YES || startflag == FRESH){
+    boundary_twist_fn(fn, OFF);
+    
+    /* Turn off staggered phases in the gauge links */
+    rephase( OFF );
+    invalidate_fermion_links(fn_links);
+  }
 
-  /* Turn off staggered phases in the gauge links */
-  rephase( OFF );
-  invalidate_fermion_links(fn_links);
-
-  /* clean up */
+  /* Why do this ?? */
   clear_qs(my_qs);
   
-  w_close_wprop(saveflag,  fp_out);
-  if(saveflag != FORGET)
-    node0_printf("Saved propagator to %s\n",savefile);
-
   destroy_swv_field(swv);
-  destroy_v_field(dst);
   
   return tot_iters;
 }
@@ -714,7 +646,7 @@ void dump_wprop_from_wp_field(int saveflag, int savetype, char savefile[],
        propagator file formats without sources records.  The minimal
        source record is a null complex field on time slice zero. */
     
-    save_wprop_from_wp_field(saveflag, savefile, &dummy_wqs, wp, "", io_timing);
+    save_wprop_from_wp_field(saveflag, savefile, "", &dummy_wqs, NULL, wp, io_timing);
   } else {
     /* Source file format */
     int ksource, ncolor, color, spin;
@@ -762,6 +694,6 @@ void reread_wprop_to_wp_field(int saveflag, char savefile[], wilson_prop_field *
   rebuild_wp_field(wp);
 
   init_qs(&dummy_wqs);
-  reload_wprop_to_wp_field(rereadflag, savefile, &dummy_wqs, wp, 1);
+  reload_wprop_to_wp_field(rereadflag, savefile, &dummy_wqs, NULL, wp, 1);
   clear_qs(&dummy_wqs); /* Free any allocations */
 }

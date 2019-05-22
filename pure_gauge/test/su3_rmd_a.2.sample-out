@@ -1,0 +1,49 @@
+Anisotropic pure gauge SU3
+Microcanonical simulation with refreshing
+MIMD version 7
+Machine = Scalar processor, with 1 nodes
+start: Sat Apr 20 06:39:42 2019
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 8352
+LAYOUT = Hypercubes, options = with fixed input-parameter node_geometry
+ON EACH NODE (RANK) 4 x 4 x 4 x 8
+Mallocing 0.9 MBytes per node for lattice
+WARNING!!: Resetting random seed
+
+
+warms 0
+trajecs 10
+traj_between_meas 1
+beta 5 7 
+microcanonical_time_step 0.01
+steps_per_trajectory 4
+fresh 
+forget 
+unit gauge configuration loaded
+CHECK PLAQ: 3.0000000000000000e+00 3.0000000000000000e+00
+CHECK NERSC LINKTR: 1.0000000000000000e+00 CKSUM: 0
+Reunitarized for double precision. Max deviation 0.00e+00 changed to 0.00e+00
+Time to check unitarity = 5.850792e-04
+WARMUPS COMPLETED
+GMES 2.946921e+00 3.340547e-04 9.990000e+01 2.975361e+00 2.975060e+00
+GMES 2.887677e+00 8.236165e-04 9.990000e+01 2.951193e+00 2.949354e+00
+GMES 2.839801e+00 2.379190e-03 9.990000e+01 2.928138e+00 2.926327e+00
+GMES 2.806852e+00 2.234768e-03 9.990000e+01 2.905357e+00 2.905688e+00
+GMES 2.761050e+00 1.225877e-03 9.990000e+01 2.880752e+00 2.882853e+00
+GMES 2.705523e+00 1.042190e-03 9.990000e+01 2.859163e+00 2.859558e+00
+GMES 2.679012e+00 3.676279e-04 9.990000e+01 2.839865e+00 2.838924e+00
+GMES 2.644505e+00 -2.288479e-03 9.990000e+01 2.819544e+00 2.819141e+00
+GMES 2.596445e+00 -2.432656e-03 9.990000e+01 2.799484e+00 2.801217e+00
+GMES 2.546647e+00 4.034159e-03 9.990000e+01 2.778606e+00 2.783614e+00
+RUNNING COMPLETED
+Time = 1.735511e-01 seconds
+
+
+get_i(0): EOF on input.
+exit: Sat Apr 20 06:39:42 2019
+

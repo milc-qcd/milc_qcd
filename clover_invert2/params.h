@@ -57,6 +57,7 @@ typedef struct {
   Real u0;
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
   int time_bc;          /* 0 for antiperiodic, 1 for periodic */
+  /* Eigenparameters (not used in clover_invert2, yet) */
   ks_eigen_param eigen_param; /* Parameters for eigensolver */
   quark_invert_control qic[MAX_PROP];
   int num_base_source;       /* Number of modified sources */

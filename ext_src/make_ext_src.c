@@ -319,8 +319,9 @@ void extract_ksprop_to_ks_source(int startflag, char startfile[], int ncolor,
   for(color = 0;color < ncolor; color++){
     
     /* Read color vector (and source as appropriate) from file */
+    /* FIX ME!!! */
     status = reload_ksprop_c_to_field(startflag, fp_in, &src_qs, 
-				      color, v, timing);
+				      color, src, v, timing);
     if(status != 0)terminate(1);
 
     /* Smear */
@@ -408,8 +409,9 @@ void extract_ksprop_to_w_source(int startflag, char startfile[], int ncolor,
   for(color = 0; color < ncolor; color++){
     
     /* Read color vector (and source as appropriate) from file */
+    /* FIX ME!!! */
     status = reload_ksprop_c_to_field(startflag, fp_in, &src_qs, 
-				      color, v[color], timing);
+				      color, src, v[color], timing);
     if(status != 0)terminate(1);
     
   }

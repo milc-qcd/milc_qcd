@@ -105,9 +105,7 @@ KS_LINKS_OBJECTS = \
 
 KS_IO_OBJECTS =  \
   io_helpers_ks.o   \
-  io_prop_ks.o \
-  io_prop_ks_fm.o \
-  io_source_ks_fm.o
+  io_prop_ks.o
 
 # These are used to compute the spectrum
 
@@ -130,8 +128,6 @@ CL_IO_OBJECTS  = \
   canopy2weyl_rot.o  \
   io_helpers_w.o     \
   io_prop_w.o        \
-  io_prop_w_fm.o     \
-  io_source_w_fm.o   \
   staggered2naive.o 
 
 # These are used to compute the spectrum

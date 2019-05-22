@@ -74,7 +74,6 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     qic[k].max = my_niter;
     qic[k].nrestart = nrestart;
     qic[k].parity = parity;
-    qic[k].start_flag = 0;
     qic[k].nsrc = 1;
     qic[k].resid = sqrt(rsqmin);
     qic[k].relresid = 0;

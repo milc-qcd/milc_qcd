@@ -14,11 +14,10 @@ int prompt;
 
         /* print banner, get volume, nflavors, seed */
     prompt=initial_set();
-        /* Initialize the layout functions, which decide where sites live */
-    setup_layout();
-    this_node = mynode();
         /* initialize the node random number generator */
     initialize_prn(&node_prn,iseed,volume+mynode());
+        /* Initialize the layout functions, which decide where sites live */
+    setup_layout();
         /* allocate space for lattice, set up coordinate fields */
     make_lattice();
         /* set up neighbor pointers and comlink structures */
@@ -30,11 +29,15 @@ int prompt;
 
 /* SETUP ROUTINES */
 int initial_set(){
-int prompt=0,status;
+int prompt,status;
     /* On node zero, read lattice size, seed, nflavors and send to others */
     if(mynode()==0){
         /* print banner */
+#ifndef ANISOTROPY
         printf("Pure gauge SU3\n");
+#else
+        printf("Anisotropic pure gauge SU3\n");
+#endif
 #ifdef RMD_ALGORITHM
         printf("Microcanonical simulation with refreshing\n");
 #endif
@@ -73,6 +76,7 @@ if( par_buf.stopflag != 0 )
     nt=par_buf.nt;
     iseed=par_buf.iseed;
     
+    this_node = mynode();
     number_of_nodes = numnodes();
     volume=nx*ny*nz*nt;
     return(prompt);
@@ -105,7 +109,12 @@ char savebuf[128];
     
 	/* get couplings and broadcast to nodes	*/
 	/* beta, mass */
+#ifndef ANISOTROPY
 	IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
+#else
+    /* beta[0] - space, beta[1] - time */
+    IF_OK status += get_vf(stdin, prompt,"beta", par_buf.beta, 2 );
+#endif
 
 #if ( defined HMC_ALGORITHM || defined RMD_ALGORITHM )
         /* microcanonical time step */
@@ -174,7 +183,12 @@ char savebuf[128];
     fixflag = par_buf.fixflag;
     saveflag = par_buf.saveflag;
     epsilon = par_buf.epsilon;
+#ifndef ANISOTROPY
     beta = par_buf.beta;
+#else
+    beta[0] = par_buf.beta[0];
+    beta[1] = par_buf.beta[1];
+#endif
     strcpy(startfile,par_buf.startfile);
     strcpy(savefile,par_buf.savefile);
     strcpy(stringLFN, par_buf.stringLFN);
