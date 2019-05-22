@@ -47,6 +47,7 @@ number_of_base_sources 1
 # base source 0
 
 corner_wall
+field_type KS
 subset full
 t0 0
 source_label C
@@ -70,6 +71,7 @@ number_of_sets 1
 
 # Parameters common to all members of this set
 
+set_type multimass
 max_cg_iterations 300
 max_cg_restarts 5
 check yes

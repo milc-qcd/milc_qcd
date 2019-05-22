@@ -71,7 +71,6 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
   Real RsdCG = qic->resid * qic->resid;      /* desired residual - 
 				normalized as (r*r)/(src_e*src_e) */
   Real RRsdCG = qic->relresid * qic->relresid;  /* desired relative residual - */
-  int flag = qic->start_flag;   /* 0: use a zero initial guess; 1: use dest */
 
   dirac_clover_param *dcp 
     = (dirac_clover_param *)dmp; /* Cast pass-through pointer */
@@ -204,44 +203,31 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
 	( ( RsdCG  <= 0 || RsdCG  > qic->size_r   ) &&
 	  ( RRsdCG <= 0 || RRsdCG > qic->size_relr) ) ) {
       
-      /* --------- if flag == 0 set dest_e = 0 ---------- */
-      if(flag == 0) {
-#ifdef CG_DEBUG
-	node0_printf("dest_0=0\n");fflush(stdout);
-#endif
-	FOREVENSITESDOMAIN(i,s) {
-	  clear_wvec( &(dest[i]) );
-	}
-	flag = 1;
-
-      } else {
-	
-	/* Test true residual for convergence */
-	/* r=src[1]-[L^(-1)*M*U^(-1)]*dest (even sites) */
-	/* --------- and compute r_e = src_e[1]-M_e*dest_e --------- */
-
+      /* Test true residual for convergence */
+      /* r=src[1]-[L^(-1)*M*U^(-1)]*dest (even sites) */
+      /* --------- and compute r_e = src_e[1]-M_e*dest_e --------- */
+      
 #if 0
-	/* tmp_e = R_e dest_e */
-	mult_this_ldu_field(gen_clov, dest, tmp, EVEN);
-	/* mp_o = D_oe dest_e */
-	dslash_w_field_special(dest, mp, PLUS, ODD, tago, is_startedo);
-	is_startedo = 1;
-	/* tmp_o = 1/R_o D_oe dest_e */
-	mult_this_ldu_field(gen_clov, mp, tmp, ODD);
-	/* mp_e = D_eo/R_o D_oe dest_e */
-	dslash_w_field_special(tmp, mp, PLUS, EVEN, tage, is_startede);
-	is_startede = 1;
+      /* tmp_e = R_e dest_e */
+      mult_this_ldu_field(gen_clov, dest, tmp, EVEN);
+      /* mp_o = D_oe dest_e */
+      dslash_w_field_special(dest, mp, PLUS, ODD, tago, is_startedo);
+      is_startedo = 1;
+      /* tmp_o = 1/R_o D_oe dest_e */
+      mult_this_ldu_field(gen_clov, mp, tmp, ODD);
+      /* mp_e = D_eo/R_o D_oe dest_e */
+      dslash_w_field_special(tmp, mp, PLUS, EVEN, tage, is_startede);
+      is_startede = 1;
 #endif
-	ilu_DRD(dest, mp, tmp, mp, PLUS, tago, &is_startedo,
-		  tage, &is_startede);
-
-	/* mp_e = R_e dest_e - K^2 D_eo/R_o D_oe dest_e = M_e dest_e */
-	/* r_e = src_e - M_e dest_e */
-	FOREVENSITESDOMAIN(i,s) {
-	  scalar_mult_add_wvec( &(tmp[i]), &(mp[i]), MKsq, &(mp[i]) );
-	  scalar_mult_add_wvec( &(src[i]), 
-				&(mp[i]), -1.0, &(r[i])     );
-	}
+      ilu_DRD(dest, mp, tmp, mp, PLUS, tago, &is_startedo,
+	      tage, &is_startede);
+      
+      /* mp_e = R_e dest_e - K^2 D_eo/R_o D_oe dest_e = M_e dest_e */
+      /* r_e = src_e - M_e dest_e */
+      FOREVENSITESDOMAIN(i,s) {
+	scalar_mult_add_wvec( &(tmp[i]), &(mp[i]), MKsq, &(mp[i]) );
+	scalar_mult_add_wvec( &(src[i]), 
+			      &(mp[i]), -1.0, &(r[i])     );
       }
 
       /* --------- size_r = sqrt(r * r)/size_src --------- */

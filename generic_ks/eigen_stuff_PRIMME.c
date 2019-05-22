@@ -225,7 +225,11 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   ret = primme_set_method(PRIMME_DYNAMIC, &primme);
 
   /* primme.printLevel=3; */
-  primme.printLevel=1;
+#ifdef PRIMME_PRINTLEVEL
+  primme.printLevel = PRIMME_PRINTLEVEL;
+#else
+  primme.printLevel = 1;
+#endif
   
 #ifdef MATVEC_PRECOND
   primme.target=primme_largest;
@@ -257,7 +261,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 
   /* Display parameters */
   if(this_node==0){
-    printf("PRIMME workspace int = %d long int = %ld\n", primme.intWorkSize, primme.realWorkSize); fflush(stdout);
+    //    printf("PRIMME workspace int = %d long int = %ld\n", primme.intWorkSize, primme.realWorkSize); fflush(stdout);
     primme_display_params(primme);
   }
 

@@ -20,6 +20,13 @@ typedef struct {
 /* Alternative name for double complex */
 typedef double_complex dcomplex;
 
+/* specific for long double complex */
+typedef struct {
+   long double real;
+   long double imag;
+} long_double_complex;
+
+
 #if (MILC_PRECISION==1)
 #define complex fcomplex
 #else
