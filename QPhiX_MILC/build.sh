@@ -2,17 +2,17 @@
 
 # Usage
 
-#  build.sh <scalar|knl|hsw|skx> <CC> <CXX>
+#  build.sh <scalar|knl|hsw|skx> <CXX>
 
-# where CC is the C compiler (currently ignored)
-#       CXX is the C++ compiler
+# where CXX is the C++ compiler
 
-# You may also need to edit milc-qphix/Makefile_qphixlib
+# You may also need to edit milc-qphix/Makefile
 
 ARCH=$1     # Choices: scalar, knl, hsw
-PK_CC=$2
-PK_CXX=$3
-GIT_BRANCH=gauge_force
+PK_CXX=$2
+
+#GIT_BRANCH=gauge_force
+GIT_BRANCH=feature/fermion-force
 
 if [ -z "${ARCH}" ]
 then
@@ -56,11 +56,11 @@ fi
 
 # HACK: Need to copy files from milc-qphix/avx512 to milc-qphix-codegen/avx512
 # Note, These files work only for double precision and avx512
-/bin/cp milc-qphix/avx512/ff_* ${dir}/avx512
+#/bin/cp milc-qphix/avx512/ff_* ${dir}/avx512
 
 pushd ${dir}
 
-# ${MAKE} ${TARGET} ${modecmd}
+${MAKE} ${TARGET} ${modecmd}
 
 popd
 
@@ -75,13 +75,13 @@ MAKE="make -j4"
 if [ ! -d ${dir} ]
 then
   echo "Fetching ${GIT_BRANCH} branch of package from github"
-  #git clone https://github.com/JeffersonLab/${dir} -b ${GIT_BRANCH}
+  git clone https://github.com/JeffersonLab/${dir} -b ${GIT_BRANCH}
 fi
 
 pushd ${dir}
+mkdir -p lib
 
-#${MAKE} -f Makefile_qphixlib ${modecmd} "ARCH=${ARCH}" "PK_CXX=${PK_CXX}"
-${MAKE} -f Makefile_ff "ARCH=${ARCH}" "PK_CXX=${PK_CXX}"
+${MAKE} "ARCH=${ARCH}" "PK_CXX=${PK_CXX}"
 
 popd
 
