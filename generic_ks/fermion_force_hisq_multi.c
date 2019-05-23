@@ -57,7 +57,6 @@
 #include "../include/generic_qphixmilc.h"
 #include "../include/generic_ks_qphix.h"
 #include "qphix.h"
-#include <qphix_ff_interface.h>
 #endif
 
 #ifdef FF_VTUNE
@@ -176,6 +175,11 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
 #ifdef FFTIME
 #ifdef USE_FF_GPU
   node0_printf("FFTIME:  time = %e (HISQ QUDA %s) terms = %d flops/site = %d mflops = %e\n",
+	       info.final_sec,qop_prec[MILC_PRECISION-1],nterms,
+	       (int)(info.final_flop*numnodes()/volume),
+	       info.final_flop/(1e6*info.final_sec) );
+#elif defined(USE_FF_QPHIX)
+  node0_printf("FFTIME:  time = %e (HISQ QPHIX %s) terms = %d flops/site = %d mflops = %e\n",
 	       info.final_sec,qop_prec[MILC_PRECISION-1],nterms,
 	       (int)(info.final_flop*numnodes()/volume),
 	       info.final_flop/(1e6*info.final_sec) );
