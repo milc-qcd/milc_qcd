@@ -476,6 +476,7 @@ endif
 WANTQPHIX = #true
 WANT_FN_CG_QPHIX = true
 WANT_GF_QPHIX = true
+WANT_FF_QPHIX = true
 
 QPHIX_HOME = ../QPhiX_MILC/milc-qphix
 
