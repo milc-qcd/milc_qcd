@@ -1495,9 +1495,7 @@ void FERMION_FORCE_MULTI(info_t *info, Real eps, Real *residues,
   char myname[] = "fermion_force_multi_hisq";
   int i;
   Real *epsv;
-  QPHIX_FermionLinksHisq qphix_link;
   QPHIX_ColorVector **qphix_xxx;
-  QPHIX_ColorMatrix *qmom[4];
 
   if(initialize_qphix(QPHIX_PrecisionInt) != QPHIX_SUCCESS){
     node0_printf("%s: Error initializing QPHIX\n",myname);
@@ -1507,24 +1505,32 @@ void FERMION_FORCE_MULTI(info_t *info, Real eps, Real *residues,
   hisq_auxiliary_t *aux = get_hisq_auxiliary(fl);
 
   /* get milc links, momentum and coefts to qphix links, momentum and coeft format */
-  for(int i=0; i<4; i++) {
-    QPHIX_create_M(&qphix_link.U_links[i], EVENANDODD);
-    QPHIX_create_M(&qphix_link.V_links[i], EVENANDODD);
-    QPHIX_create_M(&qphix_link.W_unitlinks[i], EVENANDODD);
-    QPHIX_create_M(&qphix_link.Y_unitlinks[i], EVENANDODD);
-//    QPHIX_layout_from_4su3m(qphix_link.U_links[i], (su3_matrix*)&(aux->U_link[i]));
-//    QPHIX_layout_from_4su3m(qphix_link.V_links[i], (su3_matrix*)&(aux->V_link[i]));
-//    QPHIX_layout_from_4su3m(qphix_link.W_unitlinks[i], (su3_matrix*)&(aux->W_unitlink[i]));
-//    QPHIX_layout_from_4su3m(qphix_link.Y_unitlinks[i], (su3_matrix*)&(aux->Y_unitlink[i]));
+  QPHIX_FermionLinksHisq *qphix_links = 
+    QPHIX_hisq_create_L_from_4su3m( (void *)&(aux->U_link[0]), (void *)&(aux->V_link[0]),
+				    (void *)&(aux->W_unitlink[0]), (void *)&(aux->Y_unitlink[0]),
+				    EVENANDODD );
+  QPHIX_ColorMatrix **qmom = 
+    QPHIX_create_F_from_anti_hermitmat( (void *)&(lattice->mom[0]), sizeof(site) );
 
-    QPHIX_create_M(&qmom[i], EVENANDODD);
-//    QPHIX_layout_from_anti_hermitmat((anti_hermitmat*)&(lattice->mom[i]), qmom[i]);
-  }
-  QPHIX_layout_from_4su3m(qphix_link.U_links, (su3_matrix*)&(aux->U_link[0]));
-  QPHIX_layout_from_4su3m(qphix_link.V_links, (su3_matrix*)&(aux->V_link[0]));
-  QPHIX_layout_from_4su3m(qphix_link.W_unitlinks, (su3_matrix*)&(aux->W_unitlink[0]));
-  QPHIX_layout_from_4su3m(qphix_link.Y_unitlinks, (su3_matrix*)&(aux->Y_unitlink[0]));
-  QPHIX_layout_from_anti_hermitmat(qmom,(void*)&(lattice->mom[0]),sizeof(site));
+  //  for(int i=0; i<4; i++) {
+  //    qphix_links.U_links[i] = QPHIX_create_M(EVENANDODD);
+  //    qphix_links.V_links[i] = QPHIX_create_M(EVENANDODD);
+  //    qphix_links.W_unitlinks[i] = QPHIX_create_M(EVENANDODD);
+  //    qphix_links.Y_unitlinks[i] = QPHIX_create_M(EVENANDODD);
+  
+  //    QPHIX_layout_from_4su3m(qphix_links.U_links[i], (su3_matrix*)&(aux->U_link[i]));
+  //    QPHIX_layout_from_4su3m(qphix_links.V_links[i], (su3_matrix*)&(aux->V_link[i]));
+  //    QPHIX_layout_from_4su3m(qphix_links.W_unitlinks[i], (su3_matrix*)&(aux->W_unitlink[i]));
+  //    QPHIX_layout_from_4su3m(qphix_links.Y_unitlinks[i], (su3_matrix*)&(aux->Y_unitlink[i]));
+  
+  //    qmom[i] = QPHIX_create_M(EVENANDODD);
+  //    QPHIX_layout_from_anti_hermitmat((anti_hermitmat*)&(lattice->mom[i]), qmom[i]);
+  // }
+  //  QPHIX_layout_from_4su3m(qphix_links.U_links, (su3_matrix*)&(aux->U_link[0]));
+  //  QPHIX_layout_from_4su3m(qphix_links.V_links, (su3_matrix*)&(aux->V_link[0]));
+  //  QPHIX_layout_from_4su3m(qphix_links.W_unitlinks, (su3_matrix*)&(aux->W_unitlink[0]));
+  //  QPHIX_layout_from_4su3m(qphix_links.Y_unitlinks, (su3_matrix*)&(aux->Y_unitlink[0]));
+  //  QPHIX_layout_from_anti_hermitmat(qmom,(void*)&(lattice->mom[0]),sizeof(site));
 
   QPHIX_hisq_coeffs_t *coeff = create_hisq_coeffs_qphix(fl->flg->hisq->ap);
 
@@ -1550,7 +1556,7 @@ void FERMION_FORCE_MULTI(info_t *info, Real eps, Real *residues,
 #ifdef FF_VTUNE
   __itt_resume();
 #endif
-  QPHIX_hisq_force_multi((QPHIX_info_t*)info, &qphix_link, qmom, coeff, epsv, qphix_xxx, n_orders_naik);
+  QPHIX_hisq_force_multi((QPHIX_info_t*)info, qphix_links, qmom, coeff, epsv, qphix_xxx, n_orders_naik);
 #ifdef FF_VTUNE
   __itt_pause();
 #endif
@@ -1568,6 +1574,11 @@ void FERMION_FORCE_MULTI(info_t *info, Real eps, Real *residues,
   for(i=0;i<3;i++) {
     QPHIX_destroy_M(qmom[i]);
   }
+
+  free(qmom);
+
+  QPHIX_hisq_destroy_L(qphix_links);
+
 }
 
 /*
