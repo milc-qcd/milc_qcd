@@ -34,8 +34,8 @@ then
   TARGET=avx512
 elif [ ${ARCH} = "hsw" ]
 then
-  modecmd="mode=hsw"
-  TARGET=avx512
+  modecmd="mode=avx"
+  TARGET=avx2
 else
   modecmd="mode=mic"
   TARGET=avx2
