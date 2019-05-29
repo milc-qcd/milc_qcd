@@ -161,6 +161,7 @@ typedef struct {
   int max;            /* maximum number of iterations per restart */
   int nrestart;       /* maximum restarts */
   int parity;         /* EVEN, ODD, or EVENANDODD (for some inverters) */
+  int start_flag;     /* 0: use a zero initial guess; 1: use dest */
   int nsrc;           /* Number of source vectors */
   int deflate;        /* True if we want to deflate. False if not. */
   Real resid;         /* desired residual - NOT SQUARED!
