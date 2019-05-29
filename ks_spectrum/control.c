@@ -753,6 +753,7 @@ int main(int argc, char *argv[])
 
     node0_printf("RUNNING COMPLETED\n");
     endtime=dclock();
+    starttime = endtime; /* In case we continue looping over readin */
     
     node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
     node0_printf("total_iters = %d\n",total_iters);
