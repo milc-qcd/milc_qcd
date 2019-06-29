@@ -255,6 +255,11 @@ void insert_wv_from_v(wilson_vector *wv, su3_vector *v, int spin);
 
 void extract_v_from_wv(su3_vector *v, wilson_vector *wv, int spin);
 
+void extract_wv_from_swv(wilson_vector *wv, spin_wilson_vector *swv, int spin);
+
+void insert_swv_from_wv(spin_wilson_vector *swv, int spin, wilson_vector *wv);
+
+void insert_swv_from_v(spin_wilson_vector *swv, int spin_src, int spin_snk, su3_vector *v);
 void copy_v_from_ksp(su3_vector *v, ks_prop_field *ksp, int color);
 void insert_ksp_from_v(ks_prop_field *ksp, su3_vector *v, int color);
 

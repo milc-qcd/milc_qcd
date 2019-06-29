@@ -9,7 +9,9 @@
 /* Code version                                                     */
 /********************************************************************/
 
+#ifndef MILC_CODE_VERSION
 #define MILC_CODE_VERSION "7.8.1"
+#endif
 
 /********************************************************************/
 /* Compiler/Processor-dependent macros */

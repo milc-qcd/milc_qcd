@@ -395,7 +395,7 @@ void insert_wv_from_v(wilson_vector *wv, su3_vector *v, int spin){
 }
 
 /*--------------------------------------------------------------------*/
-/* Insert v field into wv field  */
+/* Extract v field from wv field  */
 void extract_v_from_wv(su3_vector *v, wilson_vector *wv, int spin){
   int i; site *s;
   int c;
@@ -628,6 +628,29 @@ wilson_vector *create_wv_from_swv(spin_wilson_vector *swv, int spin){
 }
 
 /*--------------------------------------------------------------------*/
+/* Extract wilson vector field from spin wilson vector field  */
+void extract_wv_from_swv(wilson_vector *wv, spin_wilson_vector *swv, int spin){
+  
+  int i;
+  
+  FORALLFIELDSITES_OMP(i,default(shared)){
+    wv[i] = swv[i].d[spin];
+  } END_LOOP_OMP
+}
+
+/*--------------------------------------------------------------------*/
+
+void insert_swv_from_v(spin_wilson_vector *swv, int spin_src, int spin_snk, su3_vector *v){
+  
+  int i;
+  
+  FORALLFIELDSITES_OMP(i,default(shared)){
+    swv[i].d[spin_snk].d[spin_src] = v[i];
+  } END_LOOP_OMP
+}
+
+
+/*--------------------------------------------------------------------*/
 
 void insert_swv_from_wv(spin_wilson_vector *swv, int spin, wilson_vector *wv){
   
@@ -637,4 +660,5 @@ void insert_swv_from_wv(spin_wilson_vector *swv, int spin, wilson_vector *wv){
     swv[i].d[spin] = wv[i];
   } END_LOOP_OMP
 }
+
 

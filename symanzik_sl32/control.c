@@ -48,6 +48,11 @@ int key[4];
 	/* set up loop tables */
 	make_loop_table();
 
+#ifdef ANISOTROPY
+        /* figure out which loops are temporal and which are spatial */
+        path_determine_st();
+#endif
+
 	/* perform warmup trajectories */
 	dtime = -dclock();
 

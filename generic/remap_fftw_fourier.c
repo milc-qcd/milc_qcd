@@ -832,6 +832,7 @@ void restrict_fourier_field(
   ftd = create_ft_data(src, size);
 
   /* Create plans */
+  g_sync();  /* Make sure all ranks are ready before starting */
   make_fftw_plans(size, ftd);
 
   /* Map MILC to first FT dir */

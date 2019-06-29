@@ -56,8 +56,9 @@
 
 int main(int argc, char *argv[])
 {
+  char myname[] = "main";
   int prompt;
-  int i, j, k, iq0, iq1, iq2;
+  int i, is, j, k, iq0, iq1, iq2;
 #ifdef KS_LEAN
   int oldiq0, oldiq1, oldiq2, oldip0;
   int quark_nc[MAX_QK];
@@ -68,6 +69,7 @@ int main(int argc, char *argv[])
 #ifdef PRTIME
   double dtime;
 #endif
+  ks_prop_field *source[MAX_SOURCE];
   ks_prop_field *prop[MAX_PROP];
   ks_prop_field *quark[MAX_QK];
   int prop_nc[MAX_PROP];
@@ -76,6 +78,7 @@ int main(int argc, char *argv[])
   
   initialize_machine(&argc,&argv);
 
+  for(i = 0; i < MAX_SOURCE; i++)source[i] = NULL;
   for(i = 0; i < MAX_PROP; i++)prop[i] = NULL;
   for(i = 0; i < MAX_QK; i++)quark[i] = NULL;
 
@@ -256,30 +259,112 @@ int main(int argc, char *argv[])
 
     /**************************************************************/
 
+    /* Create sources */
+
+    STARTTIME;
+
+    /* Base sources */
+
+    for(k=0; k<param.num_base_source; k++){
+      quark_source *qs = &param.src_qs[k];
+      source[k] = create_ksp_field(qs->ncolor);
+
+      /* Open file with metadata */
+      if(qs->saveflag != FORGET){
+	char *fileinfo = create_ks_XML();
+	w_source_open_ks(qs, fileinfo);
+	free(fileinfo);
+      }
+      
+      for(int color = 0; color < qs->ncolor; color++){
+
+	/* Create a base source */
+	if(v_source_field(source[k]->v[color], qs)){
+	  printf("%s(%d): error getting source\n",myname,this_node);
+	  terminate(1);
+	}
+
+	/* Write the source, if requested */
+	if(qs->saveflag != FORGET){
+	  if(w_source_ks( source[k]->v[color], qs ) != 0)
+	    node0_printf("Error writing source\n");
+	}
+      } /* color */
+  
+      if(qs->saveflag != FORGET) w_source_close(qs);
+    }
+
+
+    /* Modified sources */
+    for(is=param.num_base_source; is<param.num_base_source+param.num_modified_source; is++){
+
+      quark_source *qs = &param.src_qs[is];
+      source[is] = create_ksp_field(qs->ncolor);
+      
+      if(qs->saveflag != FORGET){
+	char *fileinfo = create_ks_XML();
+	w_source_open_ks(qs, fileinfo);
+	free(fileinfo);
+      }
+      
+      /* Copy parent source */
+      int p = param.parent_source[is];
+      copy_ksp_field(source[is],  source[p]);
+
+      for(int color = 0; color < qs->ncolor; color++){
+
+	/* Apply operator*/
+	v_field_op(source[is]->v[color], qs->op, qs->subset, qs->t0);
+
+	/* Write the source, if requested */
+	if(qs->saveflag != FORGET){
+	  if(w_source_ks( source[is]->v[color], qs ) != 0)
+	    node0_printf("Error writing source\n");
+	}
+      } /* color */
+
+      if(qs->saveflag != FORGET) w_source_close(qs);
+
+    } /* is */
+
+    ENDTIME("create sources");
+
+    /**************************************************************/
+
 
     /* Loop over sets of propagators */
 
     STARTTIME;
+
+    /* Temporary lists */
+    ks_prop_field *tmp_source[MAX_PROP];
+    quark_source *tmp_src_qs[MAX_PROP];
+    
     for(k=0; k<param.num_set; k++){
       int num_prop = param.end_prop[k] - param.begin_prop[k] + 1;
       int i0 = param.begin_prop[k];
 
+
       for(i=param.begin_prop[k]; i <= param.end_prop[k]; i++){
-      
+
 	/**************************************************************/
 	/* Read and/or generate quark propagator */
 	
-	prop_nc[i] = param.src_qs[k].ncolor;
-	prop[i] = create_ksp_field(prop_nc[i]);
+	is = param.source[i];  /* source index for this propagator */
+	prop_nc[i] = param.src_qs[is].ncolor;
 	
+	/* Allocate propagator */
+	prop[i] = create_ksp_field(prop_nc[i]);
 	if(prop[i] == NULL){
 	  printf("main(%d): No room for prop\n",this_node);
 	  terminate(1);
 	}
-	
+	tmp_source[i] = source[is];  /* Pointer copy */
+	tmp_src_qs[i] = &param.src_qs[is]; 
+
 	node0_printf("Mass= %g source %s ",
 		     (double)param.ksp[i].mass,
-		     param.src_qs[k].descrp);
+		     param.src_qs[is].descrp);
 #ifdef U1_FIELD
 	node0_printf("Q %g ",param.charge[k]);
 #endif
@@ -291,21 +376,21 @@ int main(int argc, char *argv[])
       
       /* We pass the beginning addresses of the set data */
       
-      total_iters += solve_ksprop(num_prop,
+      total_iters += solve_ksprop(param.set_type[k],
+				  num_prop,
 				  param.startflag_ks + i0,
 				  param.startfile_ks + i0,
 				  param.saveflag_ks + i0,
 				  param.savefile_ks + i0,
 				  prop + i0,
-				  &param.src_qs[k], 
+				  tmp_source + i0,
+				  tmp_src_qs + i0,
 				  param.qic + i0, 
 				  param.ksp + i0,
 				  param.charge[k],
 				  param.bdry_phase[i0],
 				  param.coord_origin,
 				  param.check[i0]);
-      
-      clear_qs(&param.src_qs[k]);
       
     } /* sets */
     ENDTIME("compute propagators");
@@ -668,6 +753,7 @@ int main(int argc, char *argv[])
 
     node0_printf("RUNNING COMPLETED\n");
     endtime=dclock();
+    starttime = endtime; /* In case we continue looping over readin */
     
     node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
     node0_printf("total_iters = %d\n",total_iters);
