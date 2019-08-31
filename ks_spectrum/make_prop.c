@@ -35,10 +35,12 @@
 
 /* Solve for the propagator (if requested) for all members of the set */
 
-int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
+int solve_ksprop(int set_type,
+		 int num_prop, int startflag[], char startfile[][MAXFILENAME],
 		 int saveflag[], char savefile[][MAXFILENAME],
 		 ks_prop_field *ksprop[],
-		 quark_source *my_ksqs,
+		 ks_prop_field *source[],
+                 quark_source *my_ksqs[],
 		 quark_invert_control my_qic[],
 		 ks_param my_ksp[],
 		 Real charge,
@@ -52,8 +54,7 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
   int status = 0;
   char *fileinfo;
   int tot_iters = 0;
-  ks_prop_file *fp_in[MAX_PROP], *fp_out[MAX_PROP]; 
-  su3_vector **dst, *src;
+  su3_vector **dst;
   imp_ferm_links_t **fn = NULL;
   Real mybdry_phase[4];
   imp_ferm_links_t **fn_multi = NULL;
@@ -68,29 +69,9 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
      They can be different for each propagator
      NO, they must be the same! */
 
-//  r0[0] = my_ksqs->x0;
-//  r0[1] = my_ksqs->y0;
-//  r0[2] = my_ksqs->z0;
-//  r0[3] = my_ksqs->t0;
-  
-  ksqstmp = *my_ksqs;     /* For ksprop_info. Source is common to the set */
+  ksqstmp = *my_ksqs[0];     /* For ksprop_info. Source is common to the set */
   ksptmp  = my_ksp[0];      /* For action parameters */
 
-  /* Open files for KS propagators, if requested */
-
-  for(j = 0; j < num_prop; j++){
-    fp_in[j]  = r_open_ksprop(startflag[j], startfile[j]);
-    fp_out[j] = w_open_ksprop(saveflag[j],  savefile[j], VECTOR_FIELD_FILE);
-  }
-
-  /* Provision for writing the source to a file */
-  
-  if(my_ksqs->saveflag != FORGET){
-    fileinfo = create_ks_XML();
-    w_source_open_ks(my_ksqs, fileinfo);
-    free(fileinfo);
-  }
-  
   /* Construct fermion links if we will need them */
 
   if(check != CHECK_NO || startflag[0] == FRESH ){
@@ -112,69 +93,46 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
       boundary_twist_fn(fn[j], ON);
     }
 
-    /* Apply twist to the APE links */
-    /* They do not carry the KS phases, but they do carry the time bc */
-    /* This operation applies the phase to the boundary */
-    //    mybdry_phase[3] = 0; 
-    //    momentum_twist_links(mybdry_phase, 1, ape_links);
-    //    mybdry_phase[3] = bdry_phase[3]; 
-    mybdry_phase[3] = 0;
-    boundary_twist_field( mybdry_phase, r0, 1, ape_links);
-    mybdry_phase[3] = bdry_phase[3];
-
     /* Copy pointers for fermion links, based on Naik epsilon indices */
     fn_multi = (imp_ferm_links_t **)
       malloc(sizeof(imp_ferm_links_t *)*num_prop);
     for(j = 0; j < num_prop; j++)
       fn_multi[j] = fn[my_ksp[j].naik_term_epsilon_index];
     
-  }
+  } /* check != CHECK_NO || startflag[0] == FRESH */
 
   /* Check (or produce) the solution if requested */
-  for(color = 0; color < my_ksqs->ncolor; color++){
-    
-    node0_printf("%s: color = %d\n",myname, color);
-
-    /* Load the propagators */
-
-    for(j = 0; j < num_prop; j++){
-      status = reload_ksprop_c_to_field(startflag[j], fp_in[j], my_ksqs, 
-					color, ksprop[j]->v[color], 1);
+  
+  /* Load the propagators */
+  for(j = 0; j < num_prop; j++){
+    if(startflag[j] != FRESH){
+      status = reload_ksprop_to_ksp_field(startflag[j], startfile[j],
+					  my_ksqs[j], source[j], ksprop[j], 1);
       if(status != 0){
 	node0_printf("Failed to reload propagator\n");
 	terminate(1);
+      } else {
+	node0_printf("Restored propagator from %s\n",startfile[j]);
       }
     }
-      
+  }
+
+  /* Loop over source colors.  They should be the same for all sources. */
+  for(color = 0; color < source[0]->nc; color++){
+    
+    node0_printf("%s: color = %d\n",myname, color);
+
+    /* List pointers to sources for this color */
+    su3_vector **src = (su3_vector **)malloc(num_prop*sizeof(su3_vector *));
+    for(j = 0; j < num_prop; j++) src[j] = source[j]->v[color];
+
     /* Solve for the propagator if the starting guess is zero
        or we didn't say not to solve. */
     if(check != CHECK_NO || startflag[0] == FRESH){
-      /* Create the source common to this inversion */
-      src = create_v_field();
 
-      if(v_source_field(src, my_ksqs)){
-	printf("%s(%d): error getting source\n",myname,this_node);
-	terminate(1);
-      };
-    
-      /* Cache the source for writing to the propagator file */
-      if(my_ksqs->saveflag != FORGET){
-	alloc_cached_v_source(my_ksqs);
-	copy_v_field(my_ksqs->v_src, src);
-      }
-      
-      /* Write the source, if requested */
-      if(my_ksqs->saveflag != FORGET){
-	if(w_source_ks( src, my_ksqs ) != 0){
-	  node0_printf("Error writing source\n");
-	}
-      }
-      
-      /* Make a list of num_prop solution pointers for the current color */
+      /* List pointers to solutions for the current color */
       dst = (su3_vector **)malloc(num_prop*sizeof(su3_vector *));
-      for(j = 0; j < num_prop; j++){
-	dst[j] = ksprop[j]->v[color];
-      }
+      for(j = 0; j < num_prop; j++) dst[j] = ksprop[j]->v[color];
 	
       if(check != CHECK_SOURCE_ONLY){
 
@@ -189,8 +147,9 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	   It is used only for switching between periodic and
 	   antiperiodic bc's */
 	
-	mybdry_phase[3] = 0; 
-	rephase_v_field(src, mybdry_phase, r0, 1);
+	mybdry_phase[3] = 0;
+	for(j = 0; j < num_prop; j++)
+	  rephase_v_field(src[j], mybdry_phase, r0, 1);
 	mybdry_phase[3] = bdry_phase[3]; 
 	
 	if(startflag[0] != FRESH){
@@ -201,14 +160,11 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	    rephase_v_field(dst[j], mybdry_phase, r0, 1);
 	  }
 	  mybdry_phase[3] = bdry_phase[3]; 
-	}
+	} /* startflag[0] != FRESH */
 
 	if(num_prop == 1){
 	  
 	  /* Single mass inversion */
-	  
-	  if(startflag[0] == FRESH) my_qic[0].start_flag = START_ZERO_GUESS;
-	  else                      my_qic[0].start_flag = START_NONZERO_GUESS;
 	  
 	  /* When we start from a preloaded solution we use the less
 	     optimized mat_invert_cg_field algorithm, instead of
@@ -220,102 +176,75 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	     the optimized mat_invert_uml_field algorithm. */
 	  
 	  if(startflag[0] == FRESH){
-	    mat_invert_uml_field(src, dst[0], my_qic+0, my_ksp[0].mass, 
+	    mat_invert_uml_field(src[0], dst[0], my_qic+0, my_ksp[0].mass, 
 				 fn_multi[0]);
 	  } else {
-	    mat_invert_cg_field(src, dst[0], my_qic+0, my_ksp[0].mass, 
+	    mat_invert_cg_field(src[0], dst[0], my_qic+0, my_ksp[0].mass, 
 				fn_multi[0]);
 	  }
 	} else {
-
 	  /* If we have restored any propagator, we use the single-mass inverter */
 	  /* In most use cases they are either all restored, or all fresh */
 
 	  if(startflag[0] != FRESH){
 	    for(j = 0; j < num_prop; j++){
-	      mat_invert_cg_field(src, dst[j], my_qic+j, my_ksp[j].mass, 
-				  fn_multi[j]);
+	      if(set_type == MULTIMASS_SET)
+		/* Multimass inversion */
+		mat_invert_cg_field(src[0], dst[j], my_qic+j, my_ksp[j].mass, 
+				    fn_multi[j]);
+	      else
+		/* Multisource inversion */
+		mat_invert_cg_field(src[j], dst[j], my_qic+j, my_ksp[0].mass, 
+				    fn_multi[j]);
 	    }
 	  } else {
 
-	    /* Multimass inversion */
-	    mat_invert_multi(src, dst, my_ksp, num_prop, my_qic, fn_multi);
-
+	    if(set_type == MULTIMASS_SET)
+	      /* Multimass inversion */
+	      mat_invert_multi(src[0], dst, my_ksp, num_prop, my_qic, fn_multi);
+	    else {
+	      /* Multisource inversion */
+	      int num_src = num_prop;  /* Should change to num_prop * ncolors */
+	      mat_invert_block_uml(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
+	    }
 	  }
 	}
 	
-	
-	/* Transform solution, completing the U(1) gauge transformation */
+	/* Transform solutions, completing the U(1) gauge transformation */
 	mybdry_phase[3] = 0; 
 	for(j = 0; j < num_prop; j++){
 	  rephase_v_field(dst[j], mybdry_phase, r0, -1);
 	}
 	mybdry_phase[3] = bdry_phase[3]; 
 	
-      } else { /* if(check != CHECK_SOURCE_ONLY) */
-
+      } else {
+	
 	/* Copy source to solution(s) so we can use it there */
 	for(j = 0; j < num_prop; j++)
-	  copy_v_field(dst[j], src);
-	
-      }
-
-      /* save solutions if requested */
-      for(i = 0; i < num_prop; i++){
-	status = save_ksprop_c_from_field( saveflag[i], fp_out[i], my_ksqs, 
-					   color, dst[i], "", 1);
-	if(status != 0){
-	  node0_printf("Failed to write propagator\n");
-	  terminate(1);
-	}
-      }
-      
-#ifdef DEBUG_NAIVE
-      rephase( OFF );
-      for(i = 0; i < num_prop; i++)
-	{
-	  spin_wilson_vector *swv = create_swv_field();
-	  wilson_vector *wv  = create_wv_field();
-	  wilson_vector *wvsrc = create_wv_field();
-	  su3_vector *v = create_v_field();
-	  int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
-	  int spin;
-	  
-	  convert_ksprop_to_wprop_swv(swv, dst[i], ks_source_r, r0);
-	  for(spin = 0; spin < 4; spin++){
-	    copy_wv_from_swv(wv, swv, spin);
-	    clear_wv_field(wvsrc);
-	    copy_wv_from_v(wvsrc, src, spin);
-	    check_naive(wv, wvsrc, my_ksp[i].mass, 1e-5);
-	  }
-	  
-	  destroy_v_field(v);
-	  destroy_wv_field(wv);
-	  destroy_wv_field(wvsrc);
-	  destroy_swv_field(swv);
-	}
-      rephase( ON );
-#endif
+	  copy_v_field(dst[j], src[j]);
+      }  /* if(check != CHECK_SOURCE_ONLY) */
       
       /* Clean up */
       free(dst);
-      
-      destroy_v_field(src);
+      free(src);
       
     } /* if(check != CHECK_NO || startflag[0] == FRESH)} */
 
   } /* color */
 
-  
-  if(check != CHECK_NO || startflag[0] == FRESH ){
+  /* save solutions if requested */
+  for(j = 0; j < num_prop; j++){
+    status = save_ksprop_from_ksp_field( saveflag[j], savefile[j], "",
+					 my_ksqs[j], source[j], ksprop[j], 1);
+    if(status != 0){
+      node0_printf("Failed to write propagator\n");
+      terminate(1);
+    }
+    if(saveflag[j] != FORGET)
+      node0_printf("Saved propagator to %s\n",savefile[j]);
+  }
 
-    /* Unapply twist to the APE links */
-    //    mybdry_phase[3] = 0; 
-    //    momentum_twist_links(mybdry_phase, -1, ape_links);
-    //    mybdry_phase[3] = bdry_phase[3]; 
-    mybdry_phase[3] = 0;
-    boundary_twist_field( mybdry_phase, r0, -1, ape_links);
-    mybdry_phase[3] = bdry_phase[3];
+  if(check != CHECK_NO || startflag[0] == FRESH ){
 
   /* Unapply twisted boundary conditions on the fermion links and
      restore conventional KS phases and antiperiodic BC, if
@@ -324,17 +253,6 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
       boundary_twist_fn(fn[j], OFF);
   }
     
-  for(i = 0; i < num_prop; i++){
-    r_close_ksprop(startflag[i], fp_in[i]); 
-    w_close_ksprop(saveflag[i],  fp_out[i]);
-    if(saveflag[i] != FORGET)
-      node0_printf("Saved propagator to %s\n",savefile[i]);
-  }
-
-  if(my_ksqs->saveflag != FORGET){
-    w_source_close(my_ksqs);
-  }
-  
 #ifdef U1_FIELD
   /* Unapply the U(1) field phases */
   u1phase_off();
@@ -346,7 +264,7 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
   return tot_iters;
 
 }
-/* Dump wilson propagator field to file */
+/* Dump KS propagator field to file */
 
 void dump_ksprop_from_ksp_field(int saveflag, char savefile[], 
 				ks_prop_field *ksprop){
@@ -369,7 +287,7 @@ void dump_ksprop_from_ksp_field(int saveflag, char savefile[],
 
   init_qs(&dummy_ksqs);
   ksqstmp = dummy_ksqs;   /* For ksprop_info.c */
-  save_ksprop_from_ksp_field(saveflag, savefile, "", &dummy_ksqs, ksprop, 1);
+  save_ksprop_from_ksp_field(saveflag, savefile, "", &dummy_ksqs, NULL, ksprop, 1);
   clear_qs(&dummy_ksqs); /* Free any allocations */
 }
 
@@ -383,15 +301,15 @@ ks_prop_field *reread_ksprop_to_ksp_field(int saveflag, char savefile[],
   int rereadflag = convert_outflag_to_inflag_ksprop(saveflag);
 
   if(rereadflag == FRESH){
-    printf("%s(%d) Can't reread file %s when saveflag is %d\n",
-	   myname, this_node, savefile, saveflag);
+    printf("%s(%d) Can't reread file %s when saveflag is FRESH\n",
+	   myname, this_node, savefile);
     terminate(1);
   }
 
   ksprop = create_ksp_field(nc);
 
   init_qs(&dummy_ksqs);
-  reload_ksprop_to_ksp_field(rereadflag, savefile, &dummy_ksqs, ksprop, 1);
+  reload_ksprop_to_ksp_field(rereadflag, savefile, &dummy_ksqs, NULL, ksprop, 1);
   clear_qs(&dummy_ksqs); /* Free any allocations */
   return ksprop;
 }

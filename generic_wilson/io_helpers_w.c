@@ -31,8 +31,8 @@ open_input_usqcd_prop_file(w_prop_file *wpf, int serpar)
 /*---------------------------------------------------------------*/
 /* Read a USQCD Wilson propagator source and record according to file type */
 static int 
-read_usqcd_wprop_record(w_prop_file *wpf, 
-			int spin, int color, wilson_vector *dest,
+read_usqcd_wprop_record(w_prop_file *wpf, int spin, int color,
+			wilson_vector *src, wilson_vector *prop,
 			quark_source *wqs )
 {
   int status = 0;
@@ -40,31 +40,29 @@ read_usqcd_wprop_record(w_prop_file *wpf,
   char myname[] = "read_usqcd_wprop_record";
   int file_type = wpf->file_type;
 
-  if(file_type == FILE_TYPE_W_USQCD_CD_PAIRS || 
-     (file_type == FILE_TYPE_W_USQCD_C1D12 && spin == 0 && color == 0)){
-    /* Read a complex source field */
-    alloc_cached_c_source(wqs);
-    status = qio_status(read_wpropsource_C_usqcd(wpf->infile, wqs->descrp, 
-				 MAXDESCRP, get_cached_c_source(wqs)));
-    if(status == 0){node0_printf("Read prop source %s from %s\n",wqs->descrp, wpf->filename);}
-    else if(status == -1){node0_printf("Unexpected EOF encountered on %s\n", wpf->filename);}
-    if(wqs->type == DIRAC_PROPAGATOR_FILE)wqs->type = COMPLEX_FIELD_STORE;
-  }
-  else if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
+  if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
     /* Read a Wilson vector source field */
-    alloc_cached_wv_source(wqs);
+    wilson_vector *tmp_src = create_wv_field();
     status = qio_status(read_wpropsource_D_usqcd(wpf->infile, wqs->descrp, 
-				 MAXDESCRP, get_cached_wv_source(wqs)));
+						 MAXDESCRP, tmp_src));
     if(status == 0){node0_printf("Read prop source %s from %s\n",wqs->descrp, wpf->filename);}
-    else if(status == -1){node0_printf("Unexpected EOF encountered on %s\n", wpf->filename);}
-    if(wqs->type == DIRAC_PROPAGATOR_FILE)wqs->type = DIRAC_FIELD_STORE;
+    else if(status == -1){
+      node0_printf("Unexpected EOF encountered on %s\n", wpf->filename);
+    }
+    /* For source type DIRAC_PROPAGATOR_FILE, copy src from the file */
+    if(wqs->type == DIRAC_PROPAGATOR_FILE){
+      copy_wv_field(src, tmp_src);
+      if(status == 0){node0_printf("%s: Read prop source %s from %s\n",
+				   myname, wqs->descrp, wpf->filename);}
+    }
+    destroy_wv_field(tmp_src);
   }
 
-  /* Next, read the solution vector */
+  /* Next, read the propagator for this source */
   if(status == 0)
     status = qio_status(read_wproprecord_usqcd(wpf->infile, 
 					      &input_spin, &input_color, 
-					      dest));
+					      prop));
 
   /* Check spin and color */
   if(status == 0 && (input_spin != spin || input_color != color)){
@@ -131,19 +129,7 @@ read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[])
   int i;
 
   switch(file_type){
-  case FILE_TYPE_W_FMPROP:
-    *ndim = 4;
-    nx = -1; ny = -1; nz = -1; nt = -1;
-    wpf = r_serial_w_fm_i(filename);
-    for(i = 0; i < *ndim; i++)
-      dims[i] = wpf->header->dims[i];
-    r_serial_w_fm_f(wpf);
-    break;
-
-  case FILE_TYPE_W_USQCD_C1D12:
   case FILE_TYPE_W_USQCD_DD_PAIRS:
-  case FILE_TYPE_W_USQCD_CD_PAIRS:
-  case FILE_TYPE_W_USQCD_LHPC:
 #ifdef HAVE_QIO
     read_lat_dim_scidac(filename, ndim, dims);
 #else
@@ -193,37 +179,9 @@ r_open_wprop(int flag, char *filename)
      sorted by source color and spin, so the site datum is a Dirac
      vector.  The other has the full propagator on each site. */
 
-  if(file_type == FILE_TYPE_W_FMPROP){
-    if(flag == RELOAD_PARALLEL){
-      node0_printf("%s: Can't read FNAL files in parallel\n",myname);
-      node0_printf("Reading serially instead.\n");
-    }
-    wpf = r_serial_w_fm_i(filename);
-    wpf->file_type = file_type;
-    wpf->prop = (wilson_propagator *)
-      malloc(sites_on_node*sizeof(wilson_propagator));
-    wp = wpf->prop;
-    if(wp == NULL){
-      printf("%s(%d): Can't malloc for full input propagator\n",
-	     myname, this_node);
-      terminate(1);
-    }
-    /* For either FNAL format we read the entire propagator */
-    r_serial_w_fm_to_field(wpf, wp);
-    
-    /* Convert from FNAL to MILC spin basis */
-    convert_wprop_fnal_to_milc_field(wp);
-    
-    /* Indicate propagator data has been read and cached */
-    wpf->file_type = file_type = FILE_TYPE_W_STORE;
-  }
+  if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
 #ifdef HAVE_QIO
-  /* Other SciDAC propagator formats */
-
-  else if(file_type == FILE_TYPE_W_USQCD_C1D12 ||
-	  file_type == FILE_TYPE_W_USQCD_DD_PAIRS ||
-	  file_type == FILE_TYPE_W_USQCD_CD_PAIRS){
-    
+    /* Create a wpf structure. (No file movement here.) */
     int serpar = interpret_usqcd_w_reload_flag(flag);
     wpf = setup_input_w_prop_file(filename);
     wpf->file_type = file_type;
@@ -232,10 +190,12 @@ r_open_wprop(int flag, char *filename)
       printf("r_open_wprop: Failed to open %s for reading\n", filename);
       terminate(1);
     }
-  }
+#else
+    node0_printf("%s: This looks like a QIO file, but to read it requires QIO compilation\n");
 #endif
+  }
   else {
-    node0_printf("%s: Wrong file type for Dirac propagator\n", myname);
+    node0_printf("%s: File %s is not a supported Dirac propagator file\n", myname, filename);
   }
 
   return wpf;
@@ -263,32 +223,6 @@ w_open_wprop(int flag, char *filename, int source_type)
 
   case SAVE_ASCII:
     wpf = w_ascii_w_i(filename);
-    break;
-
-  case SAVE_SERIAL_FM:
-    wpf = w_serial_w_fm_i(filename);
-    /* Allocate space for the entire propagator so we can do the spin
-       basis conversion. */
-    wpf->prop = (wilson_propagator *)
-      malloc(sites_on_node*sizeof(wilson_propagator));
-    wp = wpf->prop;
-    if(wp == NULL){
-      printf("Can't malloc for full output propagator\n");
-      terminate(1);
-    }
-    break;
-
-  case SAVE_SERIAL_FM_SC:
-    wpf = w_serial_w_fm_sc_i(filename);
-    /* Allocate space for the entire propagator so we can do the spin
-       basis conversion. */
-    wpf->prop = (wilson_propagator *)
-      malloc(sites_on_node*sizeof(wilson_propagator));
-    wp = wpf->prop;
-    if(wp == NULL){
-      printf("Can't malloc for full output propagator\n");
-      terminate(1);
-    }
     break;
 
   case SAVE_SERIAL_SCIDAC:
@@ -356,18 +290,6 @@ w_close_wprop(int flag, w_prop_file *wpf)
   case SAVE_ASCII:
     w_ascii_w_f(wpf);
     break;
-  case SAVE_SERIAL_FM:
-  case SAVE_SERIAL_FM_SC:
-    /* Dump accumulated propagator and free memory */
-    wp = wpf->prop;
-    if(wp != NULL){
-      /* Convert from MILC to FNAL */
-      convert_wprop_milc_to_fnal_field(wp);
-      w_serial_w_fm_from_field(wpf, wp);
-      free(wp);  wp = NULL;
-    }
-    w_serial_w_fm_f(wpf); 
-    break;
   case SAVE_SERIAL_SCIDAC:
   case SAVE_PARALLEL_SCIDAC:   
   case SAVE_MULTIFILE_SCIDAC: 
@@ -397,7 +319,7 @@ w_close_wprop(int flag, w_prop_file *wpf)
 int 
 reload_wprop_sc_to_field( int flag, w_prop_file *wpf, 
 			  quark_source *wqs, int spin, int color, 
-			  wilson_vector *dest, int timing)
+			  wilson_vector *src, wilson_vector *dest, int timing)
 {
 
   double dtime = 0;
@@ -421,52 +343,37 @@ reload_wprop_sc_to_field( int flag, w_prop_file *wpf,
     node0_printf("Reloading ASCII to wprop field not supported\n");
     terminate(1);
     break;
+#ifdef HAVE_QIO
   case RELOAD_SERIAL:
     wp = wpf->prop;
     file_type = wpf->file_type;
-    /* Special treatment for a cached propagator */
-    if(file_type == FILE_TYPE_W_STORE){
-    /* Copy input Wilson vector for this color and spin from buffer */
-      FORALLSITES(i,s){
-	wv = dest + i;
-	for(s0=0;s0<4;s0++)for(c0=0;c0<3;c0++)
-	  {
-	    wv->d[s0].c[c0].real = wp[i].c[color].d[spin].d[s0].c[c0].real;
-	    wv->d[s0].c[c0].imag = wp[i].c[color].d[spin].d[s0].c[c0].imag;
-	  }
-      }
-      status = 0;
-    }
-#ifdef HAVE_QIO
-    else if(file_type == FILE_TYPE_W_USQCD_C1D12 ||
-	    file_type == FILE_TYPE_W_USQCD_DD_PAIRS ||
-	    file_type == FILE_TYPE_W_USQCD_CD_PAIRS){
-
+    if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
       /* Read the propagator record */
-      status = read_usqcd_wprop_record(wpf, spin, color, dest, wqs);
+      status = read_usqcd_wprop_record(wpf, spin, color, src, dest, wqs);
     }
-#endif
     else {
       node0_printf("%s: File type not supported\n",myname);
+      status = 1; /*Error status */
     }
     break;
   case RELOAD_PARALLEL:
     file_type = wpf->file_type;
-#ifdef HAVE_QIO
-    if(file_type == FILE_TYPE_W_USQCD_C1D12 ||
-       file_type == FILE_TYPE_W_USQCD_DD_PAIRS ||
-       file_type == FILE_TYPE_W_USQCD_CD_PAIRS){
-      status = read_usqcd_wprop_record(wpf, spin, color, dest, wqs);
-    }
-#endif
-    /* If not SciDAC */
-    if(file_type != FILE_TYPE_W_USQCD_C1D12 &&
-       file_type != FILE_TYPE_W_USQCD_DD_PAIRS &&
-       file_type != FILE_TYPE_W_USQCD_CD_PAIRS){
-      node0_printf("%s: Parallel reading with this file type not supported\n",
-		   myname);
+    if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
+      status = read_usqcd_wprop_record(wpf, spin, color, src, dest, wqs);
+    } else {
+      node0_printf("%s: Unsupported file type %d\n", myname, file_type);
+      status = 1;
     }
     break;
+#else
+    /* No QIO */
+    {
+      node0_printf("%s: Parallel reading with this file type not supported\n",
+		   myname);
+      status = 1;
+    }
+    break;
+#endif
   default:
     node0_printf("%s: Unrecognized reload flag.\n", myname);
     terminate(1);
@@ -490,13 +397,14 @@ reload_wprop_sc_to_field( int flag, w_prop_file *wpf,
 int 
 save_wprop_sc_from_field( int flag, w_prop_file *wpf, 
 			  quark_source *wqs,
-			  int spin, int color, wilson_vector *src, 
+			  int spin, int color,
+			  wilson_vector *src,
+			  wilson_vector *prop, 
 			  char *recinfo, int timing)
 {
   double dtime = 0;
   int status;
   int i; site *s;
-  wilson_propagator *wp;
   wilson_vector *wv;
   int s0, c0;
 #ifdef HAVE_QIO
@@ -510,24 +418,7 @@ save_wprop_sc_from_field( int flag, w_prop_file *wpf,
   case FORGET:
     break;
   case SAVE_ASCII:
-    w_ascii_w(wpf,spin,color,src);
-    break;
-  case SAVE_SERIAL_FM:
-  case SAVE_SERIAL_FM_SC:
-    wp = wpf->prop;
-    if(wp == NULL){
-      printf("%s{%d): Propagator field not allocated\n", myname, this_node);
-      terminate(1);
-    }
-    /* Add output Wilson vector to propagator buffer */
-    FORALLSITES(i,s){
-      wv = src + i;
-      for(s0=0;s0<4;s0++)for(c0=0;c0<3;c0++)
-	{
-	  wp[i].c[color].d[spin].d[s0].c[c0].real = wv->d[s0].c[c0].real;
-	  wp[i].c[color].d[spin].d[s0].c[c0].imag = wv->d[s0].c[c0].imag;
-	}
-    }
+    w_ascii_w(wpf,spin,color,prop);
     break;
   case SAVE_SERIAL_SCIDAC:
   case SAVE_PARALLEL_SCIDAC:   
@@ -536,50 +427,38 @@ save_wprop_sc_from_field( int flag, w_prop_file *wpf,
 
 #ifdef HAVE_QIO
     file_type = wpf->file_type;
-    /* Save color source field */
-    if(file_type == FILE_TYPE_W_USQCD_CD_PAIRS ||
-       (file_type == FILE_TYPE_W_USQCD_C1D12 && spin == 0 && color == 0))
-      {
-	complex *c_src = get_cached_c_source(wqs);
-	int null_src = (c_src == NULL);
-	if(null_src){
-	    node0_printf("%s complex source is missing\n",myname);
-	    node0_printf("%s File will be written with a dummy zero source\n",
-		   myname);
-	    c_src = create_c_field();
-	}
-	status = write_wpropsource_C_usqcd(wpf->outfile, wqs->descrp, 
-					   c_src, wqs->t0);
-	if(null_src)free(c_src);
-	if(status != 0)break;
-      }
     /* Save Dirac source field */
-    else if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
-      wilson_vector *wv_src = get_cached_wv_source(wqs);
-      int null_src = (wv_src == NULL);
-      if(null_src){
-	node0_printf("%s(%d) Dirac source is NULL\n",myname,this_node);
-	node0_printf("%s(%d) File will be written with a dummy zero source\n",
-		     myname,this_node);
-	wv_src = create_wv_field();
+    if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
+
+      /* If source is missing, write an empty source (zeros) */
+      wilson_vector *src_out = NULL;
+      if(src == NULL){
+	src_out = create_wv_field();  /* created with zeros */
+      } else {
+	src_out = src;
       }
       status = write_wpropsource_D_usqcd(wpf->outfile, wqs->descrp, 
-					 wv_src, wqs->t0);
-      if(null_src)free(wv_src);
-      if(status != 0)break;
+					 src_out, wqs->t0);
+      if(src_out != NULL)
+	destroy_wv_field(src_out);
+
+    } else {
+
+      node0_printf("%s: Unsupported file type %d.\n", myname, file_type);
+      status = 1;
+
     }
     /* Save solution field */
     if(status == 0)
-      status = write_prop_usqcd_sc(wpf->outfile, src, spin, color, recinfo);
+      status = write_prop_usqcd_sc(wpf->outfile, prop, spin, color, recinfo);
 #else
     node0_printf("%s: SciDAC formats require QIO compilation\n",myname);
     terminate(1);
 #endif
-    
     break;
   default:
     node0_printf("%s: Unrecognized save flag.\n", myname);
-    terminate(1);
+    status = 1;
   }
   
   if(timing)
@@ -594,11 +473,8 @@ save_wprop_sc_from_field( int flag, w_prop_file *wpf,
 
 /*---------------------------------------------------------------*/
 /* Reload a spin_wilson_vector field for a single source color and 4
-   source spins in FNAL or USQCD format, or cold propagator, or keep
-   current propagator: FRESH, CONTINUE, RELOAD_ASCII, RELOAD_SERIAL,
-   RELOAD_PARALLEL
-
-   Also reads a staggered propagator and converts to naive.
+   source spins in USQCD format, or keep current propagator: FRESH,
+   CONTINUE, RELOAD_ASCII, RELOAD_SERIAL, RELOAD_PARALLEL
 
    Return value is 
 
@@ -609,185 +485,53 @@ save_wprop_sc_from_field( int flag, w_prop_file *wpf,
 
 int 
 reload_wprop_c_to_field( int flag, w_prop_file *wpf, 
-			 quark_source *wqs, int spin, int color, 
+			 quark_source *wqs, int spin, int color,
+			 spin_wilson_vector *source,
 			 spin_wilson_vector *dest, int timing)
 {
 
   double dtime = 0;
-  int i,status;
-  site *s;
-  wilson_propagator *wp;
-  spin_wilson_vector *swv;
-#ifdef HAVE_QIO
-  wilson_vector *wv;
-#endif
-  int s0, s1;
-  int file_type = FILE_TYPE_UNKNOWN;  /* So the compiler doesn't say uninit */
-  char myname[] = "reload_wprop_sc_to_field";
+  int status;
+  wilson_vector *psi, *src;
 
-  if(timing)dtime = -dclock();
+  if(flag == FRESH)return 0;
+
   status = 0;
-  switch(flag){
-  case CONTINUE:  /* do nothing */
-    break;
-  case FRESH:     /* zero initial guess */
-    for(s0 = 0; s0 < 4; s0++)
-      FORALLSITES(i,s)clear_wvec( &(dest[i].d[s0]) );
-    break;
-  case RELOAD_ASCII:
-    node0_printf("Reloading ASCII to wprop field not supported\n");
-    terminate(1);
-    break;
-  case RELOAD_SERIAL:
-  case RELOAD_PARALLEL:
-    file_type = wpf->file_type;
-    /* Treatment for a cached propagator */
-    /* An FNAL propagator should have been read and cached already */
-    if(file_type == FILE_TYPE_W_STORE){
-      /* Copy input spin Wilson vector for this color from buffer */
-      wp = wpf->prop;
-      FORALLSITES(i,s){
-	swv = dest + i;
-	for(s1=0;s1<4;s1++)
-	  copy_wvec(&wp[i].c[color].d[s1],&swv->d[s1]);
-      }
-      status = 0;
-    }
-#ifdef HAVE_QIO
-    else if(file_type == FILE_TYPE_W_USQCD_C1D12 ||
-	    file_type == FILE_TYPE_W_USQCD_DD_PAIRS ||
-	    file_type == FILE_TYPE_W_USQCD_CD_PAIRS){
+  if(timing)dtime = -dclock();
 
-      /* Read the propagator record for four source spins */
-      wv = (wilson_vector *)malloc(sites_on_node * sizeof(wilson_vector));
-      if(wv == NULL){
-	printf("reload_wprop_c_to_field(%d): No room for wv\n",this_node);
-	terminate(1);
-      }
-      for(s1=0;s1<4;s1++){
-	status = read_usqcd_wprop_record(wpf, s1, color, wv, wqs);
-	FORALLSITES(i,s){
-	  copy_wvec(&wv[i],&dest[i].d[s1]);
-	}
-      }
-      free(wv);
-    }
-#endif
-    else {
-      node0_printf("%s: File type not supported\n",myname);
-    }
-    break;
-  default:
-    node0_printf("%s: Unrecognized reload flag.\n", myname);
-    terminate(1);
+  if(wqs->type == DIRAC_PROPAGATOR_FILE)
+    src = create_wv_field();
+  else
+    src = NULL;
+  psi = create_wv_field();
+    
+  for(int spin=0;spin<4;spin++){
+    reload_wprop_sc_to_field(flag, wpf, wqs, spin, color, src, psi, 0);
+    if(wqs->type == DIRAC_PROPAGATOR_FILE)
+      insert_swv_from_wv(source, spin, src);
+    insert_swv_from_wv(dest, spin, psi);
   }
-  
+    
+  destroy_wv_field(psi);
+  if(wqs->type == DIRAC_PROPAGATOR_FILE)
+    destroy_wv_field(src);
+
+  r_close_wprop(flag, wpf);
+
   if(timing)
     {
       dtime += dclock();
-      if(flag != FRESH && flag != CONTINUE)
-	node0_printf("Time to reload wprop spin %d color %d %e\n",
-		     spin,color,dtime);
-    }
-
-  return status;
-
-} /* reload_wprop_sc_to_field */
-
-/*---------------------------------------------------------------*/
-/* Reload a full propagator (3 source colors and 4 source spins) in
-   most of the formats, or cold propagator, or keep current propagator.
-   Destination field is a wilson_propagator
-
-   FRESH, CONTINUE,
-   RELOAD_ASCII, RELOAD_SERIAL, RELOAD_PARALLEL, RELOAD_MULTIDUMP
-
-   Return value is 
-
-  -1 end of file
-   0 normal exit value
-   1 read error
-
-*/
-int 
-reload_wprop_to_field( int flag, char *filename, quark_source *wqs,
-		       wilson_propagator *dest, int timing)
-{
-
-  double dtime = 0;
-  int i,status;
-  site *s;
-  wilson_propagator *wp;
-  int spin, color;
-  w_prop_file *wpf;
-  wilson_vector *psi;
-  char myname[] = "reload_wprop_to_field";
-  
-  status = 0;
-  if(timing)dtime = -dclock();
-  switch(flag){
-    
-  case CONTINUE:  /* do nothing */
-    break;
-    
-  case FRESH:     /* zero initial guess */
-    FORALLSITES(i,s){
-      wp = dest + i;
-      for(color = 0; color < 3; color++)
-	for(spin = 0; spin < 4; spin++)
-	  clear_wvec( &wp->c[color].d[spin] );
-    }
-    break;
-    
-  case RELOAD_ASCII:
-    node0_printf("reload_wprop_to_field: ASCII to field not supported\n");
-    terminate(1);
-    break;
-  case RELOAD_SERIAL:
-  case RELOAD_PARALLEL:
-    psi = (wilson_vector *)malloc(sites_on_node*sizeof(wilson_vector));
-    if(psi == NULL){
-      printf("%s(%d): Can't allocate psi\n",myname,this_node);
-      terminate(1);
-    }
-    
-    wpf = r_open_wprop(flag, filename);
-    
-    /* Loop over source colors */
-    for(color=0;color<3;color++){
-      /* Loop over source spins */
-      for(spin=0;spin<4;spin++){
-	reload_wprop_sc_to_field(flag, wpf, wqs, spin, color, psi, timing);
-	FORALLSITES(i,s){
-	  copy_wvec(&psi[i], &dest[i].c[color].d[spin]);
-	}
-      }
-    }
-    
-    r_close_wprop(flag, wpf);
-    
-    free(psi);
-    
-    break;
-    
-  default:
-    node0_printf("%s: Bad reload flag\n",myname);
-  }
-    
-  if(timing)
-    {
-      dtime += dclock();
-      if(flag != FRESH && flag != CONTINUE)
+      if(flag != FRESH)
 	node0_printf("Time to reload wprop %e\n",dtime);
     }
   
   return status;
-  
-} /* reload_wprop_to_field */
+
+} /* reload_wprop_c_to_field */
 
 /*---------------------------------------------------------------*/
 /* Reload a full propagator (3 source colors and 4 source spins) in
-   most of the formats, or cold propagator, or keep current propagator.
+   most of the formats, or fresh propagator, or keep current propagator.
    Destination field is a wilson_prop_field.
 
    FRESH, CONTINUE,
@@ -802,105 +546,57 @@ reload_wprop_to_field( int flag, char *filename, quark_source *wqs,
 */
 int 
 reload_wprop_to_wp_field( int flag, char *filename, quark_source *wqs,
-			  wilson_prop_field *dest, int timing)
+			  wilson_prop_field *source, wilson_prop_field *dest, int timing)
 {
 
   double dtime = 0;
   int status;
   int spin, color;
   w_prop_file *wpf;
-  wilson_vector *psi;
-  char myname[] = "reload_wprop_to_field";
+  wilson_vector *psi, *src;
   
+  if(flag == FRESH)return 0;
+
   status = 0;
   if(timing)dtime = -dclock();
-  switch(flag){
+
+  wpf = r_open_wprop(flag, filename);
+  if(wpf == NULL)return 1;
+  
+  if(wqs->type == DIRAC_PROPAGATOR_FILE)
+    src = create_wv_field();
+  else
+    src = NULL;
+  psi = create_wv_field();
     
-  case CONTINUE:  /* do nothing */
-    break;
-    
-  case FRESH:     /* zero initial guess */
-    clear_wp_field(dest);
-    break;
-    
-  case RELOAD_ASCII:
-    node0_printf("reload_wprop_to_field: ASCII to field not supported\n");
-    terminate(1);
-    break;
-  case RELOAD_SERIAL:
-  case RELOAD_PARALLEL:
-    psi = create_wv_field();
-    
-    wpf = r_open_wprop(flag, filename);
-    
-    /* Loop over source colors */
-    for(color=0;color<dest->nc;color++){
-      /* Loop over source spins */
-      for(spin=0;spin<4;spin++){
-	reload_wprop_sc_to_field(flag, wpf, wqs, spin, color, psi, 0);
-	copy_wp_from_wv(dest, psi, color, spin);
-      }
+  /* Loop over source colors */
+  status = 0;
+  for(color=0;color<dest->nc;color++){
+    /* Loop over source spins */
+    for(spin=0;spin<4;spin++){
+      reload_wprop_sc_to_field(flag, wpf, wqs, spin, color, src, psi, 0);
+      if(wqs->type == DIRAC_PROPAGATOR_FILE)
+	copy_wp_from_wv(source, src, color, spin);
+      copy_wp_from_wv(dest, psi, color, spin);
     }
-    
-    r_close_wprop(flag, wpf);
-    
-    destroy_wv_field(psi);
-    
-    break;
-    
-  default:
-    node0_printf("%s: Bad reload flag\n",myname);
   }
+    
+  r_close_wprop(flag, wpf);
+    
+  destroy_wv_field(psi);
+  if(wqs->type == DIRAC_PROPAGATOR_FILE)
+    destroy_wv_field(src);
     
   if(timing)
     {
       dtime += dclock();
-      if(flag != FRESH && flag != CONTINUE)
+      if(flag != FRESH)
 	node0_printf("Time to reload wprop %e\n",dtime);
     }
   
   return status;
   
 } /* reload_wprop_to_wp_field */
-
-/*---------------------------------------------------------------*/
-/* save the full propagator (src is wilson_propagator type)
-   FORGET,
-   SAVE_ASCII, 
-   SAVE_SERIAL_SCIDAC, SAVE_PARALLEL_SCIDAC, SAVE_PARTFILE_SCIDAC,
-   SAVE_MULTFILE_SCIDAC
-*/
-int 
-save_wprop_from_field( int flag, char *filename, quark_source *wqs,
-		       wilson_propagator *src, char *recxml, int timing)
-{
-  int spin, color;
-  w_prop_file *wpf;
-  wilson_vector *wv;
-  int status;
-  
-  status = 0;
-
-  if(flag == FORGET)return status;
-  
-  wv = create_wv_field();
-  wpf = w_open_wprop(flag, filename, DIRAC_FIELD_FILE);
-
-  for(color = 0; color < 3; color++)
-    for(spin = 0; spin < 4; spin++)
-      {
-	copy_wv_from_wprop(wv, src, color, spin);
-	if( save_wprop_sc_from_field (flag, wpf, wqs, spin, color, 
-				      wv, recxml, timing) != 0)
-	  status = 1;
-      }
-
-  w_close_wprop(flag, wpf);
-  destroy_wv_field(wv);
-
-  return status;
-
-} /* save_wprop_from_field */
 
 /*---------------------------------------------------------------*/
 /* save the full propagator (src is wilson_prop_field type)
@@ -910,41 +606,44 @@ save_wprop_from_field( int flag, char *filename, quark_source *wqs,
    SAVE_MULTFILE_SCIDAC
 */
 int 
-save_wprop_from_wp_field( int flag, char *filename, quark_source *wqs,
-			  wilson_prop_field *src, char *recxml, int timing)
+save_wprop_from_wp_field( int flag, char *filename, char *recxml,
+			  quark_source *wqs, wilson_prop_field *source,
+			  wilson_prop_field *prop,  int timing)
 {
-  int spin, color;
   w_prop_file *wpf;
-  wilson_vector *wv;
-  int status;
+  int spin, color, status = 0;
   double dtime = 0;
+  wilson_vector *wvprop, *wvsrc;
   
-  status = 0;
   if(timing)dtime = -dclock();
 
   if(flag == FORGET)return status;
-  
-  wv = create_wv_field();
   wpf = w_open_wprop(flag, filename, DIRAC_FIELD_FILE);
+  if(wpf == NULL)return 1;
+  
+  wvprop = create_wv_field();
+  wvsrc = create_wv_field();
 
-  for(color = 0; color < src->nc; color++)
+  for(color = 0; color < prop->nc; color++)
     for(spin = 0; spin < 4; spin++)
       {
-	copy_wv_from_wp(wv, src, color, spin);
-	if( save_wprop_sc_from_field (flag, wpf, wqs, spin, color, 
-				      wv, recxml, 0) != 0)
-	  status = 1;
+	copy_wv_from_wp(wvsrc, prop, color, spin);
+	copy_wv_from_wp(wvprop, prop, color, spin);
+	status = save_wprop_sc_from_field (flag, wpf, wqs, spin, color, 
+					   wvsrc, wvprop, recxml, 0);
+	if(status != 0)break;
       }
 
-  w_close_wprop(flag, wpf);
-  destroy_wv_field(wv);
+  destroy_wv_field(wvsrc);
+  destroy_wv_field(wvprop);
 
   if(timing)
     {
       dtime += dclock();
       if(flag != FORGET)
-	node0_printf("Time to save wprop %e\n",dtime);
+	node0_printf("Time to save wprop %e %s\n",dtime, filename);
     }
+  w_close_wprop(flag, wpf);
   
   return status;
 
@@ -983,7 +682,7 @@ reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
     terminate(1);
   }
 
-  status = reload_wprop_sc_to_field( flag, wpf, wqs, spin, color, wv, timing);
+  status = reload_wprop_sc_to_field( flag, wpf, wqs, spin, color, NULL, wv, timing);
   if(status)return status;
 
   FORALLSITES(i,s){
@@ -1019,7 +718,7 @@ save_wprop_sc_from_site( int flag, w_prop_file *wpf, quark_source *wqs,
     copy_wvec((wilson_vector *)F_PT(s,src),wv+i);
   }
 
-  status = save_wprop_sc_from_field( flag, wpf, wqs, spin, color, wv, 
+  status = save_wprop_sc_from_field( flag, wpf, wqs, spin, color, NULL, wv, 
 				     recinfo, timing);
 
   free(wv);
@@ -1028,6 +727,7 @@ save_wprop_sc_from_site( int flag, w_prop_file *wpf, quark_source *wqs,
 } /* save_wprop_sc_from_site */
 
 /*---------------------------------------------------------------*/
+/* DEPRECATED */
 /* Temporary procedure to support legacy applications that read to the
    site structure */
 /* reload a full propagator (all source colors and spins) in any of
@@ -1105,6 +805,7 @@ reload_wprop_to_site( int flag, char *filename, quark_source *wqs,
 } /* reload_wprop_to_site */
 
 /*---------------------------------------------------------------*/
+/* DEPRECATED */
 /* Temporary procedure to support legacy applications that read to the
    site structure */
 /* save the full propagator
@@ -1156,7 +857,7 @@ save_wprop_from_site( int flag, char *filename, quark_source *wqs,
 	FORALLSITES(i,s){
 	  copy_wvec(&((wilson_propagator *)F_PT(s,src))->c[color].d[spin],
 		    &srccs[i]);
-	  save_wprop_sc_from_field(flag, wpf, wqs, spin, color, srccs, 
+	  save_wprop_sc_from_field(flag, wpf, wqs, spin, color, NULL, srccs, 
 				   recxml, timing);
 	}
       }

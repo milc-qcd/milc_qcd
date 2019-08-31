@@ -456,9 +456,12 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 int mat_invert_uml_field(su3_vector *src, su3_vector *dst, 
 			 quark_invert_control *qic,
 			 Real mass, imp_ferm_links_t *fn );
-int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst, 
-			       quark_invert_control *qic,
-			       Real mass, imp_ferm_links_t *fn );
+int mat_invert_block_uml(su3_vector **src, su3_vector **dst, 
+			 Real mass, int nsrc, quark_invert_control *qic,
+			 imp_ferm_links_t *fn);
+int mat_invert_mrhs_uml(su3_vector **src, su3_vector **dst, 
+			Real mass, int nsrc, quark_invert_control *qic,
+			imp_ferm_links_t *fn);
 void check_invert( field_offset src, field_offset dest, Real mass,
 		   Real tol, imp_ferm_links_t *fn );
 void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,

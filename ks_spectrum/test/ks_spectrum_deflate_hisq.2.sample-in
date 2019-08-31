@@ -53,6 +53,7 @@ number_of_base_sources 2
 # base source 0
 
 random_color_wall
+field_type KS
 subset full
 t0 0
 ncolor 3
@@ -63,6 +64,7 @@ save_serial_scidac_ks_source test_src
 # base source 1
 
 point
+field_type KS
 subset full
 origin  0 0 0 0
 source_label d
@@ -87,6 +89,7 @@ number_of_sets 3
 # Set 0
 # Parameters common to all members of this set
 
+set_type multimass
 max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
@@ -112,6 +115,7 @@ forget_ksprop
 # Set 1
 # Parameters common to all members of this set
 
+set_type multimass
 max_cg_iterations 1000
 max_cg_restarts 2
 check yes
@@ -137,6 +141,7 @@ forget_ksprop
 # Set 2
 # Parameters common to all members of this set
 
+set_type multimass
 max_cg_iterations 1000
 max_cg_restarts 2
 check yes
@@ -240,6 +245,7 @@ number_of_base_sources 2
 # base source 0
 
 vector_field
+field_type KS
 subset full
 origin 0 0 0 0
 load_source_serial test_src
@@ -251,6 +257,7 @@ forget_source
 # base source 1
 
 point
+field_type KS
 subset full
 origin  0 0 0 0
 source_label d

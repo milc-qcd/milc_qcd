@@ -658,7 +658,7 @@ int ask_starting_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
   else if(strcmp("reload_parallel_ks_eigen", savebuf) == 0)
     *flag = RELOAD_PARALLEL;
   else{
-    printf("ERROR IN INPUT: %s command is invalid\n", savebuf);
+    printf("ERROR IN INPUT: ks_eigen input command %s is invalid\n", savebuf);
     return(1);
   }
 
@@ -715,7 +715,7 @@ int ask_ending_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
   else if(strcmp("save_parallel_ks_eigen",savebuf) == 0)
     *flag = SAVE_PARALLEL;
   else{
-    printf("ERROR IN INPUT: ks_eigen command is invalid.\n");
+    printf("ERROR IN INPUT: ks_eigen outpu command %s is invalid.\n", savebuf);
     printf("Choices are ");
     print_save_options();
     printf("\n");

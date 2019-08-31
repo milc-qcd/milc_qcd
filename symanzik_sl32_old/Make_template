@@ -1,0 +1,172 @@
+#  Pure gauge SU3
+#  MIMD version 7
+#
+#  Generic make-include file for pure_gauge Symanzik improved type codes.
+#  This template file defines rules and macros common to all architectures
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  This code uses 32 sublattices, which allows running on parallel
+#  machines also for the overrelaxed/quasi heat algorithm.
+#
+#  Improved gauge actions may be chosen from the set in 
+#  generic/imp_actions.  Targets are provided here for the 
+#  Symanzik 1 loop action.  Others can be added as needed.
+#  The ora algorithm is restricted currently to actions with NREPS = 1.
+#
+#     "make su3_hmc_symzk1" is the HMC version-- no fancy measurements
+#     "make su3_ora_symzk1" is the version with overrelaxed/quasi heat
+#		     bath algorithm-- no fancy measurements
+#  Currently, there is no QDP or QOP or QCDOC compilation here
+
+MYINCLUDEDIR = .
+INCLUDEDIR = ../include
+#Where the complex and su3 libraries are
+LIBDIR = ../libraries
+
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
+
+MY_HEADERS = \
+  lattice.h \
+  params.h \
+  defines.h \
+  symanzik_sl32_includes.h \
+  ${ADDHEADERS}
+
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
+
+# Basic set from current directory
+MY_OBJECTS =         \
+  control.o          \
+  setup.o            \
+  gauge_info.o
+
+# Basic set from generic directory
+G_OBJECTS =          \
+  check_unitarity.o  \
+  d_plaq4.o          \
+  field_utilities.o  \
+  gauge_stuff.o      \
+  gauge_force_imp.o  \
+  gauge_utilities.o \
+  io_detect.o        \
+  io_helpers.o       \
+  io_lat4.o          \
+  io_lat_utils.o     \
+  make_lattice.o     \
+  nersc_cksum.o       \
+  remap_stdio_from_args.o \
+  path_product.o     \
+  plaquette4.o       \
+  ploop2.o           \
+  ranstuff.o         \
+  reunitarize2.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_OBJECTS += file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
+endif
+
+G_KS_OBJECTS = \
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_KS_OBJECTS += io_scidac_ks.o
+endif
+
+G_W_OBJECTS = \
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_W_OBJECTS += io_scidac_w.o
+endif
+
+# Required layout routine
+LAYOUT = layout_hyper_sl32.o
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${SCIDAC_OBJECTS}
+
+# To these we add project-specific extra objects and machine-dependent objects
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_W_OBJECTS} ${LAYOUT} \
+  ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+
+#Libraries for complex numbers and su3 functions
+P = $(strip ${PRECISION})
+QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
+
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
+
+# Default rule for C compilation
+.c.o: ; ${CC} -c ${CFLAGS}  $*.c 
+
+# To force a full remake when changing targets
+LASTMAKE = .lastmake.${MAKEFILE}.${P}.${MYTARGET}
+
+${LASTMAKE}:
+	-/bin/rm -f .lastmake.* gauge_action.h
+	${MAKE} -f ${MAKEFILE} clean
+	touch ${LASTMAKE}
+
+
+ALL_MAKES = \
+   Make_template \
+   ${MAKEFILE} \
+   ../generic/Make_template \
+   ../Make_template_combos \
+   ../Make_template_scidac \
+   ../generic/Make_template \
+   ../generic_ks/Make_template \
+   ../generic_wilson/Make_template
+
+# All objects should depend on these
+ALL_DEPEND = ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
+
+${OBJECTS}: ${ALL_DEPEND}
+gauge_stuff.o: gauge_action.h 
+
+
+# Directory where we store the improved action headers
+GAUGEIMP = ../generic/imp_actions
+
+gauge_action.h:
+	/bin/cp ${GAUGEIMP}/${GAUGE} gauge_action.h
+
+########################################################
+# Optional DEFINES for timing:
+# -DGFTIME for gauge force timing
+
+##### Targets:
+
+su3_hmc_symzk1::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES =  -DHMC_ALGORITHM" \
+        "GAUGE = symanzik_1loop_action.h" \
+	"EXTRA_OBJECTS= update.o update_u.o update_h.o ranmom.o d_action.o"
+
+su3_ora_symzk1::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES =  -DORA_ALGORITHM " \
+        "GAUGE = symanzik_1loop_action.h" \
+	"EXTRA_OBJECTS= update_ora.o relax.o monte.o"
+
+clean:
+	-/bin/rm -f *.o
+
+
+# Rules for generic routines
+include ../generic/Make_template
+
+# Rules for generic_ks routines
+include ../generic_ks/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_wilson/Make_template
+
+libmake:
+	@echo Building libraries with ${MAKELIBRARIES}
+	cd ${LIBDIR} ;\
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
+
+localmake: ${OBJECTS} ${LIBRARIES}
+	${LD} ${LDFLAGS} -o ${MYTARGET} \
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	touch localmake
+
+target: libmake localmake 

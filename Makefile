@@ -14,7 +14,7 @@ MAKEFILE = Makefile
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH = # skx knl knc hsw pow8 pow9
+ARCH ?= # skx knl knc hsw pow8 pow9
 
 #----------------------------------------------------------------------
 # 2. Compiler family
@@ -100,7 +100,7 @@ CXX = ${MY_CXX}
 # Choices include -g -O, etc
 # Power9 recommendations are -Ofast
 
-OPT              = -O3
+OPT              ?= -O3
 
 # OpenMP?
 
@@ -301,15 +301,15 @@ QMP_BACKEND = QMP_MPI
 SCIDAC = ${HOME}/scidac/install
 TAG=
 # Parallel versions
-QMPPAR = ${SCIDAC}/qmp${TAG}
-QIOPAR = $(SCIDAC)/qio${TAG}
+QMPPAR ?= ${SCIDAC}/qmp${TAG}
+QIOPAR ?= $(SCIDAC)/qio${TAG}
 # Single processor versions
-QMPSNG = ${SCIDAC}/qmp-single${TAG}
-QIOSNG = $(SCIDAC)/qio-single${TAG}
-QLA = ${SCIDAC}/qla${TAG}
+QMPSNG ?= ${SCIDAC}/qmp-single${TAG}
+QIOSNG ?= $(SCIDAC)/qio-single${TAG}
+QLA ?= ${SCIDAC}/qla${TAG}
 # Either version
-QDP = ${SCIDAC}/qdp${TAG}
-QOPQDP = ${SCIDAC}/qopqdp${TAG}
+QDP ?= ${SCIDAC}/qdp${TAG}
+QOPQDP ?= ${SCIDAC}/qopqdp${TAG}
 
 QOP = ${QOPQDP}
 
@@ -469,6 +469,8 @@ ifeq ($(strip ${WANTQUDA}),true)
   CGPU += -DSET_QUDA_SUMMARIZE
 
 endif
+
+
 
 #----------------------------------------------------------------------
 # 16. QPhiX Options
@@ -769,7 +771,7 @@ CCOMPAT += #-DOLD_STAGGERED2NAIVE
 #     and extra list of dimensions in the parameter input file.
 #     See e.g. ks_imp_rhmc.
 
-CGEOM =#-DFIX_NODE_GEOM
+CGEOM ?=#-DFIX_NODE_GEOM
 
 #------------------------------
 # I/O node grid layout

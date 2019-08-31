@@ -29,7 +29,7 @@ typedef struct {
   
   /* Now come the physical fields, program dependent */
   /* gauge field */
-  su3_matrix link[4];
+  su3_matrix link[4] ALIGNMENT;
 
 #ifdef SITERAND
   /* The state information for a random number generator */

@@ -379,9 +379,9 @@ int readin(int prompt) {
 					&source_type, NULL, descrp,
 					savefile_s );
 	IF_OK {
-	    param.base_src_qs[is].savetype = source_type;
-	    param.base_src_qs[is].saveflag = saveflag_s;
-	    strcpy(param.base_src_qs[is].save_file, savefile_s);
+	  param.base_src_qs[is].savetype = source_type;
+	  param.base_src_qs[is].saveflag = saveflag_s;
+	  strcpy(param.base_src_qs[is].save_file, savefile_s);
 	  if(saveflag_s != FORGET && source_type != DIRAC_FIELD_FILE &&
 	     source_type != VECTOR_FIELD_FILE){
 	    printf("Unsupported output source type\n");
@@ -509,7 +509,6 @@ int readin(int prompt) {
       param.qic[i].nrestart = max_cg_restarts;
       param.qic[i].parity = EVENANDODD;
       param.qic[i].min = 0;
-      param.qic[i].start_flag = 0;
       param.qic[i].nsrc = 1;
       
       /* Momentum twist and time boundary condition */

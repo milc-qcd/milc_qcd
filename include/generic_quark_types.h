@@ -104,6 +104,11 @@ typedef struct {
 #define KS4_TYPE 3
 #define IFLA_TYPE 4
 
+/* Field types */
+
+#define WILSON_FIELD 0
+#define KS_FIELD 1
+
 /* Structures required for specific inverters */
 
 /* Structure defining parameters of Dirac matrix for clover inversion */
@@ -122,8 +127,8 @@ typedef struct {
 /* Same for plain KS case */
 typedef struct {
   Real mass;
-  Real offset;
-  Real residue;
+  Real offset;    /* For RHMC, the pole position */
+  Real residue;   /* For RHMC, the pole residue */
   int naik_term_epsilon_index;
   Real naik_term_epsilon;
 
@@ -211,8 +216,8 @@ typedef struct qss_op_struct quark_source_sink_op;
 /* Structure defining a staggered or Wilson (or clover) quark source */
 
 typedef struct {
+  int field_type;     /* type of field for this source (KS or Dirac) */
   int type;           /* source type */
-  int orig_type;      /* original source type */
   int subset;         /* hypercube corners or full time slice */
   Real scale_fact;    /* scale factor */
   char descrp[MAXDESCRP];  /* alpha description for most */
@@ -238,13 +243,14 @@ typedef struct {
   QIO_Reader *infile;
   QIO_Writer *outfile;
 #endif
-  ks_fm_source_file *kssf;
+  /* To be discontinued ... */
+  quark_source_sink_op *op;   /* op need to create this 
+				      source from parent */
   complex *c_src;      /* Pointer for complex source field storage */
   su3_vector *v_src;    /* su3_vector source for color walls */
   wilson_vector *wv_src; /* su3_vector source for color walls */
-  quark_source_sink_op *op;   /* op need to create this 
-				      source from parent */
-  /* To be discontinued ... */
+  ks_fm_source_file *kssf;
+  int orig_type;      /* original source type */
   int parity;         /* even or odd sites for w_source_h */
   int src_pointer ;   /* smearing function (for the moment, only
 		         clover_finite_p_vary/create_wilson_source.c) */

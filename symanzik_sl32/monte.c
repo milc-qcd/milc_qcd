@@ -33,7 +33,11 @@ su2_matrix h;
 
 Nhit = 3;
 pi2= 2.0*PI;
+#ifndef ANISOTROPY
 b3=beta/3.0;
+#else
+b3=1/(Real)3;
+#endif
 
     for( NumTrj = 0 ; NumTrj < NumStp; NumTrj++)
     for( subl = 0; subl < N_SUBL32; subl++) {
