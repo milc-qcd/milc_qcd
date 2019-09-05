@@ -482,8 +482,8 @@ QPHIX_HOME = ../QPhiX_MILC/milc-qphix
 
 ifeq ($(strip ${WANTQPHIX}), true)
 
-  INCQPHIX = -I${QPHIX_HOME}
-  PACKAGE_HEADERS += ${QPHIX_HOME}
+  INCQPHIX = -I${QPHIX_HOME} -I${QPHIX_HOME}/include
+  PACKAGE_HEADERS += ${QPHIX_HOME} -I${QPHIX_HOME}/include
   HAVE_QPHIX = true
   CPHI = -DHAVE_QPHIX
   QPHIX_HEADERS = ${QPHIX_HOME}
@@ -493,13 +493,13 @@ ifeq ($(strip ${WANTQPHIX}), true)
   # MPI versions of QPHIX
 
   ifeq ($(strip ${ARCH}),knl)
-    LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx512 -lrt
+    LIBQPHIX = -L${QPHIX_HOME} -L${QPHIX_HOME}/lib -lqphixmilc_avx512 -lrt
   else ifeq ($(strip ${ARCH}),knc)
-    LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_mic -lrt
+    LIBQPHIX = -L${QPHIX_HOME} -L${QPHIX_HOME}/lib -lqphixmilc_mic -lrt
   else ifeq ($(strip ${ARCH}),hsw)
-    LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx2 -lrt
+    LIBQPHIX = -L${QPHIX_HOME} -L${QPHIX_HOME}/lib -lqphixmilc_avx2 -lrt
   else ifeq ($(strip ${ARCH}),skx)
-    LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_skx -lrt
+    LIBQPHIX = -L${QPHIX_HOME} -L${QPHIX_HOME}/lib -lqphixmilc_skx -lrt
   endif
 
   else
@@ -507,13 +507,13 @@ ifeq ($(strip ${WANTQPHIX}), true)
   # Non-MPI versions
 
   ifeq ($(strip ${ARCH}),knl)
-    LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx512_single -lrt
+    LIBQPHIX = -L${QPHIX_HOME} -L${QPHIX_HOME}/lib -lqphixmilc_avx512_single -lrt
   else ifeq ($(strip ${ARCH}),knc)
-    LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_mic_single -lrt
+    LIBQPHIX = -L${QPHIX_HOME} -L${QPHIX_HOME}/lib -lqphixmilc_mic_single -lrt
   else ifeq ($(strip ${ARCH}),hsw)
-    LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx2_single -lrt
+    LIBQPHIX = -L${QPHIX_HOME} -L${QPHIX_HOME}/lib -lqphixmilc_avx2_single -lrt
   else ifeq ($(strip ${ARCH}),skx)
-    LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_skx_single -lrt
+    LIBQPHIX = -L${QPHIX_HOME} -L${QPHIX_HOME}/lib -lqphixmilc_skx_single -lrt
   endif
 
   endif
@@ -530,6 +530,11 @@ ifeq ($(strip ${WANTQPHIX}), true)
   ifeq ($(strip ${WANT_GF_QPHIX}),true)
     HAVE_GF_QPHIX = true
     CPHI += -DUSE_GF_QPHIX
+  endif
+
+  ifeq ($(strip ${WANT_FF_QPHIX}),true)
+    HAVE_FF_QPHIX = true
+    CPHI += -DUSE_FF_QPHIX
   endif
 
 endif
