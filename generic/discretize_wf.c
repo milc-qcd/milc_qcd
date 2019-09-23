@@ -250,6 +250,62 @@ static void discretize_wf ( double const a, int stride,
 	  }
 }
 
+static complex *wf_cache = NULL;
+static int x0_cache = 0;
+static int y0_cache = 0;
+static int z0_cache = 0;
+static int t0_cache = 0;
+static int stride_cache = 0;
+static Real a_cache = 0.;
+static char *wf_file_cache = NULL;
+
+void copy_cached(complex *wf){
+  if(wf_cache == NULL){
+    node0_printf("discretize_wf: FATAL: Attempted to copy from a NULL cached field\n");
+    terminate(1);
+  }
+  node0_printf("Using cached wf\n");
+  copy_c_field(wf, wf_cache);
+}
+
+/* If all the parameters are the same, copy the wf from cache and return 0
+   If there is no cache or at least one parameter differs, return nonzero */
+
+static int copy_from_cache(complex *wf, int x0, int y0, int z0, int t0, 
+			   int stride, Real a, char wf_file[]){
+  int status;
+
+  if ( wf_file_cache == NULL )
+    status = 1;
+  else
+    status = strcmp(wf_file, wf_file_cache);
+
+  if ( status == 0 )
+    status = x0 != x0_cache || y0 != y0_cache || z0 != z0_cache ||
+      t0 != t0_cache || stride != stride_cache || a != a_cache;
+
+  /* Copy wf from cache if parameters are the same */
+  if ( status == 0 ) copy_cached(wf);
+
+  return status;
+}
+
+
+static void save_to_cache(complex *wf, int x0, int y0, int z0, int t0,
+			  int stride, Real a, char wf_file[]){
+
+  if ( wf_cache == NULL ) wf_cache = create_c_field();
+  copy_c_field(wf_cache, wf);
+  x0_cache = x0;
+  y0_cache = y0;
+  z0_cache = z0;
+  t0_cache = t0;
+  stride_cache = stride;
+  a_cache = a;
+  wf_file_cache = (char *)realloc(wf_file_cache, (strlen(wf_file)+1)*sizeof(char));
+  strcpy(wf_file_cache, wf_file);
+}
+
 /*---------------------------------------------------------------*/
 
 /* t0 specifies the time slice.  (t0 = ALL_T_SLICES is for all t)
@@ -262,10 +318,12 @@ static void discretize_wf ( double const a, int stride,
    zeroed first.
 */
 
-
 void fnal_wavefunction(complex *wf, int x0, int y0, int z0, int t0, 
 		       int stride, Real a, char wf_file[]){
   point_vector *radial;
+
+  int status = copy_from_cache(wf, x0, y0, z0, t0, stride, a, wf_file);
+  if ( status == 0 ) return;
 
   // read reduced wavefunction U (r)
   radial = read_ascii_points ( wf_file );
@@ -277,4 +335,6 @@ void fnal_wavefunction(complex *wf, int x0, int y0, int z0, int t0,
 
   delete_point_vector( radial );
 
+  if(status != 0)
+    save_to_cache(wf, x0, y0, z0, t0, stride, a, wf_file);
 }

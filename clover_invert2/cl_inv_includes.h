@@ -36,10 +36,14 @@ int num_mes_report(void);
 /* ksprop_info.c */
 char *create_ks_XML(void);
 
+/* clover_info.c */
+char *create_w_QCDML(void);
+
 /* make_prop.c */
 int get_wprop_to_wp_field(int proptype, int startflag, char startfile[], 
 			  int saveflag, char savefile[],
 			  wilson_prop_field *wp,
+			  wilson_prop_field *source,
 			  quark_source *my_wqs,
 			  quark_invert_control *my_qic,
 			  void *my_dcp,
@@ -50,6 +54,7 @@ int get_wprop_to_wp_field(int proptype, int startflag, char startfile[],
 int get_ksprop_to_wp_field(int startflag, char startfile[], 
 			   int saveflag, char savefile[],
 			   wilson_prop_field *wp,
+			   ks_prop_field *source,
 			   quark_source *my_ksqs,
 			   quark_invert_control *my_qic,
 			   ks_param *my_ksp,
@@ -61,6 +66,7 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 int get_ksprop4_to_wp_field(int startflag, char startfile[], 
 			    int saveflag, char savefile[],
 			    wilson_prop_field *wp,
+			    ks_prop_field *source,
 			    quark_source *my_ksqs,
 			    quark_invert_control *my_qic,
 			    ks_param *my_ksp,

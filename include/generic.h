@@ -255,6 +255,11 @@ void insert_wv_from_v(wilson_vector *wv, su3_vector *v, int spin);
 
 void extract_v_from_wv(su3_vector *v, wilson_vector *wv, int spin);
 
+void extract_wv_from_swv(wilson_vector *wv, spin_wilson_vector *swv, int spin);
+
+void insert_swv_from_wv(spin_wilson_vector *swv, int spin, wilson_vector *wv);
+
+void insert_swv_from_v(spin_wilson_vector *swv, int spin_src, int spin_snk, su3_vector *v);
 void copy_v_from_ksp(su3_vector *v, ks_prop_field *ksp, int color);
 void insert_ksp_from_v(ks_prop_field *ksp, su3_vector *v, int color);
 
@@ -307,6 +312,9 @@ void imp_gauge_force_qphix( Real eps, field_offset mom_off );
 double imp_gauge_action(void);
 void g_measure(void);
 void make_loop_table(void);
+#ifdef ANISOTROPY
+void path_determine_st(void);
+#endif
 void dsdu_qhb_subl(int dir, int subl);
 int get_max_length(void);
 int get_nloop(void);

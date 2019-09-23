@@ -41,8 +41,14 @@ void write_appl_gauge_info(FILE *fp, gauge_file *gf)
   write_gauge_info_item(fp,"action.description","%s",
 			"\"Pure gauge\"",0,0);
   write_gauge_info_item(fp,"gauge.description","%s",
+#ifndef ANISOTROPY
 			"\"One plaquette gauge action.\"",0,0);
   write_gauge_info_item(fp,"gauge.beta11","%f",(char *)&beta,0,0);
+#else
+			"\"Anisotropic one plaquette gauge action.\"",0,0);
+  write_gauge_info_item(fp,"gauge.beta_space","%f",(char *)&(beta[0]),0,0);
+  write_gauge_info_item(fp,"gauge.beta_time", "%f",(char *)&(beta[1]),0,0);
+#endif
   write_gauge_info_item(fp,"gauge.ssplaq","%f",(char *)&myssplaq,0,0);
   write_gauge_info_item(fp,"gauge.stplaq","%f",(char *)&mystplaq,0,0);
   write_gauge_info_item(fp,"gauge.nersc_linktr","%f",
@@ -83,10 +89,20 @@ char *create_QCDML(){
 			"\"Pure gauge\"",0,0);
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.description","%s",
+#ifndef ANISOTROPY
 			"\"One plaquette gauge action.\"",0,0);
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.beta11","%f",
 			 (char *)&beta,0,0);
+#else
+			"\"Anisotropic one plaquette gauge action.\"",0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.beta_space","%f",
+			 (char *)&(beta[0]),0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.beta_time","%f",
+			 (char *)&(beta[1]),0,0);
+#endif
 
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.ssplaq","%f",

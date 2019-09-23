@@ -14,10 +14,18 @@ double d_action(){
 double ssplaq,stplaq,g_action,h_action;
 
     d_plaquette(&ssplaq,&stplaq);
+#ifndef ANISOTROPY
     g_action = -beta*volume*(ssplaq+stplaq);
+#else
+    g_action = -(beta[0]*ssplaq+beta[1]*stplaq)*volume;
+#endif
     node0_printf("PLAQUETTE ACTION: %e\n", g_action);
 
+#ifndef ANISOTROPY
     g_action = (beta/3.0)*imp_gauge_action();
+#else
+    g_action = imp_gauge_action()/3.0;
+#endif
     h_action = hmom_action();
 
     node0_printf("ACTION: g,h = %e  %e  %e\n",

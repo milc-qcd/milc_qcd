@@ -838,6 +838,8 @@ static FILE* open_fnal_meson_file(int pair){
   int ip1 = get_ancestors(ih1, &nh1, iq1);
   int is0 = param.set[ip0];
   int is1 = param.set[ip1];
+  int isrc0 = param.source[ip0];
+  int isrc1 = param.source[ip1];
   FILE *fp;
 
   /* Only node 0 writes, and only if 'SAVE_ASCII' we want the file. */
@@ -857,31 +859,13 @@ static FILE* open_fnal_meson_file(int pair){
   fprintf(fp,"trajectory:                   %d\n",param.trajectory);
   fprintf(fp,"date:                         \"%s UTC\"\n",utc_date_time);
   fprintf(fp,"lattice_size:                 %d,%d,%d,%d\n", nx, ny, nz, nt);
-  //  fprintf(fp,"spatial volume:        %g\n",((float)nx)*ny*nz);
 
   fprintf(fp,"antiquark_type:               staggered\n");
 
-//  {
-//    quark_source_sink_op* qs_op = param.src_qs[is0].op;
-  print_source_info(fp, "antiquark_source", &param.src_qs[is0]);
-  fprintf(fp,"antiquark_source_label:       %s\n",param.src_qs[is0].label);
-  print_field_op_info(fp, "antiquark_source", param.src_qs[is0].op);
-
-//    while(qs_op != NULL){
-//      print_field_op_info(fp, "antiquark_source", qs_op);
-//      qs_op = qs_op->op;
-//    }
-//  }
-
-//  fprintf(fp,"antiquark_sink_op:       %s",param.snk_qs_op[ih0[nh0-1]].descrp);
-//  for(i = nh0-2; i >=0; i--)
-//    fprintf(fp,"/%s",param.snk_qs_op[ih0[i]].descrp);
-//  fprintf(fp,"\n");
+  print_source_info(fp, "antiquark_source", &param.src_qs[isrc0]);
+  fprintf(fp,"antiquark_source_label:       %s\n",param.src_qs[isrc0].label);
+  print_field_op_info(fp, "antiquark_source", param.src_qs[isrc0].op);
   fprintf(fp,"antiquark_sink_label:         %s\n",param.snk_qs_op[iq0].label);
-//  for(k = 0; k < nh0; k++){
-//    int ih = ih0[nh0-1-k];
-//    print_field_op_info(fp, "antiquark_sink", &param.snk_qs_op[ih]);
-//  }
   
   {
     quark_source_sink_op **op_list = (quark_source_sink_op **)
@@ -902,21 +886,9 @@ static FILE* open_fnal_meson_file(int pair){
 
   fprintf(fp,"quark_type:                   staggered\n");
 
-//  {
-//    quark_source_sink_op *wqs_op = param.src_qs[is1].op;
-  print_source_info(fp, "quark_source", &param.src_qs[is1]);
-  fprintf(fp,"quark_source_label:           %s\n",param.src_qs[is1].label);
-  print_field_op_info(fp, "quark_source", param.src_qs[is1].op);
-//    while(wqs_op != NULL){
-//      print_field_op_info(fp, "quark_source", wqs_op);
-//      wqs_op = wqs_op->op;
-//    }
-//  }
-
-//  fprintf(fp,"quark_sink_op:           %s",param.snk_qs_op[ih1[nh1-1]].descrp);
-//  for(i = nh1-2; i >=0; i--)
-//    fprintf(fp,"/%s",param.snk_qs_op[ih1[i]].descrp);
-//  fprintf(fp,"\n");
+  print_source_info(fp, "quark_source", &param.src_qs[isrc1]);
+  fprintf(fp,"quark_source_label:           %s\n",param.src_qs[isrc1].label);
+  print_field_op_info(fp, "quark_source", param.src_qs[isrc1].op);
   fprintf(fp,"quark_sink_label:             %s\n",param.snk_qs_op[iq1].label);
   {
     quark_source_sink_op **op_list = (quark_source_sink_op **)
@@ -926,10 +898,6 @@ static FILE* open_fnal_meson_file(int pair){
     print_field_op_info_list(fp, "quark_sink", op_list, nh1);
     free(op_list);
   }
-//  for(k = 0; k < nh1; k++){
-//    int ih = ih1[nh1-1-k];
-//    print_field_op_info(fp, "quark_sink", &param.src_qs_op[ih]);
-//  }
 
   fprintf(fp,"quark_mass:                   \"%s\"\n",param.mass_label[ip1]);
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
@@ -956,6 +924,9 @@ static FILE* open_fnal_baryon_file(int triplet){
   int is0 = param.set[ip0];
   int is1 = param.set[ip1];
   int is2 = param.set[ip2];
+  int isrc0 = param.source[ip0];
+  int isrc1 = param.source[ip1];
+  int isrc2 = param.source[ip2];
   FILE *fp;
 
   /* Only node 0 writes, and only if we want the file. */
@@ -977,8 +948,8 @@ static FILE* open_fnal_baryon_file(int triplet){
   fprintf(fp,"lattice_size:                %d,%d,%d,%d\n", nx, ny, nz, nt);
 
   fprintf(fp,"quark0_type:                 staggered\n");
-  fprintf(fp,"quark0_source_type:          %s\n",param.src_qs[is0].descrp);
-  fprintf(fp,"quark0_source_label:         %s\n",param.src_qs[is0].label);
+  fprintf(fp,"quark0_source_type:          %s\n",param.src_qs[isrc0].descrp);
+  fprintf(fp,"quark0_source_label:         %s\n",param.src_qs[isrc0].label);
 
   fprintf(fp,"quark0_sink_type:            %s",param.snk_qs_op[ih0[nh0-1]].descrp);
   for(i = nh0-2; i >=0; i--)
@@ -995,8 +966,8 @@ static FILE* open_fnal_baryon_file(int triplet){
 #endif
 
   fprintf(fp,"quark1_type:                 stagered\n");
-  fprintf(fp,"quark1_source_type:          %s\n",param.src_qs[is1].descrp);
-  fprintf(fp,"quark1_source_label:         %s\n",param.src_qs[is1].label);
+  fprintf(fp,"quark1_source_type:          %s\n",param.src_qs[isrc1].descrp);
+  fprintf(fp,"quark1_source_label:         %s\n",param.src_qs[isrc1].label);
 
   fprintf(fp,"quark1_sink_type:            %s",param.snk_qs_op[ih1[nh1-1]].descrp);
   for(i = nh1-2; i >=0; i--)
@@ -1013,8 +984,8 @@ static FILE* open_fnal_baryon_file(int triplet){
 #endif
 
   fprintf(fp,"quark2_type:                 staggered\n");
-  fprintf(fp,"quark2_source_type:          %s\n",param.src_qs[is2].descrp);
-  fprintf(fp,"quark2_source_label:         %s\n",param.src_qs[is2].label);
+  fprintf(fp,"quark2_source_type:          %s\n",param.src_qs[isrc2].descrp);
+  fprintf(fp,"quark2_source_label:         %s\n",param.src_qs[isrc2].label);
 
   fprintf(fp,"quark2_sink_type:            %s",param.snk_qs_op[ih2[nh2-1]].descrp);
   for(i = nh2-2; i >=0; i--)
@@ -1059,6 +1030,8 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
   int ip1 = get_ancestors(ih1, &nh1, iq1);
   int is0 = param.set[ip0];
   int is1 = param.set[ip1];
+  int isrc0 = param.source[ip0];
+  int isrc1 = param.source[ip1];
   int i   = lookup_corr_index(pair,m);
 
   if(this_node != 0 || param.saveflag_m[pair] != SAVE_ASCII)return;
@@ -1073,11 +1046,11 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
   fprintf(fp,"correlator_key:               %s", param.meson_label[pair][m]);
 
   /* Source labels */
-  if(strlen(param.src_qs[is0].label)>0)
-    fprintf(fp,"_%s", param.src_qs[is0].label);
+  if(strlen(param.src_qs[isrc0].label)>0)
+    fprintf(fp,"_%s", param.src_qs[isrc0].label);
 
-  if(strlen(param.src_qs[is1].label)>0)
-    fprintf(fp,"_%s", param.src_qs[is1].label);
+  if(strlen(param.src_qs[isrc1].label)>0)
+    fprintf(fp,"_%s", param.src_qs[isrc1].label);
 
   /* Sink labels */
   if(strlen(param.snk_qs_op[iq0].label)>0)
@@ -1112,6 +1085,8 @@ print_start_meson_prop(int pair, int m){
   int ip1 = get_ancestors(ih1, &nh1, iq1);
   int is0 = param.set[ip0];
   int is1 = param.set[ip1];
+  int isrc0 = param.source[ip0];
+  int isrc1 = param.source[ip1];
   if(this_node != 0)return;
   printf("STARTPROP\n");
   printf("MOMENTUM: %s\n", param.mom_label[pair][m]);
@@ -1125,8 +1100,8 @@ print_start_meson_prop(int pair, int m){
   printf("%g ", param.charge[is1]);
   printf("\n");
 #endif
-  printf("SOURCE: %s %s\n",param.src_qs[is0].descrp,
-	 param.src_qs[is1].descrp);
+  printf("SOURCE: %s %s\n",param.src_qs[isrc0].descrp,
+	 param.src_qs[isrc1].descrp);
   printf("SINKOPS: %s %s\n", param.snk_qs_op[iq0].descrp, 
 	 param.snk_qs_op[iq1].descrp);
   printf("SINKS: %s\n", param.meson_label[pair][m]);
@@ -1146,6 +1121,9 @@ static void print_start_fnal_baryon_prop(FILE *fp, int triplet, int b)
   int is0 = param.set[ip0];
   int is1 = param.set[ip1];
   int is2 = param.set[ip2];
+  int isrc0 = param.source[ip0];
+  int isrc1 = param.source[ip1];
+  int isrc2 = param.source[ip2];
 
   if(this_node != 0 || param.saveflag_b[triplet] != SAVE_ASCII)return;
 
@@ -1158,14 +1136,14 @@ static void print_start_fnal_baryon_prop(FILE *fp, int triplet, int b)
   fprintf(fp,"correlator_key:              %s", param.baryon_label[triplet][b]);
 
   /* Source labels */
-  if(strlen(param.src_qs[is0].label)>0)
-    fprintf(fp,"_%s", param.src_qs[is0].label);
+  if(strlen(param.src_qs[isrc0].label)>0)
+    fprintf(fp,"_%s", param.src_qs[isrc0].label);
 
-  if(strlen(param.src_qs[is1].label)>0)
-    fprintf(fp,"_%s", param.src_qs[is1].label);
+  if(strlen(param.src_qs[isrc1].label)>0)
+    fprintf(fp,"_%s", param.src_qs[isrc1].label);
 
-  if(strlen(param.src_qs[is2].label)>0)
-    fprintf(fp,"_%s", param.src_qs[is2].label);
+  if(strlen(param.src_qs[isrc2].label)>0)
+    fprintf(fp,"_%s", param.src_qs[isrc2].label);
 
   /* Sink labels */
   if(strlen(param.snk_qs_op[iq0].label)>0)
@@ -1210,11 +1188,14 @@ static void print_start_baryon_prop(int triplet, int b)
   int is0 = param.set[ip0];
   int is1 = param.set[ip1];
   int is2 = param.set[ip2];
+  int isrc0 = param.source[ip0];
+  int isrc1 = param.source[ip1];
+  int isrc2 = param.source[ip2];
 
   if(this_node != 0)return;
   printf("STARTPROP\n");
-  printf("SOURCE: %s %s %s\n",param.src_qs[is0].descrp,
-	 param.src_qs[is1].descrp, param.src_qs[is2].descrp );
+  printf("SOURCE: %s %s %s\n",param.src_qs[isrc0].descrp,
+	 param.src_qs[isrc1].descrp, param.src_qs[isrc2].descrp );
   printf("MASSES: %g %g %g\n",param.ksp[ip0].mass,
 	 param.ksp[ip1].mass, param.ksp[ip2].mass);
   /* Note, the metadata should be updated here to handle the case

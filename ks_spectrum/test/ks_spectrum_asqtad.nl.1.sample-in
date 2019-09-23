@@ -38,6 +38,7 @@ number_of_base_sources 3
 # base source 0
 
 even_wall
+field_type KS
 subset full
 t0 0
 source_label E
@@ -46,6 +47,7 @@ forget_source
 # base source 1
 
 evenandodd_wall
+field_type KS
 subset full
 t0 0
 source_label q
@@ -54,6 +56,7 @@ forget_source
 # base source 2
 
 evenminusodd_wall
+field_type KS
 subset full
 t0 0
 source_label o
@@ -70,6 +73,7 @@ number_of_sets 3
 
 # Parameters for set 0
 
+set_type multimass
 max_cg_iterations 300
 max_cg_restarts 5
 check yes
@@ -93,6 +97,7 @@ forget_ksprop
 
 # Parameters for set 1
 
+set_type multimass
 max_cg_iterations 300
 max_cg_restarts 5
 check yes
@@ -114,6 +119,7 @@ fresh_ksprop
 forget_ksprop
 
 
+set_type multimass
 max_cg_iterations 300
 max_cg_restarts 5
 check yes

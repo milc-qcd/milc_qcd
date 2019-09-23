@@ -90,6 +90,7 @@
 #include "../include/io_wprop.h"
 #include "../include/gammatypes.h"
 #include "../db/io_string_stream.h"
+#include "../include/openmp_defs.h"
 #include <string.h>
 #ifdef HAVE_QIO
 #include <qio.h>
@@ -274,6 +275,7 @@ static void smear_v_field(su3_vector *v, complex *chi_cs){
   
   restrict_fourier_field((complex *)v, sizeof(su3_vector), 
 			 FORWARDS);
+
   print_timing(dtime,"FFT");
 
   dtime = start_timing();
@@ -308,6 +310,7 @@ static void smear_v_field(su3_vector *v, complex *chi_cs){
 			 BACKWARDS);
 
   print_timing(dtime,"FFT");
+
   cleanup_restrict_fourier();
 }   /* smear_v_field */
 
@@ -766,12 +769,12 @@ static void rotate_3D_wvec(wilson_vector *src, Real d1)
   dslash_w_3D_field(src, mp,  PLUS, EVENANDODD);
   dslash_w_3D_field(src, tmp, MINUS, EVENANDODD);
   
-  FORALLFIELDSITES(i){
+  FORALLFIELDSITES_OMP(i,){
     /* tmp <- mp - tmp = 2*Dslash*src */
     sub_wilson_vector(mp + i, tmp + i, tmp + i);
     /* src <- d1/4 * tmp + src */
     scalar_mult_add_wvec(src + i, tmp + i, d1/4., src + i);
-  }
+  } END_LOOP_OMP;
 
   cleanup_dslash_w_3D_temps();
   destroy_wv_field(mp); 
@@ -2436,7 +2439,6 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_i(stdin, prompt,"precision", &qss_op->qic.prec );
     IF_OK qss_op->qic.parity = EVENANDODD;
     IF_OK qss_op->qic.min = 0;
-    IF_OK qss_op->qic.start_flag = 0;
     IF_OK qss_op->qic.nsrc = 1;
     /* The coordinate origin and time boundary conditions are now set
        globally by the setup.c routines */
@@ -2530,7 +2532,6 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_i(stdin, prompt,"precision", &qss_op->qic.prec );
     IF_OK qss_op->qic.parity = EVENANDODD;
     IF_OK qss_op->qic.min = 0;
-    IF_OK qss_op->qic.start_flag = 0;
     IF_OK qss_op->qic.nsrc = 1;
     /* The coordinate origin and time boundary conditions are now set
        globally by the setup.c routines */

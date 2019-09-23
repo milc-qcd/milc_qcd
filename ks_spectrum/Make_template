@@ -150,11 +150,6 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 
 # Common compiler macros
 
-# Optional DEFINES for timing:
-# -DIOTIME for I/O timing
-# -DPRTIME for propagator timing
-# -DCGTIME for cg timing and iterations
-
 # -DFN          identifies fat-Naik-like actions with only next and 3rd
 #               next neighbor linkage
 
@@ -172,26 +167,26 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 ks_spectrum_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -DEIGEN_QIO" \
+	"DEFINES= -DFN -DHAVE_KS -DEIGEN_QIO" \
 	"EXTRA_OBJECTS += ${FN_OBJECTS}"
 
 ks_spectrum_eigcg_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME" \
+	"DEFINES= -DFN -DHAVE_KS" \
 	"DEFINES += -DEIGMODE=EIGCG -DEIGEN_QIO" \
 	"EXTRA_OBJECTS += ${FN_OBJECTS} ${EIGCG_OBJECTS}"
 
 ks_spectrum_asqtad_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -DDM_DU0 -DCHEM_POT" \
+	"DEFINES= -DFN -DHAVE_KS -DDM_DU0 -DCHEM_POT" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_spectrum_asqtad_mu_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -DTR_MM_INV \
+	"DEFINES= -DFN -DHAVE_KS -DTR_MM_INV \
 	-DDM_DU0 -DCHEM_POT -DD_CHEM_POT" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} mu_fast.o"
 
@@ -200,13 +195,13 @@ ks_spectrum_asqtad_mu_eos::
 ks_spectrum_naive::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = onelink_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -UD_FN_GATHER13" \
+	"DEFINES= -DFN -DHAVE_KS -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_spectrum_naive_debug::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = onelink_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME \
+	"DEFINES= -DFN -DHAVE_KS \
 	-DDEBUG_NAIVE"	\
 	"EXTRA_OBJECTS= ${FN_OBJECTS} dslash_w3.o staggered2naive.o gammas.o"
 
@@ -215,7 +210,7 @@ ks_spectrum_naive_debug::
 ks_spectrum_asqtad_u1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -DU1_FIELD" \
+	"DEFINES= -DFN -DHAVE_KS -DU1_FIELD" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${G_U1_OBJECTS}"
 # HISQ targets
 

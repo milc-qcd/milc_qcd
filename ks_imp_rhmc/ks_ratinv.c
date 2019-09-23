@@ -34,6 +34,7 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
     Real *roots,	/* the roots */
+    Real *residues,     /* residues */
     int order,		/* order of rational function approx */
     int my_niter,	/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
@@ -73,7 +74,6 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     qic[k].max = my_niter;
     qic[k].nrestart = nrestart;
     qic[k].parity = parity;
-    qic[k].start_flag = 0;
     qic[k].nsrc = 1;
     qic[k].resid = sqrt(rsqmin);
     qic[k].relresid = 0;
@@ -88,6 +88,7 @@ int ks_ratinv(	/* Return value is number of iterations taken */
   
   for(k = 0; k < order; k++){
     ksp[k].offset = roots[k+1];
+    ksp[k].residue = residues ? residues[k+1] : 0.0;
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
     ksp[k].naik_term_epsilon = naik_term_epsilon;
     ksp[k].naik_term_epsilon_index = naik_term_epsilon_index;

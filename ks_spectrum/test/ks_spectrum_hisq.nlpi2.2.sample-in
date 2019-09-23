@@ -38,6 +38,7 @@ number_of_base_sources 1
 # base source 0
 
 evenandodd_wall
+field_type KS
 subset full
 t0 0
 source_label q
@@ -70,6 +71,7 @@ number_of_sets 3
 
 # Parameters for set 0
 
+set_type multimass
 max_cg_iterations 300
 max_cg_restarts 5
 check yes
@@ -93,6 +95,7 @@ forget_ksprop
 
 # Parameters for set 1
 
+set_type multimass
 max_cg_iterations 300
 max_cg_restarts 5
 check yes
@@ -116,6 +119,7 @@ forget_ksprop
 
 # Parameters for set 2
 
+set_type multimass
 max_cg_iterations 300
 max_cg_restarts 5
 check yes

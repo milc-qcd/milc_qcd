@@ -402,7 +402,6 @@ void f_meas_imp( int npbp_reps, int prec,
   qic.max        = niter;
   qic.nrestart   = nrestart;
   qic.parity     = EVENANDODD;
-  qic.start_flag = 0;
   qic.nsrc       = 1;
   qic.resid      = sqrt(rsqprop);
   qic.relresid   = 0;

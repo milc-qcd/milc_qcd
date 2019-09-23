@@ -255,7 +255,7 @@ void setup_fixed_geom(int const *geom, int n){
   }
 
   if(node_count != numnodes()){
-    if(mynode()==0)printf("/n%s: Requested geometry %d %d %d %d ", myname,
+    if(mynode()==0)printf("\n%s: Requested geometry %d %d %d %d ", myname,
 		 geom[0], geom[1], geom[2], geom[3]);
     if(mynode()==0)printf("does not match number of nodes %d\n",numnodes());
     terminate(1);
@@ -352,7 +352,7 @@ static void set_topology(){
     setup_qmp_grid(geom, nd);
     if(mynode()==0){
       printf("QMP using job_geometry_dimensions");
-      for(j = 0; j < nd; j++)
+      for(int j = 0; j < nd; j++)
 	printf(" %d",geom[j]);
       printf("\n");
       fflush(stdout);
