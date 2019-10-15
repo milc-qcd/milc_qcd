@@ -327,6 +327,9 @@ include ../Make_template_scidac
 ifeq ($(strip ${COMPILER}),intel)
   INCFFTW = -mkl
   LIBFFTW = -mkl
+else ifeq ($(strip ${COMPILER}),cray-intel)
+  INCFFTW = -mkl
+  LIBFFTW = -mkl
 endif
 
 #----------------------------------------------------------------------
