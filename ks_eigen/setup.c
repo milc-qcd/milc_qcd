@@ -338,9 +338,8 @@ int readin(int prompt) {
 #if 1
   /* Calculate and print the residues and norms of the eigenvectors */
   double *resid = (double *)malloc(param.eigen_param.Nvecs_in*sizeof(double));
-  imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
   node0_printf("Even site residuals\n");
-  check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs_in, EVEN, fn );
+  check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs_in, EVEN, fn[0] );
   free(resid);
 #endif
   
