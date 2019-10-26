@@ -412,7 +412,7 @@ read_quda_ks_eigenvectors(QIO_Reader *infile, su3_vector *eigVec[], double *eigV
   /* Map eigenvectors to our dynamic array */
 
   int i;
-  FORALLFIELDSITES_OMP(i,private(j)){
+  FORALLFIELDSITES_OMP(i,){
     for(int j = 0; j < *Nvecs; j++){
       eigVec[j][i] = eigVecs[*Nvecs*i+j];
     }
