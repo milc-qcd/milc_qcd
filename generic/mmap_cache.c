@@ -1,3 +1,4 @@
+#ifdef GB_BARYON /* To make sure other programs can compile properly */
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
@@ -123,3 +124,5 @@ int msync_mmap_buffer(mmap_cache* obj,int nbuf)
 exit(-1);
 return -1;
 }
+
+#endif /* GB baryon */

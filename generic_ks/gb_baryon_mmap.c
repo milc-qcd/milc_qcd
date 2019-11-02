@@ -1,3 +1,4 @@
+#ifdef GB_BARYON
 #include "generic_ks_includes.h"
 #include "../include/generic_ks.h"
 
@@ -674,3 +675,4 @@ destroy_gb_spec_cache(){
 }
 /*---------------------------------------------------------------------*/
 #endif
+#endif /* GB baryon */

@@ -1354,6 +1354,216 @@ static FILE* open_fnal_gb_baryon_file(int triplet){
 }
 
 /*--------------------------------------------------------------------*/
+void spectrum_ks_gb_baryon_cleanup(int triplet){
+  int num_corr = param.num_corr_b[triplet];
+
+  if(param.do_gbbaryon_spect[triplet])
+    destroy_hadron_prop(&gb_baryon_prop, num_corr);
+}
+/*--------------------------------------------------------------------*/
+static void close_fnal_gb_baryon_file(FILE *fp, int triplet){
+  if(this_node != 0 || param.saveflag_gb[triplet] == FORGET)return;
+  if(fp != NULL)fclose(fp);
+}
+/*--------------------------------------------------------------------*/
+static void print_end_gb_baryon_prop(int triplet){
+  if(param.saveflag_gb[triplet] != FORGET)return;
+  node0_printf("ENDPROP\n");
+}
+
+/*--------------------------------------------------------------------*/
+static void print_fnal_gb_baryon_prop(FILE *fp, int triplet, int t, complex c)
+{
+  if(this_node != 0 || param.saveflag_gb[triplet] == FORGET)return;
+  fprintf(fp, "%d\t%e\t%e\n", t, (double)c.real, (double)c.imag);
+}
+
+/*--------------------------------------------------------------------*/
+static void print_gb_baryon_prop(int triplet, int t, complex c)
+{
+  if(param.saveflag_gb[triplet] != FORGET)return;
+  node0_printf("%d %e %e\n",t,(double)c.real,(double)c.imag);
+}
+
+/*--------------------------------------------------------------------*/
+static void print_start_fnal_gb_baryon_prop(FILE *fp, int triplet, int b)
+{
+  int iqo0 = param.qk8triplet[triplet][0];
+  int iqo1 = param.qk8triplet[triplet][1];
+  int iqo2 = param.qk8triplet[triplet][2];
+  /* get the first quark in each octet rather than printing all */
+  int iq0 = param.qk_oct[iqo0][0];
+  int iq1 = param.qk_oct[iqo1][0];
+  int iq2 = param.qk_oct[iqo2][0];
+  int ih0[MAX_HISTORY], ih1[MAX_HISTORY], ih2[MAX_HISTORY];
+  int nh0, nh1, nh2;
+  int ip0 = get_ancestors(ih0, &nh0, iq0);
+  int ip1 = get_ancestors(ih1, &nh1, iq1);
+  int ip2 = get_ancestors(ih2, &nh2, iq2);
+  int is0 = param.set[ip0];
+  int is1 = param.set[ip1];
+  int is2 = param.set[ip2];
+  int i,j;
+  char qkcont[4];
+
+  if(this_node != 0 || param.saveflag_gb[triplet] == FORGET)return;
+
+  for(i=0,j=0;i<3-param.qk8num_d[triplet]-param.qk8num_s[triplet];i++,j++){
+    qkcont[j] = 'u'; }
+  for(i=j;i<3-param.qk8num_s[triplet];i++,j++){
+    qkcont[j] = 'd'; }
+  for(i=j;i<3;i++,j++){
+    qkcont[j] = 's'; }
+  qkcont[3] = '\0';
+
+  fprintf(fp,"---\n");
+  /* redundant? */
+  fprintf(fp,"correlator:                  %s\n",param.gbbaryon_label[triplet][b]);
+  fprintf(fp,"gb_baryon_source:            %s\n",
+	  gb_baryon_label(param.gbbaryon_src[triplet][b]));
+  fprintf(fp,"gb_baryon_sink:              %s\n",
+	  gb_baryon_label(param.gbbaryon_snk[triplet][b]));
+  if (param.gb_corner[triplet][b]){
+   fprintf(fp,"construction:                cube\n");
+  } else {
+   fprintf(fp,"construction:                corner\n");
+  }
+  fprintf(fp,"quark_content:               %.3s\n",qkcont);
+
+  /* Print correlator key encoding metadata */
+  fprintf(fp,"correlator_key:              %s", param.gbbaryon_label[triplet][b]);
+
+  /* Source labels */
+  if(strlen(param.src_qs[is0].label)>0)
+    fprintf(fp,"_%s", param.src_qs[is0].label);
+
+  if(strlen(param.src_qs[is1].label)>0)
+    fprintf(fp,"_%s", param.src_qs[is1].label);
+
+  if(strlen(param.src_qs[is2].label)>0)
+    fprintf(fp,"_%s", param.src_qs[is2].label);
+
+  /* Sink labels */
+  if(strlen(param.snk_qs_op[iq0].label)>0)
+    fprintf(fp,"_%s",param.snk_qs_op[iq0].label);
+
+  if(strlen(param.snk_qs_op[iq1].label)>0)
+    fprintf(fp,"_%s",param.snk_qs_op[iq1].label);
+
+  if(strlen(param.snk_qs_op[iq2].label)>0)
+    fprintf(fp,"_%s",param.snk_qs_op[iq2].label);
+
+  /* Mass labels */
+  fprintf(fp,"_m%s", param.mass_label[ip0]);
+#if U1_FIELD
+  fprintf(fp,"_q%s", param.charge_label[is0]);
+#endif
+  fprintf(fp,"_m%s", param.mass_label[ip1]);
+#if U1_FIELD
+  fprintf(fp,"_q%s", param.charge_label[is1]);
+#endif
+  fprintf(fp,"_m%s", param.mass_label[ip2]);
+#if U1_FIELD
+  fprintf(fp,"_q%s", param.charge_label[is2]);
+#endif
+  fprintf(fp, "\n");
+
+  fprintf(fp,"...\n");
+}
+
+/*--------------------------------------------------------------------*/
+static void print_start_gb_baryon_prop(int triplet, int b)
+{
+  if(param.saveflag_gb[triplet] != FORGET)return;
+  int iqo0 = param.qk8triplet[triplet][0];
+  int iqo1 = param.qk8triplet[triplet][1];
+  int iqo2 = param.qk8triplet[triplet][2];
+  /* get the first quark in each octet rather than printing all */
+  int iq0 = param.qk_oct[iqo0][0];
+  int iq1 = param.qk_oct[iqo1][0];
+  int iq2 = param.qk_oct[iqo2][0];
+  int ih0[MAX_HISTORY], ih1[MAX_HISTORY], ih2[MAX_HISTORY];
+  int nh0, nh1, nh2;
+  int ip0 = get_ancestors(ih0, &nh0, iq0);
+  int ip1 = get_ancestors(ih1, &nh1, iq1);
+  int ip2 = get_ancestors(ih2, &nh2, iq2);
+  int is0 = param.set[ip0];
+  int is1 = param.set[ip1];
+  int is2 = param.set[ip2];
+
+  if(this_node != 0)return;
+  printf("STARTPROP\n");
+  printf("SOURCE: %s %s %s\n",param.src_qs[is0].descrp,
+	 param.src_qs[is1].descrp, param.src_qs[is2].descrp );
+  printf("MASSES: %g %g %g\n",param.ksp[ip0].mass,
+	 param.ksp[ip1].mass, param.ksp[ip2].mass);
+  /* Note, the metadata should be updated here to handle the case
+     of nontrivial sink operators */
+  printf("SINKOPS: %s %s %s\n", param.snk_qs_op[iq0].descrp,
+	 param.snk_qs_op[iq1].descrp, param.snk_qs_op[iq2].descrp);
+  printf("GB_SOURCE: %s\n", gb_baryon_label(param.gbbaryon_src[triplet][b]) );
+  printf("GB_SINK: %s\n", gb_baryon_label(param.gbbaryon_snk[triplet][b]) );
+  if (param.gb_corner[triplet][b]){
+   printf("CONSTRUCTION: cube\n");
+  } else {
+   printf("CONSTRUCTION: corner\n");
+  }
+  printf("COR_LABEL: %s\n", param.gbbaryon_label[triplet][b] );
+}
+
+/*--------------------------------------------------------------------*/
+static void spectrum_ks_print_gb_baryon(int triplet){
+
+  //  Real space_vol;
+  FILE *corr_fp;
+  int t, tp;
+  int b;
+  complex prop;
+  int num_corr = param.num_corr_gb[triplet];
+
+  /* Normalization factor */
+  //  space_vol = (Real)(nx*ny*nz);
+
+  /* print baryon propagator */
+  if(param.do_gbbaryon_spect[triplet]){
+    corr_fp = open_fnal_gb_baryon_file(triplet);
+    if(this_node == 0 && corr_fp == NULL)
+      param.saveflag_gb[triplet] = FORGET;
+
+    for(b=0;b<num_corr;b++){
+
+      print_start_gb_baryon_prop(triplet, b);
+      print_start_fnal_gb_baryon_prop(corr_fp, triplet, b);
+#ifdef BLIND
+      // if not labeled as 2pt, blind data by predetermined factor in generic/blind_data.c
+      if ((param.gb_spintaste[triplet] != GB_2POINT_BACKPROP) &&
+          (param.gb_spintaste[triplet] != 179)) // spin-taste index for GT-GT
+      {
+        node0_printf("applying blinding to correlator %d %d %s\n",
+         b,param.gb_spintaste[triplet],spin_taste_label(param.gb_spintaste[triplet]) );
+        blind_vdcomplex(gb_baryon_prop[b],nt);
+      }
+#endif
+      for(t=0; t<nt; t++){
+	tp = (t + param.r_offset_gb[triplet][3]) % nt;
+	prop = gb_baryon_prop[b][tp];
+	g_complexsum( &prop );
+	// CDIVREAL(prop, space_vol, prop);
+	/* Fix sign for antiperiodic bc */
+	if( (((t+param.r_offset_gb[triplet][3])/nt
+	      - param.r_offset_gb[triplet][3]/nt) %2 ) == 1 ){
+	  CMULREAL(prop,-1.,prop);
+	}
+	print_gb_baryon_prop(triplet, t, prop);
+	print_fnal_gb_baryon_prop(corr_fp, triplet, t, prop);
+      }
+      print_end_gb_baryon_prop(triplet);
+    }
+    close_fnal_gb_baryon_file(corr_fp, triplet);
+  }
+}
+
+/*--------------------------------------------------------------------*/
 void spectrum_ks_gb_baryon(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **qko2,
   su3_matrix *links, int triplet)
 {

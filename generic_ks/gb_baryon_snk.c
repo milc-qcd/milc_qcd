@@ -1,5 +1,4 @@
 #include "generic_ks_includes.h"
-#include <mpi.h>
 #ifdef OMP
 #include <omp.h>
 #endif

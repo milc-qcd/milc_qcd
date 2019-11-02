@@ -247,7 +247,7 @@ ks_spectrum_hisq_u1::
 # GB baryon with memory map and blinding
 ks_spectrum_hisq_gb_baryon_mmap_blind::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
-	"DEFINES += -DEIGMODE=EIGCG -DGB_BARYON -DGB_BARYON_MMAP -DBLIND"
+	"DEFINES += -DGB_BARYON -DGB_BARYON_MMAP -DBLIND"
 
 clean:
 	-/bin/rm -f *.o quark_action.h
