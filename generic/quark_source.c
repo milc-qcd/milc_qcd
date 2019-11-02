@@ -567,6 +567,14 @@ int is_complex_source(int source_type){
     source_type == COMPLEX_FIELD_FM_FILE ||
     source_type == COMPLEX_FIELD_STORE ||
     source_type == CORNER_WALL ||
+    source_type == CORNER_WALL_0   ||
+    source_type == CORNER_WALL_X   ||
+    source_type == CORNER_WALL_Y   ||
+    source_type == CORNER_WALL_XY  ||
+    source_type == CORNER_WALL_Z   ||
+    source_type == CORNER_WALL_ZX  ||
+    source_type == CORNER_WALL_YZ  ||
+    source_type == CORNER_WALL_XYZ ||
     source_type == EVEN_WALL ||
     source_type == EVENANDODD_WALL ||
     source_type == EVENMINUSODD_WALL ||
@@ -617,8 +625,30 @@ int get_complex_source(quark_source *qs){
   else if(source_type == COMPLEX_FIELD_FM_FILE)
     r_source_cmplx_fm_to_field(source_file, qs->c_src, 1, x0, y0, z0, t0);
   
-  else if(source_type == CORNER_WALL)
-    corner_wall(qs->c_src, t0);
+  else if(source_type == CORNER_WALL ||
+          source_type == CORNER_WALL_0)
+    corner_wall(qs->c_src, t0, 0);
+
+  else if(source_type == CORNER_WALL_X)
+    corner_wall(qs->c_src, t0, 1);
+  
+  else if(source_type == CORNER_WALL_Y)
+    corner_wall(qs->c_src, t0, 2);
+  
+  else if(source_type == CORNER_WALL_XY)
+    corner_wall(qs->c_src, t0, 3);
+  
+  else if(source_type == CORNER_WALL_Z)
+    corner_wall(qs->c_src, t0, 4);
+  
+  else if(source_type == CORNER_WALL_ZX)
+    corner_wall(qs->c_src, t0, 5);
+  
+  else if(source_type == CORNER_WALL_YZ)
+    corner_wall(qs->c_src, t0, 6);
+  
+  else if(source_type == CORNER_WALL_XYZ)
+    corner_wall(qs->c_src, t0, 7);
   
   else if(source_type == EVEN_WALL)
     even_wall(qs->c_src, t0);
@@ -1213,6 +1243,38 @@ static int ask_quark_source( FILE *fp, int prompt, int *source_type,
     *source_type = CORNER_WALL;
     strcpy(descrp,"CORNER");
   }
+  else if(strcmp("corner_wall_0",savebuf) == 0 ) {
+    *source_type = CORNER_WALL_0;
+    strcpy(descrp,"CORNER_0");
+  }
+  else if(strcmp("corner_wall_x",savebuf) == 0 ) {
+    *source_type = CORNER_WALL_X;
+    strcpy(descrp,"CORNER_X");
+  }
+  else if(strcmp("corner_wall_y",savebuf) == 0 ) {
+    *source_type = CORNER_WALL_Y;
+    strcpy(descrp,"CORNER_Y");
+  }
+  else if(strcmp("corner_wall_xy",savebuf) == 0 ) {
+    *source_type = CORNER_WALL_XY;
+    strcpy(descrp,"CORNER_XY");
+  }
+  else if(strcmp("corner_wall_z",savebuf) == 0 ) {
+    *source_type = CORNER_WALL_Z;
+    strcpy(descrp,"CORNER_Z");
+  }
+  else if(strcmp("corner_wall_zx",savebuf) == 0 ) {
+    *source_type = CORNER_WALL_ZX;
+    strcpy(descrp,"CORNER_ZX");
+  }
+  else if(strcmp("corner_wall_yz",savebuf) == 0 ) {
+    *source_type = CORNER_WALL_YZ;
+    strcpy(descrp,"CORNER_YZ");
+  }
+  else if(strcmp("corner_wall_xyz",savebuf) == 0 ) {
+    *source_type = CORNER_WALL_XYZ;
+    strcpy(descrp,"CORNER_XYZ");
+  }
   else if(strcmp("even_wall",savebuf) == 0 ) {
     *source_type = EVEN_WALL;
     strcpy(descrp,"even_wall");
@@ -1639,6 +1701,14 @@ void print_source_info(FILE *fp, char prefix[], quark_source *qs){
 	    qs->x0, qs->y0, qs->z0, qs->t0);
   }
   else if ( source_type == CORNER_WALL ||
+            source_type == CORNER_WALL_0 ||
+            source_type == CORNER_WALL_X ||
+            source_type == CORNER_WALL_Y ||
+            source_type == CORNER_WALL_XY ||
+            source_type == CORNER_WALL_Z ||
+            source_type == CORNER_WALL_ZX ||
+            source_type == CORNER_WALL_YZ ||
+            source_type == CORNER_WALL_XYZ ||
 	    source_type == EVEN_WALL ||
 	    source_type == EVENANDODD_WALL ||
 	    source_type == EVENMINUSODD_WALL ){
