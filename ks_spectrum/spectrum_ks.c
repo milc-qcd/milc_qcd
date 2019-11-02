@@ -14,6 +14,10 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef GB_BARYON
+static complex **gb_baryon_prop = NULL;
+#endif
+
 static complex **baryon_prop = NULL;
 static complex **pmes_prop = NULL;
 
@@ -34,7 +38,7 @@ static int *num_corr_occur;
 /*--------------------------------------------------------------------*/
 /* indexing is prop[meson_type][momentum][time] */
 
-static complex ** 
+static complex **
 create_hadron_prop(int ncor, int ntime){
   complex **prop;
   int m, t;
@@ -45,12 +49,12 @@ create_hadron_prop(int ncor, int ntime){
   for(m = 0; m < ncor; m++){
     prop[m] = (complex *)malloc(ntime*sizeof(complex));
     if(prop[m] == NULL)return NULL;
-    
+
     for(t = 0; t < nt; t++){
       prop[m][t].real = 0.0; prop[m][t].imag = 0.0;
     }
   }
-  
+
   return prop;
 }
 
@@ -64,7 +68,7 @@ void clear_wprop(wilson_propagator *p){
 
 /*--------------------------------------------------------------------*/
 
-static void 
+static void
 destroy_hadron_prop(complex ***prop, int ncor){
   int m;
 
@@ -75,7 +79,7 @@ destroy_hadron_prop(complex ***prop, int ncor){
       free((*prop)[m]);
     }
   }
-  
+
   free(*prop);
   *prop = NULL;
 }
@@ -85,7 +89,7 @@ destroy_hadron_prop(complex ***prop, int ncor){
    the momentum/parity in the hash table.  If found, return its index.
    Otherwise, add it to the table and assign it the new index */
 
-static int 
+static int
 hash_meson_mom_parity(int **mom, char **par, int *meson_mom_test,
 		      char *par_test, int *nmp){
   int i;
@@ -133,7 +137,7 @@ hash_meson_mom_parity(int **mom, char **par, int *meson_mom_test,
    momentum/parity combinations. The mom_parity_index maps the
    correlator to its momentum and parity in the momentum/parity table */
 
-static void 
+static void
 create_mom_parity(int ***mom, char ***par, int **mp_index, int *nmp, int pair){
   int c;
   int num_corr = param.num_corr_m[pair];
@@ -144,7 +148,7 @@ create_mom_parity(int ***mom, char ***par, int **mp_index, int *nmp, int pair){
     printf("%s(%d): no room for mom table\n",myname,this_node);
     terminate(1);
   }
-  
+
   *par = (char **)malloc(num_corr*sizeof(int *));
   if(*par == NULL){
     printf("%s(%d): no room for parity table\n",myname,this_node);
@@ -160,9 +164,9 @@ create_mom_parity(int ***mom, char ***par, int **mp_index, int *nmp, int pair){
   /* Run through all correlators, tabulating and hashing the unique
      momentum and parity */
   for(c = 0; c < num_corr; c++){
-    (*mp_index)[c] = 
+    (*mp_index)[c] =
       hash_meson_mom_parity(*mom, *par,
-			    param.corr_mom[pair][c], 
+			    param.corr_mom[pair][c],
 			    param.corr_parity[pair][c],
 			    nmp);
   }
@@ -170,9 +174,9 @@ create_mom_parity(int ***mom, char ***par, int **mp_index, int *nmp, int pair){
 
 /*--------------------------------------------------------------------*/
 
-static void 
+static void
 destroy_mom_parity(int ***mom, char ***par, int **mp_index, int nmp, int pair){
-  
+
   int p;
 
   if(*mom != NULL){
@@ -197,7 +201,7 @@ destroy_mom_parity(int ***mom, char ***par, int **mp_index, int nmp, int pair){
    the spin-taste index in the hash table.  If found, return its index.
    Otherwise, add it to the table and assign it the new index */
 
-static int 
+static int
 hash_spin_taste_index(int *st, int st_test, int *n){
   int i;
 
@@ -218,7 +222,7 @@ hash_spin_taste_index(int *st, int st_test, int *n){
 /* Construct hash table of unique spin/taste indices                  */
 
 
-static void 
+static void
 create_spin_taste_index(int **st, int **st_index, int *n, int pair)
 {
   char myname[] = "create_spin_tate_index";
@@ -230,7 +234,7 @@ create_spin_taste_index(int **st, int **st_index, int *n, int pair)
     printf("%s(%d): no room for spin-taste table\n", myname, this_node);
     terminate(1);
   }
-  
+
   *st_index = (int *)malloc(num_corr*sizeof(int));
   if(*st_index == NULL){
     printf("%s(%d): no room for spin-taste index table\n", myname, this_node);
@@ -240,14 +244,14 @@ create_spin_taste_index(int **st, int **st_index, int *n, int pair)
   /* Run through all correlators for this pair, tabulating and hashing
      the unique spin-taste indices */
   for(c = 0; c < num_corr; c++){
-    (*st_index)[c] = 
+    (*st_index)[c] =
       hash_spin_taste_index(*st, param.spin_taste_snk[pair][c], n);
   }
 }
 
 /*--------------------------------------------------------------------*/
 
-static void 
+static void
 destroy_spin_taste_index(int **st, int **st_index)
 {
   if(*st != NULL){
@@ -306,7 +310,7 @@ destroy_num_corr_mom_parity(int **n_cmp)
    indices for each pair */
 
 static void
-fill_corr_table(int *st, int *st_index, int **c_table, 
+fill_corr_table(int *st, int *st_index, int **c_table,
 		int *n_cmp, int n, int *mp_index, int pair)
 {
   char myname[] = "fill_corr_table";
@@ -367,15 +371,15 @@ create_corr_table(int pair)
 		       &num_spin_taste_indices, pair);
 
 
-  create_mom_parity(&momentum, &parity, &mom_parity_index, 
+  create_mom_parity(&momentum, &parity, &mom_parity_index,
 			  &num_mom_parities, pair);
 
-  num_corr_mom_parity = 
-    create_num_corr_mom_parity(spin_taste_indices, num_spin_taste_indices, 
+  num_corr_mom_parity =
+    create_num_corr_mom_parity(spin_taste_indices, num_spin_taste_indices,
 			       pair);
 
   /* Create the correlator table */
-  
+
   corr_table = (int **)malloc(num_spin_taste_indices*sizeof(int *));
   if(corr_table == NULL){
     printf("%s(%d): no room for corr table\n",myname, this_node);
@@ -385,7 +389,7 @@ create_corr_table(int pair)
   /* Fill it */
 
   fill_corr_table(spin_taste_table, spin_taste_indices, corr_table,
-		  num_corr_mom_parity, num_spin_taste_indices, 
+		  num_corr_mom_parity, num_spin_taste_indices,
 		  mom_parity_index, pair);
 
 }
@@ -433,7 +437,7 @@ create_num_corr_occur(int pair){
 
   for(m = 0; m < ncr; m++)
     nco[m] = 0;
-  
+
   for(c = 0; c < num_corr; c++){
     m = param.corr_index[pair][c];
     nco[m]++;
@@ -450,10 +454,10 @@ destroy_num_corr_occur(int **nco){
 }
 
 /*--------------------------------------------------------------------*/
-static void 
+static void
 spectrum_ks_init(int pair){
-  
-  int num_corr = 
+
+  int num_corr =
     param.num_corr_report[pair]; /* number of meson correlators to store */
 
   if(param.do_meson_spect[pair])
@@ -461,16 +465,16 @@ spectrum_ks_init(int pair){
 
   /* Set up count of contributions to the correlators */
   num_corr_occur = create_num_corr_occur(pair);
-  
+
   /* Set up table of requested correlators */
   create_corr_table(pair);
 
 }
 
 /*--------------------------------------------------------------------*/
-static void 
+static void
 spectrum_ks_baryon_init(int triplet){
-  
+
   int num_corr = param.num_corr_b[triplet];
 
   if(param.do_baryon_spect[triplet])
@@ -479,15 +483,15 @@ spectrum_ks_baryon_init(int triplet){
 
 /*---------------------------------------------------------------------*/
 
-static void spectrum_ks_baryon_nd(int nc, int type[], 
-				  ks_prop_field *qp0, 
+static void spectrum_ks_baryon_nd(int nc, int type[],
+				  ks_prop_field *qp0,
 				  ks_prop_field *qp1,
 				  ks_prop_field *qp2,
 				  int triplet)
 {
   double dtime = start_timing();
 
-  ks_baryon_nd( baryon_prop, qp0, qp1, qp2, nc, type, 
+  ks_baryon_nd( baryon_prop, qp0, qp1, qp2, nc, type,
 		param.baryon_phase[triplet], param.baryon_factor[triplet]  );
 
   print_timing(dtime, "baryons");
@@ -500,11 +504,11 @@ static void accum_gen_meson(complex **mp, su3_vector *qp0, int naik_index0,
 
   imp_ferm_links_t **fn = get_fm_links(fn_links);
 
-  ks_meson_cont_mom(mp, qp0, qp1, 
+  ks_meson_cont_mom(mp, qp0, qp1,
 		    num_mom_parities, momentum, parity,
-		    num_spin_taste_indices, num_corr_mom_parity, corr_table, 
-		    mom_parity_index, fn[naik_index0], fn[naik_index1], 
-		    param.spin_taste_snk[pair], 
+		    num_spin_taste_indices, num_corr_mom_parity, corr_table,
+		    mom_parity_index, fn[naik_index0], fn[naik_index1],
+		    param.spin_taste_snk[pair],
 		    param.meson_phase[pair], param.meson_factor[pair],
 		    param.corr_index[pair], &param.r_offset_m[pair][0]);
 }
@@ -512,7 +516,7 @@ static void accum_gen_meson(complex **mp, su3_vector *qp0, int naik_index0,
 /*--------------------------------------------------------------------*/
 static void spectrum_ks_diag_gen_meson(ks_prop_field *qp, int naik_index,
 				       complex **mp, int pair){
-  
+
   int color;
   su3_vector *qps;
   double dtime = start_timing();
@@ -530,9 +534,9 @@ static void spectrum_ks_diag_meson(ks_prop_field *qp, int naik_index, int pair){
 }
 
 /*--------------------------------------------------------------------*/
-static void spectrum_ks_offdiag_gen_meson(ks_prop_field *qp0, 
+static void spectrum_ks_offdiag_gen_meson(ks_prop_field *qp0,
 					  int naik_index0,
-					  ks_prop_field *qp1, 
+					  ks_prop_field *qp1,
 					  int naik_index1,
 					  complex **mp, int pair){
 
@@ -557,7 +561,7 @@ static void spectrum_ks_offdiag_gen_meson(ks_prop_field *qp0,
 }
 
 /*--------------------------------------------------------------------*/
-static void spectrum_ks_offdiag_meson(ks_prop_field *qp0, 
+static void spectrum_ks_offdiag_meson(ks_prop_field *qp0,
 				      int naik_index0,
 				      ks_prop_field *qp1,
 				      int naik_index1,
@@ -568,11 +572,24 @@ static void spectrum_ks_offdiag_meson(ks_prop_field *qp0,
 }
 
 /*--------------------------------------------------------------------*/
+#ifdef GB_BARYON
+static void
+spectrum_ks_gb_baryon_init(int triplet){
+
+  int num_corr = param.num_corr_gb[triplet];
+
+  if(param.do_gbbaryon_spect[triplet])
+  {
+    gb_baryon_prop = create_hadron_prop(num_corr, nt);
+  }
+}
+#endif
+/*--------------------------------------------------------------------*/
 /* Quark propagators can be derived from a sequence of sink operators
    acting on a parent propagator.  We want the complete family history
    in the metadata.
    The iq in the call is the index of the quark propagator.
-   The history (list of quark propagators and their parents) 
+   The history (list of quark propagators and their parents)
    is returned in in reverse order, as is the number of generations.
    The ancestral propagator is the return value */
 
@@ -590,16 +607,16 @@ int get_ancestors(int h[], int *n, int iq){
     }
     h[i+1] = param.prop_for_qk[h[i]];
   }
-  
+
   *n = i + 1;
 
   if(*n == MAX_HISTORY){
     printf("get_ancestors(%d):Out of space for history\n",this_node);
   }
-  
+
   return param.prop_for_qk[h[i]];
 }
-  
+
 /*--------------------------------------------------------------------*/
 static FILE* open_fnal_meson_file(int pair){
   int iq0 = param.qkpair[pair][0];
@@ -637,7 +654,7 @@ static FILE* open_fnal_meson_file(int pair){
   fprintf(fp,"antiquark_source_label:       %s\n",param.src_qs[isrc0].label);
   print_field_op_info(fp, "antiquark_source", param.src_qs[isrc0].op);
   fprintf(fp,"antiquark_sink_label:         %s\n",param.snk_qs_op[iq0].label);
-  
+
   {
     quark_source_sink_op **op_list = (quark_source_sink_op **)
       malloc(sizeof(quark_source_sink_op *)*nh0);
@@ -646,7 +663,7 @@ static FILE* open_fnal_meson_file(int pair){
     print_field_op_info_list(fp, "antiquark_sink", op_list, nh0);
     free(op_list);
   }
-      
+
   fprintf(fp,"antiquark_mass:               \"%s\"\n", param.mass_label[ip0]);
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"antiquark_epsilon:            %g\n", param.ksp[ip0].naik_term_epsilon);
@@ -680,7 +697,7 @@ static FILE* open_fnal_meson_file(int pair){
   fprintf(fp,"...\n");
   return fp;
 }
-		       
+
 /*--------------------------------------------------------------------*/
 static FILE* open_fnal_baryon_file(int triplet){
   int iq0 = param.qktriplet[triplet][0];
@@ -725,7 +742,7 @@ static FILE* open_fnal_baryon_file(int triplet){
     fprintf(fp,"/%s",param.snk_qs_op[ih0[i]].descrp);
   fprintf(fp,"\n");
   fprintf(fp,"quark0_sink_label:           %s\n",param.snk_qs_op[iq0].label);
-  
+
   fprintf(fp,"quark0_mass:                 \"%s\"\n",param.mass_label[ip0]);
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark0_epsilon:              %g\n",param.ksp[ip0].naik_term_epsilon);
@@ -761,7 +778,7 @@ static FILE* open_fnal_baryon_file(int triplet){
     fprintf(fp,"/%s",param.snk_qs_op[ih2[i]].descrp);
   fprintf(fp,"\n");
   fprintf(fp,"quark2_sink_label:           %s\n",param.snk_qs_op[iq2].label);
-  
+
   fprintf(fp,"quark2_mass:                 \"%s\"\n",param.mass_label[ip2]);
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark2_epsilon:              %g\n",param.ksp[ip2].naik_term_epsilon);
@@ -773,7 +790,7 @@ static FILE* open_fnal_baryon_file(int triplet){
   fprintf(fp,"...\n");
   return fp;
 }
-		       
+
 /*--------------------------------------------------------------------*/
 static int lookup_corr_index(int pair, int m){
   int i;
@@ -841,9 +858,9 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
 
   fprintf(fp,"...\n");
 }
-		       
+
 /*--------------------------------------------------------------------*/
-static void 
+static void
 print_start_meson_prop(int pair, int m){
   if(param.saveflag_m[pair] != FORGET)return;
   int iq0 = param.qkpair[pair][0];
@@ -871,11 +888,11 @@ print_start_meson_prop(int pair, int m){
 #endif
   printf("SOURCE: %s %s\n",param.src_qs[isrc0].descrp,
 	 param.src_qs[isrc1].descrp);
-  printf("SINKOPS: %s %s\n", param.snk_qs_op[iq0].descrp, 
+  printf("SINKOPS: %s %s\n", param.snk_qs_op[iq0].descrp,
 	 param.snk_qs_op[iq1].descrp);
   printf("SINKS: %s\n", param.meson_label[pair][m]);
 }
-		       
+
 /*--------------------------------------------------------------------*/
 static void print_start_fnal_baryon_prop(FILE *fp, int triplet, int b)
 {
@@ -941,7 +958,7 @@ static void print_start_fnal_baryon_prop(FILE *fp, int triplet, int b)
 
   fprintf(fp,"...\n");
 }
-		       
+
 /*--------------------------------------------------------------------*/
 static void print_start_baryon_prop(int triplet, int b)
 {
@@ -969,7 +986,7 @@ static void print_start_baryon_prop(int triplet, int b)
 	 param.ksp[ip1].mass, param.ksp[ip2].mass);
   /* Note, the metadata should be updated here to handle the case
      of nontrivial sink operators */
-  printf("SINKOPS: %s %s %s\n", param.snk_qs_op[iq0].descrp, 
+  printf("SINKOPS: %s %s %s\n", param.snk_qs_op[iq0].descrp,
 	 param.snk_qs_op[iq1].descrp, param.snk_qs_op[iq2].descrp);
   printf("SINKS: %s\n", param.baryon_label[triplet][b] );
 }
@@ -1032,16 +1049,16 @@ static void spectrum_ks_print_diag(int pair){
   int m;
   int num_report = param.num_corr_report[pair];
   complex prop;
-  
+
   /* Normalization factor */
   //  space_vol = (Real)(nx*ny*nz);
-  
+
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);
     if(this_node == 0 && corr_fp == NULL)
       param.saveflag_m[pair] = FORGET;
-    
+
     for(m=0;m<num_report;m++) {
       norm_fac = num_corr_occur[m];
 
@@ -1065,7 +1082,7 @@ static void spectrum_ks_print_diag(int pair){
 
 /*--------------------------------------------------------------------*/
 static void spectrum_ks_print_offdiag(int pair){
-  
+
   //  Real space_vol;
   Real norm_fac;
   int t, tp;
@@ -1073,7 +1090,7 @@ static void spectrum_ks_print_offdiag(int pair){
   int num_report = param.num_corr_report[pair];
   complex prop;
   FILE *corr_fp;
-  
+
   /* Normalization factor */
   //  space_vol = (Real)(nx*ny*nz);
 
@@ -1086,7 +1103,7 @@ static void spectrum_ks_print_offdiag(int pair){
     /* print meson propagators */
     for(m=0;m<num_report;m++) {
       norm_fac = num_corr_occur[m];
-      
+
       print_start_meson_prop(pair, m);
       print_start_fnal_meson_prop(corr_fp, pair, m);
       for(t=0; t<nt; t++){
@@ -1106,14 +1123,14 @@ static void spectrum_ks_print_offdiag(int pair){
 
 /*--------------------------------------------------------------------*/
 static void spectrum_ks_print_baryon(int triplet){
-  
+
   //  Real space_vol;
   FILE *corr_fp;
   int t, tp;
   int b;
   complex prop;
   int num_corr = param.num_corr_b[triplet];
-  
+
   /* Normalization factor */
   //  space_vol = (Real)(nx*ny*nz);
 
@@ -1167,7 +1184,7 @@ void spectrum_ks_baryon_cleanup(int triplet){
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_ks(ks_prop_field *qp0, int naik_index0, 
+void spectrum_ks(ks_prop_field *qp0, int naik_index0,
 		 ks_prop_field *qp1, int naik_index1, int pair)
 {
 
@@ -1180,7 +1197,7 @@ void spectrum_ks(ks_prop_field *qp0, int naik_index0,
 
     if(param.do_meson_spect[pair]){
       spectrum_ks_diag_meson(qp0, naik_index0, pair);
-      
+
       dtime = start_timing();
       spectrum_ks_print_diag(pair);
       print_timing(dtime, "printing correlator");
@@ -1195,8 +1212,8 @@ void spectrum_ks(ks_prop_field *qp0, int naik_index0,
       spectrum_ks_print_offdiag(pair);
       print_timing(dtime, "printing correlator");
     }
-  }    
-	    
+  }
+
   spectrum_ks_cleanup(pair);
 }
 /*--------------------------------------------------------------------*/
@@ -1208,7 +1225,7 @@ void spectrum_ks_baryon(ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *q
   spectrum_ks_baryon_init(triplet);
 
   if(do_baryon)
-    spectrum_ks_baryon_nd(param.num_corr_b[triplet], 
+    spectrum_ks_baryon_nd(param.num_corr_b[triplet],
 			  param.baryon_type_snk[triplet],
 			  qp0, qp1, qp2, triplet);
 
@@ -1220,3 +1237,161 @@ void spectrum_ks_baryon(ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *q
 
   spectrum_ks_baryon_cleanup(triplet);
 }
+
+#ifdef GB_BARYON
+/*--------------------------------------------------------------------*/
+static FILE* open_fnal_gb_baryon_file(int triplet){
+  int iqo0 = param.qk8triplet[triplet][0];
+  int iqo1 = param.qk8triplet[triplet][1];
+  int iqo2 = param.qk8triplet[triplet][2];
+  /* get the first quark in each octet rather than printing all */
+  int iq0 = param.qk_oct[iqo0][0];
+  int iq1 = param.qk_oct[iqo1][0];
+  int iq2 = param.qk_oct[iqo2][0];
+  int ih0[MAX_HISTORY], ih1[MAX_HISTORY], ih2[MAX_HISTORY];
+  int nh0, nh1, nh2;
+  int i;
+  int ip0 = get_ancestors(ih0, &nh0, iq0);
+  int ip1 = get_ancestors(ih1, &nh1, iq1);
+  int ip2 = get_ancestors(ih2, &nh2, iq2);
+  int is0 = param.set[ip0];
+  int is1 = param.set[ip1];
+  int is2 = param.set[ip2];
+  FILE *fp;
+
+  /* Only node 0 writes, and only if we want the file. */
+  if(this_node != 0 || param.saveflag_gb[triplet] == FORGET )
+    return NULL;
+
+  /* Always append */
+  fp = fopen(param.savefile_gb[triplet],"a");
+  if(fp == NULL){
+    printf("open_fnal_gb_baryon_file: ERROR. Can't open %s\n",
+	   param.savefile_gb[triplet]);
+    return NULL;
+  }
+  fprintf(fp,"---\n");
+  fprintf(fp,"JobID:                       %s\n",param.job_id);
+  fprintf(fp,"date:                        \"%s UTC\"\n",utc_date_time);
+  fprintf(fp,"lattice_size:                %d,%d,%d,%d\n", nx, ny, nz, nt);
+  if (param.gb_spintaste[triplet] == GB_2POINT_BACKPROP){
+    fprintf(fp,"spin_taste:                  %d\n", param.gb_spintaste[triplet]); /* For consistency */
+  } else {
+    fprintf(fp,"spin_taste:                  %d\n", param.gb_spintaste[triplet] );
+  }
+#ifdef BLIND
+  /* Give spin-taste explicitly, more robust code segfaults for some reason */
+  if ((param.gb_spintaste[triplet] != GB_2POINT_BACKPROP) &&
+      (param.gb_spintaste[triplet] != 180) && // GT-G5, 3link
+      (param.gb_spintaste[triplet] != 187) && // GT-G5X, 2link
+      (param.gb_spintaste[triplet] != 188) && // GT-G5Y, 2link
+      (param.gb_spintaste[triplet] != 189) && // GT-G5Z, 2link
+      (param.gb_spintaste[triplet] != 184) && // GT-GXT, 1link
+      (param.gb_spintaste[triplet] != 185) && // GT-GYT, 1link
+      (param.gb_spintaste[triplet] != 186) && // GT-GZT, 1link
+      (param.gb_spintaste[triplet] != 179) )  // GT-GT, local
+  {
+    fprintf(fp,"blind_short_tag:             %s\n", blind_short_tag);
+  }
+#endif
+
+  fprintf(fp,"quark0_type:                 staggered\n");
+  fprintf(fp,"quark0_source_type:          %s\n",param.src_qs[is0].descrp);
+  fprintf(fp,"quark0_source_label:         %s\n",param.src_qs[is0].label);
+
+  fprintf(fp,"quark0_sink_type:            %s",param.snk_qs_op[ih0[nh0-1]].descrp);
+  for(i = nh0-2; i >=0; i--)
+    fprintf(fp,"/%s",param.snk_qs_op[ih0[i]].descrp);
+  fprintf(fp,"\n");
+  fprintf(fp,"quark0_sink_label:           %s\n",param.snk_qs_op[iq0].label);
+
+  fprintf(fp,"quark0_mass:                 %s\n",param.mass_label[ip0]);
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+  fprintf(fp,"quark0_epsilon:              %g\n",param.ksp[ip0].naik_term_epsilon);
+#endif
+#if U1_FIELD
+  fprintf(fp,"quark0_charge:               \"%s\"\n", param.charge_label[is0]);
+#endif
+
+  fprintf(fp,"quark1_type:                 staggered\n");
+  fprintf(fp,"quark1_source_type:          %s\n",param.src_qs[is1].descrp);
+  fprintf(fp,"quark1_source_label:         %s\n",param.src_qs[is1].label);
+
+  fprintf(fp,"quark1_sink_type:            %s",param.snk_qs_op[ih1[nh1-1]].descrp);
+  for(i = nh1-2; i >=0; i--)
+    fprintf(fp,"/%s",param.snk_qs_op[ih1[i]].descrp);
+  fprintf(fp,"\n");
+  fprintf(fp,"quark1_sink_label:           %s\n",param.snk_qs_op[iq1].label);
+
+  fprintf(fp,"quark1_mass:                 %s\n",param.mass_label[ip1]);
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+  fprintf(fp,"quark1_epsilon:              %g\n",param.ksp[ip1].naik_term_epsilon);
+#endif
+#if U1_FIELD
+  fprintf(fp,"quark1_charge:               \"%s\"\n", param.charge_label[is1]);
+#endif
+
+  fprintf(fp,"quark2_type:                 staggered\n");
+  fprintf(fp,"quark2_source_type:          %s\n",param.src_qs[is2].descrp);
+  fprintf(fp,"quark2_source_label:         %s\n",param.src_qs[is2].label);
+
+  fprintf(fp,"quark2_sink_type:            %s",param.snk_qs_op[ih2[nh2-1]].descrp);
+  for(i = nh2-2; i >=0; i--)
+    fprintf(fp,"/%s",param.snk_qs_op[ih2[i]].descrp);
+  fprintf(fp,"\n");
+  fprintf(fp,"quark2_sink_label:           %s\n",param.snk_qs_op[iq2].label);
+
+  fprintf(fp,"quark2_mass:                 %s\n",param.mass_label[ip2]);
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+  fprintf(fp,"quark2_epsilon:              %g\n",param.ksp[ip2].naik_term_epsilon);
+#endif
+#if U1_FIELD
+  fprintf(fp,"quark2_charge:               \"%s\"\n", param.charge_label[is2]);
+#endif
+
+  fprintf(fp,"...\n");
+  return fp;
+}
+
+/*--------------------------------------------------------------------*/
+void spectrum_ks_gb_baryon(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **qko2,
+  su3_matrix *links, int triplet)
+{
+
+  int do_baryon = param.do_gbbaryon_spect[triplet];
+
+  spectrum_ks_gb_baryon_init(triplet);
+
+  if(do_baryon){
+    complex* mom = create_c_field(); /* Create once and reuse many times */
+    double dtime = start_timing();
+    gb_baryon(qko0,qko1,qko2,links,
+                  param.gbbaryon_src[triplet],
+                  param.gbbaryon_snk[triplet],
+                  param.gb_spintaste[triplet],
+                  param.gb_corner[triplet],
+                  param.qk8num_d[triplet],
+                  param.qk8num_s[triplet],
+                  param.r_offset_gb[triplet],
+                  param.snkmom_gb[triplet],
+                  param.snkpar_gb[triplet],
+                  mom,
+                  param.gb_parity_flip_snk[triplet],
+                  param.num_corr_gb[triplet],
+                  param.gbbaryon_phase[triplet],
+                  param.gbbaryon_factor[triplet],
+                  gb_baryon_prop);
+    print_timing(dtime, "gb baryon");
+    destroy_c_field(mom);
+  }
+
+  if(do_baryon){
+    double dtime2 = start_timing();
+    spectrum_ks_print_gb_baryon(triplet);
+    print_timing(dtime2, "printing gb correlator");
+  }
+
+  spectrum_ks_gb_baryon_cleanup(triplet);
+}
+
+#endif /* GB_BARYON */

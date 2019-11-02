@@ -45,7 +45,7 @@ static int initial_set(void);
 static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 static void make_3n_gathers(void);
 
-static int hash_corr_label(char meson_label[MAX_CORR][MAX_MESON_LABEL], 
+static int hash_corr_label(char meson_label[MAX_CORR][MAX_MESON_LABEL],
 			   char mom_label[MAX_CORR][MAX_MOM_LABEL],
 			   char *meson_label_in, char *mom_label_in, int *n);
 static char decode_parity(char *parity_label_in);
@@ -122,26 +122,26 @@ static int initial_set(void){
 #endif
 
     status = get_prompt(stdin,  &prompt );
-    
+
     IF_OK status += get_i(stdin,prompt,"nx", &param.nx );
     IF_OK status += get_i(stdin,prompt,"ny", &param.ny );
     IF_OK status += get_i(stdin,prompt,"nz", &param.nz );
     IF_OK status += get_i(stdin,prompt,"nt", &param.nt );
 #ifdef FIX_NODE_GEOM
-    IF_OK status += get_vi(stdin, prompt, "node_geometry", 
+    IF_OK status += get_vi(stdin, prompt, "node_geometry",
 			   param.node_geometry, 4);
 #ifdef FIX_SUBNODE_GEOM
-    IF_OK status += get_vi(stdin, prompt, "subnode_geometry", 
+    IF_OK status += get_vi(stdin, prompt, "subnode_geometry",
 			   param.subnode_geometry, 4);
 #endif
 #ifdef FIX_IONODE_GEOM
-    IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
+    IF_OK status += get_vi(stdin, prompt, "ionode_geometry",
 			   param.ionode_geometry, 4);
 #endif
 #endif
     IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
     IF_OK status += get_s(stdin, prompt,"job_id",param.job_id);
-    
+
     if(status>0) param.stopflag=1; else param.stopflag=0;
   } /* end if(mynode()==0) */
 
@@ -158,7 +158,7 @@ static int initial_set(void){
   nz=param.nz;
   nt=param.nt;
   iseed=param.iseed;
-  
+
 #ifdef FIX_NODE_GEOM
   for(i = 0; i < 4; i++)
     node_geometry[i] = param.node_geometry[i];
@@ -178,11 +178,14 @@ static int initial_set(void){
 int readin(int prompt) {
   /* read in parameters for su3 monte carlo	*/
   /* argument "prompt" is 1 if prompts are to be given for input	*/
-  
+
   int status;
   char savebuf[128];
   int i,k,nprop;
   int ipair, itriplet;
+#ifdef GB_BARYON
+  int ioctet, iqk;
+#endif
 #ifdef PRTIME
   double dtime;
 #endif
@@ -191,7 +194,7 @@ int readin(int prompt) {
 
   /* On node zero, read parameters and send to all other nodes */
   if(this_node==0){
-    
+
     printf("\n\n");
     status=0;
 
@@ -203,7 +206,7 @@ int readin(int prompt) {
 	param.startfile );
     IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
 
-    IF_OK if (prompt==1) 
+    IF_OK if (prompt==1)
       printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
     IF_OK scanf("%s",savebuf);
     IF_OK printf("%s\n",savebuf);
@@ -218,7 +221,7 @@ int readin(int prompt) {
 	printf("error in input: fixing_command %s is invalid\n",savebuf); status++;
       }
     }
-    
+
     /* find out what to do with lattice at end */
     IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.saveflag),
 			     param.savefile );
@@ -235,7 +238,7 @@ int readin(int prompt) {
        links */
     /* APE smearing parameters (if needed) */
     /* Zero suppresses APE smearing */
-    IF_OK status += get_f(stdin, prompt, "staple_weight", 
+    IF_OK status += get_f(stdin, prompt, "staple_weight",
 			  &param.staple_weight);
     IF_OK status += get_i(stdin, prompt, "ape_iter",
 			  &param.ape_iter);
@@ -252,7 +255,7 @@ int readin(int prompt) {
 	status++;
       }
     }
-    
+
     /* number of eigenpairs */
     IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
 
@@ -261,7 +264,7 @@ int readin(int prompt) {
       /* eigenvector input */
       IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
 					    param.ks_eigen_startfile);
-      
+
       /* eigenvector output */
       IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
 					  param.ks_eigen_savefile);
@@ -270,26 +273,26 @@ int readin(int prompt) {
 
 #if EIGMODE != EIGCG
       if(param.ks_eigen_startflag == FRESH){
-	
+
 	/*------------------------------------------------------------*/
 	/* Dirac eigenpair calculation                                */
 	/*------------------------------------------------------------*/
-	
+
 	/* max  Rayleigh iterations */
 	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
-	
+
 	/* Restart  Rayleigh every so many iterations */
 	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
-	
+
 	/* Kalkreuter iterations */
 	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
-	
+
 	/* Tolerance for the eigenvalue computation */
 	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
-	
+
 	/* error decrease per Rayleigh minimization */
 	IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
-	
+
 #ifdef POLY_EIGEN
 	/* Chebyshev preconditioner */
 #ifdef ARPACK
@@ -298,7 +301,7 @@ int readin(int prompt) {
 	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
 	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
 	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
-	
+
 #ifdef ARPACK
 	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
 	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
@@ -323,14 +326,14 @@ int readin(int prompt) {
       /* If we are reading in eigenpairs, we don't regenerate them */
 
       if(param.ks_eigen_startflag == FRESH){
-	
+
 
 	/* restart for Lanczos */
 	IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
-	
+
 	/* number of eigenvectors per inversion */
 	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals_per_inversion", &param.eigcgp.Nvecs);
-	
+
 	IF_OK {
 	  if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
 	    printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
@@ -341,7 +344,7 @@ int readin(int prompt) {
 	param.eigcgp.m = 0;
 	param.eigcgp.Nvecs = 0;
       }
-      
+
       param.eigcgp.Nvecs_curr = 0;
       param.eigcgp.H = NULL;
 #endif
@@ -368,7 +371,7 @@ int readin(int prompt) {
       IF_OK for(i = 0; i < param.num_pbp_masses; i++){
 	IF_OK status += get_f(stdin, prompt, "mass", &param.ksp_pbp[i].mass);
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-	IF_OK status += get_f(stdin, prompt, "naik_term_epsilon", 
+	IF_OK status += get_f(stdin, prompt, "naik_term_epsilon",
 			      &param.ksp_pbp[i].naik_term_epsilon);
 #else
 	param.ksp_pbp[i].naik_term_epsilon = 0.0;
@@ -403,7 +406,7 @@ int readin(int prompt) {
     /* Base sources                                               */
     /*------------------------------------------------------------*/
 
-    IF_OK status += get_i(stdin,prompt,"number_of_base_sources", 
+    IF_OK status += get_i(stdin,prompt,"number_of_base_sources",
 			  &param.num_base_source);
 
     IF_OK {
@@ -414,9 +417,9 @@ int readin(int prompt) {
     }
 
     for(i = 0; i < param.num_base_source; i++){
-      
+
       IF_OK init_qs(&param.src_qs[i]);
-      IF_OK status += get_v_quark_source( stdin, prompt, 
+      IF_OK status += get_v_quark_source( stdin, prompt,
 					  &param.src_qs[i]);
       /* Base sources have no parents or ops */
       IF_OK param.parent_source[i] = BASE_SOURCE_PARENT;
@@ -424,14 +427,14 @@ int readin(int prompt) {
       /* Enforce a uniform boundary condition */
       IF_OK set_qss_op_offset(&param.src_qs_op[i], param.coord_origin);
       /* NOTE: The KS built-in bc is antiperiodic. */
-      IF_OK param.src_qs_op[i].bp[3] = param.time_bc;    
-      
+      IF_OK param.src_qs_op[i].bp[3] = param.time_bc;
+
       /* Get optional file for saving the base source */
       IF_OK {
 	int source_type, saveflag_s;
 	char descrp[MAXDESCRP];
 	char savefile_s[MAXFILENAME];
-	status += 
+	status +=
 	  ask_output_quark_source_file( stdin, prompt, &saveflag_s,
 					&source_type, NULL, descrp,
 					savefile_s );
@@ -446,12 +449,12 @@ int readin(int prompt) {
 	} /* OK */
       } /* OK */
     }
-    
+
     /*------------------------------------------------------------*/
     /* Modified sources                                           */
     /*------------------------------------------------------------*/
-    
-    IF_OK status += get_i(stdin,prompt,"number_of_modified_sources", 
+
+    IF_OK status += get_i(stdin,prompt,"number_of_modified_sources",
 			  &param.num_modified_source);
     IF_OK {
       if(param.num_base_source + param.num_modified_source > MAX_SOURCE){
@@ -475,23 +478,23 @@ int readin(int prompt) {
       }
 
       IF_OK init_qss_op(&param.src_qs_op[is]);
-      
+
       /* Get source operator attributes */
       IF_OK status += get_v_field_op( stdin, prompt, &param.src_qs_op[is]);
       /* Enforce a uniform boundary condition */
       set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
       /* NOTE: The KS built-in bc is antiperiodic. */
-      param.src_qs_op[is].bp[3] = param.time_bc;    
-      
+      param.src_qs_op[is].bp[3] = param.time_bc;
+
       /* Copy parent source attributes to the derived source structure */
       IF_OK {
 	int p = param.parent_source[is];
 	param.src_qs[is] = param.src_qs[p];
 	param.src_qs[is].op = copy_qss_op_list(param.src_qs[p].op);
-	
+
 	/* Add the new operator to the linked list */
 	insert_qss_op(&param.src_qs[is], &param.src_qs_op[is]);
-	
+
 	/* Append the operator info to the description if the operator
 	   is nontrivial, but simply copy the label */
 	if(param.src_qs_op[is].type != IDENTITY){
@@ -504,13 +507,13 @@ int readin(int prompt) {
 	  strncpy(label,  op_label, MAXSRCLABEL-strlen(label)-1);
 	}
       }
-      
+
       /* Get optional file for saving the modified source */
       IF_OK {
 	int source_type, saveflag_s;
 	char descrp[MAXDESCRP];
 	char savefile_s[MAXFILENAME];
-	status += 
+	status +=
 	  ask_output_quark_source_file( stdin, prompt, &saveflag_s,
 					&source_type, NULL, descrp,
 					savefile_s );
@@ -525,13 +528,13 @@ int readin(int prompt) {
 	} /* OK */
       } /* OK */
     }
-    
+
     /*------------------------------------------------------------*/
     /* Propagators and their sources                              */
     /*------------------------------------------------------------*/
-    
+
     /* Number of sets grouped for multimass inversion */
-    
+
     IF_OK status += get_i(stdin,prompt,"number_of_sets", &param.num_set);
     if( param.num_set>MAX_SET ){
       printf("num_set = %d must be <= %d!\n", param.num_set, MAX_SET);
@@ -560,11 +563,11 @@ int readin(int prompt) {
 	  param.set_type[k] = MULTIMASS_SET;
 #endif
       /* maximum no. of conjugate gradient iterations */
-      IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
+      IF_OK status += get_i(stdin,prompt,"max_cg_iterations",
 			    &max_cg_iterations );
-      
+
       /* maximum no. of conjugate gradient restarts */
-      IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
+      IF_OK status += get_i(stdin,prompt,"max_cg_restarts",
 			    &max_cg_restarts );
 
       /* Should we be checking (computing) the propagator by running
@@ -591,7 +594,7 @@ int readin(int prompt) {
       /* So 0 0 0 gets the default, the one we commonly use. */
       /* The values are entered as fractions of pi */
       /* So 0 0 0.5 inserts a phase exp(i 0.5 pi) */
-      
+
       Real bdry_phase[4];
       IF_OK status += get_vf(stdin, prompt, "momentum_twist",
 			     bdry_phase, 3);
@@ -616,29 +619,29 @@ int readin(int prompt) {
 
       int tmp_src;
       Real tmp_naik;
-      
+
       IF_OK {
 
 	if(param.set_type[k] == MULTIMASS_SET){
-	  
+
 	  /* Get source index common to this set */
 	  IF_OK status += get_i(stdin,prompt,"source", &tmp_src);
 	} else {
-	  
+
 	  /* Get mass label common to this set */
 	  IF_OK status += get_s(stdin,prompt,"mass", savebuf);
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-	  IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
+	  IF_OK status += get_f(stdin, prompt,"naik_term_epsilon",
 				&tmp_naik);
 #else
 	  tmp_naik = 0.0;
 #endif
 	}
-	
+
       }
 
       /* Number of propagators in this set */
-      IF_OK status += get_i(stdin,prompt,"number_of_propagators", 
+      IF_OK status += get_i(stdin,prompt,"number_of_propagators",
 			    &param.num_prop[k]);
       if( param.num_prop[k]>MAX_PROP ){
 	printf("num_prop = %d must be <= %d!\n", param.num_prop[k], MAX_PROP);
@@ -654,26 +657,26 @@ int readin(int prompt) {
       }
 
       IF_OK for(i = 0; i < param.num_prop[k]; i++){
-    
+
 	/* Propagator parameters */
 
 	IF_OK {
-	  
+
 	  if(param.set_type[k]  == MULTIMASS_SET){
-	    
+
 	    /* Get mass label common to this set */
 	    IF_OK status += get_s(stdin,prompt,"mass", param.mass_label[nprop]);
-	    
+
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-	    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
+	    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon",
 				  &param.ksp[nprop].naik_term_epsilon);
 #else
 	    param.ksp[nprop].naik_term_epsilon = 0.0;
 #endif
 	    param.source[nprop] = tmp_src;
-	    
+
 	  } else {
-	    
+
 	    /* Get source index common to this set */
 	    IF_OK status += get_i(stdin,prompt,"source", &param.source[nprop]);
 	    strcpy(param.mass_label[nprop], savebuf);
@@ -693,13 +696,13 @@ int readin(int prompt) {
 	/*------------------------------------------------------------*/
 	/* Propagator inversion control                               */
 	/*------------------------------------------------------------*/
-	
+
 	/* maximum no. of conjugate gradient iterations */
 	param.qic[nprop].max = max_cg_iterations;
-      
+
 	/* maximum no. of conjugate gradient restarts */
 	param.qic[nprop].nrestart = max_cg_restarts;
-      
+
 	/* Should we be deflating? */
 	param.qic[nprop].deflate = 0;
 	IF_OK {
@@ -712,9 +715,9 @@ int readin(int prompt) {
 	}
 
 	/* error for clover propagator conjugate gradient */
-	IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
+	IF_OK status += get_f(stdin, prompt,"error_for_propagator",
 			      &param.qic[nprop].resid );
-	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
+	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator",
 			      &param.qic[nprop].relresid );
 #if defined(HALF_MIXED) && defined(HAVE_QOP)
 	/* Parameter used by QOPQDP inverter for mixed-precision solves */
@@ -722,18 +725,18 @@ int readin(int prompt) {
 #endif
 	/* Precision for all members of the set must be the same */
 	param.qic[nprop].prec = param.qic[0].prec;
-	
+
 	/* Parity is always EVENANDODD for spectroscopy */
 	param.qic[nprop].parity = EVENANDODD;
-    
-	IF_OK status += ask_starting_ksprop( stdin, prompt, 
+
+	IF_OK status += ask_starting_ksprop( stdin, prompt,
 					     &param.startflag_ks[nprop],
 					     param.startfile_ks[nprop]);
-	
-	IF_OK status += ask_ending_ksprop( stdin, prompt, 
+
+	IF_OK status += ask_ending_ksprop( stdin, prompt,
 					   &param.saveflag_ks[nprop],
 					   param.savefile_ks[nprop]);
-	
+
 	nprop++;
       }
     }
@@ -744,7 +747,7 @@ int readin(int prompt) {
     /*------------------------------------------------------------*/
 
     /* Number of quarks */
-    IF_OK status += get_i(stdin,prompt,"number_of_quarks", 
+    IF_OK status += get_i(stdin,prompt,"number_of_quarks",
 			  &param.num_qk );
     if( param.num_qk>MAX_QK ){
       printf("num_qk = %d must be <= %d!\n", param.num_qk, MAX_QK);
@@ -773,12 +776,12 @@ int readin(int prompt) {
 	  status++;
 	}
       }
-      
+
       IF_OK init_qss_op(&param.snk_qs_op[i]);
       /* Enforce a uniform boundary condition */
       set_qss_op_offset(&param.snk_qs_op[i], param.coord_origin);
       /* NOTE: The KS built-in bc is antiperiodic. */
-      param.snk_qs_op[i].bp[3] = param.time_bc;    
+      param.snk_qs_op[i].bp[3] = param.time_bc;
 
       if( param.parent_type[i] == PROP_TYPE ||  param.parent_type[i] == QUARK_TYPE ){
 	/* Next we get its index */
@@ -790,12 +793,12 @@ int readin(int prompt) {
 	  }
 	  else{
 	    printf("%d\n",param.prop_for_qk[i]);
-	    if(param.parent_type[i] == PROP_TYPE && 
+	    if(param.parent_type[i] == PROP_TYPE &&
 	       param.prop_for_qk[i] >= nprop){
 	      printf("Propagator index must be less than %d\n", nprop);
 	      status++;
 	    }
-	    else if(param.parent_type[i] == QUARK_TYPE && 
+	    else if(param.parent_type[i] == QUARK_TYPE &&
 		    param.prop_for_qk[i] >= i){
 	      printf("Quark index must be less than %d here\n",i);
 	      status++;
@@ -805,7 +808,7 @@ int readin(int prompt) {
 
 	/* Get sink operator attributes */
 	IF_OK status += get_v_field_op( stdin, prompt, &param.snk_qs_op[i]);
-	
+
       } else { /* COMBO_TYPE */
 	strcpy(param.snk_qs_op[i].descrp, "combination");
 	/* Next we get its index */
@@ -838,27 +841,27 @@ int readin(int prompt) {
       /* Will we save this propagator? */
       IF_OK status += ask_ending_ksprop( stdin, prompt, &param.saveflag_q[i],
 					 param.savefile_q[i]);
-	
+
     }
-    
+
     /*------------------------------------------------------------*/
     /* Meson correlators                                          */
     /*------------------------------------------------------------*/
-    
+
     /* Number of quark pairs */
     IF_OK status += get_i(stdin,prompt,"number_of_mesons", &param.num_pair );
     if( param.num_pair>MAX_PAIR ){
       printf("num_pair = %d must be <= %d!\n", param.num_pair, MAX_PAIR);
       status++;
     }
-    
+
     IF_OK for(ipair = 0; ipair < param.num_pair; ipair++){
       char request_buf[MAX_SPECTRUM_REQUEST];
-      
+
       /* Which quarks in the pair? */
-      
+
       IF_OK status += get_vi(stdin, prompt, "pair", param.qkpair[ipair], 2);
-      
+
       IF_OK {
 	int j;
 	for(j = 0; j < 2; j++){
@@ -869,30 +872,30 @@ int readin(int prompt) {
 	  }
 	}
       }
-      
+
       /* What spectrum calculation to do? */
       /* prepend and append a comma for ease in parsing */
       IF_OK request_buf[0] = '\0';
       IF_OK strcpy(request_buf,",");
       IF_OK status += get_s(stdin, prompt,"spectrum_request", request_buf+1 );
       IF_OK strcat(request_buf,",");
-      
+
       /* Parse the spectrum request */
       IF_OK {
 	/* Mesons. The only choice for now. */
 	if(strstr(request_buf,",meson,") != NULL)
 	  param.do_meson_spect[ipair] = 1;
 	else param.do_meson_spect[ipair] = 0;
-	
+
 	/* We need some correlator specification */
 	if(!param.do_meson_spect[ipair]){
 	  printf("Unrecognized spectrum request\n");
 	  status++;
 	}
       }
-      
+
       /* What file for the resulting correlators? */
-      
+
       IF_OK status += ask_corr_file( stdin, prompt, &param.saveflag_m[ipair],
 				     param.savefile_m[ipair]);
       /* Correlator values are printed with t relative to the t_offset_m */
@@ -905,35 +908,35 @@ int readin(int prompt) {
 	param.r_offset_m[ipair][2] = r[2];
 	param.r_offset_m[ipair][3] = r[3];
       }
-      
+
       /*------------------------------------------------------------*/
       /* Table of correlator combinations actually needed           */
       /*------------------------------------------------------------*/
-      
+
       /* Number of correlators */
-      IF_OK status += get_i(stdin,prompt,"number_of_correlators", 
+      IF_OK status += get_i(stdin,prompt,"number_of_correlators",
 			    &param.num_corr_m[ipair] );
       IF_OK {
 	if( param.num_corr_m[ipair]>MAX_CORR ){
-	  printf("num_corr = %d must be <= %d!\n", param.num_corr_m[ipair], 
+	  printf("num_corr = %d must be <= %d!\n", param.num_corr_m[ipair],
 		 MAX_CORR);
 	  status++;
 	}
       }
-      
+
       /* Sample format for correlator line:
 	 correlator P5-P5_V1-S_T13_m0.5744 p211 -1 / 4608.0 GX-G1 -2 -1 -1 EO EO EO */
-      
+
       param.num_corr_report[ipair] = 0;
       IF_OK for(i = 0; i < param.num_corr_m[ipair]; i++){
 	int ok,m;
 	char meson_label_in[MAX_MESON_LABEL], mom_label_in[MAX_MOM_LABEL],
-	  spin_taste_string[8], phase_lab[4], 
+	  spin_taste_string[8], phase_lab[4],
 	  factor_op[2], parity_x_in[3], parity_y_in[3], parity_z_in[3];
 	double factor;
-	
+
 	IF_OK status += get_sn(stdin, prompt, "correlator", meson_label_in);
-	
+
 	/* Read the momentum label next */
 	IF_OK {
 	  ok = scanf("%s", mom_label_in);
@@ -943,14 +946,14 @@ int readin(int prompt) {
 	  }
 	}
 	IF_OK printf(" %s", mom_label_in);
-	
+
 	/* Add to hash table */
 	m = hash_corr_label(param.meson_label[ipair], param.mom_label[ipair],
 			    meson_label_in, mom_label_in,
 			    &param.num_corr_report[ipair]);
 	param.corr_index[ipair][i] = m;
 	if(m < 0)status++;
-	
+
 	/* phase, op, factor, and spin-taste label */
 	IF_OK {
 	  ok = scanf("%s %s %lf %s",phase_lab,factor_op,&factor,
@@ -973,7 +976,7 @@ int readin(int prompt) {
 	    status ++;
 	  }
 	}
-	
+
 	/* decode real factor for correlator */
 	/* Permitted syntax is /ddd or *ddd where ddd is a real number */
 	IF_OK {
@@ -984,7 +987,7 @@ int readin(int prompt) {
 	    status++;
 	  }
 	}
-	
+
 	/* decode spin-taste sink label */
 	IF_OK {
 	  param.spin_taste_snk[ipair][i] = spin_taste_index(spin_taste_string);
@@ -994,7 +997,7 @@ int readin(int prompt) {
 	    status++;
 	  }
 	}
-	
+
 	/* momentum indices */
 	IF_OK {
 	  if(scanf("%d %d %d",&param.corr_mom[ipair][i][0],
@@ -1003,14 +1006,14 @@ int readin(int prompt) {
 	    printf("\nFormat error on momentum line\n");
 	    status++;
 	  }
-	  
+
 	  IF_OK printf(" %2d %2d %2d",param.corr_mom[ipair][i][0],
 		       param.corr_mom[ipair][i][1],
 		       param.corr_mom[ipair][i][2]);
 	}
-	
+
 	/* parity for each momentum component */
-	
+
 	IF_OK {
 	  ok = scanf("%s %s %s", parity_x_in, parity_y_in, parity_z_in);
 	  if(ok != 3){
@@ -1019,7 +1022,7 @@ int readin(int prompt) {
 	  }
 	  IF_OK printf(" %2s %2s %2s\n", parity_x_in, parity_y_in, parity_z_in);
 	}
-	
+
 	/* decode parity labels */
 	IF_OK {
 	  param.corr_parity[ipair][i][0] = decode_parity(parity_x_in);
@@ -1031,25 +1034,25 @@ int readin(int prompt) {
 	}
       } /* correlators for this pair */
     } /* pairs */
-    
+
     /*------------------------------------------------------------*/
     /* Baryon correlators                                          */
     /*------------------------------------------------------------*/
-    
+
     /* Number of quark triplets */
     IF_OK status += get_i(stdin,prompt,"number_of_baryons", &param.num_triplet );
     if( param.num_triplet>MAX_TRIPLET ){
       printf("number_of_baryons = %d must be <= %d!\n", param.num_triplet, MAX_TRIPLET);
       status++;
     }
-    
+
     IF_OK for(itriplet = 0; itriplet < param.num_triplet; itriplet++){
       char request_buf[MAX_SPECTRUM_REQUEST];
-      
+
       /* Which quarks in the triplet? */
-      
+
       IF_OK status += get_vi(stdin, prompt, "triplet", param.qktriplet[itriplet], 3);
-      
+
       IF_OK {
 	int j;
 	for(j = 0; j < 2; j++){
@@ -1060,14 +1063,14 @@ int readin(int prompt) {
 	  }
 	}
       }
-      
+
       /* What spectrum calculation to do? */
       /* prepend and append a comma for ease in parsing */
       IF_OK request_buf[0] = '\0';
       IF_OK strcpy(request_buf,",");
       IF_OK status += get_s(stdin, prompt,"spectrum_request", request_buf+1 );
       IF_OK strcat(request_buf,",");
-      
+
       /* Parse the spectrum request */
       IF_OK {
 	param.do_baryon_spect[itriplet] = 0;
@@ -1079,9 +1082,9 @@ int readin(int prompt) {
 	  status++;
 	}
       }
-      
+
       /* What file for the resulting correlators? */
-      
+
       IF_OK status += ask_corr_file( stdin, prompt, &param.saveflag_b[itriplet],
 				     param.savefile_b[itriplet]);
       /* Correlator values are printed with t relative to the t_offset_b */
@@ -1094,23 +1097,23 @@ int readin(int prompt) {
 	param.r_offset_b[itriplet][2] = r[2];
 	param.r_offset_b[itriplet][3] = r[3];
       }
-      
+
       /*------------------------------------------------------------*/
       /* Table of correlator combinations actually needed           */
       /*------------------------------------------------------------*/
-      
+
       /* Number of correlators */
 
-      IF_OK status += get_i(stdin,prompt,"number_of_correlators", 
+      IF_OK status += get_i(stdin,prompt,"number_of_correlators",
 			    &param.num_corr_b[itriplet] );
       IF_OK {
 	if( param.num_corr_b[itriplet]>MAX_CORR ){
-	  printf("num_corr = %d must be <= %d!\n", param.num_corr_b[itriplet], 
+	  printf("num_corr = %d must be <= %d!\n", param.num_corr_b[itriplet],
 		 MAX_CORR);
 	  status++;
 	}
       }
-      
+
       /* Sample format for baryon correlator line:
 	 correlator  NUCLEON -i * 1 nucleon */
       IF_OK for(i = 0; i < param.num_corr_b[itriplet]; i++){
@@ -1118,11 +1121,11 @@ int readin(int prompt) {
 	char baryon_label_in[MAX_BARYON_LABEL], phase_lab[4], baryon_type_label[32],
 	  factor_op[2];
 	double factor;
-	
+
 	IF_OK status += get_sn(stdin, prompt, "correlator", baryon_label_in);
 
 	IF_OK strcpy(param.baryon_label[itriplet][i], baryon_label_in);
-	
+
 	/* phase, op, factor, and baryon type label */
 	IF_OK {
 	  ok = scanf("%s %s %lf %s",phase_lab,factor_op,&factor,
@@ -1145,7 +1148,7 @@ int readin(int prompt) {
 	    status ++;
 	  }
 	}
-	
+
 	/* decode real factor for correlator */
 	/* Permitted syntax is /ddd or *ddd where ddd is a real number */
 	IF_OK {
@@ -1168,12 +1171,368 @@ int readin(int prompt) {
 	}
       } /* correlators for this baryon */
     } /* baryons */
-    
+
+		/*------------------------------------------------------------*/
+		/*                        GB BARYONS                          */
+		/*------------------------------------------------------------*/
+		#ifdef GB_BARYON
+
+		    IF_OK status += get_i(stdin,prompt,"number_of_quark_octets", &param.num_oct);
+		    if( param.num_oct > MAX_OCTET ){
+		      printf("number_of_octets = %d must be <= %d!\n",
+		        param.num_oct , MAX_OCTET );
+		      status++;
+		    }
+
+		    IF_OK if(prompt==1) {
+		      printf("Enter indices of quarks in octets\n");
+		      printf("Unneeded quarks can substitute index -1\n");
+		      printf("-> 0 x y xy z zx yz xyz\n");
+		    }
+		    IF_OK for(ioctet = 0; ioctet < param.num_oct; ioctet++){
+
+		      IF_OK status += get_vi(stdin, prompt, "octet", param.qk_oct[ioctet], 8);
+
+		      for (iqk = 0; iqk < 8; iqk++) {
+		        // index of -1 for unneeded quarks
+		        if(param.qk_oct[ioctet][iqk] < -1 || param.qk_oct[ioctet][iqk] >= param.num_qk){
+		          printf("Quark index %d must be in [-1,%d]\n",
+		          param.qk_oct[itriplet][iqk],param.num_qk-1);
+		          status++;
+		        }
+		      }
+
+		    }
+
+		    /* Number of quark triplets (triplets of octets)*/
+		    IF_OK status += get_i(stdin,prompt,"number_of_gb_baryons", &param.num_gb_triplet );
+		    if( param.num_gb_triplet > MAX_TRIPLET ){
+		      printf("number_of_gb_baryons = %d must be <= %d!\n",
+		        param.num_gb_triplet, MAX_TRIPLET);
+		      status++;
+		    }
+
+		    IF_OK for(itriplet = 0; itriplet < param.num_gb_triplet; itriplet++){
+		      char request_buf[MAX_SPECTRUM_REQUEST];
+
+		      /* Which quark OCTETS in the triplet? */
+
+		      IF_OK status += get_vi(stdin, prompt, "triplet", param.qk8triplet[itriplet], 3);
+
+		      IF_OK {
+			int j;
+			for(j = 0; j < 2; j++){
+			  if(param.qk8triplet[itriplet][j] < 0 || param.qk8triplet[itriplet][j] >= param.num_oct){
+			    printf("Quark octet index %d must be in [0,%d]\n",
+				   param.qk8triplet[itriplet][j],param.num_oct-1);
+			    status++;
+			  }
+			}
+		      }
+
+	      /* What spectrum calculation to do? */
+	      /* prepend and append a comma for ease in parsing */
+	      IF_OK request_buf[0] = '\0';
+	      IF_OK strcpy(request_buf,",");
+	      IF_OK status += get_s(stdin, prompt,"spectrum_request", request_buf+1 );
+	      IF_OK strcat(request_buf,",");
+
+		    /* Parse the spectrum request */
+	      IF_OK {
+					param.do_gbbaryon_spect[itriplet] = 0;
+					if(strstr(request_buf,",gb_baryon,") != NULL)
+					  param.do_gbbaryon_spect[itriplet] = 1;
+					if(!param.do_gbbaryon_spect[itriplet]){
+					  printf("Unrecognized spectrum request\n");
+					  status++;
+					}
+	      }
+
+	      /* What is the triplet quark content? */
+	      char qk_content_in[4];
+	      IF_OK status += get_sn(stdin,prompt,"quark_content",qk_content_in);
+	      IF_OK {
+	        param.qk8num_d[itriplet] = 0;
+	        param.qk8num_s[itriplet] = 0;
+	        int j;
+	        for (j = 0; j < 3; j++) {
+	          switch (qk_content_in[j])
+	          {
+	            case 'u': continue; break;
+	            case 'd': param.qk8num_d[itriplet]++;
+	                      continue; break;
+	            case 's': param.qk8num_s[itriplet]++;
+	                      continue; break;
+	            default:  printf("error in input: unknown quark content %c\n",qk_content_in[j]);
+	                      status++; break;
+	          }
+	        }
+	      }
+	      IF_OK printf("\n");
+
+	      /* What file for the resulting correlators? */
+	      IF_OK status += ask_corr_file( stdin, prompt, &param.saveflag_gb[itriplet],
+					     param.savefile_gb[itriplet]);
+	      /* Correlator values are printed with t relative to the t_offset_b */
+	      /* FT phases are computed with x,y,z relative to r_offset_b */
+	      IF_OK {
+					int r[4];
+					status += get_vi(stdin,prompt, "r_offset", r, 4);
+					param.r_offset_gb[itriplet][0] = r[0];
+					param.r_offset_gb[itriplet][1] = r[1];
+					param.r_offset_gb[itriplet][2] = r[2];
+					param.r_offset_gb[itriplet][3] = r[3];
+			  }
+
+	      IF_OK status += get_vi(stdin, prompt, "momentum", param.snkmom_gb[itriplet], 3);
+
+	      /* Get momentum to include in sink*/
+	      IF_OK {
+	        printf(" %2d %2d %2d",
+	          param.snkmom_gb[itriplet][0],
+	      	  param.snkmom_gb[itriplet][1],
+	      	  param.snkmom_gb[itriplet][2]);
+	      }
+
+	      /* Parity for each momentum component */
+	      int ok;
+	      char parity_x_in[3], parity_y_in[3], parity_z_in[3];
+
+	      IF_OK {
+	        ok = scanf("%s %s %s", parity_x_in, parity_y_in, parity_z_in);
+	        if(ok != 3){
+	          printf("\nError reading parity label\n");
+	          status++;
+	        }
+	        IF_OK printf(" %2s %2s %2s\n", parity_x_in, parity_y_in, parity_z_in);
+	      }
+
+	      /* decode parity labels */
+	      IF_OK {
+	        param.snkpar_gb[itriplet][0] = decode_parity(parity_x_in);
+	        param.snkpar_gb[itriplet][1] = decode_parity(parity_y_in);
+	        param.snkpar_gb[itriplet][2] = decode_parity(parity_z_in);
+	        if(param.snkpar_gb[itriplet][0] == 0xf)status++;
+	        if(param.snkpar_gb[itriplet][1] == 0xf)status++;
+	        if(param.snkpar_gb[itriplet][2] == 0xf)status++;
+	      }
+
+	      char gb_spin_taste_in[8];
+	      IF_OK status += get_sn(stdin,prompt,"spin_taste",gb_spin_taste_in);
+
+	      /* decode spin-taste sink label */
+	      IF_OK {
+	        if(strcmp("2point",gb_spin_taste_in) == 0){
+	         /* use scalar-scalar spin taste */
+	         //param.gb_spintaste[itriplet] = spin_taste_index("G1-G1"); // scalar-scalar
+	         param.gb_spintaste[itriplet] = GB_2POINT_BACKPROP; // will use scalar-scalar
+	        } else {
+	         param.gb_spintaste[itriplet]
+	           = spin_taste_index(gb_spin_taste_in);
+	        }
+	        if(param.gb_spintaste[itriplet] < 0 ){
+	          printf("\n: Unrecognized spin-taste label %s.\n",
+	                 gb_spin_taste_in);
+	          status++;
+		        }
+		      }
+
+		      /*------------------------------------------------------------*/
+		      /* Table of correlator combinations actually needed           */
+		      /*------------------------------------------------------------*/
+
+		      /* Number of correlators */
+
+		      IF_OK status += get_i(stdin,prompt,"number_of_correlators",
+					    &param.num_corr_gb[itriplet] );
+		      IF_OK {
+							if( param.num_corr_gb[itriplet]>MAX_CORR ){
+							  printf("num_corr = %d must be <= %d!\n",
+						            param.num_corr_gb[itriplet], MAX_CORR);
+							  status++;
+							}
+		      }
+
+			/* Sample format for baryon correlator line:
+			 correlator  NUCLEON -i * 1 16+ M0 2 16+ M0 42 cube
+			 correlator  NUCLEON -i * 1 16+ M0 2 M0 42 cube  <- old format x1
+			 correlator  NUCLEON -i * 1 16+ M0 2 M0 42 <- old format x2
+				 correlator  NUCLEON -i * 1 nucleon  <- old format x3
+			*/
+		  IF_OK for(i = 0; i < param.num_corr_gb[itriplet]; i++){
+			int ok;
+			char baryon_label_in[MAX_BARYON_LABEL],
+		             phase_lab[4], factor_op[2], //gts_label[4],
+		             gts_label_src[4], gts_label_snk[4],
+		             symiso_label_src[6], symiso_label_snk[7], cube_pos[7];
+			double factor;
+		        int gb_class_src, gb_class_snk;
+
+			IF_OK status += get_sn(stdin, prompt, "correlator", baryon_label_in);
+
+			IF_OK strcpy(param.gbbaryon_label[itriplet][i], baryon_label_in);
+
+			/* phase, op, factor, GTSirrep, symiso, class, construction*/
+			IF_OK {
+			  ok = scanf("%s %s %lf %s %s %i %s %s %i %s",
+		                     phase_lab,factor_op,&factor,
+		                     gts_label_src,symiso_label_src,&gb_class_src,
+		                     gts_label_snk,symiso_label_snk,&gb_class_snk,cube_pos);
+			  //if(ok != 9){
+			  if(ok != 10){
+			    printf("\nError reading Golterman-Bailey baryon parameters\n");
+			    status++;
+			  }
+			  else {
+			    printf(" %3s %1s %6f %4s %6s %2i %4s %7s %2i %6s\n",
+		                   phase_lab,factor_op,factor,
+		                   gts_label_src,symiso_label_src,gb_class_src,
+		                   gts_label_snk,symiso_label_snk,gb_class_snk,cube_pos);
+			  }
+			}
+
+			/* decode phase for correlator */
+			IF_OK {
+			  param.gbbaryon_phase[itriplet][i] = decode_phase(phase_lab);
+			  if(param.gbbaryon_phase[itriplet][i] == -1){
+			    printf("\n%s is not a valid phase label\n",phase_lab);
+			    status ++;
+			  }
+			}
+
+			/* Decode real factor for correlator */
+			/* Permitted syntax is /ddd or *ddd where ddd is a real number */
+			IF_OK {
+			  param.gbbaryon_factor[itriplet][i] = decode_factor(factor_op,factor);
+			  if(param.gbbaryon_factor[itriplet][i] == 0 ){
+			    printf("\n: Decoding factor %s %g results in zero.\n",
+				   factor_op,factor);
+			    status++;
+			  }
+			}
+
+		  /* Check input symmetry and isospin */
+			IF_OK {
+		          if(!strcmp("S",     symiso_label_src) == 0 &&
+		             !strcmp("A",     symiso_label_src) == 0 &&
+		             !strcmp("M1/2",  symiso_label_src) == 0   ){
+		            printf("error in input: unknown operator symmetry %s\n",symiso_label_src);
+			    status++;
+		          }
+		        }
+			IF_OK {
+		          if(!strcmp("S",     symiso_label_snk) == 0 &&
+		             !strcmp("A",     symiso_label_snk) == 0 &&
+		             !strcmp("M1/2",  symiso_label_snk) == 0 &&
+		             !strcmp("S*",    symiso_label_snk) == 0 &&
+		             !strcmp("A*",    symiso_label_snk) == 0 &&
+		             !strcmp("M1/2*", symiso_label_snk) == 0   ){
+		            printf("error in input: unknown operator symmetry %s\n",symiso_label_snk);
+			    status++;
+		          }
+		        }
+
+			IF_OK {
+		          if(strcmp("S*",    symiso_label_snk) == 0 ||
+		             strcmp("A*",    symiso_label_snk) == 0 ||
+		             strcmp("M1/2*", symiso_label_snk) == 0   ){
+		            param.gb_parity_flip_snk[itriplet][i] = 1;
+		          } else {
+		            param.gb_parity_flip_snk[itriplet][i] = 0;
+		          }
+		        }
+
+		  /* Check input GTS irrep */
+			IF_OK {
+		          if (!strcmp("8",  gts_label_src) == 0 &&
+		              !strcmp("8'", gts_label_src) == 0 &&
+		              !strcmp("16+",gts_label_src) == 0 &&
+		              !strcmp("16-",gts_label_src) == 0){
+		            printf("error in input: unknown GTS irrep %s\n",gts_label_src);
+			    status++;
+		          }
+		        }
+
+		  /* Check input GTS irrep */
+			IF_OK {
+          if (!strcmp("8",  gts_label_snk) == 0 &&
+              !strcmp("8'", gts_label_snk) == 0 &&
+              !strcmp("16+",gts_label_snk) == 0 &&
+              !strcmp("16-",gts_label_snk) == 0){
+            printf("error in input: unknown GTS irrep %s\n",gts_label_snk);
+			    status++;
+		          }
+		        }
+
+      /* Check input source class */
+      IF_OK {
+        if (gb_class_src != 1  &&
+            gb_class_src != 2  &&
+            gb_class_src != 3  &&
+            gb_class_src != 41 &&
+            gb_class_src != 42 &&
+            gb_class_src != 5  &&
+            gb_class_src != 61 &&
+            gb_class_src != 62 &&
+            gb_class_src != 7){
+          printf("error in input: unknown source class %i\n",gb_class_src);
+          status++;
+        			}
+		        }
+
+      /* Check input sink class */
+      IF_OK {
+        if (gb_class_snk != 1  &&
+            gb_class_snk != 2  &&
+            gb_class_snk != 3  &&
+            gb_class_snk != 41 &&
+            gb_class_snk != 42 &&
+            gb_class_snk != 5  &&
+            gb_class_snk != 61 &&
+            gb_class_snk != 62 &&
+            gb_class_snk != 7){
+          printf("error in input: unknown sink class %i\n",gb_class_snk);
+          status++;
+			        }
+			      }
+
+      IF_OK {
+        param.gbbaryon_src[itriplet][i] =
+          decode_gb_op(symiso_label_src,gts_label_src,param.qk8num_s[itriplet],gb_class_src);
+        if (param.gbbaryon_src[itriplet][i] == GB_UNDEFINED){
+          printf("error: undefined baryon source\n");
+          status++;
+			        }
+			      }
+
+      IF_OK {
+        param.gbbaryon_snk[itriplet][i] =
+          decode_gb_op(symiso_label_snk,gts_label_snk,param.qk8num_s[itriplet],gb_class_snk);
+        if (param.gbbaryon_snk[itriplet][i] == GB_UNDEFINED){
+          printf("error: undefined baryon sink\n");
+          status++;
+				      }
+				    }
+
+      /* Decode cube construction for correlator */
+      /* Permitted choices are 'corner' or 'cube' */
+      IF_OK {
+        if     (strcmp("corner",cube_pos) == 0 ){ param.gb_corner[itriplet][i] = 0x0; }
+        else if(strcmp("cube",  cube_pos) == 0 ){ param.gb_corner[itriplet][i] = 0x1; }
+        else {
+          printf("\n: Invalid operator construction %s.\n",cube_pos);
+          status++;
+				      }
+				    }
+
+		      } /* Correlators for this baryon */
+		    } /* gb baryons */
+		#endif /* GB_BARYON */
+
     /* End of input fields */
     if( status > 0)param.stopflag=1; else param.stopflag=0;
   } /* end if(this_node==0) */
-  
-  
+
   broadcast_bytes((char *)&param,sizeof(param));
   u0 = param.u0;
   if( param.stopflag != 0 )return param.stopflag;
@@ -1189,19 +1548,19 @@ int readin(int prompt) {
 
   /* First term is always zero */
   start_eps_naik(eps_naik, &n_naiks);
-  
+
   /* Contribution from the chiral condensate epsilons */
   for(i = 0; i < param.num_pbp_masses; i++){
-    param.ksp_pbp[i].naik_term_epsilon_index = 
-      fill_eps_naik(eps_naik, 
+    param.ksp_pbp[i].naik_term_epsilon_index =
+      fill_eps_naik(eps_naik,
 	  &n_naiks, param.ksp_pbp[i].naik_term_epsilon);
   }
 
   /* Contribution from the propagator epsilons */
   nprop = param.end_prop[param.num_set-1] + 1;
   for(i = 0; i < nprop; i++)
-    param.ksp[i].naik_term_epsilon_index = 
-      fill_eps_naik(eps_naik, 
+    param.ksp[i].naik_term_epsilon_index =
+      fill_eps_naik(eps_naik,
 		    &n_naiks, param.ksp[i].naik_term_epsilon);
 
   /* Requests from any embedded inverse and hopping operators in the
@@ -1253,7 +1612,7 @@ int readin(int prompt) {
 #endif
 
   /* Set options for fermion links */
-  
+
 #ifdef DBLSTORE_FN
   /* We want to double-store the links for optimization */
   fermion_links_want_back(1);
@@ -1261,7 +1620,7 @@ int readin(int prompt) {
 
   /* Don't need to save HISQ auxiliary links */
   fermion_links_want_aux(0);
-  
+
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
 
 #ifdef DM_DEPS
@@ -1304,7 +1663,7 @@ int readin(int prompt) {
 
   /* Do whatever is needed to get eigenpairs */
   imp_ferm_links_t **fn = get_fm_links(fn_links);
-  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile,
 			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
 
   if(param.fixflag != NO_GAUGE_FIX){
@@ -1337,10 +1696,10 @@ int readin(int prompt) {
 	terminate(1);
       }
     }
-    
+
     /* Do whatever is needed to get eigenpairs */
     node0_printf("Calling reload_ks_eigen\n"); fflush(stdout);
-    status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+    status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile,
 			     &param.eigen_param.Nvecs, eigVal, eigVec, 1);
     node0_printf("Return from reload_ks_eigen\n"); fflush(stdout);
     if(param.fixflag != NO_GAUGE_FIX){
@@ -1380,10 +1739,10 @@ char decode_parity(char *parity_label_in){
   printf("\nUnrecognized parity label %s\n",parity_label_in);
   return 0xf;
 }
-    
+
 /* decode real factor label */
 /* Permitted syntax is *ddd or /ddd where ddd is a real number */
-static double 
+static double
 decode_factor(char *factor_op, double factor){
 
   if(factor == 0)
@@ -1401,8 +1760,8 @@ decode_factor(char *factor_op, double factor){
 
 /* Look the labels up in the table.  If found, return its
    index.  Otherwise, add it to the table and assign it the new index */
-static int 
-hash_corr_label(char meson_label[MAX_CORR][MAX_MESON_LABEL], 
+static int
+hash_corr_label(char meson_label[MAX_CORR][MAX_MESON_LABEL],
 		char mom_label[MAX_CORR][MAX_MOM_LABEL],
 		char *meson_label_in, char *mom_label_in, int *n){
   int i;
@@ -1423,30 +1782,30 @@ hash_corr_label(char meson_label[MAX_CORR][MAX_MESON_LABEL],
 }
 
 
-/* Set up comlink structures for 3rd nearest gather pattern; 
-   make_lattice() and  make_nn_gathers() must be called first, 
+/* Set up comlink structures for 3rd nearest gather pattern;
+   make_lattice() and  make_nn_gathers() must be called first,
    preferably just before calling make_3n_gathers().
 */
-static void 
+static void
 make_3n_gathers(void)
 {
   int i;
-  
+
   for(i=XUP; i<=TUP; i++) {
     make_gather(third_neighbor, &i, WANT_INVERSE,
 		ALLOW_EVEN_ODD, SWITCH_PARITY);
   }
-  
+
   /* Sort into the order we want for nearest neighbor gathers,
      so you can use X3UP, X3DOWN, etc. as argument in calling them. */
-  
+
   sort_eight_gathers(X3UP);
 }
 
 /* this routine uses only fundamental directions (XUP..TDOWN) as directions */
 /* returning the coords of the 3rd nearest neighbor in that direction */
 
-static void 
+static void
 third_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
 	       int *xp, int *yp, int *zp, int *tp)
      /* int x,y,z,t,*dirpt,FB;  coordinates of site, direction (eg XUP), and

@@ -1,0 +1,317 @@
+#include "generic_ks_includes.h"
+/*
+ Unit test -
+  Source should be point-split point source
+  Sink should be only single point sources in the positive spatial octant, not point split!
+  Only ties up a single site at the sink
+  Used with local scalar-scalar spin-taste current, any baryon
+  Tests gauge invariance
+  --> Both coulomb and no gauge fix should give same answer
+ Methodology -
+  Only use one link direction at sink to avoid multi-site source objects (i.e. cross terms)
+  Use sources defined on single sites to construct an object which has all the correct links
+  We don't care about what the correlator actually is - we only want a gauge invariant object!
+  This tests gauge invariance of source/sink objects
+  Use only GAUGE_INV_SRCSNK with local current to test gauge invariance of source/sink
+  Use both SRCSNK and CUR to test gauge invariance of current insertion
+  When using GAUGE_INV_CUR, use the NEGATIVE_SNK_*_LINK to reverse all the links
+    which are used in point-splitting the current insertion
+    (i.e. a G1-GX current should use NEGATIVE_SNK_X_LINK only)
+ IMPORTANT - if using mmap, need to uncomment same defines in gb_baryon_mmap.c
+ Example tests:
+  16+ S2-S2, with G1-G1  current
+  16+ S2-S2, with G1-GX  current
+  16+ S2-S3, with G1-GXY current
+  16+ S2-S3, with G3-G5T current
+*/
+//#define UNIT_TEST_GAUGE_INV_SRCSNK
+//#define UNIT_TEST_GAUGE_INV_CUR
+//#define UNIT_TEST_NEGATIVE_SNK_X_LINK
+//#define UNIT_TEST_NEGATIVE_SNK_Y_LINK
+//#define UNIT_TEST_NEGATIVE_SNK_Z_LINK
+
+/* Unit test - only sum over current insertion origin */
+//#define UNIT_TEST_CURRENT_ORIGIN
+
+/* Unit test - move the correlator pieces around within unit cube */
+//#define UNIT_TEST_TRANSLATE_SOURCE 6
+//#define UNIT_TEST_TRANSLATE_SINK 0
+//#define UNIT_TEST_TRANSLATE_CURRENT 6
+
+//#define NO_SINK_LINKS
+
+//#define UNIT_TEST_ORIGIN_TRANSLATE 7
+
+// objects mapped to memory
+//#ifdef GB_SPEC_MAP
+//static su3_vector *spec_map = NULL; // hold spectator contribution
+//static short      *spec_fill= NULL; // hold bit to indicate whether slot is filled
+//#endif
+//#ifdef GB_INT_MAP
+//#define MAX_INT_MAP_CURR 16
+//static su3_vector **int_map [MAX_INT_MAP_CURR]= {NULL};// hold interacting contribution
+//static int          int_fill[MAX_INT_MAP_CURR]= {0};// spin-taste index identifier for each buffer
+//static int      num_int_buff = 0; // integer to specify number of buffers
+//#endif
+
+#ifdef GB_BARYON
+/*------------------------------------------------------------------*/
+static void conj_v_field(su3_vector *dest,su3_vector *src){
+  int i,c;
+  site *s;
+  FORALLSITES(i,s){
+   for(c=0;c<3;c++){
+    CONJG(src[i].c[c],dest[i].c[c]);
+   }
+  }
+}
+
+/*------------------------------------------------------------------*/
+/**
+   Symmetric shift a quark at the sink.
+   Normal operating direction is for doBW = 0x0, but doBW = 0x1 is
+   needed to link with the interacting quark. Links are applied
+   to the spectator pair rather than the interacting quark to prevent
+   the need for a factor of 8 more inversions.
+ */
+static void
+sym_shift_3pt(int dir, short doBW, su3_vector *dest, su3_vector *src, su3_matrix *links)
+{
+  register int i;
+  msg_tag *tag[2] = {NULL};
+  su3_vector *tvec  = create_v_field();
+  su3_vector *cvec0 = create_v_field();
+  su3_vector *cvec1 = create_v_field();
+
+/** Looks like spaghetti code, but written this way so that
+    the unit tests and the generic code are using the same
+    set of functions, rather than an independent set (or as
+    close as possible). That way if changes are made,
+    the changes can be directly checked.
+
+    SRCSNK unit test defaults always to the same path,
+    CUR unit test chooses whether to take the default or the
+     opposite path based on which NEGATIVE_SNK_*_LINKs are defined,
+    and no unit test definitions always take both directions. */
+  if(doBW){
+#ifdef UNIT_TEST_GAUGE_INV_SRCSNK
+#ifdef UNIT_TEST_GAUGE_INV_CUR
+  switch(dir){
+#ifdef UNIT_TEST_NEGATIVE_SNK_X_LINK
+  case XUP:
+#endif
+#ifdef UNIT_TEST_NEGATIVE_SNK_Y_LINK
+  case YUP:
+#endif
+#ifdef UNIT_TEST_NEGATIVE_SNK_Z_LINK
+  case ZUP:
+#endif
+    // if requested for unit test, start gather then continue on
+    tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
+    break;
+  default: //continues after #endif
+#endif // #ifdef UNIT_TEST_GAUGE_INV_CUR
+#else  // no unit test, always start gather
+    tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
+#endif // #ifdef UNIT_TEST_GAUGE_INV_SRCSNK
+
+    // continue with switch default case if UNIT_TEST_GAUGE_INV_CUR,
+    // or always do if not
+    // just want transpose: *(*M^T.*v);  v represents spectator contribution
+    // only positive direction
+    conj_v_field(cvec1,src);
+    //FORALLFIELDSITES(i) {
+    //  mult_adj_su3_mat_vec( links+4*i+dir, cvec1+i, tvec+i ); }
+#ifdef NO_SINK_LINKS
+    copy_v_field(tvec,cvec1);
+#else
+    FORALLFIELDSITES(i) {
+      mult_adj_su3_mat_vec( links+4*i+dir, cvec1+i, tvec+i ); }
+#endif // NO_SINK_LINKS
+    conj_v_field(cvec1,tvec);
+    tag[1] = start_gather_field( cvec1, sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1] );
+
+#ifdef UNIT_TEST_GAUGE_INV_SRCSNK
+#ifdef UNIT_TEST_GAUGE_INV_CUR
+    break; } // end of previous switch statement
+  switch(dir){
+#ifdef UNIT_TEST_NEGATIVE_SNK_X_LINK
+  case XUP:
+#endif
+#ifdef UNIT_TEST_NEGATIVE_SNK_Y_LINK
+  case YUP:
+#endif
+#ifdef UNIT_TEST_NEGATIVE_SNK_Z_LINK
+  case ZUP:
+#endif
+    wait_gather(tag[0]);
+    // want conjugate: *(M.*v);  v represents spectator contribution
+    FORALLFIELDSITES(i) { su3vec_copy( (su3_vector *)gen_pt[0][i], tvec+i); }
+    conj_v_field(cvec0,tvec);
+    //FORALLFIELDSITES(i) {
+    //  mult_su3_mat_vec( links+4*i+dir, cvec0+i, tvec+i ); }
+#ifdef NO_SINK_LINKS
+    copy_v_field(tvec,cvec0);
+#else
+    FORALLFIELDSITES(i) {
+      mult_su3_mat_vec( links+4*i+dir, cvec0+i, tvec+i ); }
+#endif // NO_SINK_LINKS
+    conj_v_field(dest,tvec);
+    cleanup_gather(tag[0]);
+    break;
+  default: //continues after #endif
+#endif // #ifdef UNIT_TEST_GAUGE_INV_CUR
+#else // no unit test
+    wait_gather(tag[0]);
+    // want conjugate: *(M.*v);  v represents spectator contribution
+    FORALLFIELDSITES(i) { su3vec_copy( (su3_vector *)gen_pt[0][i], tvec+i); }
+    conj_v_field(cvec0,tvec);
+    //FORALLFIELDSITES(i) {
+    //  mult_su3_mat_vec( links+4*i+dir, cvec0+i, tvec+i ); }
+#ifdef NO_SINK_LINKS
+    copy_v_field(tvec,cvec0);
+#else
+    FORALLFIELDSITES(i) {
+      mult_su3_mat_vec( links+4*i+dir, cvec0+i, tvec+i ); }
+#endif // NO_SINK_LINKS
+    conj_v_field(dest,tvec);
+    cleanup_gather(tag[0]);
+#endif // #ifdef UNIT_TEST_GAUGE_INV_SRCSNK
+
+    wait_gather(tag[1]);
+#ifdef UNIT_TEST_GAUGE_INV_SRCSNK
+    FORALLFIELDSITES(i) { su3vec_copy( (su3_vector *)gen_pt[1][i], dest+i ); }
+    cleanup_gather(tag[1]);
+#ifdef UNIT_TEST_GAUGE_INV_CUR
+    break; } // end previous switch statement
+#endif
+#else // no unit test
+    FORALLFIELDSITES(i) { add_su3_vector(dest+i, (su3_vector*)gen_pt[1][i], dest+i ); }
+    FORALLFIELDSITES(i) { scalar_mult_su3_vector( dest+i, .5, dest+i ) ; }
+    cleanup_gather(tag[1]);
+#endif
+
+  } else {
+    /* always same regardless of unit test */
+
+    // shifting in dir moves +dir to 0
+    tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
+    //FORALLFIELDSITES(i) { mult_adj_su3_mat_vec( links+4*i+dir, src+i, cvec1+i ); }
+#ifdef NO_SINK_LINKS
+    copy_v_field(cvec1,src);
+#else
+    FORALLFIELDSITES(i) { mult_adj_su3_mat_vec( links+4*i+dir, src+i, cvec1+i ); }
+#endif // NO_SINK_LINKS
+    // shifting in opp_dir moves 0 to +dir
+    tag[1] = start_gather_field( cvec1, sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1] );
+    wait_gather(tag[0]);
+
+    //FORALLFIELDSITES(i) { mult_su3_mat_vec( links+4*i+dir, (su3_vector*)gen_pt[0][i], dest+i ); }
+#ifdef NO_SINK_LINKS
+    FORALLFIELDSITES(i) { su3vec_copy( (su3_vector *)gen_pt[0][i], dest+i); }
+#else
+    FORALLFIELDSITES(i) { mult_su3_mat_vec( links+4*i+dir, (su3_vector*)gen_pt[0][i], dest+i ); }
+#endif // NO_SINK_LINKS
+    cleanup_gather(tag[0]);
+
+    wait_gather(tag[1]);
+    FORALLFIELDSITES(i) { add_su3_vector(dest+i, (su3_vector*)gen_pt[1][i], dest+i ); }
+    FORALLFIELDSITES(i) { scalar_mult_su3_vector( dest+i, .5, dest+i ) ; }
+    cleanup_gather(tag[1]);
+  }
+
+  destroy_v_field(tvec);
+  destroy_v_field(cvec0);
+  destroy_v_field(cvec1);
+}
+
+/*------------------------------------------------------------------*/
+static void
+apply_sym_shift_3pt(int n, int *d, int *r0, short doBW, ks_prop_field *dest,
+                    ks_prop_field *src, su3_matrix *links){
+  /* Apply the symmetric shifts listed in d             *
+   * Similar to zeta_shift_field in spin_taste_ops.c    *
+   * but with different sign factors                    */
+  int i,c;
+  ks_prop_field *tmp0 = create_ksp_field(3);
+
+  for(i=0;i<n;i++)
+  {
+    /* Do the shift in d[i] */
+    if(i==0)
+    {
+      /* first time from source */
+      for(c=0;c<3;c++) sym_shift_3pt(d[i], doBW, dest->v[c], src->v[c], links);
+    }
+    else
+    {
+      /* other times from dest */
+      for(c=0;c<3;c++) sym_shift_3pt(d[i], doBW, tmp0->v[c], dest->v[c], links);
+      copy_ksp_field(dest,tmp0);
+    }
+  }
+  destroy_ksp_field(tmp0);
+}
+
+/*------------------------------------------------------------------*/
+void
+apply_par_xport_3pt(ks_prop_field *dest, ks_prop_field *src,
+                    int n, int dir[], int r0[], short doBW, su3_matrix *links){
+  site *s;
+  int i,j,c;
+  ks_prop_field *tvec0 = create_ksp_field(3);
+  ks_prop_field *tvec1 = create_ksp_field(3);
+  ks_prop_field *tsrc  = create_ksp_field(3);
+  int d[6][3] =
+    {{XUP,YUP,ZUP},
+     {YUP,ZUP,XUP},
+     {ZUP,XUP,YUP},
+     {XUP,ZUP,YUP},
+     {YUP,XUP,ZUP},
+     {ZUP,YUP,XUP}};
+  copy_ksp_field(tsrc,src);
+
+  if(n == 0){
+    copy_ksp_field(dest,src);
+  }
+  else if(n == 1){
+    /* one link */
+    d[0][0] = dir[0];
+    apply_sym_shift_3pt(n,d[0],r0,doBW,dest,tsrc,links);
+  }
+  else if (n == 2){
+    /* two link */
+    d[0][0] = dir[0]; d[0][1] = dir[1];
+    d[1][1] = dir[0]; d[1][0] = dir[1];
+    apply_sym_shift_3pt(n,d[0],r0,doBW,tvec0,tsrc,links);
+    apply_sym_shift_3pt(n,d[1],r0,doBW,tvec1,tsrc,links);
+
+    for(c=0;c<3;c++){
+      FORALLSITES(i,s){
+        add_su3_vector( &tvec0->v[c][i], &tvec1->v[c][i], &dest->v[c][i] );
+        scalar_mult_su3_vector( &dest->v[c][i], 0.5, &dest->v[c][i] );
+      }
+    }
+  }
+  else if (n == 3){
+    /* three link */
+    /* use the d given */
+    for(j=0;j<6;j++){
+      apply_sym_shift_3pt(n,d[j],r0,doBW,tvec0,tsrc,links);
+      if(j==0) copy_ksp_field(tvec1,tvec0);
+      else for(c=0;c<3;c++){
+        FORALLFIELDSITES(i){
+          add_su3_vector(&tvec1->v[c][i],&tvec0->v[c][i],&tvec1->v[c][i]);
+        }
+      }
+    }
+    for(c=0;c<3;c++){FORALLSITES(i,s){
+      scalar_mult_su3_vector( &tvec1->v[c][i], 1./6., &dest->v[c][i] );
+    }}
+  }
+  destroy_ksp_field(tvec1);
+  destroy_ksp_field(tvec0);
+  destroy_ksp_field(tsrc);
+}
+
+#endif // GB_BARYON

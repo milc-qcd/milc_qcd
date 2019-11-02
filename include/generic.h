@@ -34,19 +34,19 @@ void ape_smear_field(
   Real link_u0,          /* single link weight - used in normalization
                              if SU(3) projection is turned off */
   int space_only,         /* = 1 (true) smear space-like links with
- 			          only spacelike staples 
+ 			          only spacelike staples
 			     = 0 (false) smear all links with
 			     all staples */
-  int nhits,              /* reproject onto SU(3): number of 
+  int nhits,              /* reproject onto SU(3): number of
 			     SU(2) hits. 0 for no reprojection */
   Real tol               /* tolerance for SU(3) projection.
 			     If nonzero, treat nhits as a maximum
 			     number of hits.  If zero, treat nhits
-			     as a prescribed number of hits. */ 
+			     as a prescribed number of hits. */
   );
 
 void ape_smear_field_dir(
-  su3_matrix *src,        /* su3_matrix[4] type 
+  su3_matrix *src,        /* su3_matrix[4] type
 			     input unsmeared links */
   int dir1,               /* link direction to smear */
   su3_matrix *dest,       /* su3_matrix[4] type smeared links */
@@ -54,57 +54,57 @@ void ape_smear_field_dir(
   Real link_u0,          /* single link weight - used in normalization
                              if SU(3) projection is turned off */
   int space_only,         /* = 1 (true) smear space-like links with
- 			          only spacelike staples 
+ 			          only spacelike staples
 			     = 0 (false) smear all links with
 			     all staples */
-  int nhits,              /* reproject onto SU(3): number of 
+  int nhits,              /* reproject onto SU(3): number of
 			     SU(2) hits. 0 for no reprojection */
   Real tol               /* tolerance for SU(3) projection.
 			     If nonzero, treat nhits as a maximum
 			     number of hits.  If zero, treat nhits
-			     as a prescribed number of hits. */ 
+			     as a prescribed number of hits. */
 			 );
 
 void ape_smear_dir(
-  field_offset src,       /* field offset for su3_matrix[4] type 
+  field_offset src,       /* field offset for su3_matrix[4] type
 			     input unsmeared links */
   int dir1,               /* link direction to smear */
-  field_offset dest,      /* field offset for su3_matrix type 
-			     pointing to a specific direction 
+  field_offset dest,      /* field offset for su3_matrix type
+			     pointing to a specific direction
 			     output smeared links */
   Real staple_weight,    /* single staple weight */
   Real link_u0,          /* single link weight - used in normalization
                              if SU(3) projection is turned off */
   int space_only,         /* = 1 (true) smear space-like links with
- 			          only spacelike staples 
+ 			          only spacelike staples
 			     = 0 (false) smear all links with
 			     all staples */
-  int nhits,              /* reproject onto SU(3): number of 
+  int nhits,              /* reproject onto SU(3): number of
 			     SU(2) hits. 0 for no reprojection */
   Real tol               /* tolerance for SU(3) projection.
 			     If nonzero, treat nhits as a maximum
 			     number of hits.  If zero, treat nhits
-			     as a prescribed number of hits. */ 
+			     as a prescribed number of hits. */
   );
 
 void ape_smear(
-  field_offset src,       /* field offset for su3_matrix type 
+  field_offset src,       /* field offset for su3_matrix type
 			     input unsmeared links */
-  field_offset dest,      /* field offset for su3_matrix type 
+  field_offset dest,      /* field offset for su3_matrix type
 			     output smeared links */
   Real staple_weight,    /* single staple weight */
   Real link_u0,          /* single link weight - used in normalization
                              if SU(3) projection is turned off */
   int space_only,         /* = 1 (true) smear space-like links with
- 			          only spacelike staples 
+ 			          only spacelike staples
 			     = 0 (false) smear all links with
 			     all staples */
-  int nhits,              /* reproject onto SU(3): number of 
+  int nhits,              /* reproject onto SU(3): number of
 			     SU(2) hits. 0 for no reprojection */
   Real tol               /* tolerance for SU(3) projection.
 			     If nonzero, treat nhits as a maximum
 			     number of hits.  If zero, treat nhits
-			     as a prescribed number of hits. */ 
+			     as a prescribed number of hits. */
   );
 
 su3_matrix *ape_smear_3D(Real staple_weight, int iters);
@@ -129,12 +129,12 @@ void d_plaquette(double *ss_plaq,double *st_plaq);
 
 /* discretize_wf.c */
 void fnal_wavefunction(complex *wf, int stride,
-		       int x0, int y0, int z0, int t0, 
+		       int x0, int y0, int z0, int t0,
 		       Real a, char wf_file[]);
 
 /* field_strength.c */
 void make_field_strength(
-  field_offset link_src,       /* field offset for su3_matrix[4] type 
+  field_offset link_src,       /* field offset for su3_matrix[4] type
 				  for the source link matrices */
   field_offset field_dest      /* field offset for su3_matrix[6] type
 				  for the resulting field strength */
@@ -184,7 +184,7 @@ void add_v_fields(su3_vector *vsum, su3_vector *v1, su3_vector *v2);
 void destroy_v_field(su3_vector *v);
 
 void saxpby_v_field(su3_vector *w, Real a, su3_vector *x, Real b, su3_vector *y);
-void saxpbypcz_v_field(su3_vector *w, Real a, su3_vector *x, 
+void saxpbypcz_v_field(su3_vector *w, Real a, su3_vector *x,
 		       Real b, su3_vector *y, Real c, su3_vector *z);
 
 /* array versions of the above */
@@ -230,9 +230,9 @@ wilson_prop_field * create_wp_field(int nc);
 wilson_prop_field * create_wp_field_copy(wilson_prop_field * w);
 void clear_wp_field(wilson_prop_field * wp);
 void copy_wp_field(wilson_prop_field * wpcopy, wilson_prop_field * wp);
-void scalar_mult_add_ksprop_field(ks_prop_field *a, ks_prop_field *b, 
+void scalar_mult_add_ksprop_field(ks_prop_field *a, ks_prop_field *b,
 				  Real s, ks_prop_field *c);
-void scalar_mult_add_wprop_field(wilson_prop_field *a, wilson_prop_field *b, 
+void scalar_mult_add_wprop_field(wilson_prop_field *a, wilson_prop_field *b,
 				 Real s, wilson_prop_field *c);
 wilson_prop_field *transpose_wp_field(wilson_prop_field * wp);
 void free_wp_field(wilson_prop_field * wp);
@@ -247,9 +247,9 @@ void destroy_gauge_field(su3_matrix **f);
 void extract_c_from_v(complex *c, su3_vector *v, int color);
 void insert_v_from_c(su3_vector *v, complex *c, int color);
 
-void extract_c_from_wv(complex *c, wilson_vector *wv, 
+void extract_c_from_wv(complex *c, wilson_vector *wv,
 		       int spin, int color);
-void insert_wv_from_c(wilson_vector *wv, complex *c, 
+void insert_wv_from_c(wilson_vector *wv, complex *c,
 		      int spin, int color);
 void insert_wv_from_v(wilson_vector *wv, su3_vector *v, int spin);
 
@@ -263,16 +263,16 @@ void insert_swv_from_v(spin_wilson_vector *swv, int spin_src, int spin_snk, su3_
 void copy_v_from_ksp(su3_vector *v, ks_prop_field *ksp, int color);
 void insert_ksp_from_v(ks_prop_field *ksp, su3_vector *v, int color);
 
-void copy_wp_from_wv(wilson_prop_field * wp, wilson_vector *wv, 
+void copy_wp_from_wv(wilson_prop_field * wp, wilson_vector *wv,
 		     int color, int spin);
 void copy_wv_from_v(wilson_vector *wv, su3_vector *v, int spin);
-void copy_wv_from_wp(wilson_vector *wv, wilson_prop_field * wp, 
+void copy_wv_from_wp(wilson_vector *wv, wilson_prop_field * wp,
 		     int color, int spin);
 
 void copy_wv_from_swv(wilson_vector *wv, spin_wilson_vector *swv, int spin);
 spin_wilson_vector *extract_swv_from_wp(wilson_prop_field * wp, int color);
 
-void copy_wv_from_wprop(wilson_vector *wv, wilson_propagator *wprop, 
+void copy_wv_from_wprop(wilson_vector *wv, wilson_propagator *wprop,
 			int color, int spin);
 
 /* file_types_milc_usqcd.c */
@@ -287,9 +287,9 @@ void gaugefix( int gauge_dir, Real relax_boost, int max_gauge_iter,
 	       Real gauge_fix_tol );
 
 void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
-		    Real gauge_fix_tol, int nvector, 
+		    Real gauge_fix_tol, int nvector,
 		    field_offset vector_offset[], int vector_parity[],
-		    int nantiherm, field_offset antiherm_offset[], 
+		    int nantiherm, field_offset antiherm_offset[],
 		    int antiherm_parity[] );
 
 /* gauge_force_imp_*.c */
@@ -335,8 +335,8 @@ void copy_G2(su3_matrix *dst, su3_matrix *src);
 void destroy_G2(su3_matrix *t_links);
 
 /* general_staple.c */
-void 
-compute_gen_staple_field(su3_matrix *staple, int mu, int nu, 
+void
+compute_gen_staple_field(su3_matrix *staple, int mu, int nu,
 			 su3_matrix *link, int stride,
 			 su3_matrix *fatlink, Real coef,
 			 su3_matrix *links);
@@ -368,9 +368,9 @@ int get_check_tag(FILE *fp, char *tag, char *myname);
 int get_f( FILE *fp, int prompt, char *variable_name_string, Real *value );
 int get_i( FILE *fp, int prompt, char *variable_name_string, int *value );
 char *get_next_tag(FILE *fp, char *tag, char *myname);
-int get_vi( FILE *fp, int prompt, char *variable_name_string, 
+int get_vi( FILE *fp, int prompt, char *variable_name_string,
 	    int *value, int nvalues );
-int get_vf( FILE *fp, int prompt, char *variable_name_string, 
+int get_vf( FILE *fp, int prompt, char *variable_name_string,
 	    Real *value, int nvalues );
 int get_s( FILE *fp, int prompt, char *variable_name_string, char *value );
 int get_sn( FILE *fp, int prompt, char *variable_name_string, char *value );
@@ -413,9 +413,9 @@ void rephase_wv_field(wilson_vector *wv, Real bdry_phase[4], int r0[4], int sign
 
 /* path_product.c */
 void path_product( const int *dir, const int length, su3_matrix *tempmat1);
-void path_product_field( const int *dir, const int length, 
+void path_product_field( const int *dir, const int length,
 			 su3_matrix *tempmat1, su3_matrix *links);
-void path_product_fields( su3_matrix *Src, const int *dir, 
+void path_product_fields( su3_matrix *Src, const int *dir,
 			  const int length, su3_matrix *tempmat1);
 void path_prod_subl(const int *dir, const int length, const int subl,
 		    su3_matrix *tempmat1);
@@ -443,7 +443,7 @@ int project_su3(
    Real tol              /* tolerance for SU(3) projection.
 			     If nonzero, treat Nhit as a maximum
 			     number of hits.  If zero, treat Nhit
-			     as a prescribed number of hits. */ 
+			     as a prescribed number of hits. */
    );
 
 /* quark_source.c */
@@ -461,7 +461,7 @@ int convert_ksource_to_spin(int ksource);
 char *decode_mask(int mask);
 int encode_mask(int *mask, char c_mask[]);
 void even_and_odd_wall(complex *c, int t0);
-void gaussian_source(complex *src, Real r0, 
+void gaussian_source(complex *src, Real r0,
 		     int x0, int y0, int z0, int t0);
 int is_complex_source(int source_type);
 int is_vector_source(int source_type);
@@ -486,7 +486,7 @@ int choose_usqcd_w_file_type(int source_type);
 void r_source_open(quark_source *qs);
 void r_source_close(quark_source *qs);
 #ifdef HAVE_QIO
-int r_source_cmplx_scidac(QIO_Reader *infile, complex *src,  
+int r_source_cmplx_scidac(QIO_Reader *infile, complex *src,
 			  int x0, int y0, int z0, int t0);
 QIO_Reader *r_source_cmplx_scidac_open(char source_file[]);
 #endif
@@ -499,9 +499,9 @@ int w_source_ks(su3_vector *src, quark_source *qs);
 int w_source_dirac(wilson_vector *src, quark_source *qs);
 int w_source_dirac_site(field_offset src, quark_source *qs);
 void print_output_quark_source_choices(void);
-int parse_output_quark_source_choices(int *flag, int *save_type, 
+int parse_output_quark_source_choices(int *flag, int *save_type,
 				      char *descrp, char* savebuf);
-int ask_output_quark_source_file( FILE *fp, int prompt, 
+int ask_output_quark_source_file( FILE *fp, int prompt,
 				  int *flag, int *source_type,
 				  int *t0, char *descrp, char *filename);
 
@@ -513,18 +513,18 @@ void destroy_qss_op(quark_source_sink_op *qss_op);
 quark_source_sink_op *copy_qss_op_list(quark_source_sink_op *src_qss_op);
 void insert_qss_op(quark_source *qs, quark_source_sink_op *qss_op);
 void insert_qss_eps_naik_index(int index, quark_source_sink_op *qss_op);
-void v_field_op(su3_vector *src, quark_source_sink_op *qss_op, 
+void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
 		int subset, int t0);
-void wv_field_op(wilson_vector *src, quark_source_sink_op *qss_op, 
+void wv_field_op(wilson_vector *src, quark_source_sink_op *qss_op,
 		 int subset, int t0);
 void ksp_sink_op(quark_source_sink_op *qss_op, ks_prop_field *ksp );
 void wp_sink_op(quark_source_sink_op *qss_op, wilson_prop_field *wp );
 int get_wv_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op);
 int get_v_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op);
 int get_qss_eps_naik(Real *eps_naik, quark_source_sink_op *qss_op);
-void print_field_op_info(FILE *fp, char prefix[], 
+void print_field_op_info(FILE *fp, char prefix[],
 			 quark_source_sink_op *qss_op);
-void print_field_op_info_list(FILE *fp, char prefix[], 
+void print_field_op_info_list(FILE *fp, char prefix[],
 			      quark_source_sink_op *qss_op[], int n);
 void set_qss_op_offset(quark_source_sink_op *qss_op, int r0[]);
 
@@ -546,7 +546,7 @@ void initialize_site_prn_from_seed(int iseed);
 
 /* restrict_fourier.c */
 void setup_restrict_fourier( int *key, int *slice);
-void restrict_fourier_site( 
+void restrict_fourier_site(
      field_offset src,	 /* src is field to be transformed */
      int size,		 /* Size of field in bytes.  The field must
 			    consist of size/sizeof(complex) consecutive
@@ -554,7 +554,7 @@ void restrict_fourier_site(
 			    is 3 complex numbers. */
      int isign);	 /* 1 for x -> k, -1 for k -> x */
 
-void restrict_fourier_field( 
+void restrict_fourier_field(
      complex *src,       /* src is field to be transformed */
      int size,		 /* Size of field in bytes.  The field must
 			    consist of size/sizeof(complex) consecutive
@@ -582,5 +582,26 @@ void stout_smear(su3_matrix *W, su3_matrix *V, su3_matrix *U);
 void *qcdoc_alloc(size_t nbytes);
 void qfree(void *);
 #endif
+
+#ifdef GB_BARYON
+/* mmap_cache.c */
+/* This will work even if GB_BARYON_MMAP is not defined */
+#define static_cast( type, expr ) ( (type)(expr) )
+typedef struct mmap_cache_t
+{
+  unsigned nbuffers;
+  size_t   buffer_size;
+  void**   buffer;
+  char*    back_file;
+  int      fback;
+  void*    base;
+  size_t   cache_size;
+  size_t   mem_page_size;
+} mmap_cache;
+int alloc_mmap_cache(mmap_cache* obj, unsigned nbuf, size_t buf_size, const char* cdir);
+int msync_mmap_buffer(mmap_cache* obj,int nbuf);
+int free_mmap_cache(mmap_cache* obj);
+#endif
+
 
 #endif	/* _GENERIC_H */

@@ -50,7 +50,7 @@ G_U1_OBJECTS =       \
   u1link.o           \
   u1plaq.o
 
-# # Objects depending on architecture and software package 
+# # Objects depending on architecture and software package
 
 # Selection of layout
 
@@ -105,7 +105,7 @@ endif
 
 #Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
-QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
+QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a
 
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
 LIBRARIES += ${QPHIX_LIBRARIES} ${QPHIXJ_LIBRARIES} ${GRID_LIBRARIES}
@@ -244,6 +244,11 @@ ks_spectrum_hisq_u1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
 	"DEFINES += -DU1_FIELD" "EXTRA_OBJECTS += ${G_U1_OBJECTS}"
 
+# GB baryon with memory map and blinding
+ks_spectrum_hisq_gb_baryon_mmap_blind::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DEIGMODE=EIGCG -DGB_BARYON -DGB_BARYON_MMAP -DBLIND"
+
 clean:
 	-/bin/rm -f *.o quark_action.h
 
@@ -273,9 +278,10 @@ libmake:
 	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" \
         "ARCH=${ARCH}" "COMPILER=${COMPILER}" all
 
+# added -lcrypto for blinding
 localmake: ${OBJECTS} ${LIBRARIES}
 	${LD} -o ${MYTARGET} ${LDFLAGS} \
-	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm -lcrypto
 	touch localmake
 
-target: libmake localmake 
+target: libmake localmake

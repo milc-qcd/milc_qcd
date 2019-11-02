@@ -3,6 +3,7 @@
 
 #include "defines.h"
 #include "../include/macros.h"  /* For MAXFILENAME */
+#include "../include/gb_ops.h"
 #include "../include/generic_quark_types.h"
 #include "../include/generic_ks.h" /* For quark_source */
 #include "../include/generic_wilson.h"  /* For quark_source */
@@ -10,9 +11,9 @@
 #include "../include/imp_ferm_links.h"
 
 #define MAX_MASS_PBP 8
-#define MAX_SOURCE 32
-#define MAX_SET 64
-#define MAX_PROP 64
+#define MAX_SOURCE 80
+#define MAX_SET 80
+#define MAX_PROP 80
 #define MAX_QK 256
 #define MAX_COMBO 8
 #define MAX_PAIR 5000
@@ -24,13 +25,18 @@
 #define MAX_BARYON_LABEL 64
 #define MAX_MESON_MOMENTUM 100
 #define MAX_MOM_LABEL 16
-#define MAX_CORR 200
+#define MAX_CORR 2048
 #define STATIC_TYPE 0
 #define KS_TYPE 1
 #define PROP_TYPE 0
 #define QUARK_TYPE 1
 #define COMBO_TYPE 2
 #define BASE_SOURCE_PARENT -1
+
+#ifdef GB_BARYON
+/* specific to golterman-bailey baryon 2-pts */
+#define MAX_OCTET 16
+#endif
 
 enum checktype { CHECK_NO,  CHECK_YES, CHECK_SOURCE_ONLY };
 
@@ -130,7 +136,7 @@ typedef struct {
   /* Mesons */
   int num_pair;                      /* Number of mesons */
   int qkpair[MAX_PAIR][2];           /* Indices of quarks in a meson */
-  int do_meson_spect[MAX_PAIR];      
+  int do_meson_spect[MAX_PAIR];
   int saveflag_m[MAX_PAIR];          /* Save flag for meson correlator */
   char savefile_m[MAX_PAIR][MAXFILENAME]; /* File for meson correlator */
   int r_offset_m[MAX_PAIR][4];               /* Shift of origin for meson correlator */
@@ -156,6 +162,33 @@ typedef struct {
   char baryon_label[MAX_TRIPLET][MAX_CORR][MAX_MESON_LABEL];
   int baryon_phase[MAX_TRIPLET][MAX_CORR];
   Real baryon_factor[MAX_TRIPLET][MAX_CORR];
+  /* GB Baryons */
+  #ifdef GB_BARYON
+    int  num_oct;                               /* Number of ks quark octets */
+    int  qk_oct[MAX_OCTET][8];                  /* List of ks quark octets */
+    int  num_gb_triplet;                        /* Number of Golterman-Bailey baryons */
+    int  qk8triplet[MAX_TRIPLET][3];            /* Nndices of octets used in gb baryon */
+    int  qk8num_d[MAX_TRIPLET];                 /* Number of baryon d quarks */
+    int  qk8num_s[MAX_TRIPLET];                 /* Number of baryon s quarks */
+    int  do_gbbaryon_spect[MAX_TRIPLET];        /* Whether to do this correlator or not */
+    int  gb_spintaste[MAX_TRIPLET];             /* Spin-taste phase construction at src/sink */
+    int  r_offset_gb[MAX_TRIPLET][4];           /* Origin offset for correlator */
+    int  snkmom_gb[MAX_TRIPLET][3];             /* Sink momentum */
+    char snkpar_gb[MAX_TRIPLET][3];             /* Sink parity */
+    int  num_corr_gb[MAX_TRIPLET];              /* Number of correlators for a gb baryon */
+    char gbbaryon_label[MAX_TRIPLET][MAX_CORR][MAX_MESON_LABEL];
+    int  gbbaryon_phase[MAX_TRIPLET][MAX_CORR];
+    Real gbbaryon_factor[MAX_TRIPLET][MAX_CORR];
+    enum gb_baryon_op gbbaryon_src[MAX_TRIPLET][MAX_CORR]; /* gb op at source */
+    enum gb_baryon_op gbbaryon_snk[MAX_TRIPLET][MAX_CORR]; /* gb op at sink */
+    int  gb_parity_flip_snk[MAX_TRIPLET][MAX_CORR]; /* Option to flip sink tie up epsilon location */
+    int  saveflag_gb[MAX_TRIPLET];              /* Save flag for gb baryon correlator */
+    char savefile_gb[MAX_TRIPLET][MAXFILENAME]; /* File for gb baryon correlator */
+    char gb_mom_label[MAX_TRIPLET][MAX_CORR][MAX_MOM_LABEL]; /* gb momentum label */
+    int  gb_corr_mom[MAX_TRIPLET][MAX_CORR][3];              /* gb correlator momentum */
+    char gb_corr_parity[MAX_TRIPLET][MAX_CORR][3];           /* gb correlator parity */
+    short gb_corner[MAX_TRIPLET][MAX_CORR]; /* Baryon over corner or full cube */
+  #endif
   /* Filenames */
   char startfile[MAXFILENAME];  /* Gauge file */
   char start_u1file[MAXFILENAME]; /* U(1) gauge file */

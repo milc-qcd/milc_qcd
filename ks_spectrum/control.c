@@ -751,6 +751,171 @@ int main(int argc, char *argv[])
       ENDTIME("save eigenvectors (if requested)");
     }
 
+/****************************************************************/
+/* Compute GB baryon propagators */
+
+#ifdef GB_BARYON
+
+    STARTTIME;
+    int iqo0,iqo1,iqo2;
+    ks_prop_field *qko0[8];
+    ks_prop_field *qko1[8];
+    ks_prop_field *qko2[8];
+    #ifdef GB_BARYON_MMAP
+        int jqo0,jqo1,jqo2;
+        mmap_cache *tmp_cache0; /* Pointers to temporarily retain memory */
+        mmap_cache *tmp_cache1;
+        mmap_cache *tmp_cache2;
+        node0_printf("Creating gb baryon cache container\n");
+        create_gb_qk_cache(3);
+    #endif
+        for(i = 0; i < param.num_gb_triplet; i++){
+
+          /* Index for the quarks making up this gb baryon */
+          iqo0 = param.qk8triplet[i][0];
+          iqo1 = param.qk8triplet[i][1];
+          iqo2 = param.qk8triplet[i][2];
+          node0_printf("Golterman-Bailey baryon for quark octets %d, %d, and %d\n",
+           iqo0,iqo1,iqo2);
+          node0_printf("Octet %d :  ",iqo0);
+          for(j = 0; j < 8; j++){
+            iq0 = param.qk_oct[iqo0][j];
+            node0_printf(" %d ",iq0);
+            if(iq0 == -1) qko0[j] = NULL;
+            else qko0[j] = quark[iq0];
+          }
+          node0_printf("\nOctet %d :  ",iqo1);
+          for(j = 0; j < 8; j++){
+            iq1 = param.qk_oct[iqo1][j];
+            node0_printf(" %d ",iq1);
+            if(iq1 == -1) qko1[j] = NULL;
+            else qko1[j] = quark[iq1];
+          }
+          node0_printf("\nOctet %d :  ",iqo2);
+          for(j = 0; j < 8; j++){
+            iq2 = param.qk_oct[iqo2][j];
+            node0_printf(" %d ",iq2);
+            if(iq2 == -1) qko2[j] = NULL;
+            else qko2[j] = quark[iq2];
+          }
+          node0_printf("\n");
+
+#ifdef GB_BARYON_MMAP
+          node0_printf("Creating gb baryon cache\n");
+          if (i == 0) {
+            // all new, create or copy
+            create_qk_oct_cache(qko0,0,param.r_offset_gb[i],ape_links);
+            if      (iqo1 == iqo0) { copy_qk_oct_cache(1,0); }
+            else {
+              create_qk_oct_cache(qko1,1,param.r_offset_gb[i],ape_links);
+            }
+            if      (iqo2 == iqo0) { copy_qk_oct_cache(2,0); }
+            else if (iqo2 == iqo1) { copy_qk_oct_cache(2,1); }
+            else {
+              create_qk_oct_cache(qko2,2,param.r_offset_gb[i],ape_links);
+            }
+          } else {
+
+            /* If cache is used again, retain memory in temporary pointers
+               clear all the mmap pointers
+               wipe memory for caches that are no longer necessary */
+            if      (jqo0 != iqo0 && jqo0 != iqo1 && jqo0 != iqo2) {
+              tmp_cache0 = NULL;
+              destroy_qk_oct_cache(0);
+              if (jqo1 == jqo0) { tmp_cache1 = NULL; unmap_qk_oct_cache(1); }
+              if (jqo2 == jqo0) { tmp_cache2 = NULL; unmap_qk_oct_cache(2); }
+            }
+            else { /* Retain cache pointer, unmap caches */
+              tmp_cache0 = get_qk_cache_pointer(0);
+              unmap_qk_oct_cache(0);
+              if (jqo1 == jqo0) { tmp_cache1 = tmp_cache0; unmap_qk_oct_cache(1); }
+              if (jqo2 == jqo0) { tmp_cache2 = tmp_cache0; unmap_qk_oct_cache(2); }
+            }
+            if (jqo0 != jqo1) { /* Already unmapped if jqo0 == jqo1 */
+              if (jqo1 != iqo0 && jqo1 != iqo1 && jqo1 != iqo2) {
+                  tmp_cache1 = NULL;
+                  destroy_qk_oct_cache(1);
+                  if (jqo2 == jqo1) { tmp_cache2 = NULL; unmap_qk_oct_cache(2); }
+              }
+              else {
+                tmp_cache1 = get_qk_cache_pointer(1);
+                unmap_qk_oct_cache(1);
+                if (jqo2 == jqo1) { tmp_cache2 = tmp_cache1; unmap_qk_oct_cache(2); }
+              }
+            }
+            if (jqo0 != jqo2 && jqo1 != jqo2) {
+              if (jqo2 != iqo0 && jqo2 != iqo1 && jqo2 != iqo2) {
+                  tmp_cache2 = NULL;
+                  destroy_qk_oct_cache(2);
+              }
+              else {
+                tmp_cache2 = get_qk_cache_pointer(2);
+                unmap_qk_oct_cache(2);
+              }
+            }
+
+            /* Reassign cache pointers for caches that are reused */
+            if      (iqo0 == jqo0) { assign_qk_cache_pointer(tmp_cache0,0); }
+            else if (iqo0 == jqo1) { assign_qk_cache_pointer(tmp_cache1,0); }
+            else if (iqo0 == jqo2) { assign_qk_cache_pointer(tmp_cache2,0); }
+            if      (iqo1 == jqo0) { assign_qk_cache_pointer(tmp_cache0,1); }
+            else if (iqo1 == jqo1) { assign_qk_cache_pointer(tmp_cache1,1); }
+            else if (iqo1 == jqo2) { assign_qk_cache_pointer(tmp_cache2,1); }
+            if      (iqo2 == jqo0) { assign_qk_cache_pointer(tmp_cache0,2); }
+            else if (iqo2 == jqo1) { assign_qk_cache_pointer(tmp_cache1,2); }
+            else if (iqo2 == jqo2) { assign_qk_cache_pointer(tmp_cache2,2); }
+
+            /* Create new caches */
+            if (iqo0 != jqo0 && iqo0 != jqo1 && iqo0 != jqo2) {
+              create_qk_oct_cache(qko0,0,param.r_offset_gb[i],ape_links);
+            }
+            if (iqo1 != jqo0 && iqo1 != jqo1 && iqo1 != jqo2) {
+              if      (iqo1 == iqo0) { copy_qk_oct_cache(1,0); }
+              else {
+                create_qk_oct_cache(qko1,1,param.r_offset_gb[i],ape_links);
+              }
+            }
+            if (iqo2 != jqo0 && iqo2 != jqo1 && iqo2 != jqo2) {
+              if      (iqo2 == iqo0) { copy_qk_oct_cache(2,0); }
+              else if (iqo2 == iqo1) { copy_qk_oct_cache(2,1); }
+              else {
+                create_qk_oct_cache(qko2,2,param.r_offset_gb[i],ape_links);
+              }
+            }
+          }
+
+          /* Copy octet indices for next iteration */
+          jqo0 = iqo0;
+          jqo1 = iqo1;
+          jqo2 = iqo2;
+          endtime=dclock();
+          node0_printf("Done creating gb baryon cache\n");
+          node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
+          //node0_printf("Time = %e seconds\n",(double)(endtime-gbcachestart));
+    #endif
+
+          /* Tie together to generate hadron spectrum */
+          spectrum_ks_gb_baryon(qko0,qko1,qko2,ape_links,i);
+
+    #ifdef GB_BARYON_MMAP
+          if (i == param.num_gb_triplet-1) { /* Done, remove all */
+            destroy_qk_oct_cache(0);
+            if (iqo0 != iqo1)                 { destroy_qk_oct_cache(1); }
+            if (iqo0 != iqo2 && iqo1 != iqo2) { destroy_qk_oct_cache(2); }
+          }
+    #endif
+        }
+    #ifdef GB_BARYON_MMAP
+        node0_printf("Destroying gb baryon cache container\n");
+        destroy_gb_qk_cache();
+    #endif
+    ENDTIME("tie gb baryon correlators");
+    endtime=dclock();
+
+    node0_printf("GB BARYON COMPLETED\n");
+    node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
+#endif 
+
     node0_printf("RUNNING COMPLETED\n");
     endtime=dclock();
     

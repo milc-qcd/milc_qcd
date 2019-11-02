@@ -11,6 +11,7 @@
 G_ALL = \
  ape_smear.o \
  ax_gauge.o \
+ blind_data.o \
  bsd_sum.o \
  byterevn.o \
  check_unitarity.o \
@@ -72,6 +73,7 @@ G_ALL = \
  milc_to_qphixj_utilities.o \
  milc_to_quda_utilities.o \
  make_lattice.o \
+ mmap_cache.o \
  momentum_twist.o \
  nersc_cksum.o \
  path_product.o \
@@ -107,6 +109,7 @@ G_ALL = \
 
 # Must match our headers in generic_includes.h
 G_HEADERS = \
+  ../include/blind_data.h \
   ../include/config.h \
   ../include/complex.h \
   ../include/su3.h \
@@ -132,6 +135,8 @@ ${G_ALL} : ${G_ALL_DEPEND}
 ape_smear.o: ../generic/ape_smear.c
 	${CC} -c ${CFLAGS} $<
 ax_gauge.o: ../generic/ax_gauge.c
+	${CC} -c ${CFLAGS} $<
+blind_data.o: ../generic/blind_data.c
 	${CC} -c ${CFLAGS} $<
 bsd_sum.o: ../generic/bsd_sum.c
 	${CC} -c ${CFLAGS} $<
@@ -169,9 +174,9 @@ gauge_force_imp_gpu.o: ../generic/gauge_force_imp_gpu.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_symzk1_qphix.o: ../generic/gauge_force_symzk1_qphix.c
 	${CC} -c ${CFLAGS} $<
-gauge_force_symzk1_qphix_D.o: ../generic/gauge_force_symzk1_qphix_D.c ../generic/gauge_force_symzk1_qphix_P.c 
+gauge_force_symzk1_qphix_D.o: ../generic/gauge_force_symzk1_qphix_D.c ../generic/gauge_force_symzk1_qphix_P.c
 	${CC} -c ${CFLAGS} $<
-gauge_force_symzk1_qphix_F.o: ../generic/gauge_force_symzk1_qphix_F.c ../generic/gauge_force_symzk1_qphix_P.c 
+gauge_force_symzk1_qphix_F.o: ../generic/gauge_force_symzk1_qphix_F.c ../generic/gauge_force_symzk1_qphix_P.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_symzk1_qdp.o: ../generic/gauge_force_symzk1_qdp.c
 	${CC} -c ${CFLAGS} $<
@@ -261,6 +266,8 @@ milc_to_qphixj_utilities.o: ../generic/milc_to_qphixj_utilities.cc
 milc_to_quda_utilities.o: ../generic/milc_to_quda_utilities.c
 	${CC} -c ${CFLAGS} $<
 momentum_twist.o: ../generic/momentum_twist.c
+	${CC} -c ${CFLAGS} $<
+mmap_cache.o: ../generic/mmap_cache.c
 	${CC} -c ${CFLAGS} $<
 nersc_cksum.o: ../generic/nersc_cksum.c
 	${CC} -c ${CFLAGS} $<
