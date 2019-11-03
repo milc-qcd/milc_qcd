@@ -329,14 +329,16 @@ static void insert_wv_mom(wilson_vector *wv, int mom[3],
 /* Build complex-field sources */
 /*--------------------------------------------------------------------*/
 
-static void corner_wall(complex *c, int t0){
+static void corner_wall(complex *c, int t0, int r0){
   int i;
   site *s;
 
   /* Build a corner wall source on time slice t0 */
   FORALLSITES(i,s){
     if( (s->t==t0 || t0 == ALL_T_SLICES) &&
-	s->x % 2 == 0 && s->y % 2 == 0 && s->z % 2 == 0 ){
+         s->x % 2 ==  (r0 & 1)       &&
+         s->y % 2 == ((r0 & 2) >> 1) &&
+         s->z % 2 == ((r0 & 4) >> 2) ){
       c[i].real  = 1.0;     c[i].imag  = 0.0;
     }
   }
@@ -1416,6 +1418,14 @@ static int get_quark_source(int *status_p, FILE *fp, int prompt,
     IF_OK status += get_vi(fp, prompt, "origin", source_loc, 4);
   }
   else if ( source_type == CORNER_WALL ||
+            source_type == CORNER_WALL_0 ||
+            source_type == CORNER_WALL_X ||
+            source_type == CORNER_WALL_Y ||
+            source_type == CORNER_WALL_XY ||
+            source_type == CORNER_WALL_Z ||
+            source_type == CORNER_WALL_ZX ||
+            source_type == CORNER_WALL_YZ ||
+            source_type == CORNER_WALL_XYZ ||
 	    source_type == EVEN_WALL ||
 	    source_type == EVENANDODD_WALL ||
 	    source_type == EVENMINUSODD_WALL ){

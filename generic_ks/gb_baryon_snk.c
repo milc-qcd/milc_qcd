@@ -1,4 +1,7 @@
 #include "generic_ks_includes.h"
+#ifdef MPI_COMMS
+#include <mpi.h>
+#endif
 #ifdef OMP
 #include <omp.h>
 #endif
@@ -1168,11 +1171,9 @@ gb_symm_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_fie
     }
   }
   /*
-  if((qko0 == qko1 && qko1 == qko2)
-   || (s_idx[0]==s_idx[1] && s_idx[1] == s_idx[2])){
-    gb_sink_term_loop(qko0, qko1, qko2, links, t_idx, snk_op, num_d, num_s,
-      r0, stIdx, docube, domom, mom, flip_snk, pfi, dt);
-  }
+       gb_sink_term_loop(qko0, qko1, qko2, links, t_idx, snk_op, num_d, num_s,
+       r0, stIdx, docube, domom, mom, flip_snk, pfi, dt);
+
   else if((qko0 == qko1 || qko1 == qko2)
     || (s_idx[0]==s_idx[1] || s_idx[1] == s_idx[2])){
     gb_sink_term_loop(qko0, qko1, qko2, links, t_idx, snk_op, num_d, num_s,
@@ -1186,6 +1187,7 @@ gb_symm_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_fie
   }
   */
  /* all unique quarks and tastes */
+
 	gb_sink_term_loop(qko0, qko1, qko2, links, t_idx, snk_op, num_d, num_s,
 	  r0, stIdx, docube, domom, mom, flip_snk, pfi/6., dt);
 	s_perm[0] = s_idx[1]; s_perm[1] = s_idx[2]; s_perm[2] = s_idx[0];
@@ -1203,6 +1205,7 @@ gb_symm_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_fie
 	s_perm[0] = s_idx[2]; s_perm[1] = s_idx[1]; s_perm[2] = s_idx[0];
 	gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
 	  snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, pfi/6., dt);
+
 }
 
 /*------------------------------------------------------------------*/
