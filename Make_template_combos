@@ -113,7 +113,6 @@ KS_IO_OBJECTS =  \
 
 KS_SPECTRUM_OBJECTS = \
 	gb_baryon_mmap.o \
-	gb_baryon_src.o \
 	gb_baryon_snk.o \
 	gb_baryon_3pt.o \
 	gb_ops.o \
