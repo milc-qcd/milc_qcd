@@ -389,7 +389,7 @@ initialize_machine(int *argc, char ***argv)
 
 #if defined(HAVE_GRID)  || defined(OMP)
   required = QMP_THREAD_MULTIPLE;
-  node0_printf("Enable openmp\n");
+  if(mynode()==0)printf("com_qmp: enable multi-threading\n");
 #else
   required = QMP_THREAD_SINGLE;
 #endif
