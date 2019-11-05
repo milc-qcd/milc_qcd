@@ -44,11 +44,17 @@ create_hadron_prop(int ncor, int ntime){
   int m, t;
 
   prop = (complex **)malloc(ncor*sizeof(complex *));
-  if(prop == NULL)return prop;
+  if(prop == NULL)
+      node0_printf("spectrum_ks: unable to allocate memory to correlators\n");
+      terminate(1);
+      //return prop;
 
   for(m = 0; m < ncor; m++){
     prop[m] = (complex *)malloc(ntime*sizeof(complex));
-    if(prop[m] == NULL)return NULL;
+    if(prop[m] == NULL)
+        node0_printf("spectrum_ks: unable to allocate memory to correlators\n");
+        terminate(1);
+        //return NULL;
 
     for(t = 0; t < nt; t++){
       prop[m][t].real = 0.0; prop[m][t].imag = 0.0;
