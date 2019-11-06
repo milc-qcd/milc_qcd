@@ -160,13 +160,13 @@ void w_close_ks_eigen(int flag, ks_eigen_file *kseigf){
    >1 for seek, read error, or missing data error 
 */
 int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
-		    su3_vector **eigVec, int timing){
+		    su3_vector **eigVec, imp_ferm_links_t *fn, int timing){
   
   register int i, j;
   int status = 0;
   int serpar;
   int qio_status;
-  int packed;
+  int packed = 0, file_type = 0;
   QIO_Reader *infile;
   double dtime = (double)0.0;
   char myname[] = "reload_ks_eigen";
@@ -186,20 +186,36 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
     if(flag == RELOAD_SERIAL)serpar = QIO_SERIAL;
     else serpar = QIO_PARALLEL;
     
-    infile = open_ks_eigen_infile(eigfile, Nvecs, &packed, serpar);
+    infile = open_ks_eigen_infile(eigfile, Nvecs, &packed, &file_type, serpar);
     if(infile == NULL){
       node0_printf("ERROR: Can't open %s for reading\n", eigfile);
       status = 1;
       break;
     }
-    for(int i = 0; i < *Nvecs; i++){
-      qio_status = read_ks_eigenvector(infile, packed, eigVec[i], &eigVal[i]);
+    /* Read using MILC format */
+    if(file_type == 0){
+      for(int i = 0; i < *Nvecs; i++){
+	qio_status = read_ks_eigenvector(infile, packed, eigVec[i], &eigVal[i]);
+	if(qio_status != QIO_SUCCESS){
+	  if(qio_status == QIO_EOF){
+	    node0_printf("WARNING: Premature EOF at %d eigenvectors\n", i);
+	    *Nvecs = i;
+	  } else {
+	    node0_printf("ERROR: Can't read an eigenvector. Error %d\n", qio_status);
+	    status = 1;
+	  }
+	  break;
+	}
+      }
+    } else {
+      /* Read using QUDA format */
+      qio_status = read_quda_ks_eigenvectors(infile, eigVec, eigVal, Nvecs, EVEN, fn);
       if(qio_status != QIO_SUCCESS){
 	if(qio_status == QIO_EOF){
-	  node0_printf("WARNING: Premature EOF at %d eigenvectors\n", i);
-	  *Nvecs = i;
+	  node0_printf("WARNING: Premature EOF at eigenvectors\n");
+	  terminate(1);
 	} else {
-	  node0_printf("ERROR: Can't read an eigenvector. Error %d\n", qio_status);
+	  node0_printf("ERROR: Can't read eigenvectors. Error %d\n", qio_status);
 	  status = 1;
 	}
 	break;

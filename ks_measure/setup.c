@@ -310,6 +310,12 @@ int readin(int prompt) {
 #ifdef CURRENT_DISC
       /* For some applications.  Random source count between writes */
       IF_OK status += get_i(stdin, prompt, "source_spacing", &param.thinning[k] );
+      IF_OK {
+	if(param.thinning[k] < 2){
+	  printf("Source spacing must be at least 2\n");
+	  status++;
+	}
+      }
       /* For truncated solver Take difference of sloppy and precise?*/
       char savebuf[128];
       IF_OK status += get_s(stdin, prompt, "take_truncate_diff", savebuf);
@@ -549,8 +555,9 @@ int readin(int prompt) {
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
   /* Do whatever is needed to get eigenpairs */
+  imp_ferm_links_t **fn = get_fm_links(fn_links);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &Nvecs_tot, eigVal, eigVec, 1);
+			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
   if(status != 0) terminate(1);
 
   if(param.ks_eigen_startflag != FRESH){
@@ -575,8 +582,9 @@ int readin(int prompt) {
       eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
     
     /* Do whatever is needed to get eigenpairs */
+    imp_ferm_links_t **fn = get_fm_links(fn_links);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			     &param.eigen_param.Nvecs, eigVal, eigVec, 1);
+			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
     if(status != 0)terminate(1);
 
 #if 0

@@ -1303,8 +1303,9 @@ int readin(int prompt) {
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
   /* Do whatever is needed to get eigenpairs */
+  imp_ferm_links_t **fn = get_fm_links(fn_links);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &Nvecs_tot, eigVal, eigVec, 1);
+			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
 
   if(param.fixflag != NO_GAUGE_FIX){
     node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");

@@ -13,7 +13,7 @@
 #ifdef PRIMME
 
 /* NOTE: The PRIMME release version has clashing definitions for complex functions, so we provide
-   a modifie version.  This must be checked against future releases. 
+   a modified version.  This must be checked against future releases. 
    Also, watch out for the definition of PRIMME_INT = long? */
 #include "../include/primme.h"
 #include "../include/dslash_ks_redefine.h"
@@ -220,17 +220,19 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   primme.globalSumReal=par_GlobalSumDouble;	/* the wrapper function to do global sums */
 
   primme.matrixMatvec =ks_mxv;			/* the matrix on vector product */
-
-  //  ret = primme_set_method(PRIMME_DEFAULT_MIN_MATVECS, &primme);
-  ret = primme_set_method(PRIMME_DYNAMIC, &primme);
-
+  
   /* primme.printLevel=3; */
 #ifdef PRIMME_PRINTLEVEL
+  node0_printf("Setting print level to %d\n", PRIMME_PRINTLEVEL);
   primme.printLevel = PRIMME_PRINTLEVEL;
 #else
+  node0_printf("Setting print level to default\n");
   primme.printLevel = 1;
 #endif
   
+  //  ret = primme_set_method(PRIMME_DEFAULT_MIN_MATVECS, &primme);
+  ret = primme_set_method(PRIMME_DYNAMIC, &primme);
+
 #ifdef MATVEC_PRECOND
   primme.target=primme_largest;
 #else
@@ -242,7 +244,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   primme.applyPreconditioner = ks_precond_mxv;
 #endif
 
-  /* Optimaized Parameter Setting */
+  /* Optimized Parameter Setting */
   primme.correctionParams.robustShifts = 1; // led to faster convergence with 0 for tol=1e-8  
   primme.locking=1;
 #if 1 /* James Osborn's and Xiao-Yong Jin's optimal setting */
@@ -261,16 +263,17 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 
   /* Display parameters */
   if(this_node==0){
-    //    printf("PRIMME workspace int = %d long int = %ld\n", primme.intWorkSize, primme.realWorkSize); fflush(stdout);
     primme_display_params(primme);
+    printf("PRIMME_INT size is %d\n", sizeof(PRIMME_INT));
+    //    printf("primme_op_datatype size is %d\n", sizeof(primme_op_datatype));
+    fflush(stdout);
   }
 
   /* call the actual EV finder*/
   ret = zprimme(evals, (PRIMME_COMPLEX_DOUBLE *)evecs, rnorms, &primme);
 
   if (ret!=0){ /*check return value */
-    node0_printf("ks_eigensolve_PRIMME: zprimme error\nCall stack:\n");
-    /**    primme_PrintStackTrace(primme); NOT SUPPORTED in 2.0**/ 
+    node0_printf("ks_eigensolve_PRIMME: zprimme error %d\n",ret);
     fflush(stdout);
     exit(1);
   }
