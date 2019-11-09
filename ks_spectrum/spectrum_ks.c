@@ -44,18 +44,16 @@ create_hadron_prop(int ncor, int ntime){
   int m, t;
 
   prop = (complex **)malloc(ncor*sizeof(complex *));
-  if(prop == NULL)
+  if(prop == NULL) {
       node0_printf("spectrum_ks: unable to allocate memory to correlators\n");
       terminate(1);
-      //return prop;
-
+  }
   for(m = 0; m < ncor; m++){
     prop[m] = (complex *)malloc(ntime*sizeof(complex));
-    if(prop[m] == NULL)
+    if(prop[m] == NULL) {
         node0_printf("spectrum_ks: unable to allocate memory to correlators\n");
         terminate(1);
-        //return NULL;
-
+    }
     for(t = 0; t < nt; t++){
       prop[m][t].real = 0.0; prop[m][t].imag = 0.0;
     }
@@ -1263,6 +1261,9 @@ static FILE* open_fnal_gb_baryon_file(int triplet){
   int is0 = param.set[ip0];
   int is1 = param.set[ip1];
   int is2 = param.set[ip2];
+  int isrc0 = param.source[ip0];
+  int isrc1 = param.source[ip1];
+  int isrc2 = param.source[ip2];
   FILE *fp;
 
   /* Only node 0 writes, and only if we want the file. */
@@ -1302,8 +1303,8 @@ static FILE* open_fnal_gb_baryon_file(int triplet){
 #endif
 
   fprintf(fp,"quark0_type:                 staggered\n");
-  fprintf(fp,"quark0_source_type:          %s\n",param.src_qs[is0].descrp);
-  fprintf(fp,"quark0_source_label:         %s\n",param.src_qs[is0].label);
+  fprintf(fp,"quark0_source_type:          %s\n",param.src_qs[isrc0].descrp);
+  fprintf(fp,"quark0_source_label:         %s\n",param.src_qs[isrc0].label);
 
   fprintf(fp,"quark0_sink_type:            %s",param.snk_qs_op[ih0[nh0-1]].descrp);
   for(i = nh0-2; i >=0; i--)
@@ -1320,8 +1321,8 @@ static FILE* open_fnal_gb_baryon_file(int triplet){
 #endif
 
   fprintf(fp,"quark1_type:                 staggered\n");
-  fprintf(fp,"quark1_source_type:          %s\n",param.src_qs[is1].descrp);
-  fprintf(fp,"quark1_source_label:         %s\n",param.src_qs[is1].label);
+  fprintf(fp,"quark1_source_type:          %s\n",param.src_qs[isrc1].descrp);
+  fprintf(fp,"quark1_source_label:         %s\n",param.src_qs[isrc1].label);
 
   fprintf(fp,"quark1_sink_type:            %s",param.snk_qs_op[ih1[nh1-1]].descrp);
   for(i = nh1-2; i >=0; i--)
@@ -1338,8 +1339,8 @@ static FILE* open_fnal_gb_baryon_file(int triplet){
 #endif
 
   fprintf(fp,"quark2_type:                 staggered\n");
-  fprintf(fp,"quark2_source_type:          %s\n",param.src_qs[is2].descrp);
-  fprintf(fp,"quark2_source_label:         %s\n",param.src_qs[is2].label);
+  fprintf(fp,"quark2_source_type:          %s\n",param.src_qs[isrc2].descrp);
+  fprintf(fp,"quark2_source_label:         %s\n",param.src_qs[isrc2].label);
 
   fprintf(fp,"quark2_sink_type:            %s",param.snk_qs_op[ih2[nh2-1]].descrp);
   for(i = nh2-2; i >=0; i--)
@@ -1409,6 +1410,9 @@ static void print_start_fnal_gb_baryon_prop(FILE *fp, int triplet, int b)
   int is0 = param.set[ip0];
   int is1 = param.set[ip1];
   int is2 = param.set[ip2];
+  int isrc0 = param.source[ip0];
+  int isrc1 = param.source[ip1];
+  int isrc2 = param.source[ip2];
   int i,j;
   char qkcont[4];
 
@@ -1440,14 +1444,14 @@ static void print_start_fnal_gb_baryon_prop(FILE *fp, int triplet, int b)
   fprintf(fp,"correlator_key:              %s", param.gbbaryon_label[triplet][b]);
 
   /* Source labels */
-  if(strlen(param.src_qs[is0].label)>0)
-    fprintf(fp,"_%s", param.src_qs[is0].label);
+  if(strlen(param.src_qs[isrc0].label)>0)
+    fprintf(fp,"_%s", param.src_qs[isrc0].label);
 
-  if(strlen(param.src_qs[is1].label)>0)
-    fprintf(fp,"_%s", param.src_qs[is1].label);
+  if(strlen(param.src_qs[isrc1].label)>0)
+    fprintf(fp,"_%s", param.src_qs[isrc1].label);
 
-  if(strlen(param.src_qs[is2].label)>0)
-    fprintf(fp,"_%s", param.src_qs[is2].label);
+  if(strlen(param.src_qs[isrc2].label)>0)
+    fprintf(fp,"_%s", param.src_qs[isrc2].label);
 
   /* Sink labels */
   if(strlen(param.snk_qs_op[iq0].label)>0)

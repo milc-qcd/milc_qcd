@@ -2,6 +2,9 @@
 #ifdef MPI_COMMS
 #include <mpi.h>
 #endif
+#ifdef HAVE_QMP
+#include <qmp.h>
+#endif
 #ifdef OMP
 #include <omp.h>
 #endif
@@ -1456,7 +1459,6 @@ gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2[],
   site *s;
   complex tmp;
   short domom = 0x0;
-  //node0_printf("Entering gb_baryon\n");
   if (mom[0] != 0 || mom[1] != 0 || mom[2] != 0){
     // if nonzero, compute Fourier phase once and reuse many times
     // negative sign is necessary to get momentum conservation
@@ -1496,12 +1498,30 @@ gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2[],
       print_ompinfo = true;
     }
     #endif
+    
+    #if !defined(OMP)
+    #if defined(HAVE_QMP)
+    QMP_barrier();
+    #endif
+    #if defined(MPI_COMMS)
+    MPI_Barrier(MPI_COMM_WORLD);
+    #endif
+    #endif
+
     node0_printf("gb baryon: %s %s\n",
       gb_baryon_label(src_op[i]),gb_baryon_label(snk_op[i]));
-    //MPI_Barrier(MPI_COMM_WORLD); // TODO:TEST
     gb_source_term_loop(qko0,qko1,qko2,links,src_op[i],snk_op[i],stIdx,docube[i],
      num_d,num_s,r0,domom,momfld,flip_snk[i],prop[i]);
     norm_corr( phase[i], fact[i], prop[i] );
+    
+    #if !defined(OMP)
+    #if defined(HAVE_QMP)
+    QMP_barrier();
+    #endif
+    #if defined(MPI_COMMS)
+    MPI_Barrier(MPI_COMM_WORLD);
+    #endif
+    #endif
   }
 }
 
