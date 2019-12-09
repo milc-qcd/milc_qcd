@@ -334,11 +334,17 @@ sym_shift_sink(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
   su3_vector *tvec = create_v_field();
   //node0_printf("Entering sym_shift_sink\n");
 
+
+  //node0_printf("src: %.5e + i %.5e\n", src[100].c[0].real, src[100].c[0].imag); 
+
   tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
   /* With ONE_SIDED_SHIFT defined, the shift is asymmetric */
 #ifndef ONE_SIDED_SHIFT
 #ifdef NO_SINK_LINKS
-  FORALLFIELDSITES(i) { su3vec_copy(tvec+i,src+i); }
+  FORALLFIELDSITES(i) { su3vec_copy(src+i, tvec+i); }
+
+  //node0_printf("tvec: %.5e + i %.5e\n", tvec[100].c[0].real, tvec[100].c[0].imag);
+
 #else
   FORALLFIELDSITES(i)
     {
@@ -352,6 +358,11 @@ sym_shift_sink(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
   wait_gather(tag[0]);
 #ifdef NO_SINK_LINKS
   FORALLFIELDSITES(i) { su3vec_copy((su3_vector *)gen_pt[0][i],dest+i); }
+
+  //node0_printf("gen_pt[0]: %.5e + i %.5e\n", ((su3_vector *) gen_pt[0][100])->c[0].real, 
+  //                                            ((su3_vector *) gen_pt[0][100])->c[0].imag);
+  //node0_printf("dest: %.5e + i %.5e\n", dest[100].c[0].real, dest[100].c[0].imag);
+  
 #else
   FORALLFIELDSITES(i)
     {
@@ -365,11 +376,18 @@ sym_shift_sink(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
     {
       add_su3_vector(dest+i, (su3_vector*)gen_pt[1][i], dest+i );
     }
+   
+  //node0_printf("gen_pt[1]: %.5e + i %.5e\n", ((su3_vector *) gen_pt[1][100])->c[0].real,
+  //                                           ((su3_vector *) gen_pt[0][100])->c[0].imag);
+  //node0_printf("dest: %.5e + i %.5e\n", dest[100].c[0].real, dest[100].c[0].imag);
+
+
   /* Now divide by 2 eq. (4.2b) of Golterman's Meson paper*/
   FORALLFIELDSITES(i)
     {
       scalar_mult_su3_vector( dest+i, .5, dest+i ) ;
     }
+ // node0_printf("dest: %.5e + i %.5e\n\n\n", dest[100].c[0].real, dest[100].c[0].imag);
 #endif
   cleanup_gather(tag[0]);
   cleanup_gather(tag[1]);
@@ -508,7 +526,9 @@ map_ksp_field(ks_prop_field **dest, ks_prop_field **src, int qknum,
 #else
   int n;
   int dir[3] = {0};
-  if(!remap){ *dest = create_ksp_field(3); }
+  if(!remap) {
+  *dest = create_ksp_field(3);
+  }
 
   n = singlet_index_to_disp(siSnk);
   singlet_index_to_dir(siSnk,dir);
@@ -568,6 +588,7 @@ baryon_color_asym_mat(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *qk2
   CSUB(*dt,cc,*dt);
   baryon_color_asym_v(&qk0->v[2][i], &qk1->v[1][i], &qk2->v[0][i],&cc);
   CSUB(*dt,cc,*dt);
+  //node0_printf("dt[t=0] = %.7e + i %.7e\n", (dt[0]).real, (dt[0]).imag);
 }
 /** same as above, but multiplies in momentum too */
 static void
@@ -736,13 +757,19 @@ gb_symm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
   /* also correct for the basis of the sequential inversions! */
   //stsign = spin_taste_sign(stphs,offset_singlet_index(orig,si_src[0]));
   stsign = spin_taste_sign(stphs, orig);
+  
 
   /** apply sink point splitting and calculate
      applying orig to source index automatically applies to sink too */
   map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0],orig),
     si_snk[0], r0, links, remap);
+
+
   map_ksp_field(&ksp1, qk1, 1, offset_singlet_index(si_src[1],orig),
     si_snk[1], r0, links, remap);
+
+  //node0_printf("ksp1: %.5e + i %.5e\n", (ksp1->v[2][100]).c[1].real, (ksp1->v[2][100]).c[1].imag);
+
   map_ksp_field(&ksp2, qk1, 1, offset_singlet_index(si_src[1],orig),
     si_snk[2], r0, links, remap);
   map_ksp_field(&ksp3, qk2, 2, offset_singlet_index(si_src[2],orig),
@@ -753,7 +780,15 @@ gb_symm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
     si_snk[2], r0, links, remap);
 
   remap = 0x1;
+
+  //node0_printf("ksp1: %.5e + i %.5e\n", (ksp1->v[2][100]).c[1].real, (ksp1->v[2][100]).c[1].imag);
+  //node0_printf("qk1: %.5e + i %.5e\n", (qk1[si_src[1]]->v[2][100]).c[1].real, (qk1[si_src[1]]->v[2][100]).c[1].imag);
+  //node0_printf("src singlet: %d, snk singlet: %d \n", offset_singlet_index(si_src[1],orig), 
+  //             offset_singlet_index(si_snk[1],orig));
+  //node0_printf("ksp5: %.5e + i %.5e\n", (ksp5->v[2][100]).c[1].real, (ksp5->v[2][100]).c[1].imag);
+
   accum_baryon_color_asym(ksp0,ksp1,ksp5,domom,mom,flip_snk,k_disp,stsign*pfi/6.,dt);
+  //node0_printf("dt[t=0] = %.7e + i %.7e\n", (dt[0]).real, (dt[0]).imag);
   accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp,stsign*pfi/6.,dt);
   map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0],orig),
     si_snk[1], r0, links, remap);
@@ -767,6 +802,9 @@ gb_symm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
     si_snk[2], r0, links, remap);
   accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp,stsign*pfi/6.,dt);
   accum_baryon_color_asym(ksp0,ksp1,ksp3,domom,mom,flip_snk,k_disp,stsign*pfi/6.,dt);
+
+  //node0_printf("dt[t=0] = %.7e + i %.7e\n", (dt[0]).real, (dt[0]).imag);
+
   //if(node_number(0,0,0,32) == this_node ) { printf("xsrc: ci%d cj%d ck%d ki%d kj%d kk%d o%d\n",si_src[0],si_src[1],si_src[2],si_snk[0],si_snk[1],si_snk[2],k_disp); }
   //if(node_number(0,0,0,32) == this_node ) { printf("xsrc: ci%d cj%d ck%d ki%d kj%d kk%d o%d\n",si_src[0],si_src[1],si_src[2],si_snk[0],si_snk[2],si_snk[1],k_disp); }
   //if(node_number(0,0,0,32) == this_node ) { printf("xsrc: ci%d cj%d ck%d ki%d kj%d kk%d o%d\n",si_src[0],si_src[1],si_src[2], si_snk[1],si_snk[2],si_snk[0],k_disp); }
@@ -1510,6 +1548,7 @@ gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2[],
 
     node0_printf("gb baryon: %s %s\n",
       gb_baryon_label(src_op[i]),gb_baryon_label(snk_op[i]));
+    //node0_printf("BEFORE: qko0: %.5e + i %.5e\n", (qko0[0]->v[2][100]).c[1].real, (qko0[0]->v[2][100]).c[1].imag);
     gb_source_term_loop(qko0,qko1,qko2,links,src_op[i],snk_op[i],stIdx,docube[i],
      num_d,num_s,r0,domom,momfld,flip_snk[i],prop[i]);
     norm_corr( phase[i], fact[i], prop[i] );
@@ -1522,6 +1561,7 @@ gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2[],
     MPI_Barrier(MPI_COMM_WORLD);
     #endif
     #endif
+    //node0_printf("AFTER: qko0: %.5e + i %.5e\n", (qko0[0]->v[2][100]).c[1].real, (qko0[0]->v[2][100]).c[1].imag);
   }
 }
 

@@ -11,7 +11,7 @@
 
 #define ALL_T_SLICES -1
 #define MAXDESCRP 128
-#define MAXSRCLABEL 8
+#define MAXSRCLABEL 32
 #define MAXWEIGHTS 5
 
 #ifdef HAVE_QIO

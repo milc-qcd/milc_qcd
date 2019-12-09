@@ -1,4 +1,5 @@
 #ifdef GB_BARYON /* To make sure other programs can compile properly */
+#define _POSIX_C_SOURCE 200809
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
@@ -31,9 +32,9 @@ int alloc_mmap_cache(mmap_cache* obj, unsigned nbuf, size_t buf_size, const char
   #ifdef GB_BARYON_MMAP
   obj->back_file = calloc(slen,sizeof(char));
   strcpy(obj->back_file,cdir); strcat(obj->back_file,fbase);
-  // mode_t oumask = umask(S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH); // set umask
+  mode_t oumask = umask(S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH); // set umask
   obj->fback = mkstemp(obj->back_file);  // O_RDWR|O_CREAT|O_TRUNC);
-  // umask(oumask); // reset mask
+  umask(oumask); // reset mask
   if(obj->fback < 0)
     {
       fprintf(stderr,"alloc_mmap_cache: open failed, backing file %s\n",obj->back_file);
@@ -46,7 +47,8 @@ int alloc_mmap_cache(mmap_cache* obj, unsigned nbuf, size_t buf_size, const char
       return -1;
     }
   {
-    if (write(obj->fback, "", 1) != 1) // write a null byte
+  long word = 0;
+  if (write(obj->fback, &word, sizeof(long)) != sizeof(long)) // write a null word
       {
         fprintf(stderr,"alloc_mmap_cache: cannot write backing file\n");
         return -1;
@@ -55,10 +57,11 @@ int alloc_mmap_cache(mmap_cache* obj, unsigned nbuf, size_t buf_size, const char
   fsync(obj->fback);
 
   // mmap file
-  obj->base = mmap(NULL, obj->cache_size,
+  obj->base = mmap(static_cast(void*,NULL), obj->cache_size,
                    PROT_READ|PROT_WRITE,
-                   MAP_SHARED, obj->fback,
-                   0);
+                   MAP_SHARED,
+                   obj->fback,static_cast(off_t,0));
+
   if(obj->base == MAP_FAILED)
     {
       fprintf(stderr,"alloc_mmap_cache: cannot mmap backing file\n");
@@ -74,12 +77,13 @@ int alloc_mmap_cache(mmap_cache* obj, unsigned nbuf, size_t buf_size, const char
     unsigned j;
     for(j=0; j<obj->nbuffers; ++j)
       {
-        obj->buffer[j] = obj->base + j*block_size;
+        obj->buffer[j] = static_cast(char*,obj->base) + j*block_size;
         int stat;
-        if((stat = madvise(obj->buffer[j],buf_size,MADV_SEQUENTIAL)))
+        if((stat = posix_madvise(obj->buffer[j],buf_size,POSIX_MADV_SEQUENTIAL)))
           {
             fprintf(stderr,"alloc_mmap_cache: advice MADV_SEQUENTIAL failed (%d)\n",stat);
           }
+
       }
   }
 
@@ -95,7 +99,7 @@ int alloc_mmap_cache(mmap_cache* obj, unsigned nbuf, size_t buf_size, const char
   }
   #endif
   tot_mmap_size += obj->cache_size;
-  node0_printf("current mmap size on node0: %lld\n", tot_mmap_size);
+  node0_printf("current mmap size on node0: %lld bytes\n", tot_mmap_size);
   return 0;
 }
 
@@ -115,6 +119,8 @@ int free_mmap_cache(mmap_cache* obj)
   free(obj->buffer);
   obj->buffer = NULL;
 #endif
+  tot_mmap_size -= obj->cache_size;
+  node0_printf("current mmap size on node0: %lld bytes\n", tot_mmap_size);
   return 0;
 }
 
@@ -124,5 +130,5 @@ int msync_mmap_buffer(mmap_cache* obj,int nbuf)
 exit(-1);
 return -1;
 }
-
+#undef _POSIX_C_SOURCE
 #endif /* GB baryon */
