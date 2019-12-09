@@ -339,8 +339,12 @@ read_ks_eigenvector(QIO_Reader *infile, int packed, su3_vector *eigVec, double *
       terminate(1);
     }
 
-  if(packed)
+  if(packed){
+    double dt = -dclock();
     unpack_field(eigVec, sizeof(su3_vector));
+    dt += dclock();
+    node0_printf("%s unpack time %0.2f\n",__func__,dt);
+  }
 
   if(status != QIO_EOF){
     xml = QIO_string_ptr(recxml);

@@ -342,6 +342,33 @@ int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
 
     close_ks_eigen_outfile(outfile);
     break;
+
+  case SAVE_PARTFILE_SCIDAC:
+#ifdef PACK_EIGEN
+    node0_printf("ERROR: Eigenvector packing is incompatible with partfile\n");
+    node0_printf("Recompile with PACK_EIGEN undefined\n");
+    status = 1;
+    break;
+#else
+    outfile = open_ks_eigen_outfile(savefile, Nvecs, QIO_PARTFILE, QIO_SERIAL);
+    if(outfile == NULL){
+      node0_printf("ERROR: Can't open %s for writing\n", savefile);
+      status = 1;
+      break;
+    }
+    for(int i = 0; i < Nvecs; i++){
+      int status = write_ks_eigenvector(outfile, eigVec[i], eigVal[i], resid[i]);
+      if(status != QIO_SUCCESS){
+	node0_printf("ERROR: Can't write eigenvector.\n");
+	status = 1;
+	break;
+      }
+    }
+
+    close_ks_eigen_outfile(outfile);
+    break;
+#endif
+    
   default:
     node0_printf("%s: Unrecognized save flag.\n", myname);
     terminate(1);
@@ -696,7 +723,7 @@ int ask_starting_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
 
 static void print_save_options(void){
 
-  printf("'forget_ks_eigen', 'save_ascii_ks_eigen', 'save_serial_ks_eigen', or 'save_parallel_ks_eigen'");
+  printf("'forget_ks_eigen', 'save_ascii_ks_eigen', 'save_serial_ks_eigen', 'save_parallel_ks_eigen', or 'save_partfile_ks_eigen'");
 }
 
 /*--------------------------------------------------------------------*/
@@ -730,6 +757,8 @@ int ask_ending_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
     *flag = SAVE_SERIAL;
   else if(strcmp("save_parallel_ks_eigen",savebuf) == 0)
     *flag = SAVE_PARALLEL;
+  else if(strcmp("save_partfile_ks_eigen",savebuf) == 0)
+    *flag = SAVE_PARTFILE_SCIDAC;
   else{
     printf("ERROR IN INPUT: ks_eigen outpu command %s is invalid.\n", savebuf);
     printf("Choices are ");

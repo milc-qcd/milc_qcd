@@ -65,6 +65,16 @@ thin_source(su3_vector *src, int thinning, int ex, int ey, int ez, int et){
 
 /*Write current record for the accumulated average over random sources */
 static void
+write_tslice_values_begin(char *tag){
+  node0_printf("BEGIN JTMU%s\n", tag);
+}
+
+static void
+write_tslice_values_end(char *tag){
+  node0_printf("END JTMU%s\n", tag);
+}
+
+static void
 write_tslice_values(char *tag, int jr, Real mass1, Real mass2, Real *j_mu ){
   double *jtmu = (double *)malloc(sizeof(double)*4*param.nt);
 
@@ -846,6 +856,7 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
 #endif
     
    
+    write_tslice_values_begin("DIFF");
     for(int j = 0; j < n_masses; j++){
       for(int ir = 0; ir < nr; ir++){
 #if 0      
@@ -871,6 +882,7 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
 	clear_r_array_field(j_mu[j][ir], NMU);
       } /* ir */
     } /* j */
+    write_tslice_values_end("DIFF");
 
   } /* jrand */
 
@@ -1406,7 +1418,8 @@ f_meas_current( int n_masses, int nrand, int thinning,
 #endif
 
   /* Print the exact low mode contribution to the current density */
-  if(Nvecs > 0)
+  if(Nvecs > 0){
+    write_tslice_values_begin("LOW");
     for(int j = 0; j < n_masses; j++){
 #ifdef MASS_UDLSC
       if((j == 0 && n_masses > 1) || (j == 2 && n_masses > 3))
@@ -1421,6 +1434,8 @@ f_meas_current( int n_masses, int nrand, int thinning,
 #endif
       clear_r_array_field(jlow_mu[j], NMU);
     } /* j */
+    write_tslice_values_end("LOW");
+  }
 
 
   /* Block solver parameters */
@@ -1454,6 +1469,7 @@ f_meas_current( int n_masses, int nrand, int thinning,
     block_current( n_masses, j_mu, masses, fn_mass, qic, nsrc, nr, gr_even, gr_odd);
 #endif
       
+    write_tslice_values_begin("HI");
     for(int j = 0; j < n_masses; j++){
       for(int ir = 0; ir < nr; ir++){
 #if 0
@@ -1481,6 +1497,7 @@ f_meas_current( int n_masses, int nrand, int thinning,
 	clear_r_array_field(j_mu[j][ir], NMU);
       } /* ir */
     } /* j */
+    write_tslice_values_end("HI");
   } /* jrand */
   
   for(int j = 0; j < n_masses; j++){
@@ -1642,6 +1659,7 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
 	    } /* j */
 	  } /* ex, ey, ez, et */
 
+    write_tslice_values_begin("DIFF");
     for(j = 0; j < n_masses; j++){
       Real mass = ksp[j].mass;
 #if 0
@@ -1656,6 +1674,7 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
       write_tslice_values("DIFF", jrand, ksp[j].mass, 0., j_mu[j]);
       clear_r_array_field(j_mu[j], NMU);
     } /* j */
+    write_tslice_values_end("DIFF");
 
   } /* jrand */
   
@@ -1764,10 +1783,12 @@ f_meas_current( int n_masses, int nrand, int thinning,
     } /* j */
   } /* n */
   
+  write_tslice_values_begin("LOW");
   for(j = 0; j < n_masses; j++){
     write_tslice_values("LOW", 0, mass[j], 0., jlow_mu[j]);
     clear_r_array_field(jlow_mu[j], NMU);
   }
+  write_tslice_values_end("LOW");
 
 #if 0
   for(j = 0; j < n_masses; j++){
@@ -1785,10 +1806,12 @@ f_meas_current( int n_masses, int nrand, int thinning,
   node0_printf("Time for exact low modes %g sec\n", dtime);
 #endif
 
+  write_tslice_values_begin("");
   for(j = 0; j < n_masses; j++){
     write_tslice_values("", jrand, mass[j], 0., j_mu[j]);
     clear_r_array_field(j_mu[j], NMU);
   }
+  write_tslice_values_end("");
 
   /* Loop over random sources */
   for(jrand = 0; jrand < nrand; jrand++){

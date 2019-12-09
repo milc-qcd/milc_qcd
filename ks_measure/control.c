@@ -30,6 +30,8 @@
 #include <quda_milc_interface.h>
 #endif
 
+extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
+
 int main(int argc, char *argv[])
 {
   int prompt;
@@ -50,11 +52,16 @@ int main(int argc, char *argv[])
   
   g_sync();
 
-    
   /* set up */
   STARTTIME;
   prompt = setup();
   ENDTIME("set up");
+
+#if 0
+  gethostname(hostname, 128);
+  
+  printf("(%d) %s My io_node is %d\n", this_node, hostname, io_node(this_node));  fflush(stdout);
+#endif
 
   /* loop over input sets */
 
