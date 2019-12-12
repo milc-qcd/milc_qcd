@@ -35,7 +35,7 @@
 
 #ifdef GB_BARYON
 /* specific to golterman-bailey baryon 2-pts */
-#define MAX_OCTET 16
+#define MAX_OCTET 64
 #endif
 
 enum checktype { CHECK_NO,  CHECK_YES, CHECK_SOURCE_ONLY };
