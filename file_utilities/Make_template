@@ -133,7 +133,7 @@ check_gauge::
 	"DEFINES= -DONLY_GLUON_FILES" \
 	"EXTRA_OBJECTS= ${G_OBJECTS} check_gauge.o nersc_cksum.o \
 	gauge_utilities.o \
-	check_unitarity.o gauge_info_dummy.o d_plaq4.o io_lat4.o"
+	check_unitarity.o gauge_info_dummy.o d_plaq4.o io_lat4.o io_scidac.o"
 
 diff_colormatrix::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_colormatrix" \
