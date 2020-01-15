@@ -52,7 +52,7 @@ asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGa
   GRID_ASSERT((inv_arg->parity  == GRID_EVENODD) || (inv_arg->parity  == GRID_EVEN) || 
 	      (inv_arg->parity  == GRID_ODD), GRID_FAIL);
   // In and out fields must be on the same lattice
-  GRID_ASSERT(in->cv->_grid == out->cv->_grid,  GRID_FAIL);
+  GRID_ASSERT(in->cv->Grid() == out->cv->Grid(),  GRID_FAIL);
 
   auto start = std::chrono::system_clock::now();
   // Call using c1 = c2 = 2. and u0 = 1. to neutralize link rescaling -- probably ignored anyway.
@@ -70,7 +70,7 @@ asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGa
     {
     case GRID_EVENODD:
       {
-	GRID_ASSERT((in->cv->_grid == CGrid) && (out->cv->_grid == CGrid), GRID_FAIL);
+	GRID_ASSERT((in->cv->Grid() == CGrid) && (out->cv->Grid() == CGrid), GRID_FAIL);
 
 	std::cout << "WARNING: inversion with EVENODD is untested.\n";
 	MdagMLinearOperator<ImprovedStaggeredFermion,FermionField> HermOp(Ds);
@@ -90,8 +90,8 @@ asqtadInvert (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<LatticeGa
       {
 	// For EVEN or ODD parity we support only the case that in and out fields are checkerboards
 	// and the checkerboards must be the same
-	GRID_ASSERT((in->cv->_grid == RBGrid) && (out->cv->_grid == RBGrid)
-		    && (in->cv->checkerboard == out->cv->checkerboard), GRID_FAIL);
+	GRID_ASSERT((in->cv->Grid() == RBGrid) && (out->cv->Grid() == RBGrid)
+		    && (in->cv->Checkerboard() == out->cv->Checkerboard()), GRID_FAIL);
 
 	SchurStaggeredOperator<ImprovedStaggeredFermion,FermionField> HermOp(Ds);
 	
@@ -125,7 +125,7 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
   // In and out fields must be on the same lattice
 
   for(int i = 0; i < nmass; i++){
-    GRID_ASSERT(in->cv->_grid == out[i]->cv->_grid,  GRID_FAIL);
+    GRID_ASSERT(in->cv->Grid() == out[i]->cv->Grid(),  GRID_FAIL);
   }
 
   typedef typename ImprovedStaggeredFermion::FermionField FermionField;
@@ -161,7 +161,7 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
     {
     case GRID_EVENODD:
       {
-	GRID_ASSERT((in->cv->_grid == CGrid), GRID_FAIL);
+	GRID_ASSERT((in->cv->Grid() == CGrid), GRID_FAIL);
 	std::vector<FermionField> outvec(nmass, CGrid);
 
 	MdagMLinearOperator<ImprovedStaggeredFermion,FermionField> HermOp(Ds);
@@ -173,7 +173,7 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
 	for(int i = 0; i < nmass; i++){
 	  res_arg[i]->final_iter = MSCG.IterationsToComplete[i];
 	  iters += MSCG.IterationsToComplete[i];
-	  res_arg[i]->final_rsq = MSCG.TrueResidual[i]*MSCG.TrueResidual[i];
+	  res_arg[i]->final_rsq = MSCG.TrueResiduals[i]*MSCG.TrueResiduals[i];
 	}
 	auto elapsed = end - start;
 	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
@@ -189,10 +189,10 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
       {
 	// For EVEN or ODD parity we support only the case that in and out fields are checkerboards
 	// and the checkerboards is the same
-	GRID_ASSERT(in->cv->_grid == RBGrid, GRID_FAIL);
+	GRID_ASSERT(in->cv->Grid() == RBGrid, GRID_FAIL);
 	std::vector<FermionField> outvec(nmass, RBGrid);
 	for(int i = 0; i < nmass; i++)
-	  outvec[i].checkerboard = inv_arg->parity == EVEN ? Even : Odd ;
+	  outvec[i].Checkerboard() = inv_arg->parity == EVEN ? Even : Odd ;
 	SchurStaggeredOperator<ImprovedStaggeredFermion,FermionField> HermOp(Ds);
 	
 	// Do the solve
@@ -208,7 +208,7 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
 	for(int i = 0; i < nmass; i++){
 	  res_arg[i]->final_iter = MSCG.IterationsToComplete[i];
 	  iters += MSCG.IterationsToComplete[i];
-	  res_arg[i]->final_rsq = MSCG.TrueResidual[i]*MSCG.TrueResidual[i];
+	  res_arg[i]->final_rsq = MSCG.TrueResiduals[i]*MSCG.TrueResiduals[i];
 	}
 	std::cout << "iters summed over masses = " << iters << "\n" << std::flush;
 
@@ -238,7 +238,7 @@ asqtadInvertBlock (GRID_info_t *info,
 		   GridCartesian *CGrid, GridRedBlackCartesian *RBGrid)
 {
   // In and out fields must be on the same lattice
-  GRID_ASSERT(in->cv->_grid == out->cv->_grid,  GRID_FAIL);
+  GRID_ASSERT(in->cv->Grid() == out->cv->Grid(),  GRID_FAIL);
 
   typedef typename ImprovedStaggeredFermion5D::FermionField FermionField; 
   typedef typename ImprovedStaggeredFermion5D::ComplexField ComplexField; 

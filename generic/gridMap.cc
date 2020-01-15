@@ -20,17 +20,19 @@ using namespace Grid;
 using namespace Grid::QCD;
 using namespace std;
 
-extern std::vector<int> squaresize;
+extern Coordinate squaresize;
 
 static void
-indexToCoords(uint64_t idx, std::vector<int> &x){
+indexToCoords(uint64_t idx, Coordinate &x){
+
+  int r[4];
 
   // Gets the lattice coordinates from the MILC index
-  get_coords(x.data(), this_node, idx);
+  get_coords(r, this_node, idx);
   // For Grid, we need the coordinates within the sublattice hypercube for the current MPI rank
   // NOTE: Would be better to provide a get_subl_coords() in MILC layout_*.c
   for(int i = 0; i < 4; i++)
-    x[i] %= squaresize[i];
+    x[i] = r[i] % squaresize[i];
 
   //printf("Converted %d to %d %d %d %d\n", idx, x[0], x[1], x[2], x[3]); fflush(stdout);
 }
@@ -41,7 +43,6 @@ indexToCoords(uint64_t idx, std::vector<int> &x){
 template<typename ImprovedStaggeredFermion>
 static struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *
 create_V(int milc_parity, GridCartesian *CGrid, GridRedBlackCartesian *RBGrid){
-
   struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *out;
 
   out = (struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *) 
@@ -54,13 +55,13 @@ create_V(int milc_parity, GridCartesian *CGrid, GridRedBlackCartesian *RBGrid){
     case EVEN:
       out->cv = new typename ImprovedStaggeredFermion::FermionField(RBGrid);
       GRID_ASSERT(out->cv != NULL, GRID_MEM_ERROR);
-      out->cv->checkerboard = Even;
+      out->cv->Checkerboard() = Even;
       break;
 
     case ODD:
       out->cv = new typename ImprovedStaggeredFermion::FermionField(RBGrid);
       GRID_ASSERT(out->cv != NULL, GRID_MEM_ERROR);
-      out->cv->checkerboard = Odd;
+      out->cv->Checkerboard() = Odd;
       break;
 
     case EVENANDODD:
@@ -92,7 +93,7 @@ create_nV(int n, int milc_parity,
     std::cout << "Constructing 5D field\n" << std::flush;
     out->cv = new typename ImprovedStaggeredFermion5D::FermionField(FRBGrid);
     GRID_ASSERT(out->cv != NULL, GRID_MEM_ERROR);
-    out->cv->checkerboard = milc_parity == EVEN ? Even : Odd ;
+    out->cv->Checkerboard() = milc_parity == EVEN ? Even : Odd ;
   } else {
     out->cv = new typename ImprovedStaggeredFermion5D::FermionField(FCGrid);
     GRID_ASSERT(out->cv != NULL, GRID_MEM_ERROR);
@@ -142,10 +143,10 @@ create_V_from_vec( su3_vector *src, int milc_parity,
   int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
 
   auto start = std::chrono::system_clock::now();
-  PARALLEL_FOR_LOOP
+  #pragma omp parallel for 
     for( uint64_t idx = loopstart; idx < loopend; idx++){
 
-      std::vector<int> x(4);
+      Coordinate x(4);
       indexToCoords(idx,x);
 
       ColourVector cVec;
@@ -184,17 +185,20 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
 
 
   std::cout << "create_nv_from_vecs: ColourVector size  = " << sizeof(ColourVector)  
-	    << " ColourVectorField size =" << sizeof(*(out->cv)) << "\n" << std::flush;
+	    << " ColourVectorField size = " << sizeof(*(out->cv)) << "\n" << std::flush;
   auto start = std::chrono::system_clock::now();
-  PARALLEL_FOR_LOOP
+  #pragma omp parallel for
     for( uint64_t idx = loopstart; idx < loopend; idx++){
 
-      std::vector<int> x(4);
+      Coordinate x(4);
       indexToCoords(idx,x);
-      std::vector<int> x5(1,0);
+//      Coordinate x5(1,0);
+//      for( int d = 0; d < 4; d++ )
+//	x5.push_back(x[d]);
+      Coordinate x5(5);
       for( int d = 0; d < 4; d++ )
-	x5.push_back(x[d]);
-
+	x5[d+1] = x[d];
+      
       for( int j = 0; j < n; j++ ){
 	x5[0] = j;
 	ColourVector cVec;
@@ -222,7 +226,7 @@ static void extract_V_to_vec( su3_vector *dest,
 
   FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
     {
-      std::vector<int> x(4);
+      Coordinate x(4);
       indexToCoords(idx, x);
       ColourVector cVec;
 
@@ -247,9 +251,9 @@ static void extract_nV_to_vecs( su3_vector *dest[], int n,
 
   FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
     {
-      std::vector<int> x(4);
+      Coordinate x(4);
       indexToCoords(idx, x);
-      std::vector<int> x5(1,0);
+      Coordinate x5(1,0);
       for( int d = 0; d < 4; d++ )
 	x5.push_back(x[d]);
 
@@ -289,13 +293,13 @@ static void milcGaugeFieldToGrid(su3_matrix *in, LatticeGaugeField &out){
   typedef typename LatticeGaugeField::vector_object vobj;
   typedef typename vobj::scalar_object sobj;
 
-  GridBase *grid = out._grid;
+  GridBase *grid = out.Grid();
   int lsites = grid->lSites();
   std::vector<sobj> scalardata(lsites);
 
-  PARALLEL_FOR_LOOP
+  #pragma omp parallel for
     for (uint64_t milc_idx = 0; milc_idx < sites_on_node; milc_idx++){
-      std::vector<int> x(4);
+      Coordinate x(4);
       indexToCoords(milc_idx, x);
       int grid_idx;
       Lexicographic::IndexFromCoor(x, grid_idx, grid->LocalDimensions());
@@ -372,10 +376,10 @@ asqtad_destroy_L( struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *Link
 // Create a 4D, full-grid wrapper
 GRID_4Dgrid *
 GRID_create_grid(void){
-  std::vector<int> latt_size    = GridDefaultLatt();
-  std::vector<int> simd_layoutF = GridDefaultSimd(Nd,vComplexF::Nsimd());
-  std::vector<int> simd_layoutD = GridDefaultSimd(Nd,vComplexD::Nsimd());
-  std::vector<int> mpi_layout   = GridDefaultMpi();
+  Coordinate latt_size    = GridDefaultLatt();
+  Coordinate simd_layoutF = GridDefaultSimd(Nd,vComplexF::Nsimd());
+  Coordinate simd_layoutD = GridDefaultSimd(Nd,vComplexD::Nsimd());
+  Coordinate mpi_layout   = GridDefaultMpi();
 
   GridCartesian *CGridF  = new GridCartesian(latt_size,simd_layoutF,mpi_layout);
   GRID_ASSERT(CGridF != NULL, GRID_MEM_ERROR);
