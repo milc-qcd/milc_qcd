@@ -247,7 +247,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
    >1 for seek, read error, or missing data error 
 */
 int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
-		    su3_vector **eigVec, int timing){
+		    su3_vector **eigVec, imp_ferm_links_t *fn, int timing){
 
   register int i, j;
   int status = 0;

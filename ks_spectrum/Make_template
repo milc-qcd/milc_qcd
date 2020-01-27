@@ -72,8 +72,11 @@ DEFLATE_OBJECTS = \
  eigen_stuff_helpers.o \
  io_helpers_ks_eigen.o \
  io_ks_eigen.o \
- io_scidac_ks_eigen.o \
  jacobi.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  DEFLATE_OBJECTS += io_scidac_ks_eigen.o
+endif
 
 OBJECTS = \
   ${MY_OBJECTS} \
@@ -165,14 +168,14 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 ks_spectrum_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DEIGEN_QIO" \
+	"DEFINES= -DFN -DHAVE_KS" \
 	"EXTRA_OBJECTS += ${FN_OBJECTS}"
 
 ks_spectrum_eigcg_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
 	"DEFINES= -DFN -DHAVE_KS" \
-	"DEFINES += -DEIGMODE=EIGCG -DEIGEN_QIO" \
+	"DEFINES += -DEIGMODE=EIGCG" \
 	"EXTRA_OBJECTS += ${FN_OBJECTS} ${EIGCG_OBJECTS}"
 
 ks_spectrum_asqtad_eos::
@@ -221,12 +224,12 @@ HISQ_OPTIONS = "DEFINES= -DFN -DHAVE_KS \
 
 ks_spectrum_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	${HISQ_OPTIONS} "DEFINES += -DEIGEN_QIO"
+	${HISQ_OPTIONS}
 
 
 ks_spectrum_eigcg_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	${HISQ_OPTIONS} "DEFINES += -DEIGMODE=EIGCG -DEIGEN_QIO" \
+	${HISQ_OPTIONS} "DEFINES += -DEIGMODE=EIGCG" \
 	"EXTRA_OBJECTS += ${EIGCG_OBJECTS}"
 
 ks_spectrum_hisq_eos::
