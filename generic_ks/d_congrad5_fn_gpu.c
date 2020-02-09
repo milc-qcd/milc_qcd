@@ -377,6 +377,7 @@ int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst,
   su3_matrix* fatlink = get_fatlinks(fn);
   su3_matrix* longlink = get_lnglinks(fn);
   const int quda_precision = qic->prec;
+  void *mg_preconditioner = NULL;
 
   double residual, relative_residual;
   int num_iters = 0;
@@ -391,8 +392,8 @@ int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst,
 
     node0_printf("%s: setting up the MG inverter\n", myname);
     /* Set up the MG inverter when the links change */
-    void* mg_preconditioner = setup_multigrid(quda_precision, fatlink, longlink,
-					      mass, qic->mgparamfile);
+    mg_preconditioner = setup_multigrid(quda_precision, fatlink, longlink,
+					mass, qic->mgparamfile);
   }
 
   inv_args.naik_epsilon = fn->eps_naik;
