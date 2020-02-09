@@ -184,8 +184,8 @@ static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int pa
 /* This algorithm solves even and odd sites separately */
 
 int mat_invert_cg_field(su3_vector *src, su3_vector *dst, 
-			 quark_invert_control *qic,
-			 Real mass, imp_ferm_links_t *fn ){
+			quark_invert_control *qic,
+			Real mass, imp_ferm_links_t *fn ){
     int cgn;
     su3_vector *tmp;
     double dtime;
@@ -481,13 +481,21 @@ int mat_invert_block_uml(su3_vector **src, su3_vector **dst,
 }
 
 /*****************************************************************************/
-/* Creates an array of vectors for the block-cg solver */
-int mat_invert_mrhs_uml(su3_vector **src, su3_vector **dst, 
+/* This algorithm solves the Dirac equation for both parities using
+   staggered multigrid */
+
+int mat_invert_block_mg(su3_vector **src, su3_vector **dst, 
 			Real mass, int nsrc, quark_invert_control *qic,
 			imp_ferm_links_t *fn){
-  node0_printf("mat_invert_mrhs_uml is not implemented, yet\n");
-  terminate(1);
-  return 0;  /* Humor the compiler */
+  
+  int cgn = 0;
+  register int is;
+  
+  /* Temporary until there is multi-rhs support for multigrid */
+  for(is = 0; is < nsrc; is++)
+    cgn += mat_invert_mg_field_gpu(src, dst, qic, mass, fn );
+  
+  return cgn;
 }
 
 /*****************************************************************************/
@@ -521,6 +529,58 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
     return cgn;
 }
 
+/*****************************************************************************/
+/* Generic inverter entry point for a single mass and source */
+
+int mat_invert_field(su3_vector *src, su3_vector *dst, 
+		     quark_invert_control *qic,
+		     Real mass, imp_ferm_links_t *fn, int use_precond){
+
+  int cgn = 0;
+
+  if(qic->inv_type == CGTYPE){
+    if(use_precond)
+      /* Preconditioned inversion */
+      cgn = mat_invert_uml_field(src, dst, qic, mass, fn );
+    else
+      /* Unpreconditioned inversion */
+      cgn = mat_invert_cg_field(src, dst, qic, mass, fn );
+  } else {
+    /* inv_type == MGTYPE */
+#ifdef USE_CG_GPU
+    /* Currently only available through QUDA on GPUs */
+    cgn = mat_invert_mg_field_gpu(src, dst, qic, mass, fn );
+#else
+    node0_printf("mat_invert_field: ERROR. Multigrid is available only with GPU compilation\n");
+    terminate(1);
+#endif
+  }
+  return cgn;
+}
+
+/*****************************************************************************/
+/* Generic multi-rhs inversion                                               */
+/*****************************************************************************/
+
+int mat_invert_block(su3_vector **src, su3_vector **dst, 
+		     Real mass, int nsrc, quark_invert_control *qic,
+		     imp_ferm_links_t *fn){
+  int cgn;
+  if(qic->inv_type == CGTYPE){
+    cgn = mat_invert_block_uml(src, dst, mass, nsrc, qic, fn);
+  } else {
+    /* inv_type == MGTYPE */
+#ifdef USE_CG_GPU
+    /* Currently only available through QUDA on GPUs */
+    cgn = mat_invert_block_mg(src, dst, mass, nsrc, qic, fn);
+#else
+    node0_printf("mat_invert_block: ERROR. Multigrid is available only with GPU compilation\n");
+    terminate(1);
+#endif
+  }
+  return cgn;
+}
+  
 /*****************************************************************************/
 /* FOR TESTING: multiply src by matrix and check against dest */
 void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,

@@ -542,6 +542,7 @@ int readin(int prompt) {
     IF_OK for(k = 0; k < param.num_set; k++){
       int max_cg_iterations, max_cg_restarts;
       int check = CHECK_NO;
+      char mgparamfile[MAXFILENAME] = "";
 
 #ifdef MULTISOURCE
       IF_OK status += get_s(stdin, prompt, "set_type", savebuf);
@@ -557,16 +558,40 @@ int readin(int prompt) {
 	}
       }
 #else
-	  param.set_type[k] = MULTIMASS_SET;
+      param.set_type[k] = MULTIMASS_SET;
 #endif
-      /* maximum no. of conjugate gradient iterations */
-      IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
-			    &max_cg_iterations );
-      
-      /* maximum no. of conjugate gradient restarts */
-      IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
-			    &max_cg_restarts );
 
+#ifdef MULTIGRID
+      IF_OK status += get_s(stdin, prompt, "inv_type", savebuf);
+      IF_OK {
+	if(strcmp(savebuf,"MG") == 0)
+	  param.inv_type[k] = MGTYPE;
+	else if(strcmp(savebuf,"CG") == 0)
+	  param.inv_type[k] = CGTYPE;
+	else {
+	  printf("Unrecognized inverter type %s\n",savebuf);
+	  printf("Choices are 'CG', 'MG'\n");
+	  status++;
+	}
+      }
+#else
+      param.inv_type[k] = CGTYPE;
+#endif
+      
+      IF_OK {
+	if(param.inv_type[k] == CGTYPE){
+	  /* maximum no. of conjugate gradient iterations */
+	  IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
+				&max_cg_iterations );
+	  
+	  /* maximum no. of conjugate gradient restarts */
+	  IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
+				&max_cg_restarts );
+	} else {
+	  IF_OK status += get_s(stdin, prompt, "MGparams", mgparamfile);
+	}
+      }
+	  
       /* Should we be checking (computing) the propagator by running
 	 the solver? */
 
@@ -645,6 +670,12 @@ int readin(int prompt) {
 	status++;
       }
 
+      if( param.inv_type[k] == MGTYPE && param.set_type[k] == MULTIMASS_SET
+	  && param.num_prop[k] > 1){
+	printf("ERROR: No multigrid support for multimass inversion\n");
+	status++;
+      }
+
       /* Indexing range for set */
       param.begin_prop[k] = nprop;
       param.end_prop[k] = nprop + param.num_prop[k] - 1;
@@ -699,6 +730,9 @@ int readin(int prompt) {
       
 	/* maximum no. of conjugate gradient restarts */
 	param.qic[nprop].nrestart = max_cg_restarts;
+
+	/* multigrid parameter file name */
+	strncpy(param.qic[nprop].mgparamfile, mgparamfile, MAXFILENAME);
       
 	/* Should we be deflating? */
 	param.qic[nprop].deflate = 0;

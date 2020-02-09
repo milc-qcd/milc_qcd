@@ -164,40 +164,44 @@ int solve_ksprop(int set_type,
 
 	if(num_prop == 1){
 	  
-	  /* Single mass inversion */
+	  /* Single-mass / single-source inversion */
 	  
 	  /* When we start from a preloaded solution we use the less
-	     optimized mat_invert_cg_field algorithm, instead of
-	     mat_invert_uml_field here to avoid "reconstructing", and so
-	     overwriting the odd-site solution.  This would be a
-	     degradation if the propagator was precomputed in double
-	     precision, and we were doing single precision here. When we
-	     are computing the propagator from a fresh start, we use
-	     the optimized mat_invert_uml_field algorithm. */
+	     optimized mat_invert_cg_field algorithm, instead of the
+	     preconditioned mat_invert_uml_field here to avoid
+	     "reconstructing", and so overwriting the odd-site
+	     solution.  This would be a degradation if the propagator
+	     were precomputed in double precision, and we were doing
+	     single precision here. When we are computing the
+	     propagator from a fresh start, we use the preconditioned
+	     algorithm. */
 	  
-	  if(startflag[0] == FRESH){
-	    mat_invert_uml_field(src[0], dst[0], my_qic+0, my_ksp[0].mass, 
-				 fn_multi[0]);
-	  } else {
-	    mat_invert_cg_field(src[0], dst[0], my_qic+0, my_ksp[0].mass, 
-				fn_multi[0]);
-	  }
+	  mat_invert_field(src[0], dst[0], my_qic+0, my_ksp[0].mass, 
+			   fn_multi[0], startflag[0] == FRESH);
 	} else {
-	  /* If we have restored any propagator, we use the single-mass inverter */
-	  /* In most use cases they are either all restored, or all fresh */
+
+	  /* Multi-mass or multi-source inversion */
 
 	  if(startflag[0] != FRESH){
+
+	    /* Use single-mass / single-source inverter if we restored the propagator */
+	    
+	    /* If we have restored any propagator, we use the single-mass inverter */
+	    /* In most use cases they are either all restored, or all fresh */
+
 	    for(j = 0; j < num_prop; j++){
 	      if(set_type == MULTIMASS_SET)
 		/* Multimass inversion */
-		mat_invert_cg_field(src[0], dst[j], my_qic+j, my_ksp[j].mass, 
-				    fn_multi[j]);
+		mat_invert_field(src[0], dst[j], my_qic+j, my_ksp[j].mass, 
+				 fn_multi[j],1);
 	      else
 		/* Multisource inversion */
-		mat_invert_cg_field(src[j], dst[j], my_qic+j, my_ksp[0].mass, 
-				    fn_multi[j]);
+		mat_invert_field(src[j], dst[j], my_qic+j, my_ksp[0].mass, 
+				 fn_multi[j],1);
 	    }
 	  } else {
+
+	    /* If we are starting fresh, use multimass or multisource inverter */
 
 	    if(set_type == MULTIMASS_SET)
 	      /* Multimass inversion */
@@ -205,7 +209,7 @@ int solve_ksprop(int set_type,
 	    else {
 	      /* Multisource inversion */
 	      int num_src = num_prop;  /* Should change to num_prop * ncolors */
-	      mat_invert_block_uml(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
+	      mat_invert_block(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
 	    }
 	  }
 	}
