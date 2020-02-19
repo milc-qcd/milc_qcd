@@ -23,7 +23,7 @@ extern "C" {
 }
 using namespace std;
 using namespace Grid;
-using namespace Grid::QCD;
+//using namespace Grid::QCD;
 
 GRID_4Dgrid *grid_full;
 GRID_4DRBgrid *grid_rb;

@@ -13,7 +13,7 @@
 #include "../include/macros.h"
 
 using namespace Grid;
-using namespace Grid::QCD;
+//using namespace Grid::QCD;
 
 template<typename Field>
 static void
