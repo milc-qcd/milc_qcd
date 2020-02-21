@@ -3,6 +3,8 @@
 ARCH=$1
 PK_CC=$2
 PK_CXX=$3
+#GIT_REPO=https://github.com/paboyle/Grid
+GIT_REPO=https://github.com/milc-qcdle/Grid
 GIT_BRANCH=develop
 
 if [ -z ${PK_CXX} ]
@@ -12,11 +14,11 @@ then
 fi
 
 case ${ARCH} in
-    scalar|avx512|avx2)
+    scalar|avx512|avx2|gpu-cuda)
       ;;
     *)
       echo "Unsupported ARCH"
-      echo "Usage $0 <scalar|avx512|avx2> <PK_CC> <PK_CXX>"
+      echo "Usage $0 <scalar|avx512|avx2|gpu-cuda> <PK_CC> <PK_CXX>"
       exit 1
 esac
 
@@ -32,8 +34,7 @@ MAKE="make -j4 V=1"
 if [ ! -d ${SRCDIR} ]
 then
   echo "Fetching ${GIT_BRANCH} branch of Grid package from github"
-  # git clone https://github.com/paboyle/Grid -b ${GIT_BRANCH}
-  git clone https://github.com/milc-qcd/Grid.git -b ${GIT_BRANCH}
+  git clone ${GIT_REPO} -b ${GIT_BRANCH}
 fi
 
 # Fetch Eigen package, set up Make.inc files and create Grid configure
@@ -106,7 +107,20 @@ then
 
        status=$?
        echo "Configure exit status $status"
-             ;;
+       ;;
+    gpu-cuda)
+	${SRCDIR}/configure \
+             --prefix ${INSTALLDIR}      \
+             --enable-precision=double \
+             --enable-simd=GEN           \
+	     --enable-comms=mpi          \
+             --host=x86_64-unknown-linux-gnu \
+             CXX=nvcc                    \
+             LDFLAGS=-L$HOME/prefix/lib/ \
+             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -I$HOME/prefix/include/ -std=c++11" 
+        status=$?
+        echo "Configure exit status $status"
+	;;
     *)
     echo "Unsupported ARCH ${ARCH}"
           exit 1;
