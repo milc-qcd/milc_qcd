@@ -32,7 +32,8 @@ MAKE="make -j4 V=1"
 if [ ! -d ${SRCDIR} ]
 then
   echo "Fetching ${GIT_BRANCH} branch of Grid package from github"
-  git clone https://github.com/paboyle/Grid -b ${GIT_BRANCH}
+  # git clone https://github.com/paboyle/Grid -b ${GIT_BRANCH}
+  git clone https://github.com/milc-qcd/Grid.git -b ${GIT_BRANCH}
 fi
 
 # Fetch Eigen package, set up Make.inc files and create Grid configure
