@@ -5,7 +5,7 @@ PK_CC=$2
 PK_CXX=$3
 #GIT_REPO=https://github.com/paboyle/Grid
 GIT_REPO=https://github.com/milc-qcd/Grid
-GIT_BRANCH=develop
+GIT_BRANCH=CGinfo
 
 if [ -z ${PK_CXX} ]
 then
