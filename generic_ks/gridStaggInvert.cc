@@ -171,9 +171,9 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
 	auto end = std::chrono::system_clock::now();
 	int iters = 0;
 	for(int i = 0; i < nmass; i++){
-	  res_arg[i]->final_iter = MSCG.IterationsToComplete[i];
-	  iters += MSCG.IterationsToComplete[i];
-	  res_arg[i]->final_rsq = MSCG.TrueResiduals[i]*MSCG.TrueResiduals[i];
+	  res_arg[i]->final_iter = MSCG.IterationsToCompleteShift[i];
+	  iters += MSCG.IterationsToCompleteShift[i];
+	  res_arg[i]->final_rsq = MSCG.TrueResidualShift[i]*MSCG.TrueResidualShift[i];
 	}
 	auto elapsed = end - start;
 	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
@@ -206,9 +206,9 @@ asqtadInvertMulti (GRID_info_t *info, struct GRID_FermionLinksAsqtad_struct<Latt
 	
 	int iters = 0;
 	for(int i = 0; i < nmass; i++){
-	  res_arg[i]->final_iter = MSCG.IterationsToComplete[i];
-	  iters += MSCG.IterationsToComplete[i];
-	  res_arg[i]->final_rsq = MSCG.TrueResiduals[i]*MSCG.TrueResiduals[i];
+	  res_arg[i]->final_iter = MSCG.IterationsToCompleteShift[i];
+	  iters += MSCG.IterationsToCompleteShift[i];
+	  res_arg[i]->final_rsq = MSCG.TrueResidualShift[i]*MSCG.TrueResidualShift[i];
 	}
 	std::cout << "iters summed over masses = " << iters << "\n" << std::flush;
 
