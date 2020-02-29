@@ -4,7 +4,7 @@ ARCH=$1
 PK_CC=$2
 PK_CXX=$3
 #GIT_REPO=https://github.com/paboyle/Grid
-GIT_REPO=https://github.com/milc-qcdle/Grid
+GIT_REPO=https://github.com/milc-qcd/Grid
 GIT_BRANCH=develop
 
 if [ -z ${PK_CXX} ]
