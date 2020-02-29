@@ -209,7 +209,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
       }
     } else {
       /* Read using QUDA format */
-      qio_status = read_quda_ks_eigenvectors(infile, eigVec, eigVal, Nvecs, EVEN, fn);
+      qio_status = read_quda_ks_eigenvectors(infile, eigVec, eigVal, Nvecs, EVEN);
       if(qio_status != QIO_SUCCESS){
 	if(qio_status == QIO_EOF){
 	  node0_printf("WARNING: Premature EOF at eigenvectors\n");
@@ -222,6 +222,10 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
       }
     }
     close_ks_eigen_infile(infile);
+
+    /* Reconstruct eigenvalues */
+    reset_eigenvalues( eigVec, eigVal, *Nvecs, EVEN, fn);
+
     break;
   default:
     node0_printf("%s: Unrecognized reload flag.\n", myname);
