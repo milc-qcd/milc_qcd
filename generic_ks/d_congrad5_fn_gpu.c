@@ -377,10 +377,24 @@ int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst,
   su3_matrix* fatlink = get_fatlinks(fn);
   su3_matrix* longlink = get_lnglinks(fn);
   const int quda_precision = qic->prec;
+
+  // TBD: we should persist this.
   void *mg_preconditioner = NULL;
 
   double residual, relative_residual;
   int num_iters = 0;
+
+  inv_args.naik_epsilon = fn->eps_naik;
+
+#if (FERM_ACTION==HISQ)
+  inv_args.tadpole = 1.0;
+#else
+  inv_args.tadpole = u0;
+#endif
+
+  // For now staggered MG only supports fields of both parities.
+  // How do we check this?
+
 
   // for newer versions of QUDA we need to invalidate the gauge field if the links are new
   if ( fn != get_fn_last() || fresh_fn_links(fn) ){
@@ -392,17 +406,16 @@ int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst,
 
     node0_printf("%s: setting up the MG inverter\n", myname);
     /* Set up the MG inverter when the links change */
-    mg_preconditioner = setup_multigrid(quda_precision, fatlink, longlink,
-					mass, qic->mgparamfile);
+    mg_preconditioner = qudaSetupMultigrid(MILC_PRECISION,
+                              quda_precision,
+                              mass,
+                              inv_args,
+                              milc_fatlink,
+                              milc_longlink,
+                              qic->mgparamfile);
   }
 
-  inv_args.naik_epsilon = fn->eps_naik;
-
-#if (FERM_ACTION==HISQ)
-  inv_args.tadpole = 1.0;
-#else
-  inv_args.tadpole = u0;
-#endif
+  
 
   qudaInvertMG(MILC_PRECISION,
 	       quda_precision, 
@@ -439,6 +452,9 @@ int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst,
 	   (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
 #endif
+
+    // TBD: this object should be persistent between solves.
+  qudaCleanupMultigrid(mg_preconditioner);
 
   return num_iters;
 }
