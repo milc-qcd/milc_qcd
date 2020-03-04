@@ -360,7 +360,7 @@ read_ks_eigenvector(QIO_Reader *infile, int packed, su3_vector *eigVec, double *
 
 int
 read_quda_ks_eigenvectors(QIO_Reader *infile, su3_vector *eigVec[], double *eigVal, int *Nvecs,
-			  int parity, imp_ferm_links_t *fn){
+			  int parity){
   char myname[] = "read_quda_ks_eigenvectors";
   int status;
   char *xml;
@@ -421,9 +421,6 @@ read_quda_ks_eigenvectors(QIO_Reader *infile, su3_vector *eigVec[], double *eigV
       eigVec[j][i] = eigVecs[*Nvecs*i+j];
     }
   } END_LOOP_OMP;
-
-  /* Reconstruct eigenvalues */
-  reset_eigenvalues( eigVec, eigVal, *Nvecs, parity, fn);
 
   free(eigVecs);
   

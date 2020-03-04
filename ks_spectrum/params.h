@@ -11,9 +11,9 @@
 #include "../include/imp_ferm_links.h"
 
 #define MAX_MASS_PBP 8
-#define MAX_SOURCE 80
-#define MAX_SET 80
-#define MAX_PROP 80
+#define MAX_SOURCE 128
+#define MAX_SET 256
+#define MAX_PROP 128
 #define MAX_QK 256
 #define MAX_COMBO 8
 #define MAX_PAIR 5000

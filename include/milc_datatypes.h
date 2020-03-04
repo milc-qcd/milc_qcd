@@ -33,7 +33,7 @@ typedef struct {
 #define complex dcomplex
 #endif
 
-#ifdef WANT_QUDA
+#ifdef HAVE_QUDA
 // When using QUDA, we need to set the site struct member arrays alignment to a multiple of 16 bytes
 #define ALIGNAS(n) __attribute__((aligned(n)))
 #define ALIGNMENT ALIGNAS(16)

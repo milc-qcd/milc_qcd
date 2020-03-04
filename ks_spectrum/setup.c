@@ -553,9 +553,11 @@ int readin(int prompt) {
 	  param.set_type[k] = MULTIMASS_SET;
 	else if(strcmp(savebuf,"multisource") == 0)
 	  param.set_type[k] = MULTISOURCE_SET;
+	else if(strcmp(savebuf,"single") == 0)
+	  param.set_type[k] = MULTIMASS_SET;
 	else {
 	  printf("Unrecognized set type %s\n",savebuf);
-	  printf("Choices are 'multimass', 'multisource'\n");
+	  printf("Choices are 'multimass', 'multisource', 'single'\n");
 	  status++;
 	}
       }
@@ -1698,10 +1700,16 @@ int readin(int prompt) {
     }
 
     /* Do whatever is needed to get eigenpairs */
+<<<<<<< HEAD
     node0_printf("Calling reload_ks_eigen\n"); fflush(stdout);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile,
 			     &param.eigen_param.Nvecs, eigVal, eigVec, 1);
     node0_printf("Return from reload_ks_eigen\n"); fflush(stdout);
+=======
+    imp_ferm_links_t **fn = get_fm_links(fn_links);
+    status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
+>>>>>>> 01d84a4ea7f7ceff7df5b23bf815242221ddeb67
     if(param.fixflag != NO_GAUGE_FIX){
       node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
     }
