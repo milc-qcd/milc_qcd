@@ -332,14 +332,14 @@ sym_shift_sink(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
   register int i;
   msg_tag *tag[2];
   su3_vector *tvec = create_v_field();
-  //node0_printf("Entering sym_shift_sink\n");
+  node0_printf("Entering sym_shift_sink\n");
 
 
   //node0_printf("src: %.5e + i %.5e\n", src[100].c[0].real, src[100].c[0].imag); 
 
   tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
-  /* With ONE_SIDED_SHIFT defined, the shift is asymmetric */
-#ifndef ONE_SIDED_SHIFT
+  /* With ONE_SIDED_SHIFT_GB defined, the shift is asymmetric */
+#ifndef ONE_SIDED_SHIFT_GB
 #ifdef NO_SINK_LINKS
   FORALLFIELDSITES(i) { su3vec_copy(src+i, tvec+i); }
 
@@ -354,7 +354,7 @@ sym_shift_sink(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
     }
 #endif // NO_SINK_LINKS
   tag[1] = start_gather_field( tvec, sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1] );
-#endif // ONE_SIDED_SHIFT
+#endif // ONE_SIDED_SHIFT_GB
   wait_gather(tag[0]);
 #ifdef NO_SINK_LINKS
   FORALLFIELDSITES(i) { su3vec_copy((su3_vector *)gen_pt[0][i],dest+i); }
@@ -370,7 +370,7 @@ sym_shift_sink(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
     }
 #endif // NO_SINK_LINKS
   //node0_printf("gen_pt multiply done\n");
-#ifndef ONE_SIDED_SHIFT
+#ifndef ONE_SIDED_SHIFT_GB
   wait_gather(tag[1]);
   FORALLFIELDSITES(i)
     {
@@ -388,9 +388,9 @@ sym_shift_sink(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
       scalar_mult_su3_vector( dest+i, .5, dest+i ) ;
     }
  // node0_printf("dest: %.5e + i %.5e\n\n\n", dest[100].c[0].real, dest[100].c[0].imag);
+  cleanup_gather(tag[1]);
 #endif
   cleanup_gather(tag[0]);
-  cleanup_gather(tag[1]);
   destroy_v_field(tvec);
 }
 

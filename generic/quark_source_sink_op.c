@@ -100,6 +100,9 @@
 #ifdef HAVE_DIRAC
 #include "../include/generic_clover.h"
 #endif
+#ifdef HAVE_KS
+#include "../include/generic_ks.h"
+#endif
 
 /*-------------------------------------------------------------*/
 /* Utilities for managing the quark_source_sink_op type */
@@ -1182,6 +1185,30 @@ static void apply_aslash_v(su3_vector *src,
   destroy_c_array_field(chi_cs, NMU);
 }
 
+
+static void apply_par_xport_v(su3_vector *src, quark_source_sink_op *qss_op){
+
+  //su3_matrix * g_links = create_G_from_site();
+
+//#ifdef NO_GAUGE_FIELD
+  apply_par_xport_src_v(src, src, qss_op, NULL); // gb_baryon_src.c
+//#else
+  /* Use APE links for shifts */
+  /* no need to put in sign factors if rephase_field_offset is off */
+  /* unsmeared links usually have staggered phases included */
+  //rephase_field_offset( ape_links, ON, NULL, c0 );
+  //rephase_field_offset( ape_links, OFF, NULL, c0 );
+//  node0_printf("Parallel transport smeared gauge links are ON\n");
+//  apply_par_xport_src_v(src, src, qss_op, ape_links);
+  //node0_printf("Parallel transport smeared gauge links are OFF\n");
+  //apply_par_xport_src_v(src, src, qss_op, g_links);
+//#endif
+  apply_momentum_v(src, qss_op, qss_op->t0);
+
+  //destroy_G(g_links);
+}
+
+
 static void apply_ext_src_v(su3_vector *src, 
 			    quark_source_sink_op *qss_op){
   apply_tslice_projection_v(src, qss_op);
@@ -1881,6 +1908,9 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
   else if(op_type == MOMENTUM)
     apply_momentum_v(src, qss_op, t0);
 
+  else if(op_type == PAR_XPORT_SRC_KS)
+    apply_par_xport_v(src, qss_op);
+
   else if(op_type == EXT_SRC_KS)
     apply_ext_src_v(src, qss_op);
 
@@ -2097,6 +2127,7 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     printf("'momentum', ");
     printf("'modulation', ");
     printf("'project_t_slice', ");
+    printf("'par_xport_src_ks', ");
     printf("'ext_src_ks', ");
     printf("'ext_src_dirac', ");
     printf("\n     ");
@@ -2147,6 +2178,10 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
   else if(strcmp("momentum",savebuf) == 0 ){
     *source_type = MOMENTUM;
     strcpy(descrp,"momentum");
+  }
+  else if(strcmp("par_xport_src_ks",savebuf) == 0 ){ 
+    *source_type = PAR_XPORT_SRC_KS;
+    strcpy(descrp,"par_xport_src_ks");
   }
   else if(strcmp("ext_src_ks",savebuf) == 0 ){
     *source_type = EXT_SRC_KS;
@@ -2365,6 +2400,24 @@ static int get_field_op(int *status_p, FILE *fp,
   }
 #endif
 #ifdef HAVE_KS
+  else if ( op_type == PAR_XPORT_SRC_KS ){
+    char use_links[4];
+    IF_OK status += get_i(fp, prompt, "disp", &qss_op->disp);
+    if(qss_op->disp == 0){
+      // do nothing!
+    } else if(qss_op->disp == 1){
+      IF_OK status += get_vs(fp, prompt, "dir", c_dir, 1);
+      IF_OK status += decode_dir(&qss_op->dir1, c_dir[0]);
+    } else if(qss_op->disp == 2){
+      IF_OK status += get_vs(fp, prompt, "dir", c_dir, 2);
+      IF_OK status += decode_dir(&qss_op->dir1, c_dir[0]);
+      IF_OK status += decode_dir(&qss_op->dir2, c_dir[1]);
+    } else if(qss_op->disp != 3){
+      // all directions for 3; don't need to save
+      printf("\n%i is not a valid displacement\n",qss_op->disp);
+      status++;
+    }    
+  }
   else if ( op_type == EXT_SRC_KS ){
     char gam_op_lab[MAXGAMMA];
     IF_OK status += get_s(fp, prompt, "spin_taste_extend", gam_op_lab);
@@ -2765,6 +2818,24 @@ static int print_single_op_info(FILE *fp, char prefix[],
     fprintf(fp,",\n");
     fprintf(fp,"%s%s\n", make_tag(prefix, "spin_taste_extend"), 
 	    spin_taste_label(qss_op->spin_taste));
+  }
+  else if ( op_type == PAR_XPORT_SRC_KS ){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%i,\n", make_tag(prefix, "disp"), qss_op->disp);
+    if(qss_op->disp == 1)
+      fprintf(fp,"%s%s,\n", make_tag(prefix, "dir1"), encode_dir(qss_op->dir1));
+    if(qss_op->disp == 2){
+      fprintf(fp,"%s%s,\n", make_tag(prefix, "dir1"), encode_dir(qss_op->dir1));
+      fprintf(fp,"%s%s,\n", make_tag(prefix, "dir2"), encode_dir(qss_op->dir2));
+    }    
+    if(qss_op->disp == 3) { 
+      fprintf(fp,"%s%s,\n", make_tag(prefix, "dir1"), encode_dir(XUP));
+      fprintf(fp,"%s%s,\n", make_tag(prefix, "dir2"), encode_dir(YUP));
+      fprintf(fp,"%s%s,\n", make_tag(prefix, "dir3"), encode_dir(ZUP));
+    }    
+    //fprintf(fp,"%s[%d, %d, %d],\n", make_tag(prefix, "mom"), qss_op->mom[0],
+    //        qss_op->mom[1], qss_op->mom[2]);
+    //fprintf(fp,"%s%d\n", make_tag(prefix, "t0"), qss_op->t0);
   }
   else if ( op_type == EXT_SRC_KS ){
     fprintf(fp,",\n");

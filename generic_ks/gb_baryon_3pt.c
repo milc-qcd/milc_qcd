@@ -83,143 +83,31 @@ sym_shift_3pt(int dir, short doBW, su3_vector *dest, su3_vector *src, su3_matrix
   su3_vector *cvec0 = create_v_field();
   su3_vector *cvec1 = create_v_field();
 
-/** Looks like spaghetti code, but written this way so that
-    the unit tests and the generic code are using the same
-    set of functions, rather than an independent set (or as
-    close as possible). That way if changes are made,
-    the changes can be directly checked.
-
-    SRCSNK unit test defaults always to the same path,
-    CUR unit test chooses whether to take the default or the
-     opposite path based on which NEGATIVE_SNK_*_LINKs are defined,
-    and no unit test definitions always take both directions. */
-  if(doBW){
-#ifdef UNIT_TEST_GAUGE_INV_SRCSNK
-#ifdef UNIT_TEST_GAUGE_INV_CUR
-  switch(dir){
-#ifdef UNIT_TEST_NEGATIVE_SNK_X_LINK
-  case XUP:
-#endif
-#ifdef UNIT_TEST_NEGATIVE_SNK_Y_LINK
-  case YUP:
-#endif
-#ifdef UNIT_TEST_NEGATIVE_SNK_Z_LINK
-  case ZUP:
-#endif
-    // if requested for unit test, start gather then continue on
-    tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
-    break;
-  default: //continues after #endif
-#endif // #ifdef UNIT_TEST_GAUGE_INV_CUR
-#else  // no unit test, always start gather
-    tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
-#endif // #ifdef UNIT_TEST_GAUGE_INV_SRCSNK
-
-    // continue with switch default case if UNIT_TEST_GAUGE_INV_CUR,
-    // or always do if not
-    // just want transpose: *(*M^T.*v);  v represents spectator contribution
-    // only positive direction
-    conj_v_field(cvec1,src);
-    //FORALLFIELDSITES(i) {
-    //  mult_adj_su3_mat_vec( links+4*i+dir, cvec1+i, tvec+i ); }
+  // shifting in dir moves +dir to 0
+  tag[0] = start_gather_field(src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0]);
 #ifdef NO_SINK_LINKS
-    copy_v_field(tvec,cvec1);
+  copy_v_field(cvec1,src);
 #else
-    FORALLFIELDSITES(i) {
-      mult_adj_su3_mat_vec( links+4*i+dir, cvec1+i, tvec+i ); }
+  FORALLFIELDSITES(i) { mult_adj_su3_mat_vec( links+4*i+dir, src+i, cvec1+i ); }
 #endif // NO_SINK_LINKS
-    conj_v_field(cvec1,tvec);
-    tag[1] = start_gather_field( cvec1, sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1] );
 
-#ifdef UNIT_TEST_GAUGE_INV_SRCSNK
-#ifdef UNIT_TEST_GAUGE_INV_CUR
-    break; } // end of previous switch statement
-  switch(dir){
-#ifdef UNIT_TEST_NEGATIVE_SNK_X_LINK
-  case XUP:
+#ifndef ONE_SIDED_SHIFT_GB
+  // shifting in opp_dir moves 0 to +dir
+  tag[1] = start_gather_field(cvec1, sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1]);
 #endif
-#ifdef UNIT_TEST_NEGATIVE_SNK_Y_LINK
-  case YUP:
-#endif
-#ifdef UNIT_TEST_NEGATIVE_SNK_Z_LINK
-  case ZUP:
-#endif
-    wait_gather(tag[0]);
-    // want conjugate: *(M.*v);  v represents spectator contribution
-    FORALLFIELDSITES(i) { su3vec_copy( (su3_vector *)gen_pt[0][i], tvec+i); }
-    conj_v_field(cvec0,tvec);
-    //FORALLFIELDSITES(i) {
-    //  mult_su3_mat_vec( links+4*i+dir, cvec0+i, tvec+i ); }
+  wait_gather(tag[0]);
 #ifdef NO_SINK_LINKS
-    copy_v_field(tvec,cvec0);
+  FORALLFIELDSITES(i) { su3vec_copy( (su3_vector *)gen_pt[0][i], dest+i); }
 #else
-    FORALLFIELDSITES(i) {
-      mult_su3_mat_vec( links+4*i+dir, cvec0+i, tvec+i ); }
+  FORALLFIELDSITES(i) { mult_su3_mat_vec( links+4*i+dir, (su3_vector*)gen_pt[0][i], dest+i ); }
 #endif // NO_SINK_LINKS
-    conj_v_field(dest,tvec);
-    cleanup_gather(tag[0]);
-    break;
-  default: //continues after #endif
-#endif // #ifdef UNIT_TEST_GAUGE_INV_CUR
-#else // no unit test
-    wait_gather(tag[0]);
-    // want conjugate: *(M.*v);  v represents spectator contribution
-    FORALLFIELDSITES(i) { su3vec_copy( (su3_vector *)gen_pt[0][i], tvec+i); }
-    conj_v_field(cvec0,tvec);
-    //FORALLFIELDSITES(i) {
-    //  mult_su3_mat_vec( links+4*i+dir, cvec0+i, tvec+i ); }
-#ifdef NO_SINK_LINKS
-    copy_v_field(tvec,cvec0);
-#else
-    FORALLFIELDSITES(i) {
-      mult_su3_mat_vec( links+4*i+dir, cvec0+i, tvec+i ); }
-#endif // NO_SINK_LINKS
-    conj_v_field(dest,tvec);
-    cleanup_gather(tag[0]);
-#endif // #ifdef UNIT_TEST_GAUGE_INV_SRCSNK
-
-    wait_gather(tag[1]);
-#ifdef UNIT_TEST_GAUGE_INV_SRCSNK
-    FORALLFIELDSITES(i) { su3vec_copy( (su3_vector *)gen_pt[1][i], dest+i ); }
-    cleanup_gather(tag[1]);
-#ifdef UNIT_TEST_GAUGE_INV_CUR
-    break; } // end previous switch statement
+  cleanup_gather(tag[0]);
+#ifndef ONE_SIDED_SHIFT_GB
+  wait_gather(tag[1]);
+  FORALLFIELDSITES(i) { add_su3_vector(dest+i, (su3_vector*)gen_pt[1][i], dest+i ); }
+  FORALLFIELDSITES(i) { scalar_mult_su3_vector( dest+i, .5, dest+i ) ; }
+  cleanup_gather(tag[1]);
 #endif
-#else // no unit test
-    FORALLFIELDSITES(i) { add_su3_vector(dest+i, (su3_vector*)gen_pt[1][i], dest+i ); }
-    FORALLFIELDSITES(i) { scalar_mult_su3_vector( dest+i, .5, dest+i ) ; }
-    cleanup_gather(tag[1]);
-#endif
-
-  } else {
-    /* always same regardless of unit test */
-
-    // shifting in dir moves +dir to 0
-    tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
-    //FORALLFIELDSITES(i) { mult_adj_su3_mat_vec( links+4*i+dir, src+i, cvec1+i ); }
-#ifdef NO_SINK_LINKS
-    copy_v_field(cvec1,src);
-#else
-    FORALLFIELDSITES(i) { mult_adj_su3_mat_vec( links+4*i+dir, src+i, cvec1+i ); }
-#endif // NO_SINK_LINKS
-    // shifting in opp_dir moves 0 to +dir
-    tag[1] = start_gather_field( cvec1, sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1] );
-    wait_gather(tag[0]);
-
-    //FORALLFIELDSITES(i) { mult_su3_mat_vec( links+4*i+dir, (su3_vector*)gen_pt[0][i], dest+i ); }
-#ifdef NO_SINK_LINKS
-    FORALLFIELDSITES(i) { su3vec_copy( (su3_vector *)gen_pt[0][i], dest+i); }
-#else
-    FORALLFIELDSITES(i) { mult_su3_mat_vec( links+4*i+dir, (su3_vector*)gen_pt[0][i], dest+i ); }
-#endif // NO_SINK_LINKS
-    cleanup_gather(tag[0]);
-
-    wait_gather(tag[1]);
-    FORALLFIELDSITES(i) { add_su3_vector(dest+i, (su3_vector*)gen_pt[1][i], dest+i ); }
-    FORALLFIELDSITES(i) { scalar_mult_su3_vector( dest+i, .5, dest+i ) ; }
-    cleanup_gather(tag[1]);
-  }
-
   destroy_v_field(tvec);
   destroy_v_field(cvec0);
   destroy_v_field(cvec1);
@@ -291,27 +179,29 @@ apply_par_xport_3pt(ks_prop_field *dest, ks_prop_field *src,
         add_su3_vector( &tvec0->v[c][i], &tvec1->v[c][i], &dest->v[c][i] );
         scalar_mult_su3_vector( &dest->v[c][i], 0.5, &dest->v[c][i] );
       }
-    }
+   }
   }
   else if (n == 3){
     /* three link */
-    /* use the d given */
-    for(j=0;j<6;j++){
-      apply_sym_shift_3pt(n,d[j],r0,doBW,tvec0,tsrc,links);
-      if(j==0) copy_ksp_field(tvec1,tvec0);
-      else for(c=0;c<3;c++){
-        FORALLFIELDSITES(i){
-          add_su3_vector(&tvec1->v[c][i],&tvec0->v[c][i],&tvec1->v[c][i]);
-        }
+    /* use the d given */  
+  for(j=0;j<6;j++){
+    apply_sym_shift_3pt(n,d[j],r0,doBW,tvec0,tsrc,links);
+    if(j==0) copy_ksp_field(tvec1,tvec0);
+    else for(c=0;c<3;c++){
+      FORALLFIELDSITES(i){
+        add_su3_vector(&tvec1->v[c][i],&tvec0->v[c][i],&tvec1->v[c][i]);
       }
     }
-    for(c=0;c<3;c++){FORALLSITES(i,s){
+  }
+  for(c=0;c<3;c++){
+    FORALLSITES(i,s){
       scalar_mult_su3_vector( &tvec1->v[c][i], 1./6., &dest->v[c][i] );
-    }}
+    }
   }
   destroy_ksp_field(tvec1);
   destroy_ksp_field(tvec0);
   destroy_ksp_field(tsrc);
+  }
 }
 
 #endif // GB_BARYON

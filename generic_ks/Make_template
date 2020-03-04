@@ -94,6 +94,7 @@ G_KS_ALL = \
   gb_baryon_mmap.o \
   gb_baryon_snk.o \
   gb_baryon_3pt.o \
+  gb_baryon_src.o \
   gb_ops.o \
   gridStaggInvert.o \
   grsource.o \
@@ -362,6 +363,8 @@ gb_baryon_mmap.o: ../generic_ks/gb_baryon_mmap.c
 gb_baryon_snk.o: ../generic_ks/gb_baryon_snk.c
 	${CC} -c ${CFLAGS} $<
 gb_baryon_3pt.o: ../generic_ks/gb_baryon_3pt.c
+	${CC} -c ${CFLAGS} $<
+gb_baryon_src.o: ../generic_ks/gb_baryon_src.c
 	${CC} -c ${CFLAGS} $<
 gb_ops.o: ../generic_ks/gb_ops.c
 	${CC} -c ${CFLAGS} $<
