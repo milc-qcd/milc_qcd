@@ -249,6 +249,15 @@ ks_spectrum_hisq_gb_baryon_blind_no_sink_links::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
 	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS"
 
+ks_spectrum_hisq_gb_baryon_blind_one_sided_shift::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS -DONE_SIDED_SHIFT_GB"
+
+# Extremly slow implementation. Use for debug only
+ks_spectrum_hisq_gb_baryon_blind_no_mmap::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DBLIND -DNO_SINK_LINKS"
+
 clean:
 	-/bin/rm -f *.o quark_action.h
 
