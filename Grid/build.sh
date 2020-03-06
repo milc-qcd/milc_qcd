@@ -18,7 +18,7 @@ case ${ARCH} in
       ;;
     *)
       echo "Unsupported ARCH"
-      echo "Usage $0 <scalar|avx512|avx2|gpu-cuda> <PK_CC> <PK_CXX>"
+      echo "Usage $0 <scalar|avx2|avx512-knl|avx512-skx|gpu-cuda> <PK_CC> <PK_CXX>"
       exit 1
 esac
 
@@ -53,17 +53,16 @@ then
 
     scalar)
 
-       module swap craype-mic-knl craype-haswell 
-
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
             --enable-precision=double \
             --enable-simd=GEN \
             --enable-comms=none \
-	    --with-lime=${HOME}/scidac/install/qio-intelmpi-skx \
+	    --with-lime=${HOME}/scidac/install/qio-single \
+	    --with-fftw=${HOME}/fftw/build-gcc \
             --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
             CXX="${PK_CXX}" \
-            CXXFLAGS="-std=c++11" \
+            CXXFLAGS="-std=c++14" \
 
 # 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
 
@@ -74,20 +73,20 @@ then
 
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
+            --enable-mkl=yes \
             --enable-precision=double \
             --enable-simd=GEN \
             --enable-comms=mpi \
-	    --with-lime=${HOME}/scidac/install/qio-intelmpi-skx \
+	    --with-lime=${HOME}/scidac/install/qio-skx \
             --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
             CXX="${PK_CXX}" CC="${PK_CC}" \
             CXXFLAGS="-std=c++11 -xCORE-AVX2" \
 
 #	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
-#            --enable-mkl=yes \
 
        status=$?
              ;;
-    avx512)
+    avx512-knl)
 
        INCMKL="-I/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/include"
        LIBMKL="-L/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64_lin"
@@ -101,6 +100,27 @@ then
 	    --with-lime=${HOME}/scidac/install/qio-impi-knl \
             CXX="${PK_CXX}" CC="${PK_CC}" \
             CXXFLAGS="-std=c++17 -xMIC-AVX512 -O2 -g -vec -simd -qopenmp" \
+
+	    # --with-hdf5=/opt/cray/pe/hdf5/1.10.0.3/INTEL/16.0 \
+            # --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
+
+       status=$?
+       echo "Configure exit status $status"
+       ;;
+    avx512-skx)
+
+       INCMKL="-I/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/include"
+       LIBMKL="-L/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64_lin"
+
+       ${SRCDIR}/configure \
+            --prefix=${INSTALLDIR} \
+            --enable-precision=double \
+            --enable-simd=KNL \
+            --enable-comms=mpi \
+            --host=x86_64-unknown-linux-gnu \
+	    --with-lime=${HOME}/scidac/install/qio-impi-knl \
+            CXX="${PK_CXX}" CC="${PK_CC}" \
+            CXXFLAGS="-std=c++17 -xCORE-AVX512 -O2 -g -vec -simd -qopenmp" \
 
 	    # --with-hdf5=/opt/cray/pe/hdf5/1.10.0.3/INTEL/16.0 \
             # --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
