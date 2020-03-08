@@ -22,7 +22,7 @@ int qio_node_index(const int x[]){
   return node_index(x[0],x[1],x[2],x[3]);
 }
 
-void qio_get_coords(int x[], int node, int index){
+void qio_get_coords(int x[], int node, size_t index){
   /* For this node we have a table */
   if(node == this_node){
     x[0] = lattice[index].x;
@@ -35,7 +35,7 @@ void qio_get_coords(int x[], int node, int index){
     get_coords( x, node, index );
 }
 
-int qio_num_sites(int node){
+size_t qio_num_sites(int node){
   return num_sites(node);
 }
 
@@ -46,6 +46,7 @@ void build_qio_layout(QIO_Layout *layout){
   lattice_size[1] = ny;
   lattice_size[2] = nz;
   lattice_size[3] = nt;
+  volume = (size_t)nx*ny*nz*nt;
 
   layout->node_number     = qio_node_number;
   layout->node_index      = qio_node_index;
@@ -57,6 +58,7 @@ void build_qio_layout(QIO_Layout *layout){
   layout->sites_on_node   = sites_on_node;
   layout->this_node       = this_node;
   layout->number_of_nodes = number_of_nodes;
+  node0_printf("volume = %lu\n", volume);
 }
 
 /* Default rank for serial I/O */
@@ -438,7 +440,7 @@ static gauge_file *file_scan_scidac(char *filename, int serpar){
   /* Read header to get lattice dimensions and close the file */
   read_lat_dim_scidac(filename, &ndim, dims);
   nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
-  volume = nx*ny*nz*nt;
+  volume = (size_t)nx*ny*nz*nt;
 
   /* Finish setting up, now we know the dimensions */
 
@@ -462,7 +464,7 @@ static gauge_file *file_scan_scidac(char *filename, int serpar){
   gf->filename = filename;
 
   /* Reopen file for reading */
-  QIO_verbose(QIO_VERB_OFF);
+  QIO_verbose(QIO_VERB_DEBUG);
 
   infile = open_scidac_input(filename, &layout, &fs, serpar);
   if(infile == NULL)terminate(1);

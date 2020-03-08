@@ -121,7 +121,7 @@ void r_check(gauge_file *gf, float *max_deviation)
   int destnode;
   int k;
   int x,y,z,t;
-  int buf_length,where_in_buf;
+  size_t buf_length,where_in_buf;
   gauge_check test_gc;
   u_int32type *val;
   int rank29,rank31;
@@ -226,10 +226,12 @@ void r_check(gauge_file *gf, float *max_deviation)
 	    if(buf_length > MAX_BUF_LENGTH)buf_length = MAX_BUF_LENGTH;
 	    /* then do read */
 	    
-	    if( (int)g_read(lbuf,4*sizeof(su3_matrix),buf_length,fp) != buf_length)
+	    size_t buf_length_read = g_read(lbuf,4*sizeof(fsu3_matrix),buf_length,fp) ;
+	    if( buf_length_read != buf_length)
 	      {
 		printf("%s: node %d gauge configuration read error %d file %s\n",
 		       myname,this_node,errno,filename); 
+		printf("Wanted %lu and got %lu\n", buf_length, buf_length_read);
 		fflush(stdout); terminate(1);
 	      }
 	    where_in_buf = 0;  /* reset counter */
@@ -596,7 +598,7 @@ int main(int argc, char *argv[])
     
     setup_layout();
     
-    volume = nx*ny*nz*nt;
+    volume = (size_t)nx*ny*nz*nt;
     
     if(gh->magic_number == GAUGE_VERSION_NUMBER_ARCHIVE){
       r_check_arch(gf,&max_deviation);

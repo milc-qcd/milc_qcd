@@ -153,10 +153,10 @@ static void w_serial_old(gauge_file *gf)
   FILE *fp = NULL;
   gauge_header *gh = NULL;
   u_int32type *val;
-  int rank29,rank31;
+  size_t rank29,rank31;
   fsu3_matrix *lbuf = NULL;
   fsu3_matrix tbuf[4];
-  int buf_length;
+  size_t buf_length;
   register int i,j,k;
   off_t offset;             /* File stream pointer */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
@@ -315,7 +315,7 @@ static void w_serial_old(gauge_file *gf)
 /* Flush lbuf to output */
 /* buf_length is reset */
 static void flush_lbuf_to_file(gauge_file *gf, fsu3_matrix *lbuf, 
-			       int *buf_length)
+			       size_t *buf_length)
 {
   FILE *fp = gf->fp;
 
@@ -332,7 +332,7 @@ static void flush_lbuf_to_file(gauge_file *gf, fsu3_matrix *lbuf,
 }
 
 /* Accumulate checksums */
-static void accum_cksums(gauge_file *gf, int *rank29, int *rank31,
+static void accum_cksums(gauge_file *gf, size_t *rank29, size_t *rank31,
 			 u_int32type *buf, int n){
   int k;
   u_int32type *val;
@@ -348,9 +348,9 @@ static void accum_cksums(gauge_file *gf, int *rank29, int *rank31,
 
 /* Flush tbuf to lbuf and accumulate checksums */
 /* tbuf_length is not reset here */
-static void flush_tbuf_to_lbuf(gauge_file *gf, int *rank29, int *rank31,
-			       fsu3_matrix *lbuf, int *buf_length, 
-			       fsu3_matrix *tbuf, int tbuf_length){
+static void flush_tbuf_to_lbuf(gauge_file *gf, size_t *rank29, size_t *rank31,
+			       fsu3_matrix *lbuf, size_t *buf_length, 
+			       fsu3_matrix *tbuf, size_t tbuf_length){
 
   int nword;
   u_int32type *buf;
@@ -367,7 +367,7 @@ static void flush_tbuf_to_lbuf(gauge_file *gf, int *rank29, int *rank31,
   }
 }
 
-static void send_buf_to_node0(fsu3_matrix *tbuf, int tbuf_length, 
+static void send_buf_to_node0(fsu3_matrix *tbuf, size_t tbuf_length, 
 			      int currentnode){
   if(this_node == currentnode){
     send_field((char *)tbuf,4*tbuf_length*sizeof(fsu3_matrix),0);
@@ -384,10 +384,10 @@ static void w_serial(gauge_file *gf)
 
   FILE *fp = NULL;
   gauge_header *gh = NULL;
-  int rank29,rank31;
+  size_t rank29,rank31;
   fsu3_matrix *lbuf = NULL;
   fsu3_matrix *tbuf = NULL;
-  int buf_length, tbuf_length;
+  size_t buf_length, tbuf_length;
   register int i,j;
   off_t offset;             /* File stream pointer */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
@@ -552,14 +552,14 @@ static void r_serial(gauge_file *gf)
   off_t coord_list_size;    /* Size of coordinate list in bytes */
   off_t head_size;          /* Size of header plus coordinate list */
   off_t checksum_offset = 0; /* Where we put the checksum */
-  int rcv_rank, rcv_coords;
+  size_t rcv_rank, rcv_coords;
   int destnode;
   int k;
+  size_t buf_length = 0, where_in_buf = 0;
   int x,y,z,t;
-  int buf_length = 0, where_in_buf = 0;
   gauge_check test_gc;
   u_int32type *val;
-  int rank29,rank31;
+  size_t rank29,rank31;
   fsu3_matrix *lbuf = NULL;
   fsu3_matrix tmpsu3[4];
   char myname[] = "r_serial";
@@ -656,11 +656,12 @@ static void r_serial(gauge_file *gf)
 	    if(buf_length > MAX_BUF_LENGTH)buf_length = MAX_BUF_LENGTH;
 	    /* then do read */
 	    
-	    if( (int)g_read(lbuf,4*sizeof(fsu3_matrix),buf_length,fp) 
-		!= buf_length)
+	    size_t buf_length_read = g_read(lbuf,4*sizeof(fsu3_matrix),buf_length,fp) ;
+	    if( buf_length_read != buf_length)
 	      {
 		printf("%s: node %d gauge configuration read error %d file %s\n",
 		       myname,this_node,errno,filename); 
+		printf("Wanted %lu and got %lu\n", buf_length, buf_length_read);
 		fflush(stdout); terminate(1);
 	      }
 	    where_in_buf = 0;  /* reset counter */
@@ -761,13 +762,13 @@ static void r_serial_arch(gauge_file *gf)
   FILE *fp;
   char *filename;
 
-  int rcv_rank, rcv_coords;
+  size_t rcv_rank, rcv_coords;
   int destnode;
   int i,k;
   int x,y,z,t;
   gauge_check test_gc;
   u_int32type *val;
-  int rank29,rank31;
+  size_t rank29,rank31;
   su3_matrix tmpsu3[4];
   int dataformat = gf->dataformat;
   int precision = gf->precision;
@@ -990,7 +991,7 @@ static void w_parallel(gauge_file *gf)
 
   FILE *fp;
   fsu3_matrix *lbuf;
-  int buf_length,where_in_buf;
+  size_t buf_length,where_in_buf;
   u_int32type *val;
   size_t rank29,rank31;
   off_t checksum_offset;
@@ -1001,7 +1002,7 @@ static void w_parallel(gauge_file *gf)
     short x,y,z,t;
     fsu3_matrix link[4];
   } msg;
-  int isite,ksite,site_block;
+  size_t isite,ksite,site_block;
   size_t rcv_coords,rcv_rank,tmp_rank;
   int destnode,sendnode;
   char myname[] = "w_parallel";
@@ -1181,9 +1182,9 @@ static void w_checkpoint(gauge_file *gf)
   fsu3_matrix *lbuf;
   u_int32type *val;
   int k;
-  int rank29,rank31;
+  size_t rank29,rank31;
   off_t checksum_offset;
-  int buf_length;
+  size_t buf_length;
   register site *s;
   register int i;
   char myname[] = "w_checkpoint";
@@ -1338,13 +1339,14 @@ static void r_parallel(gauge_file *gf)
     fsu3_matrix link[4];
   } msg;
 
-  int buf_length,where_in_buf;
+  size_t buf_length,where_in_buf;
   gauge_check test_gc;
   u_int32type *val;
-  int rank29,rank31;
-  int destnode,sendnode,isite,ksite,site_block;
+  size_t rank29,rank31;
+  int destnode,sendnode;
+  size_t isite,ksite,site_block;
   int x,y,z,t;
-  int rcv_rank,rcv_coords;
+  size_t rcv_rank,rcv_coords;
   register int i,k;
 
   off_t offset ;            /* File stream pointer */

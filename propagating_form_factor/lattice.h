@@ -124,7 +124,7 @@ EXTERN int wallflag;
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;	/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;	/* volume of lattice = nx*ny*nz*nt */
 
 EXTERN int verbose_flag ; /*** flag controllling the amount of debug
 			    information to print ***/
@@ -222,7 +222,7 @@ EXTERN complex *w_meson_corr; /* Storage for correlator        */
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
-EXTERN  int	sites_on_node;		/* number of sites on this node */
+EXTERN  size_t	sites_on_node;		/* number of sites on this node */
 EXTERN  int	even_sites_on_node;	/* number of even sites on this node */
 EXTERN  int	odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN  int	number_of_nodes;	/* number of nodes in use */
