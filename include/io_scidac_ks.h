@@ -53,8 +53,10 @@ int write_ksprop_usqcd_c(QIO_Writer *outfile, su3_vector *src,
 QIO_Writer *open_ks_eigen_outfile(char *filename, int Nvecs, int volfmt, int serpar);
 int write_ks_eigenvector(QIO_Writer *outfile, su3_vector *eigVec, double eigVal, double resid);
 void close_ks_eigen_outfile(QIO_Writer *outfile);
-QIO_Reader *open_ks_eigen_infile(char *filename, int *Nvecs, int *packed, int serpar);
+QIO_Reader *open_ks_eigen_infile(char *filename, int *Nvecs, int *packed, int *file_type, int serpar);
 int read_ks_eigenvector(QIO_Reader *infile, int packed, su3_vector *eigVec, double *eigVal);
+int read_quda_ks_eigenvectors(QIO_Reader *infile, su3_vector *eigVec[], double *eigVal, int *Nvecs,
+			      int parity);
 void close_ks_eigen_infile(QIO_Reader *infile);
 
 /**********************************************************************/

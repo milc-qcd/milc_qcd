@@ -534,13 +534,11 @@ void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,
     tmp = create_v_field();
 
     /* Compute tmp = M src */
-    node0_printf("check_invert_field: calling ks_dirac_op\n"); fflush(stdout);
     ks_dirac_op( src, tmp, mass, parity, fn);
 
     sum2=sum=0.0;
     dmaxerr=0;
     flag = 0;
-    node0_printf("check_invert_field: checking diffs\n"); fflush(stdout);
     FORSOMEFIELDPARITY(i,parity){
 	for(k=0;k<3;k++){
 	    r_diff = dest[i].c[k].real - tmp[i].c[k].real;

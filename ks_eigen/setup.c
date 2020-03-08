@@ -332,14 +332,14 @@ int readin(int prompt) {
     eigVec[i]= (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
   
   /* Do whatever is needed to get eigenpairs */
+  imp_ferm_links_t **fn = get_fm_links(fn_links);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &param.eigen_param.Nvecs_in, eigVal, eigVec, 1);
+			   &param.eigen_param.Nvecs_in, eigVal, eigVec, fn[0], 1);
 #if 1
   /* Calculate and print the residues and norms of the eigenvectors */
   double *resid = (double *)malloc(param.eigen_param.Nvecs_in*sizeof(double));
-  imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
   node0_printf("Even site residuals\n");
-  check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs_in, EVEN, fn );
+  check_eigres( resid, eigVec, eigVal, param.eigen_param.Nvecs_in, EVEN, fn[0] );
   free(resid);
 #endif
   

@@ -128,14 +128,14 @@ void r_ascii_ks_eigen_f(ks_eigen_file *kseigf);
 
 /* Prototypes for io_helpers_ks_eigen.c */
 void restore_eigVec(int Nvecs, double *eigVal, su3_vector **eigVec, int parity,
-		    imp_ferm_links_t *fm);
+		    imp_ferm_links_t *fn);
 ks_eigen_file *r_open_ks_eigen(int flag, char *filename);
 ks_eigen_file *w_open_ks_eigen(int flag, char *filename, int parity);
 
 void r_close_ks_eigen(int flag, ks_eigen_file *kseigf);
 void w_close_ks_eigen(int flag, ks_eigen_file *kseigf);
 int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
-		    su3_vector **eigVec, int timing);
+		    su3_vector **eigVec, imp_ferm_links_t *fn, int timing);
 int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal, 
 		  su3_vector **eigVec, double *resid, int timing);
 
