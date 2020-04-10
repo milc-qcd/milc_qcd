@@ -198,10 +198,10 @@ apply_par_xport_3pt(ks_prop_field *dest, ks_prop_field *src,
       scalar_mult_su3_vector( &tvec1->v[c][i], 1./6., &dest->v[c][i] );
     }
   }
+  }
   destroy_ksp_field(tvec1);
   destroy_ksp_field(tvec0);
   destroy_ksp_field(tsrc);
-  }
 }
 
 #endif // GB_BARYON
