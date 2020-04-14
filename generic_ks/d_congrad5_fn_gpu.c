@@ -379,7 +379,7 @@ int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst,
   const int quda_precision = qic->prec;
 
   // TBD: we should persist this.
-  void *mg_preconditioner = NULL;
+  static void *mg_preconditioner = NULL;
 
   double residual, relative_residual;
   int num_iters = 0;
@@ -416,7 +416,7 @@ int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst,
   }
 
   
-
+  // Just BiCGstab for now
   qudaInvertMG(MILC_PRECISION,
 	       quda_precision, 
 	       mass,
