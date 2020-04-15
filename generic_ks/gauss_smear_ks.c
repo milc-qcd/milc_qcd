@@ -64,16 +64,20 @@ forward2(int dir, su3_vector *dest, su3_vector *src,
   tag = start_gather_field( src, sizeof(su3_vector),
 			    dir, EVENANDODD, gen_pt[dir] );
   wait_gather(tag);
-  
+
   /* tmp <- U(up,dir) shift(up,dir)(src) */
   FORALLSITES(i,s){
     if(t0 == ALL_T_SLICES || s->t == t0){
-      mult_su3_mat_vec( t_links + 4*i + dir,  
-			(su3_vector * )(gen_pt[dir][i]), 
-			tmp + i ); 
+      #ifndef NO_GAUSS_SMEAR_LINKS
+        mult_su3_mat_vec( t_links + 4*i + dir,  
+        (su3_vector * )(gen_pt[dir][i]), 
+        tmp + i ); 
+      #else
+        su3vec_copy((su3_vector *)gen_pt[dir][i], tmp + i);
+      #endif
     }
   }
-
+  
   cleanup_gather(tag);
 
   /* start parallel transport of tmp from up dir */
@@ -84,9 +88,13 @@ forward2(int dir, su3_vector *dest, su3_vector *src,
   /* dest <- U(up,dir) shift(up,2dir)(src) */
   FORALLSITES(i,s){
     if(t0 == ALL_T_SLICES || s->t == t0){
-      mult_su3_mat_vec( t_links + 4*i + dir,  
-			(su3_vector * )(gen_pt[dir][i]), 
-			dest + i ); 
+      #ifndef NO_GAUSS_SMEAR_LINKS
+        mult_su3_mat_vec( t_links + 4*i + dir,  
+        (su3_vector * )(gen_pt[dir][i]), 
+        dest + i ); 
+      #else
+        su3vec_copy((su3_vector *)gen_pt[dir][i], dest + i); 
+      #endif
     }
   }
 
@@ -113,8 +121,12 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
   FORALLSITES(i,s){
     /* Work only on the specified time slice(s) */
     if(t0 == ALL_T_SLICES || s->t == t0){
-      mult_adj_su3_mat_vec( t_links +  4*i + dir, src + i, 
-			    dest + i );
+      #ifndef NO_GAUSS_SMEAR_LINKS
+        mult_adj_su3_mat_vec( t_links +  4*i + dir, src + i, 
+            dest + i );
+      #else
+        su3vec_copy(src + i, dest + i);
+      #endif
     }
   }
   
@@ -127,9 +139,13 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
   /* tmp <- U^dagger(down,dir) gen_pt_array */
   FORALLSITES(i,s){
     if(t0 == ALL_T_SLICES || s->t == t0){
-      mult_adj_su3_mat_vec( t_links + 4*i + dir,  
-			    (su3_vector * )(gen_pt[OPP_DIR(dir)][i]), 
-			    tmp + i ); 
+      #ifndef NO_GAUSS_SMEAR_LINKS
+        mult_adj_su3_mat_vec( t_links + 4*i + dir,  
+            (su3_vector * )(gen_pt[OPP_DIR(dir)][i]), 
+            tmp + i ); 
+      #else
+        su3vec_copy((su3_vector *)gen_pt[OPP_DIR(dir)][i], tmp + i);
+      #endif
     }
   }
   

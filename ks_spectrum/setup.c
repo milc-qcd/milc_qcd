@@ -1366,7 +1366,8 @@ int readin(int prompt) {
 			char baryon_label_in[MAX_BARYON_LABEL],
 		             phase_lab[4], factor_op[2], //gts_label[4],
 		             gts_label_src[4], gts_label_snk[4],
-		             symiso_label_src[6], symiso_label_snk[7], cube_pos[7];
+		             symiso_label_src[6], symiso_label_snk[7], sink_tie[7],
+					 cube_pos[7];
 			double factor;
 		        int gb_class_src, gb_class_snk;
 
@@ -1374,22 +1375,24 @@ int readin(int prompt) {
 
 			IF_OK strcpy(param.gbbaryon_label[itriplet][i], baryon_label_in);
 
-			/* phase, op, factor, GTSirrep, symiso, class, construction*/
+			/* phase, op, factor, GTSirrep, symiso, class, sink tieup type, construction*/
 			IF_OK {
-			  ok = scanf("%s %s %lf %s %s %i %s %s %i %s",
+			  ok = scanf("%s %s %lf %s %s %i %s %s %i %s %s",
 		                     phase_lab,factor_op,&factor,
 		                     gts_label_src,symiso_label_src,&gb_class_src,
-		                     gts_label_snk,symiso_label_snk,&gb_class_snk,cube_pos);
-			  //if(ok != 9){
-			  if(ok != 10){
+		                     gts_label_snk,symiso_label_snk,&gb_class_snk,
+							 sink_tie, cube_pos);
+
+			  if(ok != 11){
 			    printf("\nError reading Golterman-Bailey baryon parameters\n");
 			    status++;
 			  }
 			  else {
-			    printf(" %3s %1s %6f %4s %6s %2i %4s %7s %2i %6s\n",
+			    printf(" %3s %1s %6f %4s %6s %2i %4s %7s %2i %6s %6s\n",
 		                   phase_lab,factor_op,factor,
 		                   gts_label_src,symiso_label_src,gb_class_src,
-		                   gts_label_snk,symiso_label_snk,gb_class_snk,cube_pos);
+		                   gts_label_snk,symiso_label_snk,gb_class_snk,
+						   sink_tie, cube_pos);
 			  }
 			}
 
@@ -1512,6 +1515,16 @@ int readin(int prompt) {
           decode_gb_op(symiso_label_snk,gts_label_snk,param.qk8num_s[itriplet],gb_class_snk);
         if (param.gbbaryon_snk[itriplet][i] == GB_UNDEFINED){
           printf("error: undefined baryon sink\n");
+          status++;
+				      }
+				    }
+      /* Decode sink tieup options for correlator */
+      /* Permitted choices are 'point' or 'wall' */
+      IF_OK {
+        if     (strcmp("point", sink_tie) == 0 ){ param.gb_wall[itriplet][i] = 0x0; }
+        else if(strcmp("wall", sink_tie) == 0 ){ param.gb_wall[itriplet][i] = 0x1; }
+        else {
+          printf("\n: Invalid operator construction %s.\n", sink_tie);
           status++;
 				      }
 				    }

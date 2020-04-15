@@ -1145,21 +1145,20 @@ static void spectrum_ks_print_baryon(int triplet){
       param.saveflag_b[triplet] = FORGET;
 
     for(b=0;b<num_corr;b++){
-
       print_start_baryon_prop(triplet, b);
       print_start_fnal_baryon_prop(corr_fp, triplet, b);
       for(t=0; t<nt; t++){
-	tp = (t + param.r_offset_b[triplet][3]) % nt;
-	prop = baryon_prop[b][tp];
-	g_complexsum( &prop );
-	// CDIVREAL(prop, space_vol, prop);
-	/* Fix sign for antiperiodic bc */
-	if( (((t+param.r_offset_b[triplet][3])/nt
-	      - param.r_offset_b[triplet][3]/nt) %2 ) == 1 ){
-	  CMULREAL(prop,-1.,prop);
-	}
-	print_baryon_prop(triplet, t, prop);
-	print_fnal_baryon_prop(corr_fp, triplet, t, prop);
+        tp = (t + param.r_offset_b[triplet][3]) % nt;
+        prop = baryon_prop[b][tp];
+        g_complexsum( &prop );
+        // CDIVREAL(prop, space_vol, prop);
+        /* Fix sign for antiperiodic bc */
+        if( (((t+param.r_offset_b[triplet][3])/nt
+              - param.r_offset_b[triplet][3]/nt) %2 ) == 1 ){
+          CMULREAL(prop,-1.,prop);
+        }
+        print_baryon_prop(triplet, t, prop);
+        print_fnal_baryon_prop(corr_fp, triplet, t, prop);
       }
       print_end_baryon_prop(triplet);
     }
@@ -1433,6 +1432,11 @@ static void print_start_fnal_gb_baryon_prop(FILE *fp, int triplet, int b)
 	  gb_baryon_label(param.gbbaryon_src[triplet][b]));
   fprintf(fp,"gb_baryon_sink:              %s\n",
 	  gb_baryon_label(param.gbbaryon_snk[triplet][b]));
+  if (param.gb_wall[triplet][b]){
+   fprintf(fp,"sink_type:                   wall\n");
+  } else {
+   fprintf(fp,"sink_type:                   point\n");
+  }
   if (param.gb_corner[triplet][b]){
    fprintf(fp,"construction:                cube\n");
   } else {
@@ -1589,6 +1593,7 @@ void spectrum_ks_gb_baryon(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_f
                   param.gbbaryon_src[triplet],
                   param.gbbaryon_snk[triplet],
                   param.gb_spintaste[triplet],
+                  param.gb_wall[triplet],
                   param.gb_corner[triplet],
                   param.qk8num_d[triplet],
                   param.qk8num_s[triplet],

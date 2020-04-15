@@ -614,6 +614,30 @@ baryon_color_asym_mat_mom(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field 
   CMUL(cc,mom[i],*dt);
 }
 
+/** 
+ * Antisymmetrizing for wall sink  
+ * WARNING: This does not work with openMP enabled because
+ * we need global reduction within the loop. Need a new implementation
+ * for wall tieup in openACC maybe for GPU implementation??
+ * 
+*/
+static void
+baryon_color_asym_mat_wall(su3_vector *vqk0, su3_vector *vqk1, su3_vector *vqk2, complex *dt){
+  complex cc;
+  baryon_color_asym_v(vqk0+0, vqk1+1, vqk2+2, dt);
+  baryon_color_asym_v(vqk0+1, vqk1+2, vqk2+0, &cc);
+  CSUM(*dt,cc);
+  baryon_color_asym_v(vqk0+2, vqk1+0, vqk2+1, &cc);
+  CSUM(*dt,cc);
+  baryon_color_asym_v(vqk0+0, vqk1+2, vqk2+1, &cc);
+  CSUB(*dt,cc,*dt);
+  baryon_color_asym_v(vqk0+1, vqk1+0, vqk2+2, &cc);
+  CSUB(*dt,cc,*dt);
+  baryon_color_asym_v(vqk0+2, vqk1+1, vqk2+0,&cc);
+  CSUB(*dt,cc,*dt);
+  //node0_printf("dt[t=0] = %.7e + i %.7e\n", (dt[0]).real, (dt[0]).imag);
+}
+
 /*------------------------------------------------------------------*/
 /**
    Accumulate the color antisymmetrization for a specific choice of
@@ -624,68 +648,146 @@ baryon_color_asym_mat_mom(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field 
  */
 static void
 accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *qk2,
-                        short domom, complex *mom, int flip_snk, int orig, Real pfi, complex *dt){
+                        short domom, complex *mom, int flip_snk, int orig, 
+                        Real pfi, short dowall, complex *dt){
   complex cc,csum;
   complex csum_new[nt];
-  site* s1, s2;
+  site* s1;
   //complex testsum;
   int i,t,x,y,z;
   int disp[3];
   Real pf = pfi/36.;
-  //node0_printf("Entering accum_baryon_color_asym: pf=%f\n",pfi);
-
   for(t=0;t<nt;t++){
     (csum_new[t]).real = 0.;
     (csum_new[t]).imag = 0.;
-    }
-
-  typedef struct {
-    int t;
-    int node_index;
-  } node_index_t_tuple;
-
-  static bool initialized = false; // Don't initilize it everytime!
-  static node_index_t_tuple corner_sites[8][(100*100*100)/8+1];
-  static int corner_indx[8] = {0}; // Keep track of index for each corner_sites
-  if (nx*ny*nz/8 > 100*100*100/8){
-    node0_printf("Lattice size too large. It might cause troubles to tieups. Check accum_baryon_color_asym to change allocation size!");
-    exit(-1);
   }
-  int temp_corner;
-  node_index_t_tuple temp_tuple;
+  //node0_printf("Entering accum_baryon_color_asym: pf=%f\n",pfi);
 
-  if (initialized==false) {
-    FORALLSITES(i,s1){
-      for(temp_corner=0; temp_corner<8; temp_corner++){
-        disp[0] = ((int) temp_corner % 2     ) ^ flip_snk;
-        disp[1] = ((int)(temp_corner / 2) % 2) ^ flip_snk;
-        disp[2] = ((int) temp_corner / 4     ) ^ flip_snk;
-        if ((s1->x+disp[0])%2==0 & (s1->y+disp[1])%2==0 & (s1->z+disp[2])%2==0){
-          corner_sites[temp_corner][corner_indx[temp_corner]] = (node_index_t_tuple){.t=s1->t, .node_index=i};
-          corner_indx[temp_corner]++;
+   
+  if (dowall) {  // wall sink tieups    
+    #ifdef OMP
+        node0_printf("accum_baryon_color_asym error: not yet implemented for wall sink with openMP\n");
+        terminate(1);
+    #endif
+
+    if (domom){
+      node0_printf("accum_baryon_color_asym error: not yet implemented for wall sink with momenta\n");
+      terminate(1);
+    } else {
+      su3_vector *vqk0, *vqk1, *vqk2;
+      int nc = 3;
+      int icolor, icolor_snk;
+
+      //  Initilize zero vectors
+      vqk0 = (su3_vector *) malloc(nt*nc*sizeof(su3_vector)); 
+      vqk1 = (su3_vector *) malloc(nt*nc*sizeof(su3_vector));
+      vqk2 = (su3_vector *) malloc(nt*nc*sizeof(su3_vector));
+      for (t=0; t<nt; t++){
+        for (icolor=0; icolor<nc; icolor++){ // looping over source colors
+          for (icolor_snk=0; icolor_snk<nc; icolor_snk++){ // looping over source colors
+            vqk0[t*nc+icolor].c[icolor_snk].real = 0.0;
+            vqk0[t*nc+icolor].c[icolor_snk].imag = 0.0;
+            vqk1[t*nc+icolor].c[icolor_snk].real = 0.0;
+            vqk1[t*nc+icolor].c[icolor_snk].imag = 0.0;
+            vqk2[t*nc+icolor].c[icolor_snk].real = 0.0;
+            vqk2[t*nc+icolor].c[icolor_snk].imag = 0.0;
+          }
         }
       }
+
+      // Now do the global thing sum for wall source
+      disp[0] = ((int) orig % 2     ) ^ flip_snk;
+      disp[1] = ((int)(orig / 2) % 2) ^ flip_snk;
+      disp[2] = ((int) orig / 4     ) ^ flip_snk;
+      FORALLSITES(i,s1){
+        if (((s1->x+disp[0])%2==0) & ((s1->y+disp[1])%2==0) & ((s1->z+disp[2])%2==0)){
+          for (icolor=0; icolor<nc; icolor++){ 
+            add_su3_vector(vqk0+(s1->t*nc)+icolor, &qk0->v[icolor][i], vqk0+s1->t*nc+icolor);
+            add_su3_vector(vqk1+(s1->t*nc)+icolor, &qk1->v[icolor][i], vqk1+s1->t*nc+icolor);
+            add_su3_vector(vqk2+(s1->t*nc)+icolor, &qk2->v[icolor][i], vqk2+s1->t*nc+icolor);
+          }
+        }
+      }
+
+      // Aggregate results on node0
+      for (t=0; t<nt; t++){
+        for (icolor=0; icolor<nc; icolor++){
+          g_veccomplexsum((vqk0+t*nc+icolor)->c, nc);
+          g_veccomplexsum((vqk1+t*nc+icolor)->c, nc);
+          g_veccomplexsum((vqk2+t*nc+icolor)->c, nc);
+        }
+        baryon_color_asym_mat_wall(vqk0+t*nc, 
+                                   vqk1+t*nc, 
+                                   vqk2+t*nc, &cc);
+        CSUM(csum_new[t], cc);
+        CMULREAL(csum_new[t], pf, csum_new[t]);
+        CSUM(dt[t], csum_new[t]);
+      }
+      if (this_node != 0){
+        for (t=0; t<nt; t++){
+          // Safety feature, because dt will be reduced again 
+          // later and we really want to make sure it is zero for all other nodes
+          // All the results are aggregated on dt of node0
+          dt[t].real = 0.0;
+          dt[t].imag = 0.0;
+        }
+      } // end aggregating results
+
+      // Clean up
+      free(vqk0);
+      free(vqk1);
+      free(vqk2);
+    }  // no domom
+  } else { // point sink tieups
+
+    typedef struct {
+      int t;
+      int node_index;
+    } node_index_t_tuple;
+
+    static bool initialized = false; // Don't initilize it everytime! Make it global variable
+    static node_index_t_tuple corner_sites[8][(100*100*100)/8+1];
+    static int corner_indx[8] = {0}; // Keep track of index for each corner_sites
+    if (nx*ny*nz/8 > 100*100*100/8){
+      node0_printf("Lattice size too large. It might cause troubles to tieups. Check accum_baryon_color_asym to change allocation size!");
+      terminate(1);
     }
-    initialized = true;
-  }
+    int temp_corner;
+    node_index_t_tuple temp_tuple;
 
-  disp[0] = ((int) orig % 2     ) ^ flip_snk;
-  disp[1] = ((int)(orig / 2) % 2) ^ flip_snk;
-  disp[2] = ((int) orig / 4     ) ^ flip_snk;
+    if (initialized==false) {
+      FORALLSITES(i,s1){
+        for(temp_corner=0; temp_corner<8; temp_corner++){
+          disp[0] = ((int) temp_corner % 2     ) ^ flip_snk;
+          disp[1] = ((int)(temp_corner / 2) % 2) ^ flip_snk;
+          disp[2] = ((int) temp_corner / 4     ) ^ flip_snk;
+          if (((s1->x+disp[0])%2==0) & ((s1->y+disp[1])%2==0) & ((s1->z+disp[2])%2==0)){
+            corner_sites[temp_corner][corner_indx[temp_corner]] = (node_index_t_tuple){.t=s1->t, .node_index=i};
+            corner_indx[temp_corner]++;
+          }
+        }
+      }
+      initialized = true;
+    }
 
-  for(i=0; i<corner_indx[orig]; i++){
+    disp[0] = ((int) orig % 2     ) ^ flip_snk;
+    disp[1] = ((int)(orig / 2) % 2) ^ flip_snk;
+    disp[2] = ((int) orig / 4     ) ^ flip_snk;
+  
+    for(i=0; i<corner_indx[orig]; i++){
     temp_tuple = corner_sites[orig][i];
-    if (domom){
-      baryon_color_asym_mat_mom(qk0, qk1, qk2, mom, temp_tuple.node_index, &cc);
-    } else{
-      baryon_color_asym_mat(qk0, qk1, qk2, temp_tuple.node_index, &cc);
+      if (domom){
+        baryon_color_asym_mat_mom(qk0, qk1, qk2, mom, temp_tuple.node_index, &cc);
+      } else{
+        baryon_color_asym_mat(qk0, qk1, qk2, temp_tuple.node_index, &cc);
+      }
+      CSUM(csum_new[temp_tuple.t],cc);
     }
-    CSUM(csum_new[temp_tuple.t],cc);
-  }
-  for(t=0;t<nt;t++){
-    CMULREAL(csum_new[t],pf,csum_new[t]);
-    CSUM(dt[t],csum_new[t]);
-  }
+    for(t=0;t<nt;t++){
+      CMULREAL(csum_new[t],pf,csum_new[t]);
+      CSUM(dt[t],csum_new[t]);
+    }
+  } // end point sink
 }
 
 /*------------------------------------------------------------------*/
@@ -700,7 +802,7 @@ accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *q
  */
 static void
 gb_symm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
-                 su3_matrix *links, int tscIdx, int tskIdx, int r0[], int stIdx,
+                 su3_matrix *links, int tscIdx, int tskIdx, int r0[], int stIdx, short dowall, 
                  short docube, short domom, complex *mom, int flip_snk, Real pfi, complex *dt){
   int c;
   int cubestart,cubeend;
@@ -787,21 +889,21 @@ gb_symm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
   //             offset_singlet_index(si_snk[1],orig));
   //node0_printf("ksp5: %.5e + i %.5e\n", (ksp5->v[2][100]).c[1].real, (ksp5->v[2][100]).c[1].imag);
 
-  accum_baryon_color_asym(ksp0,ksp1,ksp5,domom,mom,flip_snk,k_disp,stsign*pfi/6.,dt);
+  accum_baryon_color_asym(ksp0,ksp1,ksp5,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
   //node0_printf("dt[t=0] = %.7e + i %.7e\n", (dt[0]).real, (dt[0]).imag);
-  accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp,stsign*pfi/6.,dt);
+  accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
   map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0],orig),
     si_snk[1], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp2,ksp3,domom,mom,flip_snk,k_disp,stsign*pfi/6.,dt);
+  accum_baryon_color_asym(ksp0,ksp2,ksp3,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
 
   map_ksp_field(&ksp2, qk1, 1, offset_singlet_index(si_src[1],orig),
     si_snk[0], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp2,ksp5,domom,mom,flip_snk,k_disp,stsign*pfi/6.,dt);
+  accum_baryon_color_asym(ksp0,ksp2,ksp5,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
 
   map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0],orig),
     si_snk[2], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp,stsign*pfi/6.,dt);
-  accum_baryon_color_asym(ksp0,ksp1,ksp3,domom,mom,flip_snk,k_disp,stsign*pfi/6.,dt);
+  accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
+  accum_baryon_color_asym(ksp0,ksp1,ksp3,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
 
   //node0_printf("dt[t=0] = %.7e + i %.7e\n", (dt[0]).real, (dt[0]).imag);
 
@@ -834,7 +936,7 @@ gb_symm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
  */
 static void
 gb_mixed_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
-                  su3_matrix *links, int tscIdx, int tskIdx, int r0[], int stIdx,
+                  su3_matrix *links, int tscIdx, int tskIdx, int r0[], int stIdx, short dowall,
                   short docube, short domom, complex *mom, int flip_snk, Real pfi, complex *dt){
   int c;
   int cubestart,cubeend;
@@ -919,12 +1021,12 @@ gb_mixed_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
   complex isum1[nt], isum2[nt], isum3[nt];
   int t;
   for(t=0;t<nt;t++){
-      (isum1[t]).real = 0.0;
-    	  (isum1[t]).imag = 0.0;
-      (isum2[t]).real = 0.0;
+    (isum1[t]).real = 0.0;
+    (isum1[t]).imag = 0.0;
+    (isum2[t]).real = 0.0;
 	  (isum2[t]).imag = 0.0;
 	  (isum3[t]).real = 0.0;
-      (isum3[t]).imag = 0.0;
+    (isum3[t]).imag = 0.0;
   }
 
   /* apply sink point splitting */
@@ -934,7 +1036,7 @@ gb_mixed_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
     si_snk[1], r0, links, remap);
   map_ksp_field(&ksp2, qk2, 2, offset_singlet_index(si_src[2], k_disp),
     si_snk[2], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,stsign*2.*pfi,isum1);
+  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,stsign*2.*pfi, dowall, isum1);
   remap = 0x1;
 
   map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0], k_disp),
@@ -943,7 +1045,7 @@ gb_mixed_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
     si_snk[2], r0, links, remap);
   map_ksp_field(&ksp2, qk2, 2, offset_singlet_index(si_src[2], k_disp),
     si_snk[0], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,-stsign*pfi,isum2);
+  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,-stsign*pfi, dowall, isum2);
 
   map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0], k_disp),
     si_snk[2], r0, links, remap);
@@ -951,7 +1053,7 @@ gb_mixed_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
     si_snk[0], r0, links, remap);
   map_ksp_field(&ksp2, qk2, 2, offset_singlet_index(si_src[2], k_disp),
     si_snk[1], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,-stsign*pfi,isum3);
+  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,-stsign*pfi, dowall, isum3);
 
   // Sum up partial sums
   for(t=0;t<nt;t++){
@@ -995,7 +1097,7 @@ gb_mixed_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
  */
 static void
 gb_asymm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
-                  su3_matrix *links, int tscIdx, int tskIdx, int r0[], int stIdx,
+                  su3_matrix *links, int tscIdx, int tskIdx, int r0[], int stIdx, short dowall, 
                   short docube, short domom, complex *mom, int flip_snk, Real pfi, complex *dt){
   int c;
   int cubestart,cubeend;
@@ -1062,18 +1164,18 @@ gb_asymm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
     si_snk[2], r0, links, remap);
 
   remap = 0x1;
-  accum_baryon_color_asym(ksp0,ksp1,ksp5,domom,mom,flip_snk,k_disp, stsign*pfi/6.,dt);
-  accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp,-stsign*pfi/6.,dt);
+  accum_baryon_color_asym(ksp0,ksp1,ksp5,domom,mom,flip_snk,k_disp, stsign*pfi/6., dowall, dt);
+  accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp,-stsign*pfi/6., dowall, dt);
   map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0], orig),
     si_snk[1], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp2,ksp3,domom,mom,flip_snk,k_disp, stsign*pfi/6.,dt);
+  accum_baryon_color_asym(ksp0,ksp2,ksp3,domom,mom,flip_snk,k_disp, stsign*pfi/6., dowall, dt);
   map_ksp_field(&ksp2, qk1, 1, offset_singlet_index(si_src[1], orig),
     si_snk[0], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp2,ksp5,domom,mom,flip_snk,k_disp,-stsign*pfi/6.,dt);
+  accum_baryon_color_asym(ksp0,ksp2,ksp5,domom,mom,flip_snk,k_disp,-stsign*pfi/6., dowall, dt);
   map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0], orig),
     si_snk[2], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp, stsign*pfi/6.,dt);
-  accum_baryon_color_asym(ksp0,ksp1,ksp3,domom,mom,flip_snk,k_disp,-stsign*pfi/6.,dt);
+  accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp, stsign*pfi/6., dowall, dt);
+  accum_baryon_color_asym(ksp0,ksp1,ksp3,domom,mom,flip_snk,k_disp,-stsign*pfi/6., dowall, dt);
 
   } // orig
 
@@ -1090,7 +1192,7 @@ static void
 gb_sink_term_loop(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
                  su3_matrix *links, int tscIdx, enum gb_baryon_op snk_op,
                  int num_d, int num_s, int r0[], int stIdx,
-                 short docube, short domom, complex *mom,
+                 short dowall, short docube, short domom, complex *mom,
                  int flip_snk, Real pfi, complex *dt){
   int j,k;
   int nperm,nterm;              /* number of permutations/terms */
@@ -1125,14 +1227,14 @@ gb_sink_term_loop(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
     /* simple implementation */
     for(j=0;j<nterm;j++){
       gb_symm_sink_term(qk0, qk1, qk2, links, tscIdx, tskIdx[j],
-       r0, stIdx, docube, domom, mom, flip_snk, pfi*(Real)(pf[j]/sqrt(pfsum)), dt);
+       r0, stIdx, dowall, docube, domom, mom, flip_snk, pfi*(Real)(pf[j]/sqrt(pfsum)), dt);
     }
   } /* symmetric sink */
   else if(stype == GBSYM_ANTISYM) {
     /* simple implementation */
     for(j=0;j<nterm;j++){
       gb_asymm_sink_term(qk0, qk1, qk2, links, tscIdx, tskIdx[j],
-       r0, stIdx, docube, domom, mom, flip_snk, pfi*(Real)pf[j]/sqrt(pfsum), dt);
+       r0, stIdx, dowall, docube, domom, mom, flip_snk, pfi*(Real)pf[j]/sqrt(pfsum), dt);
     }
   } /* antisymmetric sink */
   else if(stype == GBSYM_MIXED){
@@ -1144,7 +1246,7 @@ gb_sink_term_loop(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
         gb_get_permutation_order(snk_op,k,num_d,num_s,dflt,perm); // permute tastes
         psign = gb_get_permutation_sign(snk_op,k,num_d,num_s);
         gb_mixed_sink_term(qk0, qk1, qk2, links, tscIdx, singlet_to_triplet_index(perm),
-          r0, stIdx, docube, domom, mom, flip_snk, pfi*(Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
+          r0, stIdx, dowall, docube, domom, mom, flip_snk, pfi*(Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
 
         /* Need to also tieup the other way around */
         int temp_perm[3];
@@ -1152,7 +1254,7 @@ gb_sink_term_loop(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
         temp_perm[1] = perm[0];
         temp_perm[2] = perm[2];
         gb_mixed_sink_term(qk0, qk1, qk2, links, tscIdx, singlet_to_triplet_index(temp_perm),
-          r0, stIdx, docube, domom, mom, flip_snk, pfi*(Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
+          r0, stIdx, dowall, docube, domom, mom, flip_snk, pfi*(Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
 
         /* This does not work. If you tieup this way for mixed symmetry operator,
          * it will give zero by definiteion.
@@ -1195,7 +1297,7 @@ static void
 gb_symm_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **qko2,
                    su3_matrix *links, int t_idx, enum gb_baryon_op snk_op,
                    int num_d, int num_s, int r0[],
-                   int stIdx, short docube, short domom, complex *mom,
+                   int stIdx, short dowall, short docube, short domom, complex *mom,
                    int flip_snk, Real pfi, complex *dt){
   int c;
   int s_idx[3] = {0};
@@ -1230,22 +1332,22 @@ gb_symm_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_fie
  /* all unique quarks and tastes */
 
 	gb_sink_term_loop(qko0, qko1, qko2, links, t_idx, snk_op, num_d, num_s,
-	  r0, stIdx, docube, domom, mom, flip_snk, pfi/6., dt);
+	  r0, stIdx, dowall, docube, domom, mom, flip_snk, pfi/6., dt);
 	s_perm[0] = s_idx[1]; s_perm[1] = s_idx[2]; s_perm[2] = s_idx[0];
 	gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-	  snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, pfi/6., dt);
+	  snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk, pfi/6., dt);
 	s_perm[0] = s_idx[2]; s_perm[1] = s_idx[0]; s_perm[2] = s_idx[1];
 	gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-	  snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, pfi/6., dt);
+	  snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk, pfi/6., dt);
 	s_perm[0] = s_idx[0]; s_perm[1] = s_idx[2]; s_perm[2] = s_idx[1];
 	gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-	  snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, pfi/6., dt);
+	  snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk, pfi/6., dt);
 	s_perm[0] = s_idx[1]; s_perm[1] = s_idx[0]; s_perm[2] = s_idx[2];
 	gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-	  snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, pfi/6., dt);
+	  snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk, pfi/6., dt);
 	s_perm[0] = s_idx[2]; s_perm[1] = s_idx[1]; s_perm[2] = s_idx[0];
 	gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-	  snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, pfi/6., dt);
+	  snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk, pfi/6., dt);
 
 }
 
@@ -1257,7 +1359,7 @@ static void
 gb_mixed_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **qko2,
                           su3_matrix *links, int t_idx, enum gb_baryon_op snk_op,
                           int num_d, int num_s, char *qkLoc, int r0[],
-                          int stIdx, short docube, short domom, complex *mom,
+                          int stIdx, short dowall, short docube, short domom, complex *mom,
                           int flip_snk, Real pfi, complex *dt){
   int c;
   int s_idx[3] = {0};
@@ -1291,7 +1393,7 @@ gb_mixed_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_fi
 	  node0_printf("Unknown quark composition!\n");
   }
   gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-	  snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, 2.*pfi, dt);
+	  snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk, 2.*pfi, dt);
 
   int tempperm[3] = {0};
   tempperm[0] = s_idx[1]; tempperm[1] = s_idx[2]; tempperm[2] = s_idx[0];
@@ -1312,7 +1414,7 @@ gb_mixed_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_fi
 	  node0_printf("Unknown quark composition!\n");
   }
   gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-      snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, -pfi, dt);
+      snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk, -pfi, dt);
 
   tempperm[0] = s_idx[2]; tempperm[1] = s_idx[0]; tempperm[2] = s_idx[1];
   /* assume all combos are unique */
@@ -1332,7 +1434,7 @@ gb_mixed_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_fi
 	  node0_printf("Unknown quark composition!\n");
   }
   gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-      snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, -pfi, dt);
+      snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk, -pfi, dt);
 
 }
 
@@ -1344,7 +1446,7 @@ static void
 gb_asymm_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **qko2,
                    su3_matrix *links, int t_idx, enum gb_baryon_op snk_op,
                    int num_d, int num_s, int r0[],
-                   int stIdx, short docube, short domom, complex *mom,
+                   int stIdx, short dowall, short docube, short domom, complex *mom,
                    int flip_snk, Real pfi, complex *dt){
   int c;
   int s_idx[3] = {0};
@@ -1363,29 +1465,29 @@ gb_asymm_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_fi
 
   /* all must be unique */
   gb_sink_term_loop(qko0, qko1, qko2, links, t_idx, snk_op, num_d, num_s,
-      r0, stIdx, docube, domom, mom, flip_snk,  pfi/6., dt);
+      r0, stIdx, dowall, docube, domom, mom, flip_snk,  pfi/6., dt);
   s_perm[0] = s_idx[1]; s_perm[1] = s_idx[2]; s_perm[2] = s_idx[0];
   gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-      snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk,  pfi/6., dt);
+      snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk,  pfi/6., dt);
   s_perm[0] = s_idx[2]; s_perm[1] = s_idx[0]; s_perm[2] = s_idx[1];
   gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-      snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk,  pfi/6., dt);
+      snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk,  pfi/6., dt);
   s_perm[0] = s_idx[0]; s_perm[1] = s_idx[2]; s_perm[2] = s_idx[1];
   gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-      snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, -pfi/6., dt);
+      snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk, -pfi/6., dt);
   s_perm[0] = s_idx[1]; s_perm[1] = s_idx[0]; s_perm[2] = s_idx[2];
   gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-      snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, -pfi/6., dt);
+      snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk, -pfi/6., dt);
   s_perm[0] = s_idx[2]; s_perm[1] = s_idx[1]; s_perm[2] = s_idx[0];
   gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-      snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, -pfi/6., dt);
+      snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom, flip_snk, -pfi/6., dt);
 }
 
 /*------------------------------------------------------------------*/
 static void
 gb_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **qko2,
                    su3_matrix *links, enum gb_baryon_op src_op,
-                   enum gb_baryon_op snk_op, int stIdx, short docube,
+                   enum gb_baryon_op snk_op, int stIdx, short dowall, short docube,
                    int num_d, int num_s, int r0[], short domom,
                    complex *mom, int flip_snk, complex *dt){
   int j,k;
@@ -1422,13 +1524,13 @@ gb_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **
       //triplet_to_singlet_index(t_idx[j],s_idx);
       if(stype == GBSYM_SYM){
 		  gb_symm_source_term_loop(qko0, qko1, qko2,
-			  links, t_idx[j], snk_op, num_d, num_s, r0, stIdx, docube, domom, mom,
+			  links, t_idx[j], snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom,
 			  flip_snk, (Real)pf[j]/sqrt(pfsum), dt);
       }
 
       else if(stype == GBSYM_ANTISYM)
         gb_asymm_source_term_loop(qko0, qko1, qko2,
-          links, t_idx[j], snk_op, num_d, num_s, r0, stIdx, docube, domom, mom,
+          links, t_idx[j], snk_op, num_d, num_s, r0, stIdx, dowall, docube, domom, mom,
           flip_snk, (Real)pf[j]/sqrt(pfsum), dt);
     } /* terms in sink */
   } /* (anti)symmetric sink */
@@ -1451,7 +1553,7 @@ gb_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **
 		    //node0_printf("-------------------- extended at 0 --------------------------\n");
 		    //node0_printf("-------------------------------------------------------------\n");
             gb_mixed_source_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(perm),
-              snk_op, num_d, num_s, qkLoc, r0, stIdx, docube, domom, mom,
+              snk_op, num_d, num_s, qkLoc, r0, stIdx, dowall, docube, domom, mom,
               flip_snk, (Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
 
 		    //node0_printf("-------------------------------------------------------------\n");
@@ -1459,7 +1561,7 @@ gb_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **
 		    //node0_printf("-------------------------------------------------------------\n");
             strcpy(qkLoc, "ud'd");
 			gb_mixed_source_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(perm),
-			   snk_op, num_d, num_s, qkLoc, r0, stIdx, docube, domom, mom,
+			   snk_op, num_d, num_s, qkLoc, r0, stIdx, dowall, docube, domom, mom,
 			   flip_snk, (Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
 
         } else {
@@ -1467,7 +1569,7 @@ gb_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **
         	char qkLoc[] = "uud";
 
             gb_mixed_source_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(perm),
-              snk_op, num_d, num_s, qkLoc, r0, stIdx, docube, domom, mom,
+              snk_op, num_d, num_s, qkLoc, r0, stIdx, dowall, docube, domom, mom,
               flip_snk, (Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
         }
 
@@ -1486,7 +1588,7 @@ void
 gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2[],
               su3_matrix *links, enum gb_baryon_op src_op[],
               enum gb_baryon_op snk_op[],
-              int stIdx, short docube[], int num_d, int num_s, int r0[],
+              int stIdx, short dowall[], short docube[], int num_d, int num_s, int r0[],
               int mom[], char par[], complex *momfld, int flip_snk[],
               int num_corr_gb, int phase[], Real fact[], complex *prop[]){
   int i,px,py,pz;
@@ -1538,28 +1640,18 @@ gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2[],
     #endif
     
     #if !defined(OMP)
-    #if defined(HAVE_QMP)
-    QMP_barrier();
-    #endif
-    #if defined(MPI_COMMS)
-    MPI_Barrier(MPI_COMM_WORLD);
-    #endif
+    g_sync();
     #endif
 
     node0_printf("gb baryon: %s %s\n",
       gb_baryon_label(src_op[i]),gb_baryon_label(snk_op[i]));
     //node0_printf("BEFORE: qko0: %.5e + i %.5e\n", (qko0[0]->v[2][100]).c[1].real, (qko0[0]->v[2][100]).c[1].imag);
-    gb_source_term_loop(qko0,qko1,qko2,links,src_op[i],snk_op[i],stIdx,docube[i],
+    gb_source_term_loop(qko0,qko1,qko2,links,src_op[i],snk_op[i],stIdx,dowall[i],docube[i],
      num_d,num_s,r0,domom,momfld,flip_snk[i],prop[i]);
     norm_corr( phase[i], fact[i], prop[i] );
     
     #if !defined(OMP)
-    #if defined(HAVE_QMP)
-    QMP_barrier();
-    #endif
-    #if defined(MPI_COMMS)
-    MPI_Barrier(MPI_COMM_WORLD);
-    #endif
+    g_sync();
     #endif
     //node0_printf("AFTER: qko0: %.5e + i %.5e\n", (qko0[0]->v[2][100]).c[1].real, (qko0[0]->v[2][100]).c[1].imag);
   }
