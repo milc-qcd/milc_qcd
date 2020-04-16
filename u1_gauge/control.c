@@ -69,8 +69,11 @@ int main(int argc,char *argv[])
 	/* check a few things */
 	u1plaq(&splq,&tplq);
 	plp=u1ploop();
-	node0_printf("\nu1-ploop = ( %e, %e )  u1-(s,t)plaq = ( %e, %e )\n",
-		plp.real,plp.imag,splq,tplq);
+	node0_printf("\nu1-ploop = ( %e, %e )\n", plp.real,plp.imag);
+	node0_printf("u1-(s,t)plaq = ( %e, %e )\n", splq,tplq);
+	double sLink, tLink;
+	u1avlink(&sLink, &tLink);
+	node0_printf("u1-(s,t)link = ( %e, %e )\n", sLink, tLink);
 
 	/* Mark time */
 	dtime += dclock();
