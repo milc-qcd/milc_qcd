@@ -1,13 +1,16 @@
 #ifndef _GENERIC_U1
 #define _GENERIC_U1
 
-/************************ generic_ks.h **********************************
+/************************ generic_u1.h **********************************
 *									*
 *  Macros and declarations for generic_u1 routines                      *
 *  This header is for codes that call generic_u1 routines               *
 *  MIMD version 7 							*
 *									*
 */
+
+/* u1avlink.c */
+void u1avlink(double *sLink, double *tLink);
 
 /* u1link.c */
 Real *create_u1_A_field(void);
