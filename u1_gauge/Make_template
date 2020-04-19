@@ -47,7 +47,9 @@ G_OBJECTS =          \
   make_lattice.o \
   remap_stdio_from_args.o \
   ranstuff.o \
-  restrict_fourier.o
+  remap_fftw_fourier.o \
+
+#  restrict_fourier.o
 
 # Basic set from generic_u1 directory
 G_U1_OBJECTS =       \
