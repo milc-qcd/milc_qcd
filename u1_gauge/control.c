@@ -28,6 +28,10 @@ int main(int argc,char *argv[])
   /* Remap standard I/O if needed */
   if(remap_stdio_from_args(argc, argv)==1) terminate(1);
   g_sync();
+
+  /* Mark time */
+  dtime=-dclock();
+
   prompt=setup();
 
   /* Initialize fft */
@@ -41,9 +45,6 @@ int main(int argc,char *argv[])
   /* Main procedure */
   node0_printf("Starting U(1) gauge config generation run ...\n");
   while(readin(prompt)==0){
-
-	/* Mark time */
-	dtime=-dclock();
 
 	/* Generating gauge config in mom space
 	   under coulomb and global gaugefixing */
@@ -75,13 +76,13 @@ int main(int argc,char *argv[])
 	u1avlink(&sLink, &tLink);
 	node0_printf("u1-(s,t)link = ( %e, %e )\n", sLink, tLink);
 
-	/* Mark time */
-	dtime += dclock();
-	node0_printf("U(1) running completed!\n");
-	node0_printf("Time = %e seconds\n",dtime);
-	fflush(stdout);
-
   } /* while-ends */
+
+  /* Mark time */
+  dtime += dclock();
+  node0_printf("RUNNING COMPLETED\n");
+  node0_printf("Time = %e seconds\n",dtime);
+  fflush(stdout);
 
   return(0);
 
