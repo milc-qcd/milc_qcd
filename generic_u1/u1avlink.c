@@ -10,6 +10,8 @@ void u1avlink(double *sLink, double *tLink)
 {
   int i;
 
+  *sLink = *tLink = 0.;
+
   FORALLFIELDSITES(i){
     int dir;
     FORALLUPDIRBUT(TUP,dir){
