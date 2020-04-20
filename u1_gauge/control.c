@@ -74,7 +74,7 @@ int main(int argc,char *argv[])
 	node0_printf("u1-(s,t)plaq = ( %e, %e )\n", splq,tplq);
 	double sLink, tLink;
 	u1avlink(&sLink, &tLink, echarge);
-	node0_printf("u1-(s,t)link = ( %e, %e ) with charge %d\n", sLink, tLink, echarge);
+	node0_printf("u1-(s,t)link = ( %e, %e ) with charge %f\n", sLink, tLink, echarge);
 
   } /* while-ends */
 
