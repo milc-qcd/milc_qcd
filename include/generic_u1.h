@@ -10,7 +10,7 @@
 */
 
 /* u1avlink.c */
-void u1avlink(double *sLink, double *tLink);
+void u1avlink(double *sLink, double *tLink, double charge);
 
 /* u1link.c */
 Real *create_u1_A_field(void);
