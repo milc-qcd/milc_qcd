@@ -1,12 +1,7 @@
 #include "generic_ks_includes.h"
-#ifdef MPI_COMMS
-#include <mpi.h>
-#endif
-#ifdef HAVE_QMP
-#include <qmp.h>
-#endif
-#ifdef OMP
-#include <omp.h>
+#ifndef _OMP_HEADER
+  #define _OMP_HEADER
+  #include <omp.h>
 #endif
 
 //#define NO_SINK_LINKS
@@ -665,11 +660,6 @@ accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *q
 
    
   if (dowall) {  // wall sink tieups    
-    #ifdef OMP
-        node0_printf("accum_baryon_color_asym error: not yet implemented for wall sink with openMP\n");
-        terminate(1);
-    #endif
-
     if (domom){
       node0_printf("accum_baryon_color_asym error: not yet implemented for wall sink with momenta\n");
       terminate(1);
@@ -756,7 +746,8 @@ accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *q
     node_index_t_tuple temp_tuple;
 
     if (initialized==false) {
-      FORALLSITES(i,s1){
+      for(i=0;i<sites_on_node;i++) {
+        s1 = lattice + i; // FORALLSITES doesnt work with openmp
         for(temp_corner=0; temp_corner<8; temp_corner++){
           disp[0] = ((int) temp_corner % 2     ) ^ flip_snk;
           disp[1] = ((int)(temp_corner / 2) % 2) ^ flip_snk;
@@ -766,14 +757,17 @@ accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *q
             corner_indx[temp_corner]++;
           }
         }
-      }
+      } // end for parallel region
       initialized = true;
-    }
-
-    disp[0] = ((int) orig % 2     ) ^ flip_snk;
-    disp[1] = ((int)(orig / 2) % 2) ^ flip_snk;
-    disp[2] = ((int) orig / 4     ) ^ flip_snk;
+    } // end initilization
   
+    #ifdef OMP
+    #pragma omp parallel for \
+      default(none) \
+      shared(corner_indx, corner_sites, qk0, qk1, qk2, mom, csum_new, orig, domom) \
+      private(i,temp_tuple,cc) \
+      schedule(static)
+    #endif
     for(i=0; i<corner_indx[orig]; i++){
     temp_tuple = corner_sites[orig][i];
       if (domom){
@@ -783,6 +777,7 @@ accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *q
       }
       CSUM(csum_new[temp_tuple.t],cc);
     }
+
     for(t=0;t<nt;t++){
       CMULREAL(csum_new[t],pf,csum_new[t]);
       CSUM(dt[t],csum_new[t]);
@@ -1616,43 +1611,13 @@ gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2[],
   else { // just specify that momentum is not needed
    domom = 0x0;
   }
-  #ifdef OMP
-  static int procs, nthreads, maxt, tid;
-  static bool print_ompinfo = false;
-  #pragma omp parallel for \
-    shared(print_ompinfo) \
-    private(i,tid) \
-    schedule(static)
-  #endif
-  for(i=0;i<num_corr_gb;i++){
-    #ifdef OMP
-    if (!print_ompinfo){
-      procs = omp_get_num_procs();
-      nthreads = omp_get_num_threads();
-      maxt = omp_get_max_threads();
-      tid = omp_get_thread_num();
-      node0_printf("Enable openMP for gb baryon tieups.\n");
-      node0_printf("Number of processors = %d\n", procs);
-      node0_printf("Number of threads = %d\n", nthreads);
-      node0_printf("Max threads = %d\n", maxt);
-      print_ompinfo = true;
-    }
-    #endif
-    
-    #if !defined(OMP)
-    g_sync();
-    #endif
 
-    node0_printf("gb baryon: %s %s\n",
-      gb_baryon_label(src_op[i]),gb_baryon_label(snk_op[i]));
+  for(i=0;i<num_corr_gb;i++){
+    node0_printf("gb baryon: %s %s\n", gb_baryon_label(src_op[i]),gb_baryon_label(snk_op[i]));
     //node0_printf("BEFORE: qko0: %.5e + i %.5e\n", (qko0[0]->v[2][100]).c[1].real, (qko0[0]->v[2][100]).c[1].imag);
     gb_source_term_loop(qko0,qko1,qko2,links,src_op[i],snk_op[i],stIdx,dowall[i],docube[i],
      num_d,num_s,r0,domom,momfld,flip_snk[i],prop[i]);
     norm_corr( phase[i], fact[i], prop[i] );
-    
-    #if !defined(OMP)
-    g_sync();
-    #endif
     //node0_printf("AFTER: qko0: %.5e + i %.5e\n", (qko0[0]->v[2][100]).c[1].real, (qko0[0]->v[2][100]).c[1].imag);
   }
 }

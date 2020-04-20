@@ -387,8 +387,8 @@ initialize_machine(int *argc, char ***argv)
   QMP_status_t i;
   QMP_thread_level_t required, provided;
 
-#if defined(HAVE_GRID)  || defined(OMP)
-  required = QMP_THREAD_SERIALIZED;
+#ifdef HAVE_GRID
+  required = QMP_THREAD_MULTIPLE;
 #else
   required = QMP_THREAD_SINGLE;
 #endif
@@ -404,7 +404,6 @@ initialize_machine(int *argc, char ***argv)
     if(mynode()==0){
       printf("com_qmp: tried setting required thread-safety level to %d\n", required);
       printf("com_qmp: required thread-safety level %d can't be provided %d.\n", required, provided);
-      printf("com_qmp: maybe your MPI library did not compiled with MPI_THREAD_MULTIPLE. Try to use QMP_THREAD_SERIAL in this file instead.\n");
     }
     fflush(stdout);
     terminate(1);
