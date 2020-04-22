@@ -26,7 +26,7 @@
 
 #include "generic_u1_includes.h"
 
-void u1plaq(Real *splaq,Real *tplaq)
+void u1plaq(Real *splaq,Real *tplaq, Real charge)
 {
 
   int i,dir1,dir2;
@@ -71,7 +71,7 @@ void u1plaq(Real *splaq,Real *tplaq)
       }					
       
       FORALLFIELDSITES(i){
-	pre = cos(Atmp[i]);
+	pre = cos(charge*Atmp[i]);
 	if(dir1==TUP) stplaq += pre;
 	else	      ssplaq += pre;
 	if(dir1==TUP) t2plaq += pre*pre;

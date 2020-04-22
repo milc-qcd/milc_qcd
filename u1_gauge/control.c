@@ -68,10 +68,10 @@ int main(int argc,char *argv[])
 	save_u1_lattice(save_u1flag,save_u1file);
 
 	/* check a few things */
-	u1plaq(&splq,&tplq);
-	plp=u1ploop();
-	node0_printf("\nu1-ploop = ( %e, %e )\n", plp.real,plp.imag);
-	node0_printf("u1-(s,t)plaq = ( %e, %e )\n", splq,tplq);
+	u1plaq(&splq,&tplq,echarge);
+	plp=u1ploop(echarge);
+	node0_printf("\nu1-ploop = ( %e, %e ) with charge %f\n", plp.real,plp.imag, echarge);
+	node0_printf("u1-(s,t)plaq = ( %e, %e ) with charge %f\n", splq,tplq, echarge);
 	double sLink, tLink;
 	u1avlink(&sLink, &tLink, echarge);
 	node0_printf("u1-(s,t)link = ( %e, %e ) with charge %f\n", sLink, tLink, echarge);

@@ -19,8 +19,8 @@ void u1phase_on(Real charge, Real *A);
 void u1phase_off(void);
 
 /* u1plaq.c */
-complex u1ploop(void);
-void u1plaq(Real *ssplq,Real *stplq);
+complex u1ploop(Real charge);
+void u1plaq(Real *ssplq,Real *stplq,Real charge);
 
 
 #endif /* _GENERIC_U1 */
