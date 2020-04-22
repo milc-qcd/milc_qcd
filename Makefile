@@ -25,13 +25,13 @@ COMPILER ?= gnu # intel, ibm, portland, cray-intel
 # 3. MPP vs Scalar
 
 # Compiling for a parallel machine?  blank for a scalar machine
-MPP ?= false
+MPP ?= true
 
 #----------------------------------------------------------------------
 # 4. Precision 
 
 # 1 = single precision; 2 = double
-PRECISION ?= 1
+PRECISION ?= 2
 
 #----------------------------------------------------------------------
 # 5. Compiler
@@ -79,8 +79,8 @@ else ifeq ($(strip ${COMPILER}),ibm)
 
 endif
 
-CC = ${MY_CC}
-CXX = ${MY_CXX}
+CC = mpicc
+CXX = mpicxx
 
 # Override the above definitions
 
@@ -104,7 +104,7 @@ OPT              ?= -O3
 
 # OpenMP?
 
-OMP ?= #true
+OMP ?= true
 
 #----------------------------------------------------------------------
 # 7. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -288,9 +288,9 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 
 WANTQOP ?= # true # or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
 
-WANTQIO ?= # true # or blank.  Implies HAVEQMP.
+WANTQIO ?= true # or blank.  Implies HAVEQMP.
 
-WANTQMP ?= # true or blank.
+WANTQMP ?= true
 
 # QMP_MPI or QMP_SPI
 QMP_BACKEND = QMP_MPI
@@ -298,7 +298,7 @@ QMP_BACKEND = QMP_MPI
 # Edit these locations for the installed SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
-SCIDAC = ${HOME}/scidac/install
+SCIDAC = /home/eweinberg/Data/scidac/install/sm_70_omp
 TAG=
 # Parallel versions
 QMPPAR ?= ${SCIDAC}/qmp${TAG}
@@ -406,19 +406,19 @@ endif
 #----------------------------------------------------------------------
 # 15. GPU/QUDA Options
 
-WANTQUDA    ?= #true
+WANTQUDA ?= true
 WANT_CL_BCG_GPU ?= #true
-WANT_FN_CG_GPU ?= #true
-WANT_FL_GPU ?= #true
-WANT_FF_GPU ?= #true
-WANT_GF_GPU ?= #true
+WANT_FN_CG_GPU ?= true
+WANT_FL_GPU ?= true
+WANT_FF_GPU ?= true
+WANT_GF_GPU ?= true
 
 # enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
 WANT_MIXED_PRECISION_GPU ?= 0
 
 ifeq ($(strip ${WANTQUDA}),true)
 
-  QUDA_HOME ?= ${HOME}/quda
+  QUDA_HOME ?= /home/eweinberg/Data/MILC/2020-02-25MilcHisqMg/build
 
   INCQUDA = -I${QUDA_HOME}/include -I${QUDA_HOME}/tests
   PACKAGE_HEADERS += ${QUDA_HOME}/include
@@ -704,7 +704,7 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 
 # REMAP  report remapping time for QDP, QOP in conjunction with above
 
-CTIME = # -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
+CTIME = -DNERSC_TIME # -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
 
 #------------------------------
 # Profiling
@@ -773,7 +773,7 @@ CCOMPAT += #-DOLD_STAGGERED2NAIVE
 #     and extra list of dimensions in the parameter input file.
 #     See e.g. ks_imp_rhmc.
 
-CGEOM ?=#-DFIX_NODE_GEOM
+CGEOM ?= -DFIX_NODE_GEOM
 
 #------------------------------
 # I/O node grid layout
@@ -787,7 +787,7 @@ CGEOM ?=#-DFIX_NODE_GEOM
 #     by the macro FIX_IONODE_GEOM.  Then the parameter input file
 #     includes a list of dimensions.
 
-CGEOM +=# -DFIX_IONODE_GEOM
+CGEOM += -DFIX_IONODE_GEOM
 
 #------------------------------
 # Improved staggered CG inverter and Dslash
@@ -858,7 +858,7 @@ CPREFETCH = #
 # MATVEC_PRECOND
 # CHEBYSHEV_EIGEN
 
-KSCGMULTI = -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
+KSCGMULTI = -DKS_MULTICG=HYBRID -DMULTISOURCE # -DNO_REFINE # -DHALF_MIXED
 
 #------------------------------
 # Multifermion force routines

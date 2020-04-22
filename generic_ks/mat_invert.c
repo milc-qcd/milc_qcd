@@ -493,7 +493,7 @@ int mat_invert_block_mg(su3_vector **src, su3_vector **dst,
   
   /* Temporary until there is multi-rhs support for multigrid */
   for(is = 0; is < nsrc; is++)
-    cgn += mat_invert_mg_field_gpu(src, dst, qic, mass, fn );
+    cgn += mat_invert_mg_field_gpu(src[is], dst[is], qic, mass, fn );
   
   return cgn;
 }

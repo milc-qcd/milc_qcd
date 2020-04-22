@@ -579,17 +579,18 @@ int readin(int prompt) {
 #endif
       
       IF_OK {
-	if(param.inv_type[k] == CGTYPE){
-	  /* maximum no. of conjugate gradient iterations */
-	  IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
+       /* MG params file */
+       if(param.inv_type[k] == MGTYPE){
+         IF_OK status += get_s(stdin, prompt, "MGparams", mgparamfile);
+       }
+       
+       /* maximum no. of conjugate gradient iterations */
+       IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
 				&max_cg_iterations );
 	  
-	  /* maximum no. of conjugate gradient restarts */
-	  IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
+       /* maximum no. of conjugate gradient restarts */
+       IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
 				&max_cg_restarts );
-	} else {
-	  IF_OK status += get_s(stdin, prompt, "MGparams", mgparamfile);
-	}
       }
 	  
       /* Should we be checking (computing) the propagator by running
@@ -725,6 +726,9 @@ int readin(int prompt) {
 	/* Propagator inversion control                               */
 	/*------------------------------------------------------------*/
 	
+        /* invert type */
+        param.qic[nprop].inv_type = param.inv_type[k];
+
 	/* maximum no. of conjugate gradient iterations */
 	param.qic[nprop].max = max_cg_iterations;
       

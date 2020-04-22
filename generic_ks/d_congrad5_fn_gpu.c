@@ -276,7 +276,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
                  fatlink,
                  longlink,
                  (void**)t_src,
-		 (void**)t_dest,
+                 (void**)t_dest,
                  &residual,
                  &relative_residual,
                  &num_iters,
@@ -311,7 +311,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 /* Multigrid solution of the full Dirac equation for both parities  */
 /********************************************************************/
 
-int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst, 
+int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest, 
 			    quark_invert_control *qic,
 			    Real mass, imp_ferm_links_t *fn){
 
@@ -365,6 +365,18 @@ int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst,
 
   initialize_quda();
 
+  // need to set a dummy value, ignored (for now),
+  // MG will eventually support Schur solve
+  inv_args.evenodd = QUDA_EVEN_PARITY; 
+  /*if(qic->parity == EVEN){
+          inv_args.evenodd = QUDA_EVEN_PARITY;
+  }else if(qic->parity == ODD){
+          inv_args.evenodd = QUDA_ODD_PARITY;
+  }else{
+    printf("%s: Unrecognised parity\n",myname);
+    terminate(2);
+  }*/
+
   inv_args.max_iter = qic->max*qic->nrestart;
 #if defined(MAX_MIXED)
   inv_args.mixed_precision = 2;
@@ -406,15 +418,17 @@ int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst,
 
     node0_printf("%s: setting up the MG inverter\n", myname);
     /* Set up the MG inverter when the links change */
-    mg_preconditioner = qudaSetupMultigrid(MILC_PRECISION,
+    // temporary, do not set up yet
+    /*mg_preconditioner = qudaSetupMultigrid(MILC_PRECISION,
                               quda_precision,
                               mass,
                               inv_args,
-                              milc_fatlink,
-                              milc_longlink,
-                              qic->mgparamfile);
-  }
+                              fatlink,
+                              longlink,
+                              qic->mgparamfile);*/
 
+    node0_printf("%s: MG inverter setup complete\n", myname);
+  }
   
   // Just BiCGstab for now
   qudaInvertMG(MILC_PRECISION,
