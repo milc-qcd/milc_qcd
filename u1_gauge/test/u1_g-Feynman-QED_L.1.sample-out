@@ -1,7 +1,7 @@
 U(1) [Coulomb gauge-fixed] gauge field generation ... 
 stored as A(mu,x), convert to U(mu,x) to couple to fermions.
 Machine = Scalar processor, with 1 nodes!
-Start: Wed Apr 22 11:19:45 2020
+Start: Wed Apr 22 11:16:52 2020
 
 type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nx 4
@@ -27,18 +27,18 @@ save_u1_ascii ./u1_g_4_8.1.ascii.test-out
 CHECK U(1) PLAQ: 1.000000e+00 1.000000e+00
 
 Saved U(1) configuration to ascii file ./u1_g_4_8.1.ascii.test-out ...
-Time stamp Wed Apr 22 11:19:46 2020
+Time stamp Wed Apr 22 11:16:53 2020
 Saved lattice to ascii file ./u1_g_4_8.1.ascii.test-out!
-Time to save = 8.853698e-02
+Time to save = 4.953146e-03
 
 CHECK U(1) PLAQ: 7.567900e-01 7.765080e-01
 
 
 u1-ploop = ( 3.838480e-01, 0.000000e+00 ) with charge 1.000000
 u1-(s,t)plaq = ( 7.567900e-01, 7.765080e-01 ) with charge 1.000000
-u1-(s,t)link = ( 9.485897e-01, 8.984597e-01 ) with charge 1.000000
+u1-(s,t)link = ( 9.263424e-01, 9.268507e-01 ) with charge 1.000000
 
 
 get_f(0): EOF on input.
 RUNNING COMPLETED
-Time = 8.628659e-01 seconds
+Time = 9.790351e-01 seconds
