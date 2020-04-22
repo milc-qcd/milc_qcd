@@ -18,12 +18,17 @@
 
 #define MILC_ORIGINAL 1
 #define HATTON_REVISION 2
-#define DETAR_PROPOSAL 3
 
-#define GAUGE_METHOD DETAR_PROPOSAL
+#define FEYNMAN 1
+#define LORENZ 2
+#define COULOMB 3
+
+#define QED_L 1
+#define QED_TL 2
+
+#if GAUGE_METHOD == MILC_ORIGINAL
 
 /* MILC original version */
-#if GAUGE_METHOD == MILC_ORIGINAL
 void momgauge(complex *u1gf)
 {
 
@@ -287,7 +292,6 @@ void momgauge(complex *u1gf)
     else	
       {
 	
-	
 	if(latin[i] == i)hp = 1;
 	else hp = 2;
 	/* lattice mom: k^2, k0,k1,k2,k3 and squares */
@@ -409,28 +413,82 @@ void momgauge(complex *u1gf)
     
   }
 
+#if 0
   /* Adjust u1gf so we return FT of Re A(k) */
-  //FORALLSITES(i,s){
-    //if(i==latin[i]){
-      //for(dir=XUP;dir<=TUP;dir++){ 
-	//u1gf[4*i+dir].imag=0.0;
-      //}
-    //} else {
-    //  for(dir=XUP;dir<=TUP;dir++){ 
-	//CMULREAL(u1gf[4*i+dir],2.0,u1gf[4*i+dir]);
-      //}
-    //}
-  //}
+  FORALLSITES(i,s){
+    if(i==latin[i]){
+      for(dir=XUP;dir<=TUP;dir++){ 
+	u1gf[4*i+dir].imag=0.0;
+      }
+    } else {
+      for(dir=XUP;dir<=TUP;dir++){ 
+	CMULREAL(u1gf[4*i+dir],2.0,u1gf[4*i+dir]);
+      }
+    }
+  }
+#endif
 
 } /* end of momgauge() */
 
+
+#else
+
 /* ************************************************************	*/
 
-#elif GAUGE_METHOD == DETAR_PROPOSAL
+/* Transform to Coulomb gauge */
 
-/* Start with a gauge-agnostic method as though we were simulating
-   the noncompact action without gauge fixing.  Then fix Coulomb gauge */
-/* The gauge-agnostic action in momentum space is
+/* The transformation is
+
+     A_mu(k) = A_mu(k) - c \hat k_mu
+
+   where
+
+     c = vec(k) vec(A)/ vec(k)^2
+
+   Note that we also need to deal with the case \vec(k) = 0!
+   See QED_L or QED_TL below
+
+*/
+static void u1_Coulomb(complex *u1gfsite, Real *lk, Real lkssq){
+  complex cdot = cmplx(0.0,0.0);
+  complex cc;
+
+  if(lkssq == 0.0)return;
+  int dir;
+  FORALLUPDIRBUT(TUP,dir){
+    CMULREAL( u1gfsite[dir], lk[dir]/lkssq, cc );
+    CSUM( cdot, cc );
+  }
+  FORALLUPDIR(dir){
+    CMULREAL( cdot, lk[dir], cc );
+    CSUB( u1gfsite[dir], cc, u1gfsite[dir] );
+  }
+}
+
+static void u1_Lorenz(complex *u1gfsite, Real *lk, Real lksq){
+  /* Project out the longitudinal mode */
+  complex cdot = cmplx(0.0,0.0);
+  complex cc;
+
+  if(lksq == 0.0)return;
+  int dir;
+  FORALLUPDIR(dir){
+    CMULREAL( u1gfsite[dir], lk[dir]/lksq, cc );
+    CSUM( cdot, cc );
+  }
+  FORALLUPDIR(dir){
+    CMULREAL( cdot, lk[dir], cc );
+    CSUB( u1gfsite[dir], cc, u1gfsite[dir] );
+  }
+}
+
+
+/* Start with Feynman gauge and then fix to the desired gauge.  Note
+   that with Lorenz-gauge fixing we get the same ensemble of vector
+   potentials as with the quenched non-compact U(1) action.
+ */
+
+/* The Lorenz gauge action in momentum space is
 
    S = A_mu(k) (k^2 delta_mu,nu - k_mu k_nu) A^*_nu(k)
      = \sum_i (A_mu eps^i_mu)^2 k^2
@@ -446,48 +504,11 @@ void momgauge(complex *u1gf)
 
    where 
  
-      <Re \eta_nu Re \eta_mu> = delta_mu,nu ,
+      <\eta_nu \eta^(_mu> = delta_mu,nu ,
 
-   same for Im \eta_nu and zero for mixed Re and Im.
-
+   Without the projection, the vector potential is in "Feynman gauge".
+      
 */
-
-/* Do a momentum-space gauge transformation to put the gauge field in
-   Coulomb gauge in the QED_L scheme */
-
-/* The transformation is
-
-     A_mu(k) = A_mu(k) - c k_mu
-
-   where
-
-     c = vec(k) vec(A)/ vec(k)^2
-
-   In QED-L we set the vector potential to zero if vec(k) = 0
-*/
-static void u1_coulomb_QED_L(complex *u1gfsite, Real *lk, Real lkssq, Real lksq){
-  complex cdot = cmplx(0.0,0.0);
-  complex cc;
-  if(lkssq == 0.0){
-    /* QED_L condition */
-    int dir;
-    FORALLUPDIR(dir){
-      u1gfsite[dir] = cmplx(0.0, 0.0);
-    }
-  } else {
-    /* Transform to Coulomb gauge */
-    int dir;
-    FORALLUPDIRBUT(TUP,dir){
-      CMULREAL( u1gfsite[dir], lk[dir]/lkssq, cc );
-      CSUM( cdot, cc );
-    }
-    FORALLUPDIR(dir){
-      CMULREAL( cc, lk[dir], cc );
-      CSUB( u1gfsite[dir], cc, u1gfsite[dir] );
-    }
-  }
-}
-
 
 void momgauge(complex *u1gf)
 {
@@ -519,56 +540,82 @@ void momgauge(complex *u1gf)
       lksq+=sqr(lk[dir]);
       if(dir != TUP)lkssq += sqr(lk[dir]);
     }
-    if(lksq==0.0)				/* k^2 == 0 */
+
+    if(lksq == 0.0){
       /* No constant mode */
       FORALLUPDIR(dir){
 	u1gf[4*i+dir]=cmplx(0.0,0.0);
       }
-    else					/* k^2 != 0 */
-      {
-	if(latin[i]!=junk_id)
-	  {
-	    /* Start with a random complex four-vector */
-	    FORALLUPDIR(dir){
-	      u1gf[4*i+dir] = complex_gaussian_rand_no(&(s->site_prn));
-	      CDIVREAL( u1gf[4*i+dir], sqrt(hp*lksq/2.0), u1gf[4*i+dir] );
-	    }
-	    /* Project out the longitudinal mode */
-	    complex cdot = cmplx(0.0,0.0);
-	    complex cc;
-	    FORALLUPDIR(dir){
-	      CMULREAL( u1gf[4*i+dir], lk[dir]/lksq, cc );
-	      CSUM( cdot, cc );
-	    }
-	    FORALLUPDIR(dir){
-	      CMULREAL( cdot, lk[dir], cc );
-	      CSUB( u1gf[4*i+dir], cc, u1gf[4*i+dir] );
-	    }
-	  }
-      }
-    
-    /* Fix the gauge */
-    if(latin[i]!=junk_id)
-      u1_coulomb_QED_L( u1gf + 4*i, lk, lkssq, lksq );
-      
-  } /* FORALLSITES-ends */
+      continue;
+    }
 
+    /* Skip the repeated components */
+    if(latin[i]==junk_id)continue;
+    
+    /* Start with a random complex four-vector */
+    FORALLUPDIR(dir){
+      u1gf[4*i+dir] = complex_gaussian_rand_no(&(s->site_prn));
+      CDIVREAL( u1gf[4*i+dir], sqrt(hp*lksq/2.0), u1gf[4*i+dir] );
+    }
+    
+    /* Defaults to Feynman gauge */
+    
+#if GAUGE == COULOMB
+    /* Fix Coulomb gauge */
+    u1_Coulomb( u1gf + 4*i, lk, lkssq );
+    
+#elif GAUGE == LORENZ      
+    /* Fix Lorenz gauge */
+    u1_Lorenz( u1gf + 4*i, lk, lksq );
+#endif
+    
+#if SCHEME == QED_L
+    /* QED_L condition */
+    if(lkssq == 0.0){
+      /* All components are zero */
+      int dir;
+      FORALLUPDIR(dir){
+	u1gf[4*i+dir] = cmplx(0.0, 0.0);
+      }
+    }
+    
+#elif SCHEME == QED_TL
+    /* QED_TL condition */
+    if(lkssq == 0.0){
+      /* Time component is zero regargless of lk[TUP] */
+      u1gf[TUP] = cmplx(0.0, 0.0);
+      int dir;
+      /* Spatial components are zero only if lk[TUP] is zero */
+      if(lk[TUP] == 0.0){
+	FORALLUPDIRBUT(TUP,dir){
+	  u1gf[4*i+dir] = cmplx(0.0, 0.0);
+	}
+      }
+    }
+#endif    
+	
+    /* Insert e^{iak/2} factors */
+    complex phase[4] = {ce_itheta(mom[0]/2.),ce_itheta(mom[1]/2.),ce_itheta(mom[2]/2.),ce_itheta(mom[3]/2.)};
+    int dir;
+    FORALLUPDIR(dir){
+      u1gf[4*i+dir] = cmul(&phase[dir],&u1gf[4*i+dir]);
+    }
+  } /* FORALLSITES-ends */
+  
   /* Adjust u1gf so we return FT of Re A(k) */
   FORALLSITES(i,s){
     if(i==latin[i]){
-      for(dir=XUP;dir<=TUP;dir++){ 
+      int dir;
+      FORALLUPDIR(dir){
 	u1gf[4*i+dir].imag=0.0;
       }
     } else {
-      for(dir=XUP;dir<=TUP;dir++){ 
+      int dir;
+      FORALLUPDIR(dir){
 	CMULREAL(u1gf[4*i+dir],2.0,u1gf[4*i+dir]);
       }
     }
   }
-
 } /* end of momgauge() */
-
-#else
-#error "Bad value of GAUGE_VERSION "
 
 #endif
