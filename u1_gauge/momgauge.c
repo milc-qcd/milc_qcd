@@ -366,10 +366,16 @@ void momgauge(complex *u1gf)
   FORALLSITES(i,s){
     Real mom[4] = { 2.*PI*s->x/nx, 2.*PI*s->y/ny, 2.*PI*s->z/nz, 2.*PI*s->t/nt };
     complex phase[4] = {ce_itheta(mom[0]/2.),ce_itheta(mom[1]/2.),ce_itheta(mom[2]/2.),ce_itheta(mom[3]/2.)};
-    u1gf[4*i+TUP] = cmul(&phase[3],&u1gf[4*i+TUP]);
-    u1gf[4*i+XUP] = cmul(&phase[0],&u1gf[4*i+XUP]);
-    u1gf[4*i+YUP] = cmul(&phase[1],&u1gf[4*i+YUP]);
-    u1gf[4*i+ZUP] = cmul(&phase[2],&u1gf[4*i+ZUP]);
+    complex cc;
+    int dir;
+    FORALLUPDIR(dir){
+      CMUL(phase[dir],u1gf[4*i+dir], cc);
+      u1gf[4*i+dir] = cc;
+    }
+//    u1gf[4*i+TUP] = cmul(&phase[3],&u1gf[4*i+TUP]);
+//    u1gf[4*i+XUP] = cmul(&phase[0],&u1gf[4*i+XUP]);
+//    u1gf[4*i+YUP] = cmul(&phase[1],&u1gf[4*i+YUP]);
+//    u1gf[4*i+ZUP] = cmul(&phase[2],&u1gf[4*i+ZUP]);
   }
   
   /* Arrange components so that Fourier transform is real */
@@ -598,7 +604,9 @@ void momgauge(complex *u1gf)
     complex phase[4] = {ce_itheta(mom[0]/2.),ce_itheta(mom[1]/2.),ce_itheta(mom[2]/2.),ce_itheta(mom[3]/2.)};
     int dir;
     FORALLUPDIR(dir){
-      u1gf[4*i+dir] = cmul(&phase[dir],&u1gf[4*i+dir]);
+      complex cc;
+      CMUL(phase[dir],u1gf[4*i+dir], cc);
+      u1gf[4*i+dir] = cc;
     }
   } /* FORALLSITES-ends */
   
