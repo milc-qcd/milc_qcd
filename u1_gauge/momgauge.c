@@ -26,6 +26,40 @@
 #define QED_L 1
 #define QED_TL 2
 
+void show_momgauge_opts(void){
+#if GAUGE_METHOD == MILC_ORIGINAL
+  node0_printf("MILC original: Coulomb gauge QED_TL scheme\n");
+#elif GAUGE_METHOD == HATTON_REVISION
+  node0_printf("Hatton proposal: Feynman gauge QED_L scheme\n");
+#else
+  #if GAUGE == COULOMB
+     #if SCHEME == QED_L
+  node0_printf("Coulomb gauge QED_L scheme\n");
+     #elif SCHEME == QED_TL
+  node0_printf("Coulomb gauge QED_TL scheme\n");
+     #else
+  node0_printf("Coulomb gauge - no zero mode treatment\n");
+     #endif
+  #elif GAUGE == LORENZ
+     #if SCHEME == QED_L
+  node0_printf("Lorenz gauge QED_L scheme\n");
+     #elif SCHEME == QED_TL
+  node0_printf("Lorenz gauge QED_L scheme\n");
+     #else
+  node0_printf("Lorenz gauge - no zero mode treatment\n");
+     #endif
+  #else
+     #if SCHEME == QED_L
+  node0_printf("Feynman gauge QED_L scheme\n");
+     #elif SCHEME == QED_TL
+  node0_printf("Feynman gauge QED_TL scheme\n");
+     #else
+  node0_printf("Feynman gauge - no zero mode treatment\n");
+     #endif
+  #endif
+#endif  
+}
+
 #if GAUGE_METHOD == MILC_ORIGINAL
 
 /* MILC original version */
@@ -207,8 +241,16 @@ void momgauge(complex *u1gf)
 	  }
 	} /* lkssq!=0 ends */
 
-     } /* FORALLSITES-ends */
-
+      /* Insert e^{iak/2} factors */
+      complex phase[4] = {ce_itheta(mom[0]/2.),ce_itheta(mom[1]/2.),ce_itheta(mom[2]/2.),ce_itheta(mom[3]/2.)};
+      int dir;
+      FORALLUPDIR(dir){
+	complex cc;
+	CMUL(phase[dir],u1gf[4*i+dir], cc);
+	u1gf[4*i+dir] = cc;
+      }
+  } /* FORALLSITES-ends */
+  
   /* Adjust u1gf so we return FT of Re A(k) */
   FORALLSITES(i,s){
     if(i==latin[i]){
@@ -327,7 +369,7 @@ void momgauge(complex *u1gf)
     
     if(mom[0]==PI || mom[0]==0)
       {
-        if(mom[1]==PI || mom[1]==0)
+	if(mom[1]==PI || mom[1]==0)
 	  {
 	    if(mom[2]==PI || mom[2]==0)
 	      {
