@@ -48,8 +48,7 @@ G_OBJECTS =          \
   remap_stdio_from_args.o \
   ranstuff.o \
   remap_fftw_fourier.o \
-
-#  restrict_fourier.o
+  show_generic_opts.o
 
 # Basic set from generic_u1 directory
 G_U1_OBJECTS =       \
