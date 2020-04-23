@@ -31,6 +31,7 @@
 int setup(void);
 int readin(int prompt);
 void momgauge(complex *u1gf);
+void show_momgauge_opts(void);
 Real sqr(Real val);
 
 /* ************************************************************ */
