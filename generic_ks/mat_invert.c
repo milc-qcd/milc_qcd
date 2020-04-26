@@ -11,6 +11,14 @@
 #include "generic_ks_includes.h"
 #include "../include/dslash_ks_redefine.h"
 #include "../include/openmp_defs.h"
+#ifdef HAVE_QUDA
+#include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
+#endif
+
+#ifdef CGTIME
+static const char *prec_label[2] = {"F", "D"};
+#endif
 
 /*****************************************************************************/
 /* dst = M src. With parity selection */
@@ -401,6 +409,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
 }
 
 #ifdef HAVE_QUDA
+
 /********************************************************************/
 /* Multigrid solution of the full Dirac equation for both parities  */
 /********************************************************************/
