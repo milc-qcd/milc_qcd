@@ -56,7 +56,7 @@ void close_ks_eigen_outfile(QIO_Writer *outfile);
 QIO_Reader *open_ks_eigen_infile(char *filename, int *Nvecs, int *packed, int *file_type, int serpar);
 int read_ks_eigenvector(QIO_Reader *infile, int packed, su3_vector *eigVec, double *eigVal);
 int read_quda_ks_eigenvectors(QIO_Reader *infile, su3_vector *eigVec[], double *eigVal, int *Nvecs,
-			      int parity, imp_ferm_links_t *fn);
+			      int parity);
 void close_ks_eigen_infile(QIO_Reader *infile);
 
 /**********************************************************************/

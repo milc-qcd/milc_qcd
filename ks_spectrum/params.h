@@ -11,7 +11,7 @@
 
 #define MAX_MASS_PBP 8
 #define MAX_SOURCE 32
-#define MAX_SET 64
+#define MAX_SET 256
 #define MAX_PROP 64
 #define MAX_QK 256
 #define MAX_COMBO 8

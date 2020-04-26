@@ -342,8 +342,8 @@ int main(int argc, char *argv[])
     
     for(k=0; k<param.num_set; k++){
       int num_prop = param.end_prop[k] - param.begin_prop[k] + 1;
+      if(num_prop <= 0)continue;  /* Ignore set if zero */
       int i0 = param.begin_prop[k];
-
 
       for(i=param.begin_prop[k]; i <= param.end_prop[k]; i++){
 
@@ -371,7 +371,7 @@ int main(int argc, char *argv[])
 	node0_printf("residue= %g rel= %g\n",
 		     (double)param.qic[i].resid,
 		     (double)param.qic[i].relresid);
-	
+	fflush(stdout);
       }
       
       /* We pass the beginning addresses of the set data */

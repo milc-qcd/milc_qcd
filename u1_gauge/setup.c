@@ -71,9 +71,12 @@ static int initial_set(void)
   if(mynode()==0)
     {
     /* print banner */
-    printf("U(1) [Coulomb gauge-fixed] gauge field generation ... \n");
+    printf("U(1) Gauge field generation ... \n");
     printf("stored as A(mu,x), convert to U(mu,x) to couple to fermions.\n");
     printf("Machine = %s, with %d nodes!\n",machine_type(),numnodes());
+    node0_printf("Options selected...\n");
+    show_momgauge_opts();
+    show_generic_opts();
     time_stamp("Start");
     status=get_prompt(stdin,&prompt);
 

@@ -17,7 +17,7 @@ extern	int even_sites_on_node;	/* number of even sites on this node */
 extern  int this_node;
 
 using namespace Grid;
-using namespace Grid::QCD;
+//using namespace Grid::QCD;
 using namespace std;
 
 extern Coordinate squaresize;

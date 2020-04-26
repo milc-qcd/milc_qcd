@@ -4,7 +4,7 @@
 #include <Grid/Grid.h>
 
 using namespace Grid;
-using namespace Grid::QCD;
+//using namespace Grid::QCD;
 
 // Containers for grid definitions
 

@@ -143,7 +143,7 @@ gauge_file *save_u1_lattice(int flag,char *filename)
   double dtime;
   gauge_file *gf=NULL;
 
-  u1plaq(&g_splaq,&g_tplaq);
+  u1plaq(&g_splaq,&g_tplaq,1.);
 
   dtime=-dclock();
   switch(flag){
@@ -496,7 +496,7 @@ gauge_file *reload_u1_lattice(int flag, char *filename)
   
   if(flag!=FRESH && flag!=CONTINUE)
     node0_printf("Time to reload gauge configuration = %e\n",dtime);
-  u1plaq(&g_splaq,&g_tplaq);
+  u1plaq(&g_splaq,&g_tplaq,1.);
 
 #if (MILC_PRECISION==1)
   node0_printf("\nCHECK U(1) PLAQ: %e %e\n\n",g_splaq,g_tplaq);
