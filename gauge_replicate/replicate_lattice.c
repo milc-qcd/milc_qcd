@@ -151,7 +151,7 @@ get_coords2(int coords2[], int node, size_t index2){
 }
 
 /*------------------------------------------------------------------*/
-int num_sites2(int node) {
+size_t num_sites2(int node) {
     return sites_on_node2;
 }
 
@@ -210,6 +210,7 @@ setup_layout2(int reps[]){
   squaresize2[1] = reps[1]*ny/nsquares[1];
   squaresize2[2] = reps[2]*nz/nsquares[2];
   squaresize2[3] = reps[3]*nt/nsquares[3];
+  return 0;
 }
 
 static void 
