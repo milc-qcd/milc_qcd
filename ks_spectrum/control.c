@@ -787,7 +787,7 @@ int main(int argc, char *argv[])
   
 
 #ifdef HAVE_QUDA
-  qudaFinalize();
+  finalize_quda();
 #endif
   
 #ifdef HAVE_QPHIX

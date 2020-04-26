@@ -457,6 +457,7 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
 int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst, 
 			    quark_invert_control *qic,
 			    Real mass, imp_ferm_links_t *fn );
+void mat_invert_mg_cleanup(void);
 int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec, imp_ferm_links_t *fn );
 int mat_invert_uml_field(su3_vector *src, su3_vector *dst, 

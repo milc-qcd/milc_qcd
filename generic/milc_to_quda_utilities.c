@@ -41,3 +41,9 @@ int initialize_quda(void){
   return status;
 
 } /* milc_to_quda_utilities */
+
+void finalize_quda(void){
+#ifdef USE_CG_GPU
+#endif
+  qudaFinalize();
+}
