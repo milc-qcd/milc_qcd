@@ -581,17 +581,17 @@ int readin(int prompt) {
 #endif
       
       IF_OK {
-	if(param.inv_type[k] == CGTYPE){
+        if (param.inv_type[k] == MGTYPE) {
+          IF_OK status += get_s(stdin, prompt, "MGparams", mgparamfile);
+        }
+
 	  /* maximum no. of conjugate gradient iterations */
-	  IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
-				&max_cg_iterations );
+        IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
+ 				&max_cg_iterations );
 	  
 	  /* maximum no. of conjugate gradient restarts */
-	  IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
+        IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
 				&max_cg_restarts );
-	} else {
-	  IF_OK status += get_s(stdin, prompt, "MGparams", mgparamfile);
-	}
       }
 	  
       /* Should we be checking (computing) the propagator by running
@@ -674,8 +674,7 @@ int readin(int prompt) {
 
       if( param.inv_type[k] == MGTYPE && param.set_type[k] == MULTIMASS_SET
 	  && param.num_prop[k] > 1){
-	printf("ERROR: No multigrid support for multimass inversion\n");
-	status++;
+	node0_printf("WARNING: Multigrid support for multimass is currently emulated via separate inversions\n");
       }
 
       /* Indexing range for set */
@@ -727,6 +726,9 @@ int readin(int prompt) {
 	/* Propagator inversion control                               */
 	/*------------------------------------------------------------*/
 	
+        /* inversion type */
+        param.qic[nprop].inv_type = param.inv_type[k];
+
 	/* maximum no. of conjugate gradient iterations */
 	param.qic[nprop].max = max_cg_iterations;
       

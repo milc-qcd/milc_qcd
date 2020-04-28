@@ -178,7 +178,23 @@ int solve_ksprop(int set_type,
 	  
 	  mat_invert_field(src[0], dst[0], my_qic+0, my_ksp[0].mass, 
 			   fn_multi[0], startflag[0] == FRESH);
-	} else {
+	} else if(my_qic->inv_type == MGTYPE) {
+
+          /* Multi-mass or multi-source inversion with MG, do each with MG separately */
+
+          if(set_type == MULTIMASS_SET){
+            /* Do each mass separately. Future: add support for rebuilding op? */
+            for(j = 0; j < num_prop; j++){
+              mat_invert_field(src[0], dst[j], my_qic+j, my_ksp[j].mass,
+                               fn_multi[j],1);
+            }
+          } else {
+            /* Passes through to separate MG solves */
+            int num_src = num_prop;
+            mat_invert_block(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
+          }
+
+        } else {
 
 	  /* Multi-mass or multi-source inversion */
 
@@ -202,6 +218,8 @@ int solve_ksprop(int set_type,
 	  } else {
 
 	    /* If we are starting fresh, use multimass or multisource inverter */
+
+            printf("ESW Fresh start, multimass/multisource\n");
 
 	    if(set_type == MULTIMASS_SET)
 	      /* Multimass inversion */
