@@ -517,8 +517,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 
     node0_printf("%s: setting up the MG inverter\n", myname);
     /* Set up the MG inverter when the links change */
-    // temporary, do not set up yet
-#if 0
+
     if (mg_preconditioner == NULL ){
       mg_preconditioner = qudaSetupMultigrid(MILC_PRECISION,
                               quda_precision,
@@ -532,10 +531,11 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
     } else {
     node0_printf("%s: MG inverter already set up.  Skipping.\n", myname);
     }
-#endif
   }
+
+  /* To do: add option to do a rebuild if the mass changes or
+     refresh gauge links if they evolve. */
   
-  // Just BiCGstab for now
   qudaInvertMG(MILC_PRECISION,
 	       quda_precision, 
 	       mass,
