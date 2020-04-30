@@ -516,8 +516,10 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
     num_iters = -1;
 
     node0_printf("%s: setting up the MG inverter\n", myname);
-    /* Set up the MG inverter when the links change */
 
+    /* Set up the MG inverter when the links change */
+    /* FIXME: what do we do if the mgparamfile changes? */
+    
     if (mg_preconditioner == NULL ){
       mg_preconditioner = qudaSetupMultigrid(MILC_PRECISION,
                               quda_precision,
