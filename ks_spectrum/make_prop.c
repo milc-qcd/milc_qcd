@@ -219,8 +219,6 @@ int solve_ksprop(int set_type,
 
 	    /* If we are starting fresh, use multimass or multisource inverter */
 
-            printf("ESW Fresh start, multimass/multisource\n");
-
 	    if(set_type == MULTIMASS_SET)
 	      /* Multimass inversion */
 	      mat_invert_multi(src[0], dst, my_ksp, num_prop, my_qic, fn_multi);
