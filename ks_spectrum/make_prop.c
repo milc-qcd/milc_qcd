@@ -186,7 +186,7 @@ int solve_ksprop(int set_type,
             /* Do each mass separately. Future: add support for rebuilding op? */
             for(j = 0; j < num_prop; j++){
               mat_invert_field(src[0], dst[j], my_qic+j, my_ksp[j].mass,
-                               fn_multi[j],1);
+                               fn_multi[j],0);
             }
           } else {
             /* Passes through to separate MG solves */

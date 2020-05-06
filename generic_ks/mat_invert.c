@@ -255,8 +255,10 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
 
     free(tmp);
 
-    //    check_invert_field2( dst, tmp, mass, 1e-6, fn, EVENANDODD);
+    //    node0_printf("Entering check_invert_field in mat_invert_cg_field\n");
+    //    fflush(stdout);
     //    check_invert_field( dst, src, mass, 1e-6, fn, EVENANDODD);
+    
     return cgn;
 }
 
@@ -401,6 +403,8 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     cgn += ks_congrad_field( tmp, dst, qic, mass, fn );
     qic->final_iters += even_iters;
 
+    //    node0_printf("Entering check_invert_field in mat_invert_uml_field\n");
+    //    fflush(stdout);
     //    check_invert_field( dst, src, mass, 1e-6, fn, EVENANDODD);
     destroy_v_field(tmp);
     destroy_v_field(ttt);
@@ -420,7 +424,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 			    quark_invert_control *qic,
 			    Real mass, imp_ferm_links_t *fn){
 
-  char myname[] = "mat_invertt_mg_field_gpu";
+  char myname[] = "mat_invert_mg_field_gpu";
   QudaInvertArgs_t inv_args;
   int i;
   double dtimec = -dclock();
@@ -573,6 +577,11 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 	   (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
 #endif
+
+  //    node0_printf("Entering check_invert_field in mat_invert_mg_field_gpu\n");
+  //    fflush(stdout);
+  //    check_invert_field( t_dest, t_src, mass, 1e-6, fn, EVENANDODD);
+
 
   return num_iters;
 }
