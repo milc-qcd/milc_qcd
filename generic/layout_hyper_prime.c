@@ -506,7 +506,7 @@ int node_number(int x, int y, int z, int t) {
 /* Return the serialized site index for the site x, y, z, t on the PE
    that has it */
 
-int node_index(int x, int y, int z, int t) {
+size_t node_index(int x, int y, int z, int t) {
 register int i,xr,yr,zr,tr;
     xr = x%squaresize[XUP]; yr = y%squaresize[YUP];
     zr = z%squaresize[ZUP]; tr = t%squaresize[TUP];
@@ -540,10 +540,10 @@ const int *get_logical_coordinate(){
 /* Map PE rank number and serialize site index to coordinates */
 /* (The inverse of node_number and node_index) */
 /* Assumes even sites come first */
-void get_coords(int coords[], int node, int index){
+void get_coords(int coords[], int node, size_t index){
   int mc[4];
-  int ir;
-  int meo, neven, xeo;
+  size_t ir;
+  size_t meo, neven, xeo;
   int k = node;
 
   /* mc = the machine coordinates for node k */
@@ -606,10 +606,11 @@ void get_coords(int coords[], int node, int index){
 	   coords[0], coords[1], coords[2], coords[3], node, index, k);
     terminate(1);
   }
-  if((k = node_index(coords[0], coords[1], coords[2], coords[3]))
+  size_t kk;
+  if((kk = node_index(coords[0], coords[1], coords[2], coords[3]))
       != index){
-    printf("get_coords: coords %d %d %d %d for node %d index %d map to wrong index %d\n",
-	   coords[0], coords[1], coords[2], coords[3], node, index, k);
+    printf("get_coords: coords %d %d %d %d for node %d index %llu map to wrong index %llu\n",
+	   coords[0], coords[1], coords[2], coords[3], node, index, kk);
     terminate(1);
   }
 }
