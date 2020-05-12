@@ -18,7 +18,7 @@ int qio_node_number(const int x[]){
   return node_number(x[0],x[1],x[2],x[3]);
 }
 
-int qio_node_index(const int x[]){
+size_t qio_node_index(const int x[]){
   return node_index(x[0],x[1],x[2],x[3]);
 }
 
