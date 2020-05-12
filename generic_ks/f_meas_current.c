@@ -869,13 +869,18 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
 	}
 #endif
 #ifdef MASS_UDLSC
-	if((j == 0 && n_masses > 1) || (j == 2 && n_masses > 3))
+	if(j == 0 && n_masses > 1) /* U-D */
 	  {
-	    write_tslice_values("DIFF", jrand+ir, masses[j], masses[j+1], j_mu[j][ir]);
+	    write_tslice_values("DIFF", jrand+ir, masses[0], masses[1], j_mu[j][ir]);
 	  }
-	else if((j == 0 && n_masses == 1) || (j == 2 && n_masses <= 3) || j == 4 ){
-	  write_tslice_values("DIFF", jrand+ir, masses[j], 0., j_mu[j][ir]);
-	}
+	else if(j == 2 && n_masses > 3) /* U-S */
+	  {
+	    write_tslice_values("DIFF", jrand+ir, masses[0], masses[3], j_mu[j][ir]);
+	  }
+	else if((j == 0 && n_masses == 1) || (j == 2 && n_masses <= 3) || j == 4 )
+	  {
+	    write_tslice_values("DIFF", jrand+ir, masses[j], 0., j_mu[j][ir]);
+	  }
 #else
 	write_tslice_values("DIFF", jrand+ir, masses[j], 0., j_mu[j][ir]);
 #endif
@@ -1422,13 +1427,18 @@ f_meas_current( int n_masses, int nrand, int thinning,
     write_tslice_values_begin("LOW");
     for(int j = 0; j < n_masses; j++){
 #ifdef MASS_UDLSC
-      if((j == 0 && n_masses > 1) || (j == 2 && n_masses > 3))
+      if(j == 0 && n_masses > 1) /* U-D */
 	{
-	  write_tslice_values("LOW", -1, masses[j], masses[j+1], jlow_mu[j]);
+	  write_tslice_values("LOW", -1, masses[0], masses[1], jlow_mu[j]);
 	}
-      else if((j == 0 && n_masses == 1) || (j == 2 && n_masses <= 3) || j == 4 ){
-	write_tslice_values("LOW", -1, masses[j], 0., jlow_mu[j]);
-      }
+      else if(j == 2 && n_masses > 3) /* U-S */
+	{
+	  write_tslice_values("LOW", -1, masses[0], masses[3], jlow_mu[j]);
+	}
+      else if((j == 0 && n_masses == 1) || (j == 2 && n_masses <= 3) || j == 4 )
+	{
+	  write_tslice_values("LOW", -1, masses[j], 0., jlow_mu[j]);
+	}
 #else
       write_tslice_values("LOW", -1, masses[j], 0., jlow_mu[j]);
 #endif
@@ -1484,13 +1494,18 @@ f_meas_current( int n_masses, int nrand, int thinning,
 #endif
 	
 #ifdef MASS_UDLSC
-	if((j == 0 && n_masses > 1) || (j == 2 && n_masses > 3))
+	if(j == 0 && n_masses > 1) /* U-D */
 	  {
-	    write_tslice_values("HI", jrand+ir, masses[j], masses[j+1], j_mu[j][ir]);
+	    write_tslice_values("HI", jrand+ir, masses[0], masses[1], j_mu[j][ir]);
 	  }
-	else if((j == 0 && n_masses == 1) || (j == 2 && n_masses <= 3) || j == 4 ){
-	  write_tslice_values("HI", jrand+ir, masses[j], 0., j_mu[j][ir]);
-	}
+	else if(j == 2 && n_masses > 3) /* U-S */
+	  {
+	    write_tslice_values("HI", jrand+ir, masses[0], masses[3], j_mu[j][ir]);
+	  }
+	else if((j == 0 && n_masses == 1) || (j == 2 && n_masses <= 3) || j == 4 )
+	  {
+	    write_tslice_values("HI", jrand+ir, masses[j], 0., j_mu[j][ir]);
+	  }
 #else
 	write_tslice_values("HI", jrand+ir, masses[j], 0., j_mu[j][ir]);
 #endif
