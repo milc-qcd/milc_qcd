@@ -22,7 +22,7 @@ size_t qio_node_index(const int x[]){
   return node_index(x[0],x[1],x[2],x[3]);
 }
 
-void qio_get_coords(int x[], int node, int index){
+void qio_get_coords(int x[], int node, size_t index){
   /* For this node we have a table */
   if(node == this_node){
     x[0] = lattice[index].x;
@@ -35,7 +35,7 @@ void qio_get_coords(int x[], int node, int index){
     get_coords( x, node, index );
 }
 
-int qio_num_sites(int node){
+size_t qio_num_sites(int node){
   return num_sites(node);
 }
 

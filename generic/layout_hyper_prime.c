@@ -602,14 +602,14 @@ void get_coords(int coords[], int node, size_t index){
   /* Consistency checks for debugging */
   if((k = node_number(coords[0], coords[1], coords[2], coords[3])) 
      != node){
-    printf("get_coords: coords %d %d %d %d for node %d index %d map to wrong node %d\n",
+    printf("get_coords: coords %d %d %d %d for node %d index %lu map to wrong node %d\n",
 	   coords[0], coords[1], coords[2], coords[3], node, index, k);
     terminate(1);
   }
   size_t kk;
   if((kk = node_index(coords[0], coords[1], coords[2], coords[3]))
       != index){
-    printf("get_coords: coords %d %d %d %d for node %d index %llu map to wrong index %llu\n",
+    printf("get_coords: coords %d %d %d %d for node %d index %lu map to wrong index %lu\n",
 	   coords[0], coords[1], coords[2], coords[3], node, index, kk);
     terminate(1);
   }
