@@ -579,7 +579,7 @@ gauge_file *restore_u1_ascii(char *filename)
         {
         nx=gh->dims[0]; ny=gh->dims[1];
         nz=gh->dims[2]; nt=gh->dims[3];
-        volume=nx*ny*nz*nt;
+        volume = ((size_t) nx)*ny*nz*nt;
         }
       }
     } /* if node=0 */
@@ -1512,7 +1512,7 @@ int read_u1_gauge_hdr(gauge_file *gf, int parallel)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = ((size_t) nx)*ny*nz*nt;
 	}
     }
 

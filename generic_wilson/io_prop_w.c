@@ -744,7 +744,7 @@ w_prop_file *r_ascii_w_i(char *filename)
 	      ny = wph->dims[1];
 	      nz = wph->dims[2];
 	      nt = wph->dims[3];
-	      volume = nx*ny*nz*nt;
+	      volume = ((size_t) nx)*ny*nz*nt;
 	    }
 	}
       wph->header_bytes = 0;    /* Unused for ASCII */

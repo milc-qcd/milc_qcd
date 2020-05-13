@@ -129,7 +129,7 @@ int read_ks_eigen_hdr(ks_eigen_file *kseigf, int parallel){
       ny = kseigh->dims[1];
       nz = kseigh->dims[2];
       nt = kseigh->dims[3];
-      volume = nx*ny*nz*nt;
+      volume = ((size_t) nx)*ny*nz*nt;
     }
   }
   
@@ -1116,7 +1116,7 @@ ks_eigen_file *r_ascii_ks_eigen_i(char *filename){
 	ny = kseigh->dims[1];
 	nz = kseigh->dims[2];
 	nt = kseigh->dims[3];
-	volume = nx*ny*nz*nt;
+	volume = ((size_t) nx)*ny*nz*nt;
       }
     }
     kseigh->header_bytes = 0; /* Unused for ASCII */

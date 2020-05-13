@@ -127,7 +127,7 @@ initial_set()
 #endif
 
   number_of_nodes = numnodes();
-  volume=nx*ny*nz*nt;
+  volume=((size_t)nx)*ny*nz*nt;
 #ifdef HISQ_SVD_COUNTER
   hisq_svd_counter = 0;
 #endif

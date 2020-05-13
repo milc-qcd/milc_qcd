@@ -438,7 +438,7 @@ static gauge_file *file_scan_scidac(char *filename, int serpar){
   /* Read header to get lattice dimensions and close the file */
   read_lat_dim_scidac(filename, &ndim, dims);
   nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
-  volume = nx*ny*nz*nt;
+  volume = ((size_t) nx)*ny*nz*nt;
 
   /* Finish setting up, now we know the dimensions */
 

@@ -266,7 +266,7 @@ initial_set(void)
   strcpy(rparamfile,param.rparamfile);
   
   number_of_nodes = numnodes();
-  volume=nx*ny*nz*nt;
+  volume=((size_t)nx)*ny*nz*nt;
   total_iters=0;
 #ifdef HISQ_SVD_COUNTER
   hisq_svd_counter = 0;
