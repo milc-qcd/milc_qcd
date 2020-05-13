@@ -689,7 +689,7 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
 	  ny = ksph->dims[1];
 	  nz = ksph->dims[2];
 	  nt = ksph->dims[3];
-	  volume = ((size_t) nx)*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
   

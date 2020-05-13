@@ -596,7 +596,7 @@ int main(int argc, char *argv[])
     
     setup_layout();
     
-    volume = ((size_t) nx)*ny*nz*nt;
+    volume = (size_t) nx*ny*nz*nt;
     
     if(gh->magic_number == GAUGE_VERSION_NUMBER_ARCHIVE){
       r_check_arch(gf,&max_deviation);

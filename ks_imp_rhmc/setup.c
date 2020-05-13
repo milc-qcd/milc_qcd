@@ -266,7 +266,7 @@ initial_set(void)
   strcpy(rparamfile,param.rparamfile);
   
   number_of_nodes = numnodes();
-  volume=((size_t)nx)*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
   total_iters=0;
 #ifdef HISQ_SVD_COUNTER
   hisq_svd_counter = 0;
@@ -286,7 +286,6 @@ initial_set(void)
 
   /* Load rational function parameters */
   rparam = load_rhmc_params(rparamfile, n_pseudo);  
-  if(mynode()==0)printf("Finished loading rat func params %x\n", rparam); fflush(stdout);
   if(rparam == NULL)terminate(1);
 
   /* Determine the maximum rational fcn order */

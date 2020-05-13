@@ -1651,7 +1651,7 @@ gauge_file *restore_ascii(char *filename) {
 	    ny = gh->dims[1];
 	    nz = gh->dims[2];
 	    nt = gh->dims[3];
-	    volume = ((size_t) nx)*ny*nz*nt;
+	    volume = (size_t) nx*ny*nz*nt;
 	  }
       }
 

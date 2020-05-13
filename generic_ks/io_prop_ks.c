@@ -747,7 +747,7 @@ int read_ks_prop_hdr(ks_prop_file *kspf, int parallel)
 	  ny = ksph->dims[1];
 	  nz = ksph->dims[2];
 	  nt = ksph->dims[3];
-	  volume = ((size_t) nx)*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
   
@@ -1376,7 +1376,7 @@ ks_prop_file *r_ascii_ks_i(char *filename)
 	      ny = ksph->dims[1];
 	      nz = ksph->dims[2];
 	      nt = ksph->dims[3];
-	      volume = ((size_t) nx)*ny*nz*nt;
+	      volume = (size_t) nx*ny*nz*nt;
 	    }
 	}
       ksph->header_bytes = 0;    /* Unused for ASCII */
@@ -1877,7 +1877,7 @@ ks_prop_file *restore_ksprop_ascii( char *filename, field_offset prop )
 	    ny = ph->dims[1];
 	    nz = ph->dims[2];
 	    nt = ph->dims[3];
-	    volume = ((size_t) nx)*ny*nz*nt;
+	    volume = (size_t) nx*ny*nz*nt;
 	  }
       }
 

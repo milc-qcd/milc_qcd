@@ -62,7 +62,7 @@ int prompt=0,status;
     iseed=par_buf.iseed;
     
     number_of_nodes = numnodes();
-    volume=((size_t)nx)*ny*nz*nt;
+    volume=(size_t)nx*ny*nz*nt;
     return(prompt);
 }
 

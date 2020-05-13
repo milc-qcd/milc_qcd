@@ -87,7 +87,7 @@ static int initial_set(){
 #endif
   
   number_of_nodes = numnodes();
-  volume=((size_t)nx)*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
   return(prompt);
 }
 

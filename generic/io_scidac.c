@@ -373,10 +373,12 @@ static gauge_file *restore_scidac(char *filename, int serpar){
   field_offset dest = F_OFFSET(link[0]);
   gauge_file *gf;
 
-  QIO_verbose(QIO_VERB_OFF);
+  //  QIO_verbose(QIO_VERB_OFF);
+  QIO_verbose(QIO_VERB_DEBUG);
 
   /* Build the layout structure */
   build_qio_layout(&layout);
+  node0_printf("Calling build_qio_layout with volume %lu\n", layout.volume);
 
   /* Define the I/O nodes */
   build_qio_filesystem(&fs);
@@ -438,7 +440,7 @@ static gauge_file *file_scan_scidac(char *filename, int serpar){
   /* Read header to get lattice dimensions and close the file */
   read_lat_dim_scidac(filename, &ndim, dims);
   nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
-  volume = ((size_t) nx)*ny*nz*nt;
+  volume = (size_t) nx*ny*nz*nt;
 
   /* Finish setting up, now we know the dimensions */
 
