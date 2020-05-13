@@ -82,7 +82,7 @@ typedef struct {
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;			/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;			/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 #define MAX_LEVEL 5	/* maximal number of smearing levels */
 EXTERN	int no_smear_level, smear_num[MAX_LEVEL], off_axis_flag;

@@ -48,7 +48,7 @@ typedef struct {
 /* The following are global scalars */
 /* Initialization parameters */
 EXTERN	int nx,ny,nz,nt; 
-EXTERN  int volume;
+EXTERN  size_t volume;
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;

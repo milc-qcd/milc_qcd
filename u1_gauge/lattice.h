@@ -44,7 +44,7 @@ EXTERN site *lattice;
 
 /* Global Lattice Parameters */
 EXTERN int nx,ny,nz,nt; 	/* lattice dimensions */
-EXTERN int volume;		/* nx*ny*nz*nt */
+EXTERN size_t volume;		/* nx*ny*nz*nt */
 EXTERN int *latin;		/* lattice site index */
 
 EXTERN Real echarge;            /* electron charge == e */

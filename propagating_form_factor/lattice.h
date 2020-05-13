@@ -124,7 +124,7 @@ EXTERN int wallflag;
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;	/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;	/* volume of lattice = nx*ny*nz*nt */
 
 EXTERN int verbose_flag ; /*** flag controllling the amount of debug
 			    information to print ***/

@@ -13,7 +13,7 @@
 
 EXTERN	Real beta;
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
 EXTERN	size_t sites_on_node;		/* number of sites on this node */

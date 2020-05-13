@@ -507,7 +507,7 @@ int node_number(int x, int y, int z, int t) {
    that has it */
 
 size_t node_index(int x, int y, int z, int t) {
-register int i,xr,yr,zr,tr;
+    size_t i,xr,yr,zr,tr;
     xr = x%squaresize[XUP]; yr = y%squaresize[YUP];
     zr = z%squaresize[ZUP]; tr = t%squaresize[TUP];
     i = xr + squaresize[XUP]*( yr + squaresize[YUP]*( zr + squaresize[ZUP]*tr));
