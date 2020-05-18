@@ -134,28 +134,21 @@ setup(void)
   /* print banner, get volume, seed */
   prompt = initial_set();
   /* Initialize the layout functions, which decide where sites live */
-  if(mynode()==0)printf("Calling setup_layout\n"); fflush(stdout);
   setup_layout();
   this_node = mynode();
-  if(mynode()==0)printf("Done with setup_layout\n"); fflush(stdout);
   /* initialize the node random number generator */
   initialize_prn( &node_prn, iseed, volume+mynode() );
-  if(mynode()==0)printf("Initialized the prn\n"); fflush(stdout);
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
-  if(mynode()==0)printf("Made lattice\n"); fflush(stdout);
 
   /* set up neighbor pointers and comlink structures */
   make_nn_gathers();
-  if(mynode()==0)printf("Made nn gathers\n"); fflush(stdout);
   /* set up 3rd nearest neighbor pointers and comlink structures
      code for this routine is below  */
   make_3n_gathers();
-  if(mynode()==0)printf("Made 3nn gathers\n"); fflush(stdout);
   /* set up K-S phase vectors, boundary conditions */
   phaseset();
   
-  if(mynode()==0)printf("Finished setup\n"); fflush(stdout);
   return( prompt );
 }
 
@@ -369,7 +362,6 @@ initial_set(void)
   }
   u0 = param.u0;
 
-  if(mynode()==0){printf("Done with initial_set\n"); fflush(stdout);}
   return(prompt);
 }
 
