@@ -539,8 +539,11 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
     }
   }
 
-  /* To do: add option to do a rebuild if the mass changes or
-     refresh gauge links if they evolve. */
+  /* Specify the type of rebuild _if_ a rebuild is required */
+  int mg_rebuild_type = 1;
+  if (qic->mg_rebuild_type == THINREBUILD) {
+    mg_rebuild_type = 0;
+  } 
   
   qudaInvertMG(MILC_PRECISION,
 	       quda_precision, 
@@ -551,6 +554,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 	       fatlink, 
 	       longlink,
 	       mg_preconditioner,
+         mg_rebuild_type,
 	       t_src, 
 	       t_dest,
 	       &residual,
@@ -687,8 +691,9 @@ int mat_invert_block_mg(su3_vector **src, su3_vector **dst,
   register int is;
   
   /* Temporary until there is multi-rhs support for multigrid */
-  for(is = 0; is < nsrc; is++)
+  for(is = 0; is < nsrc; is++) {
     cgn += mat_invert_mg_field_gpu(src[is], dst[is], qic, mass, fn );
+  }
   
   return cgn;
 }
@@ -734,13 +739,20 @@ int mat_invert_field(su3_vector *src, su3_vector *dst,
 
   int cgn = 0;
 
-  if(qic->inv_type == CGTYPE){
+  /* Use a CG solve for a CGTYPE inversion or an MGTYPE inversion with a CG override */
+  if(qic->inv_type == CGTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD)) {
     if(use_precond)
       /* Preconditioned inversion */
       cgn = mat_invert_uml_field(src, dst, qic, mass, fn );
     else
       /* Unpreconditioned inversion */
       cgn = mat_invert_cg_field(src, dst, qic, mass, fn );
+
+    if (qic->inv_type == MGTYPE) {
+      node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
+      /* Force a reload b/c of sloppy link precision changes */
+      refresh_fn_links(fn);
+    }
   } else {
     /* inv_type == MGTYPE */
 #ifdef USE_CG_GPU
@@ -762,8 +774,14 @@ int mat_invert_block(su3_vector **src, su3_vector **dst,
 		     Real mass, int nsrc, quark_invert_control *qic,
 		     imp_ferm_links_t *fn){
   int cgn;
-  if(qic->inv_type == CGTYPE){
+  if(qic->inv_type == CGTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD)){
     cgn = mat_invert_block_uml(src, dst, mass, nsrc, qic, fn);
+    
+    if (qic->inv_type == MGTYPE) {
+      node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
+      /* Force a reload b/c of sloppy link precision changes */
+      refresh_fn_links(fn);
+    }
   } else {
     /* inv_type == MGTYPE */
 #ifdef USE_CG_GPU

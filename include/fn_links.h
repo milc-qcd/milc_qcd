@@ -31,6 +31,7 @@ void destroy_fn_links(fn_links_t *fn);
 
 void init_ferm_links(fn_links_t *fn);
 int fresh_fn_links(fn_links_t *fn);
+void refresh_fn_links(fn_links_t *fn);
 void cancel_quda_notification(fn_links_t *fn);
 
 void copy_fn(fn_links_t *fn_src, fn_links_t *fn_dst);

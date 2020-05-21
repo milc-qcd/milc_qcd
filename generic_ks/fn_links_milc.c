@@ -419,6 +419,12 @@ fresh_fn_links(fn_links_t *fn)
 }
 
 void
+refresh_fn_links(fn_links_t *fn)
+{
+  fn->notify_quda_new_links = 1;
+}
+
+void
 cancel_quda_notification(fn_links_t *fn)
 {
   fn->notify_quda_new_links = 0;

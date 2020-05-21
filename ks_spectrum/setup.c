@@ -758,6 +758,32 @@ int readin(int prompt) {
 	/* Parameter used by QOPQDP inverter for mixed-precision solves */
 	IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic[nprop].mixed_rsq );
 #endif
+
+#ifdef MULTIGRID
+  /* parameter within MG solve to specify how to refresh the coarse op */
+
+  IF_OK {
+    if (param.inv_type[k] == MGTYPE) {
+      IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
+      IF_OK {
+        if(strcmp(savebuf,"FULL") == 0)
+          param.qic[nprop].mg_rebuild_type = FULLREBUILD;
+        else if(strcmp(savebuf,"THIN") == 0)
+          param.qic[nprop].mg_rebuild_type = THINREBUILD;
+        else if(strcmp(savebuf,"CG") == 0)
+          param.qic[nprop].mg_rebuild_type = CGREBUILD;
+        else {
+          printf("Unrecognized rebuild type %s\n",savebuf);
+          printf("Choices are 'FULL', 'THIN', 'CG'\n");
+          status++;
+        }
+      }
+    }
+  }
+#else
+  param.qic[nprop].mg_rebuild_type = CGREBUILD;
+#endif
+
 	/* Precision for all members of the set must be the same */
 	param.qic[nprop].prec = param.qic[0].prec;
 	
