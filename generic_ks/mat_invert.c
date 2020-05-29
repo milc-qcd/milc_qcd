@@ -424,6 +424,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 			    quark_invert_control *qic,
 			    Real mass, imp_ferm_links_t *fn){
 
+#ifdef MULTIGRID
   char myname[] = "mat_invert_mg_field_gpu";
   QudaInvertArgs_t inv_args;
   int i;
@@ -533,9 +534,9 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
                               longlink,
                               qic->mgparamfile);
 
-    node0_printf("%s: MG inverter setup complete\n", myname);
+      node0_printf("%s: MG inverter setup complete\n", myname);
     } else {
-    node0_printf("%s: MG inverter already set up.  Skipping.\n", myname);
+      node0_printf("%s: MG inverter already set up.  Skipping.\n", myname);
     }
   }
 
@@ -588,12 +589,21 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 
 
   return num_iters;
+
+#else
+  node0_printf("mat_invert_mg_field_gpu: ERROR. Multigrid is available only with GPU compilation\n");
+  terminate(1);
+#endif
+
 }
 
 void mat_invert_mg_cleanup(void){
 
+#ifdef MULTIGRID
   if(mg_preconditioner != NULL)
     qudaCleanupMultigrid(mg_preconditioner);
+#endif
+
 }
 
 #endif /* HAVE_QUDA */
@@ -776,7 +786,7 @@ int mat_invert_block(su3_vector **src, su3_vector **dst,
   int cgn;
   if(qic->inv_type == CGTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD)){
     cgn = mat_invert_block_uml(src, dst, mass, nsrc, qic, fn);
-    
+
     if (qic->inv_type == MGTYPE) {
       node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
       /* Force a reload b/c of sloppy link precision changes */
