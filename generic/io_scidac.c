@@ -373,8 +373,7 @@ static gauge_file *restore_scidac(char *filename, int serpar){
   field_offset dest = F_OFFSET(link[0]);
   gauge_file *gf;
 
-  //  QIO_verbose(QIO_VERB_OFF);
-  QIO_verbose(QIO_VERB_DEBUG);
+  QIO_verbose(QIO_VERB_OFF);
 
   /* Build the layout structure */
   build_qio_layout(&layout);
