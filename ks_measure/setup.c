@@ -2,23 +2,15 @@
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
-/* Modifications ... */
-
-//  $Log: setup.c,v $
-//  Revision 1.2  2012/11/24 05:21:42  detar
-//  Add support for future HYPISQ action
-//
-//  Revision 1.1  2011/12/02 04:38:15  detar
-//  Add
-//
-//
-
-
 #include "ks_measure_includes.h"
 #include <string.h>
 #include <unistd.h>
 extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #include "params.h"
+#ifdef U1_FIELD
+#include "../include/generic_u1.h"
+#include "../include/io_u1lat.h"
+#endif
 
 /* Forward declarations */
 
@@ -41,9 +33,9 @@ int setup()   {
   initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
-  /* Initialize fermion links as unallocated */
-//  init_ferm_links(&fn_links, &ks_act_paths);
-//  init_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
+#ifdef U1_FIELD
+  u1_A = create_u1_A_field();
+#endif
   /* set up nearest neighbor gathers */
   make_nn_gathers();
   /* set up 3rd nearest neighbor pointers and comlink structures
@@ -56,6 +48,7 @@ int setup()   {
 
 static int n_naiks = 1;
 static double eps_naik[MAX_NAIK];
+static double charge[MAX_CHARGE];
 
 /* SETUP ROUTINES */
 static int 
@@ -84,9 +77,6 @@ initial_set(){
 #if FERM_ACTION == HISQ
     show_su3_mat_opts();
     show_hisq_links_opts();
-#elif FERM_ACTION == HYPISQ
-    show_su3_mat_opts();
-    show_hypisq_links_opts();
 #endif
     status = get_prompt(stdin,  &prompt );
     
@@ -172,6 +162,13 @@ int readin(int prompt) {
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
 				  param.stringLFN );
 
+#ifdef U1_FIELD
+    /* what kind of starting U(1) lattice to use, read filename */
+    IF_OK status+=ask_starting_u1_lattice(stdin,prompt,
+					  &param.start_u1flag, param.start_u1file );
+    IF_OK status+=ask_ending_u1_lattice(stdin,prompt,
+					&param.save_u1flag, param.save_u1file );
+#endif
     /* Provision is made to build covariant sources from smeared
        links */
     /* APE smearing parameters (if needed) */
@@ -385,11 +382,18 @@ int readin(int prompt) {
 	
 	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[npbp_masses] );
 	IF_OK param.ksp_pbp[npbp_masses].mass = atof(param.mass_label[npbp_masses]);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
 	IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 			      &param.ksp_pbp[npbp_masses].naik_term_epsilon );
 #else
 	IF_OK param.ksp_pbp[npbp_masses].naik_term_epsilon = 0.0;
+#endif
+#ifdef U1_FIELD
+	IF_OK status += get_s(stdin, prompt,"charge", param.charge_label[npbp_masses] );
+	IF_OK param.ksp_pbp[npbp_masses].charge = atof(param.charge_label[npbp_masses]);
+#else
+	IF_OK strcpy(param.charge_label[npbp_masses],"0.");
+	IF_OK param.ksp_pbp[npbp_masses].charge = 0.;
 #endif
 	/* error for staggered propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
@@ -484,12 +488,23 @@ int readin(int prompt) {
   start_eps_naik(eps_naik, &n_naiks);
   
   /* Contribution from the chiral condensate epsilons */
-  for(k = 0; k < param.num_set; k++)
-    for(i = param.begin_pbp_masses[k]; i < param.num_pbp_masses[k]; i++){
-      param.ksp_pbp[i].naik_term_epsilon_index = 
-	fill_eps_naik(eps_naik, 
-		      &n_naiks, param.ksp_pbp[i].naik_term_epsilon);
-    }
+  nprop = param.end_prop[param.num_set-1] + 1;
+  for(i = 0; i < nprop; i++)
+    param.ksp_pbp[i].naik_term_epsilon_index = 
+      fill_eps_naik(eps_naik, 
+		    &n_naiks, param.ksp_pbp[i].naik_term_epsilon);
+  
+  /* Construct a table of quark charges and build a hash table
+     for mapping a charge to its charge index */
+
+  /* First term is always zero */
+  start_charge(charge, &n_charges);
+  
+  /* Contribution from the propagator charges */
+  nprop = param.end_prop[param.num_set-1] + 1;
+  for(i = 0; i < nprop; i++)
+    param.ksp_pbp[i].charge_index = 
+      fill_charge(charge, &n_charges, param.ksp_pbp[i].charge);
   
   /* Do whatever is needed to get lattice */
   if( param.startflag == CONTINUE ){
@@ -498,6 +513,7 @@ int readin(int prompt) {
   if( param.startflag != CONTINUE ){
     startlat_p = reload_lattice( param.startflag, param.startfile );
   }
+
 
 #if 0
   su3_matrix *G = create_random_m_field();
@@ -514,6 +530,11 @@ int readin(int prompt) {
   phases_in = OFF;
   rephase( ON );
 
+#ifdef U1_FIELD
+  /* Read the U(1) gauge field, if wanted */
+  start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
+#endif
+
   /* Set options for fermion links */
   
 #ifdef DBLSTORE_FN
@@ -525,18 +546,31 @@ int readin(int prompt) {
   fermion_links_want_du0(1);
 #endif
   
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) &  defined(DM_DEPS)
+#if ( FERM_ACTION == HISQ )&  defined(DM_DEPS)
   fermion_links_want_deps(1);
 #endif
   
-  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
+  /* Create a set of fermion links structures for all unique Naik epsilon values and charges */
+  fn_links_charge = (fermion_links_t **)malloc(sizeof(fermion_links_t *) * n_charges);
+  for(int i = 0; i < n_charges; i++){
+#ifdef U1_FIELD
+    if(charge[i] != 0)u1phase_on(charge[i], u1_A);
+#endif
+    /* Create a set of fermion links for all eps_naik */
+    fn_links_charge[i] = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
+#ifdef U1_FIELD
+    if(charge[i] != 0)u1phase_off();
+#endif
+  }
+  /* For compatibility. The first charge is always zero */
+  fn_links = fn_links_charge[0];
 
   /* Construct APE smeared links, but without KS phases */
   rephase( OFF );
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
   rephase( ON );
 
-/* We put in antiperiodic bc to match what we did to the gauge field */
+/* We put in antiperiodic bc to the APE links to match what we did to the gauge field */
   apply_apbc( ape_links, 0 );
 
 #if EIGMODE == EIGCG
@@ -559,6 +593,9 @@ int readin(int prompt) {
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
   if(status != 0) terminate(1);
+  if(param.fixflag != NO_GAUGE_FIX){
+    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
+  }
 
   if(param.ks_eigen_startflag != FRESH){
     param.eigcgp.Nvecs = 0;
@@ -578,15 +615,19 @@ int readin(int prompt) {
     /* malloc for eigenpairs */
     eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
     eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
-    for(i=0; i < param.eigen_param.Nvecs; i++)
+    for(i=0; i < param.eigen_param.Nvecs; i++){
       eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+      if(eigVec[i] == NULL){
+	printf("No room for eigenvector\n");
+	terminate(1);
+      }
+    }
     
     /* Do whatever is needed to get eigenpairs */
     imp_ferm_links_t **fn = get_fm_links(fn_links);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
     if(status != 0)terminate(1);
-
 #if 0
     for(int j = 0; j < param.eigen_param.Nvecs; j++){
       gauge_transform_v_field(eigVec[j], G);
@@ -598,7 +639,7 @@ int readin(int prompt) {
 
   ENDTIME("readin");
 
-  return(0);
+  return 0;
 }
 
 /* Set up comlink structures for 3rd nearest gather pattern; 

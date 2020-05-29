@@ -648,11 +648,11 @@ static FILE* open_fnal_meson_file(int pair){
   }
       
   fprintf(fp,"antiquark_mass:               \"%s\"\n", param.mass_label[ip0]);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
   fprintf(fp,"antiquark_epsilon:            %g\n", param.ksp[ip0].naik_term_epsilon);
 #endif
 #if U1_FIELD
-  fprintf(fp,"antiquark_charge:             \"%s\"\n", param.charge_label[is0]);
+  fprintf(fp,"antiquark_charge:             \"%s\"\n", param.charge_label[ip0]);
 #endif
 
   fprintf(fp,"quark_type:                   staggered\n");
@@ -671,11 +671,11 @@ static FILE* open_fnal_meson_file(int pair){
   }
 
   fprintf(fp,"quark_mass:                   \"%s\"\n",param.mass_label[ip1]);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
   fprintf(fp,"quark_epsilon:                %g\n",param.ksp[ip1].naik_term_epsilon);
 #endif
 #if U1_FIELD
-  fprintf(fp,"quark_charge:                 \"%s\"\n", param.charge_label[is1]);
+  fprintf(fp,"quark_charge:                 \"%s\"\n", param.charge_label[ip1]);
 #endif
   fprintf(fp,"...\n");
   return fp;
@@ -727,11 +727,12 @@ static FILE* open_fnal_baryon_file(int triplet){
   fprintf(fp,"quark0_sink_label:           %s\n",param.snk_qs_op[iq0].label);
   
   fprintf(fp,"quark0_mass:                 \"%s\"\n",param.mass_label[ip0]);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+  Tue May 26 09:36:40 EDT 2020 Spawn job process 24476 started on icsubmit01.sdcc.bnl.gov
+#if ( FERM_ACTION == HISQ )
   fprintf(fp,"quark0_epsilon:              %g\n",param.ksp[ip0].naik_term_epsilon);
 #endif
 #if U1_FIELD
-  fprintf(fp,"quark0_charge:               \"%s\"\n", param.charge_label[is0]);
+  fprintf(fp,"quark0_charge:               \"%s\"\n", param.charge_label[ip0]);
 #endif
 
   fprintf(fp,"quark1_type:                 stagered\n");
@@ -745,11 +746,11 @@ static FILE* open_fnal_baryon_file(int triplet){
   fprintf(fp,"quark1_sink_label:           %s\n",param.snk_qs_op[iq1].label);
 
   fprintf(fp,"quark1_mass:                 \"%s\"\n",param.mass_label[ip1]);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
   fprintf(fp,"quark1_epsilon:              %g\n",param.ksp[ip1].naik_term_epsilon);
 #endif
 #if U1_FIELD
-  fprintf(fp,"quark1_charge:               \"%s\"\n", param.charge_label[is1]);
+  fprintf(fp,"quark1_charge:               \"%s\"\n", param.charge_label[ip1]);
 #endif
 
   fprintf(fp,"quark2_type:                 staggered\n");
@@ -763,11 +764,11 @@ static FILE* open_fnal_baryon_file(int triplet){
   fprintf(fp,"quark2_sink_label:           %s\n",param.snk_qs_op[iq2].label);
   
   fprintf(fp,"quark2_mass:                 \"%s\"\n",param.mass_label[ip2]);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
   fprintf(fp,"quark2_epsilon:              %g\n",param.ksp[ip2].naik_term_epsilon);
 #endif
 #if U1_FIELD
-  fprintf(fp,"quark2_charge:               \"%s\"\n", param.charge_label[is2]);
+  fprintf(fp,"quark2_charge:               \"%s\"\n", param.charge_label[ip2]);
 #endif
 
   fprintf(fp,"...\n");
@@ -797,7 +798,6 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
   int nh0, nh1;
   int ip0 = get_ancestors(ih0, &nh0, iq0);
   int ip1 = get_ancestors(ih1, &nh1, iq1);
-  int is0 = param.set[ip0];
   int is1 = param.set[ip1];
   int isrc0 = param.source[ip0];
   int isrc1 = param.source[ip1];
@@ -831,11 +831,11 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
   /* Mass labels */
   fprintf(fp,"_m%s", param.mass_label[ip0]);
 #if U1_FIELD
-  fprintf(fp,"_q%s", param.charge_label[is0]);
+  fprintf(fp,"_q%s", param.charge_label[ip0]);
 #endif
   fprintf(fp,"_m%s", param.mass_label[ip1]);
 #if U1_FIELD
-  fprintf(fp,"_q%s", param.charge_label[is1]);
+  fprintf(fp,"_q%s", param.charge_label[ip1]);
 #endif
   fprintf(fp, "_%s\n", param.mom_label[pair][m]);
 
@@ -852,8 +852,6 @@ print_start_meson_prop(int pair, int m){
   int nh0, nh1;
   int ip0 = get_ancestors(ih0, &nh0, iq0);
   int ip1 = get_ancestors(ih1, &nh1, iq1);
-  int is0 = param.set[ip0];
-  int is1 = param.set[ip1];
   int isrc0 = param.source[ip0];
   int isrc1 = param.source[ip1];
   if(this_node != 0)return;
@@ -865,8 +863,8 @@ print_start_meson_prop(int pair, int m){
   printf("\n");
 #ifdef U1_FIELD
   printf("CHARGES: ");
-  printf("%g ", param.charge[is0]);
-  printf("%g ", param.charge[is1]);
+  printf("%g ", param.ksp[ip0].charge);
+  printf("%g ", param.ksp[ip1].charge);
   printf("\n");
 #endif
   printf("SOURCE: %s %s\n",param.src_qs[isrc0].descrp,
@@ -887,9 +885,6 @@ static void print_start_fnal_baryon_prop(FILE *fp, int triplet, int b)
   int ip0 = get_ancestors(ih0, &nh0, iq0);
   int ip1 = get_ancestors(ih1, &nh1, iq1);
   int ip2 = get_ancestors(ih2, &nh2, iq2);
-  int is0 = param.set[ip0];
-  int is1 = param.set[ip1];
-  int is2 = param.set[ip2];
   int isrc0 = param.source[ip0];
   int isrc1 = param.source[ip1];
   int isrc2 = param.source[ip2];
@@ -927,15 +922,15 @@ static void print_start_fnal_baryon_prop(FILE *fp, int triplet, int b)
   /* Mass labels */
   fprintf(fp,"_m%s", param.mass_label[ip0]);
 #if U1_FIELD
-  fprintf(fp,"_q%s", param.charge_label[is0]);
+  fprintf(fp,"_q%s", param.charge_label[ip0]);
 #endif
   fprintf(fp,"_m%s", param.mass_label[ip1]);
 #if U1_FIELD
-  fprintf(fp,"_q%s", param.charge_label[is1]);
+  fprintf(fp,"_q%s", param.charge_label[ip1]);
 #endif
   fprintf(fp,"_m%s", param.mass_label[ip2]);
 #if U1_FIELD
-  fprintf(fp,"_q%s", param.charge_label[is2]);
+  fprintf(fp,"_q%s", param.charge_label[ip2]);
 #endif
   fprintf(fp, "\n");
 
@@ -954,9 +949,6 @@ static void print_start_baryon_prop(int triplet, int b)
   int ip0 = get_ancestors(ih0, &nh0, iq0);
   int ip1 = get_ancestors(ih1, &nh1, iq1);
   int ip2 = get_ancestors(ih2, &nh2, iq2);
-  int is0 = param.set[ip0];
-  int is1 = param.set[ip1];
-  int is2 = param.set[ip2];
   int isrc0 = param.source[ip0];
   int isrc1 = param.source[ip1];
   int isrc2 = param.source[ip2];

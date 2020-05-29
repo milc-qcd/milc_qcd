@@ -542,6 +542,11 @@ int sprint_gauge_info_item(
 	bytes = strlen(string);
 	if(bytes >= nstring)return 1;
       }
+      else if(strstr(fmt,"u") != NULL){
+	snprintf(string+bytes,nstring-bytes,fmt,*(u_int32type *)data);
+	bytes = strlen(string);
+	if(bytes >= nstring)return 1;
+      }
       else if(strstr(fmt,"lu") != NULL){
 	snprintf(string+bytes,nstring-bytes,fmt,*(unsigned long *)data);
 	bytes = strlen(string);

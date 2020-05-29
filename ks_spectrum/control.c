@@ -7,34 +7,6 @@
    background field config and ties them together according to the
    input parameters. */
 
-/* Modifications ... */
-   
-//  $Log: control.c,v $
-//  Revision 1.8  2013/12/28 20:57:27  detar
-//  Fix improper type for creating ksprop quark field
-//
-//  Revision 1.7  2013/12/24 05:39:00  detar
-//  Add combo operation
-//
-//  Revision 1.6  2012/11/24 05:14:20  detar
-//  Add support for U(1) fields and for future HYPISQ action
-//
-//  Revision 1.5  2012/05/08 20:39:54  detar
-//  Call qudaFinalize to allow writing optimization file.
-//
-//  Revision 1.4  2012/04/25 03:23:21  detar
-//  Fix rephase flag
-//
-//  Revision 1.3  2012/01/21 21:34:36  detar
-//  Move start time to beginning.  Remake APE links after gauge fixing.
-//
-//  Revision 1.2  2011/12/03 03:43:39  detar
-//  Cosmetic
-//
-//  Revision 1.1  2011/11/30 22:11:38  detar
-//  Add
-//
-   
 
 #define CONTROL
 #include "ks_spectrum_includes.h"
@@ -63,7 +35,6 @@ int main(int argc, char *argv[])
   int oldiq0, oldiq1, oldiq2, oldip0;
   int quark_nc[MAX_QK];
 #endif
-  int naik_index, naik_index0, naik_index1;
   double mass;
   double starttime, endtime;
 #ifdef PRTIME
@@ -104,10 +75,7 @@ int main(int argc, char *argv[])
 #ifdef HISQ_SVD_COUNTER
     hisq_svd_counter = 0;
 #endif
-#ifdef HYPISQ_SVD_COUNTER
-    hypisq_svd_counter = 0;
-#endif
-    
+
     /**************************************************************/
     /* Compute Dirac eigenpairs           */
 
@@ -119,7 +87,8 @@ int main(int argc, char *argv[])
       
       STARTTIME;
       
-      param.eigen_param.parity = EVEN;  /* Required */
+      param.eigen_param.parity = EVEN;  /* EVEN is required */
+      /* First set of fn links is always charge 0 and Naik epsilon 0 */
       imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
 
       /* Move KS phases and apply time boundary condition, based on the
@@ -135,7 +104,7 @@ int main(int argc, char *argv[])
 	int total_R_iters;
 	total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
 	construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn);
-	node0_printf("total Rayleigh iters = %d\n", total_R_iters);
+	node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
 	
 #if 0 /* If needed for debugging */
       /* (The ks_eigensolve routine uses the random number generator to
@@ -174,7 +143,7 @@ int main(int argc, char *argv[])
 	}
       }
       
-      ENDTIME("calculate Dirac eigenpairs");
+      ENDTIME("calculate Dirac eigenpairs"); fflush(stdout);
 #endif
     }
     
@@ -185,83 +154,41 @@ int main(int argc, char *argv[])
 
     /* Make fermion links if not already done */
 
-    for(i = 0; i < param.num_pbp_masses; i++){
-#ifdef U1_FIELD
-      u1phase_on(param.charge_pbp[i], u1_A);
-      invalidate_fermion_links(fn_links);
-#endif
-      restore_fermion_links_from_site(fn_links, param.qic_pbp[i].prec);
+    for(int j = 0; j < param.num_pbp_masses; j++){
+      Real mass = param.ksp_pbp[j].mass;
+      int naik_index = param.ksp_pbp[j].naik_term_epsilon_index;
+      int charge_index = param.ksp_pbp[j].charge_index;
+      imp_ferm_links_t *fn = get_fm_links(fn_links_charge[charge_index])[naik_index];
 
-      naik_index = param.ksp_pbp[i].naik_term_epsilon_index;
-      mass = param.ksp_pbp[i].mass;
-
-      f_meas_imp_field( param.npbp_reps, &param.qic_pbp[i], mass,
+      /* Move KS phases and apply time boundary condition, based on the
+	 coordinate origin and time_bc */
+      Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+      /* Set values in the structure fn */
+      set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
+      /* Apply the operation if not already done */
+      boundary_twist_fn(fn, ON);
+      
+      /* NOTE: CURRENTLY, THIS CALCULATION IS DONE WITH ZERO CHARGE */
+      f_meas_imp_field( param.npbp_reps, &param.qic_pbp[j], mass,
       			naik_index, fn_links);
 #ifdef D_CHEM_POT
       
-      Deriv_O6_field( param.npbp_reps, &param.qic_pbp[i], mass,
+      Deriv_O6_field( param.npbp_reps, &param.qic_pbp[j], mass,
       		      fn_links, naik_index, 
-		      param.ksp_pbp[i].naik_term_epsilon);
+		      param.ksp_pbp[j].naik_term_epsilon);
 #endif
-#ifdef U1_FIELD
-      /* Unapply the U(1) field phases */
-      u1phase_off();
-      invalidate_fermion_links(fn_links);
-#endif
+      boundary_twist_fn(fn, OFF);
     }
 
     ENDTIME("calculate pbp, etc");
 
-    /**************************************************************/
-    /* Fix the gauge */
-    
-    if( param.fixflag == COULOMB_GAUGE_FIX)
-      {
-	if(this_node == 0) 
-	  printf("Fixing to Coulomb gauge\n");
-
-	rephase( OFF );
-	STARTTIME;
-	gaugefix(TUP,(Real)1.8,500,GAUGE_FIX_TOL);
-	//gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL);
-	ENDTIME("gauge fix");
-
-	/* (Re)construct APE smeared links after gauge fixing.  
-	   No KS phases here! */
-	destroy_ape_links_4D(ape_links);
-	ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
-	if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
-
-	rephase( ON );
-	invalidate_fermion_links(fn_links);
-
-      }
-    else
-      if(this_node == 0)printf("COULOMB GAUGE FIXING SKIPPED.\n");
-    
-    /* save lattice if requested */
-    if( param.saveflag != FORGET ){
-      rephase( OFF );
-      savelat_p = save_lattice( param.saveflag, param.savefile, 
-				param.stringLFN );
-      rephase( ON );
-    }
-
-#ifdef U1_FIELD
-    if( param.save_u1flag != FORGET ){
-      save_u1_lattice( param.save_u1flag, param.save_u1file );
-    }
-#endif
-
-
     if(this_node==0)printf("END OF HEADER\n");
     
-
     /**************************************************************/
 
-    /* Create sources */
-
     STARTTIME;
+
+    /* Create sources */
 
     /* Base sources */
 
@@ -269,7 +196,7 @@ int main(int argc, char *argv[])
       quark_source *qs = &param.src_qs[k];
       source[k] = create_ksp_field(qs->ncolor);
 
-      /* Open file with metadata */
+      /* Open file and write metadata */
       if(qs->saveflag != FORGET){
 	char *fileinfo = create_ks_XML();
 	w_source_open_ks(qs, fileinfo);
@@ -313,8 +240,11 @@ int main(int argc, char *argv[])
 
       for(int color = 0; color < qs->ncolor; color++){
 
+	v_field_op(source[is]->v[color], &(param.src_qs_op[is]), qs->subset, qs->t0);
+	// v_field_op(source[is]->v[color], qs->op, qs->subset, qs->t0);
+
 	/* Apply operator*/
-	v_field_op(source[is]->v[color], qs->op, qs->subset, qs->t0);
+	//	v_field_op(source[is]->v[color], &(param.src_qs_op[is]), qs->subset, qs->t0);
 
 	/* Write the source, if requested */
 	if(qs->saveflag != FORGET){
@@ -366,7 +296,7 @@ int main(int argc, char *argv[])
 		     (double)param.ksp[i].mass,
 		     param.src_qs[is].descrp);
 #ifdef U1_FIELD
-	node0_printf("Q %g ",param.charge[k]);
+	node0_printf("Q %g ",param.ksp[i].charge_index);
 #endif
 	node0_printf("residue= %g rel= %g\n",
 		     (double)param.qic[i].resid,
@@ -387,7 +317,6 @@ int main(int argc, char *argv[])
 				  tmp_src_qs + i0,
 				  param.qic + i0, 
 				  param.ksp + i0,
-				  param.charge[k],
 				  param.bdry_phase[i0],
 				  param.coord_origin,
 				  param.check[i0]);
@@ -569,8 +498,8 @@ int main(int argc, char *argv[])
       iq1 = param.qkpair[i][1];
       
       /* Naik indices for the quarks */
-      naik_index0 = param.naik_index[iq0];
-      naik_index1 = param.naik_index[iq1];
+      int naik_index0 = param.naik_index[iq0];
+      int naik_index1 = param.naik_index[iq1];
       
       node0_printf("Mesons for quarks %d and %d\n",iq0,iq1);
       
@@ -760,28 +689,27 @@ int main(int argc, char *argv[])
 #ifdef HISQ_SVD_COUNTER
     printf("hisq_svd_counter = %d\n",hisq_svd_counter);
 #endif
-#ifdef HYPISQ_SVD_COUNTER
-    printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
-#endif
     fflush(stdout);
     
     for(i = 0; i < param.num_qk; i++){
       if(quark[i] != NULL)node0_printf("destroy quark[%d]\n",i);
-      destroy_ksp_field(quark[i]); quark[i] = NULL;
+      destroy_ksp_field(quark[i]);
+      quark[i] = NULL;
     }
     
     destroy_ape_links_3D(ape_links);
     
     /* Destroy fermion links (created in readin() */
     
+    for(int j = 0; j < n_charges; j++){
 #if FERM_ACTION == HISQ
-    destroy_fermion_links_hisq(fn_links);
-#elif FERM_ACTION == HYPISQ
-    destroy_fermion_links_hypisq(fn_links);
+      destroy_fermion_links_hisq(fn_links_charge[j]);
 #else
-    destroy_fermion_links(fn_links);
+      destroy_fermion_links(fn_links_charge[j]);
 #endif
-    fn_links = NULL;
+      fn_links_charge[j] = NULL;
+    }
+
     starttime = endtime;
   } /* readin(prompt) */
   

@@ -100,8 +100,6 @@ typedef struct {
   int num_set;  /* number of sets */
   enum set_type set_type[MAX_SET];    /* multimass or multisource */
   enum inv_type inv_type[MAX_SET];    /* inverter type MG or CG */
-  Real charge[MAX_SET];     /* charge for propagators in the set */
-  char charge_label[MAX_SET][32];  /* for correlator label */
   int num_prop[MAX_SET]; /* number of propagators in a set */
   int begin_prop[MAX_SET]; /* index of beginning propagator in this set */
   int end_prop[MAX_SET]; /* index of ending propagator in this set */
@@ -111,8 +109,9 @@ typedef struct {
   int startflag_ks[MAX_PROP];	/* what to do for beginning KS prop */
   int saveflag_ks[MAX_PROP];	/* what to do for saving KS prop */
   int source[MAX_PROP];      /* index of source for this prop */
-  char mass_label[MAX_PROP][32]; /* mass label for this prop */
   ks_param ksp[MAX_PROP];         /* propagator parameters for this prop */
+  char mass_label[MAX_PROP][32];
+  char charge_label[MAX_PROP][32];
   quark_invert_control qic[MAX_PROP];
   enum check_type check[MAX_PROP];         /* True -> run the inverter */
   Real bdry_phase[MAX_PROP][4];      /* For twisted boundary conditions */
@@ -127,6 +126,7 @@ typedef struct {
   int num_combo[MAX_QK];  /* Number of quarks to combine */
   Real combo_coeff[MAX_QK][MAX_COMBO]; /* Coefficients of linear combination */
   int naik_index[MAX_QK];            /* Naik term index for quark */
+  int charge_index[MAX_QK];          /* Charge index for quark */
   quark_source snk_qs[MAX_QK];       /* Sink description for quark */
   int saveflag_q[MAX_QK];	     /* what to do for saving KS prop */
   char savefile_q[MAX_QK][MAXFILENAME];

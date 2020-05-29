@@ -132,7 +132,9 @@ EXTERN su3_matrix *ape_links;
 EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
-EXTERN fermion_links_t        *fn_links;
+EXTERN int n_charges;
+EXTERN fermion_links_t   **fn_links_charge;
+EXTERN fermion_links_t    *fn_links;
 
 EXTERN Real *u1_A;
 EXTERN Real g_splaq,g_tplaq;	/* global U(1) plaquette measures */

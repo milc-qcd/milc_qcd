@@ -32,7 +32,7 @@ number_of_pbp_masses 2
 max_cg_iterations 300
 max_cg_restarts 5
 npbp_reps 1
-prec_pbp 1
+prec_pbp 2
 
 mass 0.03
 naik_term_epsilon 0

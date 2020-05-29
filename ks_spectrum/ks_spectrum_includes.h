@@ -54,7 +54,6 @@ int solve_ksprop(int set_type,
                  quark_source *my_ksqs[],
 		 quark_invert_control my_qic[],
 		 ks_param my_ksp[],
-		 Real charge,
 		 Real bdry_phase[],
 		 int r0[4],
 		 int check);
@@ -80,6 +79,6 @@ void u1phase_off(void);
 Real *create_u1_A_field(void);
 
 /* u1plaq.c */
-void u1plaq(Real *splaq,Real *tplaq);
+void u1plaq(Real *splaq,Real *tplaq,Real charge);
 
 /*  ks_spectrum_includes.h */

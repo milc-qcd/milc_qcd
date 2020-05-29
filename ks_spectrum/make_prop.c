@@ -43,7 +43,6 @@ int solve_ksprop(int set_type,
                  quark_source *my_ksqs[],
 		 quark_invert_control my_qic[],
 		 ks_param my_ksp[],
-		 Real charge,
 		 Real bdry_phase[],
 		 int r0[4],
 		 int check)
@@ -54,52 +53,101 @@ int solve_ksprop(int set_type,
   int status = 0;
   char *fileinfo;
   int tot_iters = 0;
-  su3_vector **dst;
-  imp_ferm_links_t **fn = NULL;
-  Real mybdry_phase[4];
-  imp_ferm_links_t **fn_multi = NULL;
-  int n_naiks = fermion_links_get_n_naiks(fn_links);
+  //  int n_naiks = fermion_links_get_n_naiks(fn_links);
   char myname[] = "solve_ksprop";
-
-  /* Local copy of bdry_phase */
-  for(i = 0; i < 4; i++)
-    mybdry_phase[i] = bdry_phase[i];
 
   /* Offset for setting the staggered phases in FN links.
      They can be different for each propagator
      NO, they must be the same! */
 
+  // NEED TO FIX ksprop_info FOR THE MULTISOURCE CASE
   ksqstmp = *my_ksqs[0];     /* For ksprop_info. Source is common to the set */
   ksptmp  = my_ksp[0];      /* For action parameters */
 
-  /* Construct fermion links if we will need them */
+  //  /* Construct fermion links if we will need them */
+  //  if(check != CHECK_NO || startflag[0] == FRESH ){
 
-  if(check != CHECK_NO || startflag[0] == FRESH ){
+//#ifdef U1_FIELD
+//    /* Apply U(1) phases if we are using it */
+//    u1phase_on(my_ksp[0].charge, u1_A);
+//    invalidate_fermion_links(fn_links);
+//#endif
 
-#ifdef U1_FIELD
-    /* Apply U(1) phases if we are using it */
-    u1phase_on(charge, u1_A);
-    invalidate_fermion_links(fn_links);
+//    restore_fermion_links_from_site(fn_links, my_qic[0].prec);
+//    fn = get_fm_links(fn_links);
+
+//    /* Apply twisted boundary conditions and move KS phases, if
+//       requested */
+//    /* This operation applies the phase to the boundary FN links */
+//    for(j = 0; j < n_naiks; j++){
+//      set_boundary_twist_fn(fn[j], mybdry_phase, r0);
+//      boundary_twist_fn(fn[j], ON);
+//    }
+
+  /* Make table of FN links, masses, and charges, and set boundary
+     phases if requested */
+  Real masses[num_prop];
+  Real charges[num_prop];
+  imp_ferm_links_t *fn_multi[num_prop];
+  /* Local copy of bdry_phase */
+  Real mybdry_phase[4];
+  for(i = 0; i < 4; i++) mybdry_phase[i] = bdry_phase[i];
+  
+  for(int j = 0; j < num_prop; j++){
+    int naik_index = my_ksp[j].naik_term_epsilon_index;
+    int charge_index = my_ksp[j].charge_index;
+    imp_ferm_links_t **fn_pt = get_fm_links(fn_links_charge[charge_index]);
+    fn_multi[j] = fn_pt[naik_index];
+    masses[j] = my_ksp[j].mass;
+    charges[j] = my_ksp[j].charge;
+    
+    /* Move KS phases and apply time boundary condition, based on the
+       coordinate origin and time_bc */
+    /* Set values in the structure fn */
+    set_boundary_twist_fn(fn_multi[j], mybdry_phase, r0); 
+    /* Apply the operation if not already done */
+    if(twist_status(fn_multi[j]) == OFF)boundary_twist_fn(fn_multi[j], ON);
+  }
+  
+  //    /* Copy pointers for fermion links, based on Naik epsilon indices */
+  //    fn_multi = (imp_ferm_links_t **)
+  //      malloc(sizeof(imp_ferm_links_t *)*num_prop);
+  //    for(j = 0; j < num_prop; j++)
+  //      fn_multi[j] = fn[my_ksp[j].naik_term_epsilon_index];
+  
+
+#if 0
+  {
+    imp_ferm_links_t *fn = fn_multi[0];
+    FILE *fpfat = fopen("fat","w");
+    for(int t=0;t<nt;t++)for(int z=0;z<nz;z++)for(int y=0;y<ny;y++)for(int x=0;x<nx;x++){
+	    int i = node_index(x,y,z,t);
+	    for(int dir=XUP;dir<=TUP;dir++){
+	      for(int k=0;k<3;k++)for(int j=0;j<3;j++){
+		  fprintf(fpfat,"%.7e\t%.7e\n",(float)fn->fat[4*i+dir].e[k][j].real,
+			  (float)fn->fat[4*i+dir].e[k][j].imag);
+		}
+	    }
+	  }
+    fclose(fpfat);
+    
+    FILE *fplng = fopen("lng","w");
+    for(int t=0;t<nt;t++)for(int z=0;z<nz;z++)for(int y=0;y<ny;y++)for(int x=0;x<nx;x++){
+	    int i = node_index(x,y,z,t);
+	    for(int dir=XUP;dir<=TUP;dir++){
+	      for(int k=0;k<3;k++)for(int j=0;j<3;j++){
+		  fprintf(fplng,"%.7e\t%.7e\n",(float)fn->lng[4*i+dir].e[k][j].real,
+			  (float)fn->lng[4*i+dir].e[k][j].imag);
+		}
+	    }
+	  }
+    fclose(fplng);
+    
+  }
 #endif
 
-    restore_fermion_links_from_site(fn_links, my_qic[0].prec);
-    fn = get_fm_links(fn_links);
 
-    /* Apply twisted boundary conditions and move KS phases, if
-       requested */
-    /* This operation applies the phase to the boundary FN links */
-    for(j = 0; j < n_naiks; j++){
-      set_boundary_twist_fn(fn[j], mybdry_phase, r0);
-      boundary_twist_fn(fn[j], ON);
-    }
-
-    /* Copy pointers for fermion links, based on Naik epsilon indices */
-    fn_multi = (imp_ferm_links_t **)
-      malloc(sizeof(imp_ferm_links_t *)*num_prop);
-    for(j = 0; j < num_prop; j++)
-      fn_multi[j] = fn[my_ksp[j].naik_term_epsilon_index];
-    
-  } /* check != CHECK_NO || startflag[0] == FRESH */
+  //  } /* check != CHECK_NO || startflag[0] == FRESH */
 
   /* Check (or produce) the solution if requested */
   
@@ -123,7 +171,7 @@ int solve_ksprop(int set_type,
     node0_printf("%s: color = %d\n",myname, color);
 
     /* List pointers to sources for this color */
-    su3_vector **src = (su3_vector **)malloc(num_prop*sizeof(su3_vector *));
+    su3_vector *src[num_prop];
     for(j = 0; j < num_prop; j++) src[j] = source[j]->v[color];
 
     /* Solve for the propagator if the starting guess is zero
@@ -131,7 +179,7 @@ int solve_ksprop(int set_type,
     if(check != CHECK_NO || startflag[0] == FRESH){
 
       /* List pointers to solutions for the current color */
-      dst = (su3_vector **)malloc(num_prop*sizeof(su3_vector *));
+      su3_vector *dst[num_prop];
       for(j = 0; j < num_prop; j++) dst[j] = ksprop[j]->v[color];
 	
       if(check != CHECK_SOURCE_ONLY){
@@ -228,10 +276,6 @@ int solve_ksprop(int set_type,
 	  copy_v_field(dst[j], src[j]);
       }  /* if(check != CHECK_SOURCE_ONLY) */
       
-      /* Clean up */
-      free(dst);
-      free(src);
-      
     } /* if(check != CHECK_NO || startflag[0] == FRESH)} */
 
   } /* color */
@@ -248,22 +292,24 @@ int solve_ksprop(int set_type,
       node0_printf("Saved propagator to %s\n",savefile[j]);
   }
 
-  if(check != CHECK_NO || startflag[0] == FRESH ){
+  //  if(check != CHECK_NO || startflag[0] == FRESH ){
 
   /* Unapply twisted boundary conditions on the fermion links and
      restore conventional KS phases and antiperiodic BC, if
      changed. */
-    for(j = 0; j < n_naiks; j++)
-      boundary_twist_fn(fn[j], OFF);
-  }
+  for(int j = 0; j < num_prop; j++)
+    if(twist_status(fn_multi[j]) == ON) boundary_twist_fn(fn_multi[j], OFF);
+  //    for(j = 0; j < n_naiks; j++)
+  //      boundary_twist_fn(fn[j], OFF);
+  //  }
     
-#ifdef U1_FIELD
-  /* Unapply the U(1) field phases */
-  u1phase_off();
-  invalidate_fermion_links(fn_links);
-#endif
+//#ifdef U1_FIELD
+//  /* Unapply the U(1) field phases */
+//  u1phase_off();
+//  invalidate_fermion_links(fn_links);
+//#endif
 
-  if(fn_multi != NULL)free(fn_multi);
+//  if(fn_multi != NULL)free(fn_multi);
 
   return tot_iters;
 

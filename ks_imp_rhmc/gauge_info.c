@@ -127,7 +127,7 @@ char *create_MILC_info(){
   sprint_gauge_info_item(info+bytes, max-bytes,"quark.dyn_flavors","%d",
 			 (char *)&dyn_flavors,n_dyn_masses,sizeof(int));
   bytes = strlen(info);
-  sprint_gauge_info_item(info+bytes, max-bytes,"quark.dyn_masses","%f",
+  sprint_gauge_info_item(info+bytes, max-bytes,"quark.dyn_mass","%f",
 			 (char *)&dyn_mass,n_dyn_masses,sizeof(Real));
   bytes = strlen(info);
 

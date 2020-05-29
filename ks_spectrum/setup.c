@@ -2,33 +2,6 @@
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
-/* Modifications ... */
-
-//  $Log: setup.c,v $
-//  Revision 1.7  2013/12/24 05:32:40  detar
-//  Add combo type.  Support embedded inverse.
-//
-//  Revision 1.6  2012/11/24 05:14:20  detar
-//  Add support for U(1) fields and for future HYPISQ action
-//
-//  Revision 1.5  2012/04/25 03:21:29  detar
-//  Initialize boundary phase
-//
-//  Revision 1.4  2012/03/06 03:23:26  detar
-//  Set GPU inverter precision through input parameter
-//
-//  Revision 1.3  2012/01/21 21:35:08  detar
-//  Support general spin_taste interpolating operators for mesons.
-//
-//  Revision 1.2  2011/12/03 03:44:36  detar
-//  Fix support for mu_eos
-//
-//  Revision 1.1  2011/11/30 22:11:40  detar
-//  Add
-//
-//
-
-
 #include "ks_spectrum_includes.h"
 #include "lattice_qdp.h"
 #include <string.h>
@@ -52,6 +25,29 @@ static char decode_parity(char *parity_label_in);
 static double decode_factor(char *factor_op, double factor);
 static void broadcast_heap_params(void);
 
+/**************************************************************/
+static void fix_gauge(void){
+    
+  if( param.fixflag == COULOMB_GAUGE_FIX)
+    {
+      if(this_node == 0) 
+	printf("Fixing to Coulomb gauge\n");
+      
+      STARTTIME;
+      gaugefix(TUP,(Real)1.8,500,GAUGE_FIX_TOL);
+      ENDTIME("gauge fix");
+      
+      /* (Re)construct APE smeared links after gauge fixing.  
+	 No KS phases here! */
+      destroy_ape_links_4D(ape_links);
+      ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+      if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
+    }
+  else
+    if(this_node == 0)printf("COULOMB GAUGE FIXING SKIPPED.\n");
+}
+    
+/***********************************************************************/
 
 int setup()   {
   int prompt, dir;
@@ -89,6 +85,7 @@ int setup()   {
 
 static int n_naiks = 1;
 static double eps_naik[MAX_NAIK];
+static double charge[MAX_CHARGE];
 
 /* SETUP ROUTINES */
 static int initial_set(void){
@@ -116,11 +113,7 @@ static int initial_set(void){
 #if FERM_ACTION == HISQ
     show_su3_mat_opts();
     show_hisq_links_opts();
-#elif FERM_ACTION == HYPISQ
-    show_su3_mat_opts();
-    show_hypisq_links_opts();
 #endif
-
     status = get_prompt(stdin,  &prompt );
     
     IF_OK status += get_i(stdin,prompt,"nx", &param.nx );
@@ -367,14 +360,18 @@ int readin(int prompt) {
       IF_OK status += get_i(stdin, prompt, "prec_pbp", &param.qic_pbp[0].prec);
       IF_OK for(i = 0; i < param.num_pbp_masses; i++){
 	IF_OK status += get_f(stdin, prompt, "mass", &param.ksp_pbp[i].mass);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
 	IF_OK status += get_f(stdin, prompt, "naik_term_epsilon", 
 			      &param.ksp_pbp[i].naik_term_epsilon);
 #else
 	param.ksp_pbp[i].naik_term_epsilon = 0.0;
 #endif
 #ifdef U1_FIELD
-	IF_OK status += get_f(stdin, prompt, "charge", &param.charge_pbp[i]);
+	IF_OK status += get_s(stdin, prompt,"charge", param.charge_label[i] );
+	IF_OK param.ksp_pbp[param.num_pbp_masses].charge = atof(param.charge_label[i]);
+#else
+	IF_OK strcpy(param.charge_label[i],"0.");
+	IF_OK param.ksp_pbp[i].charge = 0.;
 #endif
 	param.qic_pbp[i].min = 0;
 	param.qic_pbp[i].nsrc = 1;
@@ -635,33 +632,32 @@ int readin(int prompt) {
 #endif
       }
 
-#ifdef U1_FIELD
-      /* Charge, if U(1) */
-      IF_OK status += get_s(stdin, prompt, "charge", param.charge_label[k]);
-      IF_OK param.charge[k] = atof(param.charge_label[k]);
-#endif
-
+      char tmp_mass[32];
+      char tmp_charge[32];
       int tmp_src;
-      Real tmp_naik;
+      Real tmp_naik = 0.;
       
       IF_OK {
-
-	if(param.set_type[k] == MULTIMASS_SET){
+	if(param.set_type[k] == MULTISOURCE_SET){
+	  
+	  /* Get mass, Naik epsilon, and charge common to this set */
+	  IF_OK status += get_s(stdin,prompt,"mass", tmp_mass);
+	  
+#if ( FERM_ACTION == HISQ )
+	  IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
+				&tmp_naik);
+#endif
+#ifdef U1_FIELD
+	  /* Get charge label common to this set if U(1) */
+	  IF_OK status += get_s(stdin, prompt, "charge", tmp_charge);
+#endif
+	  
+	} else { /* MULTIMASS (OR SINGLE) SET */
 	  
 	  /* Get source index common to this set */
 	  IF_OK status += get_i(stdin,prompt,"source", &tmp_src);
-	} else {
-	  
-	  /* Get mass label common to this set */
-	  IF_OK status += get_s(stdin,prompt,"mass", savebuf);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-	  IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
-				&tmp_naik);
-#else
-	  tmp_naik = 0.0;
-#endif
+
 	}
-	
       }
 
       /* Number of propagators in this set */
@@ -692,36 +688,39 @@ int readin(int prompt) {
 
 	IF_OK {
 	  
-	  if(param.set_type[k]  == MULTIMASS_SET){
+	  if(param.set_type[k]  == MULTISOURCE_SET){
 	    
-	    /* Get mass label common to this set */
-	    IF_OK status += get_s(stdin,prompt,"mass", param.mass_label[nprop]);
-	    
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-	    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
-				  &param.ksp[nprop].naik_term_epsilon);
-#else
-	    param.ksp[nprop].naik_term_epsilon = 0.0;
-#endif
-	    param.source[nprop] = tmp_src;
-	    
-	  } else {
-	    
-	    /* Get source index common to this set */
+	    /* Get source index */
 	    IF_OK status += get_i(stdin,prompt,"source", &param.source[nprop]);
-	    strcpy(param.mass_label[nprop], savebuf);
-	    param.ksp[nprop].naik_term_epsilon = tmp_naik;
+	    
+	  } else { /* MULTIMASS_SET or SINGLE */
+	    
+	    /* Get mass, Naik epsilon, and charge */
+	    IF_OK status += get_s(stdin,prompt,"mass", tmp_mass);
+#if ( FERM_ACTION == HISQ )
+	    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", &tmp_naik);
+#endif
+#ifdef U1_FIELD
+	    IF_OK status += get_s(stdin, prompt, "charge", tmp_charge);
+#endif
 	  }
 	}
 
-	IF_OK param.ksp[nprop].mass = atof(param.mass_label[nprop]);
-
+	/* Set source, mass, Naik epsilon, and charge with labels */
 	IF_OK {
+	  param.source[nprop] = tmp_src;
+	  strcpy(param.mass_label[nprop], tmp_mass);
+	  param.ksp[nprop].mass = atof(tmp_mass);
+	  strcpy(param.charge_label[nprop], tmp_charge);
+	  param.ksp[nprop].charge = atof(tmp_charge);
+	  param.ksp[nprop].naik_term_epsilon = tmp_naik;
+
 	  int dir;
 	  FORALLUPDIR(dir)param.bdry_phase[nprop][dir] = bdry_phase[dir];
+
+	  param.check[nprop] = check;  /* Same for all members of a set */
+	  param.set[nprop] = k;  /* The set to which this prop belongs */
 	}
-	IF_OK param.check[nprop] = check;  /* Same for all members of a set */
-	IF_OK param.set[nprop] = k;  /* The set to which this prop belongs */
 
 	/*------------------------------------------------------------*/
 	/* Propagator inversion control                               */
@@ -735,6 +734,9 @@ int readin(int prompt) {
 
 	/* multigrid parameter file name */
 	strncpy(param.qic[nprop].mgparamfile, mgparamfile, MAXFILENAME);
+
+	/* invert type */
+	param.qic[nprop].inv_type = param.inv_type[k];
       
 	/* Should we be deflating? */
 	param.qic[nprop].deflate = 0;
@@ -1261,31 +1263,65 @@ int readin(int prompt) {
     }
   }
 
+  /* Construct a table of quark charges and build a hash table
+     for mapping a charge to its charge index */
+
+  /* First term is always zero */
+  start_charge(charge, &n_charges);
+  
+  /* Contribution from the chiral condensate epsilons */
+  for(i = 0; i < param.num_pbp_masses; i++){
+    param.ksp_pbp[i].charge_index = 
+      fill_eps_naik(charge, 
+	  &n_charges, param.ksp_pbp[i].charge);
+  }
+
+  /* Contribution from the propagator charges */
+  nprop = param.end_prop[param.num_set-1] + 1;
+  for(i = 0; i < nprop; i++)
+    param.ksp_pbp[i].charge_index = 
+      fill_charge(charge, &n_charges, param.ksp_pbp[i].charge);
+
+  /* TO DO: If we give charges to the embedded inverse operators,
+     collect them for the charge table here */
+  
   /* Assign Naik term indices to quarks based on inheritance from
      propagators */
-
+  
   for(i = 0; i < param.num_qk; i++){
-    if(param.parent_type[i] == PROP_TYPE)
+    if(param.parent_type[i] == PROP_TYPE){
       param.naik_index[i] = param.ksp[param.prop_for_qk[i]].naik_term_epsilon_index;
-    else
+      param.charge_index[i] = param.ksp[param.prop_for_qk[i]].charge_index;
+    } else {
       param.naik_index[i] = param.naik_index[param.prop_for_qk[i]];
+      param.charge_index[i] = param.charge_index[param.prop_for_qk[i]];
+    }
   }
 
- /* Do whatever is needed to get lattice */
-  if( param.startflag == CONTINUE ){
-    rephase( OFF );
-  }
+  /* Keep the current lattice or load a new one */
   if( param.startflag != CONTINUE ){
     startlat_p = reload_lattice( param.startflag, param.startfile );
+    /* Fix the gauge, if requested */
+    fix_gauge();
+    /* if a lattice was read in, put in KS phases and AP boundary condition */
+    phases_in = OFF;
+    rephase( ON );
   }
-  /* if a lattice was read in, put in KS phases and AP boundary condition */
-  phases_in = OFF;
-  rephase( ON );
 
+  /* Save the lattice if requested */
+  if( param.saveflag != FORGET ){
+    rephase( OFF );
+    savelat_p = save_lattice( param.saveflag, param.savefile, 
+			      param.stringLFN );
+    rephase( ON );
+  }
 
+  /* Read the U(1) gauge field, if wanted, and save it, if requested */
 #ifdef U1_FIELD
-  /* Read the U(1) gauge field, if wanted */
-  start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
+    start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
+    if( param.save_u1flag != FORGET ){
+      save_u1_lattice( param.save_u1flag, param.save_u1file );
+    }
 #endif
 
   /* Set options for fermion links */
@@ -1295,26 +1331,31 @@ int readin(int prompt) {
   fermion_links_want_back(1);
 #endif
 
-  /* Don't need to save HISQ auxiliary links */
-  fermion_links_want_aux(0);
-  
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-
-#ifdef DM_DEPS
-  fermion_links_want_deps(1);
-#endif
-
-  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
-
-#else
-
 #ifdef DM_DU0
   fermion_links_want_du0(1);
 #endif
-
-  fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
-
+  
+  /* Don't need to save HISQ auxiliary links */
+  fermion_links_want_aux(0);
+  
+#if ( FERM_ACTION == HISQ ) & defined(DM_DEPS)
+  fermion_links_want_deps(1);
 #endif
+
+  /* Create an array of fermion links structures for all unique Naik epsilon values and charges */
+  fn_links_charge = (fermion_links_t **)malloc(sizeof(fermion_links_t *) * n_charges);
+  for(int i = 0; i < n_charges; i++){
+#ifdef U1_FIELD
+    if(charge[i] != 0)u1phase_on(charge[i], u1_A);
+#endif
+    /* Create a set of fermion links for all eps_naik */
+    fn_links_charge[i] = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
+#ifdef U1_FIELD
+    if(charge[i] != 0)u1phase_off();
+#endif
+  }
+  /* For compatibility. The first charge is always zero */
+  fn_links = fn_links_charge[0];
 
   /* Construct APE smeared links without KS phases, but with
      conventional antiperiodic bc.  This is the same initial
@@ -1342,11 +1383,10 @@ int readin(int prompt) {
   imp_ferm_links_t **fn = get_fm_links(fn_links);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
-
+  if(status != 0) terminate(1);
   if(param.fixflag != NO_GAUGE_FIX){
     node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
   }
-  if(status != 0) normal_exit(0);
 
   if(param.ks_eigen_startflag != FRESH){
     param.eigcgp.Nvecs = 0;
@@ -1378,6 +1418,7 @@ int readin(int prompt) {
     imp_ferm_links_t **fn = get_fm_links(fn_links);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
+    if(status != 0)terminate(1);
     if(param.fixflag != NO_GAUGE_FIX){
       node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
     }
