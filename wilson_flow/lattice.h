@@ -22,6 +22,8 @@ typedef struct {
   char parity;
   /* my index in the array */
   int index;
+  /* The state information for a random number generator */
+  double_prn site_prn;
 
 /* ------------------------------------------------------------ */
 /*   Now come the physical fields, program dependent            */
