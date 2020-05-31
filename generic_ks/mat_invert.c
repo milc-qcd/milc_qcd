@@ -401,9 +401,14 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
 }
 
 #ifdef HAVE_QUDA
+#if 0
 /********************************************************************/
 /* Multigrid solution of the full Dirac equation for both parities  */
 /********************************************************************/
+#include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
+#include <string.h>
+static const char *prec_label[2] = {"F", "D"};
 
 static void *mg_preconditioner = NULL;
 
@@ -572,6 +577,7 @@ void mat_invert_mg_cleanup(void){
     qudaCleanupMultigrid(mg_preconditioner);
 }
 
+#endif /* if 0 or 1 */
 #endif /* HAVE_QUDA */
 
 /*****************************************************************************/
