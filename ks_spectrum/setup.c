@@ -27,7 +27,8 @@ static void broadcast_heap_params(void);
 
 /**************************************************************/
 static void fix_gauge(void){
-    
+
+  double dtime;
   if( param.fixflag == COULOMB_GAUGE_FIX)
     {
       if(this_node == 0) 
