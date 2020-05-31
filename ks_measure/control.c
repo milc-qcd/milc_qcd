@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
       /* Make table of FN links and masses and set boundary phases if
 	 requested */
       for(int j = 0; j < num_pbp_masses; j++){
-	int naik_index = param.ksp_pbp[i0+j].naik_index;
+	int naik_index = param.ksp_pbp[i0+j].naik_term_epsilon_index;
 	int charge_index = param.ksp_pbp[i0+j].charge_index;
 	imp_ferm_links_t **fn_pt = get_fm_links(fn_links_charge[charge_index]);
 	fn_mass[j] = fn_pt[naik_index];
