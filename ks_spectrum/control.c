@@ -13,6 +13,7 @@
 #include <string.h>
 #ifdef HAVE_QUDA
 #include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
 #endif
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
@@ -296,7 +297,7 @@ int main(int argc, char *argv[])
 		     (double)param.ksp[i].mass,
 		     param.src_qs[is].descrp);
 #ifdef U1_FIELD
-	node0_printf("Q %g ",param.ksp[i].charge_index);
+	node0_printf("Q %g ",param.ksp[i].charge);
 #endif
 	node0_printf("residue= %g rel= %g\n",
 		     (double)param.qic[i].resid,
