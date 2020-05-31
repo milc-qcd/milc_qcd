@@ -661,6 +661,7 @@ int mat_invert_block_uml(su3_vector **src, su3_vector **dst,
 }
 
 #ifdef HAVE_QUDA
+#if 0
 /*****************************************************************************/
 /* This algorithm solves the Dirac equation for both parities using
    staggered multigrid */
@@ -678,6 +679,7 @@ int mat_invert_block_mg(su3_vector **src, su3_vector **dst,
   
   return cgn;
 }
+#endif
 #endif
 
 /*****************************************************************************/
@@ -729,12 +731,14 @@ int mat_invert_field(su3_vector *src, su3_vector *dst,
       cgn = mat_invert_cg_field(src, dst, qic, mass, fn );
   } else {
     /* inv_type == MGTYPE */
+#if 0
 #ifdef USE_CG_GPU
     /* Currently only available through QUDA on GPUs */
     cgn = mat_invert_mg_field_gpu(src, dst, qic, mass, fn );
 #else
     node0_printf("mat_invert_field: ERROR. Multigrid is available only with GPU compilation\n");
     terminate(1);
+#endif
 #endif
   }
   return cgn;
@@ -752,12 +756,14 @@ int mat_invert_block(su3_vector **src, su3_vector **dst,
     cgn = mat_invert_block_uml(src, dst, mass, nsrc, qic, fn);
   } else {
     /* inv_type == MGTYPE */
+#if 0
 #ifdef USE_CG_GPU
     /* Currently only available through QUDA on GPUs */
     cgn = mat_invert_block_mg(src, dst, mass, nsrc, qic, fn);
 #else
     node0_printf("mat_invert_block: ERROR. Multigrid is available only with GPU compilation\n");
     terminate(1);
+#endif
 #endif
   }
   return cgn;
