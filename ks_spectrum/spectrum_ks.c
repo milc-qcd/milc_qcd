@@ -727,7 +727,6 @@ static FILE* open_fnal_baryon_file(int triplet){
   fprintf(fp,"quark0_sink_label:           %s\n",param.snk_qs_op[iq0].label);
   
   fprintf(fp,"quark0_mass:                 \"%s\"\n",param.mass_label[ip0]);
-  Tue May 26 09:36:40 EDT 2020 Spawn job process 24476 started on icsubmit01.sdcc.bnl.gov
 #if ( FERM_ACTION == HISQ )
   fprintf(fp,"quark0_epsilon:              %g\n",param.ksp[ip0].naik_term_epsilon);
 #endif
