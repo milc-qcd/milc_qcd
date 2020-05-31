@@ -54,9 +54,7 @@ static double charge[MAX_CHARGE];
 static int 
 initial_set(){
   int prompt=0,status;
-#ifdef FIX_NODE_GEOM
-  int i;
-#endif
+
   /* On node zero, read lattice size and send to others */
   if(mynode()==0){
     /* print banner */
@@ -113,10 +111,10 @@ initial_set(){
   iseed=param.iseed;
   
 #ifdef FIX_NODE_GEOM
-  for(i = 0; i < 4; i++)
+  for(int i = 0; i < 4; i++)
     node_geometry[i] = param.node_geometry[i];
 #ifdef FIX_IONODE_GEOM
-  for(i = 0; i < 4; i++)
+  for(int i = 0; i < 4; i++)
     ionode_geometry[i] = param.ionode_geometry[i];
 #endif
 #endif
@@ -376,7 +374,7 @@ int readin(int prompt) {
 	status++;
       }
 
-      IF_OK for(i = 0; i < param.num_pbp_masses[k]; i++){
+      IF_OK for(int i = 0; i < param.num_pbp_masses[k]; i++){
     
 	/* PBP mass parameters */
 	
@@ -488,8 +486,7 @@ int readin(int prompt) {
   start_eps_naik(eps_naik, &n_naiks);
   
   /* Contribution from the chiral condensate epsilons */
-  nprop = param.end_prop[param.num_set-1] + 1;
-  for(i = 0; i < nprop; i++)
+  for(int i = 0; i < npbp_masses; i++)
     param.ksp_pbp[i].naik_term_epsilon_index = 
       fill_eps_naik(eps_naik, 
 		    &n_naiks, param.ksp_pbp[i].naik_term_epsilon);
@@ -501,8 +498,7 @@ int readin(int prompt) {
   start_charge(charge, &n_charges);
   
   /* Contribution from the propagator charges */
-  nprop = param.end_prop[param.num_set-1] + 1;
-  for(i = 0; i < nprop; i++)
+  for(int i = 0; i < npbp_masses; i++)
     param.ksp_pbp[i].charge_index = 
       fill_charge(charge, &n_charges, param.ksp_pbp[i].charge);
   
@@ -585,7 +581,7 @@ int readin(int prompt) {
   eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
   eigVec = (su3_vector **)malloc(Nvecs_tot*sizeof(su3_vector *));
   node0_printf("Allocating space for %d eigenvectors\n", Nvecs_tot);
-  for(i = 0; i < Nvecs_tot; i++)
+  for(int i = 0; i < Nvecs_tot; i++)
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
   /* Do whatever is needed to get eigenpairs */
@@ -602,7 +598,7 @@ int readin(int prompt) {
     param.eigcgp.Nvecs_curr = Nvecs_tot;
     param.eigcgp.H = (double_complex *)malloc(Nvecs_max*Nvecs_max
 					      *sizeof(double_complex));
-    for(i = 0; i < Nvecs_max; i++){
+    for(int i = 0; i < Nvecs_max; i++){
       for(k = 0; k < i; k++)
 	param.eigcgp.H[k + Nvecs_max*i] = dcmplx((double)0.0, (double)0.0);
       param.eigcgp.H[(Nvecs_max+1)*i] = dcmplx(eigVal[i], (double)0.0);
