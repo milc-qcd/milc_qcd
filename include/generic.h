@@ -387,11 +387,11 @@ void r_source_cmplx_fm_to_field(char *filename, complex *dest_field, int stride,
 int io_node(const int node);
 void setup_layout( void );
 int node_number(int x,int y,int z,int t);
-int node_index(int x,int y,int z,int t);
+size_t node_index(int x,int y,int z,int t);
 size_t num_sites(int node);
 const int *get_logical_dimensions(void);
 const int *get_logical_coordinate(void);
-void get_coords(int coords[], int node, int index);
+void get_coords(int coords[], int node, size_t index);
 
 /* make_lattice.c */
 void make_lattice(void);

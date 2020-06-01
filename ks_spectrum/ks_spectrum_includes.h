@@ -75,13 +75,4 @@ int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename);
 void spectrum_ks(ks_prop_field *qp0, int naik_index0, ks_prop_field *qp1, int naik_index1, int pair);
 void spectrum_ks_baryon(ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *qp2, int triplet);
 
-/* u1link.c */
-complex *map_a2_u1link(Real chrg, Real *a);
-void u1phase_on(Real charge, Real *u1_A);
-void u1phase_off(void);
-Real *create_u1_A_field(void);
-
-/* u1plaq.c */
-void u1plaq(Real *splaq,Real *tplaq);
-
 /*  ks_spectrum_includes.h */

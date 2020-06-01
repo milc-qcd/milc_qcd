@@ -37,6 +37,8 @@ ${G_U1_ALL} : ${G_U1_ALL_DEPEND}
 
 io_u1lat.o: ../generic_u1/io_u1lat.c
 	${CC} -c ${CFLAGS} $<
+u1avlink.o: ../generic_u1/u1avlink.c
+	${CC} -c ${CFLAGS} $<
 u1link.o: ../generic_u1/u1link.c
 	${CC} -c ${CFLAGS} $<
 u1plaq.o: ../generic_u1/u1plaq.c
