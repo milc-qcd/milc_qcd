@@ -314,7 +314,8 @@ int main(int argc, char *argv[])
       for(int color = 0; color < qs->ncolor; color++){
 
 	/* Apply operator*/
-	v_field_op(source[is]->v[color], qs->op, qs->subset, qs->t0);
+        v_field_op(source[is]->v[color], &(param.src_qs_op[is]), qs->subset, qs->t0);
+	//	v_field_op(source[is]->v[color], qs->op, qs->subset, qs->t0);
 
 	/* Write the source, if requested */
 	if(qs->saveflag != FORGET){
