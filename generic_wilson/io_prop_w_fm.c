@@ -96,7 +96,7 @@ int read_w_fm_prop_hdr(w_prop_file *wpf)
   else
     {
       nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
-      volume = nx*ny*nz*nt;
+      volume = (size_t) nx*ny*nz*nt;
     }
   
   /* Consistency checks */

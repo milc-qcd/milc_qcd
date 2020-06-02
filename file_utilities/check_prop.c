@@ -375,7 +375,7 @@ int main(int argc, char *argv[])
 
   setup_layout();
 
-  volume = nx*ny*nz*nt;
+  volume = (size_t) nx*ny*nz*nt;
 
   /* Read and check data */
   status = 0;

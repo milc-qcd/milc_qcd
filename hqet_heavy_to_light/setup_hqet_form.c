@@ -95,7 +95,7 @@ int initial_set()
 
   this_node = mynode();
   number_of_nodes = numnodes();
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
   
   if(mynode()==0)
     {
