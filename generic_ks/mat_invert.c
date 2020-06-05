@@ -545,7 +545,9 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
   if (qic->mg_rebuild_type == THINREBUILD) {
     mg_rebuild_type = 0;
   } 
+    }
   
+  // Just BiCGstab for now
   qudaInvertMG(MILC_PRECISION,
 	       quda_precision, 
 	       mass,
@@ -594,7 +596,6 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
   node0_printf("mat_invert_mg_field_gpu: ERROR. Multigrid is available only with GPU compilation\n");
   terminate(1);
 #endif
-
 }
 
 void mat_invert_mg_cleanup(void){
@@ -603,7 +604,6 @@ void mat_invert_mg_cleanup(void){
   if(mg_preconditioner != NULL)
     qudaCleanupMultigrid(mg_preconditioner);
 #endif
-
 }
 
 #endif /* HAVE_QUDA */
@@ -704,7 +704,6 @@ int mat_invert_block_mg(su3_vector **src, su3_vector **dst,
   for(is = 0; is < nsrc; is++) {
     cgn += mat_invert_mg_field_gpu(src[is], dst[is], qic, mass, fn );
   }
-  
   return cgn;
 }
 #endif
@@ -757,7 +756,6 @@ int mat_invert_field(su3_vector *src, su3_vector *dst,
     else
       /* Unpreconditioned inversion */
       cgn = mat_invert_cg_field(src, dst, qic, mass, fn );
-
     if (qic->inv_type == MGTYPE) {
       node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
       /* Force a reload b/c of sloppy link precision changes */

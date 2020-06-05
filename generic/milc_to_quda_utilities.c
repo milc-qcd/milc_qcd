@@ -49,6 +49,5 @@ void finalize_quda(void){
 #ifdef MULTIGRID
   mat_invert_mg_cleanup();
 #endif
-
   qudaFinalize();
 }

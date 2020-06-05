@@ -228,8 +228,7 @@ int solve_ksprop(int set_type,
             mat_invert_block(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
         }
       }
-    }
-	
+    }	
 	/* Transform solutions, completing the U(1) gauge transformation */
 	mybdry_phase[3] = 0; 
 	for(j = 0; j < num_prop; j++){
