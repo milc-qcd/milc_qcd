@@ -860,7 +860,7 @@ CPREFETCH = #
 # MULTISOURCE
 # MULTIGRID
 
-KSCGMULTI = -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
+KSCGMULTI ?= -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
 
 #------------------------------
 # Multifermion force routines

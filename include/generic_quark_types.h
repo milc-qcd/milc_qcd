@@ -160,6 +160,13 @@ enum inv_type {
   CGTYPE
 };
 
+enum mg_rebuild_type {
+  FULLREBUILD,               /* do a full rebuild, expensive but best solve */
+  THINREBUILD,               /* do a thin rebuild, skips overhead of rebuild but
+                         leads to less effective preconditioner */
+  CGREBUILD                  /* override and perform CG instead */
+};
+
 typedef struct {
   int prec;           /* precision of the inversion 1 = single; 2 = double */
   int min;            /* minimum number of iterations (being phased out) */
@@ -181,7 +188,8 @@ typedef struct {
   int  final_iters;
   int  final_restart;
   enum inv_type inv_type;  /* requested inverter type */
-  char mgparamfile[MAXFILENAME];    /* Name of file with the staggered multigrid parameters */
+  char mgparamfile[MAXFILENAME];        /* Name of file with the staggered multigrid parameters */
+  enum mg_rebuild_type mg_rebuild_type;    /* how to refresh MG solve if mass/gauge links change */
                       /* Add further parameters as needed...  */
 } quark_invert_control;
 

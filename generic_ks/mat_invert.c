@@ -255,8 +255,10 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
 
     free(tmp);
 
-    //    check_invert_field2( dst, tmp, mass, 1e-6, fn, EVENANDODD);
+    //    node0_printf("Entering check_invert_field in mat_invert_cg_field\n");
+    //    fflush(stdout);
     //    check_invert_field( dst, src, mass, 1e-6, fn, EVENANDODD);
+    
     return cgn;
 }
 
@@ -401,6 +403,8 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     cgn += ks_congrad_field( tmp, dst, qic, mass, fn );
     qic->final_iters += even_iters;
 
+    //    node0_printf("Entering check_invert_field in mat_invert_uml_field\n");
+    //    fflush(stdout);
     //    check_invert_field( dst, src, mass, 1e-6, fn, EVENANDODD);
     destroy_v_field(tmp);
     destroy_v_field(ttt);
@@ -420,7 +424,8 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 			    quark_invert_control *qic,
 			    Real mass, imp_ferm_links_t *fn){
 
-  char myname[] = "mat_invertt_mg_field_gpu";
+#ifdef MULTIGRID
+  char myname[] = "mat_invert_mg_field_gpu";
   QudaInvertArgs_t inv_args;
   int i;
   double dtimec = -dclock();
@@ -516,9 +521,10 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
     num_iters = -1;
 
     node0_printf("%s: setting up the MG inverter\n", myname);
+
     /* Set up the MG inverter when the links change */
-    // temporary, do not set up yet
-#if 0
+    /* FIXME: what do we do if the mgparamfile changes? */
+    
     if (mg_preconditioner == NULL ){
       mg_preconditioner = qudaSetupMultigrid(MILC_PRECISION,
                               quda_precision,
@@ -528,12 +534,18 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
                               longlink,
                               qic->mgparamfile);
 
-    node0_printf("%s: MG inverter setup complete\n", myname);
+      node0_printf("%s: MG inverter setup complete\n", myname);
     } else {
-    node0_printf("%s: MG inverter already set up.  Skipping.\n", myname);
+      node0_printf("%s: MG inverter already set up.  Skipping.\n", myname);
     }
-#endif
   }
+
+  /* Specify the type of rebuild _if_ a rebuild is required */
+  int mg_rebuild_type = 1;
+  if (qic->mg_rebuild_type == THINREBUILD) {
+    mg_rebuild_type = 0;
+  } 
+    }
   
   // Just BiCGstab for now
   qudaInvertMG(MILC_PRECISION,
@@ -545,6 +557,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 	       fatlink, 
 	       longlink,
 	       mg_preconditioner,
+         mg_rebuild_type,
 	       t_src, 
 	       t_dest,
 	       &residual,
@@ -572,13 +585,25 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
     fflush(stdout);}
 #endif
 
+  //    node0_printf("Entering check_invert_field in mat_invert_mg_field_gpu\n");
+  //    fflush(stdout);
+  //    check_invert_field( t_dest, t_src, mass, 1e-6, fn, EVENANDODD);
+
+
   return num_iters;
+
+#else
+  node0_printf("mat_invert_mg_field_gpu: ERROR. Multigrid is available only with GPU compilation\n");
+  terminate(1);
+#endif
 }
 
 void mat_invert_mg_cleanup(void){
 
+#ifdef MULTIGRID
   if(mg_preconditioner != NULL)
     qudaCleanupMultigrid(mg_preconditioner);
+#endif
 }
 
 #endif /* HAVE_QUDA */
@@ -676,9 +701,9 @@ int mat_invert_block_mg(su3_vector **src, su3_vector **dst,
   register int is;
   
   /* Temporary until there is multi-rhs support for multigrid */
-  for(is = 0; is < nsrc; is++)
+  for(is = 0; is < nsrc; is++) {
     cgn += mat_invert_mg_field_gpu(src[is], dst[is], qic, mass, fn );
-  
+  }
   return cgn;
 }
 #endif
@@ -723,13 +748,19 @@ int mat_invert_field(su3_vector *src, su3_vector *dst,
 
   int cgn = 0;
 
-  if(qic->inv_type == CGTYPE){
+  /* Use a CG solve for a CGTYPE inversion or an MGTYPE inversion with a CG override */
+  if(qic->inv_type == CGTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD)) {
     if(use_precond)
       /* Preconditioned inversion */
       cgn = mat_invert_uml_field(src, dst, qic, mass, fn );
     else
       /* Unpreconditioned inversion */
       cgn = mat_invert_cg_field(src, dst, qic, mass, fn );
+    if (qic->inv_type == MGTYPE) {
+      node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
+      /* Force a reload b/c of sloppy link precision changes */
+      refresh_fn_links(fn);
+    }
   } else {
     /* inv_type == MGTYPE */
 #ifdef USE_CG_GPU
@@ -751,8 +782,14 @@ int mat_invert_block(su3_vector **src, su3_vector **dst,
 		     Real mass, int nsrc, quark_invert_control *qic,
 		     imp_ferm_links_t *fn){
   int cgn;
-  if(qic->inv_type == CGTYPE){
+  if(qic->inv_type == CGTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD)){
     cgn = mat_invert_block_uml(src, dst, mass, nsrc, qic, fn);
+
+    if (qic->inv_type == MGTYPE) {
+      node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
+      /* Force a reload b/c of sloppy link precision changes */
+      refresh_fn_links(fn);
+    }
   } else {
     /* inv_type == MGTYPE */
 #ifdef USE_CG_GPU
