@@ -4,7 +4,7 @@
 /*  D.T. first try at RHMC version 12/05
  *  D.T. 03/07 Added 2G1F and generalized to gang together multiple psfermions
 
-/*  A.W-L. 12/18 Added 5G1F and 6G1F
+ *  A.W-L. 12/18 Added 5G1F and 6G1F
 
  Update lattice by a molecular dynamics trajectory.
  Contains a selection of integration algorithms
