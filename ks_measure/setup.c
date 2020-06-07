@@ -133,7 +133,7 @@ int readin(int prompt) {
   
   int status;
   char savebuf[128];
-  int i, k, npbp_masses;
+  int i, k, npbp_masses = 0;
 #ifdef PRTIME
   double dtime;
 #endif
