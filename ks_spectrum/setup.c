@@ -1244,7 +1244,7 @@ int readin(int prompt) {
 		    &n_naiks, param.ksp[i].naik_term_epsilon);
 
   /* Requests from any embedded inverse and hopping operators in the
-     modified ops */
+     modified source ops */
   for(i = 0; i < param.num_modified_source; i++){
     Real eps = 0.;
     int is = param.num_base_source + i;
@@ -1273,21 +1273,21 @@ int readin(int prompt) {
   /* Contribution from the chiral condensate epsilons */
   for(i = 0; i < param.num_pbp_masses; i++){
     param.ksp_pbp[i].charge_index = 
-      fill_eps_naik(charge, 
+      fill_charge(charge, 
 	  &n_charges, param.ksp_pbp[i].charge);
   }
 
   /* Contribution from the propagator charges */
   nprop = param.end_prop[param.num_set-1] + 1;
   for(i = 0; i < nprop; i++)
-    param.ksp_pbp[i].charge_index = 
+    param.ksp[i].charge_index = 
       fill_charge(charge, &n_charges, param.ksp_pbp[i].charge);
 
   /* TO DO: If we give charges to the embedded inverse operators,
      collect them for the charge table here */
   
-  /* Assign Naik term indices to quarks based on inheritance from
-     propagators */
+  /* Assign Naik term indices and charge indices to quarks based on
+     inheritance from propagators */
   
   for(i = 0; i < param.num_qk; i++){
     if(param.parent_type[i] == PROP_TYPE){
@@ -1298,6 +1298,7 @@ int readin(int prompt) {
       param.charge_index[i] = param.charge_index[param.prop_for_qk[i]];
     }
   }
+
 
   /* Keep the current lattice or load a new one */
   if( param.startflag != CONTINUE ){
