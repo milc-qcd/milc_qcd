@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
   double dtime;
 #endif
 
-  int Nvecs_curr;
+  int Nvecs_curr = 0;
   double *resid = NULL;
   
   initialize_machine(&argc,&argv);
