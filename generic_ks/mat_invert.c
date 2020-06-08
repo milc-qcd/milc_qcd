@@ -545,7 +545,6 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
   if (qic->mg_rebuild_type == THINREBUILD) {
     mg_rebuild_type = 0;
   } 
-    }
   
   // Just BiCGstab for now
   qudaInvertMG(MILC_PRECISION,
