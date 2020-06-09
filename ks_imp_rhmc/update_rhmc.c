@@ -147,6 +147,19 @@
 #include "../include/su3_mat_op.h"
 #endif
 
+#if defined(USE_FF_GPU)
+#include "../include/generic_quda.h"
+#ifdef USE_QUDA_MANAGED
+#define special_alloc qudaAllocateManaged
+#define special_free qudaFreeManaged
+#else
+#define special_alloc qudaAllocatePinned
+#define special_free qudaFreePinned
+#endif
+#else
+#define special_alloc malloc
+#define special_free free
+#endif
 int update()  {
   int step, iters=0;
   double startaction,endaction;
@@ -253,7 +266,7 @@ int update()  {
     terminate(1);
   }
   for(i=0;i<n_multi_x;i++){
-    multi_x[i]=(su3_vector *)malloc( sizeof(su3_vector)*sites_on_node );
+    multi_x[i]=(su3_vector *)special_alloc( sizeof(su3_vector)*sites_on_node );
     if(multi_x[i] == NULL){
       printf("update: No room for multi_x\n");
       terminate(1);
@@ -740,7 +753,7 @@ int update()  {
 #endif // HMC
   
   /* free multimass solution vector storage */
-  for(i=0;i<n_multi_x;i++)free(multi_x[i]);
+  for(i=0;i<n_multi_x;i++)special_free(multi_x[i]);
   free(sumvec);
   
   if(steps > 0)return (iters/steps);
