@@ -408,7 +408,9 @@ int readin(int prompt) {
 				&rel_error_for_propagator_sloppy );
 	}
 
+#if 0
 	IF_OK status += get_s(stdin, prompt, "save_file", param.pbp_filenames[npbp_masses] );
+#endif
 #endif
 
 	/* The set to which this pbp_mass belongs */
