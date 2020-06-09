@@ -594,6 +594,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 #else
   node0_printf("mat_invert_mg_field_gpu: ERROR. Multigrid is available only with GPU compilation\n");
   terminate(1);
+  return 0;  
 #endif
 }
 
