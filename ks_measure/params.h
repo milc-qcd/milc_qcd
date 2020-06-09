@@ -69,7 +69,7 @@ typedef struct {
   quark_invert_control qic_pbp_sloppy[MAX_MASS_PBP];
   ks_param ksp_pbp[MAX_MASS_PBP];
   Real charge_pbp[MAX_MASS_PBP];
-  char pbp_filenames[MAX_MASS_PBP][MAXFILENAME];
+  char pbp_filenames[MAX_MASS_PBP][MAXFILENAME]; /* For saving the current density file -- deprecated */
   int set[MAX_MASS_PBP];  /* The set to which the propagator belongs */
   char mass_label[MAX_MASS_PBP][32];
   char charge_label[MAX_MASS_PBP][32];
