@@ -4,12 +4,12 @@
 *  MIMD version 7 	 				            *
 */
 
-#include <quda_milc_interface.h>
-#include "../include/openmp_defs.h"
-
 #ifdef HAVE_QUDA
+
+#include "../include/openmp_defs.h"
+#include <quda_milc_interface.h>
+
 int initialize_quda(void);
-#endif
 
 static QudaMILCSiteArg_t newQudaMILCSiteArg() {
   QudaMILCSiteArg_t arg;
@@ -115,5 +115,7 @@ static void copy_to_site_from_M_quda(anti_hermitmat *momentum) {
 static void destroy_M_quda(anti_hermitmat *momentum) {
   qudaFreePinned(momentum);
 }
+
+#endif // HAVE_QUDA
 
 #endif /* GENERIC_QUDA_H */
