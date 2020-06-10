@@ -320,7 +320,8 @@ initial_set(void)
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   // calculate epsilon corrections for different Naik terms
   if( 0 != eps_naik[0] ) {
-    if(mynode()==0)printf("IN HISQ AND HYPISQ ACTIONS FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");fflush(stdout);
+    if(mynode()==0)printf("IN HISQ AND HYPISQ ACTIONS FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");
+    fflush(stdout);
     terminate(1);
   }
 #endif
