@@ -39,7 +39,7 @@ register site *s;
 	}
     }
 
-#if defined(HAVE_QUDA) && defined(HAVE_GF_GPU) && defined(HAVE_FF_GPU)
+#if defined(HAVE_QUDA) && defined(USE_GF_GPU) && defined(USE_FF_GPU)
     // if gauge force and fermion force are offloaded then we can keep the momentum resident
     QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
     qudaMomLoad(MILC_PRECISION, &arg);
