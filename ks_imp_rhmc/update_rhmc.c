@@ -149,18 +149,14 @@
 
 #if defined(USE_FF_GPU)
 #include "../include/generic_quda.h"
-#ifdef USE_QUDA_MANAGED
 #define special_alloc qudaAllocateManaged
 #define special_free qudaFreeManaged
-#else
-#define special_alloc qudaAllocatePinned
-#define special_free qudaFreePinned
-#endif
 #else
 #define special_alloc malloc
 #define special_free free
 #endif
-int update()  {
+
+int update() {
   int step, iters=0;
   double startaction,endaction;
 #ifdef MILC_GLOBAL_DEBUG

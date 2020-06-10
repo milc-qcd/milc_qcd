@@ -32,6 +32,12 @@ static inline void fast_copy(void *dest, const void *src, size_t n) {
   memcpy(dest, src, n);
 }
 
+// only use managed memory if enabled by QUDA
+#ifndef USE_QUDA_MANAGED
+#define qudaAllocateManaged qudaAllocatePinned
+#define qudaFreeManaged qudaFreePinned
+#endif
+
 /*
   Allocate a pinned gauge-field array suitable for DMA transfer to the GPU
  */
