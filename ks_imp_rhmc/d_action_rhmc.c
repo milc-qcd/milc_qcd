@@ -6,6 +6,7 @@
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 #include "../include/fermion_links.h"
 #include "../include/openmp_defs.h"
+#include "../include/generic_quda.h"
 
 static Real ahmat_mag_sq(anti_hermitmat *pt);
 
@@ -83,6 +84,7 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
 
 /* gauge momentum contribution to the action */
 double hmom_action(void) {
+#ifndef HAVE_QUDA
   register int i,dir;
   register site *s;
   double sum;
@@ -90,12 +92,20 @@ double hmom_action(void) {
   sum=0.0;
   FORALLSITES_OMP(i,s,private(dir) reduction(+:sum)) {
     for(dir=XUP;dir<=TUP;dir++){
+      if (i == 0 && dir == XUP) {
+        anti_hermitmat p = s->mom[dir];
+      }
       sum += (double)ahmat_mag_sq( &(s->mom[dir]) ) - 4.0;
       /* subtract 1/2 per d.o.f. to help numerical acc. in sum */
     }
   } END_LOOP_OMP
   g_doublesum( &sum );
+
   return(sum);
+#else
+  QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+  return qudaMomAction(MILC_PRECISION, &arg);
+#endif
 }
 
 /* magnitude squared of an antihermition matrix */
