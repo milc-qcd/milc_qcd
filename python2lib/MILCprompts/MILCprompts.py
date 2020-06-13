@@ -1063,6 +1063,7 @@ class KSsolveSet:
     """A set of KS solves that have a common source specification, momentum twist, and precision."""
     _Template = """
     #== ${_classType} ==
+    set_type multimass
     max_cg_iterations ${maxCG.iters}
     max_cg_restarts ${maxCG.restarts}
     check ${check}
