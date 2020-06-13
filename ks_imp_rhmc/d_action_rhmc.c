@@ -92,9 +92,6 @@ double hmom_action(void) {
   sum=0.0;
   FORALLSITES_OMP(i,s,private(dir) reduction(+:sum)) {
     for(dir=XUP;dir<=TUP;dir++){
-      if (i == 0 && dir == XUP) {
-        anti_hermitmat p = s->mom[dir];
-      }
       sum += (double)ahmat_mag_sq( &(s->mom[dir]) ) - 4.0;
       /* subtract 1/2 per d.o.f. to help numerical acc. in sum */
     }
