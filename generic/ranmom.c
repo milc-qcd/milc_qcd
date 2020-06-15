@@ -5,6 +5,7 @@
 
 #include "generic_includes.h"
 #include <defines.h>                 /* For SITERAND */
+#include "../include/generic_quda.h"
 
 void ranmom(){
 register int i,dir;
@@ -37,5 +38,12 @@ register site *s;
 #endif
 	}
     }
+
+#if defined(HAVE_QUDA) && defined(USE_GF_GPU) && defined(USE_FF_GPU)
+    // if gauge force and fermion force are offloaded then we can keep the momentum resident
+    QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+    qudaMomLoad(MILC_PRECISION, &arg);
+#endif
+
 }
 
