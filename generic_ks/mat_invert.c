@@ -432,7 +432,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 #ifdef CGTIME
   double nflop = 1187;
 #endif
-
+  
   /* Initialize qic */
   qic->size_r = 0;
   qic->size_relr = 0;
@@ -441,7 +441,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
   qic->converged     = 1;
   qic->final_rsq = 0.;
   qic->final_relrsq = 0.;
-
+  
   /* Compute source norm */
   double source_norm = 0.0;
   FORSOMEFIELDPARITY(i,qic->parity){
@@ -451,14 +451,14 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 #ifdef CG_DEBUG
   node0_printf("mat_invert_mg_field_gpu: source_norm = %e\n", (double)source_norm);
 #endif
-
+  
   /* Provide for trivial solution */
   if(source_norm == 0.0){
     /* Zero the solution and return zero iterations */
     FORSOMEFIELDPARITY(i,qic->parity){
       memset(t_dest + i, 0, sizeof(su3_vector));
     } END_LOOP;
-
+    
     dtimec += dclock();
 #ifdef CGTIME
     if(this_node==0){
@@ -470,9 +470,9 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
     
     return 0;
   }
-
+  
   /* Initialize QUDA parameters */
-
+  
   initialize_quda();
 
   // need to set a dummy value, ignored (for now),
@@ -495,25 +495,25 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 #else
   inv_args.mixed_precision = 0;
 #endif
-
+  
   su3_matrix* fatlink = get_fatlinks(fn);
   su3_matrix* longlink = get_lnglinks(fn);
   const int quda_precision = qic->prec;
-
+  
   double residual, relative_residual;
   int num_iters = 0;
-
+  
   inv_args.naik_epsilon = fn->eps_naik;
-
+  
 #if (FERM_ACTION==HISQ)
   inv_args.tadpole = 1.0;
 #else
   inv_args.tadpole = u0;
 #endif
-
+  
   // for newer versions of QUDA we need to invalidate the gauge field if the links are new
   if ( fn != get_fn_last() || fresh_fn_links(fn) ){
-
+    
     node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", myname);
     cancel_quda_notification(fn);
     set_fn_last(fn);
@@ -556,7 +556,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 	       fatlink, 
 	       longlink,
 	       mg_preconditioner,
-         mg_rebuild_type,
+	       mg_rebuild_type,
 	       t_src, 
 	       t_dest,
 	       &residual,
