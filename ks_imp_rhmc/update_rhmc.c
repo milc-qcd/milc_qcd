@@ -316,7 +316,7 @@ int update() {
         /* update U's by half time step to get to even time */
         update_u(epsilon*0.5);
         /* reunitarize the gauge field */
-        rephase( OFF ); reunitarize(); rephase( ON );
+        reunitarize();
         /*TEMP - monitor action*/if(step%4==0)d_action_rhmc(multi_x,sumvec);
       }	/* end loop over microcanonical steps */
     break;
@@ -330,7 +330,7 @@ int update() {
         iters += update_h_rhmc( epsilon, multi_x);
         update_u(0.5*epsilon*lambda);
         /* reunitarize the gauge field */
-        rephase( OFF ); reunitarize(); rephase( ON );
+        reunitarize();
         /*TEMP - monitor action*/ //if(step%4==0)d_action_rhmc(multi_x,sumvec);
       }	/* end loop over microcanonical steps */
     break;
@@ -354,9 +354,7 @@ int update() {
      	    update_u( epsilon*( (2.0)-(1.75+0.5*alpha) ) );
 
             /* reunitarize the gauge field */
-	    rephase( OFF );
             reunitarize();
-	    rephase( ON );
             /*TEMP - monitor action*/ //if(step%6==0)d_action_rhmc(multi_x,sumvec);
         }	/* end loop over microcanonical steps */
     break;
@@ -466,9 +464,7 @@ int update() {
      	    update_u( epsilon*( (2.0)-(11.0/6.0+alpha/3.0) ) );
 
             /* reunitarize the gauge field */
-	    rephase( OFF );
             reunitarize();
-	    rephase( ON );
 #ifdef MILC_GLOBAL_DEBUG
 #ifdef HISQ_REUNITARIZATION_DEBUG
             {
@@ -585,9 +581,7 @@ int update() {
         /* finish */
      	    update_u( epsilon*( (2.0)-(19.0/10.0+alpha/5.0) ) );
         /* reunitarize the gauge field */
-	    rephase( OFF );
             reunitarize();
-	    rephase( ON );
         }
     break;
     case INT_6G1F:
@@ -632,9 +626,7 @@ int update() {
         /* finish */
      	    update_u( epsilon*( (2.0)-(23.0/12.0+alpha/6.0) ) );
         /* reunitarize the gauge field */
-	    rephase( OFF );
             reunitarize();
-	    rephase( ON );
         }
     break;
     case INT_2EPS_3TO1:
@@ -714,7 +706,7 @@ int update() {
     	    update_u(0.5*epsilon*lambda);
 
             /* reunitarize the gauge field */
-	    rephase( OFF ); reunitarize(); rephase( ON );
+	    reunitarize();
             /*TEMP - monitor action*/ //if(step%6==0)d_action_rhmc(multi_x,sumvec);
 
         }	/* end loop over microcanonical steps */

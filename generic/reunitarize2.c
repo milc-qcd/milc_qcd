@@ -217,7 +217,7 @@ void reunitarize_gpu() {
 #endif
 
   QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
-  qudaUnitarizeSU3(MILC_PRECISION, TOLERANCE, &arg);
+  qudaUnitarizeSU3Phased(MILC_PRECISION, TOLERANCE, &arg, phases_in);
 
 #ifdef GFTIME
   dtime += dclock();
@@ -283,13 +283,17 @@ void reunitarize() {
      if Schroedinger functional boundary conditions are enabled */
 #ifdef SCHROED_FUN
   node0_printf("%s not supported on GPU, using CPU fallback\n", __func__);
+  rephase(OFF)
   reunitarize_cpu();
+  rephase(ON)
 #else
   reunitarize_gpu();
 #endif
 
 #else
+  rephase(OFF)
   reunitarize_cpu();
+  rephase(ON)
 #endif
 
 }

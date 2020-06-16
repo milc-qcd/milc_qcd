@@ -35,7 +35,7 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
   for(i=0; i<num_loop_types; ++i) quda_loop_coeff[i] = loop_coeff[i][0];
 
   QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
-  qudaGaugeForce(MILC_PRECISION,num_loop_types,quda_loop_coeff,eb3,&arg);
+  qudaGaugeForcePhased(MILC_PRECISION,num_loop_types,quda_loop_coeff,eb3,&arg, phases_in);
 
   free(quda_loop_coeff);
 
