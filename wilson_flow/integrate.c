@@ -104,7 +104,7 @@ scalar_mult_ah( anti_hermitmat *a, Real c, anti_hermitmat *dest )
 
 /* Adds a matrix times a real scalar to a matrix (all antihermitian) */
 void
-scalar_mult_add_ah( anti_hermitmat *a, anti_hermitmat *b, Real c, 
+scalar_mult_add_ah( anti_hermitmat *a, anti_hermitmat *b, Real c,
                     anti_hermitmat *dest )
 {
   dest->m01.real =  a->m01.real + c*b->m01.real;
@@ -190,14 +190,14 @@ stout_smear_step( Real c1, Real c2 )
   /* Calculate the new staple */
   staple();
 
-  FORALLUPDIR(dir) 
+  FORALLUPDIR(dir)
     FORALLSITES(i, s) {
       /* Retrieve the current link and accumulation matrix */
       U = &(s->link[dir]);
       Acur = &(s->accumulate[dir]);
 
       /* Update the accumulation matrix A += c1*proj(U*S) */
-      mult_su3_na( U, &(s->staple[dir]), &tempS1 ); 
+      mult_su3_na( U, &(s->staple[dir]), &tempS1 );
       anti_hermitian_traceless_proj( &tempS1, &tempA1 );
       scalar_mult_add_ah( Acur, &tempA1, c1, Acur );
 
@@ -211,7 +211,7 @@ stout_smear_step( Real c1, Real c2 )
 
 /* Luscher's integration routine (essentially Runga-Kutta) */
 /*  Outlined in 'arXiv:1006.4518 [hep-lat]'                */
-void 
+void
 stout_step_rk()
 {
   register int dir, i;
@@ -226,4 +226,82 @@ stout_step_rk()
   stout_smear_step( 17./36.*stepsize, -9./17. );
   stout_smear_step( -8./9.*stepsize, 1. );
   stout_smear_step( 3./4.*stepsize, -1. );
+}
+
+
+
+
+/* A single step for a 2N-storage Runge-Kutta scheme
+ * where the right hand side of the flow equation is evaluated
+ * and the fields are updated
+ *  A: accumulating matrix over all smear steps in a single time step
+ *  S: staple (action dependent); recalculated before each smear step
+ *  U: gauge links
+ *  c1,c2: constants
+ *    Calculating a single smear step is done by:
+ *    A += c1*proj(S*U) -> update accumulation matrix
+ *    U = exp(c2*A)*U   -> update gauge links
+ */
+void
+integrate_RK_2N_one_step( Real c1, Real c2 )
+{
+  register int dir, i;
+  register site *s;
+
+  /* Temporary matrix holders */
+  anti_hermitmat *Acur, tempA1;
+  su3_matrix *U, tempS1, tempS2;
+
+  /* Calculate the new staple */
+  staple();
+
+  FORALLUPDIR(dir)
+    FORALLSITES(i, s) {
+      /* Retrieve the current link and accumulation matrix */
+      U = &(s->link[dir]);
+      Acur = &(s->accumulate[dir]);
+
+      /* Update the accumulation matrix A += c1*proj(U*S) */
+      mult_su3_na( U, &(s->staple[dir]), &tempS1 );
+      anti_hermitian_traceless_proj( &tempS1, &tempA1 );
+      scalar_mult_add_ah( Acur, &tempA1, c1, Acur );
+
+      /* Update the links U = exp(c2*A)*U */
+      scalar_mult_ah( Acur, c2, &tempA1 );
+      exp_anti_hermitian( &tempA1, &tempS1, exp_order );
+      mult_su3_nn( &tempS1, U, &tempS2 );
+      su3mat_copy( &tempS2, U );
+  }
+}
+
+/* one step of a low-storage Runge-Kutta scheme,
+   this includes Luscher, arXiv:1006.4518 [hep-lat]
+   or any other 2N-storage scheme */
+void
+integrate_RK_2N()
+{
+ register int dir, i;
+ register site *s;
+
+ /* Clear the accumulation matrix */
+ FORALLSITES(i, s)
+   FORALLUPDIR(dir)
+     clear_anti_hermitian(&(s->accumulate[dir]));
+
+ /* Infinitesimal stout smearing */
+ stout_smear_step( 17./36.*stepsize, -9./17. );
+ stout_smear_step( -8./9.*stepsize, 1. );
+ stout_smear_step( 3./4.*stepsize, -1. );
+}
+
+
+/* one step of the flow, here branching into different integrators happens */
+void
+flow_step()
+{
+
+  if( GF_INTEGRATOR==INTEGRATOR_LUSCHER )
+    stout_step_rk();
+
+
 }

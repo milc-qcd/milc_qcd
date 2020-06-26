@@ -10,6 +10,7 @@
 #include "../include/complex.h"
 #include "../include/su3.h"
 #include "lattice.h"
+#include "gf_globals.h"
 #include "../include/macros.h"
 #include "../include/comdefs.h"
 #include "../include/io_lat.h"
@@ -19,6 +20,7 @@
 /* Prototypes for functions in high level code */
 int setup();
 int readin(int prompt);
+void flow_step();
 void stout_step_rk();
 void staple();
 void fmunu_fmunu(double *time, double *space, double *charge);

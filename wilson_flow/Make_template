@@ -108,6 +108,7 @@ ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
 wilson_flow::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER" \
 
 clean:
 	-/bin/rm -f *.o
