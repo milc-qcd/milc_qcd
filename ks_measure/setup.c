@@ -408,7 +408,7 @@ int readin(int prompt) {
 				&rel_error_for_propagator_sloppy );
 	}
 
-#if 0
+#if 0 	/* Deprecate saving the entire site-wise density  */
 	IF_OK status += get_s(stdin, prompt, "save_file", param.pbp_filenames[npbp_masses] );
 #endif
 #endif
@@ -437,6 +437,13 @@ int readin(int prompt) {
 	param.qic_pbp[npbp_masses].min = 0;
 	param.qic_pbp[npbp_masses].start_flag = 0;
 	param.qic_pbp[npbp_masses].nsrc = 1;
+
+	/* Should we be deflating? */
+	param.qic_pbp[npbp_masses].deflate = 0;
+	IF_OK {
+	  /* Always deflate if we have eigenvectors */
+	  if(param.eigen_param.Nvecs > 0)param.qic_pbp[npbp_masses].deflate = 1;
+	}
 
 #ifdef CURRENT_DISC
       /* If we are taking the difference between a sloppy and a precise solve,
@@ -480,6 +487,9 @@ int readin(int prompt) {
 
   if(prompt==2)return 0;
 
+  npbp_masses = param.end_pbp_masses[param.num_set-1] + 1;
+
+
   /* Construct the eps_naik table of unique Naik epsilon
      coefficients.  Also build the hash table for mapping a mass term to
      its Naik epsilon index */
@@ -488,28 +498,30 @@ int readin(int prompt) {
   start_eps_naik(eps_naik, &n_naiks);
   
   /* Contribution from the chiral condensate epsilons */
-  for(int i = 0; i < npbp_masses; i++)
+  for(int i = 0; i < npbp_masses; i++){
     param.ksp_pbp[i].naik_term_epsilon_index = 
       fill_eps_naik(eps_naik, 
 		    &n_naiks, param.ksp_pbp[i].naik_term_epsilon);
-  
+  }
+
   /* Construct a table of quark charges and build a hash table
      for mapping a charge to its charge index */
 
   /* First term is always zero */
   start_charge(charge, &n_charges);
   
-  /* Contribution from the propagator charges */
-  for(int i = 0; i < npbp_masses; i++)
+  /* Contribution from the chiral condensate charges */
+  for(int i = 0; i < npbp_masses; i++){
     param.ksp_pbp[i].charge_index = 
       fill_charge(charge, &n_charges, param.ksp_pbp[i].charge);
-  
-  /* Do whatever is needed to get lattice */
+  }
+
+  /* Keep the current lattice or load a new one */
   if( param.startflag == CONTINUE ){
     rephase( OFF );
-  }
-  if( param.startflag != CONTINUE ){
+  } else {
     startlat_p = reload_lattice( param.startflag, param.startfile );
+    phases_in = OFF;
   }
 
 
@@ -524,8 +536,7 @@ int readin(int prompt) {
 	       linktrsum.real/3.,nersc_checksum);
 #endif
 
-  /* if a lattice was read in, put in KS phases and AP boundary condition */
-  phases_in = OFF;
+  /* By defailt KS and BC phases are in the gauge links */
   rephase( ON );
 
 #ifdef U1_FIELD
@@ -544,11 +555,14 @@ int readin(int prompt) {
   fermion_links_want_du0(1);
 #endif
   
-#if ( FERM_ACTION == HISQ )&  defined(DM_DEPS)
+  /* Don't need to save HISQ auxiliary links */
+  fermion_links_want_aux(0);
+
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
   fermion_links_want_deps(1);
 #endif
   
-  /* Create a set of fermion links structures for all unique Naik epsilon values and charges */
+  /* Create an array of fermion links structures for all unique Naik epsilon values and charges */
   fn_links_charge = (fermion_links_t **)malloc(sizeof(fermion_links_t *) * n_charges);
   for(int i = 0; i < n_charges; i++){
 #ifdef U1_FIELD
@@ -566,10 +580,9 @@ int readin(int prompt) {
   /* Construct APE smeared links, but without KS phases */
   rephase( OFF );
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
-  rephase( ON );
-
-/* We put in antiperiodic bc to the APE links to match what we did to the gauge field */
+  /* We put in antiperiodic bc to the APE links to match what we did to the gauge field */
   apply_apbc( ape_links, 0 );
+  rephase( ON );
 
 #if EIGMODE == EIGCG
   int Nvecs_max = param.eigcgp.Nvecs_max;
@@ -586,7 +599,7 @@ int readin(int prompt) {
   for(int i = 0; i < Nvecs_tot; i++)
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
-  /* Do whatever is needed to get eigenpairs */
+  /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
   imp_ferm_links_t **fn = get_fm_links(fn_links);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
@@ -621,7 +634,7 @@ int readin(int prompt) {
       }
     }
     
-    /* Do whatever is needed to get eigenpairs */
+    /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
     imp_ferm_links_t **fn = get_fm_links(fn_links);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
@@ -636,6 +649,7 @@ int readin(int prompt) {
 #endif
 
   ENDTIME("readin");
+  fflush(stdout);
 
   return 0;
 }
