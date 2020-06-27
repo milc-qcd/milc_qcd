@@ -168,6 +168,508 @@ exp_anti_hermitian( anti_hermitmat *a, su3_matrix *dest, int n )
   su3mat_copy(&temp1, dest);
 }
 
+
+/* copy antihermitian matrix */
+void ahmat_copy( anti_hermitmat *a, anti_hermitmat *b ) {
+  b->m01 = a->m01;
+  b->m02 = a->m02;
+  b->m12 = a->m12;
+  b->m00im = a->m00im;
+  b->m11im = a->m11im;
+  b->m22im = a->m22im;
+}
+
+
+/* commutator of anti-Hermitian matrices,
+   this is a slow version that relies on uncompressing the matrices
+   and generic multiplication */
+void
+commutator_ah( anti_hermitmat *a, anti_hermitmat *b, anti_hermitmat *c ) {
+
+  su3_matrix temp1, temp2, temp3, temp4;
+
+  uncompress_anti_hermitian( a, &temp1 );
+  uncompress_anti_hermitian( b, &temp2 );
+
+  mult_su3_nn( &temp1, &temp2, &temp3 );
+  mult_su3_nn( &temp2, &temp1, &temp4 );
+  sub_su3_matrix( &temp3, &temp4, &temp1 );
+  compress_anti_hermitian( &temp1, c );
+}
+
+
+/* derivative of the inverse matrix exponential,
+   required for generic RKMK methods */
+void
+dexpinv( anti_hermitmat *u, anti_hermitmat *v, int q, anti_hermitmat *d ) {
+  // Bernoulli numbers normalized with k!, i.e. this array is B_k/k!
+  Real BernoulliK[11] = { 1, -1/2., 1/12., 0, -1/720., 0, 1/30240., 0, -1/1209600., 0, 1/47900160. };
+
+  anti_hermitmat w;
+  int register k;
+
+  ahmat_copy( v, &w );
+  ahmat_copy( v, d );
+  for( k=1; k<q; k++ ) {
+    commutator_ah( u, &w, &w );
+    if( BernoulliK[k]==0 ) continue;
+    scalar_mult_add_ah( d, &w, BernoulliK[k], d );
+  }
+}
+
+/* distance between SU(3) matrices */
+Real
+su3mat_distance( su3_matrix *a, su3_matrix *b ) {
+
+  Real dmax = 0, temp;
+  int register i, j;
+
+  for( i=0; i<3; i++ ) {
+    for( j=0; j<3; j++ ) {
+      temp = fabs(a->e[i][j].real-b->e[i][j].real);
+      if( dmax<temp ) dmax = temp;
+      temp = fabs(a->e[i][j].imag-b->e[i][j].imag);
+      if( dmax<temp ) dmax = temp;
+    }
+  }
+  return dmax;
+}
+
+
+#if GF_INTEGRATOR==INTEGRATOR_LUSCHER || GF_INTEGRATOR==INTEGRATOR_CK
+/* A single step for a 2N-storage Runge-Kutta scheme
+ * where the right hand side of the flow equation is evaluated
+ * and the fields are updated
+ *  A: accumulating matrix over all smear steps in a single time step
+ *  S: staple (action dependent); recalculated before each smear step
+ *  U: gauge links
+ *  cA,cB: constants
+ *    Calculating a single smear step is done by
+ *    (this follows usual convention on 2N-storage RK schemes):
+ *    A = cA*A + proj(S*U) -> update accumulation matrix
+ *    U = exp(cB*A)*U   -> update gauge links
+ */
+void
+integrate_RK_2N_one_step( Real cA, Real cB )
+{
+  register int dir, i;
+  register site *s;
+
+  /* Temporary matrix holders */
+  anti_hermitmat *Acur, tempA1;
+  su3_matrix *U, tempS1, tempS2;
+
+  /* Calculate the new staple */
+  staple();
+
+  FORALLUPDIR(dir)
+    FORALLSITES(i, s) {
+      /* Retrieve the current link and accumulation matrix */
+      U = &(s->link[dir]);
+      Acur = &(s->accumulate[dir]);
+
+      /* Update the accumulation matrix A = cA*A + proj(U*S) */
+      mult_su3_na( U, &(s->staple[dir]), &tempS1 );
+      anti_hermitian_traceless_proj( &tempS1, &tempA1 );
+      scalar_mult_add_ah( &tempA1, Acur, cA, Acur );
+
+      /* Update the links U = exp(cB*A)*U */
+      scalar_mult_ah( Acur, cB, &tempA1 );
+      exp_anti_hermitian( &tempA1, &tempS1, exp_order );
+      mult_su3_nn( &tempS1, U, &tempS2 );
+      su3mat_copy( &tempS2, U );
+  }
+}
+
+/* one step of a low-storage Runge-Kutta scheme,
+   this includes Luscher, arXiv:1006.4518 [hep-lat]
+   or any other 2N-storage scheme */
+void
+integrate_RK_2N()
+{
+  register int dir, i;
+  register site *s;
+
+  /* Clear the accumulation matrix */
+  FORALLSITES(i, s)
+    FORALLUPDIR(dir)
+      clear_anti_hermitian(&(s->accumulate[dir]));
+
+  /* Infinitesimal stout smearing */
+  for( i=0; i<N_stages; i++ ) {
+    /* be careful with stepsize: Nathan's convention on the staple
+       is such that stepsize should be taken negative */
+    integrate_RK_2N_one_step( A_2N[i], -B_2N[i]*stepsize );
+  }
+}
+#elif GF_INTEGRATOR==INTEGRATOR_RKMK4 || GF_INTEGRATOR==INTEGRATOR_RKMK5 || GF_INTEGRATOR==INTEGRATOR_RKMK8
+/* generic integrator of Runge-Kutta-Munthe-Kaas type,
+   requires dexpinv evaluation at each step (nested commutators) */
+void
+integrate_RKMK_generic() {
+
+  register int dir, i, i_rk, j_rk;
+  register site *s;
+  su3_matrix tempS1, tempS2;
+  anti_hermitmat tempA1, *Atemp;
+
+  // store the initial state of the gauge field,
+  // it is used at every stage in this integrator format
+  FORALLUPDIR(dir)
+    FORALLSITES(i, s)
+      su3mat_copy( &(s->link[dir]), &(s->link0[dir]) );
+
+  // loop over RK stages
+  for( i_rk=0; i_rk<N_stages; i_rk++ ) {
+    if( i_rk!=0 ) {
+      FORALLUPDIR(dir)
+        FORALLSITES(i, s) {
+
+          Atemp = &(s->accumulate[dir]);
+          clear_anti_hermitian( Atemp );
+          for( j_rk=0; j_rk<i_rk; j_rk++ ) {
+            // accumulate a_i1*K1 + a_i2*K2 + ...
+            scalar_mult_add_ah( Atemp, &(s->K[j_rk][dir]), a_RK[i_rk][j_rk], Atemp );
+          }
+          // update the link
+          scalar_mult_ah( Atemp, -stepsize, Atemp );
+          exp_anti_hermitian( Atemp, &tempS1, exp_order );
+          mult_su3_nn( &tempS1, &(s->link0[dir]), &(s->link[dir]) );
+      }
+    }
+
+    // get the right hand side of the flow equation from the staple
+    // and store in s->K[i_rk]
+    staple();
+
+    FORALLUPDIR(dir)
+      FORALLSITES(i, s) {
+
+        mult_su3_na( &(s->link[dir]), &(s->staple[dir]), &tempS1 );
+        anti_hermitian_traceless_proj( &tempS1, &(s->K[i_rk][dir]) );
+        if( i_rk!=0 )
+          dexpinv( &(s->accumulate[dir]), &(s->K[i_rk][dir]), p_order, &(s->K[i_rk][dir]));
+    }
+  }
+  // final RK stage
+  FORALLUPDIR(dir)
+    FORALLSITES(i, s) {
+      clear_anti_hermitian( &tempA1 );
+      for( i_rk=0; i_rk<N_stages; i_rk++ ) {
+        // accumulate b_1*K1 + b_2*K2 + ...
+        scalar_mult_add_ah( &tempA1, &(s->K[i_rk][dir]), b_RK[i_rk], &tempA1 );
+      }
+      // update the link
+      scalar_mult_ah( &tempA1, -stepsize, &tempA1 );
+      exp_anti_hermitian( &tempA1, &tempS1, exp_order );
+      mult_su3_nn( &tempS1, &(s->link0[dir]), &(s->link[dir]) );
+  }
+}
+#elif GF_INTEGRATOR==INTEGRATOR_RKMK3
+/* Third order Runge-Kutta-Munthe-Kaas type,
+   requires a single commutator at the last stage */
+void
+integrate_RKMK3() {
+
+  register int dir, i, i_rk, j_rk;
+  register site *s;
+  su3_matrix tempS1, tempS2;
+  anti_hermitmat tempA1, tempA2, *Atemp;
+
+  // store the initial state of the gauge field,
+  // it is used at every stage in this integrator format
+  FORALLUPDIR(dir)
+    FORALLSITES(i, s)
+      su3mat_copy( &(s->link[dir]), &(s->link0[dir]) );
+
+  // loop over RK stages
+  for( i_rk=0; i_rk<N_stages; i_rk++ ) {
+    if( i_rk!=0 ) {
+      FORALLUPDIR(dir)
+        FORALLSITES(i, s) {
+
+          Atemp = &(s->accumulate[dir]);
+          clear_anti_hermitian( Atemp );
+          for( j_rk=0; j_rk<i_rk; j_rk++ ) {
+            // accumulate a_i1*K1 + a_i2*K2 + ...
+            scalar_mult_add_ah( Atemp, &(s->K[j_rk][dir]), a_RK[i_rk][j_rk], Atemp );
+          }
+          // update the link
+          scalar_mult_ah( Atemp, -stepsize, Atemp );
+          exp_anti_hermitian( Atemp, &tempS1, exp_order );
+          mult_su3_nn( &tempS1, &(s->link0[dir]), &(s->link[dir]) );
+      }
+    }
+
+    // get the right hand side of the flow equation from the staple
+    // and store in s->K[i_rk]
+    staple();
+
+    FORALLUPDIR(dir)
+      FORALLSITES(i, s) {
+
+        mult_su3_na( &(s->link[dir]), &(s->staple[dir]), &tempS1 );
+        anti_hermitian_traceless_proj( &tempS1, &(s->K[i_rk][dir]) );
+    }
+  }
+  // final RK stage
+  FORALLUPDIR(dir)
+    FORALLSITES(i, s) {
+      clear_anti_hermitian( &tempA1 );
+      for( i_rk=0; i_rk<N_stages; i_rk++ ) {
+        // accumulate b_1*K1 + b_2*K2 + ...
+        scalar_mult_add_ah( &tempA1, &(s->K[i_rk][dir]), b_RK[i_rk], &tempA1 );
+      }
+      // the only commutator in this scheme is at the last stage
+      commutator_ah( &tempA1, &(s->K[0][dir]), &tempA2 );
+      scalar_mult_add_ah( &tempA1, &tempA2, -stepsize/6, &tempA1 );
+      // update the link
+      scalar_mult_ah( &tempA1, -stepsize, &tempA1 );
+      exp_anti_hermitian( &tempA1, &tempS1, exp_order );
+      mult_su3_nn( &tempS1, &(s->link0[dir]), &(s->link[dir]) );
+  }
+}
+#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER
+void
+integrate_adapt_RK_2N_one_step( Real cA, Real cB, int istep )
+{
+  register int dir, i;
+  register site *s;
+
+  /* Temporary matrix holders */
+  anti_hermitmat *Acur, tempA1;
+  su3_matrix *U, tempS1, tempS2;
+
+  /* Calculate the new staple */
+  staple();
+
+  FORALLUPDIR(dir)
+    FORALLSITES(i, s) {
+      /* Retrieve the current link and accumulation matrix */
+      U = &(s->link[dir]);
+      Acur = &(s->accumulate[dir]);
+
+      /* Update the accumulation matrix A = cA*A + proj(U*S) */
+      mult_su3_na( U, &(s->staple[dir]), &tempS1 );
+      anti_hermitian_traceless_proj( &tempS1, &(s->K[istep][dir]) );
+      scalar_mult_add_ah( &(s->K[istep][dir]), Acur, cA, Acur );
+
+      /* Update the links U = exp(cB*A)*U */
+      scalar_mult_ah( Acur, cB, &tempA1 );
+      exp_anti_hermitian( &tempA1, &tempS1, exp_order );
+      mult_su3_nn( &tempS1, U, &tempS2 );
+      su3mat_copy( &tempS2, U );
+  }
+}
+
+/* Adaptive scheme based on Luscher's in 2N-storage format */
+void
+integrate_adapt_RK_2N()
+{
+  register int dir, i;
+  register site *s;
+  int is_repeat = 1;
+  anti_hermitmat tempA1;
+  su3_matrix tempS1, tempS2;
+  Real temp;
+
+  FORALLSITES(i, s)
+    FORALLUPDIR(dir) {
+      /* Clear the accumulation matrix */
+      clear_anti_hermitian(&(s->accumulate[dir]));
+      /* Store the initial state of the gauge field */
+      su3mat_copy( &(s->link[dir]), &(s->link0[dir]) );
+  }
+
+  do {
+    /* Infinitesimal stout smearing */
+    for( i=0; i<N_stages; i++ ) {
+      /* be careful with stepsize: Nathan's convention on the staple
+         is such that stepsize should be taken negative */
+      integrate_adapt_RK_2N_one_step( A_2N[i], -B_2N[i]*stepsize, i );
+    }
+
+    dist = 0;
+    FORALLUPDIR(dir)
+      FORALLSITES(i, s) {
+        /* Construct lower order approximation */
+        scalar_mult_add_ah( &(s->K[0][dir]), &(s->K[1][dir]), -2, &tempA1 );
+        scalar_mult_ah( &tempA1, stepsize, &tempA1 );
+        exp_anti_hermitian( &tempA1, &tempS1, exp_order );
+        mult_su3_nn( &tempS1, &(s->link0[dir]), &tempS2 );
+        /* Calculate distance between the two approximations */
+        temp = su3mat_distance( &(s->link[dir]), &tempS2 );
+        /* Find the maximum over the local volume */
+        if( dist<temp ) dist = temp;
+    }
+    /* Get the global maximum distance */
+    g_floatmax( &dist );
+    /* Check if tolerance is exceeded, redo the step
+       except if it is final */
+    if( dist>local_tol && is_final_step==0 ) {
+      // adjust step size
+      stepsize = stepsize * SAFETY * pow( local_tol/dist, 1/3. );
+      // record failed step
+      steps_rejected++;
+      // copy over the original state of the gauge field
+      FORALLSITES(i, s)
+        FORALLUPDIR(dir)
+          su3mat_copy( &(s->link0[dir]), &(s->link[dir]) );
+    }
+    else {
+      is_repeat = 0;
+    }
+  } while( is_repeat==1 );
+}
+#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
+/* Bogacki-Shampine adaptive 3(2) embedded pair */
+void
+integrate_adapt_bs() {
+
+  register int dir, i, i_rk, j_rk;
+  register site *s;
+  su3_matrix tempS1, tempS2;
+  anti_hermitmat tempA1, tempA2, *Atemp;
+  Real temp;
+  int is_repeat = 1;
+
+  // store the initial state of the gauge field,
+  // it is used at every stage in this integrator format
+  // and if the step gets rejected
+  FORALLUPDIR(dir)
+    FORALLSITES(i, s)
+      su3mat_copy( &(s->link[dir]), &(s->link0[dir]) );
+
+  // get the first force evaluation on the very first step of integration
+  if( is_first_step==1 ) {
+    staple();
+    FORALLUPDIR(dir)
+      FORALLSITES(i, s) {
+        mult_su3_na( &(s->link[dir]), &(s->staple[dir]), &tempS1 );
+        anti_hermitian_traceless_proj( &tempS1, &(s->K[indK[0]][dir]) );
+    }
+    is_first_step = 0;
+  }
+
+  do {
+    // loop over RK stages
+    for( i_rk=1; i_rk<N_stages; i_rk++ ) {
+//      if( i_rk!=0 ) {
+        FORALLUPDIR(dir)
+          FORALLSITES(i, s) {
+
+            Atemp = &(s->accumulate[dir]);
+            clear_anti_hermitian( Atemp );
+            for( j_rk=0; j_rk<i_rk; j_rk++ ) {
+              // accumulate a_i1*K1 + a_i2*K2 + ...
+              scalar_mult_add_ah( Atemp, &(s->K[indK[j_rk]][dir]), a_RK[i_rk][j_rk], Atemp );
+            }
+            // update the link
+            scalar_mult_ah( Atemp, -stepsize, Atemp );
+            exp_anti_hermitian( Atemp, &tempS1, exp_order );
+            mult_su3_nn( &tempS1, &(s->link0[dir]), &(s->link[dir]) );
+        }
+//}
+        // get the right hand side of the flow equation from the staple
+        // and store in s->K[i_rk]
+        // NOTE: here FSAL property is used, so the force in K[0] is
+        //       already filled from the previous step
+        staple();
+
+        FORALLUPDIR(dir)
+          FORALLSITES(i, s) {
+            mult_su3_na( &(s->link[dir]), &(s->staple[dir]), &tempS1 );
+            anti_hermitian_traceless_proj( &tempS1, &(s->K[indK[i_rk]][dir]) );
+        }
+//      }
+    }
+    // final RK stage that gives fourth-order local approximation
+    FORALLUPDIR(dir)
+      FORALLSITES(i, s) {
+        clear_anti_hermitian( &tempA1 );
+        for( i_rk=0; i_rk<N_stages; i_rk++ ) {
+          // accumulate b_1*K1 + b_2*K2 + ...
+          scalar_mult_add_ah( &tempA1, &(s->K[indK[i_rk]][dir]), b_RK[i_rk], &tempA1 );
+        }
+        // the only commutator in this scheme is at the last stage
+        commutator_ah( &tempA1, &(s->K[indK[0]][dir]), &tempA2 );
+        scalar_mult_add_ah( &tempA1, &tempA2, -stepsize/6, &tempA1 );
+        // update the link
+        scalar_mult_ah( &tempA1, -stepsize, &tempA1 );
+        exp_anti_hermitian( &tempA1, &tempS1, exp_order );
+        mult_su3_nn( &tempS1, &(s->link0[dir]), &(s->link[dir]) );
+    }
+    // additional stage
+    staple();
+    dist = 0;
+    FORALLUPDIR(dir)
+      FORALLSITES(i, s) {
+        mult_su3_na( &(s->link[dir]), &(s->staple[dir]), &tempS1 );
+        anti_hermitian_traceless_proj( &tempS1, &(s->K[indK[3]][dir]) );
+        clear_anti_hermitian( &tempA1 );
+        for( i_rk=0; i_rk<4; i_rk++ ) {
+          // accumulate b'_1*K1 + b'_2*K2 + b'_3*K3 + b'_4*K4
+          // NOTE: b' coefficients are stored as a_RK[3][0], a_RK[3][1], etc.
+          scalar_mult_add_ah( &tempA1, &(s->K[indK[i_rk]][dir]), a_RK[3][i_rk], &tempA1 );
+        }
+        // get the lower (third) order estimate
+        scalar_mult_ah( &tempA1, -stepsize, &tempA1 );
+        exp_anti_hermitian( &tempA1, &tempS1, exp_order );
+        mult_su3_nn( &tempS1, &(s->link0[dir]), &tempS2 );
+        /* Calculate distance between the two approximations */
+        temp = su3mat_distance( &(s->link[dir]), &tempS2 );
+        /* Find the maximum over the local volume */
+        if( dist<temp ) dist = temp;
+    }
+    /* Get the global maximum distance */
+    g_floatmax( &dist );
+    /* Check if tolerance is exceeded, redo the step
+       except if it is final */
+    if( dist>local_tol && is_final_step==0 ) {
+      // adjust step size
+      stepsize = stepsize * SAFETY * pow( local_tol/dist, 1/3. );
+      // record failed step
+      steps_rejected++;
+      // copy over the original state of the gauge field
+      FORALLSITES(i, s)
+        FORALLUPDIR(dir)
+          su3mat_copy( &(s->link0[dir]), &(s->link[dir]) );
+    }
+    else {
+      is_repeat = 0;
+    }
+  } while( is_repeat==1 );
+  // permute indices to read the force on the next step
+  i = indK[0];
+  indK[0] = indK[3];
+  indK[3] = i;
+}
+#endif
+
+/* one step of the flow, here branching into different integrators happens */
+void
+flow_step()
+{
+
+#if GF_INTEGRATOR==INTEGRATOR_LUSCHER || GF_INTEGRATOR==INTEGRATOR_CK
+  integrate_RK_2N();
+#elif GF_INTEGRATOR==INTEGRATOR_RKMK3
+  integrate_RKMK3();
+#elif GF_INTEGRATOR==INTEGRATOR_RKMK4 || GF_INTEGRATOR==INTEGRATOR_RKMK5 || GF_INTEGRATOR==INTEGRATOR_RKMK8
+  integrate_RKMK_generic();
+#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER
+  integrate_adapt_RK_2N();
+#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
+  integrate_adapt_bs();
+#endif
+
+}
+
+
+
+// original Nathan's routines that are being phased out
+#ifdef ABA
+
 /* Computes a single smearing steps (three smear steps per time step)
  *  A: accumulating matrix over all smear steps in a single time step
  *  S: staple (action dependent); recalculated before each smear step
@@ -229,79 +731,4 @@ stout_step_rk()
 }
 
 
-
-
-/* A single step for a 2N-storage Runge-Kutta scheme
- * where the right hand side of the flow equation is evaluated
- * and the fields are updated
- *  A: accumulating matrix over all smear steps in a single time step
- *  S: staple (action dependent); recalculated before each smear step
- *  U: gauge links
- *  c1,c2: constants
- *    Calculating a single smear step is done by:
- *    A += c1*proj(S*U) -> update accumulation matrix
- *    U = exp(c2*A)*U   -> update gauge links
- */
-void
-integrate_RK_2N_one_step( Real c1, Real c2 )
-{
-  register int dir, i;
-  register site *s;
-
-  /* Temporary matrix holders */
-  anti_hermitmat *Acur, tempA1;
-  su3_matrix *U, tempS1, tempS2;
-
-  /* Calculate the new staple */
-  staple();
-
-  FORALLUPDIR(dir)
-    FORALLSITES(i, s) {
-      /* Retrieve the current link and accumulation matrix */
-      U = &(s->link[dir]);
-      Acur = &(s->accumulate[dir]);
-
-      /* Update the accumulation matrix A += c1*proj(U*S) */
-      mult_su3_na( U, &(s->staple[dir]), &tempS1 );
-      anti_hermitian_traceless_proj( &tempS1, &tempA1 );
-      scalar_mult_add_ah( Acur, &tempA1, c1, Acur );
-
-      /* Update the links U = exp(c2*A)*U */
-      scalar_mult_ah( Acur, c2, &tempA1 );
-      exp_anti_hermitian( &tempA1, &tempS1, exp_order );
-      mult_su3_nn( &tempS1, U, &tempS2 );
-      su3mat_copy( &tempS2, U );
-  }
-}
-
-/* one step of a low-storage Runge-Kutta scheme,
-   this includes Luscher, arXiv:1006.4518 [hep-lat]
-   or any other 2N-storage scheme */
-void
-integrate_RK_2N()
-{
- register int dir, i;
- register site *s;
-
- /* Clear the accumulation matrix */
- FORALLSITES(i, s)
-   FORALLUPDIR(dir)
-     clear_anti_hermitian(&(s->accumulate[dir]));
-
- /* Infinitesimal stout smearing */
- stout_smear_step( 17./36.*stepsize, -9./17. );
- stout_smear_step( -8./9.*stepsize, 1. );
- stout_smear_step( 3./4.*stepsize, -1. );
-}
-
-
-/* one step of the flow, here branching into different integrators happens */
-void
-flow_step()
-{
-
-  if( GF_INTEGRATOR==INTEGRATOR_LUSCHER )
-    stout_step_rk();
-
-
-}
+#endif

@@ -24,6 +24,13 @@
 // 13-stage eighth order (Dormand-Prince)
 #define INTEGRATOR_RKMK8 13
 
+// adaptive schemes
+#define INTEGRATOR_ADAPT_LUSCHER 20
+#define INTEGRATOR_ADAPT_BS 21
+
+// Safety factor for adaptive schemes
+// to prevent too many rejected steps
+#define SAFETY 0.95
 
 
 #endif /* _DEFINES_H */
