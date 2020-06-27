@@ -170,7 +170,10 @@ readin(int prompt)
   exp_order = par_buf.exp_order;
   stepsize = par_buf.stepsize;
   stoptime = par_buf.stoptime;
+#if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
   local_tol = par_buf.local_tol;
+#endif
 
   saveflag = par_buf.saveflag;
   strcpy(savefile, par_buf.savefile);

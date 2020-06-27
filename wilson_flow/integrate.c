@@ -554,7 +554,6 @@ integrate_adapt_bs() {
   do {
     // loop over RK stages
     for( i_rk=1; i_rk<N_stages; i_rk++ ) {
-//      if( i_rk!=0 ) {
         FORALLUPDIR(dir)
           FORALLSITES(i, s) {
 
@@ -569,7 +568,6 @@ integrate_adapt_bs() {
             exp_anti_hermitian( Atemp, &tempS1, exp_order );
             mult_su3_nn( &tempS1, &(s->link0[dir]), &(s->link[dir]) );
         }
-//}
         // get the right hand side of the flow equation from the staple
         // and store in s->K[i_rk]
         // NOTE: here FSAL property is used, so the force in K[0] is
@@ -581,7 +579,6 @@ integrate_adapt_bs() {
             mult_su3_na( &(s->link[dir]), &(s->staple[dir]), &tempS1 );
             anti_hermitian_traceless_proj( &tempS1, &(s->K[indK[i_rk]][dir]) );
         }
-//      }
     }
     // final RK stage that gives fourth-order local approximation
     FORALLUPDIR(dir)
