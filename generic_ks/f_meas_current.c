@@ -1392,7 +1392,7 @@ static void
 clear_jlow(int n_masses, Real *jlow_mu[]){
   for(int j = 0; j < n_masses; j++){
     /* Reset jlow_mu */
-    clear_r_array_field(jlow_mu[j], NMU);
+    if(jlow_mu[j] != NULL)clear_r_array_field(jlow_mu[j], NMU);
   }  
 }
 
