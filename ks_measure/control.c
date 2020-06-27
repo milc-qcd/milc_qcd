@@ -27,6 +27,7 @@
 #include "ks_measure_includes.h"
 #include <string.h>
 #ifdef HAVE_QUDA
+#include "../include/generic_quda.h"
 #include <quda_milc_interface.h>
 #endif
 #ifdef U1_FIELD
