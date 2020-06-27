@@ -369,7 +369,7 @@ int readin(int prompt) {
 #endif
 #ifdef U1_FIELD
 	IF_OK status += get_s(stdin, prompt,"charge", param.charge_label[i] );
-	IF_OK param.ksp_pbp[param.num_pbp_masses].charge = atof(param.charge_label[i]);
+	IF_OK param.ksp_pbp[i].charge = atof(param.charge_label[i]);
 #else
 	IF_OK strcpy(param.charge_label[i],"0.");
 	IF_OK param.ksp_pbp[i].charge = 0.;
@@ -1270,7 +1270,7 @@ int readin(int prompt) {
   /* First term is always zero */
   start_charge(charge, &n_charges);
   
-  /* Contribution from the chiral condensate epsilons */
+  /* Contribution from the chiral condensate charges */
   for(i = 0; i < param.num_pbp_masses; i++){
     param.ksp_pbp[i].charge_index = 
       fill_charge(charge, 
@@ -1283,9 +1283,6 @@ int readin(int prompt) {
     param.ksp[i].charge_index = 
       fill_charge(charge, &n_charges, param.ksp_pbp[i].charge);
 
-  /* TO DO: If we give charges to the embedded inverse operators,
-     collect them for the charge table here */
-  
   /* Assign Naik term indices and charge indices to quarks based on
      inheritance from propagators */
   
@@ -1318,16 +1315,15 @@ int readin(int prompt) {
     rephase( ON );
   }
 
-  /* Read the U(1) gauge field, if wanted, and save it, if requested */
 #ifdef U1_FIELD
-    start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
-    if( param.save_u1flag != FORGET ){
-      save_u1_lattice( param.save_u1flag, param.save_u1file );
-    }
+  /* Read the U(1) gauge field, if wanted, and save it, if requested */
+  start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
+  if( param.save_u1flag != FORGET ){
+    save_u1_lattice( param.save_u1flag, param.save_u1file );
+  }
 #endif
 
   /* Set options for fermion links */
-  
 #ifdef DBLSTORE_FN
   /* We want to double-store the links for optimization */
   fermion_links_want_back(1);
@@ -1381,7 +1377,7 @@ int readin(int prompt) {
   for(i = 0; i < Nvecs_tot; i++)
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
-  /* Do whatever is needed to get eigenpairs */
+  /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
   imp_ferm_links_t **fn = get_fm_links(fn_links);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
@@ -1416,7 +1412,7 @@ int readin(int prompt) {
       }
     }
     
-    /* Do whatever is needed to get eigenpairs */
+    /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
     imp_ferm_links_t **fn = get_fm_links(fn_links);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
