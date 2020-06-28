@@ -169,7 +169,7 @@ exp_anti_hermitian( anti_hermitmat *a, su3_matrix *dest, int n )
 }
 
 
-/* copy antihermitian matrix */
+/* copy antihermitian matrix: a->b */
 void ahmat_copy( anti_hermitmat *a, anti_hermitmat *b ) {
   b->m01 = a->m01;
   b->m02 = a->m02;
@@ -179,7 +179,8 @@ void ahmat_copy( anti_hermitmat *a, anti_hermitmat *b ) {
   b->m22im = a->m22im;
 }
 
-
+//#define USE_SLOW_COMMUTATOR_AH
+#ifdef USE_SLOW_COMMUTATOR_AH
 /* commutator of anti-Hermitian matrices,
    this is a slow version that relies on uncompressing the matrices
    and generic multiplication */
@@ -196,7 +197,63 @@ commutator_ah( anti_hermitmat *a, anti_hermitmat *b, anti_hermitmat *c ) {
   sub_su3_matrix( &temp3, &temp4, &temp1 );
   compress_anti_hermitian( &temp1, c );
 }
+#else
+/* commutator of anti-Hermitian matrices,
+   direct calculation */
+void
+commutator_ah( anti_hermitmat *a, anti_hermitmat *b, anti_hermitmat *c ) {
 
+  Real temp01r, temp02r, temp12r;
+  Real temp01i, temp02i, temp12i;
+
+  temp01r  = b->m00im*a->m01.imag-a->m00im*b->m01.imag;
+  temp01r += b->m01.imag*a->m11im-a->m01.imag*b->m11im;
+  temp01r += b->m02.real*a->m12.real-a->m02.real*b->m12.real;
+  temp01r += b->m02.imag*a->m12.imag-a->m02.imag*b->m12.imag;
+
+  temp02r  = b->m00im*a->m02.imag-a->m00im*b->m02.imag;
+  temp02r += a->m01.real*b->m12.real-b->m01.real*a->m12.real;
+  temp02r += b->m02.imag*a->m22im-a->m02.imag*b->m22im;
+  temp02r += b->m01.imag*a->m12.imag-a->m01.imag*b->m12.imag;
+
+  temp12r  = b->m11im*a->m12.imag-a->m11im*b->m12.imag;
+  temp12r += b->m01.real*a->m02.real-a->m01.real*b->m02.real;
+  temp12r += b->m12.imag*a->m22im-a->m12.imag*b->m22im;
+  temp12r += b->m01.imag*a->m02.imag-a->m01.imag*b->m02.imag;
+
+  temp01i  = a->m00im*b->m01.real-b->m00im*a->m01.real;
+  temp01i += a->m01.real*b->m11im-b->m01.real*a->m11im;
+  temp01i += b->m02.imag*a->m12.real-a->m02.imag*b->m12.real;
+  temp01i += a->m02.real*b->m12.imag-b->m02.real*a->m12.imag;
+
+  temp02i  = a->m00im*b->m02.real-b->m00im*a->m02.real;
+  temp02i += a->m02.real*b->m22im-b->m02.real*a->m22im;
+  temp02i += a->m01.imag*b->m12.real-b->m01.imag*a->m12.real;
+  temp02i += a->m01.real*b->m12.imag-b->m01.real*a->m12.imag;
+
+  temp12i  = a->m11im*b->m12.real-b->m11im*a->m12.real;
+  temp12i += a->m12.real*b->m22im-b->m12.real*a->m22im;
+  temp12i += a->m01.imag*b->m02.real-b->m01.imag*a->m02.real;
+  temp12i += b->m01.real*a->m02.imag-a->m01.real*b->m02.imag;
+
+
+  c->m00im  = b->m01.imag*a->m01.real-a->m01.imag*b->m01.real;
+  c->m00im += b->m02.imag*a->m02.real-a->m02.imag*b->m02.real;
+  c->m00im *= 2;
+  c->m11im  = a->m01.imag*b->m01.real-b->m01.imag*a->m01.real;
+  c->m11im += b->m12.imag*a->m12.real-a->m12.imag*b->m12.real;
+  c->m11im *= 2;
+  c->m22im  = a->m02.imag*b->m02.real-b->m02.imag*a->m02.real;
+  c->m22im += a->m12.imag*b->m12.real-b->m12.imag*a->m12.real;
+  c->m22im *= 2;
+  c->m01.real = temp01r;
+  c->m01.imag = temp01i;
+  c->m02.real = temp02r;
+  c->m02.imag = temp02i;
+  c->m12.real = temp12r;
+  c->m12.imag = temp12i;
+}
+#endif
 
 /* derivative of the inverse matrix exponential,
    required for generic RKMK methods */
@@ -217,7 +274,9 @@ dexpinv( anti_hermitmat *u, anti_hermitmat *v, int q, anti_hermitmat *d ) {
   }
 }
 
-/* distance between SU(3) matrices */
+/* distance between SU(3) matrices:
+   maximum difference between the real or imaginary part
+   elementwise */
 Real
 su3mat_distance( su3_matrix *a, su3_matrix *b ) {
 
@@ -482,7 +541,7 @@ integrate_adapt_RK_2N()
   }
 
   do {
-    /* Infinitesimal stout smearing */
+    /* Make one RK step */
     for( i=0; i<N_stages; i++ ) {
       /* be careful with stepsize: Nathan's convention on the staple
          is such that stepsize should be taken negative */
@@ -552,7 +611,7 @@ integrate_adapt_bs() {
   }
 
   do {
-    // loop over RK stages
+    // loop over RK stages, skip 0 due to FSAL
     for( i_rk=1; i_rk<N_stages; i_rk++ ) {
         FORALLUPDIR(dir)
           FORALLSITES(i, s) {
