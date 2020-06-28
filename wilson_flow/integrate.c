@@ -275,8 +275,8 @@ dexpinv( anti_hermitmat *u, anti_hermitmat *v, int q, anti_hermitmat *d ) {
 }
 
 /* distance between SU(3) matrices:
-   maximum difference between the real or imaginary part
-   elementwise */
+   maximum difference elementwise,
+   real and imaginary parts are treated separately */
 Real
 su3mat_distance( su3_matrix *a, su3_matrix *b ) {
 

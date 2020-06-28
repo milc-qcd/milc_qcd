@@ -78,7 +78,8 @@ main( int argc, char **argv )
 #endif
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
     is_first_step = 1; // need to know the first step for FSAL
-    // set the permutation array for FSAL
+    // set the permutation array for FSAL, this saves copying
+    // K[3] to K[0] after each step
     indK[0] = 0; indK[1] = 1; indK[2] = 2; indK[3] = 3;
 #endif
     is_final_step = 0;
@@ -86,6 +87,9 @@ main( int argc, char **argv )
     i = 0;
     /* Loop over the flow time */
     while( stoptime==AUTO_STOPTIME || ( flowtime<stoptime && is_final_step==0 ) ) {
+// NOTE: the for loop below is the original Nathan's code, it does not
+// fit well with adaptive and also reaching exact time, which is needed
+// for scaling studies, this will be cleaned up once the code is stable
 //    for( flowtime=stepsize, i=0;
 //         stoptime==AUTO_STOPTIME || flowtime<stoptime;
 //         flowtime+=stepsize, i++ ) {
