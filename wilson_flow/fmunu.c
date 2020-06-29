@@ -42,7 +42,7 @@ fmunu_fmunu( double *time, double *space, double *charge )
 
   /* Loop over each site to sum F_mu,nu components */
   FORALLSITES(i, s) {
-    
+
     fs = &(s->fieldstrength[FS_XY]);
     ft = &(s->fieldstrength[FS_ZT]);
     *time -= real_trace_nn(ft, ft);
@@ -71,4 +71,13 @@ fmunu_fmunu( double *time, double *space, double *charge )
   *time /= (volume*64.0);
   *space /= (volume*64.0);
   *charge *= 0.0003957858736028819197; /* normalization of 1/(8^2 * 4 * PI^2) */
+}
+
+
+/* Compute loops for Wilson (one-plaquette) and
+  Symanzik tree-level (plaquette and rectangle) action */
+void
+gauge_action_w_s( double *gact_w_s, double *gact_w_t,
+                  double *gact_s_s, double *gact_s_t ) {
+
 }

@@ -24,5 +24,7 @@ void flow_step();
 void staple();
 void fmunu_fmunu(double *time, double *space, double *charge);
 void initialize_integrator();
-void integrate_RK_2N();
-void integrate_RK_2N_one_step( Real cA, Real cB );
+//void integrate_RK_2N();
+//void integrate_RK_2N_one_step( Real cA, Real cB );
+void gauge_action_w_s( double *gact_w_s, double *gact_w_t,
+                       double *gact_s_s, double *gact_s_t );
