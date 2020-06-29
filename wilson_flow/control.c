@@ -58,16 +58,16 @@ main( int argc, char **argv )
     /* Calculate and print initial flow output */
     fmunu_fmunu(&Et, &Es, &charge);
 #if (MILC_PRECISION==1)
-    node0_printf("WFLOW: %g %g %g %g\n", 0.0, Et, Es, charge);
+    node0_printf("GFLOW: %g %g %g %g\n", 0.0, Et, Es, charge);
 #else
-    node0_printf("WFLOW: %g %.16g %.16g %.16g\n", 0.0, Et, Es, charge);
+    node0_printf("GFLOW: %g %.16g %.16g %.16g\n", 0.0, Et, Es, charge);
 #endif
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
 #if (MILC_PRECISION==1)
       node0_printf("ADAPT: %g %g %g %g\n", 0.0, stepsize, 0.0, 0.0 );
 #else
-      node0_printf("ADAPT: %g %.16g %.16g %.16g\n", 0.0, stepsize, 0.0, 0.0 );
+      node0_printf("ADAPT: %.16g %.16g %.16g %.16g\n", 0.0, stepsize, 0.0, 0.0 );
 #endif
 #endif
     fflush(stdout);
@@ -109,9 +109,9 @@ main( int argc, char **argv )
       /* Calculate and print current flow output */
       fmunu_fmunu(&Et, &Es, &charge);
 #if (MILC_PRECISION==1)
-      node0_printf("WFLOW: %g %g %g %g\n", flowtime, Et, Es, charge);
+      node0_printf("GFLOW: %g %g %g %g\n", flowtime, Et, Es, charge);
 #else
-      node0_printf("WFLOW: %g %.16g %.16g %.16g\n", flowtime, Et, Es, charge);
+      node0_printf("GFLOW: %.16g %.16g %.16g %.16g\n", flowtime, Et, Es, charge);
 #endif
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
