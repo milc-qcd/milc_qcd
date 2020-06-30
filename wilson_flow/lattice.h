@@ -147,7 +147,7 @@ EXTERN char hostname[128];
 EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
-/* Temporary su3 matricies for gathers */
+/* Temporary su3 matrices for gathers */
 #define N_TEMPORARY 7
 EXTERN su3_matrix *tempmat[N_TEMPORARY];
 
