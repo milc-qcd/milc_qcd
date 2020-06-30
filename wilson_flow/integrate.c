@@ -702,6 +702,9 @@ integrate_adapt_bs() {
 }
 #endif
 
+#ifdef ABA
+//TODO: remove once all integrators are tested, flow_step is now
+// chosen inside defines.h
 /* one step of the flow, here branching into different integrators happens */
 void
 flow_step()
@@ -720,7 +723,7 @@ flow_step()
 #endif
 
 }
-
+#endif
 
 
 // original Nathan's routines that are being phased out
