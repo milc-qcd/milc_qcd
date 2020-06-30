@@ -200,15 +200,20 @@ gauge_action_w_s( double *gact_w_s, double *gact_w_t,
   wl1x1t /= volume;
   wl1x2s /= volume;
   wl1x2t /= volume;
-  wl1x1s /= 3;
-  wl1x1t /= 3;
-  wl1x2s /= 3;
-  wl1x2t /= 3;
+  wl1x1s *= 2;
+  wl1x1t *= 2;
+  wl1x2s *= 2;
+  wl1x2t *= 2;
 
   *gact_w_s = wl1x1s;
   *gact_w_t = wl1x1t;
   *gact_s_s = (5*wl1x1s)/3 - wl1x2s/12;
   *gact_s_t = (5*wl1x1t)/3 - wl1x2t/12;
+
+  // deallocate temporary storage
+  for( i=0; i<NTEMP_STORAGE; i++ ) {
+    free( su3mat[i] );
+  }
 
 #undef NTEMP_STORAGE
 }
