@@ -28,3 +28,9 @@ void initialize_integrator();
 //void integrate_RK_2N_one_step( Real cA, Real cB );
 void gauge_action_w_s( double *gact_w_s, double *gact_w_t,
                        double *gact_s_s, double *gact_s_t );
+// various integrators, compile-time choice
+void integrate_RK_2N();
+void integrate_RKMK3();
+void integrate_RKMK_generic();
+void integrate_adapt_RK_2N();
+void integrate_adapt_bs();

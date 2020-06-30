@@ -25,7 +25,7 @@ main( int argc, char **argv )
   double flowtime;
 
   /* Wilson flow output variables */
-  double Et, Es, charge;
+  double Et_C, Es_C, Et_W, Es_W, Et_S, Es_S, charge;
   double old_value=0, new_value=0;
   double der_value=0;
 
@@ -52,15 +52,16 @@ main( int argc, char **argv )
     dtimec = -dclock();
 
     /* Print flow output column labels */
-    node0_printf("#LABEL time Et Es charge\n");
+    node0_printf("#LABEL time Et_C Es_C Et_W Es_W Et_S Es_S charge\n");
     fflush(stdout);
 
     /* Calculate and print initial flow output */
-    fmunu_fmunu(&Et, &Es, &charge);
+    fmunu_fmunu(&Et_C, &Es_C, &charge);
+    gauge_action_w_s( &Et_W, &Es_W, &Et_S, &Es_S );
 #if (MILC_PRECISION==1)
-    node0_printf("GFLOW: %g %g %g %g\n", 0.0, Et, Es, charge);
+    node0_printf("GFLOW: %g %g %g %g %g %g %g %g\n", 0.0, Et_C, Es_C, Et_W, Es_W, Et_S, Es_S, charge);
 #else
-    node0_printf("GFLOW: %g %.16g %.16g %.16g\n", 0.0, Et, Es, charge);
+    node0_printf("GFLOW: %g %.16g %.16g %.16g %.16g %.16g %.16g %.16g\n", 0.0, Et_C, Es_C, Et_W, Es_W, Et_S, Es_S, charge);
 #endif
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
@@ -107,11 +108,12 @@ main( int argc, char **argv )
       i++;
 
       /* Calculate and print current flow output */
-      fmunu_fmunu(&Et, &Es, &charge);
+      fmunu_fmunu(&Et_C, &Es_C, &charge);
+      gauge_action_w_s( &Et_W, &Es_W, &Et_S, &Es_S );
 #if (MILC_PRECISION==1)
-      node0_printf("GFLOW: %g %g %g %g\n", flowtime, Et, Es, charge);
+      node0_printf("GFLOW: %g %g %g %g %g %g %g %g\n", flowtime, Et_C, Es_C, Et_W, Es_W, Et_S, Es_S, charge);
 #else
-      node0_printf("GFLOW: %.16g %.16g %.16g %.16g\n", flowtime, Et, Es, charge);
+      node0_printf("GFLOW: %.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g\n", flowtime, Et_C, Es_C, Et_W, Es_W, Et_S, Es_S, charge);
 #endif
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
@@ -129,7 +131,7 @@ main( int argc, char **argv )
       if( stoptime==AUTO_STOPTIME ) {
 
         old_value = new_value;
-        new_value = flowtime*flowtime*(Et+Es);
+        new_value = flowtime*flowtime*(Et_C+Es_C);
         der_value = flowtime*(new_value-old_value)/stepsize;
 
         if( new_value > 0.45 && der_value > 0.35 )
