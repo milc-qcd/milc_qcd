@@ -1237,6 +1237,169 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
 #endif
 }
 
+/*********************************************************************/
+static void
+check_eigen(int Nvecs){
+  /* Check orthonormality of a few eigenvectors (for debugging) */
+  for(int j = 0; j < Nvecs; j += 8)
+    for(int i = j; i < Nvecs; i += 8){
+      double_complex cc ;
+      dot_product(eigVec[i], eigVec[j], &cc, EVEN) ;
+      if(((i == j) && (fabs(cc.real - 1) > 1e-8)) || ((i != j && fabs(cc.real) > 1e-8)))
+	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
+    }
+}
+
+/*********************************************************************/
+/* Create fields for low- and high-mode current densities */
+static void
+create_jlow(int n_masses, int Nvecs, Real *jlow_mu[]){
+  for(int j = 0; j < n_masses; j++){
+    if(Nvecs > 0)
+      jlow_mu[j] = create_r_array_field(NMU);
+    else
+      jlow_mu[j] = NULL;
+  }
+}
+
+/*********************************************************************/
+static void
+destroy_jlow(int Nvecs, int n_masses, Real *jlow_mu[]){
+  if(Nvecs > 0)
+    for(int j = 0; j < n_masses; j++)
+      destroy_r_array_field(jlow_mu[j], NMU);
+}
+
+/*********************************************************************/
+/* Create fields for high-mode current densities, one for each
+   block of nr random sources and mass */
+static void
+create_jhi(int n_masses, int nr, Real **j_mu[]){
+  for(int j = 0; j < n_masses; j++){
+    j_mu[j] = (Real **)malloc(n_masses*sizeof(Real *));
+    for(int ir = 0; ir < nr; ir++)
+      j_mu[j][ir] = create_r_array_field(NMU);
+  }
+}
+
+/*********************************************************************/
+static void
+destroy_jhi(int n_masses, int nr, Real **j_mu[]){
+  for(int j = 0; j < n_masses; j++){
+    for(int ir = 0; ir < nr; ir++)
+      destroy_r_array_field(j_mu[j][ir], NMU);
+    free(j_mu[j]);
+  }
+}
+
+/*********************************************************************/
+/* Load arrays with masses and the HISQ link structure for each */
+static void
+load_inv_params(fermion_links_t *fl, imp_ferm_links_t *fn_mass[],
+		int n_masses, Real masses[], ks_param *ksp){
+  imp_ferm_links_t **fn = get_fm_links(fl);
+  for(int j = 0; j < n_masses; j++){
+    masses[j] = ksp[j].mass;
+    fn_mass[j] = fn[ksp[j].naik_term_epsilon_index];
+  }
+}
+
+/*********************************************************************/
+/* Compute exact low-mode current density if we have eigenvectors to do it */
+static void
+compute_jlow(int Nvecs, int n_masses, Real *jlow_mu[], Real masses[],
+			 imp_ferm_links_t *fn_mass[]){
+#ifdef MASS_UDLSC
+  if(Nvecs > 0){
+    if(n_masses <= 1){
+      exact_currents(n_masses, jlow_mu, masses, fn_mass);
+    } else {
+      exact_currents_deltam(n_masses, jlow_mu, masses, fn_mass);
+    }
+  }
+#else
+  if(Nvecs > 0){
+    exact_currents(n_masses, jlow_mu, masses, fn_mass);
+  }
+#endif
+}
+
+/***********************************************************************************/
+/* Reset jlow */
+static void
+clear_jlow(int n_masses, Real *jlow_mu[]){
+  for(int j = 0; j < n_masses; j++){
+    /* Reset jlow_mu */
+    if(jlow_mu[j] != NULL)clear_r_array_field(jlow_mu[j], NMU);
+  }  
+}
+
+/*********************************************************************/
+static su3_vector **
+create_gr(int nsrc){
+  su3_vector **gr = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  for(int is = 0; is < nsrc; is++)
+    gr[is] = create_v_field();
+  return gr;
+}
+
+/*********************************************************************/
+static void
+destroy_gr(int nsrc, su3_vector **gr){
+  for(int is = 0; is < nsrc; is++)
+    destroy_v_field(gr[is]);
+  free(gr);
+}
+
+/*********************************************************************/
+/* Do block solve for high-mode densities */
+static void
+compute_jhi(int n_masses, Real **j_mu[], Real masses[], imp_ferm_links_t *fn_mass[],
+			quark_invert_control *qic, int nsrc, int nr, su3_vector **gr_even, su3_vector **gr_odd){    
+#ifdef MASS_UDLSC
+    if(n_masses <= 1){
+      block_current( n_masses, j_mu, masses, fn_mass, qic, nsrc, nr, gr_even, gr_odd);
+    } else {
+      block_currents_deltam( n_masses, j_mu, masses, fn_mass, qic,
+			     nsrc, nr, gr_even, gr_odd);
+    }
+#else
+    block_current( n_masses, j_mu, masses, fn_mass, qic, nsrc, nr, gr_even, gr_odd);
+#endif
+}
+
+/*********************************************************************/
+/* Do block solve for the TSM difference in high-mode densities */
+static void
+compute_jhi_diff(int n_masses, Real **j_mu[], Real masses[], imp_ferm_links_t *fn_mass[],
+			     quark_invert_control *qic_precise, quark_invert_control *qic_sloppy,
+			     int nsrc, int nr, su3_vector **gr_even,	su3_vector **gr_odd){
+#ifdef MASS_UDLSC
+    if(n_masses <= 1){
+      block_current_diff(n_masses, j_mu, masses, fn_mass, 
+			 qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+    } else {
+      block_currents_diff_deltam(n_masses, j_mu, masses, fn_mass, 
+				 qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+    }
+#else
+    block_current_diff(n_masses, j_mu, masses, fn_mass, 
+                       qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+#endif
+    
+}  
+/*********************************************************************/
+/* Reset j_mu */
+static void
+clear_jhi(int n_masses, int nr, Real **j_mu[]){
+
+  for(int j = 0; j < n_masses; j++){
+    for(int ir = 0; ir < nr; ir++){
+      clear_r_array_field(j_mu[j][ir], NMU);
+    } /* ir */
+  } /* j */
+}
+
 /************************************************************************/
 /* Entry point for multiple masses with deflation and iterated
    single-mass inverter.  This variant does two solves from the same
