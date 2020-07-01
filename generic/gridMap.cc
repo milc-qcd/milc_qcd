@@ -1,6 +1,7 @@
 // Mapping between MILC and Grid types
 
 #include <Grid/Grid.h>
+#include <Grid/lattice/Lattice_view.h>
 
 #include "../include/mGrid/mGrid_internal.h"
 #include "../include/mGrid/mGrid.h"
@@ -155,7 +156,8 @@ create_V_from_vec( su3_vector *src, int milc_parity,
 	  Complex(src[idx].c[col].real, src[idx].c[col].imag);
       }
       
-      pokeLocalSite(cVec, *(out->cv), x);
+      autoView(Dst_cv, (*(out->cv)), CpuWrite);
+      pokeLocalSite(cVec, Dst_cv, x);
       
     }
   auto end = std::chrono::system_clock::now();
@@ -206,7 +208,8 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
 	  cVec._internal._internal._internal[col] = 
 	    Complex(src[j][idx].c[col].real, src[j][idx].c[col].imag);
 	}
-	pokeLocalSite(cVec, *(out->cv), x5);
+	autoView(Dst_cv, (*(out->cv)), CpuWrite);
+	pokeLocalSite(cVec, Dst_cv, x5);
       }
     }
   auto end = std::chrono::system_clock::now();
@@ -230,7 +233,8 @@ static void extract_V_to_vec( su3_vector *dest,
       indexToCoords(idx, x);
       ColourVector cVec;
 
-      peekLocalSite(cVec, *(src->cv), x);
+      autoView(Src_cv, (*(src->cv)), CpuRead);
+      peekLocalSite(cVec, Src_cv, x);
 
       for(int col = 0; col < Nc; col++)
 	{
@@ -261,7 +265,8 @@ static void extract_nV_to_vecs( su3_vector *dest[], int n,
 	x5[0] = j;
 
 	ColourVector cVec;
-	peekLocalSite(cVec, *(src->cv), x5);
+	autoView(Src_cv, (*(src->cv)), CpuRead);
+	peekLocalSite(cVec, Src_cv, x5);
 	
 	for(int col = 0; col < Nc; col++)
 	  {
