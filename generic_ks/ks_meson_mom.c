@@ -57,16 +57,17 @@ propagators together to form a meson correlator.
         no_q_momenta :: number of momentum values p in table to use
 	q_momstore[p] :: table of momentum values p to use
         q_parity[p] :: reflection parity for each momentum component
-        no_gamma_corr :: number of source/sink gamma pairs G in table
+        no_spin_taste_corr :: Number of unique spin-taste assignments (gt g)
         num_corr_mom[g] :: number of momentum/parity sets for each g
         corr_table[g] :: list of correlator indices c for gamma pair g
         p_index[c] :: p = p_index[c] is the momentum index for correlator c 
-        gout[c] :: sink gamma matrix for correlator c
-        gin[c] :: source gamma matrix for correlator c
+        fn_src1 :: Fat-Naik links for src1 needed for some spin-taste operators 
+        fn_src2 :: Fat-Naik links for src2 Needed for some spin-taste operators
         meson_phase[c] :: phase factor to multiply the correlator before
                           accumulating.  Encoded as in gammatypes.h
         meson_factor[c] :: normalization factor for each correlator c
         corr_index[c] :: correlator index m where like propagators are summed
+        r0[c] :: origin for defining FT and KS phases for correlator c
 
      On output
          prop :: complex vector to the data correlators with indexing
