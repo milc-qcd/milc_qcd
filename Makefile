@@ -414,6 +414,16 @@ WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 WANT_KS_CONT_GPU ?= #true
 
+/* Temporary for testing */
+WANTQUDACPU  ?= #false
+
+ifeq ($(strip ${WANTQUDACPU}),true)
+  ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
+    HAVE_KS_CONT_GPU = true
+    CGPU += -DUSE_KS_CONT_GPU
+  endif
+endif
+
 # enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
 WANT_MIXED_PRECISION_GPU ?= 0
 

@@ -161,21 +161,22 @@ destroy_ftfact(complex *ftfact ){
 
 /*******************************************/
 /* Put this in an appropriate header */
+
 typedef struct {
-  int num_corr_mom;
-  int **corr_mom;
-  char **corr_parity;
-  int *r0;
-  Real flops;
-  Real dtime;
+  int num_corr_mom;  /* Number of sink momenta */
+  int **corr_mom;  /* List of momenta as integers */
+  char **corr_parity; /* The "parity" of the FT component */
+  int *r0;  /* The coordinate origin for the Fourier phases */
+  Real flops; /* Return value */
+  Real dtime; /* Return value */
 } QudaContractArgs_t;
 
 void qudaContract(int milc_precision,
 		  int quda_precision,
 		  QudaContractArgs_t *cont_args,
-		  su3_vector *antiquark,
-		  su3_vector *quark,
-		  complex *meson_q[]
+		  su3_vector *antiquark,  /* Color vector field (propagator) */
+		  su3_vector *quark,   /* Color vector field (propagator) */
+                  complex *meson_q[]  /* Resulting hadron correlator indexed by time and momentum */
 		  )
 {
 
