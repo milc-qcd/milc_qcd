@@ -9,6 +9,7 @@
 #  The paths are relative to the application directory.
 
 G_KS_ALL = \
+  contraction_cpu.o \
   d_congrad5.cppacs.o \
   d_congrad5.o \
   d_congrad5_eo.o \
@@ -113,6 +114,7 @@ G_KS_ALL = \
   ks_baryon.o \
   ks_invert.o \
   ks_meson_mom.o \
+  ks_meson_mom_gpu.o \
   ks_multicg.o \
   ks_multicg_offset.o \
   ks_multicg_offset_gpu.o \
@@ -177,6 +179,8 @@ G_KS_ALL_DEPEND = \
 
 ${G_KS_ALL} : ${G_KS_ALL_DEPEND}
 
+contraction_cpu.o: ../generic_ks/contraction_cpu.c
+	${CC} -c ${CFLAGS} $<
 d_congrad5.cppacs.o: ../generic_ks/d_congrad5.cppacs.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5.o: ../generic_ks/d_congrad5.c
@@ -398,6 +402,8 @@ ks_baryon.o: ../generic_ks/ks_baryon.c
 ks_invert.o: ../generic_ks/ks_invert.c
 	${CC} -c ${CFLAGS} $<
 ks_meson_mom.o: ../generic_ks/ks_meson_mom.c
+	${CC} -c ${CFLAGS} $<
+ks_meson_mom_gpu.o: ../generic_ks/ks_meson_mom_gpu.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg.o: ../generic_ks/ks_multicg.c
 	${CC} -c ${CFLAGS} $<
