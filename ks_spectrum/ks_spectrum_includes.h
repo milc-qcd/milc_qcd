@@ -85,13 +85,4 @@ void spectrum_ks_gb_baryon(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_f
   su3_matrix *links, int triplet);
 #endif
 
-/* u1link.c */
-complex *map_a2_u1link(Real chrg, Real *a);
-void u1phase_on(Real charge, Real *u1_A);
-void u1phase_off(void);
-Real *create_u1_A_field(void);
-
-/* u1plaq.c */
-void u1plaq(Real *splaq,Real *tplaq);
-
 /*  ks_spectrum_includes.h */

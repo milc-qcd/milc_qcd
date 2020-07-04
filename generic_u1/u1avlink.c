@@ -6,16 +6,18 @@
 
 #include "generic_u1_includes.h"
 
-void u1avlink(double *sLink, double *tLink)
+void u1avlink(double *sLink, double *tLink, double charge)
 {
   int i;
+
+  *sLink = *tLink = 0.;
 
   FORALLFIELDSITES(i){
     int dir;
     FORALLUPDIRBUT(TUP,dir){
-      *sLink += cos(u1_A[4*i+dir]);
+      *sLink += cos(charge*u1_A[4*i+dir]);
     }
-    *tLink += cos(u1_A[4*i+TUP]);
+    *tLink += cos(charge*u1_A[4*i+TUP]);
   }
   *sLink /= 3.;
   g_doublesum(sLink);

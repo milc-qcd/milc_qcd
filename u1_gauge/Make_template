@@ -47,7 +47,8 @@ G_OBJECTS =          \
   make_lattice.o \
   remap_stdio_from_args.o \
   ranstuff.o \
-  restrict_fourier.o
+  remap_fftw_fourier.o \
+  show_generic_opts.o
 
 # Basic set from generic_u1 directory
 G_U1_OBJECTS =       \
@@ -132,10 +133,47 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 ##### Targets:
 
+#       Default is the same as u1_g-Coulomb-QED_L
 u1_g::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"EXTRA_OBJECTS= control.o momgauge.o" \
-	"DEFINES = -DNO_GAUGE_FIELD"
+	"DEFINES = -DNO_GAUGE_FIELD -DGAUGE=COULOMB -DSCHEME=QED_L"
+	@echo WARNING!!: MPP IS NOT SUPPORTED WITH THIS CODE!!
+
+u1_g-Basak-Coul-QED_TL::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"EXTRA_OBJECTS= control.o momgauge.o" \
+	"DEFINES = -DNO_GAUGE_FIELD -DGAUGE_METHOD=MILC_ORIGINAL"
+	@echo WARNING!!: THIS VERSION IS INCORRECT!!
+
+u1_g-Hatton-Feynman-QED_L::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"EXTRA_OBJECTS= control.o momgauge.o -DGAUGE_METHOD=HATTON_REVISION" \
+	"DEFINES = -DNO_GAUGE_FIELD -DGAUGE_METHOD=HATTON_REVISION"
+	@echo WARNING!!: MPP IS NOT SUPPORTED WITH THIS CODE!!
+
+u1_g-Feynman-QED_L::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"EXTRA_OBJECTS= control.o momgauge.o" \
+	"DEFINES = -DNO_GAUGE_FIELD -DGAUGE=FEYNMAN -DSCHEME=QED_L"
+	@echo WARNING!!: MPP IS NOT SUPPORTED WITH THIS CODE!!
+
+u1_g-Lorenz-QED_L::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"EXTRA_OBJECTS= control.o momgauge.o" \
+	"DEFINES = -DNO_GAUGE_FIELD -DGAUGE=LORENZ -DSCHEME=QED_L"
+	@echo WARNING!!: MPP IS NOT SUPPORTED WITH THIS CODE!!
+
+u1_g-Coulomb-QED_L::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"EXTRA_OBJECTS= control.o momgauge.o" \
+	"DEFINES = -DNO_GAUGE_FIELD -DGAUGE=COULOMB -DSCHEME=QED_L"
+	@echo WARNING!!: MPP IS NOT SUPPORTED WITH THIS CODE!!
+
+u1_g-Coulomb-QED_TL::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"EXTRA_OBJECTS= control.o momgauge.o" \
+	"DEFINES = -DNO_GAUGE_FIELD -DGAUGE=COULOMB -DSCHEME=QED_TL"
 	@echo WARNING!!: MPP IS NOT SUPPORTED WITH THIS CODE!!
 
 u1_g_convert::

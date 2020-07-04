@@ -311,7 +311,7 @@ v5_2scidac::
 	gauge_info_dummy.o"
 
 scidac_2v5::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= scidac_to_v5" \
 	"DEFINES= -DNO_GAUGE_FIELD" \
 	"EXTRA_OBJECTS= ${G_OBJECTS} scidac_to_v5.o \
 	gauge_info_scidac.o"

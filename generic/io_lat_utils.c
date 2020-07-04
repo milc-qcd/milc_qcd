@@ -973,7 +973,7 @@ int read_v3_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
   /* Header byte length for this file */
@@ -1088,7 +1088,7 @@ int read_1996_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
   
@@ -1258,7 +1258,7 @@ int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
   
@@ -1456,7 +1456,7 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
 

@@ -1,9 +1,10 @@
+com_qmp: set thread-safety level to 0
 SU3 staggered fermion measurements
 MIMD version 7.8.1
 Machine = QMP (portable), with 1 nodes
 Host(0) = falco.physics.utah.edu
 Username = detar
-start: Sun Jun  3 13:09:46 2018
+start: Wed Jul  1 13:07:51 2020
 
 Options selected...
 Generic double precision
@@ -24,7 +25,7 @@ iseed 5682304
 job_id 203696.kaon2.fnal.gov
 LAYOUT = Hypercubes, options = hyper_prime,
 QMP with automatic hyper_prime layout
-ON EACH NODE 4 x 4 x 4 x 4
+ON EACH NODE (RANK) 4 x 4 x 4 x 4
 Mallocing 0.2 MBytes per node for lattice
 WARNING!!: Resetting random seed
 
@@ -33,7 +34,7 @@ WARNING!!: Resetting random seed
 # source time 0
 ######################################################################
 # Gauge field description
-reload_serial ../binary_samples/lat.sample.l4444
+reload_serial ../../binary_samples/lat.sample.l4444
 u0 1
 forget 
 staple_weight 0
@@ -58,7 +59,6 @@ error_decrease 0.3
 number_of_sets 2
 # Parameters common to all members of set 0
 npbp_reps 1
-nwrite 1
 source_spacing 2
 take_truncate_diff no
 max_cg_iterations 300
@@ -72,7 +72,6 @@ rel_error_for_propagator 0
 save_file vctest0.01
 # Parameters common to all members of set 1
 npbp_reps 1
-nwrite 1
 source_spacing 2
 take_truncate_diff yes
 max_cg_iterations 300
@@ -89,14 +88,14 @@ rel_error_for_propagator 0
 error_for_propagator_sloppy 0.0001
 rel_error_for_propagator_sloppy 0
 save_file vctest0.01diff
-Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4444
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4444
 Time stamp Thu Feb 12 13:40:21 1998
 Checksums 2352c05 d137321d OK
-Time to reload gauge configuration = 7.290840e-04
+Time to reload gauge configuration = 1.896405e-02
 CHECK PLAQ: 1.7946751560761729e+00 1.7744257976067317e+00
 CHECK NERSC LINKTR: 6.4675873741896339e-01 CKSUM: ffc4bb26
 Reunitarized for double precision. Max deviation 2.52e-07 changed to 4.44e-16
-Time to check unitarity = 8.509159e-04
+Time to check unitarity = 7.479191e-04
 "Fat 7 (level 1)"
 path coefficients: npath  path_coeff
                     0      1.250000e-01
@@ -118,10 +117,11 @@ path coefficients: npath  path_coeff
                     0      1.250000e-01
                     1      -4.166667e-02
 MAKING PATH TABLES
-Combined fattening and long-link calculation time: 0.020664
-Time to APE smear 1.249313e-04 sec
+Combined fattening and long-link calculation time: 0.020263
+Time to APE smear 1.239777e-04 sec
 Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
-PRIMME workspace int = 4672 long int = 5933792
+Using 0 eigenvectors as starting vectors for PRIMME
+Setting print level to default
 // ---------------------------------------------------
 //                 primme configuration               
 // ---------------------------------------------------
@@ -131,7 +131,7 @@ primme.numProcs = 1
 primme.procID = 0
 
 // Output and reporting
-primme.printLevel = 2
+primme.printLevel = 1
 
 // Solver parameters
 primme.numEvals = 192
@@ -140,7 +140,7 @@ primme.eps = 1.000000e-06
 primme.maxBasisSize = 192
 primme.minRestartSize = 120
 primme.maxBlockSize = 8
-primme.maxOuterIterations = 100
+primme.maxOuterIterations = 2147483647
 primme.maxMatvecs = 2147483647
 primme.target = primme_smallest
 primme.projection.projection = primme_proj_RR
@@ -173,198 +173,7 @@ primme.correction.projectors.SkewQ = 0
 primme.correction.projectors.RightX = 0
 primme.correction.projectors.SkewX = 1
 // ---------------------------------------------------
-Lock epair[ 1 ]= 9.439834e-01 norm 6.7309e-08 Mvecs 363 Time 1.4402e+00 Flag 2
-Lock epair[ 2 ]= 9.618426e-01 norm 6.6983e-08 Mvecs 363 Time 1.4402e+00 Flag 2
-Lock epair[ 3 ]= 9.985572e-01 norm 7.4028e-08 Mvecs 363 Time 1.4402e+00 Flag 2
-Lock epair[ 4 ]= 1.012500e+00 norm 4.9234e-08 Mvecs 363 Time 1.4402e+00 Flag 2
-Lock epair[ 5 ]= 1.319300e+00 norm 1.6947e-07 Mvecs 363 Time 1.4402e+00 Flag 2
-Lock epair[ 6 ]= 1.365648e+00 norm 5.4871e-07 Mvecs 363 Time 1.4402e+00 Flag 2
-Lock epair[ 7 ]= 1.415804e+00 norm 1.0146e-06 Mvecs 363 Time 1.4402e+00 Flag 2
-Lock epair[ 8 ]= 1.448111e+00 norm 1.0616e-06 Mvecs 363 Time 1.4402e+00 Flag 2
-Lock epair[ 9 ]= 1.613290e+00 norm 1.2930e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 10 ]= 1.648672e+00 norm 1.5010e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 11 ]= 1.675841e+00 norm 1.1419e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 12 ]= 1.688185e+00 norm 1.7459e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 13 ]= 1.705534e+00 norm 2.1817e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 14 ]= 1.728329e+00 norm 1.5145e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 15 ]= 1.774419e+00 norm 1.9635e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 16 ]= 1.809799e+00 norm 2.1886e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 17 ]= 1.916162e+00 norm 3.4973e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 18 ]= 1.934798e+00 norm 4.0644e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 19 ]= 1.984846e+00 norm 2.6613e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 20 ]= 2.014249e+00 norm 3.0975e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 21 ]= 2.125200e+00 norm 6.4392e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 22 ]= 2.139139e+00 norm 3.9642e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 23 ]= 2.171535e+00 norm 5.4460e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 24 ]= 2.194835e+00 norm 1.0765e-05 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 25 ]= 2.234605e+00 norm 1.1743e-05 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 26 ]= 2.241682e+00 norm 1.0402e-05 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 27 ]= 2.279140e+00 norm 2.6329e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 28 ]= 2.305455e+00 norm 8.6225e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 29 ]= 2.454345e+00 norm 5.9444e-06 Mvecs 363 Time 1.4403e+00 Flag 2
-Lock epair[ 30 ]= 2.493903e+00 norm 6.4252e-06 Mvecs 363 Time 1.4404e+00 Flag 2
-Lock epair[ 31 ]= 2.519004e+00 norm 1.3346e-05 Mvecs 363 Time 1.4404e+00 Flag 2
-Lock epair[ 32 ]= 2.545222e+00 norm 7.7594e-06 Mvecs 363 Time 1.4404e+00 Flag 2
-Lock epair[ 33 ]= 2.582754e+00 norm 1.9062e-05 Mvecs 363 Time 1.4404e+00 Flag 2
-Lock epair[ 34 ]= 2.618040e+00 norm 1.2566e-06 Mvecs 716 Time 2.1083e+00 Flag 2
-Lock epair[ 35 ]= 2.675905e+00 norm 1.4120e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 36 ]= 2.721479e+00 norm 1.4261e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 37 ]= 2.745557e+00 norm 1.4967e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 38 ]= 2.792666e+00 norm 1.3978e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 39 ]= 2.854873e+00 norm 2.3758e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 40 ]= 2.884698e+00 norm 1.9071e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 41 ]= 3.007181e+00 norm 1.4481e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 42 ]= 3.065919e+00 norm 9.6191e-07 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 43 ]= 3.089612e+00 norm 1.6681e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 44 ]= 3.112218e+00 norm 1.5233e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 45 ]= 3.193762e+00 norm 1.0724e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 46 ]= 3.218686e+00 norm 9.1984e-07 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 47 ]= 3.249016e+00 norm 8.5429e-07 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 48 ]= 3.313425e+00 norm 1.0928e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 49 ]= 4.742008e+00 norm 2.5484e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 50 ]= 4.893284e+00 norm 2.7248e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 51 ]= 5.024300e+00 norm 3.7207e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 52 ]= 5.121437e+00 norm 2.9738e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 53 ]= 5.135745e+00 norm 3.9004e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 54 ]= 5.242269e+00 norm 3.9332e-06 Mvecs 716 Time 2.1084e+00 Flag 2
-Lock epair[ 55 ]= 5.290844e+00 norm 3.7573e-06 Mvecs 716 Time 2.1085e+00 Flag 2
-Lock epair[ 56 ]= 5.330684e+00 norm 5.6676e-06 Mvecs 716 Time 2.1085e+00 Flag 2
-Lock epair[ 57 ]= 5.435086e+00 norm 6.4337e-06 Mvecs 716 Time 2.1085e+00 Flag 2
-Lock epair[ 58 ]= 5.453150e+00 norm 4.6290e-06 Mvecs 716 Time 2.1085e+00 Flag 2
-Lock epair[ 59 ]= 5.463942e+00 norm 5.6414e-06 Mvecs 716 Time 2.1085e+00 Flag 2
-Lock epair[ 60 ]= 5.565372e+00 norm 9.7618e-06 Mvecs 716 Time 2.1085e+00 Flag 2
-Lock epair[ 61 ]= 5.576907e+00 norm 6.0101e-06 Mvecs 716 Time 2.1085e+00 Flag 2
-Lock epair[ 62 ]= 5.629952e+00 norm 1.3383e-05 Mvecs 716 Time 2.1085e+00 Flag 2
-Lock epair[ 63 ]= 5.679548e+00 norm 9.3302e-06 Mvecs 716 Time 2.1085e+00 Flag 2
-Lock epair[ 64 ]= 5.706957e+00 norm 1.1083e-05 Mvecs 716 Time 2.1085e+00 Flag 2
-Lock epair[ 65 ]= 5.738538e+00 norm 1.1659e-05 Mvecs 716 Time 2.1085e+00 Flag 2
-Lock epair[ 66 ]= 5.774728e+00 norm 4.9217e-06 Mvecs 1034 Time 2.7668e+00 Flag 2
-Lock epair[ 67 ]= 5.797998e+00 norm 5.0392e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 68 ]= 5.842098e+00 norm 3.2350e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 69 ]= 5.884081e+00 norm 5.6054e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 70 ]= 5.895915e+00 norm 3.8012e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 71 ]= 5.953743e+00 norm 5.0896e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 72 ]= 5.989530e+00 norm 3.8037e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 73 ]= 6.006992e+00 norm 4.2294e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 74 ]= 6.064057e+00 norm 5.2647e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 75 ]= 6.107527e+00 norm 5.6074e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 76 ]= 6.140139e+00 norm 5.4808e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 77 ]= 6.170098e+00 norm 4.8196e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 78 ]= 6.204226e+00 norm 4.9579e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 79 ]= 6.261105e+00 norm 4.7765e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 80 ]= 6.272542e+00 norm 7.3242e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 81 ]= 6.313697e+00 norm 6.7562e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 82 ]= 6.336404e+00 norm 5.9067e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 83 ]= 6.371372e+00 norm 5.0471e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 84 ]= 6.431486e+00 norm 6.8173e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 85 ]= 6.450970e+00 norm 4.2304e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 86 ]= 6.492902e+00 norm 8.4835e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 87 ]= 6.502622e+00 norm 5.9719e-06 Mvecs 1034 Time 2.7669e+00 Flag 2
-Lock epair[ 88 ]= 6.548493e+00 norm 9.5697e-06 Mvecs 1034 Time 2.7670e+00 Flag 2
-Lock epair[ 89 ]= 6.576177e+00 norm 9.2651e-06 Mvecs 1034 Time 2.7670e+00 Flag 2
-Lock epair[ 90 ]= 6.600801e+00 norm 3.0803e-06 Mvecs 1286 Time 3.3981e+00 Flag 2
-Lock epair[ 91 ]= 6.632775e+00 norm 3.1766e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 92 ]= 6.694284e+00 norm 4.4026e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 93 ]= 6.712114e+00 norm 3.0624e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 94 ]= 6.719691e+00 norm 2.3470e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 95 ]= 6.783526e+00 norm 4.7280e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 96 ]= 6.808196e+00 norm 4.2000e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 97 ]= 6.849939e+00 norm 5.3634e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 98 ]= 6.858829e+00 norm 3.4124e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 99 ]= 6.890644e+00 norm 3.7478e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 100 ]= 6.924630e+00 norm 7.5371e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 101 ]= 6.963705e+00 norm 2.6959e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 102 ]= 6.973009e+00 norm 3.3800e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 103 ]= 6.996332e+00 norm 2.6807e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 104 ]= 7.027798e+00 norm 3.1103e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 105 ]= 7.069449e+00 norm 6.9423e-06 Mvecs 1286 Time 3.3982e+00 Flag 2
-Lock epair[ 106 ]= 7.084701e+00 norm 6.0001e-06 Mvecs 1286 Time 3.3983e+00 Flag 2
-Lock epair[ 107 ]= 7.132710e+00 norm 3.1762e-06 Mvecs 1286 Time 3.3983e+00 Flag 2
-Lock epair[ 108 ]= 7.182508e+00 norm 3.2632e-06 Mvecs 1286 Time 3.3983e+00 Flag 2
-Lock epair[ 109 ]= 7.200400e+00 norm 1.3370e-05 Mvecs 1286 Time 3.3983e+00 Flag 2
-Lock epair[ 110 ]= 7.210225e+00 norm 2.5278e-06 Mvecs 1286 Time 3.3983e+00 Flag 2
-Lock epair[ 111 ]= 7.247077e+00 norm 1.0052e-05 Mvecs 1286 Time 3.3983e+00 Flag 2
-Lock epair[ 112 ]= 7.301057e+00 norm 5.9367e-06 Mvecs 1286 Time 3.3983e+00 Flag 2
-Lock epair[ 113 ]= 7.313665e+00 norm 5.4375e-06 Mvecs 1286 Time 3.3983e+00 Flag 2
-Lock epair[ 114 ]= 7.375220e+00 norm 6.4093e-06 Mvecs 1286 Time 3.3983e+00 Flag 2
-Lock epair[ 115 ]= 7.390649e+00 norm 1.6212e-05 Mvecs 1286 Time 3.3983e+00 Flag 2
-Lock epair[ 116 ]= 7.438733e+00 norm 3.2497e-06 Mvecs 1496 Time 4.0430e+00 Flag 2
-Lock epair[ 117 ]= 7.452612e+00 norm 2.4777e-06 Mvecs 1496 Time 4.0430e+00 Flag 2
-Lock epair[ 118 ]= 7.469672e+00 norm 2.2286e-06 Mvecs 1496 Time 4.0430e+00 Flag 2
-Lock epair[ 119 ]= 7.503872e+00 norm 1.9151e-06 Mvecs 1496 Time 4.0430e+00 Flag 2
-Lock epair[ 120 ]= 7.523085e+00 norm 2.5965e-06 Mvecs 1496 Time 4.0430e+00 Flag 2
-Lock epair[ 121 ]= 7.556699e+00 norm 3.1858e-06 Mvecs 1496 Time 4.0430e+00 Flag 2
-Lock epair[ 122 ]= 7.588327e+00 norm 4.7266e-06 Mvecs 1496 Time 4.0430e+00 Flag 2
-Lock epair[ 123 ]= 7.626836e+00 norm 6.4685e-06 Mvecs 1496 Time 4.0430e+00 Flag 2
-Lock epair[ 124 ]= 7.640706e+00 norm 2.4531e-06 Mvecs 1496 Time 4.0430e+00 Flag 2
-Lock epair[ 125 ]= 7.665588e+00 norm 2.3197e-06 Mvecs 1496 Time 4.0430e+00 Flag 2
-Lock epair[ 126 ]= 7.696270e+00 norm 9.8929e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 127 ]= 7.740501e+00 norm 2.3045e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 128 ]= 7.756693e+00 norm 2.7726e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 129 ]= 7.775935e+00 norm 2.6631e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 130 ]= 7.842081e+00 norm 5.7759e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 131 ]= 7.865058e+00 norm 4.5923e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 132 ]= 7.887061e+00 norm 2.4490e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 133 ]= 7.910196e+00 norm 2.8043e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 134 ]= 7.925641e+00 norm 2.3451e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 135 ]= 7.960454e+00 norm 8.5640e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 136 ]= 7.982408e+00 norm 6.0088e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 137 ]= 8.002972e+00 norm 2.9104e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 138 ]= 8.072240e+00 norm 3.4017e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 139 ]= 8.076591e+00 norm 3.2218e-06 Mvecs 1496 Time 4.0431e+00 Flag 2
-Lock epair[ 140 ]= 8.122228e+00 norm 2.7942e-06 Mvecs 1706 Time 4.7027e+00 Flag 2
-Lock epair[ 141 ]= 8.136503e+00 norm 5.8987e-06 Mvecs 1706 Time 4.7027e+00 Flag 2
-Lock epair[ 142 ]= 8.150475e+00 norm 2.3479e-06 Mvecs 1706 Time 4.7027e+00 Flag 2
-Lock epair[ 143 ]= 8.181743e+00 norm 4.6166e-06 Mvecs 1706 Time 4.7027e+00 Flag 2
-Lock epair[ 144 ]= 8.221866e+00 norm 7.8015e-06 Mvecs 1706 Time 4.7027e+00 Flag 2
-Lock epair[ 145 ]= 8.250200e+00 norm 4.0231e-06 Mvecs 1706 Time 4.7027e+00 Flag 2
-Lock epair[ 146 ]= 8.269116e+00 norm 2.2105e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 147 ]= 8.322582e+00 norm 2.2634e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 148 ]= 8.354247e+00 norm 6.4242e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 149 ]= 8.391637e+00 norm 2.6680e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 150 ]= 8.406623e+00 norm 4.2491e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 151 ]= 8.443868e+00 norm 8.4824e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 152 ]= 8.468894e+00 norm 6.8790e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 153 ]= 8.507766e+00 norm 8.0820e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 154 ]= 8.549877e+00 norm 5.2299e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 155 ]= 8.573209e+00 norm 5.3640e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 156 ]= 8.607622e+00 norm 4.8716e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 157 ]= 8.637974e+00 norm 3.6413e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 158 ]= 8.665730e+00 norm 5.9443e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 159 ]= 8.706170e+00 norm 5.9651e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 160 ]= 8.739428e+00 norm 7.1142e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 161 ]= 8.770274e+00 norm 4.4546e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 162 ]= 8.799337e+00 norm 4.4904e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 163 ]= 8.863217e+00 norm 7.0290e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 164 ]= 8.885957e+00 norm 4.1358e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 165 ]= 8.928685e+00 norm 3.4523e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 166 ]= 8.935879e+00 norm 3.4025e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 167 ]= 8.978669e+00 norm 2.9815e-06 Mvecs 1706 Time 4.7028e+00 Flag 2
-Lock epair[ 168 ]= 9.036297e+00 norm 9.0610e-06 Mvecs 1706 Time 4.7029e+00 Flag 2
-Lock epair[ 169 ]= 9.086010e+00 norm 5.0594e-06 Mvecs 1706 Time 4.7029e+00 Flag 2
-Lock epair[ 170 ]= 9.112060e+00 norm 2.2896e-06 Mvecs 1706 Time 4.7029e+00 Flag 2
-Lock epair[ 171 ]= 9.140984e+00 norm 3.2931e-06 Mvecs 1706 Time 4.7029e+00 Flag 2
-Lock epair[ 172 ]= 9.205702e+00 norm 5.3485e-06 Mvecs 1706 Time 4.7029e+00 Flag 2
-Lock epair[ 173 ]= 9.217341e+00 norm 3.2125e-06 Mvecs 1778 Time 4.8653e+00 Flag 2
-Lock epair[ 174 ]= 9.252181e+00 norm 2.6661e-06 Mvecs 1778 Time 4.8653e+00 Flag 2
-Lock epair[ 175 ]= 9.319958e+00 norm 2.3538e-06 Mvecs 1778 Time 4.8653e+00 Flag 2
-Lock epair[ 176 ]= 9.331431e+00 norm 2.7360e-06 Mvecs 1778 Time 4.8653e+00 Flag 2
-Lock epair[ 177 ]= 9.368430e+00 norm 7.1781e-06 Mvecs 1778 Time 4.8653e+00 Flag 2
-Lock epair[ 178 ]= 9.408848e+00 norm 2.3615e-06 Mvecs 1778 Time 4.8653e+00 Flag 2
-Lock epair[ 179 ]= 9.429185e+00 norm 5.8955e-06 Mvecs 1778 Time 4.8653e+00 Flag 2
-Lock epair[ 180 ]= 9.494463e+00 norm 2.7370e-06 Mvecs 1778 Time 4.8653e+00 Flag 2
-Lock epair[ 181 ]= 9.526920e+00 norm 6.6799e-06 Mvecs 1778 Time 4.8653e+00 Flag 2
-Lock epair[ 182 ]= 9.568079e+00 norm 8.7372e-06 Mvecs 1778 Time 4.8653e+00 Flag 2
-Lock epair[ 183 ]= 9.591262e+00 norm 7.7753e-06 Mvecs 1778 Time 4.8654e+00 Flag 2
-Lock epair[ 184 ]= 9.638210e+00 norm 5.9743e-06 Mvecs 1778 Time 4.8654e+00 Flag 2
-Lock epair[ 185 ]= 9.670767e+00 norm 3.0042e-06 Mvecs 1778 Time 4.8654e+00 Flag 2
-Lock epair[ 186 ]= 9.724019e+00 norm 3.2273e-06 Mvecs 1778 Time 4.8654e+00 Flag 2
-Lock epair[ 187 ]= 9.735818e+00 norm 4.3745e-06 Mvecs 1778 Time 4.8654e+00 Flag 2
-Lock epair[ 188 ]= 9.825900e+00 norm 4.5920e-06 Mvecs 1778 Time 4.8654e+00 Flag 2
-Lock epair[ 189 ]= 9.915477e+00 norm 6.6455e-06 Mvecs 1778 Time 4.8654e+00 Flag 2
-Lock epair[ 190 ]= 9.960673e+00 norm 1.3076e-05 Mvecs 1778 Time 4.8654e+00 Flag 2
-Lock epair[ 191 ]= 9.993704e+00 norm 6.6325e-06 Mvecs 1778 Time 4.8654e+00 Flag 2
-Lock epair[ 192 ]= 1.012076e+01 norm 1.4883e-05 Mvecs 1778 Time 4.8654e+00 Flag 2
+PRIMME_INT size is 8
 mxv operations for eigenvecs 1321
 mxv precond operations for eigenvecs 0
 BEGIN RESULTS
@@ -1147,16 +956,24 @@ eigenval(189):    1.57803
 eigenval(190):    1.58064
 eigenval(191):    1.59066
 Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+BEGIN JTMULOW
+JTMULOW LOW MODE MASS 0.01
+JTMULOW 0 0.071784 -0.0221483 0.126818 -0.0822949 
+JTMULOW 1 0.121429 -0.0301621 0.0226049 -0.0301324 
+JTMULOW 2 0.199943 -0.0706137 -0.0133092 -0.0248651 
+JTMULOW 3 0.158456 -0.0191733 0.0268962 0.0462842 
+END JTMULOW
 Solving for all EVEN displacements for mass 0.01
  OK converged final_rsq= 5.1e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 14
 Solving for all ODD displacements for mass 0.01
  OK converged final_rsq= 7.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 15
-Wrote current density for source 0 and mass 0.01 to file vctest0.01
-JTMU source 0 mass 0.01
-JTMU 0 -0.343873 -0.99999 0.598183 -0.304088 
-JTMU 1 0.767607 -0.646887 -0.480056 0.561475 
-JTMU 2 0.634649 0.368519 -0.0266451 -0.884477 
-JTMU 3 0.0235504 -0.262594 0.123476 -0.0561316 
+BEGIN JTMUHI
+JTMUHI RANDOM_SOURCE 0 MASS 0.01
+JTMUHI 0 0 -0.415657 -0.977842 0.471364 -0.221794 
+JTMUHI 0 1 0.646178 -0.616725 -0.502661 0.591607 
+JTMUHI 0 2 0.434707 0.439133 -0.0133359 -0.859612 
+JTMUHI 0 3 -0.134905 -0.243421 0.0965794 -0.102416 
+END JTMUHI
 Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Solving sloppily for all EVEN displacements for mass 0.01
@@ -1167,20 +984,20 @@ Solving precisely for all EVEN displacements for mass 0.01
  OK converged final_rsq= 4.6e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 14
 Solving precisely for all ODD displacements for mass 0.01
  OK converged final_rsq= 7.4e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 14
-For rand 0 and mass 0
-Wrote current density for source 0 and mass 0.01 to file vctest0.01diff
-JTMUDIFF source 0 mass 0.01
-JTMUDIFF 0 -1.7187e-05 -6.49792e-05 -5.32877e-05 1.72605e-05 
-JTMUDIFF 1 4.9078e-06 3.29524e-05 -0.000101601 3.95912e-05 
-JTMUDIFF 2 7.3887e-05 1.91568e-05 6.93582e-05 -0.000180953 
-JTMUDIFF 3 2.22553e-05 2.06517e-05 -2.648e-05 -2.30774e-05 
+BEGIN JTMUDIFF
+JTMUDIFF RANDOM_SOURCE 0 MASS 0.01
+JTMUDIFF 0 0 -1.7187e-05 -6.49792e-05 -5.32877e-05 1.72605e-05 
+JTMUDIFF 0 1 4.9078e-06 3.29524e-05 -0.000101601 3.95912e-05 
+JTMUDIFF 0 2 7.3887e-05 1.91568e-05 6.93582e-05 -0.000180953 
+JTMUDIFF 0 3 2.22553e-05 2.06517e-05 -2.648e-05 -2.30774e-05 
+END JTMUDIFF
 Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
-Time to save 192 eigenvectors = 2.878404e-02
+Time to save 192 eigenvectors = 4.803801e-02
 RUNNING COMPLETED
-Time = 5.519076e+00 seconds
+Time = 5.502344e+00 seconds
 total_iters = 569
 
 
 ask_starting_lattice(0): EOF on input.
-exit: Sun Jun  3 13:09:52 2018
+exit: Wed Jul  1 13:07:57 2020
 

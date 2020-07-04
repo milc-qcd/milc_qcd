@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
       /* Finish setup - broadcast dimensions */
       setup_refresh();
       
-      volume=nx*ny*nz*nt;
+      volume=(size_t)nx*ny*nz*nt;
 
       /* Allocate space for the full propagator on each node */
       wprop = (wilson_propagator *)malloc(sites_on_node*
