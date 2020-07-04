@@ -7,6 +7,7 @@
 
 #define WILSON 0
 #define SYMANZIK 1
+#define ZEUTHEN 2
 
 // low-storage schemes
 // 3-stage third order
