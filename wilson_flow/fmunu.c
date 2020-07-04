@@ -76,11 +76,13 @@ fmunu_fmunu( double *time, double *space, double *charge )
 
 //TODO: debug Symanzik part, compare to GACTION from other applications
 // (e.g. HMC with 0 steps)
-/* Compute loops for Wilson (one-plaquette) and
-  Symanzik tree-level (plaquette and rectangle) action */
+/* Compute loops: 1x1 -- plaquette, 1x2 + 2x1 -- rectangle
+   for Wilson (one-plaquette) and
+   Symanzik tree-level (plaquette and rectangle) action,
+   spatial and temporal part separately */
 void
-gauge_action_w_s( double *gact_w_s, double *gact_w_t,
-                  double *gact_s_s, double *gact_s_t ) {
+gauge_action_w_s( double *wl1x1s, double *wl1x1t,
+                  double *wl1x2s, double *wl1x2t ) {
 
 #define NTEMP_STORAGE 6
   register int i, dir1, dir2;
@@ -88,7 +90,7 @@ gauge_action_w_s( double *gact_w_s, double *gact_w_t,
   msg_tag *tag0, *tag1, *tag2, *tag3, *tag4, *tag5, *tag6, *tag7, *tag8;
   su3_matrix *su3mat[NTEMP_STORAGE];
   su3_matrix tempmat;
-  double wl1x1s, wl1x1t, wl1x2s, wl1x2t, tt;
+  double tt;
 
   for( i=0; i<NTEMP_STORAGE; i++ ) {
     su3mat[i] = (su3_matrix *)malloc( sizeof(su3_matrix)*sites_on_node );
@@ -99,10 +101,10 @@ gauge_action_w_s( double *gact_w_s, double *gact_w_t,
   }
 
   // prepare accumulators
-  wl1x1s = 0;
-  wl1x1t = 0;
-  wl1x2s = 0;
-  wl1x2t = 0;
+  *wl1x1s = 0;
+  *wl1x1t = 0;
+  *wl1x2s = 0;
+  *wl1x2t = 0;
 
   for( dir1=YUP; dir1<=TUP; dir1++ ) {
     for( dir2=XUP; dir2<dir1; dir2++ ) {
@@ -155,9 +157,9 @@ gauge_action_w_s( double *gact_w_s, double *gact_w_t,
         mult_su3_an( (su3_matrix *)(gen_pt[1][i]), &(su3mat[0][i]), &(su3mat[2][i]) );
         // get the contribution of 1x2 rectangle extended in dir2
         // to the accumulator
-        if( dir1==TUP ) wl1x2t += 3 -
+        if( dir1==TUP ) *wl1x2t +=
             realtrace_su3( (su3_matrix *)(gen_pt[2][i]), &(su3mat[3][i]) );
-        else            wl1x2s += 3 -
+        else            *wl1x2s +=
             realtrace_su3( (su3_matrix *)(gen_pt[2][i]), &(su3mat[3][i]) );
       }
 
@@ -167,15 +169,15 @@ gauge_action_w_s( double *gact_w_s, double *gact_w_t,
         // get the contribution of 1x2 rectangle extended in dir1
         // and of 1x1 plaquette to the accumulators
         if( dir1==TUP ) {
-          wl1x2t += 3 -
+          *wl1x2t +=
             realtrace_su3( (su3_matrix *)(gen_pt[3][i]), &(su3mat[2][i]) );
-          wl1x1t += 3 -
+          *wl1x1t +=
             realtrace_su3( &(su3mat[1][i]), &(su3mat[0][i]) );
         }
         else {
-          wl1x2s += 3 -
+          *wl1x2s +=
             realtrace_su3( (su3_matrix *)(gen_pt[3][i]), &(su3mat[2][i]) );
-          wl1x1s += 3 -
+          *wl1x1s +=
             realtrace_su3( &(su3mat[1][i]), &(su3mat[0][i]) );
         }
       }
@@ -190,25 +192,20 @@ gauge_action_w_s( double *gact_w_s, double *gact_w_t,
   } // dir1
 
   // global sum
-  g_doublesum( &wl1x1s );
-  g_doublesum( &wl1x1t );
-  g_doublesum( &wl1x2s );
-  g_doublesum( &wl1x2t );
+  g_doublesum( wl1x1s );
+  g_doublesum( wl1x1t );
+  g_doublesum( wl1x2s );
+  g_doublesum( wl1x2t );
 
   // get densities
-  wl1x1s /= volume;
-  wl1x1t /= volume;
-  wl1x2s /= volume;
-  wl1x2t /= volume;
-  wl1x1s *= 2;
-  wl1x1t *= 2;
-  wl1x2s *= 2;
-  wl1x2t *= 2;
-
-  *gact_w_s = wl1x1s;
-  *gact_w_t = wl1x1t;
-  *gact_s_s = (5*wl1x1s)/3 - wl1x2s/12;
-  *gact_s_t = (5*wl1x1t)/3 - wl1x2t/12;
+  *wl1x1s /= volume;
+  *wl1x1s /= 3;
+  *wl1x1t /= volume;
+  *wl1x1t /= 3;
+  *wl1x2s /= volume;
+  *wl1x2s /= 6;
+  *wl1x2t /= volume;
+  *wl1x2t /= 6;
 
   // deallocate temporary storage
   for( i=0; i<NTEMP_STORAGE; i++ ) {
