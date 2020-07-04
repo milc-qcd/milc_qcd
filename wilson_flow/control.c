@@ -52,7 +52,11 @@ main( int argc, char **argv )
     dtimec = -dclock();
 
     /* Print flow output column labels */
-    node0_printf("#LABEL time Et_C Es_C Et_W Es_W Et_S Es_S charge\n");
+    node0_printf("#LABEL time Clover_t Clover_s Plaq_t Plaq_s Rect_t Rect_s charge\n");
+#if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
+    node0_printf("#ADAPT time stepsize distance local_tol/distance\n");
+#endif
     fflush(stdout);
 
     /* Calculate and print initial flow output */
