@@ -300,13 +300,19 @@ void imp_gauge_force_gpu( Real eps, field_offset mom_off );
 
 void imp_gauge_force_qphix( Real eps, field_offset mom_off );
 
+static void imp_gauge_force( Real eps, field_offset mom_off ){
 #ifdef USE_GF_GPU
-#define imp_gauge_force imp_gauge_force_gpu
+	imp_gauge_force_gpu(eps, mom_off);
 #elif USE_GF_QPHIX
-#define imp_gauge_force imp_gauge_force_qphix
+	rephase(OFF);
+	imp_gauge_force_qphix(eps, mom_off);
+	rephase(ON);
 #else
-#define imp_gauge_force imp_gauge_force_cpu
+	rephase(OFF);
+	imp_gauge_force_cpu(eps, mom_off);
+	rephase(ON);
 #endif
+}
 
 /* gauge_stuff.c */
 double imp_gauge_action(void);
