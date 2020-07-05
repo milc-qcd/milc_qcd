@@ -209,7 +209,7 @@ gauge_file *reload_lattice( int flag, char *filename){
     if(this_node==0)printf("Unitarity checked.  Max deviation %.2e\n",
 			   max_deviation); fflush(stdout);
 #else
-    reunitarize();
+    reunitarize_cpu();  /* No rephasing here, because phases are not in */
     max_deviation2 = check_unitarity();
     g_floatmax(&max_deviation2);
     if(this_node==0)
