@@ -300,6 +300,7 @@ void imp_gauge_force_gpu( Real eps, field_offset mom_off );
 
 void imp_gauge_force_qphix( Real eps, field_offset mom_off );
 
+#include "../include/rephase.h"
 static void imp_gauge_force( Real eps, field_offset mom_off ){
 #ifdef USE_GF_GPU
 	imp_gauge_force_gpu(eps, mom_off);

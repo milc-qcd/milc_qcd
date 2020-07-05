@@ -13,7 +13,7 @@
 #include "../include/su3.h"
 #include "../include/comdefs.h"
 #include "../include/info.h"
-
+#include "../include/rephase.h"
 
 void copy_latvec(field_offset src, field_offset dest, int parity);
 void dslash_site( field_offset src, field_offset dest, int parity );
@@ -91,14 +91,6 @@ void path_transport_connection_hisq( su3_matrix * src, su3_matrix **links,
     su3_matrix * dest, int parity, int *dir, int length );
 void link_transport_connection_hisq( su3_matrix * src, su3_matrix *links, 
     su3_matrix * dest, su3_matrix * work, int dir );
-
-/* rephase.c */
-void apply_apbc( su3_matrix *links, int r0t );
-void phaseset(void);
-void rephase( int flag );
-void rephase_field_offset( su3_matrix *internal_links, int flag, 
-			   int *status_now, int r0[] );
-void rephase_offset( int flag, int r0[] );
 
 /* show_generic_ks_opts.c */
 void show_generic_ks_opts( void );

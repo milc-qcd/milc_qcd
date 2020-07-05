@@ -283,17 +283,17 @@ void reunitarize() {
      if Schroedinger functional boundary conditions are enabled */
 #ifdef SCHROED_FUN
   node0_printf("%s not supported on GPU, using CPU fallback\n", __func__);
-  rephase(OFF)
+  rephase(OFF);
   reunitarize_cpu();
-  rephase(ON)
+  rephase(ON);
 #else
   reunitarize_gpu();
 #endif
 
 #else
-  rephase(OFF)
+  rephase(OFF);
   reunitarize_cpu();
-  rephase(ON)
+  rephase(ON);
 #endif
 
 }
