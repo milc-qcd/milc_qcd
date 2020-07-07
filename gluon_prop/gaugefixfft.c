@@ -485,13 +485,13 @@ if(gauge_iter==0) node0_printf("Starting |d_mu A_mu| = %e\n", curr_damu);
 	/* Reunitarize when iteration count is a multiple of REUNIT_INTERVAL */
 	if((gauge_iter % REUNIT_INTERVAL) == (REUNIT_INTERVAL - 1)){
 	    node0_printf("step %d: |d_mu A_mu| = %e\n", gauge_iter, curr_damu);
-	    reunitarize();
+	    reunitarize_cpu();
 	    fflush(stdout);
 	}
     }
     /* Reunitarize at the end, unless we just did it in the loop */
     if((gauge_iter % REUNIT_INTERVAL) != 0)
-	reunitarize();
+	reunitarize_cpu();
 
     /* Transform vectors and gauge momenta if requested */
     for(j = 0; j < nvector; j++)

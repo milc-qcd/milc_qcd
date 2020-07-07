@@ -141,13 +141,13 @@ int main(int argc, char *argv[])
 	  
 	  /* Create a base source */
 	  if(wv_source_field(src, qs)){
-	    /* Copy to source[k] */
-	    insert_swv_from_wv(wv_source[k]->swv[color], spin, src);
-	    
 	    printf("%s(%d): error getting source\n",myname,this_node);
 	    terminate(1);
 	  }
-	
+
+	  /* Copy to source[k] */
+	  insert_swv_from_wv(wv_source[k]->swv[color], spin, src);
+	    
 	  /* Write the source, if requested */
 	  if(qs->saveflag != FORGET){
 	    if(w_source_dirac( src, qs ) != 0)
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
       quark_source *qs = &param.base_src_qs[is];
 
       if(qs->field_type == WILSON_FIELD){
-	wv_source[k] = create_wp_field(qs->ncolor);
+	wv_source[is] = create_wp_field(qs->ncolor);
 
 	if(qs->saveflag != FORGET){
 	  char *fileinfo = create_w_QCDML();
