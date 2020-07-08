@@ -71,7 +71,7 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
     Real action,act2,new_term;
 
     int ncount;
-    char myname[] = "imp_gauge_force";
+    char myname[] = "imp_gauge_force_cpu";
     su3_matrix *links;
 
 #ifdef GFTIME
@@ -217,4 +217,10 @@ node0_printf("GFTIME:   time = %e (Symanzik1) mflops = %e\n",dtime,
  destroy_G(links);
  special_free(staple); 
  special_free(tempmat1); 
-} /* imp_gauge_force.c */
+} /* imp_gauge_force_cpu.c */
+
+/* Wrapper for backward compatibility */
+void imp_gauge_force( Real eps, field_offset mom_off ){
+  imp_gauge_force_cpu(eps, mom_off);
+}
+

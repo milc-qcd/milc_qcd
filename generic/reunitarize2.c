@@ -224,7 +224,7 @@ void reunitarize_gpu() {
   node0_printf("REUNITARIZE: time = %e\n", dtime);
 #endif
 
-}  /* reunitarize2 */
+}  /* reunitarize_gpu */
 
 #endif
 
@@ -273,27 +273,5 @@ void reunitarize_cpu() {
 	}
     }
 
-}  /* reunitarize2 */
+}  /* reunitarize_cpu */
 
-void reunitarize() {
-
-#ifdef USE_GF_GPU // temporarily disable
-
-  /* Use QUDA if gauge-force is enabled for GPU, but fallback to CPU
-     if Schroedinger functional boundary conditions are enabled */
-#ifdef SCHROED_FUN
-  node0_printf("%s not supported on GPU, using CPU fallback\n", __func__);
-  rephase(OFF)
-  reunitarize_cpu();
-  rephase(ON)
-#else
-  reunitarize_gpu();
-#endif
-
-#else
-  rephase(OFF)
-  reunitarize_cpu();
-  rephase(ON)
-#endif
-
-}

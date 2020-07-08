@@ -29,6 +29,7 @@ number_of_base_sources 1
 # source 0
 
 point
+field_type Dirac
 subset full
 origin 0 0 0 0
 source_label d
@@ -50,7 +51,7 @@ number_of_propagators 2
 
 # propagator 0
 
-propagator_type KS
+propagator_type Dirac
 mass 0.1
 check no
 error_for_propagator 1e-8

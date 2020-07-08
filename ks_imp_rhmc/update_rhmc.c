@@ -316,7 +316,7 @@ int update() {
         /* update U's by half time step to get to even time */
         update_u(epsilon*0.5);
         /* reunitarize the gauge field */
-        reunitarize();
+        reunitarize_ks();
         /*TEMP - monitor action*/if(step%4==0)d_action_rhmc(multi_x,sumvec);
       }	/* end loop over microcanonical steps */
     break;
@@ -330,7 +330,7 @@ int update() {
         iters += update_h_rhmc( epsilon, multi_x);
         update_u(0.5*epsilon*lambda);
         /* reunitarize the gauge field */
-        reunitarize();
+        reunitarize_ks();
         /*TEMP - monitor action*/ //if(step%4==0)d_action_rhmc(multi_x,sumvec);
       }	/* end loop over microcanonical steps */
     break;
@@ -354,7 +354,7 @@ int update() {
      	    update_u( epsilon*( (2.0)-(1.75+0.5*alpha) ) );
 
             /* reunitarize the gauge field */
-            reunitarize();
+            reunitarize_ks();
             /*TEMP - monitor action*/ //if(step%6==0)d_action_rhmc(multi_x,sumvec);
         }	/* end loop over microcanonical steps */
     break;
@@ -464,7 +464,7 @@ int update() {
      	    update_u( epsilon*( (2.0)-(11.0/6.0+alpha/3.0) ) );
 
             /* reunitarize the gauge field */
-            reunitarize();
+            reunitarize_ks();
 #ifdef MILC_GLOBAL_DEBUG
 #ifdef HISQ_REUNITARIZATION_DEBUG
             {
@@ -581,7 +581,7 @@ int update() {
         /* finish */
      	    update_u( epsilon*( (2.0)-(19.0/10.0+alpha/5.0) ) );
         /* reunitarize the gauge field */
-            reunitarize();
+            reunitarize_ks();
         }
     break;
     case INT_6G1F:
@@ -626,7 +626,7 @@ int update() {
         /* finish */
      	    update_u( epsilon*( (2.0)-(23.0/12.0+alpha/6.0) ) );
         /* reunitarize the gauge field */
-            reunitarize();
+            reunitarize_ks();
         }
     break;
     case INT_2EPS_3TO1:
@@ -639,7 +639,7 @@ int update() {
         for(step=6; step <= steps; step+=6){
 	    /* update U's and H's - first Omelyan step */
      	    update_u(0.5*epsilon*lambda);
-	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
+	    imp_gauge_force_ks(epsilon,F_OFFSET(mom));
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
@@ -652,7 +652,7 @@ int update() {
 
      	    update_u(epsilon*( 0.5*(1.0-lambda) ));
 
-	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
+	    imp_gauge_force_ks(epsilon,F_OFFSET(mom));
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
@@ -663,7 +663,7 @@ int update() {
 	    /* update U's and H's - second Omelyan step */
      	    update_u(0.5*epsilon*lambda);
 
-	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
+	    imp_gauge_force_ks(epsilon,F_OFFSET(mom));
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
@@ -671,7 +671,7 @@ int update() {
 
      	    update_u(epsilon*(2.0-lambda));
 
-	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
+	    imp_gauge_force_ks(epsilon,F_OFFSET(mom));
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
@@ -682,7 +682,7 @@ int update() {
 	    /* update U's and H's - third Omelyan step */
      	    update_u(0.5*epsilon*lambda);
 
-	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
+	    imp_gauge_force_ks(epsilon,F_OFFSET(mom));
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
@@ -697,7 +697,7 @@ int update() {
 
      	    update_u(epsilon*( 1.0 + 0.5*(1.0-lambda) ));
 
-	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
+	    imp_gauge_force_ks(epsilon,F_OFFSET(mom));
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
@@ -706,7 +706,7 @@ int update() {
     	    update_u(0.5*epsilon*lambda);
 
             /* reunitarize the gauge field */
-	    reunitarize();
+	    reunitarize_ks();
             /*TEMP - monitor action*/ //if(step%6==0)d_action_rhmc(multi_x,sumvec);
 
         }	/* end loop over microcanonical steps */

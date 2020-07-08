@@ -295,24 +295,11 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 /* gauge_force_imp_*.c */
 void imp_gauge_force_cpu( Real eps, field_offset mom_off );
 void imp_gauge_force_gpu( Real eps, field_offset mom_off );
+void imp_gauge_force( Real eps, field_offset mom_off );
 
 /* gauge_force_symzk1_qphix.c */
 
 void imp_gauge_force_qphix( Real eps, field_offset mom_off );
-
-static void imp_gauge_force( Real eps, field_offset mom_off ){
-#ifdef USE_GF_GPU
-	imp_gauge_force_gpu(eps, mom_off);
-#elif USE_GF_QPHIX
-	rephase(OFF);
-	imp_gauge_force_qphix(eps, mom_off);
-	rephase(ON);
-#else
-	rephase(OFF);
-	imp_gauge_force_cpu(eps, mom_off);
-	rephase(ON);
-#endif
-}
 
 /* gauge_stuff.c */
 double imp_gauge_action(void);
@@ -571,6 +558,7 @@ void cleanup_restrict_fourier(void);
 
 /* reunitarize2.c */
 void reunitarize( void );
+void reunitarize_cpu( void );
 int reunit_su3(su3_matrix *c);
 
 /* show_generic_opts.c */

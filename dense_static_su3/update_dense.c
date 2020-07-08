@@ -27,7 +27,7 @@ int update_dense()  {
 	  node0_printf("DUMMY: Reunitarizing with phases in!\n");
 	  exit(0);
 	}
-        reunitarize();         
+        reunitarize_cpu();         
 
     if(steps_over > 0)return (iters/steps_over);
     else return(-99);
