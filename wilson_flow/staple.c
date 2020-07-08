@@ -204,6 +204,16 @@ symanzik1x2_staple(int dir1, int dir2, field_offset lnk1,
   cleanup_gather(tag8);
 }
 
+/* Correction to Symanzik flow -- Zeuthen flow,
+   Ramos, Sint, 1408.05552 */
+void
+zeuthen_correction( int dir1, field_offset lnk1,
+                    Real coeff, field_offset stp ) {
+
+  //TODO: add Zeuthen correction to the flow equation
+
+}
+
 /* Compiles all contributions to the staple */
 void
 staple()
@@ -211,7 +221,7 @@ staple()
   register int i;
   register site *s;
   int dir1, dir2;
-  Real coeff1x1, coeff1x2;
+  Real coeff1x1, coeff1x2, coeffz=1/12.;
   field_offset lnk1, lnk2, stp;
 
   /* Pick the coefficients for each loop contributing to the staple */
@@ -245,7 +255,11 @@ staple()
       if( stapleflag!=WILSON )
         symanzik1x2_staple(dir1, dir2, lnk1, lnk2, coeff1x2, stp);
 
-      if( stapleflag==ZEUTHEN ) ; //TODO: add Zeuthen correction to the flow equation
     } /* end: dir2 loop */
+
+    if( stapleflag==ZEUTHEN ) //TODO: this is doing nothing at the moment
+      zeuthen_correction(dir1,lnk1,coeffz,stp);
+
+
   } /* end: dir1 loop */
 }
