@@ -274,9 +274,13 @@ dexpinv( anti_hermitmat *u, anti_hermitmat *v, int q, anti_hermitmat *d ) {
   }
 }
 
+
+//#define USE_STRICT_DISTANCE
+#ifdef USE_STRICT_DISTANCE
 /* distance between SU(3) matrices:
-   maximum difference elementwise,
-   real and imaginary parts are treated separately */
+   maximum difference element-wise,
+   real and imaginary parts are treated separately,
+   this is the strictest criterium */
 Real
 su3mat_distance( su3_matrix *a, su3_matrix *b ) {
 
@@ -293,6 +297,30 @@ su3mat_distance( su3_matrix *a, su3_matrix *b ) {
   }
   return dmax;
 }
+#else
+/* distance between SU(3) matrices:
+   normalized root of the average element-wise
+   distance squared -- milder and smoother criteria,
+   defined in Ramos, Fritzsch, 1301.4388 */
+Real
+su3mat_distance( su3_matrix *a, su3_matrix *b ) {
+
+  Real temp = 0, re, im;
+  int register i, j;
+
+  for( i=0; i<3; i++ ) {
+    for( j=0; j<3; j++ ) {
+      re = a->e[i][j].real-b->e[i][j].real;
+      im = a->e[i][j].imag-b->e[i][j].imag;
+      temp += re*re + im*im;
+    }
+  }
+  // NOTE: the normalization in 1301.4388
+  // is 1/N_c^2 outside the square root
+  temp = sqrt(temp) / 9;
+  return temp;
+}
+#endif
 
 
 #if GF_INTEGRATOR==INTEGRATOR_LUSCHER || GF_INTEGRATOR==INTEGRATOR_CK
