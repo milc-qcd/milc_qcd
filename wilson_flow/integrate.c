@@ -324,7 +324,7 @@ su3mat_distance( su3_matrix *a, su3_matrix *b ) {
 
 
 #if GF_INTEGRATOR==INTEGRATOR_LUSCHER || GF_INTEGRATOR==INTEGRATOR_CK \
- || GF_INTEGRATOR==INTEGRATOR_BBB
+ || GF_INTEGRATOR==INTEGRATOR_BBB || GF_INTEGRATOR==INTEGRATOR_CF3
 /* A single step for a 2N-storage Runge-Kutta scheme
  * where the right hand side of the flow equation is evaluated
  * and the fields are updated

@@ -237,6 +237,41 @@ initialize_integrator()
   B_2N[4] = 1.718581042715;
   B_2N[5] = 0.27;
   node0_printf("Integrator = INTEGRATOR_BBB\n");
+#elif GF_INTEGRATOR==INTEGRATOR_CF3
+  N_stages = 3;
+  // Commutator-free 2N-storage for experiments
+  // with coefficients
+
+//TODO: this is experimental, it should be removed once
+// the optimal set of coefficients is found
+// (lowest truncation error)
+#define READ_CF3_FROM_FILE
+#ifdef READ_CF3_FROM_FILE
+  FILE *fp;
+  fp = fopen( "cf3_coeff.dat", "rt" );
+  fscanf( fp, "%le", &(A_2N[0]) );
+  fscanf( fp, "%le", &(A_2N[1]) );
+  fscanf( fp, "%le", &(A_2N[2]) );
+  fscanf( fp, "%le", &(B_2N[0]) );
+  fscanf( fp, "%le", &(B_2N[1]) );
+  fscanf( fp, "%le", &(B_2N[2]) );
+  fclose( fp );
+/*  printf( "%.16g\n", A_2N[0] );
+  printf( "%.16g\n", A_2N[1] );
+  printf( "%.16g\n", A_2N[2] );
+  printf( "%.16g\n", B_2N[0] );
+  printf( "%.16g\n", B_2N[1] );
+  printf( "%.16g\n", B_2N[2] );*/
+#else
+  // optimized with Ralston procedure
+  A_2N[0] = 0;
+  A_2N[1] = -0.637694471842202;
+  A_2N[2] = -1.306647717737108;
+  B_2N[0] = 0.457379997569388;
+  B_2N[1] = 0.925296410920922;
+  B_2N[2] = 0.393813594675071;*/
+#endif
+  node0_printf("Integrator = INTEGRATOR_CF3\n");
 #elif GF_INTEGRATOR==INTEGRATOR_RKMK3
   N_stages = 3;
   p_order = 3;
