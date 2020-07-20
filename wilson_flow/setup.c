@@ -245,7 +245,7 @@ initialize_integrator()
 //TODO: this is experimental, it should be removed once
 // the optimal set of coefficients is found
 // (lowest truncation error)
-#define READ_CF3_FROM_FILE
+//#define READ_CF3_FROM_FILE
 #ifdef READ_CF3_FROM_FILE
   FILE *fp;
   fp = fopen( "cf3_coeff.dat", "rt" );
@@ -269,7 +269,7 @@ initialize_integrator()
   A_2N[2] = -1.306647717737108;
   B_2N[0] = 0.457379997569388;
   B_2N[1] = 0.925296410920922;
-  B_2N[2] = 0.393813594675071;*/
+  B_2N[2] = 0.393813594675071;
 #endif
   node0_printf("Integrator = INTEGRATOR_CF3\n");
 #elif GF_INTEGRATOR==INTEGRATOR_RKMK3
