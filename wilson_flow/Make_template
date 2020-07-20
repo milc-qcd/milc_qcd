@@ -115,6 +115,10 @@ wilson_flow_ck::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CK" \
 
+wilson_flow_bbb::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_BBB" \
+
 wilson_flow_rkmk3::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK3" \

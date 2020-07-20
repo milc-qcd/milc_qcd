@@ -14,6 +14,8 @@
 #define INTEGRATOR_LUSCHER 0
 // 5-stage fourth order
 #define INTEGRATOR_CK 1
+// 6-stage fourth order
+#define INTEGRATOR_BBB 2
 
 // Runge-Kutta-Munthe-Kaas schemes
 // 3-stage third order
@@ -35,7 +37,8 @@
 
 
 /* one step of the flow, here branching into different integrators happens */
-#if GF_INTEGRATOR==INTEGRATOR_LUSCHER || GF_INTEGRATOR==INTEGRATOR_CK
+#if GF_INTEGRATOR==INTEGRATOR_LUSCHER || GF_INTEGRATOR==INTEGRATOR_CK \
+ || GF_INTEGRATOR==INTEGRATOR_BBB
 #define flow_step integrate_RK_2N
 #elif GF_INTEGRATOR==INTEGRATOR_RKMK3
 #define flow_step integrate_RKMK3

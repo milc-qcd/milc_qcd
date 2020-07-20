@@ -127,6 +127,10 @@ readin(int prompt)
         par_buf.stapleflag = SYMANZIK;
         printf("set staple to symanzik\n");
       }
+      else if( strcmp("zeuthen", par_buf.flow_description) == 0 ) {
+        par_buf.stapleflag = ZEUTHEN;
+        printf("set staple to zeuthen\n");
+      }
       else {
         printf("Error: flow_description %s is invalid\n",
                par_buf.flow_description);
@@ -203,7 +207,8 @@ initialize_integrator()
   node0_printf("Integrator = INTEGRATOR_LUSCHER\n");
 #elif GF_INTEGRATOR==INTEGRATOR_CK
   N_stages = 5;
-  // Carpenter, Kennedy coefficients
+  // Carpenter, Kennedy coefficients,
+  // Technical Memorandum NASA-TM-109112
   A_2N[0] = 0;
   A_2N[1] = -567301805773/1357537059087.;
   A_2N[2] = -2404267990393/2016746695238.;
@@ -215,6 +220,23 @@ initialize_integrator()
   B_2N[3] = 3134564353537/4481467310338.;
   B_2N[4] = 2277821191437/14882151754819.;
   node0_printf("Integrator = INTEGRATOR_CK\n");
+#elif GF_INTEGRATOR==INTEGRATOR_BBB
+  N_stages = 6;
+  // Berland, Bogey, Bailly coefficients,
+  // Computers and Fluids 35 (2006) 1459-1463
+  A_2N[0] = 0;
+  A_2N[1] = -0.737101392796;
+  A_2N[2] = -1.634740794341;
+  A_2N[3] = -0.744739003780;
+  A_2N[4] = -1.469897351522;
+  A_2N[5] = -2.813971388035;
+  B_2N[0] = 0.032918605146;
+  B_2N[1] = 0.823256998200;
+  B_2N[2] = 0.381530948900;
+  B_2N[3] = 0.200092213184;
+  B_2N[4] = 1.718581042715;
+  B_2N[5] = 0.27;
+  node0_printf("Integrator = INTEGRATOR_BBB\n");
 #elif GF_INTEGRATOR==INTEGRATOR_RKMK3
   N_stages = 3;
   p_order = 3;
