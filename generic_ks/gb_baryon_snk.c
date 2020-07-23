@@ -764,9 +764,9 @@ accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *q
     #ifdef OMP
     #pragma omp parallel for \
       default(none) \
-      shared(corner_indx, corner_sites, qk0, qk1, qk2, mom, csum_new, orig, domom) \
+      shared(corner_indx, corner_sites, qk0, qk1, qk2, mom, orig, domom, csum_new) \
       private(i,temp_tuple,cc) \
-      schedule(static)
+      schedule(static) 
     #endif
     for(i=0; i<corner_indx[orig]; i++){
     temp_tuple = corner_sites[orig][i];
@@ -775,7 +775,16 @@ accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *q
       } else{
         baryon_color_asym_mat(qk0, qk1, qk2, temp_tuple.node_index, &cc);
       }
+
+      // Avoid race condition
+      #ifdef OMP
+      #pragma omp atomic
+      csum_new[temp_tuple.t].real += cc.real;
+      #pragma omp atomic
+      csum_new[temp_tuple.t].imag += cc.imag;
+      #else
       CSUM(csum_new[temp_tuple.t],cc);
+      #endif
     }
 
     for(t=0;t<nt;t++){
