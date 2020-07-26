@@ -124,14 +124,18 @@ typedef struct {
   Real Kappa;        /* hopping */
 } dirac_wilson_param;
 
+/* Size of a bookkeeping table holding unique charges */
+#define MAX_CHARGE 16
+
 /* Same for plain KS case */
 typedef struct {
   Real mass;
+  Real charge;
   Real offset;    /* For RHMC, the pole position */
   Real residue;   /* For RHMC, the pole residue */
   int naik_term_epsilon_index;
+  int charge_index;
   Real naik_term_epsilon;
-
 } ks_param;
 
 /* This is the IFLA case */
@@ -155,6 +159,11 @@ typedef struct {
 
 /* Structure defining quark inversion parameters for most inverters */
 
+enum inv_type {
+  MGTYPE,
+  CGTYPE
+};
+
 typedef struct {
   int prec;           /* precision of the inversion 1 = single; 2 = double */
   int min;            /* minimum number of iterations (being phased out) */
@@ -175,6 +184,8 @@ typedef struct {
   int converged;      /* returned 0 if not converged; 1 if converged */
   int  final_iters;
   int  final_restart;
+  enum inv_type inv_type;  /* requested inverter type */
+  char mgparamfile[MAXFILENAME];    /* Name of file with the staggered multigrid parameters */
                       /* Add further parameters as needed...  */
 } quark_invert_control;
 
