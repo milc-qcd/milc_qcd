@@ -264,8 +264,8 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   /* Display parameters */
   if(this_node==0){
     primme_display_params(primme);
-    printf("PRIMME_INT size is %d\n", sizeof(PRIMME_INT));
-    //    printf("primme_op_datatype size is %d\n", sizeof(primme_op_datatype));
+    printf("PRIMME_INT size is %lu\n", sizeof(PRIMME_INT));
+    //    printf("primme_op_datatype size is %lu\n", sizeof(primme_op_datatype));
     fflush(stdout);
   }
 
