@@ -485,7 +485,7 @@ int readin(int prompt) {
   
   /* Contribution from the chiral condensate epsilons */
   for(k = 0; k < param.num_set; k++)
-    for(i = param.begin_pbp_masses[k]; i < param.num_pbp_masses[k]; i++){
+    for(i = param.begin_pbp_masses[k]; i <= param.end_pbp_masses[k]; i++){
       param.ksp_pbp[i].naik_term_epsilon_index = 
 	fill_eps_naik(eps_naik, 
 		      &n_naiks, param.ksp_pbp[i].naik_term_epsilon);
