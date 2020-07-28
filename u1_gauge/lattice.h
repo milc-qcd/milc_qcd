@@ -44,7 +44,7 @@ EXTERN site *lattice;
 
 /* Global Lattice Parameters */
 EXTERN int nx,ny,nz,nt; 	/* lattice dimensions */
-EXTERN int volume;		/* nx*ny*nz*nt */
+EXTERN size_t volume;		/* nx*ny*nz*nt */
 EXTERN int *latin;		/* lattice site index */
 
 EXTERN Real echarge;            /* electron charge == e */
@@ -57,9 +57,9 @@ EXTERN double_complex linktrsum;	/* not used */
 EXTERN  u_int32type nersc_checksum;	/* not used */
 
 EXTERN int this_node;		/* node number of this node */
-EXTERN int sites_on_node;	/* = volume */
-EXTERN int number_of_nodes;	/* number of nodes in use */
-EXTERN int even_sites_on_node;	/* = volume / 2 */
+EXTERN size_t sites_on_node;	/* = volume */
+EXTERN size_t number_of_nodes;	/* number of nodes in use */
+EXTERN size_t even_sites_on_node;	/* = volume / 2 */
 EXTERN int odd_sites_on_node;	/* = volume / 2 */
 
 EXTERN int start_u1flag;	/* begin u(1) lattice: FRESH or RELOAD */

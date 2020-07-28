@@ -82,9 +82,7 @@ int update()  {
     update_u(0.5*epsilon*lambda);
     
     /* reunitarize the gauge field */
-    rephase( OFF );
-    reunitarize();
-    rephase( ON );
+    reunitarize_ks();
     /*TEMP - monitor action*/ //if(step%6==0)d_action_rhmc(multi_x,sumvec);
     
   }	/* end loop over microcanonical steps */

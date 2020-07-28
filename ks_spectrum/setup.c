@@ -1,33 +1,7 @@
 /******** setup.c *********/
 /* MIMD version 7 */
+
 #define IF_OK if(status==0)
-
-/* Modifications ... */
-
-//  $Log: setup.c,v $
-//  Revision 1.7  2013/12/24 05:32:40  detar
-//  Add combo type.  Support embedded inverse.
-//
-//  Revision 1.6  2012/11/24 05:14:20  detar
-//  Add support for U(1) fields and for future HYPISQ action
-//
-//  Revision 1.5  2012/04/25 03:21:29  detar
-//  Initialize boundary phase
-//
-//  Revision 1.4  2012/03/06 03:23:26  detar
-//  Set GPU inverter precision through input parameter
-//
-//  Revision 1.3  2012/01/21 21:35:08  detar
-//  Support general spin_taste interpolating operators for mesons.
-//
-//  Revision 1.2  2011/12/03 03:44:36  detar
-//  Fix support for mu_eos
-//
-//  Revision 1.1  2011/11/30 22:11:40  detar
-//  Add
-//
-//
-
 
 #include "ks_spectrum_includes.h"
 #include "lattice_qdp.h"
@@ -169,7 +143,7 @@ static int initial_set(void){
 #endif
 
   number_of_nodes = numnodes();
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
 
   return(prompt);
 }

@@ -34,7 +34,7 @@ void load_qop_imp_gauge_coeffs(QOP_gauge_coeffs_t *c)
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-void imp_gauge_force( Real eps, field_offset mom_off ){
+void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
 
   QOP_GaugeField *links;
   QOP_Force *mom;

@@ -88,7 +88,7 @@ if( par_buf.stopflag != 0 )
     nt=par_buf.nt;
     
     number_of_nodes = numnodes();
-    volume=nx*ny*nz*nt;
+    volume=(size_t)nx*ny*nz*nt;
     return(prompt);
 }
 

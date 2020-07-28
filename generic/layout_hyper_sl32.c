@@ -394,8 +394,8 @@ register int i;
 }
 
 /*------------------------------------------------------------------*/
-int node_index(int x, int y, int z, int t) {
-register int i,xr,yr,zr,tr,k;
+size_t node_index(int x, int y, int z, int t) {
+    size_t i,xr,yr,zr,tr,k;
     /* Coordinate relative to origin of local hypercube */
     xr = x%squaresize[XUP]; yr = y%squaresize[YUP];
     zr = z%squaresize[ZUP]; tr = t%squaresize[TUP];
@@ -430,7 +430,7 @@ const int *get_logical_coordinate(){
 
 /*------------------------------------------------------------------*/
 /* Map node number and index to coordinates  */
-void get_coords(int coords[], int node, int index){
+void get_coords(int coords[], int node, size_t index){
   int mc[4];
   int ir,kr,d,eo;
   int k = node;
