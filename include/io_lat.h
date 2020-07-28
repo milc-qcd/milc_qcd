@@ -36,6 +36,8 @@
 #define SAVE_PARALLEL                    54
 #define SAVE_MULTIDUMP                   55
 #define SAVE_SERIAL_ARCHIVE              56
+#define SAVE_SERIAL_PACKED               57
+#define SAVE_PARALLEL_PACKED             58
 
 /* Format for NERSC archive files */
 #define ARCHIVE_3x2   0
