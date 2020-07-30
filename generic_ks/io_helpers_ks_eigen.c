@@ -764,7 +764,7 @@ int ask_ending_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
   else if(strcmp("save_partfile_ks_eigen",savebuf) == 0)
     *flag = SAVE_PARTFILE_SCIDAC;
   else{
-    printf("ERROR IN INPUT: ks_eigen outpu command %s is invalid.\n", savebuf);
+    printf("ERROR IN INPUT: ks_eigen output command %s is invalid.\n", savebuf);
     printf("Choices are ");
     print_save_options();
     printf("\n");
