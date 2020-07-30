@@ -23,7 +23,7 @@
 #define RECINFOSTRING_MAX  256
 
 static char *
-create_file_xml(int Nvecs){
+create_file_xml(int Nvecs, int packed){
   char begin_xml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info><title>KS eigenvalues and vectors</title>";
   char end_xml[] = "</info>";
   char *xml = (char *)malloc(FILEINFOSTRING_MAX);
@@ -37,10 +37,10 @@ create_file_xml(int Nvecs){
   snprintf(xml+bytes, max-bytes, "<Nvecs>%d</Nvecs>", Nvecs);
   bytes = strlen(xml);
   
-  #ifdef PACK_EIGEN
-  snprintf(xml+bytes, max-bytes, "<format>Packed</format>");
-  bytes = strlen(xml);
-  #endif
+  if(packed){
+    snprintf(xml+bytes, max-bytes, "<format>Packed</format>");
+    bytes = strlen(xml);
+  }
 
   snprintf(xml+bytes, max-bytes, "%s", end_xml);
   bytes = strlen(xml);
@@ -194,7 +194,7 @@ parse_record_xml(double *eigVal, char *xml){
 /* Open a file for writing eigenvectors */
 
 QIO_Writer *
-open_ks_eigen_outfile(char *filename, int Nvecs, int volfmt, int serpar){
+open_ks_eigen_outfile(char *filename, int Nvecs, int volfmt, int serpar, int packed){
   char *xml;
 
   QIO_String *filexml = QIO_string_create();
@@ -209,7 +209,7 @@ open_ks_eigen_outfile(char *filename, int Nvecs, int volfmt, int serpar){
   build_qio_filesystem(&fs);
 
   /* Create the file XML */
-  xml = create_file_xml(Nvecs);
+  xml = create_file_xml(Nvecs, packed);
   QIO_string_set(filexml, xml);
 
   /* Open the file for output */
@@ -224,7 +224,7 @@ open_ks_eigen_outfile(char *filename, int Nvecs, int volfmt, int serpar){
 /* Write an eigenvector and its eigenvalue */
 
 int
-write_ks_eigenvector(QIO_Writer *outfile, su3_vector *eigVec, double eigVal, 
+write_ks_eigenvector(QIO_Writer *outfile, int packed, su3_vector *eigVec, double eigVal, 
 		     double resid){
   int status;
   char *xml;
@@ -233,18 +233,18 @@ write_ks_eigenvector(QIO_Writer *outfile, su3_vector *eigVec, double eigVal,
   xml = create_record_xml(eigVal, resid);
   QIO_string_set(recxml, xml);
 
-#ifdef PACK_EIGEN
-  pack_field(eigVec, sizeof(su3_vector));
-  if(MILC_PRECISION == 1)
-    status = write_F3_V_from_half_field(outfile, recxml, eigVec, 1);
-  else
-    status = write_D3_V_from_half_field(outfile, recxml, eigVec, 1);
-#else
-  if(MILC_PRECISION == 1)
-    status = write_F3_V_from_field(outfile, recxml, eigVec, 1);
-  else
-    status = write_D3_V_from_field(outfile, recxml, eigVec, 1);
-#endif
+  if(packed){
+    pack_field(eigVec, sizeof(su3_vector));
+    if(MILC_PRECISION == 1)
+      status = write_F3_V_from_half_field(outfile, recxml, eigVec, 1);
+    else
+      status = write_D3_V_from_half_field(outfile, recxml, eigVec, 1);
+  } else {
+    if(MILC_PRECISION == 1)
+      status = write_F3_V_from_field(outfile, recxml, eigVec, 1);
+    else
+      status = write_D3_V_from_field(outfile, recxml, eigVec, 1);
+  }
 
   QIO_string_destroy(recxml);
   free(xml);
