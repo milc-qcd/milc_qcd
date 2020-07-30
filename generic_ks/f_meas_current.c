@@ -134,7 +134,7 @@ write_tslice_values(char *tag, int jr, Real mass1, Real charge1,
     }
     for(int mu = 0; mu < 4; mu++){
       g_doublesum(&jtmu[4*t+mu]);
-      node0_printf("%g ", jtmu[4*t+mu]);
+      node0_printf("%.10g ", jtmu[4*t+mu]);
     }
     node0_printf("\n");
   }
@@ -175,7 +175,7 @@ write_jdotA_value(char *tag, int jr, Real mass1, Real charge1,
     }
   }
   g_doublesum(&jdotA);
-  node0_printf("%g\n", jdotA);
+  node0_printf("%.10g\n", jdotA);
 }
 
 /*****************************************************************************/
