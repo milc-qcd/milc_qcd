@@ -308,6 +308,12 @@ apply_twist(fn_links_t *fn, int r0[], complex cphase[]){
   }
 }
 
+int
+twist_status(fn_links_t *fn){
+  link_phase_info_t *lp = fn->phase;
+  return lp->twist_in;
+}
+
 void 
 boundary_twist_fn(fn_links_t *fn, int flag) {
   char myname[] = "boundary_twist_fn";

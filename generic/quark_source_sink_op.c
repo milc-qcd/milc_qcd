@@ -1129,7 +1129,7 @@ get_spin_taste(void){
   
   /* Decode spin-taste label */
   for(mu = 0; mu < NMU; mu++){
-    char dummy[6];
+    char dummy[7];
     strncpy(dummy, spin_taste_label[mu], 6);
     spin_taste[mu] = spin_taste_index(dummy);
   }

@@ -155,6 +155,7 @@ link_phase_info_t *create_link_phase_info(void);
 void destroy_link_phase_info(link_phase_info_t *lp);
 void set_boundary_twist_fn(fn_links_qop_t *fn_links, Real bdry_phase[4], int r0[4]);
 void boundary_twist_fn(fn_links_qop_t *fn_links, int flag);
+int twist_status(fn_links_t *fn);
 
 /********************************************************************/
 /* Action coefficient conversion */

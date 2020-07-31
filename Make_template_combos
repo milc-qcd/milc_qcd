@@ -91,6 +91,7 @@ FERMION_OBJECTS = \
 # These are used to build propagators
 
 KS_LINKS_OBJECTS = \
+  charge_utilities.o \
   fermion_links_from_site.o \
   f_meas.o \
   gauss_smear_ks.o \

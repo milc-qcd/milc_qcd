@@ -26,6 +26,10 @@ static const char *prec_label[2] = {"F", "D"};
 #define HALF_MIXED
 #endif
 
+/********************************************************************/
+/* Solution of the normal equations for a single site parity        */
+/********************************************************************/
+
 // Note that the restart criterion used by QUDA is different from 
 // the restart criterion used by the MILC code
 int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest, 
@@ -179,11 +183,6 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 #ifdef CGTIME
   double nflop = 1187;  // FIXME Wrong flops
 #endif
-
-//  if(qic->relresid != 0.){
-//    printf("%s: GPU code does not yet support a Fermilab-type relative residual\n",myname);
-//    terminate(1);
-//  }
 
   /* Initialize qic */
   qic->size_r = 0;
