@@ -124,14 +124,18 @@ typedef struct {
   Real Kappa;        /* hopping */
 } dirac_wilson_param;
 
+/* Size of a bookkeeping table holding unique charges */
+#define MAX_CHARGE 16
+
 /* Same for plain KS case */
 typedef struct {
   Real mass;
+  Real charge;
   Real offset;    /* For RHMC, the pole position */
   Real residue;   /* For RHMC, the pole residue */
   int naik_term_epsilon_index;
+  int charge_index;
   Real naik_term_epsilon;
-
 } ks_param;
 
 /* This is the IFLA case */

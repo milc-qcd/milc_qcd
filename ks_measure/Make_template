@@ -45,6 +45,11 @@ MY_OBJECTS =         \
   gauge_info.o       \
   setup.o           
 
+G_U1_OBJECTS =       \
+  io_u1lat.o         \
+  u1link.o           \
+  u1plaq.o
+
 # Selection of layout
 
 LAYOUT = layout_hyper_prime.o # Choices possible here
@@ -133,6 +138,7 @@ ALL_MAKES = \
   ../Make_template_scidac \
   ../generic/Make_template \
   ../generic_ks/Make_template \
+  ../generic_u1/Make_template \
   ../generic_wilson/Make_template
 
 # To force a remake when changing any make file, header, or target
@@ -240,6 +246,19 @@ ks_measure_hisq_mu_eos::
 	${HISQ_OPTIONS} "DEFINES += -DDM_DEPS -DCHEM_POT \
 	-DD_CHEM_POT" "EXTRA_OBJECTS += mu_fast.o"
 
+# HISQ + U(1)
+
+ks_measure_current_hisq_u1::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC -DU1_FIELD" \
+	"EXTRA_OBJECTS += f_meas_current.o ${G_U1_OBJECTS}"
+
+ks_measure_current_hisq_u1_loop::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC -DU1_FIELD" \
+	"DEFINES += -DQED_LOOP" \
+	"EXTRA_OBJECTS += f_meas_current.o ${G_U1_OBJECTS}"
+
 clean:
 	-/bin/rm -f *.o quark_action.h
 
@@ -248,6 +267,9 @@ include ../generic/Make_template
 
 # Rules for generic_ks routines
 include ../generic_ks/Make_template
+
+# Rules for generic_u1 routines
+include ../generic_u1/Make_template
 
 # Rules for generic_wilson routines
 include ../generic_wilson/Make_template
