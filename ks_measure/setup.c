@@ -406,7 +406,8 @@ int readin(int prompt) {
 				&rel_error_for_propagator_sloppy );
 	}
 
-	IF_OK status += get_s(stdin, prompt, "save_file", param.pbp_filenames[npbp_masses] );
+	/* Deprecate saving the current density file */
+	//	IF_OK status += get_s(stdin, prompt, "save_file", param.pbp_filenames[npbp_masses] );
 #endif
 
 	/* The set to which this pbp_mass belongs */

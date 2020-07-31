@@ -19,7 +19,7 @@ int iters=0;
 
         /* reunitarize the gauge field */
 
-        reunitarize();         
+        reunitarize_cpu();         
 
     if(steps > 0)return (iters/steps);
     else return(-99);

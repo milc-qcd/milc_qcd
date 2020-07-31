@@ -526,7 +526,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
     /* FIXME: what do we do if the mgparamfile changes? */
     
     if (mg_preconditioner == NULL ){
-      mg_preconditioner = qudaSetupMultigrid(MILC_PRECISION,
+      mg_preconditioner = qudaMultigridCreate(MILC_PRECISION,
                               quda_precision,
                               mass,
                               inv_args,
@@ -545,7 +545,6 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
   if (qic->mg_rebuild_type == THINREBUILD) {
     mg_rebuild_type = 0;
   } 
-
   
   // Just BiCGstab for now
   qudaInvertMG(MILC_PRECISION,
@@ -595,6 +594,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
 #else
   node0_printf("mat_invert_mg_field_gpu: ERROR. Multigrid is available only with GPU compilation\n");
   terminate(1);
+  return 0;  
 #endif
 }
 
@@ -602,7 +602,7 @@ void mat_invert_mg_cleanup(void){
 
 #ifdef MULTIGRID
   if(mg_preconditioner != NULL)
-    qudaCleanupMultigrid(mg_preconditioner);
+    qudaMultigridDestroy(mg_preconditioner);
 #endif
 }
 

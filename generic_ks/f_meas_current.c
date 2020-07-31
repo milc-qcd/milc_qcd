@@ -30,6 +30,7 @@
 #define NMU 4
 #define NRECINFO 128
 
+/*****************************************************************************/
 /* Create spin-taste indices for current */
 static int *
 get_spin_taste(void){
@@ -49,6 +50,7 @@ get_spin_taste(void){
   return spin_taste;
 }
 
+/*****************************************************************************/
 /* Thin the random source */
 static void
 thin_source(su3_vector *src, int thinning, int ex, int ey, int ez, int et){
@@ -63,17 +65,20 @@ thin_source(su3_vector *src, int thinning, int ex, int ey, int ez, int et){
   }
 }
 
+/*****************************************************************************/
 /*Write current record for the accumulated average over random sources */
 static void
 write_tslice_values_begin(char *tag){
   node0_printf("BEGIN JTMU%s\n", tag);
 }
 
+/*****************************************************************************/
 static void
 write_tslice_values_end(char *tag){
   node0_printf("END JTMU%s\n", tag);
 }
 
+/*****************************************************************************/
 static void
 write_tslice_values(char *tag, int jr, Real mass1, Real mass2, Real *j_mu ){
   double *jtmu = (double *)malloc(sizeof(double)*4*param.nt);
@@ -122,8 +127,9 @@ write_tslice_values(char *tag, int jr, Real mass1, Real mass2, Real *j_mu ){
 
 /*****************************************************************************/
 /* Returns the dot product of two fermion vectors */
-static void dot_product(su3_vector *vec1, su3_vector *vec2, 
-		   double_complex *dot, int parity) {
+static void
+dot_product(su3_vector *vec1, su3_vector *vec2, 
+	    double_complex *dot, int parity) {
   register double re,im ;
   register  int i;
   complex cc ;
@@ -141,8 +147,9 @@ static void dot_product(su3_vector *vec1, su3_vector *vec2,
 
 /*****************************************************************************/
 /* Returns vec2 = vec2 - cc*vec1   cc is a double complex   */
-static void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1, 
-			  su3_vector *vec2, int parity){
+static void
+complex_vec_mult_sub(double_complex *cc, su3_vector *vec1, 
+		     su3_vector *vec2, int parity){
 
   register  int i;
   complex sc ;
@@ -159,7 +166,8 @@ static void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1,
 /*  Projects out the *vectors from the  vec. Num is the Number of vectors  *
  * and parity is the parity on which we work on.                           *
  * The vectors are assumed to be orthonormal.                              */
-static void project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
+static void
+project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
   register int i ;
   double_complex cc ;
   double ptime = -dclock();
@@ -785,123 +793,185 @@ block_currents_diff_deltam(int n_masses, Real **j_mu[], Real masses[],
   
 } /* block_currents_diff_deltam */
 
-/************************************************************************/
-/* Entry point for multiple masses with deflation and iterated single-mass inverter.
-   This variant does two solves from the same source -- sloppy and precise --
-   and calculates the average of the difference between the resulting current
-   densities.  Designed for use with deflation or eigcg. 
-   Requires a set of accurate low-mode eigenpairs */
+/*********************************************************************/
+/* This version of the block current routine does all masses without
+   any differences betweem results of different masses.
+   Results in j_mu
+ */
 
-void 
-f_meas_current_diff( int n_masses, int nrand, int thinning,
-		     quark_invert_control *qic_precise,
-		     quark_invert_control *qic_sloppy,
-		     ks_param *ksp, fermion_links_t *fl, 
-		     char filenames[][MAXFILENAME]){
-  
-  char myname[] = "f_meas_current_diff";
+static void 
+block_current( int n_masses, Real **j_mu[], Real masses[],
+	       imp_ferm_links_t *fn_mass[], quark_invert_control *qic,
+	       int nsrc, int nr, su3_vector *gr_even[], su3_vector *gr_odd[]){
+
+  char myname[] = "block_current";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
-  int nr = 2;  /* Number of random sources to include in multi-rhs */
-  if(nrand < nr)
-    nr = nrand;
-
-  /* Create fields for high-mode current densities, one for each
-     multi-rhs randm source and mass */
-  Real **j_mu[n_masses];
+  /* Construct current density from the list of sources */
   for(int j = 0; j < n_masses; j++){
-    j_mu[j] = (Real **)malloc(n_masses*sizeof(Real *));
-    for(int ir = 0; ir < nr; ir++)
-      j_mu[j][ir] = create_r_array_field(NMU);
-  }
+    node0_printf("Solving for all EVEN displacements for mass %g\n", masses[j]);
+    block_current_stochastic( nr, j_mu[j], masses[j], nsrc, +1, EVEN,
+			      qic + j, fn_mass[j], gr_even);
+    node0_printf("Solving for all ODD displacements for mass %g\n", masses[j]);
+    block_current_stochastic( nr, j_mu[j], masses[j], nsrc, +1, ODD,
+			      qic + j, fn_mass[j], gr_odd);
+  } /* j */
+}
 
-  /* Load arrays with masses and the HISQ link structure for each */
-  imp_ferm_links_t *fn_mass[n_masses];
-  Real masses[n_masses];
-  imp_ferm_links_t **fn = get_fm_links(fl);
-  for(int j = 0; j < n_masses; j++){
-    masses[j] = ksp[j].mass;
-    fn_mass[j] = fn[ksp[j].naik_term_epsilon_index];
-  }
-
-  /* Block solver parameters */
-  int d = thinning;
-  int evol = d*d*d*d/2;
-  int nsrc = evol*nr;
+/*********************************************************************/
+/* This version takes three masses.
+   It takes the differences of current densities for mass0 and mass1 
+   and also computes mass2
+   Results in j_mu[0] and j_mu[2]
+*/
+static void 
+block_currents_delta_lsc( int n_masses, Real **j_mu[], Real masses[], 
+			  imp_ferm_links_t *fn[], int nsrc, int nr,
+			  quark_invert_control qic[],
+			  su3_vector **gr_even, su3_vector **gr_odd){
+  char myname[] = "block_currents_delta_lsc";
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
   
-  su3_vector **gr_even = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
-  su3_vector **gr_odd = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
-  for(int is = 0; is < nsrc; is++){
-    gr_even[is] = create_v_field();
-    gr_odd[is] = create_v_field();
+  Real m_l = masses[0];
+  Real m_s = masses[1];
+  Real m_c = masses[2];
+  imp_ferm_links_t *fn_ls = fn[0];
+  imp_ferm_links_t *fn_c = fn[2];
+  Real **j_mu_ls = j_mu[0];
+  Real **j_mu_c = j_mu[2];
+  Real dm2_ls4 = 4*(m_s*m_s - m_l*m_l);
+  quark_invert_control *qic_ls = &qic[0];
+  quark_invert_control *qic_c = &qic[2];
+  
+  /* Construct current density from the list of sources */
+  node0_printf("Solving for all EVEN displacements for mass diff  %g %g\n",
+	       m_l, m_s);
+  block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls,
+				   nsrc, +1, EVEN, nr, qic_ls, gr_even);
+  if(n_masses == 3){
+    node0_printf("Solving for all EVEN displacements for mass %g\n", m_c);
+    block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, EVEN,
+			      qic_c, fn_c, gr_even);
   }
 
-  /* Loop over random sources in groups of nr */
-  for(int jrand = 0; jrand < nrand; jrand += nr){
+  node0_printf("Solving for all ODD displacements for mass diff %g %g\n",
+	       m_l, m_s);
+  block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls,
+				   nsrc, +1, ODD, nr, qic_ls, gr_odd);
+  if(n_masses == 3){
+    node0_printf("Solving for all ODD displacements for mass %g\n", m_c);
+    block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, ODD,
+			      qic_c, fn_c, gr_odd);
+  }
+}
 
-    /* Create sources in gr_even and gr_odd */
-    collect_sources(gr_even, gr_odd, nr, d, evol);
-    
-#ifdef MASS_UDLSC
-    if(n_masses <= 1){
-      block_current_diff(n_masses, j_mu, masses, fn_mass, 
-			 qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
-    } else {
-      block_currents_diff_deltam(n_masses, j_mu, masses, fn_mass, 
-				 qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
-    }
+/*********************************************************************/
+/* This version takes five masses
+   Takes the differences of mass0 and mass1 and of mass2 and mass3
+   and computes mass4
+   Results in j_mu[0], j_mu[2], and j_mu[4]
+*/
+
+static void 
+block_currents_delta_udlsc( int n_masses, Real **j_mu[], Real masses[], 
+			    imp_ferm_links_t *fn[], int nsrc, int nr,
+			    quark_invert_control qic[],
+			    su3_vector **gr_even, su3_vector **gr_odd){
+
+  char myname[] = "block_currents_delta_udlsc";
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
+
+  Real m_u = masses[0];
+  Real m_d = masses[1];
+  Real m_l = masses[2];
+  Real m_s = masses[3];
+  Real m_c = masses[4];
+  Real **j_mu_ud = j_mu[0];
+  Real **j_mu_ls = j_mu[2];
+  Real **j_mu_c  = j_mu[4];
+  imp_ferm_links_t *fn_ud = fn[0];
+  imp_ferm_links_t *fn_ls = fn[2];
+  imp_ferm_links_t *fn_c  = fn[4];
+  Real dm2_ud4 = 4*(m_d*m_d - m_u*m_u);
+  Real dm2_ls4 = 4*(m_s*m_s - m_l*m_l);
+  quark_invert_control *qic_ud = &qic[0];
+  quark_invert_control *qic_ls = &qic[2];
+  quark_invert_control *qic_c  = &qic[4];
+
+  /* Construct current density from the list of sources */
+
+#ifdef OPT_UDLSC
+  node0_printf("Solving sloppily for all EVEN displacements for mass diff %g %g and %g %g\n",
+	       m_u, m_d, m_l, m_s);
+  block_current_stochastic_delta_udls( j_mu, masses, fn, nsrc, +1, EVEN, nr, 
+				       qic, gr_even);
 #else
-    block_current_diff(n_masses, j_mu, masses, fn_mass, 
-                       qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+  node0_printf("Solving sloppily for all EVEN displacements for mass diff  %g %g\n",
+	       m_u, m_d);
+  block_current_stochastic_deltam( j_mu_ud, m_u, m_d, dm2_ud4, fn_ud, nsrc,
+				   +1, EVEN, nr, qic_ud, gr_even);
+  node0_printf("Solving sloppily for all EVEN displacements for mass diff  %g %g\n",
+	       m_l, m_s);
+  block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls, nsrc,
+				   +1, EVEN, nr, qic_ls, gr_even);
 #endif
-    
+  if(n_masses == 5){
+    node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", m_c);
+    block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, EVEN,
+			      qic_c, fn_c, gr_even);
+  }
+  
+#ifdef OPT_UDLSC
+  node0_printf("Solving sloppily for all ODD displacements for mass diff %g %g and %g %g\n",
+	       m_u, m_d, m_l, m_s);
+  block_current_stochastic_delta_udls( j_mu, masses, fn, nsrc, +1, ODD, nr, 
+				       qic, gr_odd);
+#else
+  node0_printf("Solving sloppily for all ODD displacements for mass diff  %g %g\n",
+	       m_u, m_d);
+  block_current_stochastic_deltam( j_mu_ud, m_u, m_d, dm2_ud4, fn_ud, nsrc,
+				   +1, ODD, nr, qic_ud, gr_odd);
+  node0_printf("Solving sloppily for all ODD displacements for mass diff  %g %g\n",
+	       m_l, m_s);
+  block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls, nsrc,
+				   +1, ODD, nr, qic_ls, gr_odd);
+#endif
+  if(n_masses == 5){
+    node0_printf("Solving sloppily for all ODD displacements for mass %g\n", m_c);
+    block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, ODD,
+			      qic_c, fn_c, gr_odd);
+  }
+}
+
+
+/*********************************************************************/
+/* This version takes three or five masses
+
+   With three, it takes the differences of current densities for
+   mass0 and mass1 and computes mass2
+   Results in j_mu[0] and j_mu[2]
+
+   With five, takes the differences of current densities for mass0 and
+   mass1 and of mass2 and mass3 and computes mass4
+   Results in j_mu[0], j_mu[2], and j_mu[4]
    
-    write_tslice_values_begin("DIFF");
-    for(int j = 0; j < n_masses; j++){
-      for(int ir = 0; ir < nr; ir++){
-#if 0      
-	/* DEBUG */
-	FORALLFIELDSITES(i){
-	  printf("%d %d %d %d ",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t);
-	  for(mu = 0; mu < NMU; mu++)
-	    printf("%d %g ",mu, j_mu[j][ir][NMU*i + mu]);
-	  printf("\n");
-	}
-#endif
-#ifdef MASS_UDLSC
-	if(j == 0 && n_masses > 1) /* U-D */
-	  {
-	    write_tslice_values("DIFF", jrand+ir, masses[0], masses[1], j_mu[j][ir]);
-	  }
-	else if(j == 2 && n_masses > 3) /* U-S */
-	  {
-	    write_tslice_values("DIFF", jrand+ir, masses[0], masses[3], j_mu[j][ir]);
-	  }
-	else if((j == 0 && n_masses == 1) || (j == 2 && n_masses <= 3) || j == 4 )
-	  {
-	    write_tslice_values("DIFF", jrand+ir, masses[j], 0., j_mu[j][ir]);
-	  }
-#else
-	write_tslice_values("DIFF", jrand+ir, masses[j], 0., j_mu[j][ir]);
-#endif
-	clear_r_array_field(j_mu[j][ir], NMU);
-      } /* ir */
-    } /* j */
-    write_tslice_values_end("DIFF");
+*/
+static void 
+block_currents_deltam( int n_masses, Real **j_mu[], Real masses[], 
+		       imp_ferm_links_t *fn[], quark_invert_control qic[],
+		       int nsrc, int nr, su3_vector *gr_even[], su3_vector *gr_odd[]){
 
-  } /* jrand */
+  char myname[] = "block_currents_deltam";
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
-  for(int is = 0; is < nsrc; is++){
-    destroy_v_field(gr_even[is]);
-    destroy_v_field(gr_odd[is]);
-  }
-  
-  free(gr_even); gr_even = NULL;
-  free(gr_odd); gr_odd = NULL;
-
-  fflush(stdout);
-  
-} /* f_meas_current_diff */
+  if(n_masses <= 3){
+    block_currents_delta_lsc(n_masses, j_mu, masses, fn, nsrc, nr,
+			     qic, gr_even, gr_odd);
+  } else {
+    block_currents_delta_udlsc(n_masses, j_mu, masses, fn, nsrc, nr,
+			       qic, gr_even, gr_odd);
+  }      
+}
 
 /*********************************************************************/
 
@@ -1168,190 +1238,293 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
 }
 
 /*********************************************************************/
-/* This version of the block current routine does all masses without
-   any differences betweem results of different masses.
-   Results in j_mu
- */
+static void
+check_eigen(int Nvecs){
+  /* Check orthonormality of a few eigenvectors (for debugging) */
+  for(int j = 0; j < Nvecs; j += 8)
+    for(int i = j; i < Nvecs; i += 8){
+      double_complex cc ;
+      dot_product(eigVec[i], eigVec[j], &cc, EVEN) ;
+      if(((i == j) && (fabs(cc.real - 1) > 1e-8)) || ((i != j && fabs(cc.real) > 1e-8)))
+	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
+    }
+}
 
-static void 
-block_current( int n_masses, Real **j_mu[], Real masses[],
-	       imp_ferm_links_t *fn_mass[], quark_invert_control *qic,
-	       int nsrc, int nr, su3_vector *gr_even[], su3_vector *gr_odd[]){
-
-  char myname[] = "block_current";
-  //  node0_printf("Entered %s\n", myname); fflush(stdout);
-
-  /* Construct current density from the list of sources */
+/*********************************************************************/
+/* Create fields for low- and high-mode current densities */
+static void
+create_jlow(int n_masses, int Nvecs, Real *jlow_mu[]){
   for(int j = 0; j < n_masses; j++){
-    node0_printf("Solving for all EVEN displacements for mass %g\n", masses[j]);
-    block_current_stochastic( nr, j_mu[j], masses[j], nsrc, +1, EVEN,
-			      qic + j, fn_mass[j], gr_even);
-    node0_printf("Solving for all ODD displacements for mass %g\n", masses[j]);
-    block_current_stochastic( nr, j_mu[j], masses[j], nsrc, +1, ODD,
-			      qic + j, fn_mass[j], gr_odd);
+    if(Nvecs > 0)
+      jlow_mu[j] = create_r_array_field(NMU);
+    else
+      jlow_mu[j] = NULL;
+  }
+}
+
+/*********************************************************************/
+static void
+destroy_jlow(int Nvecs, int n_masses, Real *jlow_mu[]){
+  if(Nvecs > 0)
+    for(int j = 0; j < n_masses; j++)
+      destroy_r_array_field(jlow_mu[j], NMU);
+}
+
+/*********************************************************************/
+/* Create fields for high-mode current densities, one for each
+   block of nr random sources and mass */
+static void
+create_jhi(int n_masses, int nr, Real **j_mu[]){
+  for(int j = 0; j < n_masses; j++){
+    j_mu[j] = (Real **)malloc(n_masses*sizeof(Real *));
+    for(int ir = 0; ir < nr; ir++)
+      j_mu[j][ir] = create_r_array_field(NMU);
+  }
+}
+
+/*********************************************************************/
+static void
+destroy_jhi(int n_masses, int nr, Real **j_mu[]){
+  for(int j = 0; j < n_masses; j++){
+    for(int ir = 0; ir < nr; ir++)
+      destroy_r_array_field(j_mu[j][ir], NMU);
+    free(j_mu[j]);
+  }
+}
+
+/*********************************************************************/
+/* Load arrays with masses and the HISQ link structure for each */
+static void
+load_inv_params(fermion_links_t *fl, imp_ferm_links_t *fn_mass[],
+		int n_masses, Real masses[], ks_param *ksp){
+  imp_ferm_links_t **fn = get_fm_links(fl);
+  for(int j = 0; j < n_masses; j++){
+    masses[j] = ksp[j].mass;
+    fn_mass[j] = fn[ksp[j].naik_term_epsilon_index];
+  }
+}
+
+/*********************************************************************/
+/* Compute exact low-mode current density if we have eigenvectors to do it */
+static void
+compute_jlow(int Nvecs, int n_masses, Real *jlow_mu[], Real masses[],
+			 imp_ferm_links_t *fn_mass[]){
+#ifdef MASS_UDLSC
+  if(Nvecs > 0){
+    if(n_masses <= 1){
+      exact_currents(n_masses, jlow_mu, masses, fn_mass);
+    } else {
+      exact_currents_deltam(n_masses, jlow_mu, masses, fn_mass);
+    }
+  }
+#else
+  if(Nvecs > 0){
+    exact_currents(n_masses, jlow_mu, masses, fn_mass);
+  }
+#endif
+}
+
+/***********************************************************************************/
+/* Reset jlow */
+static void
+clear_jlow(int n_masses, Real *jlow_mu[]){
+  for(int j = 0; j < n_masses; j++){
+    /* Reset jlow_mu */
+    if(jlow_mu[j] != NULL)clear_r_array_field(jlow_mu[j], NMU);
+  }  
+}
+
+/*********************************************************************/
+static su3_vector **
+create_gr(int nsrc){
+  su3_vector **gr = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  for(int is = 0; is < nsrc; is++)
+    gr[is] = create_v_field();
+  return gr;
+}
+
+/*********************************************************************/
+static void
+destroy_gr(int nsrc, su3_vector **gr){
+  for(int is = 0; is < nsrc; is++)
+    destroy_v_field(gr[is]);
+  free(gr);
+}
+
+/*********************************************************************/
+/* Do block solve for high-mode densities */
+static void
+compute_jhi(int n_masses, Real **j_mu[], Real masses[], imp_ferm_links_t *fn_mass[],
+			quark_invert_control *qic, int nsrc, int nr, su3_vector **gr_even, su3_vector **gr_odd){    
+#ifdef MASS_UDLSC
+    if(n_masses <= 1){
+      block_current( n_masses, j_mu, masses, fn_mass, qic, nsrc, nr, gr_even, gr_odd);
+    } else {
+      block_currents_deltam( n_masses, j_mu, masses, fn_mass, qic,
+			     nsrc, nr, gr_even, gr_odd);
+    }
+#else
+    block_current( n_masses, j_mu, masses, fn_mass, qic, nsrc, nr, gr_even, gr_odd);
+#endif
+}
+
+/*********************************************************************/
+/* Do block solve for the TSM difference in high-mode densities */
+static void
+compute_jhi_diff(int n_masses, Real **j_mu[], Real masses[], imp_ferm_links_t *fn_mass[],
+			     quark_invert_control *qic_precise, quark_invert_control *qic_sloppy,
+			     int nsrc, int nr, su3_vector **gr_even,	su3_vector **gr_odd){
+#ifdef MASS_UDLSC
+    if(n_masses <= 1){
+      block_current_diff(n_masses, j_mu, masses, fn_mass, 
+			 qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+    } else {
+      block_currents_diff_deltam(n_masses, j_mu, masses, fn_mass, 
+				 qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+    }
+#else
+    block_current_diff(n_masses, j_mu, masses, fn_mass, 
+                       qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+#endif
+    
+}  
+/*********************************************************************/
+/* Reset j_mu */
+static void
+clear_jhi(int n_masses, int nr, Real **j_mu[]){
+
+  for(int j = 0; j < n_masses; j++){
+    for(int ir = 0; ir < nr; ir++){
+      clear_r_array_field(j_mu[j][ir], NMU);
+    } /* ir */
   } /* j */
 }
 
-/*********************************************************************/
-/* This version takes three masses.
-   It takes the differences of current densities for mass0 and mass1 
-   and also computes mass2
-   Results in j_mu[0] and j_mu[2]
-*/
-static void 
-block_currents_delta_lsc( int n_masses, Real **j_mu[], Real masses[], 
-			  imp_ferm_links_t *fn[], int nsrc, int nr,
-			  quark_invert_control qic[],
-			  su3_vector **gr_even, su3_vector **gr_odd){
-  char myname[] = "block_currents_delta_lsc";
-  //  node0_printf("Entered %s\n", myname); fflush(stdout);
+/************************************************************************/
+/* Entry point for multiple masses with deflation and iterated
+   single-mass inverter.  This variant does two solves from the same
+   source -- sloppy and precise -- and calculates the average of the
+   difference between the resulting current densities.  Designed for
+   use with deflation or eigcg.  The optional set of accurate low-mode
+   eigenpairs are in the globals eigVal and eigVec. */
+/************************************************************************/
+
+void 
+f_meas_current_diff( int n_masses, int nrand, int thinning,
+		     quark_invert_control *qic_precise,
+		     quark_invert_control *qic_sloppy,
+		     ks_param *ksp, fermion_links_t *fl, 
+		     char filenames[][MAXFILENAME]){
   
-  Real m_l = masses[0];
-  Real m_s = masses[1];
-  Real m_c = masses[2];
-  imp_ferm_links_t *fn_ls = fn[0];
-  imp_ferm_links_t *fn_c = fn[2];
-  Real **j_mu_ls = j_mu[0];
-  Real **j_mu_c = j_mu[2];
-  Real dm2_ls4 = 4*(m_s*m_s - m_l*m_l);
-  quark_invert_control *qic_ls = &qic[0];
-  quark_invert_control *qic_c = &qic[2];
-  
-  /* Construct current density from the list of sources */
-  node0_printf("Solving for all EVEN displacements for mass diff  %g %g\n",
-	       m_l, m_s);
-  block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls,
-				   nsrc, +1, EVEN, nr, qic_ls, gr_even);
-  if(n_masses == 3){
-    node0_printf("Solving for all EVEN displacements for mass %g\n", m_c);
-    block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, EVEN,
-			      qic_c, fn_c, gr_even);
-  }
-
-  node0_printf("Solving for all ODD displacements for mass diff %g %g\n",
-	       m_l, m_s);
-  block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls,
-				   nsrc, +1, ODD, nr, qic_ls, gr_odd);
-  if(n_masses == 3){
-    node0_printf("Solving for all ODD displacements for mass %g\n", m_c);
-    block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, ODD,
-			      qic_c, fn_c, gr_odd);
-  }
-}
-
-/*********************************************************************/
-/* This version takes five masses
-   Takes the differences of mass0 and mass1 and of mass2 and mass3
-   and computes mass4
-   Results in j_mu[0], j_mu[2], and j_mu[4]
-*/
-
-static void 
-block_currents_delta_udlsc( int n_masses, Real **j_mu[], Real masses[], 
-			    imp_ferm_links_t *fn[], int nsrc, int nr,
-			    quark_invert_control qic[],
-			    su3_vector **gr_even, su3_vector **gr_odd){
-
-  char myname[] = "block_currents_delta_udlsc";
+  char myname[] = "f_meas_current_diff";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
-  Real m_u = masses[0];
-  Real m_d = masses[1];
-  Real m_l = masses[2];
-  Real m_s = masses[3];
-  Real m_c = masses[4];
-  Real **j_mu_ud = j_mu[0];
-  Real **j_mu_ls = j_mu[2];
-  Real **j_mu_c  = j_mu[4];
-  imp_ferm_links_t *fn_ud = fn[0];
-  imp_ferm_links_t *fn_ls = fn[2];
-  imp_ferm_links_t *fn_c  = fn[4];
-  Real dm2_ud4 = 4*(m_d*m_d - m_u*m_u);
-  Real dm2_ls4 = 4*(m_s*m_s - m_l*m_l);
-  quark_invert_control *qic_ud = &qic[0];
-  quark_invert_control *qic_ls = &qic[2];
-  quark_invert_control *qic_c  = &qic[4];
+  int nr = 2;  /* Number of random sources to include in multi-rhs */
+  if(nrand < nr)
+    nr = nrand;
 
-  /* Construct current density from the list of sources */
-
-#ifdef OPT_UDLSC
-  node0_printf("Solving sloppily for all EVEN displacements for mass diff %g %g and %g %g\n",
-	       m_u, m_d, m_l, m_s);
-  block_current_stochastic_delta_udls( j_mu, masses, fn, nsrc, +1, EVEN, nr, 
-				       qic, gr_even);
-#else
-  node0_printf("Solving sloppily for all EVEN displacements for mass diff  %g %g\n",
-	       m_u, m_d);
-  block_current_stochastic_deltam( j_mu_ud, m_u, m_d, dm2_ud4, fn_ud, nsrc,
-				   +1, EVEN, nr, qic_ud, gr_even);
-  node0_printf("Solving sloppily for all EVEN displacements for mass diff  %g %g\n",
-	       m_l, m_s);
-  block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls, nsrc,
-				   +1, EVEN, nr, qic_ls, gr_even);
-#endif
-  if(n_masses == 5){
-    node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", m_c);
-    block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, EVEN,
-			      qic_c, fn_c, gr_even);
+  /* Create fields for high-mode current densities, one for each
+     multi-rhs randm source and mass */
+  Real **j_mu[n_masses];
+  for(int j = 0; j < n_masses; j++){
+    j_mu[j] = (Real **)malloc(n_masses*sizeof(Real *));
+    for(int ir = 0; ir < nr; ir++)
+      j_mu[j][ir] = create_r_array_field(NMU);
   }
+
+  /* Load arrays with masses and the HISQ link structure for each */
+  imp_ferm_links_t *fn_mass[n_masses];
+  Real masses[n_masses];
+  imp_ferm_links_t **fn = get_fm_links(fl);
+  for(int j = 0; j < n_masses; j++){
+    masses[j] = ksp[j].mass;
+    fn_mass[j] = fn[ksp[j].naik_term_epsilon_index];
+  }
+
+  /* Block solver parameters */
+  int d = thinning;
+  int evol = d*d*d*d/2;
+  int nsrc = evol*nr;
   
-#ifdef OPT_UDLSC
-  node0_printf("Solving sloppily for all ODD displacements for mass diff %g %g and %g %g\n",
-	       m_u, m_d, m_l, m_s);
-  block_current_stochastic_delta_udls( j_mu, masses, fn, nsrc, +1, ODD, nr, 
-				       qic, gr_odd);
-#else
-  node0_printf("Solving sloppily for all ODD displacements for mass diff  %g %g\n",
-	       m_u, m_d);
-  block_current_stochastic_deltam( j_mu_ud, m_u, m_d, dm2_ud4, fn_ud, nsrc,
-				   +1, ODD, nr, qic_ud, gr_odd);
-  node0_printf("Solving sloppily for all ODD displacements for mass diff  %g %g\n",
-	       m_l, m_s);
-  block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls, nsrc,
-				   +1, ODD, nr, qic_ls, gr_odd);
-#endif
-  if(n_masses == 5){
-    node0_printf("Solving sloppily for all ODD displacements for mass %g\n", m_c);
-    block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, ODD,
-			      qic_c, fn_c, gr_odd);
+  su3_vector **gr_even = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  su3_vector **gr_odd = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  for(int is = 0; is < nsrc; is++){
+    gr_even[is] = create_v_field();
+    gr_odd[is] = create_v_field();
   }
-}
 
+  /* Loop over random sources in groups of nr */
+  for(int jrand = 0; jrand < nrand; jrand += nr){
 
-/*********************************************************************/
-/* This version takes three or five masses
-
-   With three, it takes the differences of current densities for
-   mass0 and mass1 and computes mass2
-   Results in j_mu[0] and j_mu[2]
-
-   With five, takes the differences of current densities for mass0 and
-   mass1 and of mass2 and mass3 and computes mass4
-   Results in j_mu[0], j_mu[2], and j_mu[4]
+    /* Create sources in gr_even and gr_odd */
+    collect_sources(gr_even, gr_odd, nr, d, evol);
+    
+#ifdef MASS_UDLSC
+    if(n_masses <= 1){
+      block_current_diff(n_masses, j_mu, masses, fn_mass, 
+			 qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+    } else {
+      block_currents_diff_deltam(n_masses, j_mu, masses, fn_mass, 
+				 qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+    }
+#else
+    block_current_diff(n_masses, j_mu, masses, fn_mass, 
+                       qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+#endif
+    
    
-*/
-static void 
-block_currents_deltam( int n_masses, Real **j_mu[], Real masses[], 
-		       imp_ferm_links_t *fn[], quark_invert_control qic[],
-		       int nsrc, int nr, su3_vector *gr_even[], su3_vector *gr_odd[]){
+    write_tslice_values_begin("DIFF");
+    for(int j = 0; j < n_masses; j++){
+      for(int ir = 0; ir < nr; ir++){
+#if 0      
+	/* DEBUG */
+	FORALLFIELDSITES(i){
+	  printf("%d %d %d %d ",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t);
+	  for(mu = 0; mu < NMU; mu++)
+	    printf("%d %g ",mu, j_mu[j][ir][NMU*i + mu]);
+	  printf("\n");
+	}
+#endif
+#ifdef MASS_UDLSC
+	if(j == 0 && n_masses > 1) /* U-D */
+	  {
+	    write_tslice_values("DIFF", jrand+ir, masses[0], masses[1], j_mu[j][ir]);
+	  }
+	else if(j == 2 && n_masses > 3) /* U-S */
+	  {
+	    write_tslice_values("DIFF", jrand+ir, masses[0], masses[3], j_mu[j][ir]);
+	  }
+	else if((j == 0 && n_masses == 1) || (j == 2 && n_masses <= 3) || j == 4 )
+	  {
+	    write_tslice_values("DIFF", jrand+ir, masses[j], 0., j_mu[j][ir]);
+	  }
+#else
+	write_tslice_values("DIFF", jrand+ir, masses[j], 0., j_mu[j][ir]);
+#endif
+	clear_r_array_field(j_mu[j][ir], NMU);
+      } /* ir */
+    } /* j */
+    write_tslice_values_end("DIFF");
 
-  char myname[] = "block_currents_deltam";
-  //  node0_printf("Entered %s\n", myname); fflush(stdout);
+  } /* jrand */
 
-  if(n_masses <= 3){
-    block_currents_delta_lsc(n_masses, j_mu, masses, fn, nsrc, nr,
-			     qic, gr_even, gr_odd);
-  } else {
-    block_currents_delta_udlsc(n_masses, j_mu, masses, fn, nsrc, nr,
-			       qic, gr_even, gr_odd);
-  }      
-}
+  for(int is = 0; is < nsrc; is++){
+    destroy_v_field(gr_even[is]);
+    destroy_v_field(gr_odd[is]);
+  }
+  
+  free(gr_even); gr_even = NULL;
+  free(gr_odd); gr_odd = NULL;
 
+  fflush(stdout);
+  
+} /* f_meas_current_diff */
 
 /*********************************************************************/
 /* Entry point for multiple masses with iterated single-mass inverter.
    Designed for use with deflation or eigcg.
    Does deflation, so requires a set of accurate low-mode eigenpairs */
+/*********************************************************************/
 
 void 
 f_meas_current( int n_masses, int nrand, int thinning,
@@ -1367,16 +1540,9 @@ f_meas_current( int n_masses, int nrand, int thinning,
   if(nrand < nr)
     nr = nrand;
 
+  /* Check orthonormality of a few eigenvectors (debugging) */
 #if 0
-  /* DEBUG */
-  /* Check orthonormality of a few eigenvectors */
-  for(int j = 0; j < Nvecs; j += 8)
-    for(i = j; i < Nvecs; i += 8){
-      double_complex cc ;
-      dot_product(eigVec[i], eigVec[j], &cc, EVEN) ;
-      if(((i == j) && (fabs(cc.real - 1) > 1e-8)) || ((i != j && fabs(cc.real) > 1e-8)))
-	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
-    }
+  check_eigen(Nvecs);
 #endif
 
   /* Create fields for low-mode current densities, one for each mass */

@@ -27,6 +27,7 @@ number_of_base_sources 1
 # base_source 0
 
 gaussian
+field_type Dirac
 subset full
 origin 0 0 0 0
 r0 1.5
