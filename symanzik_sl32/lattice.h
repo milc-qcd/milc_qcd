@@ -73,7 +73,15 @@ EXTERN	int warms,trajecs,steps,stepsQ,propinterval;
 #ifndef ANISOTROPY
 EXTERN	Real beta,u0;
 #else
-EXTERN	Real beta[2],u0;
+EXTERN  short ani_dir; /* direction of anisotropy */
+EXTERN  Real beta[2]; /* beta[0] - 3d-isotropic, beta[1] - anisotropic */
+/* The tadpole factor should be consistently defined as Real u0[2]; 
+   with the elements u0[0] - 3d-isotropic, u0[1] - anisotropic.
+   However, in the following we keep a single tadpole 
+   factor u0 since we only aim for anisotropic simulations 
+   using u0=1.0. 
+*/
+EXTERN  Real u0; 
 #endif
 EXTERN  int n_dyn_masses; // number of dynamical masses (zero here)
 EXTERN  int dyn_flavors[MAX_DYN_MASSES]; 

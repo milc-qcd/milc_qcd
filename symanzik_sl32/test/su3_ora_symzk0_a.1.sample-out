@@ -1,14 +1,14 @@
 Anisotropic pure gauge SU3
 Overrelaxed/quasi-heat bath algorithm
 MIMD version 7
-Machine = Scalar processor, with 1 nodes
+Machine = MPI (portable), with 1 nodes
 type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nx 4
 ny 4
 nz 4
 nt 4
 iseed 9435
-LAYOUT = Hypercubes, options = setup_layout: Preallocated machine geometry overrides request
+LAYOUT = Hypercubes, options = hyper_sl32,
 ON EACH NODE 4 x 4 x 4 x 4
 Mallocing 0.2 MBytes per node for lattice
 WARNING!!: Resetting random seed
@@ -18,6 +18,7 @@ warms 0
 trajecs 3
 traj_between_meas 1
 beta 5 7 
+ani_dir t
 u0 0.87
 steps_per_trajectory 2
 qhb_steps 1
@@ -27,7 +28,7 @@ unit gauge configuration loaded
 CHECK PLAQ: 3.000000e+00 3.000000e+00
 CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
 Unitarity checked.  Max deviation 0.00e+00
-Time to check unitarity = 4.291534e-05
+Time to check unitarity = 9.584427e-05
 Symanzik 1x1 + 1x2 action
 gauge_action: total_dyn_flavors = 0
 loop coefficients: nloop rep loop_coeff  multiplicity
@@ -35,12 +36,15 @@ loop coefficients: nloop rep loop_coeff  multiplicity
                     1 0      -6.605893e-02     12
 WARMUPS COMPLETED
 GMES 1.583933e+00 -4.606774e-02 9.990000e+01 1.821010e+00 1.964936e+00
+Pmunu 1.856553e+00 1.849255e+00 1.757222e+00 1.957489e+00 1.981801e+00 1.955519e+00
 GMES 8.258254e-01 3.158196e-02 9.990000e+01 1.501452e+00 1.721655e+00
+Pmunu 1.471776e+00 1.509864e+00 1.522716e+00 1.684119e+00 1.713243e+00 1.767603e+00
 GMES 4.400871e-01 -1.629362e-02 9.990000e+01 1.335442e+00 1.644592e+00
+Pmunu 1.313165e+00 1.324118e+00 1.369041e+00 1.608291e+00 1.669678e+00 1.655806e+00
 RUNNING COMPLETED
-Time = 1.686761e-01 seconds
+Time = 1.733079e-01 seconds
 
 
 get_i(0): EOF on input.
-exit: Sat Mar  9 11:43:35 2019
+exit: Sun May 10 13:44:02 2020
 

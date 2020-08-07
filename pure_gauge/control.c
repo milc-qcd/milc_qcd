@@ -70,6 +70,13 @@ if(this_node==0)printf("Fat Polyakov loop parameter %f\n",ALPHA_FUZZ);
                     (double)plp.real,(double)plp.imag,99.9,dssplaq,dstplaq);
                 /* Re(Polyakov) Im(Poyakov) cg_iters ss_plaq st_plaq */
 
+#ifdef ANISOTROPY
+                double plaq[6];
+                d_plaquette6(plaq);
+                node0_printf("Pmunu %.6e %.6e %.6e %.6e %.6e %.6e\n",
+                  plaq[0], plaq[1], plaq[2], plaq[3], plaq[4], plaq[5]);
+#endif
+
 #ifdef FUZZ
 		if(this_node==0)printf("GFUZZ %e %e\n",
 		    (double)plp_fuzzy.real,(double)plp_fuzzy.imag);

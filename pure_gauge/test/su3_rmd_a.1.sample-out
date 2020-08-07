@@ -1,8 +1,8 @@
 Anisotropic pure gauge SU3
 Microcanonical simulation with refreshing
 MIMD version 7
-Machine = Scalar processor, with 1 nodes
-start: Sat Mar  9 11:59:05 2019
+Machine = MPI (portable), with 1 nodes
+start: Sun May 10 14:09:19 2020
 
 type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nx 4
@@ -10,8 +10,9 @@ ny 4
 nz 4
 nt 8
 iseed 8352
-LAYOUT = Hypercubes, options = with fixed node_geometry
-ON EACH NODE 4 x 4 x 4 x 8
+LAYOUT = Hypercubes, options = hyper_prime,
+automatic hyper_prime layout
+ON EACH NODE (RANK) 4 x 4 x 4 x 8
 Mallocing 0.5 MBytes per node for lattice
 WARNING!!: Resetting random seed
 
@@ -20,6 +21,7 @@ warms 0
 trajecs 10
 traj_between_meas 1
 beta 5 7 
+ani_dir t
 microcanonical_time_step 0.01
 steps_per_trajectory 4
 fresh 
@@ -28,22 +30,30 @@ unit gauge configuration loaded
 CHECK PLAQ: 3.000000e+00 3.000000e+00
 CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
 Unitarity checked.  Max deviation 0.00e+00
-Time to check unitarity = 7.081032e-05
+Time to check unitarity = 1.931190e-04
 WARMUPS COMPLETED
 GMES 2.946920e+00 3.340570e-04 9.990000e+01 2.975361e+00 2.975060e+00
+Pmunu 2.975684e+00 2.974765e+00 2.975634e+00 2.974339e+00 2.975689e+00 2.975152e+00
 GMES 2.887677e+00 8.236088e-04 9.990000e+01 2.951193e+00 2.949354e+00
+Pmunu 2.950458e+00 2.951814e+00 2.951307e+00 2.949796e+00 2.949782e+00 2.948484e+00
 GMES 2.839801e+00 2.379184e-03 9.990000e+01 2.928138e+00 2.926327e+00
+Pmunu 2.927392e+00 2.928568e+00 2.928454e+00 2.927677e+00 2.927282e+00 2.924023e+00
 GMES 2.806851e+00 2.234770e-03 9.990000e+01 2.905357e+00 2.905688e+00
+Pmunu 2.903919e+00 2.907139e+00 2.905014e+00 2.906723e+00 2.907253e+00 2.903086e+00
 GMES 2.761050e+00 1.225871e-03 9.990000e+01 2.880752e+00 2.882853e+00
+Pmunu 2.879287e+00 2.882563e+00 2.880407e+00 2.884143e+00 2.883088e+00 2.881328e+00
 GMES 2.705524e+00 1.042189e-03 9.990000e+01 2.859163e+00 2.859558e+00
+Pmunu 2.859246e+00 2.860710e+00 2.857533e+00 2.860407e+00 2.861423e+00 2.856844e+00
 GMES 2.679012e+00 3.676346e-04 9.990000e+01 2.839865e+00 2.838924e+00
+Pmunu 2.841796e+00 2.840500e+00 2.837298e+00 2.839728e+00 2.841118e+00 2.835925e+00
 GMES 2.644506e+00 -2.288492e-03 9.990000e+01 2.819544e+00 2.819141e+00
+Pmunu 2.819194e+00 2.821937e+00 2.817500e+00 2.818003e+00 2.821176e+00 2.818246e+00
 GMES 2.596446e+00 -2.432653e-03 9.990000e+01 2.799484e+00 2.801217e+00
+Pmunu 2.800244e+00 2.802655e+00 2.795553e+00 2.797483e+00 2.802651e+00 2.803516e+00
 GMES 2.546647e+00 4.034179e-03 9.990000e+01 2.778606e+00 2.783614e+00
+Pmunu 2.781332e+00 2.781088e+00 2.773398e+00 2.777867e+00 2.786043e+00 2.786933e+00
 RUNNING COMPLETED
-Time = 7.975388e-02 seconds
+Time = 9.853506e-02 seconds
 
 
 get_i(0): EOF on input.
-exit: Sat Mar  9 11:59:05 2019
-

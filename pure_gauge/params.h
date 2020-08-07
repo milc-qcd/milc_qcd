@@ -21,7 +21,8 @@ typedef struct {
 #ifndef ANISOTROPY
 	Real beta;	/* gauge coupling */
 #else
-        Real beta[2];   /* gauge coupling: 0 - space, 1 - time */
+        Real beta[2];   /* beta[0] - 3d-isotropic, beta[1] - anisotropic */
+        short ani_dir; /* direction of anisotropy */
 #endif
 	Real epsilon;	/* time step */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];

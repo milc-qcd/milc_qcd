@@ -42,8 +42,8 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
     register anti_hermitmat* momentum;
     su3_matrix *staple, *tempmat1;
 #ifdef ANISOTROPY
-    int is_temporal; /* to decide what kind of staple we have:
-                      0 - spatial, 1 - temporal */
+    int is_anisotropic; /* to decide what kind of staple we have:
+                      0 - 3d-isotropic, 1 - anisotropic */
 #endif
 
     /* lengths of various kinds of loops */
@@ -122,8 +122,8 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
 		/* set up dirs.  we are looking at loop starting in "XUP"
 		   direction, rotate so it starts in "dir" direction. */
 #ifdef ANISOTROPY
-		/* initialize staple flag as spatial */
-		is_temporal = 0;
+                /* initialize staple flag as 3d-isotropic */
+                is_anisotropic=0;
 #endif
 		for(k=0;k<length;k++){
                     if( GOES_FORWARDS(loop_table[iloop][ln][k]) ){
@@ -134,9 +134,9 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
 			    (dir+OPP_DIR(loop_table[iloop][ln][k]))%4 );
 		    }
 #ifdef ANISOTROPY
-		    /* flip the flag if a temporal link is encountered */
-		    if( is_temporal==0 && ( dirs[k]==TUP || dirs[k]==TDOWN ) )
-			is_temporal=1;
+                    /* flip the flag if an anisotropic link is encountered */
+                    if( is_anisotropic==0 && ( dirs[k]==ani_dir || dirs[k]==OPP_DIR(ani_dir) ) )
+                      is_anisotropic=1;
 #endif
 		}
 
@@ -166,10 +166,10 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
 			/* first we compute the fundamental term */
 			new_term = loop_coeff[iloop][0];
 #ifdef ANISOTROPY
-			/* multiply the coefficient by the coupling -
-                           this weighs spatial and temporal paths
+                        /* multiply the coefficient by the coupling -
+                           this weighs 3d-isotropic or anisotropic paths
                            differently */
-			new_term *= beta[is_temporal];
+                        new_term *= beta[is_anisotropic];
 #endif
 
 			/* now we add in the higher representations */

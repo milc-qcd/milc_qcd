@@ -127,6 +127,9 @@ void d_linktrsum(double_complex *linktrsum);
 /* d_plaq?.c */
 void d_plaquette(double *ss_plaq,double *st_plaq);
 
+/* d_plaq6.c */
+void d_plaquette6(double plaq[]);
+
 /* discretize_wf.c */
 void fnal_wavefunction(complex *wf, int stride,
 		       int x0, int y0, int z0, int t0, 
@@ -306,7 +309,7 @@ double imp_gauge_action(void);
 void g_measure(void);
 void make_loop_table(void);
 #ifdef ANISOTROPY
-void path_determine_st(void);
+void path_determine_ani(void);
 #endif
 void dsdu_qhb_subl(int dir, int subl);
 int get_max_length(void);

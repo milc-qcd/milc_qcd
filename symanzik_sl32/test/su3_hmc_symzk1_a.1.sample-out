@@ -1,14 +1,14 @@
 Anisotropic pure gauge SU3
 Hybrid Monte Carlo algorithm
 MIMD version 7
-Machine = Scalar processor, with 1 nodes
+Machine = MPI (portable), with 1 nodes
 type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nx 4
 ny 4
 nz 4
 nt 4
 iseed 9435
-LAYOUT = Hypercubes, options = setup_layout: Preallocated machine geometry overrides request
+LAYOUT = Hypercubes, options = hyper_sl32,
 ON EACH NODE 4 x 4 x 4 x 4
 Mallocing 0.3 MBytes per node for lattice
 WARNING!!: Resetting random seed
@@ -18,6 +18,7 @@ warms 0
 trajecs 3
 traj_between_meas 1
 beta 5 7 
+ani_dir t
 u0 0.87
 steps_per_trajectory 10
 microcanonical_time_step 0.1
@@ -27,7 +28,7 @@ unit gauge configuration loaded
 CHECK PLAQ: 3.000000e+00 3.000000e+00
 CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
 Unitarity checked.  Max deviation 0.00e+00
-Time to check unitarity = 4.100800e-05
+Time to check unitarity = 3.004074e-05
 Symanzik 1x1 + 1x2 + 1x1x1 action
 gauge_action: total_dyn_flavors = 0
 loop coefficients: nloop rep loop_coeff  multiplicity
@@ -41,22 +42,25 @@ PLAQUETTE ACTION: -7.157928e+03
 ACTION: g,h = 1.429488e+03  2.616611e+03  4.046099e+03
 ACCEPT: delta S = -3.986143e+01
 GMES 1.339269e+00 -1.749813e-03 9.990000e+01 2.243073e+00 2.392185e+00
+Pmunu 2.269844e+00 2.198705e+00 2.260668e+00 2.414967e+00 2.374695e+00 2.386892e+00
 PLAQUETTE ACTION: -7.157928e+03
 ACTION: g,h = 1.429488e+03  4.233089e+03  5.662577e+03
 PLAQUETTE ACTION: -6.050004e+03
 ACTION: g,h = 2.291168e+03  3.353907e+03  5.645075e+03
 ACCEPT: delta S = -1.750235e+01
 GMES 8.647457e-01 -6.906758e-02 9.990000e+01 1.825868e+00 2.071927e+00
+Pmunu 1.880694e+00 1.806233e+00 1.790677e+00 2.112109e+00 2.081656e+00 2.022015e+00
 PLAQUETTE ACTION: -6.050004e+03
 ACTION: g,h = 2.291168e+03  4.048888e+03  6.340056e+03
 PLAQUETTE ACTION: -5.400349e+03
 ACTION: g,h = 2.804145e+03  3.527429e+03  6.331574e+03
 ACCEPT: delta S = -8.482258e+00
 GMES 1.035351e+00 -7.091898e-02 9.990000e+01 1.609214e+00 1.864149e+00
+Pmunu 1.579712e+00 1.643779e+00 1.604152e+00 1.880157e+00 1.857604e+00 1.854684e+00
 RUNNING COMPLETED
-Time = 1.950290e-01 seconds
+Time = 2.069602e-01 seconds
 
 
 get_i(0): EOF on input.
-exit: Sat Mar  9 11:39:00 2019
+exit: Sun May 10 13:44:11 2020
 

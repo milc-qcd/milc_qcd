@@ -25,7 +25,7 @@
 int update()  {
 int step, iters=0;
 #ifdef HMC_ALGORITHM
-double startaction,endaction,change;
+double startaction=0.,endaction,change;
 Real xrandom;
 #endif
 

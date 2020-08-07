@@ -19,6 +19,7 @@ G_ALL = \
  com_vanilla.o \
  d_plaq2.o \
  d_plaq4.o \
+ d_plaq6.o \
  discretize_wf.o \
  field_strength.o \
  field_translation.o \
@@ -146,6 +147,8 @@ com_vanilla.o: ../generic/com_vanilla.c
 d_plaq2.o: ../generic/d_plaq2.c
 	${CC} -c ${CFLAGS} $<
 d_plaq4.o: ../generic/d_plaq4.c
+	${CC} -c ${CFLAGS} $<
+d_plaq6.o: ../generic/d_plaq6.c
 	${CC} -c ${CFLAGS} $<
 d_linktrsum.o: ../generic/d_linktrsum.c
 	${CC} -c ${CFLAGS} $<

@@ -83,7 +83,8 @@ EXTERN	int warms,trajecs,steps,stepsQ,propinterval;
 #ifndef ANISOTROPY
 EXTERN	Real beta;
 #else
-EXTERN	Real beta[2]; // beta[0] - space, beta[1] - time
+EXTERN  short ani_dir; /* direction of anisotropy */
+EXTERN  Real beta[2]; /* beta[0] - 3d-isotropic, beta[1] - anisotropic */
 #endif
 EXTERN	Real epsilon;
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];

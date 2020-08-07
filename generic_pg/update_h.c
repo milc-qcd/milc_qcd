@@ -5,12 +5,6 @@
 
 #include "generic_pg_includes.h"
 
-#ifdef SCHROED_FUN
-#ifdef ANISOTROPY
-#error "Anisotropic gauge couplings are not supported for Schroedinger functional"
-#endif
-#endif
-
 /* update the momenta with the gauge force */
 void update_h(Real eps) {
 register int i,dir1,dir2;
@@ -25,8 +19,8 @@ register Real eb3;
     eb3 = eps*beta/3.0;
 #else
     eb3 = eps/3.0;
-    int is_temporal; /* to decide what kind of staple we have:
-                        0 - spatial, 1 - temporal */
+    int is_anisotropic; /* to decide what kind of staple we have:
+                           0 - 3d-isotropic, 1 - anisotropic */
 #endif
     /* Loop over directions, update mom[dir1] */
     for(dir1=XUP; dir1<=TUP; dir1++){
@@ -36,9 +30,8 @@ register Real eb3;
 	for(dir2=XUP;dir2<=TUP;dir2++)if(dir2 != dir1){
 
 #ifdef ANISOTROPY
-	    /* find out what kind of staple we have:
-	       0 - spatial, 1 - temporal */
-	    is_temporal = (dir1==TUP) ? 1 : ( (dir2==TUP) ? 1 : 0 );
+            /* flip the flag if an anisotropic link is encountered */
+            is_anisotropic = ( ( dir1==ani_dir || dir2==ani_dir ) ? 1 : 0 );
 #endif
 
 	    /* get link[dir2] from direction dir1 */
@@ -92,19 +85,35 @@ register Real eb3;
 			mult_su3_nn( &(st->link[dir2]), &(st->boundary[dir1]),
 			    &tmat1);
 			mult_su3_na( &tmat1, (su3_matrix *)gen_pt[0][i],
-			    &(st->staple));
-		    }
-		    else if(st->t==(nt-1) && dir1==TUP){
+#ifndef ANISOTROPY
+                        &(st->staple));
+#else
+                        &(st->staple_a[is_anisotropic]) );
+                        // zero out the other staple
+                        clear_su3mat( &(st->staple_a[1-is_anisotropic]) );
+#endif
+		    }else if(st->t==(nt-1) && dir1==TUP){
 			mult_su3_nn( &(st->link[dir2]),
 			    (su3_matrix *)gen_pt[2][i], &tmat1);
 			mult_su3_na( &tmat1, &(st->boundary[dir2]),
-			    &(st->staple));
-		    }
-		    else{
+#ifndef ANISOTROPY
+                        &(st->staple));
+#else
+                        &(st->staple_a[is_anisotropic]) );
+                        // zero out the other staple
+                        clear_su3mat( &(st->staple_a[1-is_anisotropic]) );
+#endif
+		    }else{
 			mult_su3_nn( &(st->link[dir2]),
 			    (su3_matrix *)gen_pt[2][i], &tmat1);
 			mult_su3_na( &tmat1, (su3_matrix *)gen_pt[0][i],
-			    &(st->staple));
+#ifndef ANISOTROPY
+                        &(st->staple));
+#else
+                        &(st->staple_a[is_anisotropic]) );
+                        // zero out the other staple
+                        clear_su3mat( &(st->staple_a[1-is_anisotropic]) );
+#endif
 		    }
 #else
 		FORALLSITES(i,st){
@@ -114,9 +123,9 @@ register Real eb3;
 #ifndef ANISOTROPY
 			&(st->staple));
 #else
-			&(st->staple_a[is_temporal]) );
+                        &(st->staple_a[is_anisotropic]) );
 			// zero out the other staple
-			clear_su3mat( &(st->staple_a[1-is_temporal]) );
+			clear_su3mat( &(st->staple_a[1-is_anisotropic]) );
 #endif
 #endif
 		}
@@ -151,8 +160,8 @@ register Real eb3;
 #ifndef ANISOTROPY
 		    add_su3_matrix( &(st->staple),&tmat2,&(st->staple));
 #else
-		    add_su3_matrix( &(st->staple_a[is_temporal]), &tmat2,
-			&(st->staple_a[is_temporal]));
+                    add_su3_matrix( &(st->staple_a[is_anisotropic]), &tmat2,
+                        &(st->staple_a[is_anisotropic]));
 #endif
 
 		}
@@ -168,9 +177,9 @@ register Real eb3;
 		add_su3_matrix( &(st->staple), (su3_matrix *)gen_pt[1][i],
 		    &(st->staple));
 #else
-		add_su3_matrix( &(st->staple_a[is_temporal]),
-		    (su3_matrix *)gen_pt[1][i],
-		    &(st->staple_a[is_temporal]));
+                add_su3_matrix( &(st->staple_a[is_anisotropic]),
+                    (su3_matrix *)gen_pt[1][i],
+                    &(st->staple_a[is_anisotropic]));
 #endif
 	    }
 	    cleanup_gather(tag0);
@@ -178,13 +187,13 @@ register Real eb3;
 	    cleanup_gather(tag2);
 	}
 #ifdef ANISOTROPY
-	/* Add spatial and temporal staples weighted by betas to the
-	   "staple" variable */
-	FORALLSITES(i,st){
-	    scalar_mult_su3_matrix( &(st->staple_a[0]), beta[0], &tmat1 );
-	    scalar_mult_su3_matrix( &(st->staple_a[1]), beta[1], &tmat2 );
-	    add_su3_matrix( &tmat1, &tmat2, &(st->staple) );
-	}
+        /* Add 3d-isotropic and anisotropic, i.e. usually spatial and temporal, staples weighted by betas to the
+       "staple" variable */
+        FORALLSITES(i,st){
+            scalar_mult_su3_matrix( &(st->staple_a[0]), beta[0], &tmat1 );
+            scalar_mult_su3_matrix( &(st->staple_a[1]), beta[1], &tmat2 );
+            add_su3_matrix( &tmat1, &tmat2, &(st->staple) );
+        }
 #endif
 
 	/* Now multiply the staple sum by the link, then update momentum */

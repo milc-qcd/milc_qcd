@@ -37,21 +37,13 @@ int key[4];
     /* set up */
     prompt = setup();
 
-/* set up polyakof loop correlator */
+/* set up polyakov loop correlator */
 #ifdef PLCOR
     setup_ploop_corr(key);
 #endif
 
     /* loop over input sets */
     while( readin(prompt) == 0){
-
-	/* set up loop tables */
-	make_loop_table();
-
-#ifdef ANISOTROPY
-        /* figure out which loops are temporal and which are spatial */
-        path_determine_st();
-#endif
 
 	/* perform warmup trajectories */
 	dtime = -dclock();
@@ -80,6 +72,13 @@ int key[4];
 		(double)plp.real,(double)plp.imag,99.9,
 		dssplaq,dstplaq);
 	    /* Re(Polyakov) Im(Poyakov) cg_iters ss_plaq st_plaq */
+#ifdef ANISOTROPY
+            double plaq[6];
+            d_plaquette6(plaq);
+            node0_printf("Pmunu %.6e %.6e %.6e %.6e %.6e %.6e\n",
+              plaq[0], plaq[1], plaq[2], plaq[3], plaq[4], plaq[5]);
+#endif
+
 #else
 	    /* do "extensive local" measurements */
 	    g_measure();

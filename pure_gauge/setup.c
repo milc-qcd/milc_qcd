@@ -2,6 +2,14 @@
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
+
+#include <string.h>
+#include <ctype.h>
+
+/* Forward declarations */
+#ifdef ANISOTROPY
+static int dirstring2index (char savebuf[], int *status);
+#endif
 #include "pure_gauge_includes.h"
 int initial_set();
 
@@ -108,12 +116,15 @@ char savebuf[128];
 	    get_i(stdin, prompt,"traj_between_meas", &par_buf.propinterval );
     
 	/* get couplings and broadcast to nodes	*/
-	/* beta, mass */
+	/* beta */
 #ifndef ANISOTROPY
 	IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
 #else
-    /* beta[0] - space, beta[1] - time */
-    IF_OK status += get_vf(stdin, prompt,"beta", par_buf.beta, 2 );
+        /* beta[0] - isotropic, beta[1] - anisotropic */
+        IF_OK status += get_vf(stdin, prompt,"beta", par_buf.beta, 2 );
+        /* Direction of anisotropy */
+        IF_OK status += get_s(stdin, prompt,"ani_dir",savebuf);
+        par_buf.ani_dir = dirstring2index( savebuf, &status);
 #endif
 
 #if ( defined HMC_ALGORITHM || defined RMD_ALGORITHM )
@@ -186,6 +197,8 @@ char savebuf[128];
 #ifndef ANISOTROPY
     beta = par_buf.beta;
 #else
+    ani_dir=par_buf.ani_dir;
+
     beta[0] = par_buf.beta[0];
     beta[1] = par_buf.beta[1];
 #endif
@@ -199,3 +212,33 @@ char savebuf[128];
 
     return(0);
 } /*readin()*/
+
+#ifdef ANISOTROPY
+static int dirstring2index (char savebuf[], int *status) {
+  short mydir;
+
+  if ( savebuf[0] >= 'A' && savebuf[0] <= 'Z' )
+    mydir = tolower(savebuf[0]);
+  else
+    mydir = savebuf[0];
+  switch(mydir) {
+    case XUP:
+    case '0':
+    case 'x': mydir = XUP; break;
+    case YUP:
+    case '1':
+    case 'y': mydir = YUP; break;
+    case ZUP:
+    case '2':
+    case 'z': mydir = ZUP; break;
+    case TUP:
+    case '3':
+    case 't': mydir = TUP; break;
+    default:
+      node0_printf("Expecting direction \
+as x,y,z,t, X,Y,Z,T, or 0,1,2,3;  instead %c\n", mydir);
+     (*status)++;
+  }
+  return mydir;
+}
+#endif

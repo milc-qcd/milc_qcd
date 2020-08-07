@@ -9,6 +9,7 @@ warms 0
 trajecs 3
 traj_between_meas 1
 beta 5.0 7.0
+ani_dir t
 u0 0.870
 steps_per_trajectory 10
 microcanonical_time_step 0.1
