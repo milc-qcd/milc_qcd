@@ -1,0 +1,241 @@
+#  Staggered inverter with spectroscopy
+#  MIMD version 7
+
+#  Generic make-include file for ani_non_prod_tests codes
+
+#  This template file defines rules and macros common to all architectures
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  Select the inverter algorithm in the Makefile
+#
+
+
+MYINCLUDEDIR = .
+INCLUDEDIR = ../include ../include/mGrid
+#Where the complex and su3 libraries are
+LIBDIR = ../libraries
+
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
+
+INLINE_HEADERS = \
+  ../sse/include/ \
+  ../sse2/include/ \
+  ../libraries/include/
+
+MY_HEADERS = \
+  lattice.h \
+  params.h \
+  defines.h \
+  quark_action.h
+
+#  ks_spectrum_includes.h \
+
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} \
+  ${QUDA_HEADERS} ${QPHIX_HEADERS} ${GRID_HEADERS} ${SCIDAC_HEADERS}
+
+# All required object files
+# Basic set from current directory
+MY_OBJECTS =         \
+  check_ani.o        \
+  gauge_info.o       \
+  ks_source_info.o   \
+  ksprop_info.o      \
+  ani_non_prod_tests.o   \
+  setup.o
+
+
+SMZK_OBJECTS = \
+  gauge_stuff.o      \
+  gauge_force_imp.o  \
+  plaquette4.o       \
+  ploop2.o           \
+  update.o \
+  update_u.o \
+  update_h.o \
+  ranmom.o \
+  d_action.o \
+  d_plaq6.o
+
+# # Objects depending on architecture and software package 
+
+# Selection of layout
+
+LAYOUT = layout_hyper_prime.o # Choices possible here
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG}
+
+OBJECTS = \
+  ${MY_OBJECTS} \
+  ${GAUGE_OBJECTS} \
+  ${KS_IO_OBJECTS} \
+  ${LAYOUT} \
+  ${FFT_OBJECTS} \
+  ${FERMION_OBJECTS} \
+  ${KS_SPECTRUM_OBJECTS} \
+  ${STANDARD_OBJECTS} \
+  ${ADD_OBJECTS} \
+  ${SMZK_OBJECTS} \
+  ${EXTRA_OBJECTS}
+
+#Libraries for complex numbers and su3 functions
+P = $(strip ${PRECISION})
+QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
+
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
+LIBRARIES += ${QPHIX_LIBRARIES} ${QPHIXJ_LIBRARIES} ${GRID_LIBRARIES}
+
+# Default rule for C compilation
+.c.o: ; ${CC} -c ${CFLAGS} $<
+.cc.o: ; ${CXX} -c ${CXXFLAGS} $<
+
+# To force a full remake when changing targets
+LASTMAKE = .lastmake.${MAKEFILE}.${P}.${MYTARGET}
+
+${LASTMAKE}: ${ALL_MAKES}
+	-/bin/rm -f .lastmake.* quark_action.h
+	${MAKE} -f ${MAKEFILE} clean
+	touch ${LASTMAKE}
+
+# All make files used in this compilation
+ALL_MAKES = \
+  Make_template \
+  ${MAKEFILE} \
+  ../Make_template_qop \
+  ../Make_template_combos \
+  ../Make_template_scidac \
+  ../generic/Make_template \
+  ../generic_ks/Make_template \
+  ../generic_u1/Make_template \
+  ../symanzik_sl32/Make_template
+
+# To force a remake when changing any make file, header, or target
+${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
+
+gauge_stuff.o: gauge_action.h 
+
+# Directory where we store the improved action headers
+GAUGEIMP = ../generic/imp_actions
+
+gauge_action.h:
+	@echo Configuring special gauge action 
+	/bin/cp ${GAUGESRC}/${GAUGE} gauge_action.h
+	/bin/sed 's/symanzik_sl32_includes.h/ani_non_prod_tests_includes.h/g' < ../symanzik_sl32/update_u.c > update_u.c
+	/bin/sed 's/symanzik_sl32_includes.h/ani_non_prod_tests_includes.h/g' < ../symanzik_sl32/update_h.c > update_h.c
+	/bin/sed 's/symanzik_sl32_includes.h/ani_non_prod_tests_includes.h/g' < ../symanzik_sl32/d_action.c > d_action.tmp
+	/bin/sed 's/g,h = %e  %e  %e/g,h = %.16e  %.16e  %.16e/g' < d_action.tmp > d_action.c
+	/bin/rm d_action.tmp
+	/bin/sed 's/symanzik_sl32_includes.h/ani_non_prod_tests_includes.h/g' < ../symanzik_sl32/update.c > update.tmp
+	/bin/sed 's/reunitarize()/noreunit()/g' < update.tmp > update.c
+	/bin/rm update.tmp
+
+# Directories where we store the improved action headers
+QUARKIMP = ../generic_ks/imp_actions
+
+quark_action.h: ${QUARKIMP}/${QUARK}
+	@echo Copying quark_action.h from ${QUARKIMP}/${QUARK}
+	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
+
+
+##### Targets:
+# Common compiler macros
+
+# -DFN          identifies fat-Naik-like actions with only next and 3rd
+#               next neighbor linkage
+
+NAIVE_OPTIONS = "DEFINES += -DFN -DHAVE_KS -UD_FN_GATHER13" \
+	"QUARK = onelink_action.h" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS}"
+
+ASQTAD_OPTIONS = "DEFINES += -DFN -DHAVE_KS" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS += ${FN_OBJECTS}"
+
+HISQ_OPTIONS = "DEFINES += -DFN -DHAVE_KS \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS = ${HISQ_OBJECTS}"
+
+KS_ANI_OPTIONS = "DEFINES += \
+	-DONEDIM_ANISO_TEST -DFREE_KS_ANI_TEST \
+	-DANI_VERBOSE" 
+
+# naive targets
+check_ani_naive::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES += -DANISOTROPY" \
+	${NAIVE_OPTIONS} \
+	${KS_ANI_OPTIONS} \
+	"GAUGESRC = ${GAUGEIMP}" \
+	"GAUGE = symanzik_tree_action.h" 
+	
+
+# Asqtad targets
+check_ani_asqtad::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES += -DANISOTROPY" \
+	${ASQTAD_OPTIONS} \
+	${KS_ANI_OPTIONS} \
+	"GAUGESRC = ${GAUGEIMP}" \
+	"GAUGE = symanzik_tree_action.h" 
+
+# HISQ targets
+check_ani_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES += -DANISOTROPY" \
+	${HISQ_OPTIONS} \
+	${KS_ANI_OPTIONS} \
+	"GAUGESRC = ${GAUGEIMP}" \
+	"GAUGE = symanzik_tree_action.h" 
+
+# SYMANZIK targets
+check_ani_funny_symzk0::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES += -DANISOTROPY" \
+	"DEFINES += -DHMC_ALGORITHM -DFUNNYLINKS" \
+	${NAIVE_OPTIONS} \
+	"GAUGESRC = ." \
+	"GAUGE = symanzik_tree_action.h" 
+
+check_ani_funny_symzk1::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES += -DANISOTROPY" \
+	"DEFINES += -DHMC_ALGORITHM -DFUNNYLINKS" \
+	${NAIVE_OPTIONS} \
+	"GAUGESRC = ." \
+	"GAUGE = symanzik_1loop_action.h" 
+
+clean:
+	-/bin/rm -f *.o quark_action.h gauge_action.h
+
+# Rules for generic routines
+include ../generic/Make_template
+
+# Rules for generic_ks routines
+include ../generic_ks/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_wilson/Make_template
+
+# Rules for packages
+Grid:
+	@echo Building Grid
+	cd ${HOME}/Grid && \
+	./build.sh ${GRID_ARCH} ${CC} ${CXX}
+
+packagemake: ${PACKAGE_DEPS}
+
+libmake:
+	@echo Building libraries with ${MAKELIBRARIES}
+	cd ${LIBDIR} ;\
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" \
+        "ARCH=${ARCH}" "COMPILER=${COMPILER}" all
+
+localmake: ${OBJECTS} ${LIBRARIES}
+	${LD} -o ${MYTARGET} ${LDFLAGS} \
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	touch localmake
+
+target: libmake localmake 
