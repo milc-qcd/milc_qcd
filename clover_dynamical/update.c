@@ -118,7 +118,7 @@ Real xrandom;
 
         /* reunitarize the gauge field */
 	boundary_flip(PLUS);
-        reunitarize();
+        reunitarize_cpu();
 	boundary_flip(MINUS);
 
     }	/* end loop over microcanonical steps */

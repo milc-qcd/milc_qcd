@@ -19,7 +19,7 @@ void rand_gauge(field_offset G)
 {
     randomize(G, 1.0);
     gauge_trans(G);
-    reunitarize();
+    reunitarize_cpu();
 }
 
 void randomize(field_offset G, Real radius)

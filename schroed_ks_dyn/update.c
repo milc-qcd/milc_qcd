@@ -130,7 +130,7 @@ Real xrandom;
 
 	/* reunitarize the gauge field */
 	rephase_sf( OFF );
-	reunitarize();
+	reunitarize_cpu();
 	rephase_sf( ON );
 
     }	/* end loop over microcanonical steps */

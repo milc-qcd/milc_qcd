@@ -149,9 +149,7 @@ int update()  {
     	update_u(epsilon*0.5);
 
         /* reunitarize the gauge field */
-	rephase( OFF );
-        reunitarize();
-	rephase( ON );
+        reunitarize_ks();
 
     }	/* end loop over microcanonical steps */
 
