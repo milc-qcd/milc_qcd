@@ -758,8 +758,10 @@ int mat_invert_field(su3_vector *src, su3_vector *dst,
       cgn = mat_invert_cg_field(src, dst, qic, mass, fn );
     if (qic->inv_type == MGTYPE) {
       node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
+#ifdef HAVE_QUDA
       /* Force a reload b/c of sloppy link precision changes */
       refresh_fn_links(fn);
+#endif
     }
   } else {
     /* inv_type == MGTYPE */
@@ -787,8 +789,10 @@ int mat_invert_block(su3_vector **src, su3_vector **dst,
 
     if (qic->inv_type == MGTYPE) {
       node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
+#ifdef HAVE_QUDA
       /* Force a reload b/c of sloppy link precision changes */
       refresh_fn_links(fn);
+#endif
     }
   } else {
     /* inv_type == MGTYPE */
