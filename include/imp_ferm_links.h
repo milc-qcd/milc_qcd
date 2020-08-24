@@ -365,6 +365,10 @@ void print_densities(su3_vector *src, char *tag, int y,int z,int t,
 		     int parity);
 void reset_eigenvalues(su3_vector *eigVec[], double *eigVal,
 		       int Nvecs, int parity, imp_ferm_links_t *fn);
+void perturb_eigpair(su3_vector *eigVec_new[], double *eigVal_new,
+		     su3_vector *eigVec_old[], double *eigVal_old,
+		     int Nvecs, int parity, imp_ferm_links_t *fn_new,
+		     imp_ferm_links_t *fn_old);
 void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
 		  int Nvecs, int parity, imp_ferm_links_t *fn);
 void construct_eigen_odd(su3_vector **eigVec, double *eigVal, ks_eigen_param* eigen_param, imp_ferm_links_t *fn);
@@ -377,6 +381,10 @@ su3_matrix *get_lnglinks(imp_ferm_links_t *fn);
 su3_matrix *get_fatbacklinks(imp_ferm_links_t *fn);
 su3_matrix *get_lngbacklinks(imp_ferm_links_t *fn);
 
+/* fn_links_milc.c only -- for QUDA */
+int fresh_fn_links(imp_ferm_links_t *fn);
+void refresh_fn_links(imp_ferm_links_t *fn);
+void cancel_quda_notification(imp_ferm_links_t *fn);
 
 /* fpi_2.c */
 int fpi_2( /* Return value is number of C.G. iterations taken */
