@@ -1496,16 +1496,9 @@ int get_wv_quark_source(FILE *fp, int prompt, quark_source *qs){
   IF_OK qs->orig_type  = source_type;  /* In case we change the type */
   
   /* Get the field type */
+  char savebuf[128];
+  IF_OK status += get_s(stdin, prompt, "field_type", savebuf);
   IF_OK {
-
-    if (prompt==1){
-      printf("enter field type ");
-      printf("'Dirac', ");
-      printf("'KS', ");
-      printf("\n");
-    }
-    char *savebuf = get_next_tag(fp, "field type", myname);
-    if (savebuf == NULL) return 1;
     if(strcmp("Dirac",savebuf) == 0){
       qs->field_type = WILSON_FIELD;
     }
@@ -1513,10 +1506,31 @@ int get_wv_quark_source(FILE *fp, int prompt, quark_source *qs){
       qs->field_type = KS_FIELD;
     }
     else{
-      printf("%s: ERROR IN INPUT: field type %s not recognized\n",myname,
+      printf("%s: ERROR IN INPUT: field type %s not recognized. Choices are 'Dirac' and 'KS'.n",myname,
 	     savebuf);
       status++;
     }
+//  IF_OK {
+//
+//    if (prompt==1){
+//      printf("enter field type ");
+//      printf("'Dirac', ");
+//      printf("'KS', ");
+//      printf("\n");
+//    }
+//    char *savebuf = get_next_tag(fp, "field type", myname);
+//    if (savebuf == NULL) return 1;
+//    if(strcmp("Dirac",savebuf) == 0){
+//      qs->field_type = WILSON_FIELD;
+//    }
+//    else if(strcmp("KS",savebuf) == 0){
+//      qs->field_type = KS_FIELD;
+//    }
+//    else{
+//      printf("%s: ERROR IN INPUT: field type %s not recognized\n",myname,
+//	     savebuf);
+//      status++;
+//    }
 
   
     /* Specify the subset */

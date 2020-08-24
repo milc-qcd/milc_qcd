@@ -41,6 +41,7 @@
 #include <string.h>
 #ifdef HAVE_QUDA
 #include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
 #endif
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
@@ -314,7 +315,7 @@ int main(int argc, char *argv[])
       for(int color = 0; color < qs->ncolor; color++){
 
 	/* Apply operator*/
-	v_field_op(source[is]->v[color], qs->op, qs->subset, qs->t0);
+        v_field_op(source[is]->v[color], &(param.src_qs_op[is]), qs->subset, qs->t0);
 
 	/* Write the source, if requested */
 	if(qs->saveflag != FORGET){
@@ -772,6 +773,12 @@ int main(int argc, char *argv[])
     
     destroy_ape_links_3D(ape_links);
     
+
+    for(is=0; is<param.num_base_source+param.num_modified_source; is++){
+      if(source[is] != NULL)node0_printf("destroy source[%d]\n",is);
+      destroy_ksp_field(source[is]); source[is] = NULL;
+    }
+    
     /* Destroy fermion links (created in readin() */
     
 #if FERM_ACTION == HISQ
@@ -787,7 +794,7 @@ int main(int argc, char *argv[])
   
 
 #ifdef HAVE_QUDA
-  qudaFinalize();
+  finalize_quda();
 #endif
   
 #ifdef HAVE_QPHIX

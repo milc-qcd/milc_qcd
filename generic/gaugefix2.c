@@ -449,12 +449,12 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 	{
 	  node0_printf("step %d av gf action %.8e, delta %.3e\n",
 		       gauge_iter,current_av,del_av); fflush(stdout);
-	  reunitarize();
+	  reunitarize_cpu();
 	}
     }
   /* Reunitarize at the end, unless we just did it in the loop */
   if((gauge_iter % REUNIT_INTERVAL) != 0)
-    reunitarize();
+    reunitarize_cpu();
 
   /* Free workspace */
   free(diffmatp);

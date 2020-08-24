@@ -186,7 +186,7 @@ main( int argc, char **argv )
   free_lattice();
 
 #ifdef HAVE_QUDA
-  qudaFinalize();
+  finalize_quda();
 #endif
 
 #ifdef HAVE_QPHIX

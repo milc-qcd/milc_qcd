@@ -35,13 +35,17 @@ typedef struct {
 
   /*  REPEATING BLOCK */
   int startflag;	/* what to do for beginning lattice */
+  int start_u1flag;	/* what to do for beginning u(1) lattice */
   Real u0;
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
   int time_bc;          /* 0 for antiperiodic, 1 for periodic */
   Real staple_weight;
   int ape_iter;
   int saveflag;	/* what to do for saving lattice */
+  int save_u1flag;	/* what to do with ending u(1) lattice */
   char startfile[MAXFILENAME];  /* Gauge file */
+  char start_u1file[MAXFILENAME]; /* U(1) gauge file */
+  char save_u1file[MAXFILENAME]; /* U(1) gauge file */
   char savefile[MAXFILENAME];
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 #if EIGMODE == EIGCG
@@ -64,9 +68,11 @@ typedef struct {
   quark_invert_control qic_pbp[MAX_MASS_PBP];
   quark_invert_control qic_pbp_sloppy[MAX_MASS_PBP];
   ks_param ksp_pbp[MAX_MASS_PBP];
-  char pbp_filenames[MAX_MASS_PBP][MAXFILENAME];
+  Real charge_pbp[MAX_MASS_PBP];
+  char pbp_filenames[MAX_MASS_PBP][MAXFILENAME]; /* For saving the current density file -- deprecated */
   int set[MAX_MASS_PBP];  /* The set to which the propagator belongs */
   char mass_label[MAX_MASS_PBP][32];
+  char charge_label[MAX_MASS_PBP][32];
 }  params;
 
 

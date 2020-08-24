@@ -14,7 +14,6 @@
 #include "../include/comdefs.h"
 #include "../include/info.h"
 
-
 void copy_latvec(field_offset src, field_offset dest, int parity);
 void dslash_site( field_offset src, field_offset dest, int parity );
 void dslash_site_special( field_offset src, field_offset dest,
@@ -27,6 +26,11 @@ void checkmul(void);
 
 void prefetch_vector( su3_vector * );
 void prefetch_matrix( su3_matrix * );
+
+/* charge_utilities.c */
+int fill_charge(double charge_table[], int *n, double next_charge);
+int index_charge(double charge_table[], int n, double find_charge);
+void start_charge(double charge_table[], int *n);
 
 /* d_congrad_opt.c */
 
@@ -58,6 +62,9 @@ void scalar_mult_add_latveclist_proj(anti_hermitmat *mom,
            veclist *back, veclist *forw, Real *coeff, int listlength );
 void scalar_mult_add_latveclist( veclist *dest,
             veclist *src, Real *s, int listlength );
+
+/* gauge_force_imp_ks.c */
+void imp_gauge_force_ks( Real eps, field_offset mom_off );
 
 /* gauss_smear_ks.c */
 void gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
@@ -99,6 +106,9 @@ void rephase( int flag );
 void rephase_field_offset( su3_matrix *internal_links, int flag, 
 			   int *status_now, int r0[] );
 void rephase_offset( int flag, int r0[] );
+
+/* reunitarize_ks.c */
+void reunitarize_ks(void);
 
 /* show_generic_ks_opts.c */
 void show_generic_ks_opts( void );

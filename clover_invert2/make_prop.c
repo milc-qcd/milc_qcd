@@ -324,7 +324,7 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 	} /* startflag != FRESH */
 
 	/* In most use cases we will be reading a precomputed staggered
-	   propagator, so we use the less optimized mat_invert_cg_field
+	   propagator, so we use the less optimized mat_invert_field
 	   algorithm, instead of mat_invert_uml_field here to avoid
 	   "reconstructing", and so overwriting the odd-site solution.
 	   This would be a degradation if the propagator was precomputed
@@ -334,13 +334,8 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 	   inverter algorithm dependent on the propagator start flag.
 	   FRESH -> uml and otherwise cg. */
 	
-	if(startflag == FRESH){
-	  avs_iters += mat_invert_uml_field(src, dst, 
-					    my_qic, my_ksp->mass, fn);
-	} else {
-	  avs_iters += mat_invert_cg_field(src, dst,
-					   my_qic, my_ksp->mass, fn);
-	}
+	avs_iters += mat_invert_field(src, dst, my_qic, my_ksp->mass,
+				      fn, startflag == FRESH);
 
 	/* Transform solution, completing the U(1) gauge transformation */
 	mybdry_phase[3] = 0; 
@@ -547,7 +542,7 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
 	mybdry_phase[3] = bdry_phase[3]; 
 	
 	/* In most use cases we will be reading a precomputed staggered
-	   propagator, so we use the less optimized mat_invert_cg_field
+	   propagator, so we use the less optimized mat_invert_field
 	   algorithm, instead of mat_invert_uml_field here to avoid
 	   "reconstructing", and so overwriting the odd-site solution.
 	   This would be a degradation if the propagator was precomputed
@@ -557,11 +552,8 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
 	   inverter algorithm dependent on the propagator start flag.
 	   FRESH -> uml and otherwise cg. */
 	
-	if(startflag == FRESH){
-	  avs_iters += mat_invert_uml_field(src, dst, my_qic, my_ksp->mass, fn);
-	} else {
-	  avs_iters += mat_invert_cg_field(src, dst, my_qic, my_ksp->mass, fn);
-	}
+	avs_iters += mat_invert_field(src, dst, my_qic, my_ksp->mass,
+				      fn, startflag == FRESH);
 
 	/* Transform solution, completing the U(1) gauge transformation */
 	mybdry_phase[3] = 0; 
