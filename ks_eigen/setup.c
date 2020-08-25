@@ -97,9 +97,6 @@ static int initial_set(){
 #if FERM_ACTION == HISQ
     show_su3_mat_opts();
     show_hisq_links_opts();
-#elif FERM_ACTION == HYPISQ
-    show_su3_mat_opts();
-    show_hypisq_links_opts();
 #endif
 
     status = get_prompt(stdin, &prompt);
@@ -293,7 +290,7 @@ int readin(int prompt) {
   
   if(prompt==2)return 0;
   
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
   n_naiks = 1;
   eps_naik[0] = 0.0;
 #endif
@@ -320,7 +317,7 @@ int readin(int prompt) {
   fermion_links_want_back(1);
 #endif
   
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
   fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 #else
   fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
