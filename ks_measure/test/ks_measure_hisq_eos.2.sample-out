@@ -116,14 +116,14 @@ Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
  OK converged final_rsq= 4.7e-23 (cf 0) rel = 6.9e-11 (cf 1e-10) restarts = 1 iters= 51
  OK converged final_rsq= 2.6e-23 (cf 0) rel = 5.4e-11 (cf 1e-10) restarts = 1 iters= 7
-PB_DMDEPS_P: mass 7.000000e-02  3.139979e-01  3.237271e-01 ( 1 of 1 )
-PBP: mass 7.000000e-02     8.827944e-02  2.745726e-02  -3.024949e-02  -3.024949e-02 ( 1 of 1 )
-FACTION: mass = 7.000000e-02,  1.500311e+00 ( 1 of 1 )
-PB_DMDMU_P: mass 7.000000e-02  -4.290479e-02  1.621986e-02  -4.093955e-02  2.553170e-02 ( 1 of 1 )
-PB_D2MDMU2_P: mass 7.000000e-02  6.548345e-01  7.103028e-01  -4.566629e-02  -5.566839e-02 ( 1 of 1 )
+PB_DMDEPS_P: mass 7.000000e-02  3.173363e-01  3.271860e-01 ( 1 of 1 )
+PBP: mass 7.000000e-02     8.962231e-02  2.833810e-02  -3.065112e-02  -3.065112e-02 ( 1 of 1 )
+FACTION: mass = 7.000000e-02,  1.500343e+00 ( 1 of 1 )
+PB_DMDMU_P: mass 7.000000e-02  -4.289088e-02  1.635671e-02  -4.095090e-02  2.541506e-02 ( 1 of 1 )
+PB_D2MDMU2_P: mass 7.000000e-02  6.644298e-01  7.190974e-01  -4.414811e-02  -5.369865e-02 ( 1 of 1 )
  OK converged final_rsq= 3.7e-22 (cf 0) rel = 9.7e-11 (cf 1e-10) restarts = 1 iters= 52
  OK converged final_rsq= 2.8e-22 (cf 0) rel = 9.8e-11 (cf 1e-10) restarts = 1 iters= 7
-TR_MidM_MidM: mass 7.000000e-02,  3.669487e-01 ( 1 of 1 )
+TR_MidM_MidM: mass 7.000000e-02,  3.664454e-01 ( 1 of 1 )
 Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 RUNNING COMPLETED
 Time = 3.994160e-01 seconds
