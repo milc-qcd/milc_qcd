@@ -165,6 +165,9 @@ include ../generic/Make_template
 # Rules for generic_ks routines
 include ../generic_ks/Make_template
 
+# Rules for generic_u1 routines
+include ../generic_u1/Make_template
+
 # Rules for generic_wilson routines
 include ../generic_wilson/Make_template
 
