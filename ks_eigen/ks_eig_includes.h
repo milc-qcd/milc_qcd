@@ -20,6 +20,7 @@
 #include "../include/generic.h"
 #include "../include/dirs.h"
 #include "../include/io_ksprop.h"  /* We really should get rid of this */
+#include "../include/generic_u1.h"
 
 #ifdef FN
 #define dslash_site dslash_fn_site
