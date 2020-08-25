@@ -610,7 +610,6 @@ void mat_invert_mg_cleanup(void){
 #endif
 }
 
-#endif /* if 0 or 1 */
 #endif /* HAVE_QUDA */
 
 /*****************************************************************************/
