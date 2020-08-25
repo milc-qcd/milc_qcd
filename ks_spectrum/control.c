@@ -241,11 +241,9 @@ int main(int argc, char *argv[])
 
       for(int color = 0; color < qs->ncolor; color++){
 
+	/* Apply operator*/
 	v_field_op(source[is]->v[color], &(param.src_qs_op[is]), qs->subset, qs->t0);
 	// v_field_op(source[is]->v[color], qs->op, qs->subset, qs->t0);
-
-	/* Apply operator*/
-	//	v_field_op(source[is]->v[color], &(param.src_qs_op[is]), qs->subset, qs->t0);
 
 	/* Write the source, if requested */
 	if(qs->saveflag != FORGET){
@@ -699,6 +697,12 @@ int main(int argc, char *argv[])
     }
     
     destroy_ape_links_3D(ape_links);
+    
+
+    for(is=0; is<param.num_base_source+param.num_modified_source; is++){
+      if(source[is] != NULL)node0_printf("destroy source[%d]\n",is);
+      destroy_ksp_field(source[is]); source[is] = NULL;
+    }
     
     /* Destroy fermion links (created in readin() */
     

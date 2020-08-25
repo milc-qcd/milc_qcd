@@ -4,7 +4,7 @@
 /*  D.T. first try at RHMC version 12/05
  *  D.T. 03/07 Added 2G1F and generalized to gang together multiple psfermions
 
-/*  A.W-L. 12/18 Added 5G1F and 6G1F
+ *  A.W-L. 12/18 Added 5G1F and 6G1F
 
  Update lattice by a molecular dynamics trajectory.
  Contains a selection of integration algorithms
@@ -147,7 +147,16 @@
 #include "../include/su3_mat_op.h"
 #endif
 
-int update()  {
+#if defined(USE_FF_GPU)
+#include "../include/generic_quda.h"
+#define special_alloc qudaAllocateManaged
+#define special_free qudaFreeManaged
+#else
+#define special_alloc malloc
+#define special_free free
+#endif
+
+int update() {
   int step, iters=0;
   double startaction,endaction;
 #ifdef MILC_GLOBAL_DEBUG
@@ -253,7 +262,7 @@ int update()  {
     terminate(1);
   }
   for(i=0;i<n_multi_x;i++){
-    multi_x[i]=(su3_vector *)malloc( sizeof(su3_vector)*sites_on_node );
+    multi_x[i]=(su3_vector *)special_alloc( sizeof(su3_vector)*sites_on_node );
     if(multi_x[i] == NULL){
       printf("update: No room for multi_x\n");
       terminate(1);
@@ -307,7 +316,7 @@ int update()  {
         /* update U's by half time step to get to even time */
         update_u(epsilon*0.5);
         /* reunitarize the gauge field */
-        rephase( OFF ); reunitarize(); rephase( ON );
+        reunitarize_ks();
         /*TEMP - monitor action*/if(step%4==0)d_action_rhmc(multi_x,sumvec);
       }	/* end loop over microcanonical steps */
     break;
@@ -321,7 +330,7 @@ int update()  {
         iters += update_h_rhmc( epsilon, multi_x);
         update_u(0.5*epsilon*lambda);
         /* reunitarize the gauge field */
-        rephase( OFF ); reunitarize(); rephase( ON );
+        reunitarize_ks();
         /*TEMP - monitor action*/ //if(step%4==0)d_action_rhmc(multi_x,sumvec);
       }	/* end loop over microcanonical steps */
     break;
@@ -345,9 +354,7 @@ int update()  {
      	    update_u( epsilon*( (2.0)-(1.75+0.5*alpha) ) );
 
             /* reunitarize the gauge field */
-	    rephase( OFF );
-            reunitarize();
-	    rephase( ON );
+            reunitarize_ks();
             /*TEMP - monitor action*/ //if(step%6==0)d_action_rhmc(multi_x,sumvec);
         }	/* end loop over microcanonical steps */
     break;
@@ -457,9 +464,7 @@ int update()  {
      	    update_u( epsilon*( (2.0)-(11.0/6.0+alpha/3.0) ) );
 
             /* reunitarize the gauge field */
-	    rephase( OFF );
-            reunitarize();
-	    rephase( ON );
+            reunitarize_ks();
 #ifdef MILC_GLOBAL_DEBUG
 #ifdef HISQ_REUNITARIZATION_DEBUG
             {
@@ -576,9 +581,7 @@ int update()  {
         /* finish */
      	    update_u( epsilon*( (2.0)-(19.0/10.0+alpha/5.0) ) );
         /* reunitarize the gauge field */
-	    rephase( OFF );
-            reunitarize();
-	    rephase( ON );
+            reunitarize_ks();
         }
     break;
     case INT_6G1F:
@@ -623,9 +626,7 @@ int update()  {
         /* finish */
      	    update_u( epsilon*( (2.0)-(23.0/12.0+alpha/6.0) ) );
         /* reunitarize the gauge field */
-	    rephase( OFF );
-            reunitarize();
-	    rephase( ON );
+            reunitarize_ks();
         }
     break;
     case INT_2EPS_3TO1:
@@ -638,7 +639,7 @@ int update()  {
         for(step=6; step <= steps; step+=6){
 	    /* update U's and H's - first Omelyan step */
      	    update_u(0.5*epsilon*lambda);
-	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
+	    imp_gauge_force_ks(epsilon,F_OFFSET(mom));
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
@@ -651,7 +652,7 @@ int update()  {
 
      	    update_u(epsilon*( 0.5*(1.0-lambda) ));
 
-	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
+	    imp_gauge_force_ks(epsilon,F_OFFSET(mom));
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
@@ -662,7 +663,7 @@ int update()  {
 	    /* update U's and H's - second Omelyan step */
      	    update_u(0.5*epsilon*lambda);
 
-	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
+	    imp_gauge_force_ks(epsilon,F_OFFSET(mom));
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
@@ -670,7 +671,7 @@ int update()  {
 
      	    update_u(epsilon*(2.0-lambda));
 
-	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
+	    imp_gauge_force_ks(epsilon,F_OFFSET(mom));
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
@@ -681,7 +682,7 @@ int update()  {
 	    /* update U's and H's - third Omelyan step */
      	    update_u(0.5*epsilon*lambda);
 
-	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
+	    imp_gauge_force_ks(epsilon,F_OFFSET(mom));
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
@@ -696,7 +697,7 @@ int update()  {
 
      	    update_u(epsilon*( 1.0 + 0.5*(1.0-lambda) ));
 
-	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
+	    imp_gauge_force_ks(epsilon,F_OFFSET(mom));
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
@@ -705,7 +706,7 @@ int update()  {
     	    update_u(0.5*epsilon*lambda);
 
             /* reunitarize the gauge field */
-	    rephase( OFF ); reunitarize(); rephase( ON );
+	    reunitarize_ks();
             /*TEMP - monitor action*/ //if(step%6==0)d_action_rhmc(multi_x,sumvec);
 
         }	/* end loop over microcanonical steps */
@@ -740,7 +741,7 @@ int update()  {
 #endif // HMC
   
   /* free multimass solution vector storage */
-  for(i=0;i<n_multi_x;i++)free(multi_x[i]);
+  for(i=0;i<n_multi_x;i++)special_free(multi_x[i]);
   free(sumvec);
   
   if(steps > 0)return (iters/steps);

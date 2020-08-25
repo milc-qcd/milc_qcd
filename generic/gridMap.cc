@@ -208,8 +208,8 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
 	  cVec._internal._internal._internal[col] = 
 	    Complex(src[j][idx].c[col].real, src[j][idx].c[col].imag);
 	}
-	autoView(Dst_cv, (*(out->cv)), CpuWrite);
-	pokeLocalSite(cVec, Dst_cv, x5);
+        autoView(Dst_cv, (*(out->cv)), CpuWrite);
+        pokeLocalSite(cVec, Dst_cv, x5);
       }
     }
   auto end = std::chrono::system_clock::now();
@@ -265,8 +265,8 @@ static void extract_nV_to_vecs( su3_vector *dest[], int n,
 	x5[0] = j;
 
 	ColourVector cVec;
-	autoView(Src_cv, (*(src->cv)), CpuRead);
-	peekLocalSite(cVec, Src_cv, x5);
+        autoView(Src_cv, (*(src->cv)), CpuRead);
+        peekLocalSite(cVec, Src_cv, x5);
 	
 	for(int col = 0; col < Nc; col++)
 	  {

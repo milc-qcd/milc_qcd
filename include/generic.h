@@ -295,18 +295,11 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 /* gauge_force_imp_*.c */
 void imp_gauge_force_cpu( Real eps, field_offset mom_off );
 void imp_gauge_force_gpu( Real eps, field_offset mom_off );
+void imp_gauge_force( Real eps, field_offset mom_off );
 
 /* gauge_force_symzk1_qphix.c */
 
 void imp_gauge_force_qphix( Real eps, field_offset mom_off );
-
-#ifdef USE_GF_GPU
-#define imp_gauge_force imp_gauge_force_gpu
-#elif USE_GF_QPHIX
-#define imp_gauge_force imp_gauge_force_qphix
-#else
-#define imp_gauge_force imp_gauge_force_cpu
-#endif
 
 /* gauge_stuff.c */
 double imp_gauge_action(void);
@@ -387,11 +380,11 @@ void r_source_cmplx_fm_to_field(char *filename, complex *dest_field, int stride,
 int io_node(const int node);
 void setup_layout( void );
 int node_number(int x,int y,int z,int t);
-int node_index(int x,int y,int z,int t);
+size_t node_index(int x,int y,int z,int t);
 size_t num_sites(int node);
 const int *get_logical_dimensions(void);
 const int *get_logical_coordinate(void);
-void get_coords(int coords[], int node, int index);
+void get_coords(int coords[], int node, size_t index);
 
 /* make_lattice.c */
 void make_lattice(void);
@@ -565,6 +558,7 @@ void cleanup_restrict_fourier(void);
 
 /* reunitarize2.c */
 void reunitarize( void );
+void reunitarize_cpu( void );
 int reunit_su3(su3_matrix *c);
 
 /* show_generic_opts.c */

@@ -25,5 +25,5 @@ void smooth(void)
    }
 
    /* reunitarize the gauge field */
-   reunitarize();
+   reunitarize_cpu();
 }

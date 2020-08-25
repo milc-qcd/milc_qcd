@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   ny = atoi(argv[2]);
   nz = atoi(argv[3]);
   nt = atoi(argv[4]);
-  volume = nx*ny*nz*nt;
+  volume = (size_t) nx*ny*nz*nt;
   t0 = atoi(argv[5]);
   mod_file = argv[6];
   
