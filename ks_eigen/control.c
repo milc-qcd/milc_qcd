@@ -66,6 +66,11 @@ int main( int argc, char **argv ){
     /* save lattice if requested */
     if( param.saveflag != FORGET ){
       rephase( OFF );
+#ifdef U1_FIELD
+      if(param.charge !=0)
+	node0_printf("Lattice is being saved with U(1) phases IN for charge %g!\n",
+		     param.charge);
+#endif
       savelat_p = save_lattice( param.saveflag, param.savefile, 
 				param.stringLFN );
       rephase( ON );
@@ -77,8 +82,8 @@ int main( int argc, char **argv ){
     }
 
     /* Insert U(1) phases into the gauge links in the site structure */
-    u1phase_on(param.charge, u1_A);
-    invalidate_fermion_links(fn_links);
+    //    u1phase_on(param.charge, u1_A);
+    //    invalidate_fermion_links(fn_links);
 #endif
     
     /* Recompute FN links from the links in the site structure */
@@ -138,8 +143,8 @@ int main( int argc, char **argv ){
 
 #ifdef U1_FIELD
     /* Unapply the U(1) field phases */
-    u1phase_off();
-    invalidate_fermion_links(fn_links);
+    //    u1phase_off();
+    //    invalidate_fermion_links(fn_links);
 #endif
     ENDTIME("calculate Dirac eigenpairs");
     
