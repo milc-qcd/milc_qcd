@@ -308,6 +308,8 @@ int readin(int prompt) {
 #ifdef U1_FIELD
   /* Read the U(1) gauge field, if wanted */
   start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
+  /* Insert U(1) phases in site links and leave them in */
+  if(param.charge != 0.)u1phase_on(param.charge, u1_A);
 #endif
   
   /* Set options for fermion links */
