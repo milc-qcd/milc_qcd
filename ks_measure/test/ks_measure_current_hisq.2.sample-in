@@ -59,7 +59,7 @@ mass 0.01
 naik_term_epsilon 0
 error_for_propagator 1e-8
 rel_error_for_propagator 0
-save_file vctest0.01
+#save_file vctest0.01
 
 # Parameters common to all members of set 1
 
@@ -81,5 +81,5 @@ error_for_propagator 1e-8
 rel_error_for_propagator 0
 error_for_propagator_sloppy 1e-4
 rel_error_for_propagator_sloppy 0
-save_file vctest0.01diff
+#save_file vctest0.01diff
 

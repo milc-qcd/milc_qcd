@@ -272,14 +272,17 @@ void f_meas_imp( int npbp_reps, int prec,
 
 /* f_meas_current.c */
 void f_meas_current( int n_masses, int nrand, int thinning,
-		     quark_invert_control *qic, ks_param *ksp,
-		     fermion_links_t *fl, char filenames[][MAXFILENAME]);
+		     quark_invert_control *qic, 
+		     Real masses[], Real charges[],
+		     imp_ferm_links_t *fn_mass[], 
+		     Real *u1_A, char filenames[][MAXFILENAME]);
 
 void f_meas_current_diff( int n_masses, int nrand, int thinning,
 			  quark_invert_control *qic_precise,
 			  quark_invert_control *qic_sloppy,
-			  ks_param *ksp, fermion_links_t *fl, 
-			  char filenames[][MAXFILENAME]);
+			  Real masses[], Real charges[],
+			  imp_ferm_links_t *fn_mass[], 
+			  Real *u1_A, char filenames[][MAXFILENAME]);
 /* mu.c and mu_fast.c */
 void M_derivatives(field_offset phi_off, field_offset xxx_off, 
 		   field_offset xxx1_off, Real mass,

@@ -2,23 +2,15 @@
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
-/* Modifications ... */
-
-//  $Log: setup.c,v $
-//  Revision 1.2  2012/11/24 05:21:42  detar
-//  Add support for future HYPISQ action
-//
-//  Revision 1.1  2011/12/02 04:38:15  detar
-//  Add
-//
-//
-
-
 #include "ks_measure_includes.h"
 #include <string.h>
 #include <unistd.h>
 extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #include "params.h"
+#ifdef U1_FIELD
+#include "../include/generic_u1.h"
+#include "../include/io_u1lat.h"
+#endif
 
 /* Forward declarations */
 
@@ -41,9 +33,9 @@ int setup()   {
   initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
-  /* Initialize fermion links as unallocated */
-//  init_ferm_links(&fn_links, &ks_act_paths);
-//  init_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
+#ifdef U1_FIELD
+  u1_A = create_u1_A_field();
+#endif
   /* set up nearest neighbor gathers */
   make_nn_gathers();
   /* set up 3rd nearest neighbor pointers and comlink structures
@@ -56,14 +48,13 @@ int setup()   {
 
 static int n_naiks = 1;
 static double eps_naik[MAX_NAIK];
+static double charge[MAX_CHARGE];
 
 /* SETUP ROUTINES */
 static int 
 initial_set(){
   int prompt=0,status;
-#ifdef FIX_NODE_GEOM
-  int i;
-#endif
+
   /* On node zero, read lattice size and send to others */
   if(mynode()==0){
     /* print banner */
@@ -84,9 +75,6 @@ initial_set(){
 #if FERM_ACTION == HISQ
     show_su3_mat_opts();
     show_hisq_links_opts();
-#elif FERM_ACTION == HYPISQ
-    show_su3_mat_opts();
-    show_hypisq_links_opts();
 #endif
     status = get_prompt(stdin,  &prompt );
     
@@ -123,10 +111,10 @@ initial_set(){
   iseed=param.iseed;
   
 #ifdef FIX_NODE_GEOM
-  for(i = 0; i < 4; i++)
+  for(int i = 0; i < 4; i++)
     node_geometry[i] = param.node_geometry[i];
 #ifdef FIX_IONODE_GEOM
-  for(i = 0; i < 4; i++)
+  for(int i = 0; i < 4; i++)
     ionode_geometry[i] = param.ionode_geometry[i];
 #endif
 #endif
@@ -145,7 +133,7 @@ int readin(int prompt) {
   
   int status;
   char savebuf[128];
-  int i, k, npbp_masses;
+  int i, k, npbp_masses = 0;
 #ifdef PRTIME
   double dtime;
 #endif
@@ -172,6 +160,13 @@ int readin(int prompt) {
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
 				  param.stringLFN );
 
+#ifdef U1_FIELD
+    /* what kind of starting U(1) lattice to use, read filename */
+    IF_OK status+=ask_starting_u1_lattice(stdin,prompt,
+					  &param.start_u1flag, param.start_u1file );
+    IF_OK status+=ask_ending_u1_lattice(stdin,prompt,
+					&param.save_u1flag, param.save_u1file );
+#endif
     /* Provision is made to build covariant sources from smeared
        links */
     /* APE smearing parameters (if needed) */
@@ -379,17 +374,24 @@ int readin(int prompt) {
 	status++;
       }
 
-      IF_OK for(i = 0; i < param.num_pbp_masses[k]; i++){
+      IF_OK for(int i = 0; i < param.num_pbp_masses[k]; i++){
     
 	/* PBP mass parameters */
 	
 	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[npbp_masses] );
 	IF_OK param.ksp_pbp[npbp_masses].mass = atof(param.mass_label[npbp_masses]);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
 	IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 			      &param.ksp_pbp[npbp_masses].naik_term_epsilon );
 #else
 	IF_OK param.ksp_pbp[npbp_masses].naik_term_epsilon = 0.0;
+#endif
+#ifdef U1_FIELD
+	IF_OK status += get_s(stdin, prompt,"charge", param.charge_label[npbp_masses] );
+	IF_OK param.ksp_pbp[npbp_masses].charge = atof(param.charge_label[npbp_masses]);
+#else
+	IF_OK strcpy(param.charge_label[npbp_masses],"0.");
+	IF_OK param.ksp_pbp[npbp_masses].charge = 0.;
 #endif
 	/* error for staggered propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
@@ -406,8 +408,9 @@ int readin(int prompt) {
 				&rel_error_for_propagator_sloppy );
 	}
 
-	/* Deprecate saving the current density file */
-	//	IF_OK status += get_s(stdin, prompt, "save_file", param.pbp_filenames[npbp_masses] );
+#if 0 	/* Deprecate saving the entire site-wise density  */
+	IF_OK status += get_s(stdin, prompt, "save_file", param.pbp_filenames[npbp_masses] );
+#endif
 #endif
 
 	/* The set to which this pbp_mass belongs */
@@ -434,6 +437,13 @@ int readin(int prompt) {
 	param.qic_pbp[npbp_masses].min = 0;
 	param.qic_pbp[npbp_masses].start_flag = 0;
 	param.qic_pbp[npbp_masses].nsrc = 1;
+
+	/* Should we be deflating? */
+	param.qic_pbp[npbp_masses].deflate = 0;
+	IF_OK {
+	  /* Always deflate if we have eigenvectors */
+	  if(param.eigen_param.Nvecs > 0)param.qic_pbp[npbp_masses].deflate = 1;
+	}
 
 #ifdef CURRENT_DISC
       /* If we are taking the difference between a sloppy and a precise solve,
@@ -477,6 +487,8 @@ int readin(int prompt) {
 
   if(prompt==2)return 0;
 
+  npbp_masses = param.end_pbp_masses[param.num_set-1] + 1;
+
   /* Construct the eps_naik table of unique Naik epsilon
      coefficients.  Also build the hash table for mapping a mass term to
      its Naik epsilon index */
@@ -485,19 +497,30 @@ int readin(int prompt) {
   start_eps_naik(eps_naik, &n_naiks);
   
   /* Contribution from the chiral condensate epsilons */
-  for(k = 0; k < param.num_set; k++)
-    for(i = param.begin_pbp_masses[k]; i < param.num_pbp_masses[k]; i++){
-      param.ksp_pbp[i].naik_term_epsilon_index = 
-	fill_eps_naik(eps_naik, 
-		      &n_naiks, param.ksp_pbp[i].naik_term_epsilon);
-    }
+  for(int i = 0; i < npbp_masses; i++){
+    param.ksp_pbp[i].naik_term_epsilon_index = 
+      fill_eps_naik(eps_naik, 
+		    &n_naiks, param.ksp_pbp[i].naik_term_epsilon);
+  }
+
+  /* Construct a table of quark charges and build a hash table
+     for mapping a charge to its charge index */
+
+  /* First term is always zero */
+  start_charge(charge, &n_charges);
   
-  /* Do whatever is needed to get lattice */
+  /* Contribution from the chiral condensate charges */
+  for(int i = 0; i < npbp_masses; i++){
+    param.ksp_pbp[i].charge_index = 
+      fill_charge(charge, &n_charges, param.ksp_pbp[i].charge);
+  }
+
+  /* Keep the current lattice or load a new one */
   if( param.startflag == CONTINUE ){
     rephase( OFF );
-  }
-  if( param.startflag != CONTINUE ){
+  } else {
     startlat_p = reload_lattice( param.startflag, param.startfile );
+    phases_in = OFF;
   }
 
 #if 0
@@ -511,9 +534,13 @@ int readin(int prompt) {
 	       linktrsum.real/3.,nersc_checksum);
 #endif
 
-  /* if a lattice was read in, put in KS phases and AP boundary condition */
-  phases_in = OFF;
+  /* By defailt KS and BC phases are in the gauge links */
   rephase( ON );
+
+#ifdef U1_FIELD
+  /* Read the U(1) gauge field, if wanted */
+  start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
+#endif
 
   /* Set options for fermion links */
   
@@ -526,19 +553,34 @@ int readin(int prompt) {
   fermion_links_want_du0(1);
 #endif
   
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) &  defined(DM_DEPS)
+  /* Don't need to save HISQ auxiliary links */
+  fermion_links_want_aux(0);
+
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
   fermion_links_want_deps(1);
 #endif
   
-  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
+  /* Create an array of fermion links structures for all unique Naik epsilon values and charges */
+  fn_links_charge = (fermion_links_t **)malloc(sizeof(fermion_links_t *) * n_charges);
+  for(int i = 0; i < n_charges; i++){
+#ifdef U1_FIELD
+    if(charge[i] != 0)u1phase_on(charge[i], u1_A);
+#endif
+    /* Create a set of fermion links for all eps_naik */
+    fn_links_charge[i] = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
+#ifdef U1_FIELD
+    if(charge[i] != 0)u1phase_off();
+#endif
+  }
+  /* For compatibility. The first charge is always zero */
+  fn_links = fn_links_charge[0];
 
   /* Construct APE smeared links, but without KS phases */
   rephase( OFF );
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
-  rephase( ON );
-
-/* We put in antiperiodic bc to match what we did to the gauge field */
+  /* We put in antiperiodic bc to the APE links to match what we did to the gauge field */
   apply_apbc( ape_links, 0 );
+  rephase( ON );
 
 #if EIGMODE == EIGCG
   int Nvecs_max = param.eigcgp.Nvecs_max;
@@ -552,21 +594,24 @@ int readin(int prompt) {
   eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
   eigVec = (su3_vector **)malloc(Nvecs_tot*sizeof(su3_vector *));
   node0_printf("Allocating space for %d eigenvectors\n", Nvecs_tot);
-  for(i = 0; i < Nvecs_tot; i++)
+  for(int i = 0; i < Nvecs_tot; i++)
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
-  /* Do whatever is needed to get eigenpairs */
+  /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
   imp_ferm_links_t **fn = get_fm_links(fn_links);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
   if(status != 0) terminate(1);
+  //  if(param.fixflag != NO_GAUGE_FIX){
+  //    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
+  //  }
 
   if(param.ks_eigen_startflag != FRESH){
     param.eigcgp.Nvecs = 0;
     param.eigcgp.Nvecs_curr = Nvecs_tot;
     param.eigcgp.H = (double_complex *)malloc(Nvecs_max*Nvecs_max
 					      *sizeof(double_complex));
-    for(i = 0; i < Nvecs_max; i++){
+    for(int i = 0; i < Nvecs_max; i++){
       for(k = 0; k < i; k++)
 	param.eigcgp.H[k + Nvecs_max*i] = dcmplx((double)0.0, (double)0.0);
       param.eigcgp.H[(Nvecs_max+1)*i] = dcmplx(eigVal[i], (double)0.0);
@@ -579,15 +624,19 @@ int readin(int prompt) {
     /* malloc for eigenpairs */
     eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
     eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
-    for(i=0; i < param.eigen_param.Nvecs; i++)
+    for(i=0; i < param.eigen_param.Nvecs; i++){
       eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+      if(eigVec[i] == NULL){
+	printf("No room for eigenvector\n");
+	terminate(1);
+      }
+    }
     
-    /* Do whatever is needed to get eigenpairs */
+    /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
     imp_ferm_links_t **fn = get_fm_links(fn_links);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
     if(status != 0)terminate(1);
-
 #if 0
     for(int j = 0; j < param.eigen_param.Nvecs; j++){
       gauge_transform_v_field(eigVec[j], G);
@@ -598,8 +647,9 @@ int readin(int prompt) {
 #endif
 
   ENDTIME("readin");
+  fflush(stdout);
 
-  return(0);
+  return 0;
 }
 
 /* Set up comlink structures for 3rd nearest gather pattern; 

@@ -187,7 +187,7 @@ r_open_ksprop(int flag, char *filename)
       terminate(1);
     }
 #else
-    node0_printf("%s: This looks like a QIO file, but to read it requires QIO compilation\n");
+    node0_printf("%s: This looks like a QIO file, but to read it requires QIO compilation\n", myname);
 #endif
   }
   else {
