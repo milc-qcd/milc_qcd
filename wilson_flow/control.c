@@ -13,6 +13,10 @@
 #include "../include/io_scidac.h"
 #endif
 
+#ifdef DEBUG_FIELDS
+void dump_double_lattice();
+#endif
+
 int
 main( int argc, char **argv )
 {
@@ -164,6 +168,9 @@ main( int argc, char **argv )
     /* Save lattice if requested */
     if( saveflag != FORGET )
       save_lattice( saveflag, savefile, stringLFN );
+#ifdef DEBUG_FIELDS
+      dump_double_lattice();
+#endif
 
     /* Stop and print timer for this configuration */
     dtimec += dclock();

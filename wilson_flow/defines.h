@@ -52,4 +52,7 @@
 #define flow_step integrate_adapt_bs
 #endif
 
+// dump lattice in double precision for debugging purposes
+#define DEBUG_FIELDS
+
 #endif /* _DEFINES_H */

@@ -731,6 +731,70 @@ integrate_adapt_bs() {
 }
 #endif
 
+
+
+#ifdef DEBUG_FIELDS
+#define REPACK_TO_DOUBLE
+#ifdef REPACK_TO_DOUBLE
+#define MATRIX_TYPE dsu3_matrix
+#else
+#define MATRIX_TYPE fsu3_matrix
+#endif
+
+void repack_site( su3_matrix *a, MATRIX_TYPE *b ) {
+  int dir,i,j;
+
+  for(dir = 0; dir < 4; dir++){
+    for(i = 0; i < 3; i++)for(j = 0; j < 3; j++){
+      b[dir].e[i][j].real = a[dir].e[i][j].real;
+      b[dir].e[i][j].imag = a[dir].e[i][j].imag;
+    }
+  }
+}
+
+void dump_double_lattice() {
+
+  int i, x, y, z, t;
+  char filename[1024];
+  MATRIX_TYPE *tbuf = NULL;
+  char myname[] = "dump_double_lattice";
+  FILE *fp;
+
+  // make a node file name
+  sprintf( filename, "fields_on_node.%04d", this_node );
+
+  tbuf = (MATRIX_TYPE *)malloc(nx*4*sizeof(MATRIX_TYPE));
+  if(tbuf == NULL){
+    printf("%s(%d): No room for tbuf\n",myname,this_node);
+    terminate(1);
+  }
+
+  fp = fopen( filename, "wb" );
+
+  // loop over fields and store
+  for( t=0; t<nt; t++) for( z=0; z<nz; z++) for( y=0; y<ny; y++ ) {
+    for( x=0; x<nx; x++) {
+      i = node_index( x, y, z, t );
+      repack_site( &lattice[i].link[0], &tbuf[4*x] );
+    }
+
+    if( (int)fwrite( (void*)tbuf, sizeof(MATRIX_TYPE), 4*nx, fp ) != 4*nx )
+    {
+      printf("dump_double_lattice: Node %d gauge configuration write error\n",
+             this_node);
+      fflush(stdout);
+      terminate(1);
+    }
+
+  }
+
+  fclose( fp );
+
+}
+#endif
+
+
+
 #ifdef ABA
 //TODO: remove once all integrators are tested, flow_step is now
 // chosen inside defines.h
