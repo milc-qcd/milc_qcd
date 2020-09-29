@@ -245,7 +245,7 @@ initialize_integrator()
 //TODO: this is experimental, it should be removed once
 // the optimal set of coefficients is found
 // (lowest truncation error)
-//#define READ_CF3_FROM_FILE
+#define READ_CF3_FROM_FILE
 #ifdef READ_CF3_FROM_FILE
   FILE *fp;
   fp = fopen( "cf3_coeff.dat", "rt" );
