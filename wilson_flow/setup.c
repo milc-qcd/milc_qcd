@@ -249,6 +249,10 @@ initialize_integrator()
 #ifdef READ_CF3_FROM_FILE
   FILE *fp;
   fp = fopen( "cf3_coeff.dat", "rt" );
+  if( fp==NULL ) {
+    node0_printf( "ERROR: cf3_coeff.dat file cannot be read\n" );
+    terminate(1);
+  }
   fscanf( fp, "%le", &(A_2N[0]) );
   fscanf( fp, "%le", &(A_2N[1]) );
   fscanf( fp, "%le", &(A_2N[2]) );
