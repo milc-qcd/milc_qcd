@@ -8,6 +8,8 @@
 #
 #  The paths are relative to the application directory.
 
+#hc : added eigen_stuff_Grid.o, gridStaggEigen.o
+
 G_KS_ALL = \
   charge_utilities.o \
   d_congrad5.cppacs.o \
@@ -49,6 +51,7 @@ G_KS_ALL = \
   eigen_stuff_helpers.o \
   eigen_stuff_Ritz.o \
   eigen_stuff_PRIMME.o \
+  eigen_stuff_Grid.o \
   f_meas.o \
   f_meas_current.o \
   fermion_force_asqtad.o \
@@ -93,6 +96,7 @@ G_KS_ALL = \
   fn_links_qop.o \
   gauge_force_imp_ks.o \
   gauss_smear_ks.o \
+  gridStaggEigen.o \
   gridStaggInvert.o \
   grsource.o \
   hisq_links_qop.o \
@@ -260,6 +264,9 @@ eigen_stuff_Ritz.o: ../generic_ks/eigen_stuff_Ritz.c
 	${CC} -c ${CFLAGS} $<
 eigen_stuff_PRIMME.o: ../generic_ks/eigen_stuff_PRIMME.c
 	${CC} -c ${CFLAGS} $<
+#hc
+eigen_stuff_Grid.o: ../generic_ks/eigen_stuff_Grid.c
+	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad.o: ../generic_ks/fermion_force_asqtad.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qop.o: ../generic_ks/fermion_force_asqtad_qop.c
@@ -360,6 +367,9 @@ gauge_force_imp_ks.o: ../generic_ks/gauge_force_imp_ks.c
 	${CC} -c ${CFLAGS} $<
 gauss_smear_ks.o: ../generic_ks/gauss_smear_ks.c
 	${CC} -c ${CFLAGS} $<
+#hc
+gridStaggEigen.o: ../generic_ks/gridStaggEigen.cc
+	${CXX} -c ${CXXFLAGS} $<
 gridStaggInvert.o: ../generic_ks/gridStaggInvert.cc
 	${CXX} -c ${CXXFLAGS} $<
 grsource.o: ../generic_ks/grsource.c

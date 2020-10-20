@@ -330,6 +330,21 @@ typedef struct {
   int parity; 
   ks_eigen_poly poly; /* Preconditioning polynomial */
 } ks_eigen_param;
+/*hc*/
+#elif defined(Grid_EIG)
+#define ks_eigensolve ks_eigensolve_Grid
+typedef struct {
+  int Nvecs; /* number of eigenvectors */
+  int Nvecs_in; /* number of input starting eigenvectors */
+  Real tol; /* Tolerance for the eigenvalue computation */
+  int MaxIter; /* max implicit restarting iterations */
+  int Nrestart; /* Lanczos restarts from this number of eigenvalues */
+  int Nmax; /* Lanczos iteration stops here and restart from Nrestart */
+  int reorth_period; /* Reorthogonalization period */
+  ks_eigen_poly poly; /* Preconditioning polynomial */
+  char diagAlg[10];
+  int parity; 
+} ks_eigen_param;
 #else
 #define ks_eigensolve ks_eigensolve_Kalkreuter_Ritz
 typedef struct {
@@ -355,6 +370,8 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 				  ks_eigen_param *eigen_param, int init );
 int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal, 
 				  ks_eigen_param *eigen_param, int init );
+/*hc*/
+int ks_eigensolve_Grid( su3_vector ** eigVec, double * eigVal, ks_eigen_param * eigen_param, int init );
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *eigen_param, 
 		     imp_ferm_links_t *fn );
 void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *eigen_param, 
@@ -365,6 +382,10 @@ void print_densities(su3_vector *src, char *tag, int y,int z,int t,
 		     int parity);
 void reset_eigenvalues(su3_vector *eigVec[], double *eigVal,
 		       int Nvecs, int parity, imp_ferm_links_t *fn);
+void perturb_eigpair(su3_vector *eigVec_new[], double *eigVal_new,
+		     su3_vector *eigVec_old[], double *eigVal_old,
+		     int Nvecs, int parity, imp_ferm_links_t *fn_new,
+		     imp_ferm_links_t *fn_old);
 void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
 		  int Nvecs, int parity, imp_ferm_links_t *fn);
 void construct_eigen_odd(su3_vector **eigVec, double *eigVal, ks_eigen_param* eigen_param, imp_ferm_links_t *fn);
@@ -377,6 +398,10 @@ su3_matrix *get_lnglinks(imp_ferm_links_t *fn);
 su3_matrix *get_fatbacklinks(imp_ferm_links_t *fn);
 su3_matrix *get_lngbacklinks(imp_ferm_links_t *fn);
 
+/* fn_links_milc.c only -- for QUDA */
+int fresh_fn_links(imp_ferm_links_t *fn);
+void refresh_fn_links(imp_ferm_links_t *fn);
+void cancel_quda_notification(imp_ferm_links_t *fn);
 
 /* fpi_2.c */
 int fpi_2( /* Return value is number of C.G. iterations taken */
@@ -460,9 +485,16 @@ void ks_dirac_adj_op_inplace( su3_vector *srcdst, Real mass,
 			      int parity, imp_ferm_links_t *fn);
 int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec, imp_ferm_links_t *fn );
+int mat_invert_field(su3_vector *src, su3_vector *dst, 
+		     quark_invert_control *qic,
+		     Real mass, imp_ferm_links_t *fn, int use_precond );
 int mat_invert_cg_field(su3_vector *src, su3_vector *dst, 
 			quark_invert_control *qic,
 			Real mass, imp_ferm_links_t *fn );
+int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst, 
+			    quark_invert_control *qic,
+			    Real mass, imp_ferm_links_t *fn );
+void mat_invert_mg_cleanup(void);
 int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec, imp_ferm_links_t *fn );
 int mat_invert_uml_field(su3_vector *src, su3_vector *dst, 
@@ -471,9 +503,12 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
 int mat_invert_block_uml(su3_vector **src, su3_vector **dst, 
 			 Real mass, int nsrc, quark_invert_control *qic,
 			 imp_ferm_links_t *fn);
-int mat_invert_mrhs_uml(su3_vector **src, su3_vector **dst, 
+int mat_invert_block_mg(su3_vector **src, su3_vector **dst, 
 			Real mass, int nsrc, quark_invert_control *qic,
 			imp_ferm_links_t *fn);
+int mat_invert_block(su3_vector **src, su3_vector **dst, 
+		     Real mass, int nsrc, quark_invert_control *qic,
+		     imp_ferm_links_t *fn);
 void check_invert( field_offset src, field_offset dest, Real mass,
 		   Real tol, imp_ferm_links_t *fn );
 void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,

@@ -349,6 +349,88 @@ void reset_eigenvalues(su3_vector *eigVec[], double *eigVal,
 }
   
 /*****************************************************************************/
+/* Returns the dot product of two fermion vectors */
+static void dot_product(su3_vector *vec1, su3_vector *vec2, 
+			double_complex *dot, int parity) {
+  register double re,im ;
+  register  int i;
+  
+  re=im=0.0;
+  FORSOMEFIELDPARITY_OMP(i,parity,reduction(+:re,im)){
+    complex cc = su3_dot( &(vec1[i]), &(vec2[i]) );
+    re += cc.real ;
+    im += cc.imag ;
+  } END_LOOP_OMP;
+  dot->real = re ; 
+  dot->imag = im ;
+  g_dcomplexsum(dot);
+}
+
+/*****************************************************************************/
+/* Returns the dot product of two fermion vectors */
+static double dot_product_real(su3_vector *vec1, su3_vector *vec2, int parity) {
+  double rdot = 0.;
+  register  int i;
+  
+  FORSOMEFIELDPARITY_OMP(i,parity,reduction(+:rdot)){
+    rdot += su3_rdot( &(vec1[i]), &(vec2[i]) );
+  } END_LOOP_OMP;
+  g_doublesum(&rdot);
+  return rdot;
+}
+
+/*****************************************************************************/
+/* Returns vec2 = vec2 - cc*vec1   cc is a double complex   */
+static void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1, 
+				 su3_vector *vec2, int parity){
+  register  int i;
+  complex sc ;
+  
+  sc.real= (Real)(cc->real) ; 
+  sc.imag= (Real)(cc->imag) ;
+
+  FORSOMEFIELDPARITY_OMP(i,parity,){
+    c_scalar_mult_sub_su3vec(&(vec2[i]), (&sc), &(vec1[i])) ;
+  } END_LOOP_OMP;
+}
+
+/*****************************************************************************/
+/* Use first-order perturbation theory to shift eigenvalues and eigenvectorsa
+   from an old to a new Dslash^2 operator */
+
+void perturb_eigpair(su3_vector *eigVec_new[], double *eigVal_new,
+		     su3_vector *eigVec_old[], double *eigVal_old,
+		     int Nvecs, int parity, imp_ferm_links_t *fn_new,
+		     imp_ferm_links_t *fn_old){
+
+
+  int otherparity = opposite_parity(parity);
+  su3_vector *ttt = create_v_field();
+  for(int n = 0; n < Nvecs; n++){
+    /* ttt <- D_new^2 eigVec[n] */
+    dslash_fn_field(eigVec_old[n], ttt, otherparity, fn_new);
+    dslash_fn_field(ttt, ttt, parity, fn_new);
+    copy_v_field(eigVec_new[n], eigVec_old[n]);
+    for(int m = 0; m < Nvecs; m++){
+      /* Note that eigVal is -1 times the eigenvalue of D^2 */
+      /* eigVal_new = - < eigVec D_new^2 eigVec > */
+      if(m == n){
+	eigVal_new[m] = -dot_product_real(eigVec_old[m], ttt, parity);
+      } else {
+	/* deigVec_n = sum(m!=n) eigVec_m <eigVec_m D_new^2 eigVec_n> / (-eigVal_n + eigVal_m) */
+	double_complex cc;
+	/* cc = <eigVec_m D_new^2 eigVec_n> */
+	dot_product(eigVec_old[m], ttt, &cc, parity);
+	/* cc = <eigVec_m D_new^2 eigVec_n> / (eigVal_n - eigVal_m) */
+	CDIVREAL(cc, eigVal_old[n] - eigVal_old[m], cc);
+	complex_vec_mult_sub(&cc, eigVec_old[n], eigVec_new[m], parity);
+	//	node0_printf("eig(%d) %d |cc| %f\n",n,m,sqrt(cc.real*cc.real+cc.imag*cc.imag));
+      }
+    }
+  }
+  destroy_v_field(ttt);
+}
+/*****************************************************************************/
 /* Check the residues and norms of the eigenvectors                          */
 /* Hiroshi Ono */
 

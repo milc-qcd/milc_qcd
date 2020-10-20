@@ -26,6 +26,8 @@ static QudaMILCSiteArg_t newQudaMILCSiteArg() {
   return arg;
 }
 
+void finalize_quda(void);
+
 #include <string.h>
 
 static inline void fast_copy(void *dest, const void *src, size_t n) {

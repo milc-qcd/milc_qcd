@@ -100,6 +100,16 @@ void GRID_D3_asqtad_invert_block (GRID_info_t *info,
 				  GRID_D3_ColorVectorBlock *in,
 				  GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
 				  GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
+
+//hc
+void GRID_D3_implicitly_restarted_lanczos(
+  GRID_D3_ColorVector ** eigVecs,
+  double * eigVals,
+  GRID_D3_FermionLinksAsqtad * asqtad,
+  GRID_eig_arg_t * eig_arg,
+  double mass,
+  GRID_4Dgrid * grid_full,
+  GRID_4DRBgrid * grid_rb );
   
   /**************************************************/
   /* Mapping of generic names to specific precision */
