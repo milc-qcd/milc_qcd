@@ -195,7 +195,7 @@ int main( int argc, char **argv ){
   fn_links = NULL;
   
 #ifdef HAVE_QUDA
-  qudaFinalize();
+  finalize_quda();
 #endif
   
   normal_exit(0);
