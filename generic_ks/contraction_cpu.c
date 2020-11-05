@@ -78,19 +78,23 @@ sum_meson_q(complex **meson_q, complex **meson_q_thread, int nonzero[],
 /* Calculate a single Fourier phase factor */
 static complex ff(Real theta, char parity, complex tmp)
 {
-  complex z = {0.,0.};
+  complex z; // = {0.,0.};
   
   if(parity == EVEN){
-    z.real = tmp.real*cos(theta);
-    z.imag = tmp.imag*cos(theta);
+    Real costh = cos(theta);
+    z.real = tmp.real*costh;
+    z.imag = tmp.imag*costh;
   }
   else if(parity == ODD){
-    z.real = -tmp.imag*sin(theta);
-    z.imag =  tmp.real*sin(theta);
+    Real sinth = sin(theta);
+    z.real = -tmp.imag*sinth;
+    z.imag =  tmp.real*sinth;
   }
   else if(parity == EVENANDODD){
-    z.real = tmp.real*cos(theta)-tmp.imag*sin(theta);
-    z.imag = tmp.imag*cos(theta)+tmp.real*sin(theta);
+    Real costh = cos(theta);
+    Real sinth = sin(theta);
+    z.real = tmp.real*costh-tmp.imag*sinth;
+    z.imag = tmp.imag*costh+tmp.real*sinth;
   }
   else{
     printf("ff(%d): bad parity %d\n", this_node, parity);
