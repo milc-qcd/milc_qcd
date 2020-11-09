@@ -5,16 +5,16 @@ PK_CC=$2
 PK_CXX=$3
 #GIT_REPO=https://github.com/paboyle/Grid
 GIT_REPO=https://github.com/milc-qcd/Grid
-GIT_BRANCH=CGinfo
+GIT_BRANCH=feature/CGinfo
 
 if [ -z ${PK_CXX} ]
 then
-  echo "Usage $0 <scalar|avx512|avx2> <PK_CC> <PK_CXX>"
+  echo "Usage $0 <scalar|avx2|avx512-knl|avx512-skx|gpu-cuda> <PK_CC> <PK_CXX>"
   exit 1
 fi
 
 case ${ARCH} in
-    scalar|avx512|avx2|gpu-cuda)
+    scalar|avx512-knl|avs512-skx|avx2|gpu-cuda)
       ;;
     *)
       echo "Unsupported ARCH"
@@ -129,10 +129,10 @@ then
        echo "Configure exit status $status"
        ;;
     gpu-cuda)
+	# Cori: salloc -C gpu -t 60 -N 1 -c 10 --gres=gpu:1 -A m1759
 	${SRCDIR}/configure \
              --prefix ${INSTALLDIR}      \
              --enable-precision=double \
-             --enable-simd=GEN           \
 	     --enable-comms=mpi          \
              --host=x86_64-unknown-linux-gnu \
              CXX=nvcc                    \
@@ -141,6 +141,9 @@ then
         status=$?
         echo "Configure exit status $status"
 	;;
+
+    #              --enable-simd=GEN           \
+
     *)
     echo "Unsupported ARCH ${ARCH}"
           exit 1;
