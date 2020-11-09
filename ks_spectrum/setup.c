@@ -1238,7 +1238,7 @@ int readin(int prompt) {
   /* Don't need to save HISQ auxiliary links */
   fermion_links_want_aux(0);
   
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if FERM_ACTION == HISQ
 
 #ifdef DM_DEPS
   fermion_links_want_deps(1);
