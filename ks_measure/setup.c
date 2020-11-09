@@ -602,9 +602,9 @@ int readin(int prompt) {
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
   if(status != 0) terminate(1);
-  if(param.fixflag != NO_GAUGE_FIX){
-    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
-  }
+  //  if(param.fixflag != NO_GAUGE_FIX){
+  //    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
+  //  }
 
   if(param.ks_eigen_startflag != FRESH){
     param.eigcgp.Nvecs = 0;

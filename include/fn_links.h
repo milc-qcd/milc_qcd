@@ -30,8 +30,6 @@ fn_links_t *create_fn_links(void);
 void destroy_fn_links(fn_links_t *fn);
 
 void init_ferm_links(fn_links_t *fn);
-int fresh_fn_links(fn_links_t *fn);
-void cancel_quda_notification(fn_links_t *fn);
 
 void copy_fn(fn_links_t *fn_src, fn_links_t *fn_dst);
 void scalar_mult_fn(fn_links_t *fnsrc, Real s, fn_links_t *fndst);

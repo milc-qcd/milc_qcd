@@ -163,9 +163,9 @@ void load_act_path_coeff_hisq(ks_action_paths_hisq *ap, int n_naiks,
 #endif
   
 #if ( UNITARIZATION_GROUP==UNITARIZE_SU3 )
-  if(mynode()==0)printf("Unitarizaton group = SU(3)\n");
+  if(mynode()==0)printf("Unitarization group = SU(3)\n");
 #elif ( UNITARIZATION_GROUP==UNITARIZE_U3 )
-  if(mynode()==0)printf("Unitarizaton group = U(3)\n");
+  if(mynode()==0)printf("Unitarization group = U(3)\n");
 #else
   if(mynode()==0)printf("Unknown unitarization group. Set U(3) or SU(3)\n");
   terminate(0);
