@@ -22,8 +22,6 @@
 #include "../include/dirs.h"
 #include "../include/io_u1lat.h"
 #include "../include/generic_u1.h"
-#define MULTIMASS_SET 0
-#define MULTISOURCE_SET 1
 
 #ifdef GB_BARYON
 #include "../include/gb_ops.h"

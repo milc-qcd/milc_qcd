@@ -38,7 +38,9 @@
 #define MAX_OCTET 64
 #endif
 
-enum checktype { CHECK_NO,  CHECK_YES, CHECK_SOURCE_ONLY };
+enum check_type { CHECK_NO,  CHECK_YES, CHECK_SOURCE_ONLY };
+
+enum set_type { MULTIMASS_SET, MULTISOURCE_SET };
 
 /* structure for passing simulation parameters to each node */
 typedef struct {
@@ -102,7 +104,8 @@ typedef struct {
   int parent_source[MAX_SOURCE];      /* base_source or source index */
   /* Multimass or multisource sets */
   int num_set;  /* number of sets */
-  int set_type[MAX_SET];    /* multimass or multisource */
+  enum set_type set_type[MAX_SET];    /* multimass or multisource */
+  enum inv_type inv_type[MAX_SET];    /* inverter type MG or CG */
   Real charge[MAX_SET];     /* charge for propagators in the set */
   char charge_label[MAX_SET][32];  /* for correlator label */
   int num_prop[MAX_SET]; /* number of propagators in a set */
@@ -117,7 +120,7 @@ typedef struct {
   char mass_label[MAX_PROP][32]; /* mass label for this prop */
   ks_param ksp[MAX_PROP];         /* propagator parameters for this prop */
   quark_invert_control qic[MAX_PROP];
-  int check[MAX_PROP];         /* True -> run the inverter */
+  enum check_type check[MAX_PROP];         /* True -> run the inverter */
   Real bdry_phase[MAX_PROP][4];      /* For twisted boundary conditions */
   char startfile_ks[MAX_PROP][MAXFILENAME];
   char savefile_ks[MAX_PROP][MAXFILENAME];

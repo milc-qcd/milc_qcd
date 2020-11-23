@@ -257,7 +257,7 @@ int main(int argc, char *argv[])
 
     Nvecs_curr = param.eigcgp.Nvecs_curr;
 
-    fn = get_fm_links(fn_links)[0];
+    imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
     resid = (double *)malloc(Nvecs_curr*sizeof(double));
 
     if(param.ks_eigen_startflag == FRESH)
