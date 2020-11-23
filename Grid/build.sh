@@ -14,7 +14,7 @@ then
 fi
 
 case ${ARCH} in
-    scalar|avx512-knl|avs512-skx|avx2|gpu-cuda)
+    scalar|avx512-knl|avx512-skx|avx2|gpu-cuda)
       ;;
     *)
       echo "Unsupported ARCH"
