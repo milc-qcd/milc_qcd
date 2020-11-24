@@ -518,7 +518,7 @@ int sngl_trace(Real *bb0s11)
 	 throughout */
       load_ferm_links(&fn_links);
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			    niter, rsqprop/(mass*mass), PRECISION, 
+			    niter, rsqprop/(mass*mass), MILC_PRECISION, 
 			    EVEN,&finalrsq, &fn_links);
       cgn += this_cgn;
       if(this_node==0)printf("bar_corr: ss1 cgn %d\n",this_cgn);
@@ -556,7 +556,7 @@ int sngl_trace(Real *bb0s11)
       /* do a C.G. (source in phi, result in xxx) now ODD source*/
       load_ferm_links(&fn_links);
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			    niter, rsqprop/(mass*mass), PRECISION, 
+			    niter, rsqprop/(mass*mass), MILC_PRECISION, 
 			    ODD, &finalrsq, &fn_links);
       cgn += this_cgn;
       if(this_node==0)printf("bar_corr: ss1: cgn %d\n",this_cgn);
@@ -842,7 +842,7 @@ int bar_corr()
       /* -x_e = -(4m^2a^2 - D_eo D_oe)^(-1) phi_e' */
       load_ferm_links(&fn_links);
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			    niter, rsqprop, PRECISION, EVEN, &finalrsq, &fn_links);
+			    niter, rsqprop, MILC_PRECISION, EVEN, &finalrsq, &fn_links);
       cgn += this_cgn;
       if(this_node==0)printf("bar_corr: pbp irand %2d cgn %d\n",irand,this_cgn);
       /* Even sites are now OK, except for a minus sign */
@@ -980,7 +980,7 @@ int bar_corr()
       /* -x_e = -(4m^2a^2 - D_eo D_oe)^(-1) phi_e' */
       load_ferm_links(&fn_links);
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			    niter, rsqprop, PRECISION, EVEN, &finalrsq,
+			    niter, rsqprop, MILC_PRECISION, EVEN, &finalrsq,
 			    &fn_links);
       cgn += this_cgn;
       if(this_node==0)printf("bar_corr: bdens irand %2d cgn %d\n",irand,this_cgn);

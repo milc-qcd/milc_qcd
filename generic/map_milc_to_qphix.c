@@ -13,7 +13,7 @@
 
 /* Convert (or copy) MILC types between specific and prevailing precision */
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 
 static void 
 f2p_mat(su3_matrix *dest, fsu3_matrix *src){
@@ -218,6 +218,14 @@ p2d_wvec(dwilson_vector *dest, wilson_vector *src){
 /********************************************************************/
 
 
+/* Hash tables for optimizing data mapping */
+
+make_create_hash(G);
+make_create_hash(F);
+make_create_hash(V);
+make_create_hash(D);
+
+
 /* Storage for raw gauge field */
 
 make_create_raw4(F, G, fsu3_matrix);
@@ -226,8 +234,6 @@ make_create_raw4(D, G, dsu3_matrix);
 make_destroy_raw4(F, G, fsu3_matrix);
 make_destroy_raw4(D, G, dsu3_matrix);
 
-#if 0
-
 /* Storage for raw gauge momentum */
 
 make_create_raw4(F, F, fsu3_matrix);
@@ -235,8 +241,6 @@ make_create_raw4(D, F, dsu3_matrix);
 
 make_destroy_raw4(F, F, fsu3_matrix);
 make_destroy_raw4(D, F, dsu3_matrix);
-
-#endif
 
 /* Storage for raw su3 vector field */
 
@@ -260,27 +264,23 @@ make_destroy_raw(D, D, dwilson_vector);
 
 /* Map gauge field from site to raw */
 
-make_create_raw4_from_site(F, G, fsu3_matrix, su3_matrix);
-make_create_raw4_from_site(D, G, dsu3_matrix, su3_matrix);
+make_create_raw4_from_site4(F, G, fsu3_matrix, su3_matrix);
+make_create_raw4_from_site4(D, G, dsu3_matrix, su3_matrix);
 
 /* Map gauge field from field to raw */
 
 make_create_raw4_from_field(F, G, fsu3_matrix, su3_matrix);
 make_create_raw4_from_field(D, G, dsu3_matrix, su3_matrix);
 
-#if 0
-
 /* Map gauge momentum from site to raw */
 
-make_create_raw4_from_site(F, F, fsu3_matrix, anti_hermitmat);
-make_create_raw4_from_site(D, F, dsu3_matrix, anti_hermitmat);
+make_create_raw4_from_site4(F, F, fsu3_matrix, anti_hermitmat);
+make_create_raw4_from_site4(D, F, dsu3_matrix, anti_hermitmat);
 
 /* Map gauge momentum from field to raw */
 
 make_create_raw4_from_field(F, F, fsu3_matrix, anti_hermitmat);
 make_create_raw4_from_field(D, F, dsu3_matrix, anti_hermitmat);
-
-#endif
 
 /* Map color vector from site to raw */
 
@@ -309,27 +309,23 @@ make_create_raw_from_field(D, D, dwilson_vector, wilson_vector);
 
 /* Map gauge field from raw to site */
 
-make_unload_raw4_to_site(F, G, su3_matrix, fsu3_matrix);
-make_unload_raw4_to_site(D, G, su3_matrix, dsu3_matrix);
+make_unload_raw4_to_site4(F, G, su3_matrix, fsu3_matrix);
+make_unload_raw4_to_site4(D, G, su3_matrix, dsu3_matrix);
 
 /* Map gauge field from raw to field */
 
 make_unload_raw4_to_field(F, G, su3_matrix, fsu3_matrix);
 make_unload_raw4_to_field(D, G, su3_matrix, dsu3_matrix);
 
-#if 0
-
 /* Map gauge momentum from raw to site */
 
-make_unload_raw4_to_site(F, F, anti_hermitmat, fsu3_matrix);
-make_unload_raw4_to_site(D, F, anti_hermitmat, dsu3_matrix);
+make_unload_raw4_to_site4(F, F, anti_hermitmat, fsu3_matrix);
+make_unload_raw4_to_site4(D, F, anti_hermitmat, dsu3_matrix);
 
 /* Map gauge momentum from raw to field */
 
 make_unload_raw4_to_field(F, F, anti_hermitmat, fsu3_matrix);
 make_unload_raw4_to_field(D, F, anti_hermitmat, dsu3_matrix);
-
-#endif
 
 /* Map color vector from raw to site */
 
@@ -444,6 +440,8 @@ make_unload_to_site(D, D, QPHIX_D3_DiracFermion, dwilson_vector, double);
 make_unload_to_field(F, D, QPHIX_F3_DiracFermion, fwilson_vector, wilson_vector, float);
 make_unload_to_field(D, D, QPHIX_D3_DiracFermion, dwilson_vector, wilson_vector, double);
 
+#endif
+
 /* Map QPHIX gauge force to site */
 
 make_unload_to_site4(F, F, QPHIX_F3_Force, fsu3_matrix, float);
@@ -463,6 +461,8 @@ make_unload_to_site4(D, G, QPHIX_D3_GaugeField, dsu3_matrix, double);
 
 make_unload_to_field4(F, G, QPHIX_F3_GaugeField, fsu3_matrix, su3_matrix, float);
 make_unload_to_field4(D, G, QPHIX_D3_GaugeField, dsu3_matrix, su3_matrix, double);
+
+#if 0
 
 /* Map preconstructed MILC fat and long links in site to QPHIX fermion links */
 

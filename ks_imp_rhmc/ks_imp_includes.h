@@ -33,6 +33,13 @@
 #define dslash_field dslash_eo_field
 #endif
 
+#ifdef PRTIME
+#define STARTTIME dtime = -dclock();
+#define ENDTIME(string) dtime += dclock(); node0_printf("Aggregate time to %s %e\n",(string),dtime);
+#else
+#define STARTTIME
+#define ENDTIME(string)
+#endif
 
 /* prototypes for functions in this directory */
 
@@ -49,7 +56,7 @@ int readin(int prompt);
 /* update_rhmc.c */
 
 enum int_alg_t { INT_LEAPFROG, INT_OMELYAN, INT_2EPS_3TO1, INT_2EPS_2TO1, 
-		 INT_2G1F, INT_3G1F, INT_4MN4FP, INT_4MN5FV, INT_FOURSTEP, 
+                 INT_2G1F, INT_3G1F, INT_5G1F, INT_6G1F, INT_4MN4FP, INT_4MN5FV, INT_FOURSTEP, 
 		 INT_PLAY };
 
 /* Set default integration algorithm */
@@ -81,6 +88,7 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
     Real *roots,	/* the roots */
+    Real *residues,	/* the residues (if not zero, there are used to scale the shifted target residual) */
     int order,		/* order of rational function approx */
     int my_niter,	/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */

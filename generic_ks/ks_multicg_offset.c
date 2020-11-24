@@ -35,6 +35,29 @@ static su3_vector *resid;
 int num_offsets_padded;  // padded so vectors aligned to 64 bytes
 static int first_multicongrad = 1;
 
+/* The Fermilab relative residue */
+/* Called with p = residual and q = trial solution */
+static Real 
+my_relative_residue(su3_vector *p, su3_vector *q, int parity)
+{
+  double residue, num, den;
+  int i;
+  
+  residue = 0;
+  FORSOMEFIELDPARITY_OMP(i,parity,private(num,den) reduction(+:residue)){
+    num = (double)magsq_su3vec( &(p[i]) );
+    den = (double)magsq_su3vec( &(q[i]) );
+    residue += (den==0) ? 1.0 : (num/den);
+  } END_LOOP_OMP;
+
+  g_doublesum(&residue);
+
+  if(parity == EVENANDODD)
+    return sqrt(residue/volume);
+  else
+    return sqrt(2*residue/volume);
+}
+
 /* Interface for call with offsets = 4 * mass * mass */
 
 int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken */
@@ -52,6 +75,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   int iteration;	/* counter for iterations */
   int num_offsets_now; /* number of offsets still being worked on */
   double c1, c2, rsq, oldrsq, pkp;		/* pkp = cg_p.K.cg_p */
+  double relrsq = 0.;
   double source_norm;	/* squared magnitude of source vector */
   double rsqstop;	/* stopping residual normalized by source norm */
   int l_parity=0;	/* parity we are currently doing */
@@ -73,6 +97,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   int niter        = qic[0].max*qic[0].nrestart;
   Real rsqmin      = qic[0].resid * qic[0].resid;    /* desired squared residual - 
 							normalized as sqrt(r*r)/sqrt(src_e*src_e) */
+  Real relrsqmin   = qic->relresid * qic->relresid; /* desired relative residual (FNAL)*/
   int parity       = qic[0].parity;   /* EVEN, ODD */
   
 #ifdef CGTIME
@@ -96,7 +121,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   /* Initialize structure */
   for(j = 0; j < num_offsets; j++){
     qic[j].final_rsq     = 0.;
-    qic[j].final_relrsq  = 1.; /* No relative residual in use here */
+    qic[j].final_relrsq  = 0.;
     qic[j].size_r        = 0.;
     qic[j].size_relr     = 0.;
     qic[j].final_iters   = 0;
@@ -150,7 +175,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   
   pm = (su3_vector ** restrict )malloc(num_offsets*sizeof(su3_vector *));
 
-  if(PRECISION == 2) num_offsets_padded = (num_offsets-1)/4+4; // 4 doubles * real/imag
+  if(MILC_PRECISION == 2) num_offsets_padded = (num_offsets-1)/4+4; // 4 doubles * real/imag
   else               num_offsets_padded = (num_offsets-1)/8+8; // 8 floats * real/imag
 
   offset_low = 1.0e+20;
@@ -240,7 +265,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
     dtimec += dclock();
     if(this_node==0){
       printf("CONGRAD5: time = %e (multicg_offset %s) masses = %d iters = %d mflops = %e\n",
-	     dtimec,milc_prec[PRECISION-1],num_offsets,iteration,
+	     dtimec,milc_prec[MILC_PRECISION-1],num_offsets,iteration,
 	     (double)(nflop)*volume*
 	     iteration/(1.0e6*dtimec*numnodes()));
       fflush(stdout);
@@ -342,10 +367,18 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
     } END_LOOP_OMP;
     g_doublesum(&rsq);
     
+    if(relrsqmin > 0){
+      relrsq = 0.;
+      for(j=0;j<num_offsets_now;j++) {
+	double r = qic[j].final_relrsq = my_relative_residue(resid, psim[j], parity);
+	if(r > relrsq)relrsq = r;  /* relrsq is the max of the relative residuals */
+      }
+    }
+
 #if CG_DEBUG
-    node0_printf("%s: iter %d rsq = %g\n", myname, iteration, rsq);
+    node0_printf("%s: iter %d rsq = %g, relrsq = %g\n", myname, iteration, rsq, relrsq);
 #endif
-    if( rsq <= rsqstop ){
+    if( (rsqstop > 0 && rsq <= rsqstop) || (relrsqmin > 0 && relrsq <= relrsqmin) ){
       /* if parity==EVENANDODD, set up to do odd sites and go back */
       if(parity == EVENANDODD) {
 	l_parity=ODD; l_otherparity=EVEN;
@@ -385,7 +418,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
       dtimec += dclock();
       if(this_node==0){
 	printf("CONGRAD5: time = %e (multicg_offset %s) masses = %d iters = %d mflops = %e\n",
-	       dtimec,milc_prec[PRECISION-1],num_offsets,iteration,
+	       dtimec,milc_prec[MILC_PRECISION-1],num_offsets,iteration,
 	       (double)(nflop)*volume*
 	       iteration/(1.0e6*dtimec*numnodes()));
 	fflush(stdout);}

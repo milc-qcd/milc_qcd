@@ -72,8 +72,7 @@ static void load_fl_options(ferm_links_options_t *dest){
 /* Create the fermion links structure */
 /* This procedure is "private".  Use
    create_fermion_links_asqtad or
-   create_fermion_links_hisq or
-   create_fermion_links_hypisq as appropriate */
+   create_fermion_links_hisq */
 /*----------------------------------------*/
 
 /* To be called only by fermion_links*.c routines */
@@ -111,8 +110,6 @@ int fermion_links_get_n_naiks(fermion_links_t *fl){
 
 #if FERM_ACTION == HISQ
   return get_n_naiks_hisq(fl);
-#elif FERM_ACTION == HYPISQ
-  return get_n_naiks_hypisq(fl);
 #else
   return 1;
 #endif
@@ -124,8 +121,6 @@ double *fermion_links_get_eps_naik(fermion_links_t *fl){
 
 #if FERM_ACTION == HISQ
   return get_eps_naik_hisq(fl);
-#elif FERM_ACTION == HYPISQ
-  return get_eps_naik_hypisq(fl);
 #else
   return NULL;
 #endif

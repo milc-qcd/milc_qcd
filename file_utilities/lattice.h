@@ -13,12 +13,12 @@
 
 EXTERN	Real beta;
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
-EXTERN	int sites_on_node;		/* number of sites on this node */
-EXTERN	int even_sites_on_node;	/* number of even sites on this node */
-EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
+EXTERN	size_t sites_on_node;		/* number of sites on this node */
+EXTERN	size_t even_sites_on_node;	/* number of even sites on this node */
+EXTERN	size_t odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 EXTERN  double g_ssplaq, g_stplaq;
@@ -43,7 +43,7 @@ struct site {
 	int index;
 	double_prn site_prn;
 #ifndef NO_GAUGE_FIELD
-	su3_matrix link[4];
+	su3_matrix link[4] ALIGNMENT;
 #endif
 };
 typedef struct site site;

@@ -319,7 +319,7 @@ int read_kspropsource_V_usqcd(QIO_Reader *infile, char *srcinfo, int n,
 int write_kspropsource_C_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml, 
 			       complex *src, int t0){
   int status;
-  if(PRECISION == 1)
+  if(MILC_PRECISION == 1)
     status = write_F_C_timeslice_from_field(outfile, recxml, src, 1, t0);
   else
     status = write_D_C_timeslice_from_field(outfile, recxml, src, 1, t0);
@@ -352,12 +352,12 @@ int write_kspropsource_V_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml,
 				   su3_vector *src, int t0){
   int status;
   if(t0 == ALL_T_SLICES){
-    if(PRECISION == 1)
+    if(MILC_PRECISION == 1)
       status = write_F3_V_from_field(outfile, recxml, src, 1);
     else
       status = write_D3_V_from_field(outfile, recxml, src, 1);
   }  else {
-    if(PRECISION == 1)
+    if(MILC_PRECISION == 1)
       status = write_F3_V_timeslice_from_field(outfile, recxml, src, 1, t0);
     else
       status = write_D3_V_timeslice_from_field(outfile, recxml, src, 1, t0);
@@ -399,7 +399,7 @@ int write_ksprop_usqcd_c(QIO_Writer *outfile, su3_vector *src,
   QIO_encode_usqcd_ksproprecord_info(recxml, proprecord_info);
   QIO_destroy_usqcd_ksproprecord_info(proprecord_info);
 
-  if(PRECISION == 1)
+  if(MILC_PRECISION == 1)
     status = write_F3_V_from_field(outfile, recxml, src, 1);
   else
     status = write_D3_V_from_field(outfile, recxml, src, 1);
@@ -443,7 +443,7 @@ QIO_Reader *open_usqcd_ksprop_read(char *filename, int serpar, char **fileinfo){
     printf("open_usqcd_ksprop_read: No room for fileinfo\n");
     terminate(1);
   }
-  strncpy(*fileinfo, s, len);
+  strncpy(*fileinfo, s, len+1);
   (*fileinfo)[len] = '\0';
   QIO_string_destroy(xml_file);
 

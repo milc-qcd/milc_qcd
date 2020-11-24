@@ -121,7 +121,7 @@ gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
     dtime += dclock();
     if(flag != FORGET)
       node0_printf("Time to save = %e\n",dtime);
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
     node0_printf("CHECK PLAQ: %e %e\n",g_ssplaq,g_stplaq);
     node0_printf("CHECK NERSC LINKTR: %e CKSUM: %x\n",
 		 linktrsum.real/3.,nersc_checksum);
@@ -146,7 +146,7 @@ gauge_file *reload_lattice( int flag, char *filename){
     double dtime;
     gauge_file *gf = NULL;
     Real max_deviation;
-#if PRECISION == 2
+#if MILC_PRECISION == 2
     Real max_deviation2;
 #endif
 
@@ -189,7 +189,7 @@ gauge_file *reload_lattice( int flag, char *filename){
     nersc_checksum = nersc_cksum();
 #endif
     if(this_node==0){
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
     node0_printf("CHECK PLAQ: %e %e\n",g_ssplaq,g_stplaq);
     node0_printf("CHECK NERSC LINKTR: %e CKSUM: %x\n",
 		 linktrsum.real/3.,nersc_checksum);
@@ -205,11 +205,11 @@ gauge_file *reload_lattice( int flag, char *filename){
     dtime = -dclock();
     max_deviation = check_unitarity();
     g_floatmax(&max_deviation);
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
     if(this_node==0)printf("Unitarity checked.  Max deviation %.2e\n",
 			   max_deviation); fflush(stdout);
 #else
-    reunitarize();
+    reunitarize_cpu();  /* No rephasing here, because phases are not in */
     max_deviation2 = check_unitarity();
     g_floatmax(&max_deviation2);
     if(this_node==0)
@@ -615,7 +615,7 @@ int get_f( FILE *fp, int prompt, char *tag, Real *value ){
 	while(s != 1){
 	  printf("enter %s ",tag);
 	  fscanf(fp,"%s",checkvalue);
-#if PRECISION == 1
+#if MILC_PRECISION == 1
 	  s=sscanf(checkvalue,"%e",value);
 #else
 	  s=sscanf(checkvalue,"%le",value);
@@ -628,7 +628,7 @@ int get_f( FILE *fp, int prompt, char *tag, Real *value ){
     else  {
       if(get_check_tag(fp, tag, myname) == 1)return 1;
 	  
-#if PRECISION == 1
+#if MILC_PRECISION == 1
       s = fscanf(fp,"%e",value);
 #else
       s = fscanf(fp,"%le",value);
@@ -649,7 +649,7 @@ int get_i( FILE *fp, int prompt, char *tag, int *value ){
       s = 0;
       while(s != 1){
     	printf("enter %s ",tag);
-	fscanf(fp,"%s",checkvalue);
+	s=fscanf(fp,"%s",checkvalue);
     	s=sscanf(checkvalue,"%d",value);
 	if(s==EOF)return 1;
 	if(s==0)printf("Data format error.\n");
@@ -750,7 +750,7 @@ int get_vf( FILE* fp, int prompt, char *tag,
 	s = 0;
 	while(s != 1){
 	  printf("\n[%d] ",i);
-#if PRECISION == 1
+#if MILC_PRECISION == 1
 	  s=scanf("%e",value+i);
 #else
 	  s=scanf("%le",value+i);
@@ -765,7 +765,7 @@ int get_vf( FILE* fp, int prompt, char *tag,
       if(get_check_tag(fp, tag, myname) == 1)return 1;
 	  
       for(i = 0; i < nvalues; i++){
-#if PRECISION == 1
+#if MILC_PRECISION == 1
 	s = fscanf(fp,"%e",value + i);
 #else
 	s = fscanf(fp,"%le",value + i);
@@ -842,7 +842,7 @@ int get_prompt( FILE *fp, int *prompt ){
       }
     }
     if(strcmp(initial_prompt,"prompt") == 0)  {
-      fscanf(fp, "%d",prompt);
+      status = fscanf(fp, "%d",prompt);
     }
     else if(strcmp(initial_prompt,"0") == 0) *prompt=0;
     else if(strcmp(initial_prompt,"1") == 0) *prompt=1;

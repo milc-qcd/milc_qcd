@@ -34,14 +34,22 @@ typedef struct {
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4];
+	su3_matrix link[4] ALIGNMENT;
+#ifdef ANISOTROPY
+        su3_matrix staple_a[2];
+        /* NOTE: a) staple_a[0] - spatial, staple_a[1] - temporal
+                 b) the "staple" variable below is different from isotropic
+                    case: here staple=beta[0]*staple_a[0]+beta[1]*staple_a[1],
+                    while in the isotropic case it would be simply
+                    staple=staple_a[0]+staple_a[1] */
+#endif
 	su3_matrix tempmat1,staple;
 #ifdef HMC_ALGORITHM
  	su3_matrix old_link[4];
 	/* For accept/reject */
 #endif
 	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4];
+ 	anti_hermitmat mom[4] ALIGNMENT;
 #ifdef RMD_ALGORITHM
 
 	/* temporary matrices */
@@ -69,10 +77,15 @@ typedef struct {
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;			/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;			/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,stepsQ,propinterval;
+#ifndef ANISOTROPY
 EXTERN	Real beta;
+#else
+EXTERN  short ani_dir; /* direction of anisotropy */
+EXTERN  Real beta[2]; /* beta[0] - 3d-isotropic, beta[1] - anisotropic */
+#endif
 EXTERN	Real epsilon;
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 EXTERN  double g_ssplaq, g_stplaq;
@@ -86,9 +99,9 @@ EXTERN	int total_iters;
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
-EXTERN	int sites_on_node;		/* number of sites on this node */
-EXTERN	int even_sites_on_node;	/* number of even sites on this node */
-EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
+EXTERN	size_t sites_on_node;		/* number of sites on this node */
+EXTERN	size_t even_sites_on_node;	/* number of even sites on this node */
+EXTERN	size_t odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 

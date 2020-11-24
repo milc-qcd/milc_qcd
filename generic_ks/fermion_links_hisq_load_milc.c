@@ -21,6 +21,10 @@
 #ifdef QCDOC
 #define special_alloc qcdoc_alloc
 #define special_free qfree
+#elif defined(USE_FL_GPU)
+#include "../include/generic_quda.h"
+#define special_alloc qudaAllocatePinned
+#define special_free qudaFreePinned
 #else
 #define special_alloc malloc
 #define special_free free
@@ -211,14 +215,18 @@ load_Y_from_V(info_t *info, hisq_auxiliary_t *aux, int umethod){
     node0_printf("UNITARIZE_APE: derivative is not ready for this method\n"); 
     terminate(0);
     
+    int status = 0;
     FORALLFIELDSITES_OMP(i,private(dir,tmat))for(dir=XUP;dir<=TUP;dir++){
       /* Use partially reunitarized link for guess */
       tmat = V_link[4*i+dir];
       reunit_su3(&tmat);
-      project_su3(&tmat, &(V_link[4*i+dir]), nhits, tol);
+      status += project_su3(&tmat, &(V_link[4*i+dir]), nhits, tol);
       Y_unitlink[4*i+dir] = tmat;
     }
     END_LOOP_OMP;
+    g_intsum(&status);
+    if(this_node == 0 && status > 0)
+      printf("WARNING %d sites report no convergence in project_su3\n", status);
     break;
 
   case UNITARIZE_ROOT:
@@ -512,6 +520,7 @@ load_X_from_W(info_t *info, fn_links_t *fn, hisq_auxiliary_t *aux,
   double dtime = -dclock();
 #ifdef USE_FL_GPU
   load_fatlonglinks_gpu(info, fat, lng, ap, aux->W_unitlink);
+  final_flop += info->final_flop;
 #else
   load_fatlinks(info, fat, ap, aux->W_unitlink );
   final_flop += info->final_flop;
@@ -599,9 +608,11 @@ load_hisq_fn_links(info_t *info, fn_links_t **fn, fn_links_t *fn_deps,
     // 2nd path table set
     load_X_from_W(info, fn[0], aux, &ap->p2);
     final_flop += info->final_flop;
-    for( inaik = 1; inaik < n_naiks; inaik++ )
+    for( inaik = 1; inaik < n_naiks; inaik++ ) {
       add_fn( fn[inaik], fn[0], fn[inaik] );
       final_flop += 18.*volume/numnodes();
+      fn[inaik]->eps_naik = eps_naik[inaik];
+    }
   }
   else {
     // 2nd path table set only, no other terms with Naik corrections
@@ -783,6 +794,7 @@ create_hisq_links_milc(info_t *info, fn_links_t **fn, fn_links_t **fn_deps,
 
   dtime += dclock();
   info->final_sec = dtime;
+  info->final_flop = final_flop;
 }
 
 void

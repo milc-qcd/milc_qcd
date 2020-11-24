@@ -18,7 +18,7 @@
 # Results are in the files out.test.diff.* 
 #------------------------------------------------------------
 
-PROJS = su3_rmd su3_hmc su3_ora
+PROJS = su3_rmd su3_hmc su3_ora su3_rmd_a su3_hmc_a su3_ora_a
 PRECLIST = 1
 
 PATTERNS = WARMUPS RUNNING

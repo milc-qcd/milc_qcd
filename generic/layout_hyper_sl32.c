@@ -394,8 +394,8 @@ register int i;
 }
 
 /*------------------------------------------------------------------*/
-int node_index(int x, int y, int z, int t) {
-register int i,xr,yr,zr,tr,k;
+size_t node_index(int x, int y, int z, int t) {
+    size_t i,xr,yr,zr,tr,k;
     /* Coordinate relative to origin of local hypercube */
     xr = x%squaresize[XUP]; yr = y%squaresize[YUP];
     zr = z%squaresize[ZUP]; tr = t%squaresize[TUP];
@@ -430,9 +430,9 @@ const int *get_logical_coordinate(){
 
 /*------------------------------------------------------------------*/
 /* Map node number and index to coordinates  */
-void get_coords(int coords[], int node, int index){
+void get_coords(int coords[], int node, size_t index){
   int mc[4];
-  int ir,kr,d,eo;
+  size_t ir,kr,d,eo;
   int k = node;
 
   /* Compute machine coordinates for node */
@@ -486,13 +486,13 @@ void get_coords(int coords[], int node, int index){
   /* Consistency checks for debugging */
   if((k = node_number(coords[0], coords[1], coords[2], coords[3])) 
      != node){
-    printf("get_coords: coords %d %d %d %d for node %d index %d map to wrong node %d\n",
+    printf("get_coords: coords %d %d %d %d for node %d index %ld map to wrong node %d\n",
 	   coords[0], coords[1], coords[2], coords[3], node, index, k);
     terminate(1);
   }
   if((k = node_index(coords[0], coords[1], coords[2], coords[3]))
       != index){
-    printf("get_coords: coords %d %d %d %d for node %d index %d map to wrong index %d\n",
+    printf("get_coords: coords %d %d %d %d for node %d index %ld map to wrong index %d\n",
 	   coords[0], coords[1], coords[2], coords[3], node, index, k);
     terminate(1);
   }

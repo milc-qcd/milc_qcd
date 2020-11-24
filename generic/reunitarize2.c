@@ -11,6 +11,11 @@
 */
 
 #include "generic_includes.h"
+#include "../include/openmp_defs.h"
+
+#ifdef USE_GF_GPU
+#include "../include/generic_quda.h"
+#endif
 
 #define TOLERANCE (0.0001)
 #define MAXERRCOUNT 100
@@ -200,7 +205,30 @@ int reunit_su3(su3_matrix *c)
 
 } /* reunit_su3 */
 
-void reunitarize() {
+#ifdef USE_GF_GPU
+
+void reunitarize_gpu() {
+
+  initialize_quda();
+
+#ifdef GFTIME
+  double dtime, dclock();
+  dtime = -dclock();
+#endif
+
+  QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+  qudaUnitarizeSU3Phased(MILC_PRECISION, TOLERANCE, &arg, phases_in);
+
+#ifdef GFTIME
+  dtime += dclock();
+  node0_printf("REUNITARIZE: time = %e\n", dtime);
+#endif
+
+}  /* reunitarize_gpu */
+
+#endif
+
+void reunitarize_cpu() {
   register su3_matrix *mat;
   register int i,dir;
   register site *s;
@@ -209,8 +237,8 @@ void reunitarize() {
 
   max_deviation = 0.;
   av_deviation = 0.;
-  
-  FORALLSITES(i,s){
+
+  FORALLSITES_OMP(i,s,private(dir,mat,errors) reduction(+:errcount) ){
 #ifdef SCHROED_FUN
   for(dir=XUP; dir<=TUP; dir++ ) if(dir==TUP || s->t>0 ){
 #else
@@ -219,14 +247,15 @@ void reunitarize() {
       mat = (su3_matrix *)&(s->link[dir]);
       errors = reunit_su3( mat );
       errcount += errors;
-      if(errors)reunit_report_problem_matrix(mat,i,dir);
-      if(errcount > MAXERRCOUNT)
-	{
+      if(errors && errcount <= MAXERRCOUNT)
+	reunit_report_problem_matrix(mat,i,dir);
+    }
+  } END_LOOP_OMP
+  if(errcount > MAXERRCOUNT)
+     {
 	  printf("Unitarity error count exceeded.\n");
 	  terminate(1);
-	}
-    }
-  }
+     }
 
 #ifdef UNIDEBUG
   printf("Deviation from unitarity on node %d: max %.3e, avrg %.3e\n",
@@ -244,5 +273,5 @@ void reunitarize() {
 	}
     }
 
-}  /* reunitarize2 */
+}  /* reunitarize_cpu */
 

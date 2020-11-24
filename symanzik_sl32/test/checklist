@@ -1,2 +1,12 @@
 exec su3_hmc_symzk1 1 - - WARMUPS RUNNING
+exec su3_hmc_symzk1 2 - - WARMUPS RUNNING
 exec su3_ora_symzk1 1 - - WARMUPS RUNNING
+exec su3_ora_symzk1 2 - - WARMUPS RUNNING
+exec su3_hmc_symzk0_a 1 - - WARMUPS RUNNING
+exec su3_hmc_symzk0_a 2 - - WARMUPS RUNNING
+exec su3_ora_symzk0_a 1 - - WARMUPS RUNNING
+exec su3_ora_symzk0_a 2 - - WARMUPS RUNNING
+exec su3_hmc_symzk1_a 1 - - WARMUPS RUNNING
+exec su3_hmc_symzk1_a 2 - - WARMUPS RUNNING
+exec su3_ora_symzk1_a 1 - - WARMUPS RUNNING
+exec su3_ora_symzk1_a 2 - - WARMUPS RUNNING

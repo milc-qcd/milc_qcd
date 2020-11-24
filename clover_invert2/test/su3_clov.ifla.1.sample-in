@@ -15,6 +15,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0
+time_bc periodic
 
 # Inversion control
 
@@ -26,6 +27,7 @@ number_of_base_sources 1
 # base_source 0
 
 gaussian
+field_type Dirac
 subset full
 origin 0 0 0 0
 r0 1.5
@@ -60,7 +62,6 @@ error_for_propagator 1e-6
 rel_error_for_propagator 1e-6
 precision 1
 momentum_twist 0 0 0
-time_bc periodic
 
 source 0
 

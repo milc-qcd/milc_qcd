@@ -20,10 +20,11 @@ int prompt;
 
 	/* print banner, get volume, seed */
     prompt=initial_set();
-   	/* initialize the node random number generator */
-    initialize_prn(&node_prn,iseed,volume+mynode());
 	/* Initialize the layout functions, which decide where sites live */
     setup_layout();
+    this_node = mynode();
+   	/* initialize the node random number generator */
+    initialize_prn(&node_prn,iseed,volume+mynode());
 	/* allocate space for lattice, set up coordinate fields */
     make_lattice();
 	/* set up neighbor pointers and comlink structures */
@@ -37,7 +38,7 @@ int prompt;
 
 /* SETUP ROUTINES */
 int initial_set(){
-int prompt,status;
+int prompt=0,status;
     /* On node zero, read lattice size, seed, and send to others */
     if(mynode()==0){
 	/* print banner */
@@ -73,9 +74,8 @@ int prompt,status;
     nt=par_buf.nt;
     iseed=par_buf.iseed;
     
-    this_node = mynode();
     number_of_nodes = numnodes();
-    volume=nx*ny*nz*nt;
+    volume=(size_t)nx*ny*nz*nt;
     total_iters=0;
     return(prompt);
 }

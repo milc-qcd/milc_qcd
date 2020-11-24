@@ -99,10 +99,10 @@ void map_milc_clov_to_quda_raw_##P(MILCFLOAT *raw_clov, clover *milc_clov){\
 }
 // make_map_clov_to_quda_raw
 
-#if ( PRECISION == 1 )
+#if ( MILC_PRECISION == 1 )
 make_map_milc_clov_to_quda_raw(F, float)
 #define map_milc_clov_to_quda_raw map_milc_clov_to_quda_raw_F
-#else // PRECISION == 2
+#else // MILC_PRECISION == 2
 make_map_milc_clov_to_quda_raw(D, double)
 #define map_milc_clov_to_quda_raw map_milc_clov_to_quda_raw_D
 #endif
@@ -115,18 +115,62 @@ int bicgilu_cl_field_gpu ( // Return value is number of iterations taken
   void *dmp  		   // parameters defining the Dirac matrix
 )			   
 {
-   int flag = qic->start_flag;  // O: use a zero initial guess;
+  int num_iters = 0;
+  double residual = 0.;
+  double relative_residual = 0.;
+
+#ifdef CGTIME
+  double dtime = -dclock();
+#endif
+  int i;
+
+  /* Compute source norm */
+  double source_norm = 0.0;
+  FORSOMEFIELDPARITY(i,qic->parity){
+    source_norm += (double)magsq_wvec( src+i );
+  } END_LOOP;
+  g_doublesum( &source_norm );
+  //#ifdef CG_DEBUG
+  node0_printf("bicgilu_cl_field_gpu: source_norm = %e\n", (double)source_norm);
+  //#endif
+
+  /* Provide for trivial solution */
+  if(source_norm == 0.0){
+    /* Zero the solution and return zero iterations */
+    FORSOMEFIELDPARITY(i,qic->parity){
+      memset(dest + i, 0, sizeof(wilson_vector));
+    } END_LOOP;
+
+#ifdef CGTIME
+    dtime += dclock();
+#endif
+    if(this_node==0){
+      if(num_iters==0)
+	printf("BICGILU: NO iterations taken size_r= %.2e rel %.2e\n",
+	       qic->final_rsq, qic->final_relrsq);
+#ifdef CGTIME
+      else
+	printf("CGTIME: time = %.2e (bicgilu GPU) size_r= %.2e relr= %.2e iters= %d MF = %.1f\n",
+	       dtime,qic->final_rsq,qic->final_relrsq,qic->final_iters,
+	       (double)8742*qic->final_iters*even_sites_on_node/(dtime*1e6));
+#endif
+    }
+    qic->final_rsq    = residual*residual; 
+    qic->final_relrsq = relative_residual*relative_residual;
+    qic->final_iters  = num_iters; 
+    
+    return 0;
+  }
+    
+  int flag = qic->start_flag;  // O: use a zero initial guess;
 			        // 1: use dest
 
-   dirac_clover_param *dcp = (dirac_clover_param *)dmp; 
-   Real kappa  = dcp->Kappa;
-   Real clov_c = dcp->Clov_c;
-   Real u0     = dcp->U0; 
-   Real CKU0   = kappa*clov_c/(u0*u0*u0);
-#ifdef CGTIME
-   double dtime = -dclock();
-#endif
-
+  dirac_clover_param *dcp = (dirac_clover_param *)dmp; 
+  Real kappa  = dcp->Kappa;
+  Real clov_c = dcp->Clov_c;
+  Real u0     = dcp->U0; 
+  Real CKU0   = kappa*clov_c/(u0*u0*u0);
+  
   clover *milc_clov = gen_clov;
   if(milc_clov == NULL){
     printf("bicgilu_cl_field_gpu(%d): milc_clov == NULL\n", this_node);	
@@ -173,29 +217,27 @@ int bicgilu_cl_field_gpu ( // Return value is number of iterations taken
   inv_args.max_iter          = qic->max*qic->nrestart;
 #ifdef MAX_MIXED
   inv_args.mixed_precision = 2;
-#else
-#ifdef HALF_MIXED
+#elif defined(HALF_MIXED)
   inv_args.mixed_precision = 1;
 #else
   inv_args.mixed_precision = 0;
 #endif
-#endif
-  
+
+  node0_printf("inv_args.mixed_precision is set to %d\n",
+	       inv_args.mixed_precision);
+  inv_args.solver_type = QUDA_BICGSTAB_INVERTER;
+
   int dir;
   for(dir=0; dir<4; ++dir) inv_args.boundary_phase[dir] = boundary_phase[dir]; // boundary_phase is a global array
   const int quda_precision   = qic->prec;
   
-  double residual, relative_residual;
-  int num_iters = 0;
-  
   gamma_matrix_t g5 = gamma_mat(G5);
 
-  int i;
   FORALLFIELDSITES(i){
     mult_w_by_gamma_mat_l(&(src[i]), &(quda_src[i]), &g5);
   }
 
-  qudaCloverInvert(PRECISION, 
+  qudaCloverInvert(MILC_PRECISION, 
 		   quda_precision,
 		   kappa,
 		   CKU0,

@@ -24,7 +24,6 @@ QMP with automatic hyper_prime layout
 ON EACH NODE 8 x 8 x 8 x 8
 Mallocing 2.9 MBytes per node for lattice
 WARNING!!: Resetting random seed
-Aggregate time to setup 1.193905e-02
 
 
 ######################################################################
@@ -38,6 +37,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0 
+time_bc antiperiodic
 # Chiral condensate and related measurements
 number_of_pbp_masses 0
 # Description of base sources
@@ -57,7 +57,6 @@ max_cg_iterations 300
 max_cg_restarts 5
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 0
 number_of_propagators 3
@@ -270,15 +269,12 @@ path coefficients: npath  path_coeff  multiplicity
                     4      -6.022150e-03     384
                     5      -1.092954e-01     48
 Time to APE smear 1.955986e-03 sec
-Aggregate time to readin 8.368301e-02
-Aggregate time to calculate pbp, etc 0.000000e+00
 Fixing to Coulomb gauge
 step 19 av gf action 8.73432119e-01, delta 6.467e-04
 step 39 av gf action 8.76698059e-01, delta 4.322e-05
 step 59 av gf action 8.77135975e-01, delta 1.052e-05
 step 79 av gf action 8.77249813e-01, delta 2.893e-06
 GFIX: Ended at step 85. Av gf action 8.77263803e-01, delta 1.980e-06
-Aggregate time to gauge fix 6.298809e-01
 Time to APE smear 2.653122e-03 sec
 END OF HEADER
 Mass= 0.03 source CORNER residue= 1e-08 rel= 0
@@ -297,13 +293,9 @@ solve_ksprop: color = 2
  OK converged final_rsq= 0 (cf 1e-16) rel = 1 (cf 0) restarts = 0 iters= 0
 Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Done with solve_ksprop
-Aggregate time to compute propagators 9.398739e-01
 destroy prop[0]
-Aggregate time to generate sink operator 2.899170e-04
 destroy prop[1]
-Aggregate time to generate sink operator 2.129078e-04
 destroy prop[2]
-Aggregate time to generate sink operator 2.319813e-04
 Mesons for quarks 0 and 0
 Time for diagonal mesons 1.564503e-02
 Time for printing correlator 2.918005e-03
@@ -322,7 +314,6 @@ Time for printing correlator 4.918575e-04
 Mesons for quarks 2 and 2
 Time for diagonal mesons 1.500392e-02
 Time for printing correlator 4.570484e-04
-Aggregate time to tie meson correlators 1.230590e-01
 Baryons for quarks 0, 0, and 0
 Time for baryons 6.890297e-05
 Time for printing correlator 3.700256e-04
@@ -353,7 +344,6 @@ Time for printing correlator 2.951622e-04
 Baryons for quarks 2, 2, and 2
 Time for baryons 5.602837e-05
 Time for printing correlator 2.732277e-04
-Aggregate time to tie baryon correlators 3.839016e-03
 RUNNING COMPLETED
 Time = 1.797154e+00 seconds
 total_iters = 1030

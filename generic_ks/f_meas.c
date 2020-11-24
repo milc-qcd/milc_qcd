@@ -402,7 +402,6 @@ void f_meas_imp( int npbp_reps, int prec,
   qic.max        = niter;
   qic.nrestart   = nrestart;
   qic.parity     = EVENANDODD;
-  qic.start_flag = 0;
   qic.nsrc       = 1;
   qic.resid      = sqrt(rsqprop);
   qic.relresid   = 0;
@@ -463,7 +462,8 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
     /* M_inv_gr = M^{-1} gr */
 
     M_inv_gr = create_su3_vector_array(n_masses);
-    total_iters += mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic, fn_multi );
+    //total_iters += mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic, fn_multi );
+    mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic, fn_multi );
       
 #ifdef DM_DU0
     /* dMdu_x = dM/du0 M^{-1} gr */

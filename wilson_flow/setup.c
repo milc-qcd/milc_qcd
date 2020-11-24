@@ -23,6 +23,7 @@ setup()
 
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
 
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
@@ -74,9 +75,8 @@ initial_set()
   nz=par_buf.nz;
   nt=par_buf.nt;
   
-  this_node = mynode();
   number_of_nodes = numnodes();
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
   
   return prompt;
 }

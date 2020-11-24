@@ -104,6 +104,11 @@ typedef struct {
 #define KS4_TYPE 3
 #define IFLA_TYPE 4
 
+/* Field types */
+
+#define WILSON_FIELD 0
+#define KS_FIELD 1
+
 /* Structures required for specific inverters */
 
 /* Structure defining parameters of Dirac matrix for clover inversion */
@@ -119,13 +124,18 @@ typedef struct {
   Real Kappa;        /* hopping */
 } dirac_wilson_param;
 
+/* Size of a bookkeeping table holding unique charges */
+#define MAX_CHARGE 16
+
 /* Same for plain KS case */
 typedef struct {
   Real mass;
-  Real offset;
+  Real charge;
+  Real offset;    /* For RHMC, the pole position */
+  Real residue;   /* For RHMC, the pole residue */
   int naik_term_epsilon_index;
+  int charge_index;
   Real naik_term_epsilon;
-
 } ks_param;
 
 /* This is the IFLA case */
@@ -149,6 +159,11 @@ typedef struct {
 
 /* Structure defining quark inversion parameters for most inverters */
 
+enum inv_type {
+  MGTYPE,
+  CGTYPE
+};
+
 typedef struct {
   int prec;           /* precision of the inversion 1 = single; 2 = double */
   int min;            /* minimum number of iterations (being phased out) */
@@ -157,6 +172,7 @@ typedef struct {
   int parity;         /* EVEN, ODD, or EVENANDODD (for some inverters) */
   int start_flag;     /* 0: use a zero initial guess; 1: use dest */
   int nsrc;           /* Number of source vectors */
+  int deflate;        /* True if we want to deflate. False if not. */
   Real resid;         /* desired residual - NOT SQUARED!
 			 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
   Real relresid;      /* desired relative residual - NOT SQUARED! */
@@ -168,6 +184,8 @@ typedef struct {
   int converged;      /* returned 0 if not converged; 1 if converged */
   int  final_iters;
   int  final_restart;
+  enum inv_type inv_type;  /* requested inverter type */
+  char mgparamfile[MAXFILENAME];    /* Name of file with the staggered multigrid parameters */
                       /* Add further parameters as needed...  */
 } quark_invert_control;
 
@@ -199,8 +217,7 @@ struct qss_op_struct {
   char mass_label[32]; /* For KS solver */
   Real eps_naik;      /* Naik epsilon for KS hopping operator and KS inverse */
   quark_invert_control qic; /* For Dirac and KS solver */
-  int co[4];          /* Coordinate origin for Dirac solver boundary twist */
-  Real bp[4];         /* Boundary phase for Dirac solver */
+  Real bp[4];         /* Boundary phase for Dirac and KS solvers */
   int t0;             /* For time slice projection */
   struct qss_op_struct *op;   /* Next operation in the chain */
 };
@@ -210,8 +227,8 @@ typedef struct qss_op_struct quark_source_sink_op;
 /* Structure defining a staggered or Wilson (or clover) quark source */
 
 typedef struct {
+  int field_type;     /* type of field for this source (KS or Dirac) */
   int type;           /* source type */
-  int orig_type;      /* original source type */
   int subset;         /* hypercube corners or full time slice */
   Real scale_fact;    /* scale factor */
   char descrp[MAXDESCRP];  /* alpha description for most */
@@ -237,13 +254,14 @@ typedef struct {
   QIO_Reader *infile;
   QIO_Writer *outfile;
 #endif
-  ks_fm_source_file *kssf;
+  /* To be discontinued ... */
+  quark_source_sink_op *op;   /* op need to create this 
+				      source from parent */
   complex *c_src;      /* Pointer for complex source field storage */
   su3_vector *v_src;    /* su3_vector source for color walls */
   wilson_vector *wv_src; /* su3_vector source for color walls */
-  quark_source_sink_op *op;   /* op need to create this 
-				      source from parent */
-  /* To be discontinued ... */
+  ks_fm_source_file *kssf;
+  int orig_type;      /* original source type */
   int parity;         /* even or odd sites for w_source_h */
   int src_pointer ;   /* smearing function (for the moment, only
 		         clover_finite_p_vary/create_wilson_source.c) */

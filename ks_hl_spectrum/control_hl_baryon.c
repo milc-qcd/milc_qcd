@@ -33,7 +33,7 @@ int main(int argc,char *argv[])
   double starttime;
   site *s;
   double space_vol;
-  int prec = PRECISION;  /* For file names */
+  int prec = MILC_PRECISION;  /* For file names */
   
   int t, color, spin, spin1;
 

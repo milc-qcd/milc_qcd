@@ -6,7 +6,7 @@
 
 if [ $# -lt 4 ] 
 then
-  echo "Usage $0 target tol PAT1 PAT2 PAT1 PAT2 ..."
+  echo "Usage $0 target tol PAT1 PAT2 PAT1 PAT2 ... SELECT='P1|P2...'"
   exit
 fi
 

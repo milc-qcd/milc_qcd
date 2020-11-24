@@ -5,6 +5,9 @@
 
 #ifdef PRIMME
 
+/* NOTE: The PRIMME release version has clashing definitions for complex functions, so we provide
+   a stripped-down version.  This must be checked against future releases. 
+   Also, watch out for the definition of PRIMME_INT = long? */
 #include "../include/primme.h"
 static int mxv_kalk;
 
@@ -14,7 +17,7 @@ void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme_params
 
 //static const Real jd_shift=1.e-6;
 
-void av_ov (void *x, void *y, int *blockSize, primme_params *primme)
+void av_ov (void *x, long *ldx, void *y, long *ldy, int *blockSize, struct primme_params *primme, int *ierr)
 {
     site* s;
     int i, j, iblock;
@@ -77,12 +80,13 @@ void av_ov (void *x, void *y, int *blockSize, primme_params *primme)
     }
     
 
+  *ierr = 0 ;
 
 }
 
-int Kalkreuter_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
-	Real RelTol, int Nvecs, int MaxIter, 
-	int Restart, int Kiters, int parity)
+int ks_eigensolve_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
+			 Real RelTol, int Nvecs, int MaxIter, 
+			 int Restart, int Kiters, int parity)
 {
     int maxnev=Nvecs;       /* number of eigenvalues to compute*/
     int maxn;
@@ -151,12 +155,12 @@ int Kalkreuter_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance,
 
     primme.numProcs=number_of_nodes;          
     primme.procID=this_node;
-    primme.globalSumDouble=par_GlobalSumDouble;/*the wrapper function to do global sums*/
+    primme.globalSumReal=par_GlobalSumDouble;/*the wrapper function to do global sums*/
 
     primme.matrixMatvec =av_ov;                  /*the matrix on vector product*/
 
 
-    ret = primme_set_method(DEFAULT_MIN_MATVECS, &primme);
+    ret = primme_set_method(PRIMME_DEFAULT_MIN_MATVECS, &primme);
     /*
     if (kind_of_h0==HOVERLAP) primme.printLevel=3;
     else */ primme.printLevel=2;
@@ -220,7 +224,7 @@ int Kalkreuter_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance,
     free(evals);
     free(evecs);
     free(rnorms);
-    primme_Free(&primme);
+    primme_free(&primme);
     mxv_kalk=ndelta0-nn0;
     return mxv_kalk;
 
@@ -238,11 +242,11 @@ void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme_params
 
 /* Stub to allow compilation (but not execution) in case PRIMME is not available */
 
-int Kalkreuter_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
-	Real RelTol, int Nvecs, int MaxIter, 
-	int Restart, int Kiters, int parity)
+int ks_eigensolve_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
+			 Real RelTol, int Nvecs, int MaxIter, 
+			 int Restart, int Kiters, int parity)
 {
-  node0_printf("Kalkreuter_PRIMME: Requires compilation with the PRIMME package\n");
+  node0_printf("ks_eigensolve_PRIMME: Requires compilation with the PRIMME package\n");
   terminate(1);
 
   return 0;

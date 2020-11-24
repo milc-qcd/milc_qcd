@@ -54,7 +54,7 @@ Real xrandom;
 #ifdef PHI_ALGORITHM
 	/* generate a pseudofermion configuration only at start*/
 	if(step==1){
-	  restore_fermion_links_from_site(fn_links, PRECISION);
+	  restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	  fn = get_fm_links(fn_links);
 	  clear_latvec( F_OFFSET(phi), EVENANDODD );
 	  grsource_imp( F_OFFSET(phi), mass, EVEN, fn[0]);
@@ -65,10 +65,10 @@ Real xrandom;
 
 	    /* do conjugate gradient to get (Madj M)inverse * phi */
 	    /* NOTE: NEED TO UPGRADE TO ASQTAD.  BUILD ks_act_paths, ETC. */
-	    restore_fermion_links_from_site(fn_links, PRECISION);
+	    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	    fn = get_fm_links(fn_links);
 	    iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				niter, nrestart, rsqmin, PRECISION, EVEN, 
+				niter, nrestart, rsqmin, MILC_PRECISION, EVEN, 
 				&final_rsq, fn[0]);
 	    cg_time = 0.0;
 	}
@@ -122,17 +122,17 @@ Real xrandom;
 
 	/* reunitarize the gauge field */
 	rephase_sf( OFF );
-	reunitarize();
+	reunitarize_cpu();
 	rephase_sf( ON );
 
 	/* do conjugate gradient to get (Madj M)inverse * phi */
 	next_cg_time = step*epsilon;
 	predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
-	restore_fermion_links_from_site(fn_links, PRECISION);
+	restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	fn = get_fm_links(fn_links);
 	clear_latvec( F_OFFSET(xxx), EVENANDODD );
 	iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			    niter, nrestart, rsqmin, PRECISION, EVEN, 
+			    niter, nrestart, rsqmin, MILC_PRECISION, EVEN, 
 			    &final_rsq, fn[0]);
 	cg_time = step*epsilon;
 

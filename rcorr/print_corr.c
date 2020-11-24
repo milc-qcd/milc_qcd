@@ -156,7 +156,7 @@ print_result(Real *q[], Real *q2[], int nblock, int block_size[]){
 	      else if(y == z){mult /= 2;}
 	    }
 	    for(ib = 0; ib < nblock; ib++){
-	      myqb[ib] = q[ib][node_index(x,y,z,t)]; // selection of correlation values at the given sites with different block size
+	      myqb[ib] = q[ib][node_index(x,y,z,t)];
 	      myqb2[ib] = q2[ib][node_index(x,y,z,t)];
 	    }
 	  }
@@ -168,7 +168,8 @@ print_result(Real *q[], Real *q2[], int nblock, int block_size[]){
 
 	  if(this_node == 0)
 	    //	    if(r <= RMAX && x%2==0 && y%2==0 && z%2==0 && t%2==0){
-	    if(r <= RMAX && (x+y+z+t)%2 == 0){
+	    //	    if(r <= RMAX && (x+y+z+t)%2 == 0){
+	    if(r <= RMAX){
 	      /* Get stdev of mean over symmetry-related sites */
 	      /* Assumes statistical independence  - not assured */
 	      for(ib = 0; ib < nblock; ib++)

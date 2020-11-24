@@ -9,7 +9,12 @@
 
 #include "symanzik_sl32_includes.h"
 #include <string.h>
+#include <ctype.h>
 
+/* Forward declarations */
+#ifdef ANISOTROPY
+static int dirstring2index (char savebuf[], int *status);
+#endif
 void make_sublattices();
 
 /* Each node has a params structure for passing simulation parameters */
@@ -42,7 +47,11 @@ int prompt,status;
     /* On node zero, read lattice size, seed, nflavors and send to others */
     if(mynode()==0){
 	/* print banner */
+#ifndef ANISOTROPY
 	printf("Pure gauge SU3\n");
+#else
+	printf("Anisotropic pure gauge SU3\n");
+#endif
 #ifdef HMC_ALGORITHM
         printf("Hybrid Monte Carlo algorithm\n");
 #endif
@@ -83,7 +92,7 @@ int prompt,status;
     
     this_node = mynode();
     number_of_nodes = numnodes();
-    volume=nx*ny*nz*nt;
+    volume=(size_t)nx*ny*nz*nt;
     return(prompt);
 }
 
@@ -153,6 +162,10 @@ int readin(int prompt) {
 /* argument "prompt" is 1 if prompts are to be given for input	*/
 
 int status;
+#ifdef ANISOTROPY
+  char savebuf[128];
+#endif
+
 
     /* On node zero, read parameters and send to all other nodes */
     if(this_node==0){
@@ -170,14 +183,26 @@ int status;
     
 	/* get couplings and broadcast to nodes	*/
 	/* beta */
+#ifndef ANISOTROPY
 	IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
+#else
+        /* beta[0] - isotropic, beta[1] - anisotropic */
+        IF_OK status += get_vf(stdin, prompt,"beta", par_buf.beta, 2 );
+        /* Direction of anisotropy */
+        IF_OK status += get_s(stdin, prompt,"ani_dir",savebuf);
+        par_buf.ani_dir = dirstring2index( savebuf, &status);
+#endif
 
 	/* no dynamical masses for pure gauge */
 	n_dyn_masses = 0;
 	dyn_flavors[0] = 0;
 
 	/* u0 */
-	IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+#ifndef ANISOTROPY
+        IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+#else
+        IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+#endif
 
 #ifdef HMC_ALGORITHM
 	/* steps per trajectory */
@@ -221,8 +246,21 @@ int status;
     startflag = par_buf.startflag;
     saveflag = par_buf.saveflag;
     epsilon = par_buf.epsilon;
+#ifndef ANISOTROPY
     beta = par_buf.beta;
+#else
+    ani_dir = par_buf.ani_dir;
+
+    beta[0] = par_buf.beta[0];
+    beta[1] = par_buf.beta[1];
+#endif
+
+#ifndef ANISOTROPY
     u0 = par_buf.u0;
+#else
+    u0 = par_buf.u0;
+#endif
+
     strcpy(startfile,par_buf.startfile);
     strcpy(savefile,par_buf.savefile);
     strcpy(stringLFN, par_buf.stringLFN);
@@ -231,5 +269,39 @@ int status;
     if( startflag != CONTINUE )
       startlat_p = reload_lattice( startflag, startfile );
 
+    /* make table of coefficients and permutations of loops in gauge action */
+    make_loop_table();
+
+#ifdef ANISOTROPY
+    /* figure out which loops are temporal and which are spatial */
+    path_determine_ani();
+#endif
+
     return(0);
 }
+
+#ifdef ANISOTROPY
+static int dirstring2index (char savebuf[], int *status) {
+  short mydir;
+
+  if ( savebuf[0] >= 'A' && savebuf[0] <= 'Z' )
+    mydir = tolower(savebuf[0]);
+  else
+    mydir = savebuf[0];
+  switch(mydir) {
+    case XUP:
+    case 'x': mydir = XUP; break;
+    case YUP:
+    case 'y': mydir = YUP; break;
+    case ZUP:
+    case 'z': mydir = ZUP; break;
+    case TUP:
+    case 't': mydir = TUP; break;
+    default:
+      node0_printf("Expecting direction \
+as x,y,z,t, X,Y,Z,T, or 0,1,2,3;  instead %c\n", mydir);
+     (*status)++;
+  }
+  return mydir;
+}
+#endif

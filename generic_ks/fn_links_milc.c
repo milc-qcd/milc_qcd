@@ -10,6 +10,10 @@
 #ifdef QCDOC
 #define special_alloc qcdoc_alloc
 #define special_free qfree
+#elif defined(USE_FL_GPU)
+#include "../include/generic_quda.h"
+#define special_alloc qudaAllocatePinned
+#define special_free qudaFreePinned
 #else
 #define special_alloc malloc
 #define special_free free
@@ -227,6 +231,15 @@ load_fn_backlinks(fn_links_t *fn){
 /* Create/destroy fn links                                           */
 /*-------------------------------------------------------------------*/
 
+void 
+init_ferm_links(fn_links_t *fn){
+  fn->fat = NULL;
+  fn->lng = NULL;
+  fn->fatback = NULL;
+  fn->lngback = NULL;
+  fn->eps_naik = 0.0;
+  fn->notify_quda_new_links = 1;
+}
 /* The fat/long members are not created */
 
 fn_links_t *
@@ -245,11 +258,13 @@ create_fn_links(void){
     terminate(1);
   }
   
+  init_ferm_links(fn);
   fn->phase = create_link_phase_info();
   fn->fat = create_fatlinks();
   fn->lng = create_lnglinks();
   fn->fatback = NULL;
   fn->lngback = NULL;
+  fn->eps_naik = 0.0;
 
   return fn;
 }
@@ -318,6 +333,9 @@ copy_fn(fn_links_t *fn_src, fn_links_t *fn_dst){
 	lngbackdst[4*i + dir] = lngbacksrc[4*i + dir];
     }
   }
+
+  fn_dst->eps_naik = fn_src->eps_naik;
+
   END_LOOP_OMP;
 }
 
@@ -354,6 +372,16 @@ scalar_mult_fn(fn_links_t *fn_src, Real s, fn_links_t *fn_dst){
 
 void 
 add_fn(fn_links_t *fn_A, fn_links_t *fn_B, fn_links_t *fn_C){
+
+  char myname[] = "add_fn";
+
+  if (fn_A->eps_naik != fn_B->eps_naik) {
+    node0_printf("%s: eps_naik does not match between the two links", myname);
+    exit(0);
+  }
+
+  fn_C->eps_naik = fn_B->eps_naik;
+
   int i, dir;
 
   su3_matrix *fatA = get_fatlinks(fn_A);
@@ -384,3 +412,14 @@ add_fn(fn_links_t *fn_A, fn_links_t *fn_B, fn_links_t *fn_C){
   END_LOOP_OMP;
 }
 
+int
+fresh_fn_links(fn_links_t *fn)
+{
+  return fn->notify_quda_new_links;
+}
+
+void
+cancel_quda_notification(fn_links_t *fn)
+{
+  fn->notify_quda_new_links = 0;
+}

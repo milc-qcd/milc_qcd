@@ -1,6 +1,6 @@
 CC = gcc
 CXX = g++
-LDFLAGS = -L$(HOME)/gmp/lib -lmpfr -lgmp -Wl,--rpath,/usr/local/lib64
+LDFLAGS = -L/usr/lib64/lib -lmpfr -lgmp -Wl,--rpath,/usr/local/lib64
 
 INCLIST = -I$(HOME)/gmp/include
 

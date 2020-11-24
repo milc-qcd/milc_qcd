@@ -1,33 +1,7 @@
 /******** setup.c *********/
 /* MIMD version 7 */
+
 #define IF_OK if(status==0)
-
-/* Modifications ... */
-
-//  $Log: setup.c,v $
-//  Revision 1.7  2013/12/24 05:32:40  detar
-//  Add combo type.  Support embedded inverse.
-//
-//  Revision 1.6  2012/11/24 05:14:20  detar
-//  Add support for U(1) fields and for future HYPISQ action
-//
-//  Revision 1.5  2012/04/25 03:21:29  detar
-//  Initialize boundary phase
-//
-//  Revision 1.4  2012/03/06 03:23:26  detar
-//  Set GPU inverter precision through input parameter
-//
-//  Revision 1.3  2012/01/21 21:35:08  detar
-//  Support general spin_taste interpolating operators for mesons.
-//
-//  Revision 1.2  2011/12/03 03:44:36  detar
-//  Fix support for mu_eos
-//
-//  Revision 1.1  2011/11/30 22:11:40  detar
-//  Add
-//
-//
-
 
 #include "ks_spectrum_includes.h"
 #include "lattice_qdp.h"
@@ -59,10 +33,11 @@ int setup()   {
   /* print banner, get volume */
   prompt=initial_set();
   if(prompt == 2)return prompt;
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
 #ifdef U1_FIELD
@@ -79,7 +54,7 @@ int setup()   {
   /* set up 3rd nearest neighbor pointers and comlink structures
      code for this routine is below  */
   make_3n_gathers();
-  /* set up K-S phase vectors, boundary conditions */
+  /* set up K-S phase vectors, antiperiodic boundary conditions */
   phaseset();
 
   return(prompt);
@@ -91,7 +66,7 @@ static double eps_naik[MAX_NAIK];
 
 /* SETUP ROUTINES */
 static int initial_set(void){
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
@@ -129,6 +104,10 @@ static int initial_set(void){
 #ifdef FIX_NODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "node_geometry", 
 			   param.node_geometry, 4);
+#ifdef FIX_SUBNODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "subnode_geometry", 
+			   param.subnode_geometry, 4);
+#endif
 #ifdef FIX_IONODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
 			   param.ionode_geometry, 4);
@@ -163,9 +142,8 @@ static int initial_set(void){
 #endif
 #endif
 
-  this_node = mynode();
   number_of_nodes = numnodes();
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
 
   return(prompt);
 }
@@ -238,67 +216,111 @@ int readin(int prompt) {
 
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
     IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
-    
-#if EIGMODE == EIGCG
-    /* for eigcg */
-    /* restart for Lanczos */
-    IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
-
-    /* number of eigenvectors per inversion */
-    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigcgp.Nvecs);
-
-    if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
-      printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
-      status++;
+    IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
+    IF_OK {
+      /* NOTE: The staggered default time bc is antiperiodic. */
+      if(strcmp(savebuf,"antiperiodic") == 0)param.time_bc = 0;
+      else if(strcmp(savebuf,"periodic") == 0)param.time_bc = 1;
+      else{
+	node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n", savebuf);
+	status++;
+      }
     }
+    
+    /* number of eigenpairs */
+    IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
 
-    /* maximum number of eigenvectors */
-    IF_OK status += get_i(stdin, prompt,"Max_Number_of_eigenvals",
-			  &param.eigcgp.Nvecs_max);
+    IF_OK if(param.eigen_param.Nvecs > 0){
 
-    /* eigenvector input */
-    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
-					  param.ks_eigen_startfile);
+      /* eigenvector input */
+      IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
+					    param.ks_eigen_startfile);
+      
+      /* eigenvector output */
+      IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
+					  param.ks_eigen_savefile);
 
-    /* eigenvector output */
-    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
-					param.ks_eigen_savefile);
+      /* If we are reading in eigenpairs, we don't regenerate them */
 
-    param.eigcgp.Nvecs_curr = 0;
-    param.eigcgp.H = NULL;
+#if EIGMODE != EIGCG
+      if(param.ks_eigen_startflag == FRESH){
+	
+	/*------------------------------------------------------------*/
+	/* Dirac eigenpair calculation                                */
+	/*------------------------------------------------------------*/
+	
+	/* max  Rayleigh iterations */
+	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
+	
+	/* Restart  Rayleigh every so many iterations */
+	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
+	
+	/* Kalkreuter iterations */
+	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
+	
+	/* Tolerance for the eigenvalue computation */
+	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
+	
+	/* error decrease per Rayleigh minimization */
+	IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
+	
+#ifdef POLY_EIGEN
+	/* Chebyshev preconditioner */
+#ifdef ARPACK
+	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
+#endif
+	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
+	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
+	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
+	
+#ifdef ARPACK
+	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
+	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
+	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
+#endif
+#endif
+      } else {
+	param.eigen_param.MaxIter = 0;
+	param.eigen_param.Restart = 0;
+	param.eigen_param.Kiters = 0;
+	param.eigen_param.tol = 0;
+	param.eigen_param.error_decr = 0.0;
+      }
+
+#else
+
+      /* for eigcg */
+
+      /* maximum number of eigenvectors */
+      param.eigcgp.Nvecs_max =  param.eigen_param.Nvecs;
+
+      /* If we are reading in eigenpairs, we don't regenerate them */
+
+      if(param.ks_eigen_startflag == FRESH){
+	
+
+	/* restart for Lanczos */
+	IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
+	
+	/* number of eigenvectors per inversion */
+	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals_per_inversion", &param.eigcgp.Nvecs);
+	
+	IF_OK {
+	  if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
+	    printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
+	    status++;
+	  }
+	}
+      } else {
+	param.eigcgp.m = 0;
+	param.eigcgp.Nvecs = 0;
+      }
+      
+      param.eigcgp.Nvecs_curr = 0;
+      param.eigcgp.H = NULL;
 #endif
 
-#if EIGMODE == DEFLATION
-    /*------------------------------------------------------------*/
-    /* Dirac eigenpair calculation                                */
-    /*------------------------------------------------------------*/
-
-    /* number of eigenvectors */
-    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.Nvecs);
-
-    /* max  Rayleigh iterations */
-    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.MaxIter);
-
-    /* Restart  Rayleigh every so many iterations */
-    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.Restart);
-
-    /* Kalkreuter iterations */
-    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.Kiters);
-
-     /* Tolerance for the eigenvalue computation */
-    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigenval_tol);
-
-     /* error decrease per Rayleigh minimization */
-    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.error_decr);
-
-    /* eigenvector input */
-    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
-					  param.ks_eigen_startfile);
-
-    /* eigenvector output */
-    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
-					param.ks_eigen_savefile);
-#endif
+    }
 
     /*------------------------------------------------------------*/
     /* Chiral condensate and related quantities                   */
@@ -329,11 +351,20 @@ int readin(int prompt) {
 	IF_OK status += get_f(stdin, prompt, "charge", &param.charge_pbp[i]);
 #endif
 	param.qic_pbp[i].min = 0;
-	param.qic_pbp[i].start_flag = 0;
 	param.qic_pbp[i].nsrc = 1;
 	param.qic_pbp[i].max = param.qic_pbp[0].max;
 	param.qic_pbp[i].nrestart = param.qic_pbp[0].nrestart;
 	param.qic_pbp[i].prec = param.qic_pbp[0].prec;
+	/* Should we be deflating? */
+	param.qic_pbp[i].deflate = 0;
+	IF_OK {
+	  if(param.eigen_param.Nvecs > 0){  /* Need eigenvectors to deflate */
+	    IF_OK status += get_s(stdin, prompt,"deflate", savebuf);
+	    IF_OK {
+	      if(strcmp(savebuf,"yes") == 0)param.qic_pbp[i].deflate = 1;
+	    }
+	  }
+	}
 	IF_OK status += get_f(stdin, prompt, "error_for_propagator", &param.qic_pbp[i].resid);
 	IF_OK status += get_f(stdin, prompt, "rel_error_for_propagator", &param.qic_pbp[i].relresid );
 #ifdef HALF_MIXED
@@ -358,14 +389,17 @@ int readin(int prompt) {
 
     for(i = 0; i < param.num_base_source; i++){
       
-      IF_OK init_qs(&param.base_src_qs[i]);
+      IF_OK init_qs(&param.src_qs[i]);
       IF_OK status += get_v_quark_source( stdin, prompt, 
-					  &param.base_src_qs[i]);
+					  &param.src_qs[i]);
       /* Base sources have no parents or ops */
       IF_OK param.parent_source[i] = BASE_SOURCE_PARENT;
       IF_OK init_qss_op(&param.src_qs_op[i]);
+      /* Enforce a uniform boundary condition */
       IF_OK set_qss_op_offset(&param.src_qs_op[i], param.coord_origin);
-
+      /* NOTE: The KS built-in bc is antiperiodic. */
+      IF_OK param.src_qs_op[i].bp[3] = param.time_bc;    
+      
       /* Get optional file for saving the base source */
       IF_OK {
 	int source_type, saveflag_s;
@@ -376,9 +410,9 @@ int readin(int prompt) {
 					&source_type, NULL, descrp,
 					savefile_s );
 	IF_OK {
-	  param.base_src_qs[i].savetype = source_type;
-	  param.base_src_qs[i].saveflag = saveflag_s;
-	  strcpy(param.base_src_qs[i].save_file, savefile_s);
+	  param.src_qs[i].savetype = source_type;
+	  param.src_qs[i].saveflag = saveflag_s;
+	  strcpy(param.src_qs[i].save_file, savefile_s);
 	  if(saveflag_s != FORGET && source_type != VECTOR_FIELD_FILE){
 	    printf("Unsupported output source type\n");
 	    status++;
@@ -415,26 +449,29 @@ int readin(int prompt) {
       }
 
       IF_OK init_qss_op(&param.src_qs_op[is]);
-      set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
       
       /* Get source operator attributes */
       IF_OK status += get_v_field_op( stdin, prompt, &param.src_qs_op[is]);
+      /* Enforce a uniform boundary condition */
+      set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
+      /* NOTE: The KS built-in bc is antiperiodic. */
+      param.src_qs_op[is].bp[3] = param.time_bc;    
       
       /* Copy parent source attributes to the derived source structure */
       IF_OK {
 	int p = param.parent_source[is];
-	param.base_src_qs[is] = param.base_src_qs[p];
-	param.base_src_qs[is].op = copy_qss_op_list(param.base_src_qs[p].op);
+	param.src_qs[is] = param.src_qs[p];
+	param.src_qs[is].op = copy_qss_op_list(param.src_qs[p].op);
 	
 	/* Add the new operator to the linked list */
-	insert_qss_op(&param.base_src_qs[is], &param.src_qs_op[is]);
+	insert_qss_op(&param.src_qs[is], &param.src_qs_op[is]);
 	
 	/* Append the operator info to the description if the operator
 	   is nontrivial, but simply copy the label */
 	if(param.src_qs_op[is].type != IDENTITY){
-	  char *descrp = param.base_src_qs[is].descrp;
+	  char *descrp = param.src_qs[is].descrp;
 	  char *op_descrp = param.src_qs_op[is].descrp;
-	  char *label = param.base_src_qs[is].label;
+	  char *label = param.src_qs[is].label;
 	  char *op_label = param.src_qs_op[is].label;
 	  strncat(descrp, "/", MAXDESCRP-strlen(descrp)-1);
 	  strncat(descrp, op_descrp, MAXDESCRP-strlen(descrp)-1);
@@ -452,9 +489,9 @@ int readin(int prompt) {
 					&source_type, NULL, descrp,
 					savefile_s );
 	IF_OK {
-	  param.base_src_qs[is].savetype = source_type;
-	  param.base_src_qs[is].saveflag = saveflag_s;
-	  strcpy(param.base_src_qs[is].save_file, savefile_s);
+	  param.src_qs[is].savetype = source_type;
+	  param.src_qs[is].saveflag = saveflag_s;
+	  strcpy(param.src_qs[is].save_file, savefile_s);
 	  if(saveflag_s != FORGET && source_type != VECTOR_FIELD_FILE){
 	    printf("Unsupported output source type\n");
 	    status++;
@@ -479,8 +516,25 @@ int readin(int prompt) {
     IF_OK for(k = 0; k < param.num_set; k++){
       int max_cg_iterations, max_cg_restarts;
       int check = CHECK_NO;
-      Real bdry_phase[4];
 
+#ifdef MULTISOURCE
+      IF_OK status += get_s(stdin, prompt, "set_type", savebuf);
+      IF_OK {
+	if(strcmp(savebuf,"multimass") == 0)
+	  param.set_type[k] = MULTIMASS_SET;
+	else if(strcmp(savebuf,"multisource") == 0)
+	  param.set_type[k] = MULTISOURCE_SET;
+	else if(strcmp(savebuf,"single") == 0)
+	  param.set_type[k] = MULTIMASS_SET;
+	else {
+	  printf("Unrecognized set type %s\n",savebuf);
+	  printf("Choices are 'multimass', 'multisource', 'single'\n");
+	  status++;
+	}
+      }
+#else
+	  param.set_type[k] = MULTIMASS_SET;
+#endif
       /* maximum no. of conjugate gradient iterations */
       IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
 			    &max_cg_iterations );
@@ -514,27 +568,18 @@ int readin(int prompt) {
       /* The values are entered as fractions of pi */
       /* So 0 0 0.5 inserts a phase exp(i 0.5 pi) */
       
+      Real bdry_phase[4];
       IF_OK status += get_vf(stdin, prompt, "momentum_twist",
 			     bdry_phase, 3);
+      bdry_phase[3] = param.time_bc;  /* Enforce a uniform boundary condition */
 
-      /* Antiperiodic or periodic boundary conditions in time */
-
-      IF_OK status += get_s(stdin, prompt,"time_bc", savebuf);
       IF_OK {
-	/* NOTE: The staggered default time bc is antiperiodic. */
-	if(strcmp(savebuf,"antiperiodic") == 0)bdry_phase[3] = 0;
-	else if(strcmp(savebuf,"periodic") == 0)bdry_phase[3] = 1;
-	else{
-	  node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n",
-		       savebuf);
-	  status++;
-	}
 	IF_OK status += get_i(stdin, prompt,"precision", &param.qic[0].prec );
-#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU)
-	IF_OK if(param.qic[0].prec != PRECISION){
-	  node0_printf("WARNING: Compiled precision %d overrides request\n",PRECISION);
-	  node0_printf("QOP or CG_GPU compilation is required for mixed precision\n");
-	  param.qic[0].prec = PRECISION;   /* Same for all members of a set*/
+#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU) && !defined(HAVE_QPHIX)
+	IF_OK if(param.qic[0].prec != MILC_PRECISION){
+	  node0_printf("WARNING: Compiled precision %d overrides request\n",MILC_PRECISION);
+	  node0_printf("QOP or CG_GPU or QPHIX compilation is required for mixed precision\n");
+	  param.qic[0].prec = MILC_PRECISION;   /* Same for all members of a set*/
 	}
 #endif
       }
@@ -545,8 +590,28 @@ int readin(int prompt) {
       IF_OK param.charge[k] = atof(param.charge_label[k]);
 #endif
 
-      /* Get source index for this set */
-      IF_OK status += get_i(stdin,prompt,"source", &param.source[k]);
+      int tmp_src;
+      Real tmp_naik;
+      
+      IF_OK {
+
+	if(param.set_type[k] == MULTIMASS_SET){
+	  
+	  /* Get source index common to this set */
+	  IF_OK status += get_i(stdin,prompt,"source", &tmp_src);
+	} else {
+	  
+	  /* Get mass label common to this set */
+	  IF_OK status += get_s(stdin,prompt,"mass", savebuf);
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+	  IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
+				&tmp_naik);
+#else
+	  tmp_naik = 0.0;
+#endif
+	}
+	
+      }
 
       /* Number of propagators in this set */
       IF_OK status += get_i(stdin,prompt,"number_of_propagators", 
@@ -568,14 +633,32 @@ int readin(int prompt) {
     
 	/* Propagator parameters */
 
-	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[nprop] );
-	IF_OK param.ksp[nprop].mass = atof(param.mass_label[nprop]);
+	IF_OK {
+	  
+	  if(param.set_type[k]  == MULTIMASS_SET){
+	    
+	    /* Get mass label common to this set */
+	    IF_OK status += get_s(stdin,prompt,"mass", param.mass_label[nprop]);
+	    
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-	IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
-			      &param.ksp[nprop].naik_term_epsilon );
+	    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
+				  &param.ksp[nprop].naik_term_epsilon);
 #else
-	param.ksp[nprop].naik_term_epsilon = 0.0;
+	    param.ksp[nprop].naik_term_epsilon = 0.0;
 #endif
+	    param.source[nprop] = tmp_src;
+	    
+	  } else {
+	    
+	    /* Get source index common to this set */
+	    IF_OK status += get_i(stdin,prompt,"source", &param.source[nprop]);
+	    strcpy(param.mass_label[nprop], savebuf);
+	    param.ksp[nprop].naik_term_epsilon = tmp_naik;
+	  }
+	}
+
+	IF_OK param.ksp[nprop].mass = atof(param.mass_label[nprop]);
+
 	IF_OK {
 	  int dir;
 	  FORALLUPDIR(dir)param.bdry_phase[nprop][dir] = bdry_phase[dir];
@@ -593,29 +676,32 @@ int readin(int prompt) {
 	/* maximum no. of conjugate gradient restarts */
 	param.qic[nprop].nrestart = max_cg_restarts;
       
+	/* Should we be deflating? */
+	param.qic[nprop].deflate = 0;
+	IF_OK {
+	  if(param.eigen_param.Nvecs > 0){  /* Need eigenvectors to deflate */
+	    IF_OK status += get_s(stdin, prompt,"deflate", savebuf);
+	    IF_OK {
+	      if(strcmp(savebuf,"yes") == 0)param.qic[nprop].deflate = 1;
+	    }
+	  }
+	}
+
 	/* error for clover propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
 			      &param.qic[nprop].resid );
 	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
 			      &param.qic[nprop].relresid );
-#ifdef HALF_MIXED
+#if defined(HALF_MIXED) && defined(HAVE_QOP)
+	/* Parameter used by QOPQDP inverter for mixed-precision solves */
 	IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic[nprop].mixed_rsq );
 #endif
 	/* Precision for all members of the set must be the same */
 	param.qic[nprop].prec = param.qic[0].prec;
-
+	
 	/* Parity is always EVENANDODD for spectroscopy */
 	param.qic[nprop].parity = EVENANDODD;
     
-	/* Copy the base source to the propagator source structure */
-
-	IF_OK {
-	  int p = param.source[k];
-	  init_qs(&param.src_qs[k]);
-	  param.src_qs[k] = param.base_src_qs[p];
-	  param.src_qs[k].op = copy_qss_op_list(param.base_src_qs[p].op);
-	}
-
 	IF_OK status += ask_starting_ksprop( stdin, prompt, 
 					     &param.startflag_ks[nprop],
 					     param.startfile_ks[nprop]);
@@ -665,6 +751,10 @@ int readin(int prompt) {
       }
       
       IF_OK init_qss_op(&param.snk_qs_op[i]);
+      /* Enforce a uniform boundary condition */
+      set_qss_op_offset(&param.snk_qs_op[i], param.coord_origin);
+      /* NOTE: The KS built-in bc is antiperiodic. */
+      param.snk_qs_op[i].bp[3] = param.time_bc;    
 
       if( param.parent_type[i] == PROP_TYPE ||  param.parent_type[i] == QUARK_TYPE ){
 	/* Next we get its index */
@@ -808,7 +898,7 @@ int readin(int prompt) {
       }
       
       /* Sample format for correlator line:
-	 correlator  A1_P5 p200 -i * 1 2 0 0 E E E */
+	 correlator P5-P5_V1-S_T13_m0.5744 p211 -1 / 4608.0 GX-G1 -2 -1 -1 EO EO EO */
       
       param.num_corr_report[ipair] = 0;
       IF_OK for(i = 0; i < param.num_corr_m[ipair]; i++){
@@ -1132,6 +1222,7 @@ int readin(int prompt) {
   phases_in = OFF;
   rephase( ON );
 
+
 #ifdef U1_FIELD
   /* Read the U(1) gauge field, if wanted */
   start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
@@ -1153,7 +1244,7 @@ int readin(int prompt) {
   fermion_links_want_deps(1);
 #endif
 
-  fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 
 #else
 
@@ -1161,7 +1252,7 @@ int readin(int prompt) {
   fermion_links_want_du0(1);
 #endif
 
-  fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 
 #endif
 
@@ -1171,7 +1262,7 @@ int readin(int prompt) {
      adjusted according to boundary phases and momentum twists. */
   rephase( OFF );
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
-  apply_apbc( ape_links );
+  if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
   rephase( ON );
 
 #if EIGMODE == EIGCG
@@ -1188,8 +1279,13 @@ int readin(int prompt) {
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
   /* Do whatever is needed to get eigenpairs */
+  imp_ferm_links_t **fn = get_fm_links(fn_links);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &Nvecs_tot, eigVal, eigVec, 1);
+			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
+
+  if(param.fixflag != NO_GAUGE_FIX){
+    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
+  }
   if(status != 0) normal_exit(0);
 
   if(param.ks_eigen_startflag != FRESH){
@@ -1205,16 +1301,27 @@ int readin(int prompt) {
   }
 #endif
 
-#if EIGMODE == DEFLATION
-  /* malloc for eigenpairs */
-  eigVal = (double *)malloc(param.Nvecs*sizeof(double));
-  eigVec = (su3_vector **)malloc(param.Nvecs*sizeof(su3_vector *));
-  for(i=0; i < param.Nvecs; i++)
-    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-
-  /* Do whatever is needed to get eigenpairs */
-  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &param.Nvecs, eigVal, eigVec, 1);
+#if EIGMODE != EIGCG
+  if(param.eigen_param.Nvecs > 0){
+    /* malloc for eigenpairs */
+    eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
+    eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
+    for(i=0; i < param.eigen_param.Nvecs; i++){
+      eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+      if(eigVec[i] == NULL){
+	printf("No room for eigenvector\n");
+	terminate(1);
+      }
+    }
+    
+    /* Do whatever is needed to get eigenpairs */
+    imp_ferm_links_t **fn = get_fm_links(fn_links);
+    status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
+    if(param.fixflag != NO_GAUGE_FIX){
+      node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+    }
+  }
 #endif
 
   ENDTIME("readin");
@@ -1228,12 +1335,12 @@ static void broadcast_heap_params(void){
   int i, k;
 
   for(i = 0; i < param.num_base_source + param.num_modified_source; i++){
-    broadcast_quark_source_sink_op_recursive(&param.base_src_qs[i].op);
+    broadcast_quark_source_sink_op_recursive(&param.src_qs[i].op);
     broadcast_quark_source_sink_op_recursive(&param.src_qs_op[i].op);
   }
 
-  for(k = 0; k < param.num_set; k++)
-    broadcast_quark_source_sink_op_recursive(&param.src_qs[k].op);
+//  for(k = 0; k < param.num_set; k++)
+//    broadcast_quark_source_sink_op_recursive(&param.src_qs[k].op);
 
   for(i = 0; i < param.num_qk; i++)
     broadcast_quark_source_sink_op_recursive(&param.snk_qs_op[i].op);

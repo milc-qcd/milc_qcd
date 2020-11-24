@@ -35,7 +35,7 @@ typedef struct  {
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4];
+	su3_matrix link[4] ALIGNMENT;
 
 	/* Use unions so smeared gauge fields overlap wilson vectors.
 	   Programmer must use only one at a time!!  In particular, this
@@ -101,7 +101,7 @@ typedef struct  {
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;			/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;			/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int niter;
 EXTERN	int source_start, source_inc, n_sources;
@@ -124,9 +124,9 @@ EXTERN int verbose_flag ; /*** flag controlling the amount of debug information 
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
-EXTERN	int sites_on_node;		/* number of sites on this node */
-EXTERN	int even_sites_on_node;	/* number of even sites on this node */
-EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
+EXTERN	size_t sites_on_node;		/* number of sites on this node */
+EXTERN	size_t even_sites_on_node;	/* number of even sites on this node */
+EXTERN	size_t odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 

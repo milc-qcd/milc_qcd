@@ -744,7 +744,7 @@ w_prop_file *r_ascii_w_i(char *filename)
 	      ny = wph->dims[1];
 	      nz = wph->dims[2];
 	      nt = wph->dims[3];
-	      volume = nx*ny*nz*nt;
+	      volume = (size_t) nx*ny*nz*nt;
 	    }
 	}
       wph->header_bytes = 0;    /* Unused for ASCII */
@@ -809,7 +809,7 @@ int r_ascii_w(w_prop_file *wpf,int spin,int color,field_offset src)
 	  for(i=0;i<4;i++)for(j=0;j<3;j++)
 	    {
 	      if( 
-#if PRECISION == 1
+#if MILC_PRECISION == 1
 		 fscanf(fp,"%e%e\n",
 #else
 		 fscanf(fp,"%le%le\n",

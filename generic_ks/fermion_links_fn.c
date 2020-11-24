@@ -1,4 +1,5 @@
 /****** fermion_links_fn.c  -- ******************/
+/* DEPRECATED !! */
 /* MIMD version 7 */
 /* Link fattening routines for varions staggered actions
    CD 9/8/06 separated from quark_stuff.c 

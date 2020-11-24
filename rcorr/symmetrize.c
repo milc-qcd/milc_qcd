@@ -135,26 +135,21 @@ symmetrize(Real *q, Real *q2){
 
   wait_gather(mtagxy);
   FORALLFIELDSITES(i){
-    qxy[i] = *((double *)gen_pt[0][i]);
+    qxy[i] = *((Real *)gen_pt[0][i]);
   }
 
   wait_gather(mtagxz);
   FORALLFIELDSITES(i){
-    qxz[i] = *((double *)gen_pt[1][i]);
+    qxz[i] = *((Real *)gen_pt[1][i]);
   }
-
-  FORALLFIELDSITES(i){
-    q[i] = (q[i] + qxy[i] + qxz[i])/3.;
-  }
-
   wait_gather(mtagxy2);
   FORALLFIELDSITES(i){
-    qxy2[i] = *((double *)gen_pt[2][i]);
+    qxy2[i] = *((Real *)gen_pt[2][i]);
   }
 
   wait_gather(mtagxz2);
   FORALLFIELDSITES(i){
-    qxz2[i] = *((double *)gen_pt[3][i]);
+    qxz2[i] = *((Real *)gen_pt[3][i]);
   }
 
   FORALLFIELDSITES(i){
@@ -186,12 +181,12 @@ symmetrize(Real *q, Real *q2){
 
   wait_gather(mtagyz);
   FORALLFIELDSITES(i){
-    qyz[i] = *((double *)gen_pt[0][i]);
+    qyz[i] = *((Real *)gen_pt[0][i]);
   }
 
   wait_gather(mtagyz2);
   FORALLFIELDSITES(i){
-    qyz2[i] = *((double *)gen_pt[1][i]);
+    qyz2[i] = *((Real *)gen_pt[1][i]);
   }
 
   FORALLFIELDSITES(i){
@@ -223,11 +218,11 @@ symmetrize(Real *q, Real *q2){
   mtagxp2 = start_gather_field(q2, sizeof(Real), dirxp, EVENANDODD, gen_pt[1]);
   wait_gather(mtagxp);
   FORALLFIELDSITES(i){
-    qxp[i] = *((double *)gen_pt[0][i]);
+    qxp[i] = *((Real *)gen_pt[0][i]);
   }
   wait_gather(mtagxp2);
   FORALLFIELDSITES(i){
-    qxp2[i] = *((double *)gen_pt[1][i]);
+    qxp2[i] = *((Real *)gen_pt[1][i]);
   }
   FORALLFIELDSITES(i){
     q[i] = (q[i] + qxp[i])/2.;
@@ -246,11 +241,11 @@ symmetrize(Real *q, Real *q2){
   mtagyp2 = start_gather_field(q2, sizeof(Real), diryp, EVENANDODD, gen_pt[1]);
   wait_gather(mtagyp);
   FORALLFIELDSITES(i){
-    qyp[i] = *((double *)gen_pt[0][i]);
+    qyp[i] = *((Real *)gen_pt[0][i]);
   }
   wait_gather(mtagyp2);
   FORALLFIELDSITES(i){
-    qyp2[i] = *((double *)gen_pt[1][i]);
+    qyp2[i] = *((Real *)gen_pt[1][i]);
   }
   FORALLFIELDSITES(i){
     q[i] = (q[i] + qyp[i])/2.;
@@ -269,11 +264,11 @@ symmetrize(Real *q, Real *q2){
   mtagzp2 = start_gather_field(q2, sizeof(Real), dirzp, EVENANDODD, gen_pt[1]);
   wait_gather(mtagzp);
   FORALLFIELDSITES(i){
-    qzp[i] = *((double *)gen_pt[0][i]);
+    qzp[i] = *((Real *)gen_pt[0][i]);
   }
   wait_gather(mtagzp2);
   FORALLFIELDSITES(i){
-    qzp2[i] = *((double *)gen_pt[1][i]);
+    qzp2[i] = *((Real *)gen_pt[1][i]);
   }
   FORALLFIELDSITES(i){
     q[i] = (q[i] + qzp[i])/2.;
@@ -292,11 +287,11 @@ symmetrize(Real *q, Real *q2){
   mtagtp2 = start_gather_field(q2, sizeof(Real), dirtp, EVENANDODD, gen_pt[1]);
   wait_gather(mtagtp);
   FORALLFIELDSITES(i){
-    qtp[i] = *((double *)gen_pt[0][i]);
+    qtp[i] = *((Real *)gen_pt[0][i]);
   }
   wait_gather(mtagtp2);
   FORALLFIELDSITES(i){
-    qtp2[i] = *((double *)gen_pt[1][i]);
+    qtp2[i] = *((Real *)gen_pt[1][i]);
   }
   FORALLFIELDSITES(i){
     q[i] = (q[i] + qtp[i])/2.;

@@ -18,11 +18,11 @@ int qio_node_number(const int x[]){
   return node_number(x[0],x[1],x[2],x[3]);
 }
 
-int qio_node_index(const int x[]){
+size_t qio_node_index(const int x[]){
   return node_index(x[0],x[1],x[2],x[3]);
 }
 
-void qio_get_coords(int x[], int node, int index){
+void qio_get_coords(int x[], int node, size_t index){
   /* For this node we have a table */
   if(node == this_node){
     x[0] = lattice[index].x;
@@ -35,7 +35,7 @@ void qio_get_coords(int x[], int node, int index){
     get_coords( x, node, index );
 }
 
-int qio_num_sites(int node){
+size_t qio_num_sites(int node){
   return num_sites(node);
 }
 
@@ -108,10 +108,12 @@ QIO_Writer *open_scidac_output(char *filename, int volfmt,
 #ifdef QIO_TRELEASE
   QIO_set_trelease(0,QIO_TRELEASE);
 #endif
+  QIO_verbose(QIO_VERB_OFF);
   outfile = QIO_open_write(xml_write_file, filename, volfmt, layout, 
 			   fs, &oflag);
   if(outfile == NULL){
     printf("open_scidac_output(%d): QIO_open_write returned NULL\n",this_node);
+    fflush(stdout);
     return NULL;
   }
   return outfile;
@@ -248,6 +250,10 @@ gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
     node0_printf("Saved gauge configuration in partition format to binary file %s\n",
 	   filename);
   }
+  else if(volfmt == QIO_PARTFILE_DIR){
+    node0_printf("Saved gauge configuration in partition format to binary file %s\n",
+	   filename);
+  }
 
   node0_printf("Time stamp %s\n",gf->header->time_stamp);
   node0_printf("Checksums %x %x\n",
@@ -315,6 +321,10 @@ gauge_file *save_partfile_scidac(char *filename){
   return save_scidac(filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGNO, NULL);
 }
 
+gauge_file *save_partfile_dir_scidac(char *filename){
+  return save_scidac(filename, QIO_PARTFILE_DIR, QIO_SERIAL, QIO_ILDGNO, NULL);
+}
+
 gauge_file *save_serial_ildg(char *filename, char *stringLFN){
   return save_scidac(filename, QIO_SINGLEFILE, QIO_SERIAL, QIO_ILDGLAT, 
 		     stringLFN);
@@ -332,6 +342,11 @@ gauge_file *save_multifile_ildg(char *filename, char *stringLFN){
 
 gauge_file *save_partfile_ildg(char *filename, char *stringLFN){
   return save_scidac(filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGLAT,
+		     stringLFN);
+}
+
+gauge_file *save_partfile_dir_ildg(char *filename, char *stringLFN){
+  return save_scidac(filename, QIO_PARTFILE_DIR, QIO_SERIAL, QIO_ILDGLAT,
 		     stringLFN);
 }
 
@@ -362,6 +377,7 @@ static gauge_file *restore_scidac(char *filename, int serpar){
 
   /* Build the layout structure */
   build_qio_layout(&layout);
+  node0_printf("Calling build_qio_layout with volume %lu\n", layout.volume);
 
   /* Define the I/O nodes */
   build_qio_filesystem(&fs);
@@ -423,7 +439,7 @@ static gauge_file *file_scan_scidac(char *filename, int serpar){
   /* Read header to get lattice dimensions and close the file */
   read_lat_dim_scidac(filename, &ndim, dims);
   nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
-  volume = nx*ny*nz*nt;
+  volume = (size_t) nx*ny*nz*nt;
 
   /* Finish setting up, now we know the dimensions */
 
@@ -649,6 +665,10 @@ void save_color_matrix_scidac_from_site(char *filename, char *fileinfo,
     node0_printf("Saved KS matrix in partition format to binary file %s\n",
 	   filename);
   }
+  else if(volfmt == QIO_PARTFILE_DIR){
+    node0_printf("Saved KS matrix in partition format to binary file %s\n",
+	   filename);
+  }
 
   node0_printf("Checksums %x %x\n",
 	       QIO_get_writer_last_checksuma(outfile),
@@ -706,6 +726,10 @@ void save_color_matrix_scidac_from_field(char *filename,
            filename);
   }
   else if(volfmt == QIO_PARTFILE){
+    node0_printf("Saved KS matrix in partition format to binary file %s\n",
+           filename);
+  }
+  else if(volfmt == QIO_PARTFILE_DIR){
     node0_printf("Saved KS matrix in partition format to binary file %s\n",
            filename);
   }
@@ -805,6 +829,10 @@ void save_random_state_scidac_from_site(char *filename,
     node0_printf("Saved random state in partition format to binary file %s\n",
 	   filename);
   }
+  else if(volfmt == QIO_PARTFILE_DIR){
+    node0_printf("Saved random state in partition format to binary file %s\n",
+	   filename);
+  }
 
   node0_printf("Checksums %x %x\n",
 	       QIO_get_writer_last_checksuma(outfile),
@@ -895,6 +923,10 @@ int save_complex_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
 	   filename);
   }
   else if(volfmt == QIO_PARTFILE){
+    node0_printf("Saved complex field in partition format to binary file %s\n",
+	   filename);
+  }
+  else if(volfmt == QIO_PARTFILE_DIR){
     node0_printf("Saved complex field in partition format to binary file %s\n",
 	   filename);
   }
@@ -1189,6 +1221,10 @@ void save_real_scidac_from_field(char *filename,
     node0_printf("Saved real field in partition format to binary file %s\n",
 	   filename);
   }
+  else if(volfmt == QIO_PARTFILE_DIR){
+    node0_printf("Saved real field in partition format to binary file %s\n",
+	   filename);
+  }
 
   node0_printf("Checksums %x %x\n",
 	       QIO_get_writer_last_checksuma(outfile),
@@ -1243,6 +1279,10 @@ void save_real_scidac_from_site(char *filename,
 	   filename);
   }
   else if(volfmt == QIO_PARTFILE){
+    node0_printf("Saved real field in partition format to binary file %s\n",
+	   filename);
+  }
+  else if(volfmt == QIO_PARTFILE_DIR){
     node0_printf("Saved real field in partition format to binary file %s\n",
 	   filename);
   }

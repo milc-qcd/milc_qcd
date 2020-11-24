@@ -34,18 +34,18 @@ typedef struct {
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4];
+	su3_matrix link[4] ALIGNMENT;
 	su3_matrix boundary[3];	/* spatial boundary links (for t=nt) */
 #ifdef HMC_ALGORITHM
  	su3_matrix old_link[4];
 	/* For accept/reject */
 	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4];
+ 	anti_hermitmat mom[4] ALIGNMENT;
 #endif
 #ifdef RMD_ALGORITHM
 
 	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4];
+ 	anti_hermitmat mom[4] ALIGNMENT;
 	/* temporary matrices */
 	su3_matrix tempmat1,tempmat2,staple;
 #else
@@ -67,7 +67,7 @@ typedef struct {
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;			/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;			/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,stepsQ,propinterval;
 EXTERN	Real beta;
@@ -85,9 +85,9 @@ EXTERN  Real c_t11;
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
-EXTERN	int sites_on_node;		/* number of sites on this node */
-EXTERN	int even_sites_on_node;	/* number of even sites on this node */
-EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
+EXTERN	size_t sites_on_node;		/* number of sites on this node */
+EXTERN	size_t even_sites_on_node;	/* number of even sites on this node */
+EXTERN	size_t odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 

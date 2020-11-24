@@ -19,9 +19,7 @@ int update_h_rhmc( Real eps, su3_vector **multi_x ){
 #endif
   /*  node0_printf("update_h_rhmc:\n"); */
   /* gauge field force */
-  rephase(OFF);
-  imp_gauge_force(eps,F_OFFSET(mom));
-  rephase(ON);
+  imp_gauge_force_ks(eps,F_OFFSET(mom));
   /* fermionic force */
   
   iters = update_h_fermion( eps,  multi_x );
@@ -33,9 +31,7 @@ int update_h_rhmc( Real eps, su3_vector **multi_x ){
 void update_h_gauge( Real eps ){
   /* node0_printf("update_h_gauge:\n");*/
   /* gauge field force */
-  rephase(OFF);
-  imp_gauge_force(eps,F_OFFSET(mom));
-  rephase(ON);
+  imp_gauge_force_ks(eps,F_OFFSET(mom));
 } /* update_h_gauge */
 
 // fermion force update grouping pseudofermions with the same path coeffs
@@ -78,8 +74,8 @@ int update_h_fermion( Real eps, su3_vector **multi_x ){
       // Then compute M*xxx in temporary vector xxx_odd 
       /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
-      iters += ks_ratinv( F_OFFSET(phi[iphi]), multi_x+tmporder, roots, order, 
-			  niter_md[iphi], rsqmin_md[iphi], prec_md[iphi], EVEN, 
+      iters += ks_ratinv( F_OFFSET(phi[iphi]), multi_x+tmporder, roots, residues,
+                          order, niter_md[iphi], rsqmin_md[iphi], prec_md[iphi], EVEN,
 			  &final_rsq, fn[i], 
 			  i, rparam[iphi].naik_term_epsilon );
 

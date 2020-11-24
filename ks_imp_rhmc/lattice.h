@@ -1,7 +1,6 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 /****************************** lattice.h ********************************/
-
 /* include file for MIMD version 7
    This file defines global scalars and the fields in the lattice.
 
@@ -48,16 +47,17 @@ typedef struct {
 /* ------------------------------------------------------------ */
 /*   Now come the physical fields, program dependent            */
 /* ------------------------------------------------------------ */
-	/* gauge field */
-	su3_matrix link[4];	/* the fundamental field */
+
+        /* gauge field */
+        su3_matrix link[4] ALIGNMENT;	/* the fundamental field */
+
+	/* antihermitian momentum matrices in each direction */
+        anti_hermitmat mom[4] ALIGNMENT;
 
 #ifdef HMC
  	su3_matrix old_link[4];
 	/* For accept/reject */
 #endif
-
-	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4];
 
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */
@@ -106,7 +106,7 @@ typedef struct {
    u0 is tadpole improvement factor, perhaps (plaq/3)^(1/4)
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 #ifdef FIX_NODE_GEOM
 EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
 			    hypercubes) for the compute nodes in each
@@ -120,7 +120,7 @@ EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-EXTERN  params par_buf;
+EXTERN  params param;
 EXTERN	int iseed;		/* random number seed */
 EXTERN  Real beta,u0;
 EXTERN  int n_dyn_masses; // number of dynamical masses
@@ -152,9 +152,9 @@ EXTERN  int hypisq_force_filter_counter;
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
-EXTERN	int sites_on_node;		/* number of sites on this node */
-EXTERN	int even_sites_on_node;	/* number of even sites on this node */
-EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
+EXTERN	size_t sites_on_node;		/* number of sites on this node */
+EXTERN	size_t even_sites_on_node;	/* number of even sites on this node */
+EXTERN	size_t odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
@@ -190,5 +190,11 @@ EXTERN int global_current_time_step;
 EXTERN int n_order_naik_total;
 EXTERN int n_pseudo_naik[MAX_N_PSEUDO];
 EXTERN int n_orders_naik[MAX_N_PSEUDO];
+
+/* For eigenpair calculation */
+/* Not used for HMC */
+EXTERN int Nvecs_tot;
+EXTERN double *eigVal; /* eigenvalues of D^dag D */
+EXTERN su3_vector **eigVec; /* eigenvectors */
 
 #endif /* _LATTICE_H */

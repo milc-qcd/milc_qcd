@@ -1,7 +1,7 @@
-U(1) [Coulomb gauge-fixed] gauge field generation ... 
+U(1) Gauge field generation ... 
 stored as A(mu,x), convert to U(mu,x) to couple to fermions.
-Machine = QMP (portable), with 1 nodes!
-Start: Mon Jun  4 20:36:13 2012
+Machine = Scalar processor, with 1 nodes!
+Start: Wed Apr 22 11:29:07 2020
 
 type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nx 4
@@ -9,10 +9,10 @@ ny 4
 nz 4
 nt 8
 iseed 1001722
-LAYOUT = Hypercubes, options = hyper_prime,
-QMP with automatic hyper_prime layout
-ON EACH NODE 4 x 4 x 4 x 8
+LAYOUT = Hypercubes, options = with fixed input-parameter node_geometry
+ON EACH NODE (RANK) 4 x 4 x 4 x 8
 Mallocing 0.1 MBytes per node for lattice
+WARNING!!: Resetting random seed
 Made lattice!
 Made nn_gathers!
 Momentum table prepared!
@@ -26,24 +26,22 @@ reload_u1_ascii
 save_u1_serial ./u1_g_4_8.1.converted.test-out
 Restored lattice from ascii file ./u1_g_4_8.1.ascii.sample-out
 Time stamp Mon Jun  4 20:32:57 2012
-Time to reload gauge configuration = 1.711130e-03
+Time to reload gauge configuration = 3.612041e-03
 
 CHECK U(1) PLAQ: 7.820602e-01 7.645227e-01
 
 Saved u1 gauge configuration serially to binary file ./u1_g_4_8.1.converted.test-out
-Time stamp Mon Jun  4 20:36:13 2012
+Time stamp Wed Apr 22 11:29:07 2020
 Checksums 39bdad17 95b4edc7
 Wrote info file ./u1_g_4_8.1.converted.test-out.info
 Saved lattice to ascii file ./u1_g_4_8.1.converted.test-out!
-Time to save = 5.941391e-04
+Time to save = 1.936197e-03
 
 CHECK U(1) PLAQ: 7.820602e-01 7.645227e-01
 
 
-u1-ploop = ( 5.255151e-01, 0.000000e+00 )  u1-(s,t)plaq = ( 7.820602e-01, 7.645227e-01 )
+u1-ploop = ( 5.255151e-01, 0.000000e+00 )  u1-(s,t)plaq = ( 7.820602e-01, 7.645227e-01 ) with charge 1.000000
 U(1) conversion completed!
-Time = 1.593828e-03 seconds
-
 
 electron_charge 1
 reload_u1_serial 
@@ -51,23 +49,24 @@ reload_u1_serial
 save_u1_ascii ./u1_g_4_8.1.ascii2.test-out
 Reloading U1 gauge field
 Restored binary u1 gauge configuration serially from file ./u1_g_4_8.1.converted.test-out
-Time stamp Mon Jun  4 20:36:13 2012
+Time stamp Wed Apr 22 11:29:07 2020
 Checksums 39bdad17 95b4edc7 OK
-Time to reload gauge configuration = 2.300739e-04
+Time to reload gauge configuration = 6.220341e-04
 
 CHECK U(1) PLAQ: 7.820602e-01 7.645227e-01
 
 Saved U(1) configuration to ascii file ./u1_g_4_8.1.ascii2.test-out ...
-Time stamp Mon Jun  4 20:36:13 2012
+Time stamp Wed Apr 22 11:29:09 2020
 Saved lattice to ascii file ./u1_g_4_8.1.ascii2.test-out!
-Time to save = 2.535105e-03
+Time to save = 5.625010e-03
 
 CHECK U(1) PLAQ: 7.820602e-01 7.645227e-01
 
 
-u1-ploop = ( 5.255151e-01, 0.000000e+00 )  u1-(s,t)plaq = ( 7.820602e-01, 7.645227e-01 )
+u1-ploop = ( 5.255151e-01, 0.000000e+00 )  u1-(s,t)plaq = ( 7.820602e-01, 7.645227e-01 ) with charge 1.000000
 U(1) conversion completed!
-Time = 3.520966e-03 seconds
 
 
 get_f(0): EOF on input.
+RUNNING COMPLETED
+Time = 1.509851e+00 seconds

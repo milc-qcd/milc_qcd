@@ -56,7 +56,7 @@ void build_hr0( int flag, int precflag )/*  0, fresh start, 1--restart with stor
      FORALLSITES(i,s){
        if(s->x ==0 && s ->y==0 && s->z==0){
          node0_printf("DT %d %d %d %d\n",s->x,s->y,s->z,s->t);
-         dump_wvec(&(eigVec0[1][i]));
+         dump_wilson_vec(&(eigVec0[1][i]));
        }
      }
       */
@@ -117,9 +117,9 @@ void build_hr0( int flag, int precflag )/*  0, fresh start, 1--restart with stor
 	    }
 	    node0_printf("calling hr0 with Maxr0Iter %d\n",Maxr0Iter);
 
-	    total_R_iters=Kalkreuter(MyeigVec0, MyeigVal0, eigenval_tol, 
-		    error_decr, Nvecs_h0r0+ifailed, Maxr0Iter, Restart, 
-		    Kiters, EVENANDODD) ;
+	    total_R_iters=ks_eigensolve(MyeigVec0, MyeigVal0, eigenval_tol, 
+					error_decr, Nvecs_h0r0+ifailed, Maxr0Iter, Restart, 
+					Kiters, EVENANDODD) ;
 	    if(this_node==0)printf("total Rayleigh iters = %d\n",total_R_iters);
 	    fflush(stdout);
 

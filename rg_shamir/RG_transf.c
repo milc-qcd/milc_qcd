@@ -136,7 +136,7 @@ void RG_M_inv(QDP_ColorVector *dest, QDP_ColorVector *src)
 #else
   /* Do phi_s = (M^\dagger M)^{-1} src */
   /* Pack structure */
-  qic.prec      = PRECISION;
+  qic.prec      = MILC_PRECISION;
   qic.min       = 0;
   qic.max       = niter;
   qic.nrestart  = 5;
@@ -191,7 +191,7 @@ void RG_M_inv(QDP_ColorVector *dest, QDP_ColorVector *src)
   
   set_site_from_V(F_OFFSET(ttt),src,EVENANDODD);
   load_ferm_links(&fn_links);
-  ks_congrad(F_OFFSET(ttt),F_OFFSET(cg_p),mass,niter,rsqprop,PRECISION,
+  ks_congrad(F_OFFSET(ttt),F_OFFSET(cg_p),mass,niter,rsqprop,MILC_PRECISION,
 	     EVENANDODD,&final_rsq, &fn_links );
   
   load_ferm_links(&fn_links);

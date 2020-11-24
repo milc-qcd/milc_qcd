@@ -50,10 +50,15 @@
 #include "../include/generic_qphix.h"
 #endif
 
+#ifdef HAVE_GRID
+#include "../include/generic_grid.h"
+#endif
+
 int main(int argc, char *argv[])
 {
+  char myname[] = "main";
   int prompt;
-  int i, j, k, iq0, iq1, iq2;
+  int i, is, j, k, iq0, iq1, iq2;
 #ifdef KS_LEAN
   int oldiq0, oldiq1, oldiq2, oldip0;
   int quark_nc[MAX_QK];
@@ -64,17 +69,16 @@ int main(int argc, char *argv[])
 #ifdef PRTIME
   double dtime;
 #endif
+  ks_prop_field *source[MAX_SOURCE];
   ks_prop_field *prop[MAX_PROP];
   ks_prop_field *quark[MAX_QK];
   int prop_nc[MAX_PROP];
-#if EIGMODE == EIGCG || EIGMODE == DEFLATION
   int Nvecs_curr;
   double *resid = NULL;
-  imp_ferm_links_t **fn;
-#endif
   
   initialize_machine(&argc,&argv);
 
+  for(i = 0; i < MAX_SOURCE; i++)source[i] = NULL;
   for(i = 0; i < MAX_PROP; i++)prop[i] = NULL;
   for(i = 0; i < MAX_QK; i++)quark[i] = NULL;
 
@@ -104,52 +108,75 @@ int main(int argc, char *argv[])
     hypisq_svd_counter = 0;
 #endif
     
-#if EIGMODE == DEFLATION
     /**************************************************************/
     /* Compute Dirac eigenpairs           */
 
-    STARTTIME;
+    Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
+      
+    if(param.eigen_param.Nvecs > 0){
+      
+#if EIGMODE != EIGCG
+      
+      STARTTIME;
+      
+      param.eigen_param.parity = EVEN;  /* Required */
+      imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
 
-    active_parity = EVEN;
-    fn = get_fm_links(fn_links);
-    Nvecs_curr = Nvecs_tot = param.Nvecs;
-
-    /* compute eigenpairs if requested */
-    if(param.ks_eigen_startflag == FRESH){
-      int total_R_iters;
-      total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
-			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters, 1);
-      node0_printf("total Rayleigh iters = %d\n", total_R_iters);
-
+      /* Move KS phases and apply time boundary condition, based on the
+	 coordinate origin and time_bc */
+      Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+      /* Set values in the structure fn */
+      set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
+      /* Apply the operation */
+      boundary_twist_fn(fn, ON);
+      
+      /* compute eigenpairs if requested */
+      if(param.ks_eigen_startflag == FRESH){
+	int total_R_iters;
+	total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
+	construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn);
+	node0_printf("total Rayleigh iters = %d\n", total_R_iters);
+	
 #if 0 /* If needed for debugging */
-      /* (The Kalkreuter routine uses the random number generator to
+      /* (The ks_eigensolve routine uses the random number generator to
 	 initialize the eigenvector search, so, if you want to compare
 	 first results with and without deflation, you need to
 	 re-initialize here.) */
-      initialize_site_prn_from_seed(iseed);
+	initialize_site_prn_from_seed(iseed);
 #endif
-    }
+      }
     
-    /* Calculate and print the residues and norms of the eigenvectors */
-    resid = (double *)malloc(Nvecs_curr*sizeof(double));
-    check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
+      /* Check the eigenvectors */
 
-    /* print eigenvalues of iDslash */
-    node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
-    node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
-    for(i=0;i<Nvecs_curr;i++){ 
-      if ( eigVal[i] > 0.0 ){
-	node0_printf("eigenval(%i): %10g\n", i, 0.5*sqrt(eigVal[i]));
+      /* Calculate and print the residues and norms of the eigenvectors */
+      resid = (double *)malloc(Nvecs_curr*sizeof(double));
+      node0_printf("Even site residuals\n");
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
+      construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn);
+      node0_printf("Odd site residuals\n");
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
+      
+      /* Unapply twisted boundary conditions on the fermion links and
+	 restore conventional KS phases and antiperiodic BC, if
+	 changed. */
+      boundary_twist_fn(fn, OFF);
+      
+      /* print eigenvalues of iDslash */
+      node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
+      node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
+      for(i=0;i<Nvecs_curr;i++){ 
+	if ( eigVal[i] > 0.0 ){
+	  node0_printf("eigenval(%i): %10g\n", i, 0.5*sqrt(eigVal[i]));
+	}
+	else{
+	  eigVal[i] = 0.0;
+	  node0_printf("eigenval(%i): %10g\n", i, 0.0);
+	}
       }
-      else{
-	eigVal[i] = 0.0;
-	node0_printf("eigenval(%i): %10g\n", i, 0.0);
-      }
-    }
-
-    ENDTIME("calculate Dirac eigenpairs");
-
+      
+      ENDTIME("calculate Dirac eigenpairs");
 #endif
+    }
     
     /**************************************************************/
     /* Compute chiral condensate and related quantities           */
@@ -164,6 +191,7 @@ int main(int argc, char *argv[])
       invalidate_fermion_links(fn_links);
 #endif
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i].prec);
+
       naik_index = param.ksp_pbp[i].naik_term_epsilon_index;
       mass = param.ksp_pbp[i].mass;
 
@@ -202,7 +230,7 @@ int main(int argc, char *argv[])
 	   No KS phases here! */
 	destroy_ape_links_4D(ape_links);
 	ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
-	apply_apbc( ape_links );
+	if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
 
 	rephase( ON );
 	invalidate_fermion_links(fn_links);
@@ -231,56 +259,138 @@ int main(int argc, char *argv[])
 
     /**************************************************************/
 
+    /* Create sources */
+
+    STARTTIME;
+
+    /* Base sources */
+
+    for(k=0; k<param.num_base_source; k++){
+      quark_source *qs = &param.src_qs[k];
+      source[k] = create_ksp_field(qs->ncolor);
+
+      /* Open file with metadata */
+      if(qs->saveflag != FORGET){
+	char *fileinfo = create_ks_XML();
+	w_source_open_ks(qs, fileinfo);
+	free(fileinfo);
+      }
+      
+      for(int color = 0; color < qs->ncolor; color++){
+
+	/* Create a base source */
+	if(v_source_field(source[k]->v[color], qs)){
+	  printf("%s(%d): error getting source\n",myname,this_node);
+	  terminate(1);
+	}
+
+	/* Write the source, if requested */
+	if(qs->saveflag != FORGET){
+	  if(w_source_ks( source[k]->v[color], qs ) != 0)
+	    node0_printf("Error writing source\n");
+	}
+      } /* color */
+  
+      if(qs->saveflag != FORGET) w_source_close(qs);
+    }
+
+
+    /* Modified sources */
+    for(is=param.num_base_source; is<param.num_base_source+param.num_modified_source; is++){
+
+      quark_source *qs = &param.src_qs[is];
+      source[is] = create_ksp_field(qs->ncolor);
+      
+      if(qs->saveflag != FORGET){
+	char *fileinfo = create_ks_XML();
+	w_source_open_ks(qs, fileinfo);
+	free(fileinfo);
+      }
+      
+      /* Copy parent source */
+      int p = param.parent_source[is];
+      copy_ksp_field(source[is],  source[p]);
+
+      for(int color = 0; color < qs->ncolor; color++){
+
+	/* Apply operator*/
+        v_field_op(source[is]->v[color], &(param.src_qs_op[is]), qs->subset, qs->t0);
+
+	/* Write the source, if requested */
+	if(qs->saveflag != FORGET){
+	  if(w_source_ks( source[is]->v[color], qs ) != 0)
+	    node0_printf("Error writing source\n");
+	}
+      } /* color */
+
+      if(qs->saveflag != FORGET) w_source_close(qs);
+
+    } /* is */
+
+    ENDTIME("create sources");
+
+    /**************************************************************/
+
 
     /* Loop over sets of propagators */
 
     STARTTIME;
+
+    /* Temporary lists */
+    ks_prop_field *tmp_source[MAX_PROP];
+    quark_source *tmp_src_qs[MAX_PROP];
+    
     for(k=0; k<param.num_set; k++){
       int num_prop = param.end_prop[k] - param.begin_prop[k] + 1;
+      if(num_prop <= 0)continue;  /* Ignore set if zero */
       int i0 = param.begin_prop[k];
 
       for(i=param.begin_prop[k]; i <= param.end_prop[k]; i++){
-      
+
 	/**************************************************************/
 	/* Read and/or generate quark propagator */
 	
-	prop_nc[i] = param.src_qs[k].ncolor;
-	prop[i] = create_ksp_field(prop_nc[i]);
+	is = param.source[i];  /* source index for this propagator */
+	prop_nc[i] = param.src_qs[is].ncolor;
 	
+	/* Allocate propagator */
+	prop[i] = create_ksp_field(prop_nc[i]);
 	if(prop[i] == NULL){
 	  printf("main(%d): No room for prop\n",this_node);
 	  terminate(1);
 	}
-	
+	tmp_source[i] = source[is];  /* Pointer copy */
+	tmp_src_qs[i] = &param.src_qs[is]; 
+
 	node0_printf("Mass= %g source %s ",
 		     (double)param.ksp[i].mass,
-		     param.src_qs[k].descrp);
+		     param.src_qs[is].descrp);
 #ifdef U1_FIELD
 	node0_printf("Q %g ",param.charge[k]);
 #endif
 	node0_printf("residue= %g rel= %g\n",
 		     (double)param.qic[i].resid,
 		     (double)param.qic[i].relresid);
-	
+	fflush(stdout);
       }
       
       /* We pass the beginning addresses of the set data */
       
-      total_iters += solve_ksprop(num_prop,
+      total_iters += solve_ksprop(param.set_type[k],
+				  num_prop,
 				  param.startflag_ks + i0,
 				  param.startfile_ks + i0,
 				  param.saveflag_ks + i0,
 				  param.savefile_ks + i0,
 				  prop + i0,
-				  &param.src_qs[k], 
+				  tmp_source + i0,
+				  tmp_src_qs + i0,
 				  param.qic + i0, 
 				  param.ksp + i0,
 				  param.charge[k],
 				  param.bdry_phase[i0],
 				  param.coord_origin,
 				  param.check[i0]);
-      
-      clear_qs(&param.src_qs[k]);
       
     } /* sets */
     ENDTIME("compute propagators");
@@ -308,7 +418,7 @@ int main(int argc, char *argv[])
 	/* If we saved the old prop to a file, we can safely free it */
 	if(oldip0 >= 0 && oldip0 != i)
 	  if(param.saveflag_ks[oldip0] != FORGET){
-	    free_ksp_field(prop[oldip0]);  prop[oldip0] = NULL;
+	    destroy_ksp_field(prop[oldip0]);  prop[oldip0] = NULL;
 	    node0_printf("destroy prop[%d]\n",oldip0);
 	  }
 	
@@ -605,47 +715,47 @@ int main(int argc, char *argv[])
     
 #if EIGMODE == EIGCG
 
-    STARTTIME;
-
-    active_parity = EVEN;
     Nvecs_curr = param.eigcgp.Nvecs_curr;
-
-    fn = get_fm_links(fn_links);
-    resid = (double *)malloc(Nvecs_curr*sizeof(double));
-
-    if(param.ks_eigen_startflag == FRESH)
-      calc_eigenpairs(eigVal, eigVec, &param.eigcgp, active_parity);
-
-    check_eigres( resid, eigVec, eigVal, Nvecs_curr, active_parity, fn[0] );
-
-    if(param.eigcgp.H != NULL) free(param.eigcgp.H);
-
-    ENDTIME("compute eigenvectors");
-#endif
-
-#if EIGMODE == EIGCG || EIGMODE == DEFLATION
-
-    STARTTIME;
-
-    /* save eigenvectors if requested */
-    int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
-			       Nvecs_curr, eigVal, eigVec, resid, 1);
-    if(status != 0){
-      node0_printf("ERROR writing eigenvectors\n");
+      
+    if(param.eigcgp.Nvecs_max > 0){
+      STARTTIME;
+      
+      imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
+      resid = (double *)malloc(Nvecs_curr*sizeof(double));
+      
+      if(param.ks_eigen_startflag == FRESH)
+	calc_eigenpairs(eigVal, eigVec, &param.eigcgp, EVEN);
+      
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
+      
+      if(param.eigcgp.H != NULL) free(param.eigcgp.H);
+      
+      ENDTIME("compute eigenvectors");
     }
-
-    /* Clean up eigen storage */
-    for(i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
-    free(eigVal); free(eigVec); free(resid);
-
-    ENDTIME("save eigenvectors (if requested)");
-
 #endif
+
+    if(param.eigen_param.Nvecs > 0){
+      STARTTIME;
+      
+      /* save eigenvectors if requested */
+      int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
+				 Nvecs_curr, eigVal, eigVec, resid, 1);
+      if(status != 0){
+	node0_printf("ERROR writing eigenvectors\n");
+      }
+      
+      /* Clean up eigen storage */
+      for(i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
+      free(eigVal); free(eigVec); free(resid);
+      
+      ENDTIME("save eigenvectors (if requested)");
+    }
 
     node0_printf("RUNNING COMPLETED\n");
     endtime=dclock();
     
     node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
+    starttime = endtime; /* In case we continue looping over readin */
     node0_printf("total_iters = %d\n",total_iters);
 #ifdef HISQ_SVD_COUNTER
     printf("hisq_svd_counter = %d\n",hisq_svd_counter);
@@ -662,6 +772,12 @@ int main(int argc, char *argv[])
     
     destroy_ape_links_3D(ape_links);
     
+
+    for(is=0; is<param.num_base_source+param.num_modified_source; is++){
+      if(source[is] != NULL)node0_printf("destroy source[%d]\n",is);
+      destroy_ksp_field(source[is]); source[is] = NULL;
+    }
+    
     /* Destroy fermion links (created in readin() */
     
 #if FERM_ACTION == HISQ
@@ -672,6 +788,7 @@ int main(int argc, char *argv[])
     destroy_fermion_links(fn_links);
 #endif
     fn_links = NULL;
+    starttime = endtime;
   } /* readin(prompt) */
   
 
@@ -681,6 +798,10 @@ int main(int argc, char *argv[])
   
 #ifdef HAVE_QPHIX
   finalize_qphix();
+#endif
+
+#ifdef HAVE_GRID
+  finalize_grid();
 #endif
 
   normal_exit(0);

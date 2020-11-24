@@ -32,8 +32,9 @@ void momentum_twist_ape_links(int i, int sign){
 
 int main(int argc, char *argv[])
 {
+  char myname[] = "main";
   int prompt;
-  int i, j, iq0, iq1;
+  int i, is, j, k, iq0, iq1;
 #ifdef CLOV_LEAN
   int oldiq0, oldiq1, oldip0;
 #endif
@@ -41,10 +42,17 @@ int main(int argc, char *argv[])
 #ifdef PRTIME
   double dtime;
 #endif
+  ks_prop_field *v_source[MAX_SOURCE];
+  wilson_prop_field *wv_source[MAX_SOURCE];
   wilson_prop_field *prop[MAX_PROP];
   wilson_prop_field *quark[MAX_QK];
   
   initialize_machine(&argc,&argv);
+
+  for(i = 0; i < MAX_SOURCE; i++)v_source[i] = NULL;
+  for(i = 0; i < MAX_SOURCE; i++)wv_source[i] = NULL;
+  for(i = 0; i < MAX_PROP; i++)prop[i] = NULL;
+  for(i = 0; i < MAX_QK; i++)quark[i] = NULL;
 
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
@@ -84,8 +92,9 @@ int main(int argc, char *argv[])
 
 	/* (Re)construct APE smeared links after gauge fixing.  
 	   No KS phases here! */
-	destroy_ape_links_3D(ape_links);
-	ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
+	destroy_ape_links_4D(ape_links);
+	ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+	if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
 
 	invalidate_this_clov(gen_clov);
       }
@@ -104,6 +113,166 @@ int main(int argc, char *argv[])
     
     /**************************************************************/
 
+    /* Create sources */
+
+    STARTTIME;
+
+    /* Base sources */
+    for(k=0; k<param.num_base_source; k++){
+      quark_source *qs = &param.base_src_qs[k];
+
+      if(qs->field_type == WILSON_FIELD){
+	
+	wv_source[k] = create_wp_field(qs->ncolor);
+	
+	if(qs->saveflag != FORGET){
+	  char *fileinfo = create_w_QCDML();
+	  w_source_open_dirac(qs, fileinfo);
+	  free(fileinfo);
+	}
+	
+	/* Make the source */
+	wilson_vector *src = create_wv_field();
+	
+	for(int ksource = 0; ksource < qs->nsource; ksource++){
+	  int spin = convert_ksource_to_spin(ksource);
+	  int color = convert_ksource_to_color(ksource);
+	  
+	  
+	  /* Create a base source */
+	  if(wv_source_field(src, qs)){
+	    printf("%s(%d): error getting source\n",myname,this_node);
+	    terminate(1);
+	  }
+
+	  /* Copy to source[k] */
+	  insert_swv_from_wv(wv_source[k]->swv[color], spin, src);
+	    
+	  /* Write the source, if requested */
+	  if(qs->saveflag != FORGET){
+	    if(w_source_dirac( src, qs ) != 0)
+	      node0_printf("%s: Error writing source\n",myname);
+	  }
+	} /* ksource */
+  
+	destroy_wv_field(src);
+	  
+	if(qs->saveflag != FORGET) w_source_close(qs);
+
+      }
+      else if(qs->field_type == KS_FIELD){
+	v_source[k] = create_ksp_field(qs->ncolor);
+	
+	if(qs->saveflag != FORGET){
+	  char *fileinfo = create_w_QCDML();
+	  w_source_open_ks(qs, fileinfo);
+	  free(fileinfo);
+	}
+	
+	for(int color = 0; color < qs->ncolor; color++){
+	  
+	  /* Create a base source */
+	  if(v_source_field(v_source[k]->v[color], qs)){
+	    printf("%s(%d): error getting source\n",myname,this_node);
+	    terminate(1);
+	  }
+	  
+	  /* Write the source, if requested */
+	  if(qs->saveflag != FORGET){
+	    if(w_source_ks( v_source[k]->v[color], qs ) != 0)
+	      node0_printf("Error writing source\n");
+	  }
+	} /* color */
+	
+	if(qs->saveflag != FORGET) w_source_close(qs);
+      } /* qs->field_type == KS_FIELD */
+      else {
+	node0_printf("%s: Unrecognized source field type %d\n", myname, qs->field_type);
+	terminate(1);
+      }
+    } /* k */
+
+
+    /* Modified sources */
+    for(is=param.num_base_source; is<param.num_base_source+param.num_modified_source; is++){
+
+      quark_source *qs = &param.base_src_qs[is];
+
+      if(qs->field_type == WILSON_FIELD){
+	wv_source[is] = create_wp_field(qs->ncolor);
+
+	if(qs->saveflag != FORGET){
+	  char *fileinfo = create_w_QCDML();
+	  w_source_open_dirac(qs, fileinfo);
+	  free(fileinfo);
+	}
+	
+	/* Copy parent source */
+	int p = param.parent_source[is];
+	if(wv_source[p] == NULL){
+	  node0_printf("Parent source %d is missing\n", p);
+	  terminate(1);
+	}
+	copy_wp_field(wv_source[is],  wv_source[p]);
+	
+	for(int ksource = 0; ksource < qs->nsource; ksource++){
+	  int spin = convert_ksource_to_spin(ksource);
+	  int color = convert_ksource_to_color(ksource);
+	  
+	  /* Apply operator*/
+	  wilson_vector *src = create_wv_field();
+	  extract_wv_from_swv(src, wv_source[is]->swv[color], spin);
+	  wv_field_op(src, qs->op, qs->subset, qs->t0);
+	  insert_swv_from_wv(wv_source[is]->swv[color], spin, src);
+	  
+	  destroy_wv_field(src);
+	} /* ksource */
+	
+	if(qs->saveflag != FORGET) w_source_close(qs);
+      }
+
+      else if(qs->field_type == KS_FIELD){
+	v_source[k] = create_ksp_field(qs->ncolor);
+
+	if(qs->saveflag != FORGET){
+	  char *fileinfo = create_ks_XML();
+	  w_source_open_ks(qs, fileinfo);
+	  free(fileinfo);
+	}
+	
+	/* Copy parent source */
+	int p = param.parent_source[is];
+	if(v_source[p] == NULL){
+	  node0_printf("Parent source %d is missing\n", p);
+	  terminate(1);
+	}
+	copy_ksp_field(v_source[is],  v_source[p]);
+	
+	for(int color = 0; color < qs->ncolor; color++){
+	  
+	  /* Apply operator*/
+	  v_field_op(v_source[is]->v[color], qs->op, qs->subset, qs->t0);
+	  
+	  /* Write the source, if requested */
+	  if(qs->saveflag != FORGET){
+	    if(w_source_ks( v_source[is]->v[color], qs ) != 0)
+	      node0_printf("Error writing source\n");
+	  }
+	} /* color */
+	
+	if(qs->saveflag != FORGET) w_source_close(qs);
+      }
+      else{
+	node0_printf("%s: Unrecognized source field type %d\n", myname, qs->field_type);
+	terminate(1);
+      }
+
+    } /* is */
+
+    ENDTIME("Create sources");
+
+    /**************************************************************/
+
 
     /* Loop over the propagators */
 
@@ -117,7 +286,18 @@ int main(int argc, char *argv[])
       if(param.prop_type[i] == CLOVER_TYPE)
 	{
 	  int ncolor = convert_ksource_to_color(param.src_qs[i].nsource);
-	  
+
+	  /* Convert KS source to Dirac source if need be */
+	  is = param.source[i];
+	  wilson_prop_field *tmp_src = wv_source[is];
+	  if (param.base_src_qs[is].field_type == KS_FIELD){
+	    tmp_src = create_wp_field(ncolor);
+	    for(int color = 0; color < ncolor; color++)
+	      for(int spin = 0; spin < 4; spin++)
+		insert_swv_from_v(tmp_src->swv[color], spin, spin,
+				  v_source[is]->v[color]);
+	  }
+
 	  prop[i] = create_wp_field(ncolor);
       
 	  node0_printf("Generate Dirac propagator\n");
@@ -136,13 +316,19 @@ int main(int argc, char *argv[])
 					       param.startfile_w[i], 
 					       param.saveflag_w[i], 
 					       param.savefile_w[i],
-					       prop[i], 
+					       prop[i],
+					       tmp_src,
 					       &param.src_qs[i],
 					       &param.qic[i], 
 					       (void *)&param.dcp[i],
 					       param.bdry_phase[i],
 					       param.coord_origin,
 					       param.check[i]);
+
+
+	  if (param.base_src_qs[is].field_type == KS_FIELD)
+	    destroy_wp_field(tmp_src);
+
 #ifdef CLOV_LEAN
 	  /* Free clover prop memory if we have saved the prop to disk */
 	  if(param.saveflag_w[i] != FORGET){
@@ -178,6 +364,7 @@ int main(int argc, char *argv[])
 					       param.saveflag_w[i], 
 					       param.savefile_w[i],
 					       prop[i], 
+					       wv_source[param.source[i]],
 					       &param.src_qs[i], 
 					       &param.qic[i], 
 					       (void *)&param.nap[i],
@@ -208,6 +395,7 @@ int main(int argc, char *argv[])
 						param.saveflag_ks[i], 
 						param.savefile_ks[i],
 						prop[i], 
+						v_source[param.source[i]],
 						&param.src_qs[i],
 						&param.qic[i], 
 						&param.ksp[i],
@@ -235,6 +423,7 @@ int main(int argc, char *argv[])
 						 param.saveflag_w[i], 
 						 param.savefile_w[i],
 						 prop[i], 
+						 v_source[param.source[i]],
 						 &param.src_qs[i],
 						 &param.qic[i], 
 						 &param.ksp[i],
@@ -498,6 +687,8 @@ int main(int argc, char *argv[])
     fn_links = NULL;
 
   } /* readin(prompt) */
+
+  free_lattice();
 
 #ifdef HAVE_QUDA
   qudaFinalize();

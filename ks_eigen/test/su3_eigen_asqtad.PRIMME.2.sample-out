@@ -1,0 +1,255 @@
+SU3 with improved KS action
+Eigenvalues and eigenvectors
+MIMD version 6
+Machine = QMP (portable), with 1 nodes
+Host(0) = aquila.physics.utah.edu
+Username = detar
+start: Sun Feb 14 16:34:48 2016
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+HALF_MIXED
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+# Always 0 when this data is in a file
+# Lattice dimensions
+nx 4
+ny 4
+nz 4
+nt 4
+# random number seed
+iseed 5682304
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 0.3 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+
+
+# mass for psi-bar-psi
+mass 0.1
+# tadpole factor
+u0 1
+# CG for psi-bar-psi measurement (error_per_site is unused)
+max_cg_iterations 300
+max_cg_restarts 5
+error_per_site 5e-06
+error_for_propagator 2e-06
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 32
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+# Outer loop iterations
+Kalkreuter_iters 20
+# Eigenvalue tolerance
+eigenval_tolerance 5e-14
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease 0.3
+# Input lattice
+reload_serial ../../binary_samples/lat.sample.inst
+staple_weight 0
+ape_iter 0
+Reading as old-style gauge field configuration.
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.inst
+Checksums ed5b7449 68d34f64
+Checksums not verified in this format
+Time to reload gauge configuration = 6.649494e-04
+CHECK PLAQ: 2.973028e+00 2.973028e+00
+CHECK NERSC LINKTR: 9.916278e-01 CKSUM: a0e19040
+Unitarity checked.  Max deviation 1.49e-07
+Time to check unitarity = 3.859997e-04
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -6.250000e-02     48
+Time to APE smear 9.107590e-05 sec
+Lock epair[ 1 ]= 3.344201e-02 norm 9.1573e-07 Mvecs 39 Time 2.9411e-02 Flag 2
+Lock epair[ 2 ]= 3.344220e-02 norm 1.6944e-06 Mvecs 64 Time 4.7935e-02 Flag 2
+Lock epair[ 3 ]= 1.946451e+00 norm 1.4962e-06 Mvecs 177 Time 1.2759e-01 Flag 2
+Lock epair[ 4 ]= 1.946451e+00 norm 1.5426e-06 Mvecs 266 Time 1.8364e-01 Flag 2
+Lock epair[ 5 ]= 1.955962e+00 norm 1.3028e-06 Mvecs 307 Time 2.1492e-01 Flag 2
+Lock epair[ 6 ]= 1.955962e+00 norm 1.6126e-06 Mvecs 324 Time 2.2588e-01 Flag 2
+Lock epair[ 7 ]= 1.981036e+00 norm 1.4537e-06 Mvecs 389 Time 2.6990e-01 Flag 2
+Lock epair[ 8 ]= 1.981036e+00 norm 1.6457e-06 Mvecs 398 Time 2.7837e-01 Flag 2
+Lock epair[ 9 ]= 2.013302e+00 norm 1.8362e-06 Mvecs 471 Time 3.3103e-01 Flag 2
+Lock epair[ 10 ]= 2.013302e+00 norm 1.6316e-06 Mvecs 471 Time 3.3107e-01 Flag 2
+Lock epair[ 11 ]= 2.117684e+00 norm 1.4241e-06 Mvecs 553 Time 3.9060e-01 Flag 2
+Lock epair[ 12 ]= 2.117685e+00 norm 1.8823e-06 Mvecs 553 Time 3.9088e-01 Flag 2
+Lock epair[ 13 ]= 2.146501e+00 norm 1.6557e-06 Mvecs 611 Time 4.3495e-01 Flag 2
+Lock epair[ 14 ]= 2.146502e+00 norm 1.7972e-06 Mvecs 636 Time 4.5193e-01 Flag 2
+Lock epair[ 15 ]= 2.347221e+00 norm 1.2361e-06 Mvecs 685 Time 4.9006e-01 Flag 2
+Lock epair[ 16 ]= 2.347221e+00 norm 1.6403e-06 Mvecs 742 Time 5.3465e-01 Flag 2
+Lock epair[ 17 ]= 2.347221e+00 norm 1.8528e-06 Mvecs 791 Time 5.7122e-01 Flag 2
+Lock epair[ 18 ]= 2.347221e+00 norm 1.0989e-06 Mvecs 840 Time 6.1294e-01 Flag 2
+Lock epair[ 19 ]= 2.347221e+00 norm 1.2274e-06 Mvecs 897 Time 6.5281e-01 Flag 2
+Lock epair[ 20 ]= 2.347221e+00 norm 1.1960e-06 Mvecs 978 Time 7.1943e-01 Flag 2
+Lock epair[ 21 ]= 2.347221e+00 norm 1.7680e-06 Mvecs 1059 Time 7.8150e-01 Flag 2
+Lock epair[ 22 ]= 2.347221e+00 norm 1.7321e-06 Mvecs 1156 Time 8.5669e-01 Flag 2
+Lock epair[ 23 ]= 2.347221e+00 norm 1.1376e-06 Mvecs 1237 Time 9.2446e-01 Flag 2
+Lock epair[ 24 ]= 2.347221e+00 norm 1.8578e-06 Mvecs 1318 Time 9.8713e-01 Flag 2
+Lock epair[ 25 ]= 2.421365e+00 norm 1.8092e-06 Mvecs 1318 Time 9.8719e-01 Flag 2
+Lock epair[ 26 ]= 2.421366e+00 norm 1.2349e-06 Mvecs 1318 Time 9.8720e-01 Flag 2
+Lock epair[ 27 ]= 2.347221e+00 norm 1.4522e-06 Mvecs 1385 Time 1.0409e+00 Flag 2
+Lock epair[ 28 ]= 2.347221e+00 norm 1.2072e-06 Mvecs 1456 Time 1.1011e+00 Flag 2
+Lock epair[ 29 ]= 2.347221e+00 norm 1.0301e-06 Mvecs 1519 Time 1.1506e+00 Flag 2
+Lock epair[ 30 ]= 2.347221e+00 norm 9.9685e-07 Mvecs 1591 Time 1.2157e+00 Flag 2
+Lock epair[ 31 ]= 2.434391e+00 norm 1.7851e-06 Mvecs 1591 Time 1.2157e+00 Flag 2
+Lock epair[ 32 ]= 2.347221e+00 norm 1.3273e-06 Mvecs 1659 Time 1.2715e+00 Flag 2
+mxv operations for eigenvecs 1650
+BEGIN RESULTS
+Eigenvalue(0) = 0.0334421 
+Eigenvalue(1) = 0.0334421 
+Eigenvalue(2) = 1.94645 
+Eigenvalue(3) = 1.94645 
+Eigenvalue(4) = 1.95596 
+Eigenvalue(5) = 1.95596 
+Eigenvalue(6) = 1.98104 
+Eigenvalue(7) = 1.98104 
+Eigenvalue(8) = 2.0133 
+Eigenvalue(9) = 2.0133 
+Eigenvalue(10) = 2.11768 
+Eigenvalue(11) = 2.11768 
+Eigenvalue(12) = 2.1465 
+Eigenvalue(13) = 2.1465 
+Eigenvalue(14) = 2.34722 
+Eigenvalue(15) = 2.34722 
+Eigenvalue(16) = 2.34722 
+Eigenvalue(17) = 2.34722 
+Eigenvalue(18) = 2.34722 
+Eigenvalue(19) = 2.34722 
+Eigenvalue(20) = 2.34722 
+Eigenvalue(21) = 2.34722 
+Eigenvalue(22) = 2.34722 
+Eigenvalue(23) = 2.34722 
+Eigenvalue(24) = 2.34722 
+Eigenvalue(25) = 2.34722 
+Eigenvalue(26) = 2.34722 
+Eigenvalue(27) = 2.34722 
+Eigenvalue(28) = 2.42137 
+Eigenvalue(29) = 2.42137 
+Eigenvalue(30) = 2.43439 
+Eigenvalue(31) = 2.43439 
+Even site residuals
+Checking eigensolutions
+eigVal[0] = 3.344213e-02 ( resid = 8.278142e-13 , |eigVec[0]|-1 = 6.661338e-16 )
+eigVal[1] = 3.344213e-02 ( resid = 6.137623e-13 , |eigVec[1]|-1 = 0.000000e+00 )
+eigVal[2] = 1.946451e+00 ( resid = 6.255658e-13 , |eigVec[2]|-1 = 2.220446e-16 )
+eigVal[3] = 1.946451e+00 ( resid = 8.342061e-13 , |eigVec[3]|-1 = 2.442491e-15 )
+eigVal[4] = 1.955962e+00 ( resid = 7.480337e-13 , |eigVec[4]|-1 = 1.110223e-15 )
+eigVal[5] = 1.955962e+00 ( resid = 4.402457e-13 , |eigVec[5]|-1 = 1.554312e-15 )
+eigVal[6] = 1.981036e+00 ( resid = 3.739091e-13 , |eigVec[6]|-1 = -3.330669e-16 )
+eigVal[7] = 1.981036e+00 ( resid = 4.157531e-13 , |eigVec[7]|-1 = 4.440892e-16 )
+eigVal[8] = 2.013302e+00 ( resid = 7.420692e-13 , |eigVec[8]|-1 = -3.330669e-16 )
+eigVal[9] = 2.013302e+00 ( resid = 4.855833e-13 , |eigVec[9]|-1 = -1.221245e-15 )
+eigVal[10] = 2.117685e+00 ( resid = 3.390560e-13 , |eigVec[10]|-1 = 0.000000e+00 )
+eigVal[11] = 2.117685e+00 ( resid = 7.734636e-13 , |eigVec[11]|-1 = 2.220446e-16 )
+eigVal[12] = 2.146502e+00 ( resid = 4.186037e-13 , |eigVec[12]|-1 = 8.881784e-16 )
+eigVal[13] = 2.146502e+00 ( resid = 6.278715e-13 , |eigVec[13]|-1 = 2.220446e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 8.695415e-13 , |eigVec[14]|-1 = -6.661338e-16 )
+eigVal[15] = 2.347222e+00 ( resid = 5.633443e-13 , |eigVec[15]|-1 = -1.221245e-15 )
+eigVal[16] = 2.347222e+00 ( resid = 4.333406e-13 , |eigVec[16]|-1 = -8.881784e-16 )
+eigVal[17] = 2.347222e+00 ( resid = 6.144229e-13 , |eigVec[17]|-1 = -4.440892e-16 )
+eigVal[18] = 2.347222e+00 ( resid = 7.593734e-13 , |eigVec[18]|-1 = 0.000000e+00 )
+eigVal[19] = 2.347222e+00 ( resid = 7.930111e-13 , |eigVec[19]|-1 = 2.220446e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 7.186170e-13 , |eigVec[20]|-1 = 0.000000e+00 )
+eigVal[21] = 2.347222e+00 ( resid = 9.237055e-13 , |eigVec[21]|-1 = -2.220446e-16 )
+eigVal[22] = 2.347222e+00 ( resid = 4.158412e-13 , |eigVec[22]|-1 = 2.220446e-16 )
+eigVal[23] = 2.347222e+00 ( resid = 4.014308e-13 , |eigVec[23]|-1 = 2.220446e-16 )
+eigVal[24] = 2.347222e+00 ( resid = 9.111788e-13 , |eigVec[24]|-1 = 2.220446e-16 )
+eigVal[25] = 2.347222e+00 ( resid = 5.476846e-13 , |eigVec[25]|-1 = 1.110223e-15 )
+eigVal[26] = 2.347222e+00 ( resid = 8.496279e-13 , |eigVec[26]|-1 = 2.220446e-16 )
+eigVal[27] = 2.347222e+00 ( resid = 5.127019e-13 , |eigVec[27]|-1 = 8.881784e-16 )
+eigVal[28] = 2.421365e+00 ( resid = 2.761457e-13 , |eigVec[28]|-1 = 1.332268e-15 )
+eigVal[29] = 2.421365e+00 ( resid = 4.183061e-13 , |eigVec[29]|-1 = 2.886580e-15 )
+eigVal[30] = 2.434392e+00 ( resid = 7.679966e-13 , |eigVec[30]|-1 = 1.332268e-15 )
+eigVal[31] = 2.434392e+00 ( resid = 6.522701e-13 , |eigVec[31]|-1 = -8.881784e-16 )
+End of eigensolutions
+Odd site residuals
+Checking eigensolutions
+eigVal[0] = 3.344213e-02 ( resid = 1.392212e-11 , |eigVec[0]|-1 = 0.000000e+00 )
+eigVal[1] = 3.344213e-02 ( resid = 1.050251e-11 , |eigVec[1]|-1 = -1.110223e-16 )
+eigVal[2] = 1.946451e+00 ( resid = 1.314634e-12 , |eigVec[2]|-1 = 2.220446e-16 )
+eigVal[3] = 1.946451e+00 ( resid = 1.669340e-12 , |eigVec[3]|-1 = 2.220446e-16 )
+eigVal[4] = 1.955962e+00 ( resid = 1.477269e-12 , |eigVec[4]|-1 = -1.110223e-16 )
+eigVal[5] = 1.955962e+00 ( resid = 1.093537e-12 , |eigVec[5]|-1 = 0.000000e+00 )
+eigVal[6] = 1.981036e+00 ( resid = 8.466477e-13 , |eigVec[6]|-1 = -1.110223e-16 )
+eigVal[7] = 1.981036e+00 ( resid = 9.455109e-13 , |eigVec[7]|-1 = 0.000000e+00 )
+eigVal[8] = 2.013302e+00 ( resid = 1.532138e-12 , |eigVec[8]|-1 = 2.220446e-16 )
+eigVal[9] = 2.013302e+00 ( resid = 9.379373e-13 , |eigVec[9]|-1 = 0.000000e+00 )
+eigVal[10] = 2.117685e+00 ( resid = 6.414618e-13 , |eigVec[10]|-1 = -1.110223e-16 )
+eigVal[11] = 2.117685e+00 ( resid = 1.453892e-12 , |eigVec[11]|-1 = -4.440892e-16 )
+eigVal[12] = 2.146502e+00 ( resid = 7.358083e-13 , |eigVec[12]|-1 = -1.110223e-16 )
+eigVal[13] = 2.146502e+00 ( resid = 1.109802e-12 , |eigVec[13]|-1 = -2.220446e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 1.571176e-12 , |eigVec[14]|-1 = -2.220446e-16 )
+eigVal[15] = 2.347222e+00 ( resid = 1.116434e-12 , |eigVec[15]|-1 = -1.110223e-16 )
+eigVal[16] = 2.347222e+00 ( resid = 9.953081e-13 , |eigVec[16]|-1 = 0.000000e+00 )
+eigVal[17] = 2.347222e+00 ( resid = 1.154739e-12 , |eigVec[17]|-1 = 0.000000e+00 )
+eigVal[18] = 2.347222e+00 ( resid = 1.180297e-12 , |eigVec[18]|-1 = 2.220446e-16 )
+eigVal[19] = 2.347222e+00 ( resid = 1.387929e-12 , |eigVec[19]|-1 = -3.330669e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 1.508931e-12 , |eigVec[20]|-1 = 0.000000e+00 )
+eigVal[21] = 2.347222e+00 ( resid = 1.744725e-12 , |eigVec[21]|-1 = -5.551115e-16 )
+eigVal[22] = 2.347222e+00 ( resid = 8.142367e-13 , |eigVec[22]|-1 = -2.220446e-16 )
+eigVal[23] = 2.347222e+00 ( resid = 7.611869e-13 , |eigVec[23]|-1 = 0.000000e+00 )
+eigVal[24] = 2.347222e+00 ( resid = 1.840698e-12 , |eigVec[24]|-1 = 0.000000e+00 )
+eigVal[25] = 2.347222e+00 ( resid = 9.732382e-13 , |eigVec[25]|-1 = 0.000000e+00 )
+eigVal[26] = 2.347222e+00 ( resid = 1.425028e-12 , |eigVec[26]|-1 = 0.000000e+00 )
+eigVal[27] = 2.347222e+00 ( resid = 1.063451e-12 , |eigVec[27]|-1 = -1.110223e-16 )
+eigVal[28] = 2.421365e+00 ( resid = 4.804381e-13 , |eigVec[28]|-1 = -1.110223e-16 )
+eigVal[29] = 2.421365e+00 ( resid = 7.428681e-13 , |eigVec[29]|-1 = 2.220446e-16 )
+eigVal[30] = 2.434392e+00 ( resid = 1.576279e-12 , |eigVec[30]|-1 = -1.110223e-16 )
+eigVal[31] = 2.434392e+00 ( resid = 1.203443e-12 , |eigVec[31]|-1 = 0.000000e+00 )
+End of eigensolutions
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+The above were eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0):  0.0914359
+eigenval(1):  0.0914359
+eigenval(2):   0.697576
+eigenval(3):   0.697576
+eigenval(4):   0.699279
+eigenval(5):   0.699279
+eigenval(6):   0.703746
+eigenval(7):   0.703746
+eigenval(8):   0.709454
+eigenval(9):   0.709454
+eigenval(10):   0.727613
+eigenval(11):   0.727613
+eigenval(12):   0.732547
+eigenval(13):   0.732547
+eigenval(14):   0.766032
+eigenval(15):   0.766032
+eigenval(16):   0.766032
+eigenval(17):   0.766032
+eigenval(18):   0.766032
+eigenval(19):   0.766032
+eigenval(20):   0.766032
+eigenval(21):   0.766032
+eigenval(22):   0.766032
+eigenval(23):   0.766032
+eigenval(24):   0.766032
+eigenval(25):   0.766032
+eigenval(26):   0.766032
+eigenval(27):   0.766032
+eigenval(28):   0.778037
+eigenval(29):   0.778037
+eigenval(30):   0.780127
+eigenval(31):   0.780127
+RUNNING COMPLETED
+total Rayleigh iters = 536
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Thu May 31 16:07:07 2018

@@ -9,18 +9,17 @@
 
 /**#define GFTIME**/ /* For timing gauge force calculation */
 #include "generic_includes.h"	/* definitions files and prototypes */
-
-// Added by J.F.
-#include <quda.h>
-#include <quda_milc_interface.h>
-
 #include "../include/generic_quda.h"
 
 // gpu code 
-// Only works for the Symanzik gauge action
 void imp_gauge_force_gpu(Real eps, field_offset mom_off)
 {
-  char myname[] = "imp_gauge_force_gpu";
+
+#ifdef GFTIME
+  int nflop = 153004;  /* For Symanzik1 action */
+  double dtime = -dclock();
+#endif
+
   Real **loop_coeff = get_loop_coeff();
   //int max_length = get_max_length();
   //int nreps = get_nreps();
@@ -28,37 +27,17 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
   const int num_loop_types = get_nloop();
   double *quda_loop_coeff = (double*)malloc(num_loop_types * sizeof(double));
   int i;
-#ifdef GFTIME
-  int nflop = 153004;  /* For Symanzik1 action */
-  double dtime = -dclock();
-#endif
-
-  const Real eb3 = eps*beta/3.0;
-  su3_matrix* links = create_G_from_site();
-  
-  Real* momentum = (Real*)malloc(sites_on_node*4*sizeof(anti_hermitmat));
-
-  int dir,j;
   site *st;
+  const Real eb3 = eps*beta/3.0;
+  
+  initialize_quda();
 
   for(i=0; i<num_loop_types; ++i) quda_loop_coeff[i] = loop_coeff[i][0];
 
-  if(momentum == NULL){
-    printf("%s(%d): Can't malloc temporary momentum\n",myname,this_node);
-    terminate(1);
-  }
+  QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+  qudaGaugeForcePhased(MILC_PRECISION,num_loop_types,quda_loop_coeff,eb3,&arg, phases_in);
 
-  initialize_quda();
-
-  qudaGaugeForce(PRECISION,num_loop_types,quda_loop_coeff,eb3,links,momentum);
-
-  FORALLSITES(i,st){
-    for(dir=0; dir<4; ++dir){
-      for(j=0; j<10; ++j){
-	*((Real*)(&(st->mom[dir])) + j) += *(momentum + (4*i+ dir)*10 + j);
-      }
-    }
-  }
+  free(quda_loop_coeff);
 
 #ifdef GFTIME
   dtime+=dclock();
@@ -66,9 +45,6 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
 	       nflop*(double)volume/(1e6*dtime*numnodes()) );
 #endif
 
-  free(quda_loop_coeff);
-  free(links);
-  free(momentum);
   return;
 }
 

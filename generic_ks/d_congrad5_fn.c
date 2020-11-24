@@ -35,6 +35,30 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
   return iters;
 }
 
+/* API for field arguments */
+
+int ks_congrad_block_field( int nsrc, su3_vector **src, su3_vector **dest, 
+			    quark_invert_control *qic, Real mass,
+			    imp_ferm_links_t *fn)
+{
+  int iters = 0;
+  int parity = qic->parity;
+
+  if(parity == EVEN || parity == EVENANDODD){
+    qic->parity = EVEN;
+    iters += ks_congrad_block_parity(nsrc, src, dest, qic, mass, fn);
+    report_status(qic);
+  }
+  if(parity == ODD || parity == EVENANDODD){
+    qic->parity = ODD;
+    iters += ks_congrad_block_parity(nsrc, src, dest, qic, mass, fn);
+    report_status(qic);
+  }
+
+  qic->parity = parity;
+  return iters;
+}
+
 /* API for field arguments.  This one never uses the GPU. */
 
 int ks_congrad_field_cpu( su3_vector *src, su3_vector *dest, 
@@ -111,7 +135,6 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
   qic.max       = niter;
   qic.nrestart  = nrestart;
   qic.parity    = parity;
-  qic.start_flag = 0;
   qic.nsrc      = 1;
   qic.resid     = sqrt(rsqmin);
   qic.relresid  = 0;     /* Suppresses this test */
@@ -121,6 +144,5 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
 
   /* Unpack the results */
   *final_rsq    = qic.final_rsq;
-  total_iters += iters;
   return iters;
 }

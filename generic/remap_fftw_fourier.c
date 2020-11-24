@@ -16,7 +16,7 @@
 #include "generic_includes.h"
 #include <fftw3.h>
 
-#if PRECISION==1
+#if MILC_PRECISION==1
 #define FFTWP(x) fftwf_##x
 #else
 #define FFTWP(x) fftw_##x
@@ -24,13 +24,22 @@
 
 #ifdef CHECK_MALLOC
 
-#define FFTWP(malloc)(_size) \
+#if MILC_PRECISION==1
+#define fftwf_malloc(_size) \
   (( (_malloc_ptr = FFTWP(malloc)(_size)), \
    (this_node == 0 ? \
    printf("%x = FFTWP(malloc)(%d) %s:%d\n",_malloc_ptr,_size,__func__,__LINE__) \
    && fflush(stdout) : 0 )), _malloc_ptr)
-
+#else
+#define fftw_malloc(_size) \
+  (( (_malloc_ptr = FFTWP(malloc)(_size)), \
+   (this_node == 0 ? \
+   printf("%x = FFTWP(malloc)(%d) %s:%d\n",_malloc_ptr,_size,__func__,__LINE__) \
+   && fflush(stdout) : 0 )), _malloc_ptr)
 #endif
+#endif
+
+//#define DEBUG_TIMING
 
 /* Data structure for the layout */
 
@@ -299,9 +308,13 @@ void make_fftw_plans(int size, ft_data *ftd){
   int nxfm;
   unsigned flags;
   int dir;
-  //  double dtime = start_timing();
+#ifdef DEBUG_TIMING
+  double dtime = start_timing();
+#endif
 
   flags = FFTW_ESTIMATE;  /* Could try FFTW_MEASURE */
+  //  flags = FFTW_MEASURE;
+
   rank = 1;
   /* Number of complex values in a 4D site datum */
   ncmp = size/sizeof(complex);
@@ -332,7 +345,9 @@ void make_fftw_plans(int size, ft_data *ftd){
 			    FFTW_BACKWARD, flags);
     }
 
-  // print_timing(dtime, "make FFTW plans");
+#ifdef DEBUG_TIMING
+  print_timing(dtime, "make FFTW plans");
+#endif
 }
 
 /*----------------------------------------------------------------------*/
@@ -351,7 +366,9 @@ void destroy_fftw_plans(){
 void ft_create_layouts(ft_layout *ftl[], ft_layout **ft_milc, 
 		       int ndim, int dims[], int key[]){
   int dir;
-  //  int dtime = start_timing();
+#ifdef DEBUG_TIMING
+  double dtime = start_timing();
+#endif
 
   /* Set up the FT layout structure for each dir needed */
   /* We don't remake the FT layout if it already exists, i.e.  the
@@ -382,7 +399,9 @@ void ft_create_layouts(ft_layout *ftl[], ft_layout **ft_milc,
     (*ft_milc)->nxfm = 0;  /* We don't run transforms with the MILC layout */
   }
 
-  //  print_timing(dtime, "create FFT layouts");
+#ifdef DEBUG_TIMING
+  print_timing(dtime, "create FFT layouts");
+#endif
 }
 
 /*----------------------------------------------------------------------*/
@@ -503,7 +522,9 @@ static void ft_make_map(int dirold, int dir){
 static void ft_make_maps(ft_layout *ftl[], int key[], int ndim){
 
   int dir, dirold;
-  //  double dtime = start_timing();
+#ifdef DEBUG_TIMING
+  double dtime = start_timing();
+#endif
 
   dirold = MILC_DIR;  /* Start from MILC layout */
   for(dir = 0; dir < ndim; dir++){
@@ -516,7 +537,9 @@ static void ft_make_maps(ft_layout *ftl[], int key[], int ndim){
   dir = MILC_DIR;
   ft_make_map(dirold, dir);
 
-  //  print_timing(dtime, "make FFTW gathers");
+#ifdef DEBUG_TIMING
+  print_timing(dtime, "make FFTW gathers");
+#endif
 }
 
 /*----------------------------------------------------------------------*/
@@ -533,7 +556,10 @@ void setup_restrict_fourier( int *key, int *slice){
   int dims[NDIM] = {nx, ny, nz, nt};
   int ndim = NDIM;
   int dir;
-  
+
+#ifdef DEBUG_TIMING
+  double dtime = -dclock();
+#endif  
   /* No support for key[dir] = 2 */
   for(dir = 0; dir < ndim; dir++){
     if(key[dir] == 2){
@@ -549,6 +575,11 @@ void setup_restrict_fourier( int *key, int *slice){
   /* Create the maps for switching layouts */
 
   ft_make_maps(layout, key, ndim);
+
+#ifdef DEBUG_TIMING
+  dtime += dclock();
+  node0_printf("Time to set up the FFT %g\n", dtime);
+#endif
 }
 
 /*----------------------------------------------------------------------*/
@@ -594,8 +625,9 @@ ft_data *create_ft_data(complex *src, int size){
   char myname[] = "create_ft_data";
   ft_data *ftd;
   int ncmp;
-  //  double dtime = start_timing();
-
+#ifdef DEBUG_TIMING
+  double dtime = start_timing();
+#endif
   ftd = (ft_data *)malloc(sizeof(ft_data));
   if(ftd == NULL){
     printf("%s: No room\n", myname);
@@ -617,7 +649,9 @@ ft_data *create_ft_data(complex *src, int size){
   /* Copy data in */
   ft_copy_from_milc(ftd->data, src, size);
 
-  //  print_timing(dtime, "REMAP FFTW copy MILC");
+#ifdef DEBUG_TIMING
+  print_timing(dtime, "REMAP FFTW copy MILC");
+#endif
   return ftd;
 }
 
@@ -626,9 +660,9 @@ ft_data *create_ft_data(complex *src, int size){
 void destroy_ft_data(ft_data *ftd){
   if(ftd != NULL){
     if(ftd->data != NULL)
-      free(ftd->data);
+      FFTWP(free)(ftd->data);
     if(ftd->tmp != NULL)
-      free(ftd->tmp);
+      FFTWP(free)(ftd->tmp);
     free(ftd);
   }
 }
@@ -640,18 +674,29 @@ static void remap_data(int index, ft_data *ftd){
   msg_tag *mtag;
   char *temp;
   int i;
-  //  double dtime = start_timing();
-
+#ifdef DEBUG_TIMING
+  double dtime;
+#endif
   temp = (char *)malloc(sites_on_node*ftd->size);
   if(temp==NULL){
     printf("remap_data: No room\n");
     terminate(1);
   }
 
+#ifdef DEBUG_TIMING
+  dtime = start_timing();
+#endif
   mtag = start_gather_field(ftd->data, ftd->size, index, EVENANDODD,
 			    gen_pt[0]);
+#ifdef DEBUG_TIMING
+  print_timing(dtime, "REMAP FFTW start_gather");
+  dtime = start_timing();
+#endif
   wait_gather(mtag);
-
+#ifdef DEBUG_TIMING
+  print_timing(dtime, "REMAP FFTW wait_gather");
+  dtime = start_timing();
+#endif
   /* First copy gathered data to temporary */
   for(i = 0; i < sites_on_node; i++)
     memcpy(temp + ftd->size*i, gen_pt[0][i], ftd->size);
@@ -663,7 +708,9 @@ static void remap_data(int index, ft_data *ftd){
 
   free(temp);
 
-  //  print_timing(dtime, "REMAP FFTW remap");
+#ifdef DEBUG_TIMING
+  print_timing(dtime, "REMAP FFTW copy in place");
+#endif
 }
 
 /*----------------------------------------------------------------------*/
@@ -720,20 +767,26 @@ static int remap_data_next(ft_data *ftd, int isign){
 
 void fourier_ftdata( ft_data *ftd, int isign ){
 
-  //  double dtime = start_timing();
+#ifdef DEBUG_TIMING
+  double dtime = start_timing();
+#endif
 
   if(isign == 1)
     FFTWP(execute)(fwd_plan[ftd->dir]);
   else
     FFTWP(execute)(bck_plan[ftd->dir]);
 
-  // print_timing(dtime, "FFTW transform");
-  //  dtime = start_timing();
+#ifdef DEBUG_TIMING
+  print_timing(dtime, "FFTW transform");
+  dtime = start_timing();
+#endif
 
   /* Copy the result from "tmp" back to "data" */
 
   memcpy((char *)ftd->data, (char *)ftd->tmp, ftd->size*sites_on_node);
-  //  print_timing(dtime, "REMAP FFTW copy back");
+#ifdef DEBUG_TIMING
+  print_timing(dtime, "REMAP FFTW copy back");
+#endif
 }
 
 /*----------------------------------------------------------------------*/
@@ -779,6 +832,7 @@ void restrict_fourier_field(
   ftd = create_ft_data(src, size);
 
   /* Create plans */
+  g_sync();  /* Make sure all ranks are ready before starting */
   make_fftw_plans(size, ftd);
 
   /* Map MILC to first FT dir */
@@ -799,6 +853,8 @@ void restrict_fourier_field(
 
   destroy_fftw_plans();
   destroy_ft_data(ftd);
+
+  FFTWP(cleanup)();
 }
 
 /*----------------------------------------------------------------------*/

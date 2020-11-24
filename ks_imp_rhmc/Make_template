@@ -41,9 +41,11 @@ MY_OBJECTS = \
   d_action_rhmc.o \
   eo_fermion_force_rhmc.o \
   gauge_info.o \
+  gauge_force_imp_ks.o \
   grsource_rhmc.o \
   ks_ratinv.o  \
   load_rhmc_params.o \
+  reunitarize_ks.o \
   setup.o \
   update_h_rhmc.o \
   update_rhmc.o \
@@ -226,6 +228,32 @@ su3_rhmd_hisq_su3::
 	"DEFINES= -DFN  -DINT_ALG=INT_3G1F" \
 	"GAUGE = symanzik_1loop_hisq_action.h" \
 	"QUARK = hisq/hisq_su3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+su3_rhmc_hisq_5G1F::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT} " \
+	"DEFINES= -DFN -DHMC -DINT_ALG=INT_5G1F \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
+        -DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+su3_rhmc_hisq_6G1F::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT} " \
+	"DEFINES= -DFN -DHMC -DINT_ALG=INT_6G1F \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
+        -DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
 	${GAUGE_FORCE} control.o"
 

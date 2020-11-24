@@ -39,7 +39,7 @@ typedef struct {
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4];
+	su3_matrix link[4] ALIGNMENT;
 
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */
@@ -64,7 +64,7 @@ typedef struct {
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int iseed;
 EXTERN  int niter, nrestart;
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 #ifdef FIX_NODE_GEOM
 EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
 			    hypercubes) for the compute nodes in each
@@ -90,9 +90,9 @@ EXTERN	Real rsqmin,rsqprop; /* for Asqtad, etc. fermions only! */
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
-EXTERN	int sites_on_node;		/* number of sites on this node */
-EXTERN	int even_sites_on_node;	/* number of even sites on this node */
-EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
+EXTERN	size_t sites_on_node;		/* number of sites on this node */
+EXTERN	size_t even_sites_on_node;	/* number of even sites on this node */
+EXTERN	size_t odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
@@ -103,6 +103,7 @@ EXTERN quark_source wqstmp;
 EXTERN dirac_clover_param dcptmp;
 EXTERN gauge_file *startlat_p;
 EXTERN gauge_file *savelat_p;
+EXTERN gauge_file *start_u1lat_p;
 EXTERN char hostname[128];
 EXTERN char utc_date_time[64];
 
@@ -124,18 +125,17 @@ EXTERN su3_matrix *ape_links;
 /* NEED 8 WHEN GAUGEFIXING */
 EXTERN char ** gen_pt[N_POINTERS];
 
-/* Storage for definition of the quark action */
+/* Storage for the fermion links structures */
+EXTERN int n_charges;
+EXTERN fermion_links_t   **fn_links_charge;
 EXTERN fermion_links_t    *fn_links;
-//EXTERN ferm_links_t    fn_links_dmdu0;
-//EXTERN ks_action_paths ks_act_paths;
-//EXTERN ks_action_paths ks_act_paths_dmdu0;
+
+EXTERN Real *u1_A;
+EXTERN Real g_splaq,g_tplaq;	/* global U(1) plaquette measures */
 
 /* For eigenpair calculation */
-#if EIGMODE == EIGCG || EIGMODE == DEFLATION
-EXTERN int active_parity ; /* parity used in eigenvalue calculation */
 EXTERN int Nvecs_tot;
 EXTERN double *eigVal; /* eigenvalues of M^adj M */
 EXTERN su3_vector **eigVec; /* eigenvectors */
-#endif
 
 #endif /* _LATTICE_H */

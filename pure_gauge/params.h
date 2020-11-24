@@ -18,7 +18,12 @@ typedef struct {
 	int startflag;  /* what to do for beginning lattice */
 	int fixflag;    /* whether to gauge fix */
 	int saveflag;   /* what to do with lattice at end */
+#ifndef ANISOTROPY
 	Real beta;	/* gauge coupling */
+#else
+        Real beta[2];   /* beta[0] - 3d-isotropic, beta[1] - anisotropic */
+        short ani_dir; /* direction of anisotropy */
+#endif
 	Real epsilon;	/* time step */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/

@@ -18,6 +18,7 @@
 #include "../include/generic_quark_types.h"
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
+#include "params.h"
 #include "../include/generic_ks.h" /* For fn_links and ks_act_paths */
 #include "../include/fermion_links.h"
 
@@ -47,7 +48,7 @@ typedef struct {
 /*   Now come the physical fields, program dependent            */
 /* ------------------------------------------------------------ */
 	/* gauge field */
-	su3_matrix link[4];	/* the fundamental field */
+	su3_matrix link[4] ALIGNMENT;	/* the fundamental field */
 #if  defined(HYBRIDS)
 	su3_matrix tmplink[4];	/* three link straight paths */
 #endif
@@ -58,7 +59,7 @@ typedef struct {
 #endif
 
 	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4];
+ 	anti_hermitmat mom[4] ALIGNMENT;
 
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */
@@ -134,7 +135,7 @@ typedef struct {
    u0 is tadpole improvement factor, perhaps (plaq/3)^(1/4)
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 #ifdef FIX_NODE_GEOM
 EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
 			    hypercubes) for the compute nodes in each
@@ -148,6 +149,7 @@ EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
+EXTERN  params param;
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
 EXTERN  int npbp_reps_in;
@@ -197,9 +199,9 @@ EXTERN  Real fpi_mass[MAX_FPI_NMASSES];
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
-EXTERN	int sites_on_node;		/* number of sites on this node */
-EXTERN	int even_sites_on_node;	/* number of even sites on this node */
-EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
+EXTERN	size_t sites_on_node;		/* number of sites on this node */
+EXTERN	size_t even_sites_on_node;	/* number of even sites on this node */
+EXTERN	size_t odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
@@ -228,4 +230,10 @@ EXTERN fermion_links_t        *fn_links;
 EXTERN int n_order_naik_total;
 EXTERN int n_pseudo_naik[MAX_N_PSEUDO];
 EXTERN int n_orders_naik[MAX_N_PSEUDO];
+
+/* For eigenpair calculation */
+/* Not used for HMC */
+EXTERN int Nvecs_tot;
+EXTERN double *eigVal; /* eigenvalues of D^dag D */
+EXTERN su3_vector **eigVec; /* eigenvectors */
 #endif /* _LATTICE_H */

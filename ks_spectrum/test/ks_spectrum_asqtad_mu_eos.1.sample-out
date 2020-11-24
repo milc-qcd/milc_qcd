@@ -24,7 +24,6 @@ QMP with automatic hyper_prime layout
 ON EACH NODE 8 x 8 x 8 x 8
 Mallocing 1.7 MBytes per node for lattice
 WARNING!!: Resetting random seed
-Aggregate time to setup 1.496911e-02
 
 
 ######################################################################
@@ -37,7 +36,8 @@ coulomb_gauge_fix
 forget 
 staple_weight 0
 ape_iter 0
-coordinate_origin 0 0 0 0 
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
 # Chiral condensate and related measurements
 number_of_pbp_masses 2
 max_cg_iterations 300
@@ -73,7 +73,6 @@ path coefficients: npath  path_coeff  multiplicity
                     4      -6.022150e-03     384
                     5      -1.092954e-01     48
 Time to APE smear 6.909370e-04 sec
-Aggregate time to readin 1.516218e-01
  OK converged final_rsq= 4.3e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 100
  OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 14
 PB_DMDU_P: mass 5.000000e-02  -4.868624e+00  -4.812158e+00 ( 1 of 2 )
@@ -1046,19 +1045,14 @@ d3_trdMduMi_dmu3: mass 1.000000e-01,  R: -7.183378672e-03  Im: 1.316437694e-01 (
 d4_trdMduMi_dmu4: mass 1.000000e-01,  R: 1.220110959e+00  Im: 1.555530742e+00 ( 2 of 2 )
 d5_trdMduMi_dmu5: mass 1.000000e-01,  R: 6.127698972e+01  Im: -7.048774582e+01 ( 2 of 2 )
 d6_trdMduMi_dmu6: mass 1.000000e-01,  R: 1.179204993e+02  Im: 5.278411527e+02 ( 2 of 2 )
-Aggregate time to calculate pbp, etc 4.653717e+01
 Fixing to Coulomb gauge
 step 19 av gf action 8.73432130e-01, delta 6.467e-04
 step 39 av gf action 8.76697987e-01, delta 4.321e-05
 step 59 av gf action 8.77135903e-01, delta 1.052e-05
 step 79 av gf action 8.77249718e-01, delta 2.891e-06
 GFIX: Ended at step 85. Av gf action 8.77263725e-01, delta 1.937e-06
-Aggregate time to gauge fix 4.478750e-01
 Time to APE smear 7.781982e-04 sec
 END OF HEADER
-Aggregate time to compute propagators 1.907349e-06
-Aggregate time to tie meson correlators 9.536743e-07
-Aggregate time to tie baryon correlators 0.000000e+00
 RUNNING COMPLETED
 Time = 4.715389e+01 seconds
 total_iters = 49357
@@ -1093,7 +1087,6 @@ QMP with automatic hyper_prime layout
 ON EACH NODE 8 x 8 x 8 x 8
 Mallocing 1.7 MBytes per node for lattice
 WARNING!!: Resetting random seed
-Aggregate time to setup 8.901596e-02
 
 
 ######################################################################
@@ -1107,6 +1100,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0 
+time_bc antiperiodic
 # Chiral condensate and related measurements
 number_of_pbp_masses 2
 max_cg_iterations 300
@@ -1142,7 +1136,6 @@ path coefficients: npath  path_coeff  multiplicity
                     4      -6.022150e-03     384
                     5      -1.092954e-01     48
 Time to APE smear 1.296043e-03 sec
-Aggregate time to readin 1.988041e-01
  OK converged final_rsq= 4.5e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 2 iters= 89
  OK converged final_rsq= 8.9e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 1 iters= 16
 PB_DMDU_P: mass 5.000000e-02  -4.868625e+00  -4.812155e+00 ( 1 of 2 )
@@ -2115,19 +2108,14 @@ d3_trdMduMi_dmu3: mass 1.000000e-01,  R: -7.155015292e-03  Im: 1.316723299e-01 (
 d4_trdMduMi_dmu4: mass 1.000000e-01,  R: 1.220345623e+00  Im: 1.555559512e+00 ( 2 of 2 )
 d5_trdMduMi_dmu5: mass 1.000000e-01,  R: 6.127955005e+01  Im: -7.048812077e+01 ( 2 of 2 )
 d6_trdMduMi_dmu6: mass 1.000000e-01,  R: 1.179396970e+02  Im: 5.279565778e+02 ( 2 of 2 )
-Aggregate time to calculate pbp, etc 4.203763e+01
 Fixing to Coulomb gauge
 step 19 av gf action 8.73432130e-01, delta 6.467e-04
 step 39 av gf action 8.76697987e-01, delta 4.321e-05
 step 59 av gf action 8.77135903e-01, delta 1.052e-05
 step 79 av gf action 8.77249718e-01, delta 2.891e-06
 GFIX: Ended at step 85. Av gf action 8.77263725e-01, delta 1.937e-06
-Aggregate time to gauge fix 4.537392e-01
 Time to APE smear 8.339882e-04 sec
 END OF HEADER
-Aggregate time to compute propagators 9.536743e-07
-Aggregate time to tie meson correlators 9.536743e-07
-Aggregate time to tie baryon correlators 9.536743e-07
 RUNNING COMPLETED
 Time = 4.278178e+01 seconds
 total_iters = 44817

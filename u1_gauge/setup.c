@@ -37,11 +37,12 @@ int setup(void)
   /* print banner, get lattice parameters */
   prompt=initial_set();
 
-  /* initialize the node random number generator */
-  initialize_prn(&node_prn,iseed,volume+mynode());
-
   /* initialize the layout -- lattice across the nodes */
   setup_layout();
+  this_node=mynode();
+
+  /* initialize the node random number generator */
+  initialize_prn(&node_prn,iseed,volume+mynode());
 
   /* allocate space for lattice, set up coordinates */
   make_lattice();
@@ -65,14 +66,17 @@ int setup(void)
 static int initial_set(void)
 {
 
-  int prompt,status;
+  int prompt=0,status;
 
   if(mynode()==0)
     {
     /* print banner */
-    printf("U(1) [Coulomb gauge-fixed] gauge field generation ... \n");
+    printf("U(1) Gauge field generation ... \n");
     printf("stored as A(mu,x), convert to U(mu,x) to couple to fermions.\n");
     printf("Machine = %s, with %d nodes!\n",machine_type(),numnodes());
+    node0_printf("Options selected...\n");
+    show_momgauge_opts();
+    show_generic_opts();
     time_stamp("Start");
     status=get_prompt(stdin,&prompt);
 
@@ -98,9 +102,8 @@ static int initial_set(void)
   nt=par_buf.nt;
   iseed=par_buf.iseed;
 
-  this_node=mynode();
   number_of_nodes=numnodes();
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
 
   return(prompt);
 

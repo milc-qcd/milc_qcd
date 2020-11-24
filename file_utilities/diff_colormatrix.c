@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
   /* Finish setup - broadcast dimensions */
   setup_refresh();
   
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
   
   /* Allocate space for 4 color matrices */
   colormatrix1 = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
@@ -145,9 +145,9 @@ int main(int argc, char *argv[])
   
   /* Read all of both files */
   restore_color_matrix_scidac_to_field (colormatrix_file1, colormatrix1, 
-					4, PRECISION);
+					4, MILC_PRECISION);
   restore_color_matrix_scidac_to_field (colormatrix_file2, colormatrix2, 
-					4, PRECISION);
+					4, MILC_PRECISION);
   
   /* Compare data */
   

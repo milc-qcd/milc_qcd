@@ -15,6 +15,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0
+time_bc periodic
 
 # Inversion control
 
@@ -26,6 +27,7 @@ number_of_base_sources 2
 # base_source 0
 
 vector_propagator_file
+field_type KS
 subset full
 ncolor 3
 source_label d
@@ -55,7 +57,6 @@ error_for_propagator 1e-8
 rel_error_for_propagator 1e-8
 precision 2
 momentum_twist 0 0 0
-time_bc periodic
 
 source 0
 
@@ -72,7 +73,6 @@ error_for_propagator 1e-8
 rel_error_for_propagator 1e-8
 precision 2
 momentum_twist 0 0 0
-time_bc periodic
 
 source 1
 

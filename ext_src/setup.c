@@ -48,10 +48,11 @@ int setup(void)   {
   /* print banner, get volume */
   prompt=initial_set();
   if(prompt == 2)return prompt;
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   /* set up nearest neighbor gathers */
@@ -63,7 +64,7 @@ int setup(void)   {
 
 /* SETUP ROUTINES */
 static int initial_set(){
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
@@ -117,9 +118,8 @@ static int initial_set(){
 #endif
 #endif
   
-  this_node = mynode();
   number_of_nodes = numnodes();
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
   return(prompt);
 }
 

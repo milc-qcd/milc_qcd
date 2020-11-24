@@ -10,7 +10,7 @@
 
 #include "arb_ov_includes.h"
 
-void build_params(float mass_0)
+void build_params(Real mass_0)
 {
   int j;  
   float cpauli[0];

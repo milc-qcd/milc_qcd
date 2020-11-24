@@ -92,7 +92,7 @@ void rotate_field(field_offset src,field_offset dest, Real mass_0)
 	/* begin with the origin */
 	FORALLSITES(i,s) {
 /*
-                dump_wvec((wilson_vector *)F_PT(s,src));
+                dump_wilson_vec((wilson_vector *)F_PT(s,src));
 */
 
 		scalar_mult_wvec((wilson_vector *)F_PT(s,src), lam[0],

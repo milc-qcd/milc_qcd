@@ -44,7 +44,7 @@ Real xrandom;
             /* do conjugate gradient to get (Madj M)inverse * phi */
 	  load_ferm_links(&fn_links);
 	    iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				niter, rsqmin, PRECISION, EVEN, &final_rsq,
+				niter, rsqmin, MILC_PRECISION, EVEN, &final_rsq,
 				&fn_links);
 	    cg_time = 0.0;
 
@@ -75,7 +75,7 @@ Real xrandom;
         /* do conjugate gradient to get (Madj M)inverse * phi */
 	load_ferm_links(&fn_links);
      	iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			    niter, rsqmin, PRECISION, EVEN, &final_rsq,
+			    niter, rsqmin, MILC_PRECISION, EVEN, &final_rsq,
 			    &fn_links);
 	cg_time = ((Real)step - 0.5)*epsilon;
 
@@ -86,9 +86,7 @@ Real xrandom;
     	update_u(epsilon*0.5);
 
         /* reunitarize the gauge field */
-	rephase( OFF );
-        reunitarize();
-	rephase( ON );
+        reunitarize_ks();
 
     }	/* end loop over microcanonical steps */
 
@@ -100,7 +98,7 @@ Real xrandom;
     predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
     load_ferm_links(&fn_links);
     iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			niter, rsqmin, PRECISION, EVEN, &final_rsq,
+			niter, rsqmin, MILC_PRECISION, EVEN, &final_rsq,
 			&fn_links);
     cg_time = steps*epsilon;
     endaction=d_action();

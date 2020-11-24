@@ -26,7 +26,7 @@ struct site {
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4];
+	su3_matrix link[4] ALIGNMENT;
 
   /*	su3_matrix s_link,s_link_f,t_link_f; */
 #ifndef COULOMB
@@ -48,7 +48,7 @@ typedef struct site site;
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;			/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;			/* volume of lattice = nx*ny*nz*nt */
 EXTERN  Real u0;
 EXTERN  int max_t, max_x;
 EXTERN  Real staple_weight;
@@ -73,9 +73,9 @@ EXTERN	int total_iters;
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
-EXTERN	int sites_on_node;		/* number of sites on this node */
-EXTERN	int even_sites_on_node;	/* number of even sites on this node */
-EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
+EXTERN	size_t sites_on_node;		/* number of sites on this node */
+EXTERN	size_t even_sites_on_node;	/* number of even sites on this node */
+EXTERN	size_t odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 

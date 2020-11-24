@@ -57,7 +57,7 @@ FILE *(r_ascii_m_i(char *filenam, int i1, int *file_hops))
       printf("Incorrect lattice nt %d\n", t);
       terminate(1);
     }
-#if PRECISION == 1
+#if MILC_PRECISION == 1
     if ((fscanf(fp, "%e %e %d", &x1, &x2, &i_in)) != 3)
 #else
     if ((fscanf(fp, "%le %le %d", &x1, &x2, &i_in)) != 3)
@@ -76,7 +76,7 @@ FILE *(r_ascii_m_i(char *filenam, int i1, int *file_hops))
     {
       printf("Warning: file has %d props, prog wants %d\n", i_in, i1);
     }
-#if PRECISION == 1
+#if MILC_PRECISION == 1
     if ((fscanf(fp, "%e %d", &x1, &i_in)) != 2)
 #else
     if ((fscanf(fp, "%le %d", &x1, &i_in)) != 2)
@@ -90,7 +90,7 @@ FILE *(r_ascii_m_i(char *filenam, int i1, int *file_hops))
       printf("Error in reading meson header\n");
       terminate(1);
     }
-#if PRECISION == 1
+#if MILC_PRECISION == 1
     if ((fscanf(fp, "%e", &x1)) != 1)
 #else
     if ((fscanf(fp, "%le", &x1)) != 1)

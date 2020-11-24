@@ -42,7 +42,6 @@ int mrilu_cl_field(     /* Return value is number of iterations taken */
   Real RsdCG = qic->resid * qic->resid;      /* desired residual - 
 				normalized as (r*r)/(src_e*src_e) */
   Real RRsdCG = qic->relresid * qic->relresid;  /* desired relative residual - */
-  int flag = qic->start_flag;	/* 0: use a zero initial guess; 1: use dest */
 
   dirac_clover_param *dcp
     = (dirac_clover_param *)dmp;	/* Cast pass-through pointer */
@@ -169,36 +168,22 @@ int mrilu_cl_field(     /* Return value is number of iterations taken */
 	( ( RsdCG  <= 0 || RsdCG  > qic->size_r   ) &&
 	  ( RRsdCG <= 0 || RRsdCG > qic->size_relr) ) ) {
       
-      /* Provision for starting with dest = 0 the first time */
-      if(flag == 0) {
-#ifdef CG_DEBUG
-	node0_printf("dest_0=0\n");fflush(stdout);
-#endif
-
-	FOREVENSITESDOMAIN(i,s) {
-	  clear_wvec( &(dest[i]) );
-	}
-	flag = 1;
-
-      } else {
-	
-	/* Test true residual for convergence */
-	/* r=src[1]-[L^(-1)*M*U^(-1)]*dest */
-
+      /* Test true residual for convergence */
+      /* r=src[1]-[L^(-1)*M*U^(-1)]*dest */
+      
 #if 0
-	mult_this_ldu_field(gen_clov, dest, tmp, EVEN);
-	dslash_w_field_special(dest, mp, PLUS, ODD, tago, is_startedo);
-	is_startedo = 1;
-	mult_this_ldu_field(gen_clov, mp, tmp, ODD);
-	dslash_w_field_special(tmp, mp, PLUS, EVEN, tage, is_startede);
-	is_startede = 1;
+      mult_this_ldu_field(gen_clov, dest, tmp, EVEN);
+      dslash_w_field_special(dest, mp, PLUS, ODD, tago, is_startedo);
+      is_startedo = 1;
+      mult_this_ldu_field(gen_clov, mp, tmp, ODD);
+      dslash_w_field_special(tmp, mp, PLUS, EVEN, tage, is_startede);
+      is_startede = 1;
 #endif
-	ilu_DRD(dest, mp, tmp, mp, PLUS, tago, &is_startedo,
-		  tage, &is_startede);
-	FOREVENSITESDOMAIN(i,s) {
-	  scalar_mult_add_wvec( &(tmp[i]), &(mp[i]), MKsq, &(mp[i]) );
-	  scalar_mult_add_wvec( &(src[i]), &(mp[i]), -1.0, &(r[i])     );
-	}
+      ilu_DRD(dest, mp, tmp, mp, PLUS, tago, &is_startedo,
+	      tage, &is_startede);
+      FOREVENSITESDOMAIN(i,s) {
+	scalar_mult_add_wvec( &(tmp[i]), &(mp[i]), MKsq, &(mp[i]) );
+	scalar_mult_add_wvec( &(src[i]), &(mp[i]), -1.0, &(r[i])     );
       }
 
       rsq = 0.0;

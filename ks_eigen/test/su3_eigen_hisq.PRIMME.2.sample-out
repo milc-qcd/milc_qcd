@@ -1,0 +1,320 @@
+SU3 with improved KS action
+Eigenvalues and eigenvectors
+MIMD version 6
+Machine = QMP (portable), with 1 nodes
+Host(0) = aquila.physics.utah.edu
+Username = detar
+start: Sun Feb 14 16:36:40 2016
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+HALF_MIXED
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+# Always 0 when this data is in a file
+# Lattice dimensions
+nx 4
+ny 4
+nz 4
+nt 4
+# random number seed
+iseed 5682304
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 0.3 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+
+
+# mass for psi-bar-psi
+mass 0.1
+# tadpole factor
+u0 1
+# CG for psi-bar-psi measurement (error_per_site is unused)
+max_cg_iterations 300
+max_cg_restarts 5
+error_per_site 5e-06
+error_for_propagator 2e-06
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 32
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+# Outer loop iterations
+Kalkreuter_iters 20
+# Eigenvalue tolerance
+eigenval_tolerance 5e-14
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease 0.3
+# Input lattice
+reload_serial ../../binary_samples/lat.sample.inst
+staple_weight 0
+ape_iter 0
+Reading as old-style gauge field configuration.
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.inst
+Checksums ed5b7449 68d34f64
+Checksums not verified in this format
+Time to reload gauge configuration = 6.799698e-04
+CHECK PLAQ: 2.973028e+00 2.973028e+00
+CHECK NERSC LINKTR: 9.916278e-01 CKSUM: a0e19040
+Unitarity checked.  Max deviation 1.49e-07
+Time to check unitarity = 3.919601e-04
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+Combined fattening and long-link calculation time: 0.044059
+PRIMME workspace int = 4032 long int = 5932512
+// ---------------------------------------------------
+//                 primme configuration               
+// ---------------------------------------------------
+primme.n = 384
+primme.nLocal = 384
+primme.numProcs = 1
+primme.procID = 0
+
+// Output and reporting
+primme.printLevel = 2
+
+// Solver parameters
+primme.numEvals = 32
+primme.aNorm = 0.000000e+00
+primme.eps = 5.000000e-14
+primme.maxBasisSize = 192
+primme.minRestartSize = 120
+primme.maxBlockSize = 8
+primme.maxOuterIterations = 6000
+primme.maxMatvecs = 2147483647
+primme.target = primme_smallest
+primme.projection.projection = primme_proj_RR
+primme.initBasisMode = primme_init_krylov
+primme.numTargetShifts = 0
+primme.dynamicMethodSwitch = 1
+primme.locking = 1
+primme.initSize = 0
+primme.numOrthoConst = 0
+primme.ldevecs = 384
+primme.ldOPs = 384
+primme.iseed = -1 -1 -1 -1
+
+// Restarting
+primme.restarting.scheme = primme_thick
+primme.restarting.maxPrevRetain = 2
+
+// Correction parameters
+primme.correction.precondition = 0
+primme.correction.robustShifts = 1
+primme.correction.maxInnerIterations = -1
+primme.correction.relTolBase = 0
+primme.correction.convTest = primme_adaptive_ETolerance
+
+// projectors for JD cor.eq.
+primme.correction.projectors.LeftQ = 0
+primme.correction.projectors.LeftX = 1
+primme.correction.projectors.RightQ = 0
+primme.correction.projectors.SkewQ = 0
+primme.correction.projectors.RightX = 0
+primme.correction.projectors.SkewX = 1
+// ---------------------------------------------------
+Lock epair[ 1 ]= 4.613508e-02 norm 3.1727e-14 Mvecs 374 Time 5.3376e-01 Flag 2
+Lock epair[ 2 ]= 4.613508e-02 norm 2.8002e-14 Mvecs 374 Time 5.3379e-01 Flag 2
+Lock epair[ 3 ]= 1.984240e+00 norm 1.3340e-13 Mvecs 374 Time 5.3379e-01 Flag 2
+Lock epair[ 4 ]= 1.984240e+00 norm 8.2571e-14 Mvecs 374 Time 5.3379e-01 Flag 2
+Lock epair[ 5 ]= 2.033702e+00 norm 1.7157e-13 Mvecs 374 Time 5.3380e-01 Flag 2
+Lock epair[ 6 ]= 2.033702e+00 norm 4.7334e-13 Mvecs 374 Time 5.3380e-01 Flag 2
+Lock epair[ 7 ]= 2.073985e+00 norm 4.3890e-13 Mvecs 374 Time 5.3380e-01 Flag 2
+Lock epair[ 8 ]= 2.073985e+00 norm 1.3356e-13 Mvecs 374 Time 5.3380e-01 Flag 2
+Lock epair[ 9 ]= 2.092368e+00 norm 3.0766e-13 Mvecs 374 Time 5.3381e-01 Flag 2
+Lock epair[ 10 ]= 2.092368e+00 norm 2.2531e-13 Mvecs 374 Time 5.3381e-01 Flag 2
+Lock epair[ 11 ]= 2.135127e+00 norm 1.7568e-13 Mvecs 643 Time 7.8382e-01 Flag 2
+Lock epair[ 12 ]= 2.135127e+00 norm 7.8136e-14 Mvecs 643 Time 7.8384e-01 Flag 2
+Lock epair[ 13 ]= 2.175197e+00 norm 2.7882e-13 Mvecs 643 Time 7.8384e-01 Flag 2
+Lock epair[ 14 ]= 2.175197e+00 norm 1.8782e-13 Mvecs 643 Time 7.8385e-01 Flag 2
+Lock epair[ 15 ]= 2.347222e+00 norm 1.0648e-12 Mvecs 643 Time 7.8385e-01 Flag 2
+Lock epair[ 16 ]= 2.347222e+00 norm 3.1817e-13 Mvecs 643 Time 7.8385e-01 Flag 2
+Lock epair[ 17 ]= 2.347222e+00 norm 9.7485e-13 Mvecs 851 Time 1.0106e+00 Flag 2
+Lock epair[ 18 ]= 2.347222e+00 norm 1.6059e-12 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 19 ]= 2.347222e+00 norm 1.6479e-12 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 20 ]= 2.347222e+00 norm 3.1555e-12 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 21 ]= 2.347222e+00 norm 2.6592e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 22 ]= 2.347222e+00 norm 5.1577e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 23 ]= 2.347222e+00 norm 3.1459e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 24 ]= 2.347222e+00 norm 2.3273e-12 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 25 ]= 2.347222e+00 norm 2.4617e-12 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 26 ]= 2.347222e+00 norm 5.9661e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 27 ]= 2.347222e+00 norm 2.8914e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 28 ]= 2.347222e+00 norm 1.5156e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 29 ]= 2.347222e+00 norm 8.5230e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 30 ]= 2.445175e+00 norm 1.0074e-13 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 31 ]= 2.445175e+00 norm 8.2343e-14 Mvecs 851 Time 1.0107e+00 Flag 2
+Lock epair[ 32 ]= 2.347222e+00 norm 4.4568e-13 Mvecs 857 Time 1.0467e+00 Flag 2
+mxv operations for eigenvecs 618
+mxv precond operations for eigenvecs 0
+BEGIN RESULTS
+Eigenvalue(0) = 0.0461351 
+Eigenvalue(1) = 0.0461351 
+Eigenvalue(2) = 1.98424 
+Eigenvalue(3) = 1.98424 
+Eigenvalue(4) = 2.0337 
+Eigenvalue(5) = 2.0337 
+Eigenvalue(6) = 2.07399 
+Eigenvalue(7) = 2.07399 
+Eigenvalue(8) = 2.09237 
+Eigenvalue(9) = 2.09237 
+Eigenvalue(10) = 2.13513 
+Eigenvalue(11) = 2.13513 
+Eigenvalue(12) = 2.1752 
+Eigenvalue(13) = 2.1752 
+Eigenvalue(14) = 2.34722 
+Eigenvalue(15) = 2.34722 
+Eigenvalue(16) = 2.34722 
+Eigenvalue(17) = 2.34722 
+Eigenvalue(18) = 2.34722 
+Eigenvalue(19) = 2.34722 
+Eigenvalue(20) = 2.34722 
+Eigenvalue(21) = 2.34722 
+Eigenvalue(22) = 2.34722 
+Eigenvalue(23) = 2.34722 
+Eigenvalue(24) = 2.34722 
+Eigenvalue(25) = 2.34722 
+Eigenvalue(26) = 2.34722 
+Eigenvalue(27) = 2.34722 
+Eigenvalue(28) = 2.34722 
+Eigenvalue(29) = 2.34722 
+Eigenvalue(30) = 2.44517 
+Eigenvalue(31) = 2.44517 
+Even site residuals
+Checking eigensolutions
+eigVal[0] = 4.613508e-02 ( resid = 3.323791e-14 , |eigVec[0]|-1 = -1.221245e-15 )
+eigVal[1] = 4.613508e-02 ( resid = 2.974120e-14 , |eigVec[1]|-1 = -2.886580e-15 )
+eigVal[2] = 1.984240e+00 ( resid = 1.341275e-13 , |eigVec[2]|-1 = 6.661338e-16 )
+eigVal[3] = 1.984240e+00 ( resid = 8.321383e-14 , |eigVec[3]|-1 = -5.551115e-16 )
+eigVal[4] = 2.033702e+00 ( resid = 1.715402e-13 , |eigVec[4]|-1 = -1.110223e-16 )
+eigVal[5] = 2.033702e+00 ( resid = 4.735746e-13 , |eigVec[5]|-1 = 4.440892e-16 )
+eigVal[6] = 2.073985e+00 ( resid = 4.401457e-13 , |eigVec[6]|-1 = -3.330669e-16 )
+eigVal[7] = 2.073985e+00 ( resid = 1.338896e-13 , |eigVec[7]|-1 = -1.443290e-15 )
+eigVal[8] = 2.092368e+00 ( resid = 3.078675e-13 , |eigVec[8]|-1 = 1.332268e-15 )
+eigVal[9] = 2.092368e+00 ( resid = 2.257328e-13 , |eigVec[9]|-1 = -1.110223e-15 )
+eigVal[10] = 2.135127e+00 ( resid = 1.764423e-13 , |eigVec[10]|-1 = -1.332268e-15 )
+eigVal[11] = 2.135127e+00 ( resid = 7.846490e-14 , |eigVec[11]|-1 = 1.776357e-15 )
+eigVal[12] = 2.175197e+00 ( resid = 2.784441e-13 , |eigVec[12]|-1 = 8.881784e-16 )
+eigVal[13] = 2.175197e+00 ( resid = 1.876124e-13 , |eigVec[13]|-1 = 1.998401e-15 )
+eigVal[14] = 2.347222e+00 ( resid = 9.744164e-13 , |eigVec[14]|-1 = 8.881784e-16 )
+eigVal[15] = 2.347222e+00 ( resid = 1.605806e-12 , |eigVec[15]|-1 = 1.776357e-15 )
+eigVal[16] = 2.347222e+00 ( resid = 1.648205e-12 , |eigVec[16]|-1 = 8.881784e-16 )
+eigVal[17] = 2.347222e+00 ( resid = 3.155763e-12 , |eigVec[17]|-1 = 1.776357e-15 )
+eigVal[18] = 2.347222e+00 ( resid = 1.065049e-12 , |eigVec[18]|-1 = -6.661338e-16 )
+eigVal[19] = 2.347222e+00 ( resid = 2.661200e-13 , |eigVec[19]|-1 = 4.440892e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 5.157614e-13 , |eigVec[20]|-1 = -1.110223e-16 )
+eigVal[21] = 2.347222e+00 ( resid = 3.144854e-13 , |eigVec[21]|-1 = 6.661338e-16 )
+eigVal[22] = 2.347222e+00 ( resid = 3.180581e-13 , |eigVec[22]|-1 = -1.110223e-16 )
+eigVal[23] = 2.347222e+00 ( resid = 2.327619e-12 , |eigVec[23]|-1 = -3.330669e-16 )
+eigVal[24] = 2.347222e+00 ( resid = 2.462142e-12 , |eigVec[24]|-1 = 4.440892e-16 )
+eigVal[25] = 2.347222e+00 ( resid = 4.457093e-13 , |eigVec[25]|-1 = 4.440892e-16 )
+eigVal[26] = 2.347222e+00 ( resid = 5.971413e-13 , |eigVec[26]|-1 = -3.330669e-16 )
+eigVal[27] = 2.347222e+00 ( resid = 2.896475e-13 , |eigVec[27]|-1 = -1.554312e-15 )
+eigVal[28] = 2.347222e+00 ( resid = 1.510796e-13 , |eigVec[28]|-1 = -7.771561e-16 )
+eigVal[29] = 2.347222e+00 ( resid = 8.523996e-13 , |eigVec[29]|-1 = -1.554312e-15 )
+eigVal[30] = 2.445175e+00 ( resid = 1.013758e-13 , |eigVec[30]|-1 = -9.992007e-16 )
+eigVal[31] = 2.445175e+00 ( resid = 8.256046e-14 , |eigVec[31]|-1 = -2.775558e-15 )
+End of eigensolutions
+Odd site residuals
+Checking eigensolutions
+eigVal[0] = 4.613508e-02 ( resid = 4.149181e-13 , |eigVec[0]|-1 = -2.220446e-16 )
+eigVal[1] = 4.613508e-02 ( resid = 4.353451e-13 , |eigVec[1]|-1 = -3.330669e-16 )
+eigVal[2] = 1.984240e+00 ( resid = 3.403040e-13 , |eigVec[2]|-1 = -1.110223e-16 )
+eigVal[3] = 1.984240e+00 ( resid = 2.101296e-13 , |eigVec[3]|-1 = 0.000000e+00 )
+eigVal[4] = 2.033702e+00 ( resid = 4.374830e-13 , |eigVec[4]|-1 = -3.330669e-16 )
+eigVal[5] = 2.033702e+00 ( resid = 1.183154e-12 , |eigVec[5]|-1 = 0.000000e+00 )
+eigVal[6] = 2.073985e+00 ( resid = 1.063335e-12 , |eigVec[6]|-1 = 2.220446e-16 )
+eigVal[7] = 2.073985e+00 ( resid = 3.077713e-13 , |eigVec[7]|-1 = 0.000000e+00 )
+eigVal[8] = 2.092368e+00 ( resid = 8.003724e-13 , |eigVec[8]|-1 = 0.000000e+00 )
+eigVal[9] = 2.092368e+00 ( resid = 5.561576e-13 , |eigVec[9]|-1 = 0.000000e+00 )
+eigVal[10] = 2.135127e+00 ( resid = 4.196841e-13 , |eigVec[10]|-1 = -1.110223e-16 )
+eigVal[11] = 2.135127e+00 ( resid = 1.646291e-13 , |eigVec[11]|-1 = 0.000000e+00 )
+eigVal[12] = 2.175197e+00 ( resid = 5.539525e-13 , |eigVec[12]|-1 = -1.110223e-16 )
+eigVal[13] = 2.175197e+00 ( resid = 3.937836e-13 , |eigVec[13]|-1 = -1.110223e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 2.432378e-12 , |eigVec[14]|-1 = 2.220446e-16 )
+eigVal[15] = 2.347222e+00 ( resid = 3.980525e-12 , |eigVec[15]|-1 = 0.000000e+00 )
+eigVal[16] = 2.347222e+00 ( resid = 4.183328e-12 , |eigVec[16]|-1 = -4.440892e-16 )
+eigVal[17] = 2.347222e+00 ( resid = 7.956642e-12 , |eigVec[17]|-1 = 0.000000e+00 )
+eigVal[18] = 2.347222e+00 ( resid = 2.552708e-12 , |eigVec[18]|-1 = -4.440892e-16 )
+eigVal[19] = 2.347222e+00 ( resid = 6.534865e-13 , |eigVec[19]|-1 = 4.440892e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 1.282686e-12 , |eigVec[20]|-1 = 2.220446e-16 )
+eigVal[21] = 2.347222e+00 ( resid = 7.798201e-13 , |eigVec[21]|-1 = -1.110223e-16 )
+eigVal[22] = 2.347222e+00 ( resid = 7.837934e-13 , |eigVec[22]|-1 = -1.110223e-16 )
+eigVal[23] = 2.347222e+00 ( resid = 5.754616e-12 , |eigVec[23]|-1 = 2.220446e-16 )
+eigVal[24] = 2.347222e+00 ( resid = 6.082362e-12 , |eigVec[24]|-1 = -4.440892e-16 )
+eigVal[25] = 2.347222e+00 ( resid = 9.802031e-13 , |eigVec[25]|-1 = 2.220446e-16 )
+eigVal[26] = 2.347222e+00 ( resid = 1.471776e-12 , |eigVec[26]|-1 = -1.110223e-16 )
+eigVal[27] = 2.347222e+00 ( resid = 7.109877e-13 , |eigVec[27]|-1 = -1.110223e-16 )
+eigVal[28] = 2.347222e+00 ( resid = 3.667470e-13 , |eigVec[28]|-1 = -1.110223e-16 )
+eigVal[29] = 2.347222e+00 ( resid = 2.138212e-12 , |eigVec[29]|-1 = 0.000000e+00 )
+eigVal[30] = 2.445175e+00 ( resid = 2.473746e-13 , |eigVec[30]|-1 = -3.330669e-16 )
+eigVal[31] = 2.445175e+00 ( resid = 1.930502e-13 , |eigVec[31]|-1 = 0.000000e+00 )
+End of eigensolutions
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+The above were eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0):   0.107395
+eigenval(1):   0.107395
+eigenval(2):   0.704315
+eigenval(3):   0.704315
+eigenval(4):    0.71304
+eigenval(5):    0.71304
+eigenval(6):   0.720067
+eigenval(7):   0.720067
+eigenval(8):   0.723251
+eigenval(9):   0.723251
+eigenval(10):   0.730604
+eigenval(11):   0.730604
+eigenval(12):   0.737427
+eigenval(13):   0.737427
+eigenval(14):   0.766032
+eigenval(15):   0.766032
+eigenval(16):   0.766032
+eigenval(17):   0.766032
+eigenval(18):   0.766032
+eigenval(19):   0.766032
+eigenval(20):   0.766032
+eigenval(21):   0.766032
+eigenval(22):   0.766032
+eigenval(23):   0.766032
+eigenval(24):   0.766032
+eigenval(25):   0.766032
+eigenval(26):   0.766032
+eigenval(27):   0.766032
+eigenval(28):   0.766032
+eigenval(29):   0.766032
+eigenval(30):   0.781853
+eigenval(31):   0.781853
+RUNNING COMPLETED
+Time = 1.039407e+00 seconds
+total Rayleigh iters = 618
+exit: Tue Apr 17 22:17:22 2018
+

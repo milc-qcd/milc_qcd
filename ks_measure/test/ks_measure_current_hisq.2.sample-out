@@ -1,0 +1,1003 @@
+com_qmp: set thread-safety level to 0
+SU3 staggered fermion measurements
+MIMD version 7.8.1
+Machine = QMP (portable), with 1 nodes
+Host(0) = falco.physics.utah.edu
+Username = detar
+start: Wed Jul  1 13:07:51 2020
+
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+HISQ_REUNIT_ALLOW_SVD
+HISQ_REUNIT_SVD_REL_ERROR = 1e-08
+HISQ_REUNIT_SVD_ABS_ERROR = 1e-08
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE (RANK) 4 x 4 x 4 x 4
+Mallocing 0.2 MBytes per node for lattice
+WARNING!!: Resetting random seed
+
+
+######################################################################
+# source time 0
+######################################################################
+# Gauge field description
+reload_serial ../../binary_samples/lat.sample.l4444
+u0 1
+forget 
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0 
+time_bc antiperiodic
+# Dirac eigenpair calculation
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+max_number_of_eigenpairs 192
+fresh_ks_eigen 
+save_serial_ks_eigen eig.sample.l4444
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+# Outer loop iterations
+Kalkreuter_iters 20
+# Eigenvalue tolerance
+eigenval_tolerance 1e-06
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease 0.3
+# Chiral condensate and related measurements
+number_of_sets 2
+# Parameters common to all members of set 0
+npbp_reps 1
+source_spacing 2
+take_truncate_diff no
+max_cg_iterations 300
+max_cg_restarts 5
+prec_pbp 2
+number_of_pbp_masses 1
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+save_file vctest0.01
+# Parameters common to all members of set 1
+npbp_reps 1
+source_spacing 2
+take_truncate_diff yes
+max_cg_iterations 300
+max_cg_restarts 5
+prec_pbp 2
+max_cg_iterations_sloppy 300
+max_cg_restarts_sloppy 5
+prec_pbp_sloppy 2
+number_of_pbp_masses 1
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+error_for_propagator_sloppy 0.0001
+rel_error_for_propagator_sloppy 0
+save_file vctest0.01diff
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4444
+Time stamp Thu Feb 12 13:40:21 1998
+Checksums 2352c05 d137321d OK
+Time to reload gauge configuration = 1.896405e-02
+CHECK PLAQ: 1.7946751560761729e+00 1.7744257976067317e+00
+CHECK NERSC LINKTR: 6.4675873741896339e-01 CKSUM: ffc4bb26
+Reunitarized for double precision. Max deviation 2.52e-07 changed to 4.44e-16
+Time to check unitarity = 7.479191e-04
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+Combined fattening and long-link calculation time: 0.020263
+Time to APE smear 1.239777e-04 sec
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Using 0 eigenvectors as starting vectors for PRIMME
+Setting print level to default
+// ---------------------------------------------------
+//                 primme configuration               
+// ---------------------------------------------------
+primme.n = 384
+primme.nLocal = 384
+primme.numProcs = 1
+primme.procID = 0
+
+// Output and reporting
+primme.printLevel = 1
+
+// Solver parameters
+primme.numEvals = 192
+primme.aNorm = 0.000000e+00
+primme.eps = 1.000000e-06
+primme.maxBasisSize = 192
+primme.minRestartSize = 120
+primme.maxBlockSize = 8
+primme.maxOuterIterations = 2147483647
+primme.maxMatvecs = 2147483647
+primme.target = primme_smallest
+primme.projection.projection = primme_proj_RR
+primme.initBasisMode = primme_init_krylov
+primme.numTargetShifts = 0
+primme.dynamicMethodSwitch = 1
+primme.locking = 1
+primme.initSize = 0
+primme.numOrthoConst = 0
+primme.ldevecs = 384
+primme.ldOPs = 384
+primme.iseed = -1 -1 -1 -1
+
+// Restarting
+primme.restarting.scheme = primme_thick
+primme.restarting.maxPrevRetain = 2
+
+// Correction parameters
+primme.correction.precondition = 0
+primme.correction.robustShifts = 1
+primme.correction.maxInnerIterations = -1
+primme.correction.relTolBase = 0
+primme.correction.convTest = primme_adaptive_ETolerance
+
+// projectors for JD cor.eq.
+primme.correction.projectors.LeftQ = 0
+primme.correction.projectors.LeftX = 1
+primme.correction.projectors.RightQ = 0
+primme.correction.projectors.SkewQ = 0
+primme.correction.projectors.RightX = 0
+primme.correction.projectors.SkewX = 1
+// ---------------------------------------------------
+PRIMME_INT size is 8
+mxv operations for eigenvecs 1321
+mxv precond operations for eigenvecs 0
+BEGIN RESULTS
+Eigenvalue(0) = 0.943983 
+Eigenvalue(1) = 0.961843 
+Eigenvalue(2) = 0.998557 
+Eigenvalue(3) = 1.0125 
+Eigenvalue(4) = 1.3193 
+Eigenvalue(5) = 1.36565 
+Eigenvalue(6) = 1.4158 
+Eigenvalue(7) = 1.44811 
+Eigenvalue(8) = 1.61329 
+Eigenvalue(9) = 1.64867 
+Eigenvalue(10) = 1.67584 
+Eigenvalue(11) = 1.68819 
+Eigenvalue(12) = 1.70553 
+Eigenvalue(13) = 1.72833 
+Eigenvalue(14) = 1.77442 
+Eigenvalue(15) = 1.8098 
+Eigenvalue(16) = 1.91616 
+Eigenvalue(17) = 1.9348 
+Eigenvalue(18) = 1.98485 
+Eigenvalue(19) = 2.01425 
+Eigenvalue(20) = 2.1252 
+Eigenvalue(21) = 2.13914 
+Eigenvalue(22) = 2.17154 
+Eigenvalue(23) = 2.19484 
+Eigenvalue(24) = 2.23461 
+Eigenvalue(25) = 2.24168 
+Eigenvalue(26) = 2.27914 
+Eigenvalue(27) = 2.30545 
+Eigenvalue(28) = 2.45434 
+Eigenvalue(29) = 2.4939 
+Eigenvalue(30) = 2.519 
+Eigenvalue(31) = 2.54522 
+Eigenvalue(32) = 2.58275 
+Eigenvalue(33) = 2.61804 
+Eigenvalue(34) = 2.6759 
+Eigenvalue(35) = 2.72148 
+Eigenvalue(36) = 2.74556 
+Eigenvalue(37) = 2.79267 
+Eigenvalue(38) = 2.85487 
+Eigenvalue(39) = 2.8847 
+Eigenvalue(40) = 3.00718 
+Eigenvalue(41) = 3.06592 
+Eigenvalue(42) = 3.08961 
+Eigenvalue(43) = 3.11222 
+Eigenvalue(44) = 3.19376 
+Eigenvalue(45) = 3.21869 
+Eigenvalue(46) = 3.24902 
+Eigenvalue(47) = 3.31343 
+Eigenvalue(48) = 4.74201 
+Eigenvalue(49) = 4.89328 
+Eigenvalue(50) = 5.0243 
+Eigenvalue(51) = 5.12144 
+Eigenvalue(52) = 5.13574 
+Eigenvalue(53) = 5.24227 
+Eigenvalue(54) = 5.29084 
+Eigenvalue(55) = 5.33068 
+Eigenvalue(56) = 5.43509 
+Eigenvalue(57) = 5.45315 
+Eigenvalue(58) = 5.46394 
+Eigenvalue(59) = 5.56537 
+Eigenvalue(60) = 5.57691 
+Eigenvalue(61) = 5.62995 
+Eigenvalue(62) = 5.67955 
+Eigenvalue(63) = 5.70696 
+Eigenvalue(64) = 5.73854 
+Eigenvalue(65) = 5.77473 
+Eigenvalue(66) = 5.798 
+Eigenvalue(67) = 5.8421 
+Eigenvalue(68) = 5.88408 
+Eigenvalue(69) = 5.89592 
+Eigenvalue(70) = 5.95374 
+Eigenvalue(71) = 5.98953 
+Eigenvalue(72) = 6.00699 
+Eigenvalue(73) = 6.06406 
+Eigenvalue(74) = 6.10753 
+Eigenvalue(75) = 6.14014 
+Eigenvalue(76) = 6.1701 
+Eigenvalue(77) = 6.20423 
+Eigenvalue(78) = 6.26111 
+Eigenvalue(79) = 6.27254 
+Eigenvalue(80) = 6.3137 
+Eigenvalue(81) = 6.3364 
+Eigenvalue(82) = 6.37137 
+Eigenvalue(83) = 6.43149 
+Eigenvalue(84) = 6.45097 
+Eigenvalue(85) = 6.4929 
+Eigenvalue(86) = 6.50262 
+Eigenvalue(87) = 6.54849 
+Eigenvalue(88) = 6.57618 
+Eigenvalue(89) = 6.6008 
+Eigenvalue(90) = 6.63277 
+Eigenvalue(91) = 6.69428 
+Eigenvalue(92) = 6.71211 
+Eigenvalue(93) = 6.71969 
+Eigenvalue(94) = 6.78353 
+Eigenvalue(95) = 6.8082 
+Eigenvalue(96) = 6.84994 
+Eigenvalue(97) = 6.85883 
+Eigenvalue(98) = 6.89064 
+Eigenvalue(99) = 6.92463 
+Eigenvalue(100) = 6.96371 
+Eigenvalue(101) = 6.97301 
+Eigenvalue(102) = 6.99633 
+Eigenvalue(103) = 7.0278 
+Eigenvalue(104) = 7.06945 
+Eigenvalue(105) = 7.0847 
+Eigenvalue(106) = 7.13271 
+Eigenvalue(107) = 7.18251 
+Eigenvalue(108) = 7.2004 
+Eigenvalue(109) = 7.21023 
+Eigenvalue(110) = 7.24708 
+Eigenvalue(111) = 7.30106 
+Eigenvalue(112) = 7.31366 
+Eigenvalue(113) = 7.37522 
+Eigenvalue(114) = 7.39065 
+Eigenvalue(115) = 7.43873 
+Eigenvalue(116) = 7.45261 
+Eigenvalue(117) = 7.46967 
+Eigenvalue(118) = 7.50387 
+Eigenvalue(119) = 7.52309 
+Eigenvalue(120) = 7.5567 
+Eigenvalue(121) = 7.58833 
+Eigenvalue(122) = 7.62684 
+Eigenvalue(123) = 7.64071 
+Eigenvalue(124) = 7.66559 
+Eigenvalue(125) = 7.69627 
+Eigenvalue(126) = 7.7405 
+Eigenvalue(127) = 7.75669 
+Eigenvalue(128) = 7.77593 
+Eigenvalue(129) = 7.84208 
+Eigenvalue(130) = 7.86506 
+Eigenvalue(131) = 7.88706 
+Eigenvalue(132) = 7.9102 
+Eigenvalue(133) = 7.92564 
+Eigenvalue(134) = 7.96045 
+Eigenvalue(135) = 7.98241 
+Eigenvalue(136) = 8.00297 
+Eigenvalue(137) = 8.07224 
+Eigenvalue(138) = 8.07659 
+Eigenvalue(139) = 8.12223 
+Eigenvalue(140) = 8.1365 
+Eigenvalue(141) = 8.15048 
+Eigenvalue(142) = 8.18174 
+Eigenvalue(143) = 8.22187 
+Eigenvalue(144) = 8.2502 
+Eigenvalue(145) = 8.26912 
+Eigenvalue(146) = 8.32258 
+Eigenvalue(147) = 8.35425 
+Eigenvalue(148) = 8.39164 
+Eigenvalue(149) = 8.40662 
+Eigenvalue(150) = 8.44387 
+Eigenvalue(151) = 8.46889 
+Eigenvalue(152) = 8.50777 
+Eigenvalue(153) = 8.54988 
+Eigenvalue(154) = 8.57321 
+Eigenvalue(155) = 8.60762 
+Eigenvalue(156) = 8.63797 
+Eigenvalue(157) = 8.66573 
+Eigenvalue(158) = 8.70617 
+Eigenvalue(159) = 8.73943 
+Eigenvalue(160) = 8.77027 
+Eigenvalue(161) = 8.79934 
+Eigenvalue(162) = 8.86322 
+Eigenvalue(163) = 8.88596 
+Eigenvalue(164) = 8.92869 
+Eigenvalue(165) = 8.93588 
+Eigenvalue(166) = 8.97867 
+Eigenvalue(167) = 9.0363 
+Eigenvalue(168) = 9.08601 
+Eigenvalue(169) = 9.11206 
+Eigenvalue(170) = 9.14098 
+Eigenvalue(171) = 9.2057 
+Eigenvalue(172) = 9.21734 
+Eigenvalue(173) = 9.25218 
+Eigenvalue(174) = 9.31996 
+Eigenvalue(175) = 9.33143 
+Eigenvalue(176) = 9.36843 
+Eigenvalue(177) = 9.40885 
+Eigenvalue(178) = 9.42919 
+Eigenvalue(179) = 9.49446 
+Eigenvalue(180) = 9.52692 
+Eigenvalue(181) = 9.56808 
+Eigenvalue(182) = 9.59126 
+Eigenvalue(183) = 9.63821 
+Eigenvalue(184) = 9.67077 
+Eigenvalue(185) = 9.72402 
+Eigenvalue(186) = 9.73582 
+Eigenvalue(187) = 9.8259 
+Eigenvalue(188) = 9.91548 
+Eigenvalue(189) = 9.96067 
+Eigenvalue(190) = 9.9937 
+Eigenvalue(191) = 10.1208 
+total Rayleigh iters = 1321
+Even site residuals
+Checking eigensolutions
+eigVal[0] = 9.439834e-01 ( resid = 6.730900e-08 , |eigVec[0]|-1 = 2.220446e-16 )
+eigVal[1] = 9.618426e-01 ( resid = 6.698255e-08 , |eigVec[1]|-1 = -2.886580e-15 )
+eigVal[2] = 9.985572e-01 ( resid = 7.402772e-08 , |eigVec[2]|-1 = 8.881784e-16 )
+eigVal[3] = 1.012500e+00 ( resid = 4.923406e-08 , |eigVec[3]|-1 = 1.554312e-15 )
+eigVal[4] = 1.319300e+00 ( resid = 1.694676e-07 , |eigVec[4]|-1 = 0.000000e+00 )
+eigVal[5] = 1.365648e+00 ( resid = 5.487127e-07 , |eigVec[5]|-1 = -4.440892e-16 )
+eigVal[6] = 1.415804e+00 ( resid = 1.014650e-06 , |eigVec[6]|-1 = -1.221245e-15 )
+eigVal[7] = 1.448111e+00 ( resid = 1.061637e-06 , |eigVec[7]|-1 = -1.998401e-15 )
+eigVal[8] = 1.613290e+00 ( resid = 1.293045e-06 , |eigVec[8]|-1 = 1.998401e-15 )
+eigVal[9] = 1.648672e+00 ( resid = 1.501038e-06 , |eigVec[9]|-1 = 1.554312e-15 )
+eigVal[10] = 1.675841e+00 ( resid = 1.141941e-06 , |eigVec[10]|-1 = -1.110223e-16 )
+eigVal[11] = 1.688185e+00 ( resid = 1.745921e-06 , |eigVec[11]|-1 = 1.332268e-15 )
+eigVal[12] = 1.705534e+00 ( resid = 2.181734e-06 , |eigVec[12]|-1 = 1.776357e-15 )
+eigVal[13] = 1.728329e+00 ( resid = 1.514473e-06 , |eigVec[13]|-1 = 8.881784e-16 )
+eigVal[14] = 1.774419e+00 ( resid = 1.963535e-06 , |eigVec[14]|-1 = 1.110223e-15 )
+eigVal[15] = 1.809799e+00 ( resid = 2.188602e-06 , |eigVec[15]|-1 = 8.881784e-16 )
+eigVal[16] = 1.916162e+00 ( resid = 3.497281e-06 , |eigVec[16]|-1 = -5.551115e-16 )
+eigVal[17] = 1.934798e+00 ( resid = 4.064434e-06 , |eigVec[17]|-1 = -1.998401e-15 )
+eigVal[18] = 1.984846e+00 ( resid = 2.661315e-06 , |eigVec[18]|-1 = -3.330669e-16 )
+eigVal[19] = 2.014249e+00 ( resid = 3.097534e-06 , |eigVec[19]|-1 = -1.443290e-15 )
+eigVal[20] = 2.125200e+00 ( resid = 6.439236e-06 , |eigVec[20]|-1 = -1.887379e-15 )
+eigVal[21] = 2.139139e+00 ( resid = 3.964234e-06 , |eigVec[21]|-1 = -5.551115e-16 )
+eigVal[22] = 2.171535e+00 ( resid = 5.445963e-06 , |eigVec[22]|-1 = 4.440892e-16 )
+eigVal[23] = 2.194835e+00 ( resid = 1.076476e-05 , |eigVec[23]|-1 = 0.000000e+00 )
+eigVal[24] = 2.234605e+00 ( resid = 1.174316e-05 , |eigVec[24]|-1 = -4.440892e-16 )
+eigVal[25] = 2.241682e+00 ( resid = 1.040163e-05 , |eigVec[25]|-1 = 2.220446e-16 )
+eigVal[26] = 2.279140e+00 ( resid = 2.632893e-06 , |eigVec[26]|-1 = -1.110223e-15 )
+eigVal[27] = 2.305455e+00 ( resid = 8.622451e-06 , |eigVec[27]|-1 = 2.220446e-16 )
+eigVal[28] = 2.454345e+00 ( resid = 5.944385e-06 , |eigVec[28]|-1 = -6.661338e-16 )
+eigVal[29] = 2.493903e+00 ( resid = 6.425151e-06 , |eigVec[29]|-1 = -9.992007e-16 )
+eigVal[30] = 2.519004e+00 ( resid = 1.334557e-05 , |eigVec[30]|-1 = -1.776357e-15 )
+eigVal[31] = 2.545222e+00 ( resid = 7.759413e-06 , |eigVec[31]|-1 = -7.771561e-16 )
+eigVal[32] = 2.582754e+00 ( resid = 1.906150e-05 , |eigVec[32]|-1 = -8.881784e-16 )
+eigVal[33] = 2.618040e+00 ( resid = 1.256568e-06 , |eigVec[33]|-1 = -2.886580e-15 )
+eigVal[34] = 2.675905e+00 ( resid = 1.411987e-06 , |eigVec[34]|-1 = 1.776357e-15 )
+eigVal[35] = 2.721479e+00 ( resid = 1.426106e-06 , |eigVec[35]|-1 = 6.661338e-16 )
+eigVal[36] = 2.745557e+00 ( resid = 1.496699e-06 , |eigVec[36]|-1 = 6.661338e-16 )
+eigVal[37] = 2.792666e+00 ( resid = 1.397781e-06 , |eigVec[37]|-1 = -7.771561e-16 )
+eigVal[38] = 2.854873e+00 ( resid = 2.375786e-06 , |eigVec[38]|-1 = -2.220446e-16 )
+eigVal[39] = 2.884698e+00 ( resid = 1.907068e-06 , |eigVec[39]|-1 = -4.440892e-16 )
+eigVal[40] = 3.007181e+00 ( resid = 1.448061e-06 , |eigVec[40]|-1 = 3.330669e-15 )
+eigVal[41] = 3.065919e+00 ( resid = 9.619090e-07 , |eigVec[41]|-1 = 1.998401e-15 )
+eigVal[42] = 3.089612e+00 ( resid = 1.668148e-06 , |eigVec[42]|-1 = 1.554312e-15 )
+eigVal[43] = 3.112218e+00 ( resid = 1.523315e-06 , |eigVec[43]|-1 = 2.220446e-15 )
+eigVal[44] = 3.193762e+00 ( resid = 1.072392e-06 , |eigVec[44]|-1 = 6.661338e-16 )
+eigVal[45] = 3.218686e+00 ( resid = 9.198370e-07 , |eigVec[45]|-1 = -1.554312e-15 )
+eigVal[46] = 3.249016e+00 ( resid = 8.542946e-07 , |eigVec[46]|-1 = 3.552714e-15 )
+eigVal[47] = 3.313425e+00 ( resid = 1.092807e-06 , |eigVec[47]|-1 = 2.442491e-15 )
+eigVal[48] = 4.742008e+00 ( resid = 2.548373e-06 , |eigVec[48]|-1 = -7.771561e-16 )
+eigVal[49] = 4.893284e+00 ( resid = 2.724802e-06 , |eigVec[49]|-1 = 0.000000e+00 )
+eigVal[50] = 5.024300e+00 ( resid = 3.720748e-06 , |eigVec[50]|-1 = 3.552714e-15 )
+eigVal[51] = 5.121437e+00 ( resid = 2.973751e-06 , |eigVec[51]|-1 = 4.440892e-16 )
+eigVal[52] = 5.135745e+00 ( resid = 3.900424e-06 , |eigVec[52]|-1 = 3.330669e-15 )
+eigVal[53] = 5.242269e+00 ( resid = 3.933158e-06 , |eigVec[53]|-1 = 2.220446e-16 )
+eigVal[54] = 5.290844e+00 ( resid = 3.757303e-06 , |eigVec[54]|-1 = 1.110223e-15 )
+eigVal[55] = 5.330684e+00 ( resid = 5.667576e-06 , |eigVec[55]|-1 = -3.330669e-16 )
+eigVal[56] = 5.435086e+00 ( resid = 6.433666e-06 , |eigVec[56]|-1 = 0.000000e+00 )
+eigVal[57] = 5.453150e+00 ( resid = 4.629007e-06 , |eigVec[57]|-1 = 1.776357e-15 )
+eigVal[58] = 5.463942e+00 ( resid = 5.641368e-06 , |eigVec[58]|-1 = -2.220446e-16 )
+eigVal[59] = 5.565372e+00 ( resid = 9.761753e-06 , |eigVec[59]|-1 = -1.110223e-15 )
+eigVal[60] = 5.576907e+00 ( resid = 6.010083e-06 , |eigVec[60]|-1 = -6.661338e-16 )
+eigVal[61] = 5.629952e+00 ( resid = 1.338303e-05 , |eigVec[61]|-1 = -1.221245e-15 )
+eigVal[62] = 5.679548e+00 ( resid = 9.330221e-06 , |eigVec[62]|-1 = 8.881784e-16 )
+eigVal[63] = 5.706957e+00 ( resid = 1.108257e-05 , |eigVec[63]|-1 = 0.000000e+00 )
+eigVal[64] = 5.738538e+00 ( resid = 1.165941e-05 , |eigVec[64]|-1 = 4.440892e-16 )
+eigVal[65] = 5.774728e+00 ( resid = 4.921732e-06 , |eigVec[65]|-1 = -1.554312e-15 )
+eigVal[66] = 5.797998e+00 ( resid = 5.039242e-06 , |eigVec[66]|-1 = -1.221245e-15 )
+eigVal[67] = 5.842098e+00 ( resid = 3.234975e-06 , |eigVec[67]|-1 = -1.887379e-15 )
+eigVal[68] = 5.884081e+00 ( resid = 5.605441e-06 , |eigVec[68]|-1 = -2.220446e-16 )
+eigVal[69] = 5.895915e+00 ( resid = 3.801171e-06 , |eigVec[69]|-1 = 1.998401e-15 )
+eigVal[70] = 5.953743e+00 ( resid = 5.089556e-06 , |eigVec[70]|-1 = 4.440892e-16 )
+eigVal[71] = 5.989530e+00 ( resid = 3.803726e-06 , |eigVec[71]|-1 = -1.332268e-15 )
+eigVal[72] = 6.006992e+00 ( resid = 4.229442e-06 , |eigVec[72]|-1 = 2.220446e-16 )
+eigVal[73] = 6.064057e+00 ( resid = 5.264688e-06 , |eigVec[73]|-1 = 0.000000e+00 )
+eigVal[74] = 6.107527e+00 ( resid = 5.607371e-06 , |eigVec[74]|-1 = 6.661338e-16 )
+eigVal[75] = 6.140139e+00 ( resid = 5.480806e-06 , |eigVec[75]|-1 = -1.443290e-15 )
+eigVal[76] = 6.170098e+00 ( resid = 4.819611e-06 , |eigVec[76]|-1 = -4.440892e-16 )
+eigVal[77] = 6.204226e+00 ( resid = 4.957907e-06 , |eigVec[77]|-1 = 1.110223e-15 )
+eigVal[78] = 6.261105e+00 ( resid = 4.776506e-06 , |eigVec[78]|-1 = -9.992007e-16 )
+eigVal[79] = 6.272542e+00 ( resid = 7.324183e-06 , |eigVec[79]|-1 = -1.776357e-15 )
+eigVal[80] = 6.313697e+00 ( resid = 6.756202e-06 , |eigVec[80]|-1 = -7.771561e-16 )
+eigVal[81] = 6.336404e+00 ( resid = 5.906658e-06 , |eigVec[81]|-1 = 8.881784e-16 )
+eigVal[82] = 6.371372e+00 ( resid = 5.047086e-06 , |eigVec[82]|-1 = 1.776357e-15 )
+eigVal[83] = 6.431486e+00 ( resid = 6.817316e-06 , |eigVec[83]|-1 = 3.774758e-15 )
+eigVal[84] = 6.450970e+00 ( resid = 4.230422e-06 , |eigVec[84]|-1 = 6.661338e-16 )
+eigVal[85] = 6.492902e+00 ( resid = 8.483458e-06 , |eigVec[85]|-1 = -5.551115e-16 )
+eigVal[86] = 6.502622e+00 ( resid = 5.971882e-06 , |eigVec[86]|-1 = 8.881784e-16 )
+eigVal[87] = 6.548493e+00 ( resid = 9.569675e-06 , |eigVec[87]|-1 = 0.000000e+00 )
+eigVal[88] = 6.576177e+00 ( resid = 9.265069e-06 , |eigVec[88]|-1 = -1.332268e-15 )
+eigVal[89] = 6.600801e+00 ( resid = 3.080307e-06 , |eigVec[89]|-1 = 8.881784e-16 )
+eigVal[90] = 6.632775e+00 ( resid = 3.176577e-06 , |eigVec[90]|-1 = -3.663736e-15 )
+eigVal[91] = 6.694284e+00 ( resid = 4.402571e-06 , |eigVec[91]|-1 = 1.332268e-15 )
+eigVal[92] = 6.712114e+00 ( resid = 3.062432e-06 , |eigVec[92]|-1 = 1.998401e-15 )
+eigVal[93] = 6.719691e+00 ( resid = 2.347032e-06 , |eigVec[93]|-1 = -7.771561e-16 )
+eigVal[94] = 6.783526e+00 ( resid = 4.727996e-06 , |eigVec[94]|-1 = -2.442491e-15 )
+eigVal[95] = 6.808196e+00 ( resid = 4.200010e-06 , |eigVec[95]|-1 = -3.330669e-16 )
+eigVal[96] = 6.849939e+00 ( resid = 5.363374e-06 , |eigVec[96]|-1 = 1.110223e-15 )
+eigVal[97] = 6.858829e+00 ( resid = 3.412439e-06 , |eigVec[97]|-1 = 1.110223e-15 )
+eigVal[98] = 6.890644e+00 ( resid = 3.747794e-06 , |eigVec[98]|-1 = -6.661338e-16 )
+eigVal[99] = 6.924630e+00 ( resid = 7.537129e-06 , |eigVec[99]|-1 = 8.881784e-16 )
+eigVal[100] = 6.963705e+00 ( resid = 2.695945e-06 , |eigVec[100]|-1 = 2.220446e-16 )
+eigVal[101] = 6.973009e+00 ( resid = 3.380029e-06 , |eigVec[101]|-1 = 2.220446e-16 )
+eigVal[102] = 6.996332e+00 ( resid = 2.680682e-06 , |eigVec[102]|-1 = 4.440892e-16 )
+eigVal[103] = 7.027798e+00 ( resid = 3.110288e-06 , |eigVec[103]|-1 = 8.881784e-16 )
+eigVal[104] = 7.069449e+00 ( resid = 6.942316e-06 , |eigVec[104]|-1 = 2.220446e-16 )
+eigVal[105] = 7.084701e+00 ( resid = 6.000118e-06 , |eigVec[105]|-1 = -8.881784e-16 )
+eigVal[106] = 7.132710e+00 ( resid = 3.176218e-06 , |eigVec[106]|-1 = 1.332268e-15 )
+eigVal[107] = 7.182508e+00 ( resid = 3.263216e-06 , |eigVec[107]|-1 = 0.000000e+00 )
+eigVal[108] = 7.200400e+00 ( resid = 1.337040e-05 , |eigVec[108]|-1 = -7.771561e-16 )
+eigVal[109] = 7.210225e+00 ( resid = 2.527780e-06 , |eigVec[109]|-1 = 4.440892e-16 )
+eigVal[110] = 7.247077e+00 ( resid = 1.005233e-05 , |eigVec[110]|-1 = 2.220446e-16 )
+eigVal[111] = 7.301057e+00 ( resid = 5.936668e-06 , |eigVec[111]|-1 = -2.220446e-16 )
+eigVal[112] = 7.313665e+00 ( resid = 5.437512e-06 , |eigVec[112]|-1 = 2.220446e-16 )
+eigVal[113] = 7.375220e+00 ( resid = 6.409266e-06 , |eigVec[113]|-1 = 1.110223e-15 )
+eigVal[114] = 7.390649e+00 ( resid = 1.621203e-05 , |eigVec[114]|-1 = 0.000000e+00 )
+eigVal[115] = 7.438733e+00 ( resid = 3.249687e-06 , |eigVec[115]|-1 = 2.220446e-16 )
+eigVal[116] = 7.452612e+00 ( resid = 2.477652e-06 , |eigVec[116]|-1 = 1.554312e-15 )
+eigVal[117] = 7.469672e+00 ( resid = 2.228644e-06 , |eigVec[117]|-1 = 2.220446e-16 )
+eigVal[118] = 7.503872e+00 ( resid = 1.915148e-06 , |eigVec[118]|-1 = 8.881784e-16 )
+eigVal[119] = 7.523085e+00 ( resid = 2.596534e-06 , |eigVec[119]|-1 = -1.443290e-15 )
+eigVal[120] = 7.556699e+00 ( resid = 3.185811e-06 , |eigVec[120]|-1 = -9.992007e-16 )
+eigVal[121] = 7.588327e+00 ( resid = 4.726627e-06 , |eigVec[121]|-1 = -8.881784e-16 )
+eigVal[122] = 7.626836e+00 ( resid = 6.468524e-06 , |eigVec[122]|-1 = -7.771561e-16 )
+eigVal[123] = 7.640706e+00 ( resid = 2.453109e-06 , |eigVec[123]|-1 = -1.332268e-15 )
+eigVal[124] = 7.665588e+00 ( resid = 2.319691e-06 , |eigVec[124]|-1 = -1.221245e-15 )
+eigVal[125] = 7.696270e+00 ( resid = 9.892909e-06 , |eigVec[125]|-1 = 0.000000e+00 )
+eigVal[126] = 7.740501e+00 ( resid = 2.304466e-06 , |eigVec[126]|-1 = -1.221245e-15 )
+eigVal[127] = 7.756693e+00 ( resid = 2.772648e-06 , |eigVec[127]|-1 = -5.551115e-16 )
+eigVal[128] = 7.775935e+00 ( resid = 2.663067e-06 , |eigVec[128]|-1 = -1.110223e-16 )
+eigVal[129] = 7.842081e+00 ( resid = 5.775874e-06 , |eigVec[129]|-1 = 8.881784e-16 )
+eigVal[130] = 7.865058e+00 ( resid = 4.592287e-06 , |eigVec[130]|-1 = 2.220446e-16 )
+eigVal[131] = 7.887061e+00 ( resid = 2.449030e-06 , |eigVec[131]|-1 = 4.440892e-16 )
+eigVal[132] = 7.910196e+00 ( resid = 2.804335e-06 , |eigVec[132]|-1 = 8.881784e-16 )
+eigVal[133] = 7.925641e+00 ( resid = 2.345112e-06 , |eigVec[133]|-1 = 1.332268e-15 )
+eigVal[134] = 7.960454e+00 ( resid = 8.563953e-06 , |eigVec[134]|-1 = 1.110223e-15 )
+eigVal[135] = 7.982408e+00 ( resid = 6.008834e-06 , |eigVec[135]|-1 = -3.330669e-16 )
+eigVal[136] = 8.002972e+00 ( resid = 2.910371e-06 , |eigVec[136]|-1 = 1.110223e-15 )
+eigVal[137] = 8.072240e+00 ( resid = 3.401690e-06 , |eigVec[137]|-1 = -3.330669e-16 )
+eigVal[138] = 8.076591e+00 ( resid = 3.221843e-06 , |eigVec[138]|-1 = 0.000000e+00 )
+eigVal[139] = 8.122228e+00 ( resid = 2.794176e-06 , |eigVec[139]|-1 = 4.440892e-16 )
+eigVal[140] = 8.136503e+00 ( resid = 5.898686e-06 , |eigVec[140]|-1 = -5.551115e-16 )
+eigVal[141] = 8.150475e+00 ( resid = 2.347897e-06 , |eigVec[141]|-1 = -4.551914e-15 )
+eigVal[142] = 8.181743e+00 ( resid = 4.616648e-06 , |eigVec[142]|-1 = -1.332268e-15 )
+eigVal[143] = 8.221866e+00 ( resid = 7.801452e-06 , |eigVec[143]|-1 = -3.219647e-15 )
+eigVal[144] = 8.250200e+00 ( resid = 4.023052e-06 , |eigVec[144]|-1 = -7.771561e-16 )
+eigVal[145] = 8.269116e+00 ( resid = 2.210539e-06 , |eigVec[145]|-1 = 0.000000e+00 )
+eigVal[146] = 8.322582e+00 ( resid = 2.263440e-06 , |eigVec[146]|-1 = 1.776357e-15 )
+eigVal[147] = 8.354247e+00 ( resid = 6.424215e-06 , |eigVec[147]|-1 = -1.110223e-15 )
+eigVal[148] = 8.391637e+00 ( resid = 2.667978e-06 , |eigVec[148]|-1 = -2.220446e-16 )
+eigVal[149] = 8.406623e+00 ( resid = 4.249075e-06 , |eigVec[149]|-1 = 2.220446e-16 )
+eigVal[150] = 8.443868e+00 ( resid = 8.482421e-06 , |eigVec[150]|-1 = 6.661338e-16 )
+eigVal[151] = 8.468894e+00 ( resid = 6.878988e-06 , |eigVec[151]|-1 = -2.109424e-15 )
+eigVal[152] = 8.507766e+00 ( resid = 8.081964e-06 , |eigVec[152]|-1 = -3.330669e-16 )
+eigVal[153] = 8.549877e+00 ( resid = 5.229926e-06 , |eigVec[153]|-1 = -5.551115e-16 )
+eigVal[154] = 8.573209e+00 ( resid = 5.364024e-06 , |eigVec[154]|-1 = -1.443290e-15 )
+eigVal[155] = 8.607622e+00 ( resid = 4.871562e-06 , |eigVec[155]|-1 = -3.330669e-15 )
+eigVal[156] = 8.637974e+00 ( resid = 3.641341e-06 , |eigVec[156]|-1 = -2.220446e-16 )
+eigVal[157] = 8.665730e+00 ( resid = 5.944252e-06 , |eigVec[157]|-1 = 0.000000e+00 )
+eigVal[158] = 8.706170e+00 ( resid = 5.965065e-06 , |eigVec[158]|-1 = 6.661338e-16 )
+eigVal[159] = 8.739428e+00 ( resid = 7.114215e-06 , |eigVec[159]|-1 = 1.332268e-15 )
+eigVal[160] = 8.770274e+00 ( resid = 4.454596e-06 , |eigVec[160]|-1 = 1.110223e-15 )
+eigVal[161] = 8.799337e+00 ( resid = 4.490405e-06 , |eigVec[161]|-1 = 1.554312e-15 )
+eigVal[162] = 8.863217e+00 ( resid = 7.028976e-06 , |eigVec[162]|-1 = 1.332268e-15 )
+eigVal[163] = 8.885957e+00 ( resid = 4.135762e-06 , |eigVec[163]|-1 = 2.442491e-15 )
+eigVal[164] = 8.928685e+00 ( resid = 3.452324e-06 , |eigVec[164]|-1 = 2.886580e-15 )
+eigVal[165] = 8.935879e+00 ( resid = 3.402479e-06 , |eigVec[165]|-1 = 2.220446e-16 )
+eigVal[166] = 8.978669e+00 ( resid = 2.981528e-06 , |eigVec[166]|-1 = 4.440892e-16 )
+eigVal[167] = 9.036297e+00 ( resid = 9.060989e-06 , |eigVec[167]|-1 = 1.554312e-15 )
+eigVal[168] = 9.086010e+00 ( resid = 5.059359e-06 , |eigVec[168]|-1 = 4.440892e-16 )
+eigVal[169] = 9.112060e+00 ( resid = 2.289582e-06 , |eigVec[169]|-1 = 2.220446e-16 )
+eigVal[170] = 9.140984e+00 ( resid = 3.293129e-06 , |eigVec[170]|-1 = 1.110223e-15 )
+eigVal[171] = 9.205702e+00 ( resid = 5.348547e-06 , |eigVec[171]|-1 = -1.110223e-15 )
+eigVal[172] = 9.217341e+00 ( resid = 3.212545e-06 , |eigVec[172]|-1 = -6.661338e-16 )
+eigVal[173] = 9.252181e+00 ( resid = 2.666072e-06 , |eigVec[173]|-1 = 4.440892e-16 )
+eigVal[174] = 9.319958e+00 ( resid = 2.353842e-06 , |eigVec[174]|-1 = 3.552714e-15 )
+eigVal[175] = 9.331431e+00 ( resid = 2.736041e-06 , |eigVec[175]|-1 = 2.220446e-16 )
+eigVal[176] = 9.368430e+00 ( resid = 7.178128e-06 , |eigVec[176]|-1 = 1.554312e-15 )
+eigVal[177] = 9.408848e+00 ( resid = 2.361492e-06 , |eigVec[177]|-1 = -8.881784e-16 )
+eigVal[178] = 9.429185e+00 ( resid = 5.895545e-06 , |eigVec[178]|-1 = 0.000000e+00 )
+eigVal[179] = 9.494463e+00 ( resid = 2.736990e-06 , |eigVec[179]|-1 = 1.554312e-15 )
+eigVal[180] = 9.526920e+00 ( resid = 6.679890e-06 , |eigVec[180]|-1 = 8.881784e-16 )
+eigVal[181] = 9.568079e+00 ( resid = 8.737200e-06 , |eigVec[181]|-1 = 2.220446e-16 )
+eigVal[182] = 9.591262e+00 ( resid = 7.775280e-06 , |eigVec[182]|-1 = 6.661338e-16 )
+eigVal[183] = 9.638210e+00 ( resid = 5.974301e-06 , |eigVec[183]|-1 = 1.998401e-15 )
+eigVal[184] = 9.670767e+00 ( resid = 3.004248e-06 , |eigVec[184]|-1 = 4.440892e-16 )
+eigVal[185] = 9.724019e+00 ( resid = 3.227314e-06 , |eigVec[185]|-1 = 0.000000e+00 )
+eigVal[186] = 9.735818e+00 ( resid = 4.374493e-06 , |eigVec[186]|-1 = -1.110223e-15 )
+eigVal[187] = 9.825900e+00 ( resid = 4.592028e-06 , |eigVec[187]|-1 = 0.000000e+00 )
+eigVal[188] = 9.915477e+00 ( resid = 6.645530e-06 , |eigVec[188]|-1 = -4.440892e-15 )
+eigVal[189] = 9.960673e+00 ( resid = 1.307579e-05 , |eigVec[189]|-1 = 1.110223e-15 )
+eigVal[190] = 9.993704e+00 ( resid = 6.632544e-06 , |eigVec[190]|-1 = 8.881784e-16 )
+eigVal[191] = 1.012076e+01 ( resid = 1.488322e-05 , |eigVec[191]|-1 = 3.774758e-15 )
+End of eigensolutions
+Odd site residuals
+Checking eigensolutions
+eigVal[0] = 9.439834e-01 ( resid = 2.578802e-07 , |eigVec[0]|-1 = -1.110223e-16 )
+eigVal[1] = 9.618426e-01 ( resid = 2.538922e-07 , |eigVec[1]|-1 = -2.220446e-16 )
+eigVal[2] = 9.985572e-01 ( resid = 2.738416e-07 , |eigVec[2]|-1 = 2.220446e-16 )
+eigVal[3] = 1.012500e+00 ( resid = 1.784512e-07 , |eigVec[3]|-1 = 0.000000e+00 )
+eigVal[4] = 1.319300e+00 ( resid = 5.499007e-07 , |eigVec[4]|-1 = -4.440892e-16 )
+eigVal[5] = 1.365648e+00 ( resid = 1.757574e-06 , |eigVec[5]|-1 = 0.000000e+00 )
+eigVal[6] = 1.415804e+00 ( resid = 3.169027e-06 , |eigVec[6]|-1 = 0.000000e+00 )
+eigVal[7] = 1.448111e+00 ( resid = 3.310509e-06 , |eigVec[7]|-1 = -2.220446e-16 )
+eigVal[8] = 1.613290e+00 ( resid = 3.818968e-06 , |eigVec[8]|-1 = -1.110223e-16 )
+eigVal[9] = 1.648672e+00 ( resid = 4.035130e-06 , |eigVec[9]|-1 = 0.000000e+00 )
+eigVal[10] = 1.675841e+00 ( resid = 3.284715e-06 , |eigVec[10]|-1 = -5.551115e-16 )
+eigVal[11] = 1.688185e+00 ( resid = 4.956430e-06 , |eigVec[11]|-1 = 0.000000e+00 )
+eigVal[12] = 1.705534e+00 ( resid = 5.967844e-06 , |eigVec[12]|-1 = 0.000000e+00 )
+eigVal[13] = 1.728329e+00 ( resid = 4.156062e-06 , |eigVec[13]|-1 = 0.000000e+00 )
+eigVal[14] = 1.774419e+00 ( resid = 5.070531e-06 , |eigVec[14]|-1 = 0.000000e+00 )
+eigVal[15] = 1.809799e+00 ( resid = 5.787844e-06 , |eigVec[15]|-1 = -2.220446e-16 )
+eigVal[16] = 1.916162e+00 ( resid = 9.087543e-06 , |eigVec[16]|-1 = -2.220446e-16 )
+eigVal[17] = 1.934798e+00 ( resid = 1.078537e-05 , |eigVec[17]|-1 = -1.110223e-16 )
+eigVal[18] = 1.984846e+00 ( resid = 6.651391e-06 , |eigVec[18]|-1 = 0.000000e+00 )
+eigVal[19] = 2.014249e+00 ( resid = 7.884542e-06 , |eigVec[19]|-1 = 2.220446e-16 )
+eigVal[20] = 2.125200e+00 ( resid = 1.602267e-05 , |eigVec[20]|-1 = -1.110223e-16 )
+eigVal[21] = 2.139139e+00 ( resid = 9.584846e-06 , |eigVec[21]|-1 = -3.330669e-16 )
+eigVal[22] = 2.171535e+00 ( resid = 1.315267e-05 , |eigVec[22]|-1 = 2.220446e-16 )
+eigVal[23] = 2.194835e+00 ( resid = 2.616887e-05 , |eigVec[23]|-1 = 2.220446e-16 )
+eigVal[24] = 2.234605e+00 ( resid = 2.931006e-05 , |eigVec[24]|-1 = 0.000000e+00 )
+eigVal[25] = 2.241682e+00 ( resid = 2.480579e-05 , |eigVec[25]|-1 = -1.110223e-16 )
+eigVal[26] = 2.279140e+00 ( resid = 6.229542e-06 , |eigVec[26]|-1 = -2.220446e-16 )
+eigVal[27] = 2.305455e+00 ( resid = 1.985410e-05 , |eigVec[27]|-1 = 0.000000e+00 )
+eigVal[28] = 2.454345e+00 ( resid = 1.274007e-05 , |eigVec[28]|-1 = 0.000000e+00 )
+eigVal[29] = 2.493903e+00 ( resid = 1.362895e-05 , |eigVec[29]|-1 = 2.220446e-16 )
+eigVal[30] = 2.519004e+00 ( resid = 2.817927e-05 , |eigVec[30]|-1 = 2.220446e-16 )
+eigVal[31] = 2.545222e+00 ( resid = 1.688860e-05 , |eigVec[31]|-1 = -2.220446e-16 )
+eigVal[32] = 2.582754e+00 ( resid = 4.491060e-05 , |eigVec[32]|-1 = -2.220446e-16 )
+eigVal[33] = 2.618040e+00 ( resid = 3.126104e-06 , |eigVec[33]|-1 = 0.000000e+00 )
+eigVal[34] = 2.675905e+00 ( resid = 3.429966e-06 , |eigVec[34]|-1 = -1.110223e-16 )
+eigVal[35] = 2.721479e+00 ( resid = 3.457684e-06 , |eigVec[35]|-1 = 0.000000e+00 )
+eigVal[36] = 2.745557e+00 ( resid = 3.547164e-06 , |eigVec[36]|-1 = -1.110223e-16 )
+eigVal[37] = 2.792666e+00 ( resid = 3.294684e-06 , |eigVec[37]|-1 = -3.330669e-16 )
+eigVal[38] = 2.854873e+00 ( resid = 5.530346e-06 , |eigVec[38]|-1 = 0.000000e+00 )
+eigVal[39] = 2.884698e+00 ( resid = 4.456262e-06 , |eigVec[39]|-1 = 0.000000e+00 )
+eigVal[40] = 3.007181e+00 ( resid = 3.306896e-06 , |eigVec[40]|-1 = -2.220446e-16 )
+eigVal[41] = 3.065919e+00 ( resid = 2.175300e-06 , |eigVec[41]|-1 = -1.110223e-16 )
+eigVal[42] = 3.089612e+00 ( resid = 3.784991e-06 , |eigVec[42]|-1 = 2.220446e-16 )
+eigVal[43] = 3.112218e+00 ( resid = 3.434208e-06 , |eigVec[43]|-1 = 4.440892e-16 )
+eigVal[44] = 3.193762e+00 ( resid = 2.406847e-06 , |eigVec[44]|-1 = -2.220446e-16 )
+eigVal[45] = 3.218686e+00 ( resid = 2.031970e-06 , |eigVec[45]|-1 = 0.000000e+00 )
+eigVal[46] = 3.249016e+00 ( resid = 1.907656e-06 , |eigVec[46]|-1 = 0.000000e+00 )
+eigVal[47] = 3.313425e+00 ( resid = 2.425607e-06 , |eigVec[47]|-1 = 0.000000e+00 )
+eigVal[48] = 4.742008e+00 ( resid = 4.641485e-06 , |eigVec[48]|-1 = 0.000000e+00 )
+eigVal[49] = 4.893284e+00 ( resid = 4.779277e-06 , |eigVec[49]|-1 = 0.000000e+00 )
+eigVal[50] = 5.024300e+00 ( resid = 6.565398e-06 , |eigVec[50]|-1 = 2.220446e-16 )
+eigVal[51] = 5.121437e+00 ( resid = 5.147658e-06 , |eigVec[51]|-1 = 2.220446e-16 )
+eigVal[52] = 5.135745e+00 ( resid = 6.699213e-06 , |eigVec[52]|-1 = -1.110223e-16 )
+eigVal[53] = 5.242269e+00 ( resid = 6.531223e-06 , |eigVec[53]|-1 = -2.220446e-16 )
+eigVal[54] = 5.290844e+00 ( resid = 6.180504e-06 , |eigVec[54]|-1 = -1.110223e-16 )
+eigVal[55] = 5.330684e+00 ( resid = 9.236175e-06 , |eigVec[55]|-1 = -1.110223e-16 )
+eigVal[56] = 5.435086e+00 ( resid = 1.044215e-05 , |eigVec[56]|-1 = 0.000000e+00 )
+eigVal[57] = 5.453150e+00 ( resid = 7.358971e-06 , |eigVec[57]|-1 = 2.220446e-16 )
+eigVal[58] = 5.463942e+00 ( resid = 8.880250e-06 , |eigVec[58]|-1 = 0.000000e+00 )
+eigVal[59] = 5.565372e+00 ( resid = 1.527434e-05 , |eigVec[59]|-1 = 0.000000e+00 )
+eigVal[60] = 5.576907e+00 ( resid = 9.292749e-06 , |eigVec[60]|-1 = -1.110223e-16 )
+eigVal[61] = 5.629952e+00 ( resid = 2.062878e-05 , |eigVec[61]|-1 = 4.440892e-16 )
+eigVal[62] = 5.679548e+00 ( resid = 1.456780e-05 , |eigVec[62]|-1 = -2.220446e-16 )
+eigVal[63] = 5.706957e+00 ( resid = 1.699747e-05 , |eigVec[63]|-1 = 0.000000e+00 )
+eigVal[64] = 5.738538e+00 ( resid = 1.816537e-05 , |eigVec[64]|-1 = 4.440892e-16 )
+eigVal[65] = 5.774728e+00 ( resid = 7.018978e-06 , |eigVec[65]|-1 = -2.220446e-16 )
+eigVal[66] = 5.797998e+00 ( resid = 7.105481e-06 , |eigVec[66]|-1 = -2.220446e-16 )
+eigVal[67] = 5.842098e+00 ( resid = 4.451378e-06 , |eigVec[67]|-1 = 0.000000e+00 )
+eigVal[68] = 5.884081e+00 ( resid = 7.884812e-06 , |eigVec[68]|-1 = 0.000000e+00 )
+eigVal[69] = 5.895915e+00 ( resid = 4.841471e-06 , |eigVec[69]|-1 = 0.000000e+00 )
+eigVal[70] = 5.953743e+00 ( resid = 7.505856e-06 , |eigVec[70]|-1 = -2.220446e-16 )
+eigVal[71] = 5.989530e+00 ( resid = 4.783865e-06 , |eigVec[71]|-1 = 0.000000e+00 )
+eigVal[72] = 6.006992e+00 ( resid = 6.514447e-06 , |eigVec[72]|-1 = -3.330669e-16 )
+eigVal[73] = 6.064057e+00 ( resid = 6.512551e-06 , |eigVec[73]|-1 = -3.330669e-16 )
+eigVal[74] = 6.107527e+00 ( resid = 8.217795e-06 , |eigVec[74]|-1 = -4.440892e-16 )
+eigVal[75] = 6.140139e+00 ( resid = 7.313403e-06 , |eigVec[75]|-1 = 0.000000e+00 )
+eigVal[76] = 6.170098e+00 ( resid = 7.257300e-06 , |eigVec[76]|-1 = 2.220446e-16 )
+eigVal[77] = 6.204226e+00 ( resid = 7.332744e-06 , |eigVec[77]|-1 = -4.440892e-16 )
+eigVal[78] = 6.261105e+00 ( resid = 5.620716e-06 , |eigVec[78]|-1 = 2.220446e-16 )
+eigVal[79] = 6.272542e+00 ( resid = 1.051603e-05 , |eigVec[79]|-1 = 0.000000e+00 )
+eigVal[80] = 6.313697e+00 ( resid = 1.012024e-05 , |eigVec[80]|-1 = 0.000000e+00 )
+eigVal[81] = 6.336404e+00 ( resid = 8.531421e-06 , |eigVec[81]|-1 = -2.220446e-16 )
+eigVal[82] = 6.371372e+00 ( resid = 6.322239e-06 , |eigVec[82]|-1 = 2.220446e-16 )
+eigVal[83] = 6.431486e+00 ( resid = 9.944368e-06 , |eigVec[83]|-1 = 0.000000e+00 )
+eigVal[84] = 6.450970e+00 ( resid = 5.250412e-06 , |eigVec[84]|-1 = -1.110223e-16 )
+eigVal[85] = 6.492902e+00 ( resid = 1.245958e-05 , |eigVec[85]|-1 = 0.000000e+00 )
+eigVal[86] = 6.502622e+00 ( resid = 8.639794e-06 , |eigVec[86]|-1 = 2.220446e-16 )
+eigVal[87] = 6.548493e+00 ( resid = 1.378761e-05 , |eigVec[87]|-1 = -1.110223e-16 )
+eigVal[88] = 6.576177e+00 ( resid = 1.344546e-05 , |eigVec[88]|-1 = 0.000000e+00 )
+eigVal[89] = 6.600801e+00 ( resid = 4.251171e-06 , |eigVec[89]|-1 = 0.000000e+00 )
+eigVal[90] = 6.632775e+00 ( resid = 4.239009e-06 , |eigVec[90]|-1 = 0.000000e+00 )
+eigVal[91] = 6.694284e+00 ( resid = 5.642865e-06 , |eigVec[91]|-1 = 0.000000e+00 )
+eigVal[92] = 6.712114e+00 ( resid = 2.849611e-06 , |eigVec[92]|-1 = 0.000000e+00 )
+eigVal[93] = 6.719691e+00 ( resid = 2.354516e-06 , |eigVec[93]|-1 = -1.110223e-16 )
+eigVal[94] = 6.783526e+00 ( resid = 6.308310e-06 , |eigVec[94]|-1 = 2.220446e-16 )
+eigVal[95] = 6.808196e+00 ( resid = 5.387739e-06 , |eigVec[95]|-1 = 0.000000e+00 )
+eigVal[96] = 6.849939e+00 ( resid = 7.476330e-06 , |eigVec[96]|-1 = -1.110223e-16 )
+eigVal[97] = 6.858829e+00 ( resid = 3.598388e-06 , |eigVec[97]|-1 = -2.220446e-16 )
+eigVal[98] = 6.890644e+00 ( resid = 4.365306e-06 , |eigVec[98]|-1 = -3.330669e-16 )
+eigVal[99] = 6.924630e+00 ( resid = 1.110768e-05 , |eigVec[99]|-1 = 0.000000e+00 )
+eigVal[100] = 6.963705e+00 ( resid = 2.670652e-06 , |eigVec[100]|-1 = 0.000000e+00 )
+eigVal[101] = 6.973009e+00 ( resid = 4.339843e-06 , |eigVec[101]|-1 = -2.220446e-16 )
+eigVal[102] = 6.996332e+00 ( resid = 2.757956e-06 , |eigVec[102]|-1 = -1.110223e-16 )
+eigVal[103] = 7.027798e+00 ( resid = 3.869027e-06 , |eigVec[103]|-1 = 0.000000e+00 )
+eigVal[104] = 7.069449e+00 ( resid = 9.823844e-06 , |eigVec[104]|-1 = 0.000000e+00 )
+eigVal[105] = 7.084701e+00 ( resid = 7.923841e-06 , |eigVec[105]|-1 = -2.220446e-16 )
+eigVal[106] = 7.132710e+00 ( resid = 2.993496e-06 , |eigVec[106]|-1 = 2.220446e-16 )
+eigVal[107] = 7.182508e+00 ( resid = 3.607996e-06 , |eigVec[107]|-1 = -2.220446e-16 )
+eigVal[108] = 7.200400e+00 ( resid = 1.993680e-05 , |eigVec[108]|-1 = 2.220446e-16 )
+eigVal[109] = 7.210225e+00 ( resid = 2.366908e-06 , |eigVec[109]|-1 = -1.110223e-16 )
+eigVal[110] = 7.247077e+00 ( resid = 1.415194e-05 , |eigVec[110]|-1 = -2.220446e-16 )
+eigVal[111] = 7.301057e+00 ( resid = 8.039370e-06 , |eigVec[111]|-1 = 0.000000e+00 )
+eigVal[112] = 7.313665e+00 ( resid = 7.421337e-06 , |eigVec[112]|-1 = -2.220446e-16 )
+eigVal[113] = 7.375220e+00 ( resid = 8.918752e-06 , |eigVec[113]|-1 = -1.110223e-16 )
+eigVal[114] = 7.390649e+00 ( resid = 2.331375e-05 , |eigVec[114]|-1 = 0.000000e+00 )
+eigVal[115] = 7.438733e+00 ( resid = 3.870857e-06 , |eigVec[115]|-1 = -3.330669e-16 )
+eigVal[116] = 7.452612e+00 ( resid = 2.348158e-06 , |eigVec[116]|-1 = -1.110223e-16 )
+eigVal[117] = 7.469672e+00 ( resid = 2.337865e-06 , |eigVec[117]|-1 = -2.220446e-16 )
+eigVal[118] = 7.503872e+00 ( resid = 1.747683e-06 , |eigVec[118]|-1 = 2.220446e-16 )
+eigVal[119] = 7.523085e+00 ( resid = 2.965167e-06 , |eigVec[119]|-1 = -1.110223e-16 )
+eigVal[120] = 7.556699e+00 ( resid = 3.981061e-06 , |eigVec[120]|-1 = 2.220446e-16 )
+eigVal[121] = 7.588327e+00 ( resid = 6.489169e-06 , |eigVec[121]|-1 = 0.000000e+00 )
+eigVal[122] = 7.626836e+00 ( resid = 9.368940e-06 , |eigVec[122]|-1 = -1.110223e-16 )
+eigVal[123] = 7.640706e+00 ( resid = 2.750263e-06 , |eigVec[123]|-1 = -3.330669e-16 )
+eigVal[124] = 7.665588e+00 ( resid = 2.105902e-06 , |eigVec[124]|-1 = -2.220446e-16 )
+eigVal[125] = 7.696270e+00 ( resid = 1.410631e-05 , |eigVec[125]|-1 = 2.220446e-16 )
+eigVal[126] = 7.740501e+00 ( resid = 2.168352e-06 , |eigVec[126]|-1 = 0.000000e+00 )
+eigVal[127] = 7.756693e+00 ( resid = 3.005674e-06 , |eigVec[127]|-1 = -1.110223e-16 )
+eigVal[128] = 7.775935e+00 ( resid = 3.217733e-06 , |eigVec[128]|-1 = -1.110223e-16 )
+eigVal[129] = 7.842081e+00 ( resid = 8.068665e-06 , |eigVec[129]|-1 = -1.110223e-16 )
+eigVal[130] = 7.865058e+00 ( resid = 6.021890e-06 , |eigVec[130]|-1 = 2.220446e-16 )
+eigVal[131] = 7.887061e+00 ( resid = 2.863260e-06 , |eigVec[131]|-1 = 0.000000e+00 )
+eigVal[132] = 7.910196e+00 ( resid = 2.775567e-06 , |eigVec[132]|-1 = -1.110223e-16 )
+eigVal[133] = 7.925641e+00 ( resid = 2.544529e-06 , |eigVec[133]|-1 = 2.220446e-16 )
+eigVal[134] = 7.960454e+00 ( resid = 1.197350e-05 , |eigVec[134]|-1 = 2.220446e-16 )
+eigVal[135] = 7.982408e+00 ( resid = 8.146731e-06 , |eigVec[135]|-1 = 2.220446e-16 )
+eigVal[136] = 8.002972e+00 ( resid = 2.974064e-06 , |eigVec[136]|-1 = 2.220446e-16 )
+eigVal[137] = 8.072240e+00 ( resid = 3.773672e-06 , |eigVec[137]|-1 = 0.000000e+00 )
+eigVal[138] = 8.076591e+00 ( resid = 3.558188e-06 , |eigVec[138]|-1 = -4.440892e-16 )
+eigVal[139] = 8.122228e+00 ( resid = 2.594922e-06 , |eigVec[139]|-1 = 0.000000e+00 )
+eigVal[140] = 8.136503e+00 ( resid = 8.001664e-06 , |eigVec[140]|-1 = -3.330669e-16 )
+eigVal[141] = 8.150475e+00 ( resid = 1.847351e-06 , |eigVec[141]|-1 = 0.000000e+00 )
+eigVal[142] = 8.181743e+00 ( resid = 6.023103e-06 , |eigVec[142]|-1 = -2.220446e-16 )
+eigVal[143] = 8.221866e+00 ( resid = 1.079751e-05 , |eigVec[143]|-1 = -1.110223e-16 )
+eigVal[144] = 8.250200e+00 ( resid = 5.184990e-06 , |eigVec[144]|-1 = 2.220446e-16 )
+eigVal[145] = 8.269116e+00 ( resid = 1.764815e-06 , |eigVec[145]|-1 = 0.000000e+00 )
+eigVal[146] = 8.322582e+00 ( resid = 2.063110e-06 , |eigVec[146]|-1 = 2.220446e-16 )
+eigVal[147] = 8.354247e+00 ( resid = 8.569368e-06 , |eigVec[147]|-1 = -1.110223e-16 )
+eigVal[148] = 8.391637e+00 ( resid = 2.273910e-06 , |eigVec[148]|-1 = 0.000000e+00 )
+eigVal[149] = 8.406623e+00 ( resid = 5.067365e-06 , |eigVec[149]|-1 = -2.220446e-16 )
+eigVal[150] = 8.443868e+00 ( resid = 1.153813e-05 , |eigVec[150]|-1 = -1.110223e-16 )
+eigVal[151] = 8.468894e+00 ( resid = 9.370531e-06 , |eigVec[151]|-1 = 0.000000e+00 )
+eigVal[152] = 8.507766e+00 ( resid = 1.108928e-05 , |eigVec[152]|-1 = -4.440892e-16 )
+eigVal[153] = 8.549877e+00 ( resid = 6.291380e-06 , |eigVec[153]|-1 = 0.000000e+00 )
+eigVal[154] = 8.573209e+00 ( resid = 6.960496e-06 , |eigVec[154]|-1 = 0.000000e+00 )
+eigVal[155] = 8.607622e+00 ( resid = 5.942923e-06 , |eigVec[155]|-1 = -1.110223e-16 )
+eigVal[156] = 8.637974e+00 ( resid = 4.237522e-06 , |eigVec[156]|-1 = -2.220446e-16 )
+eigVal[157] = 8.665730e+00 ( resid = 7.697049e-06 , |eigVec[157]|-1 = -1.110223e-16 )
+eigVal[158] = 8.706170e+00 ( resid = 7.933669e-06 , |eigVec[158]|-1 = -4.440892e-16 )
+eigVal[159] = 8.739428e+00 ( resid = 9.488645e-06 , |eigVec[159]|-1 = 0.000000e+00 )
+eigVal[160] = 8.770274e+00 ( resid = 5.712481e-06 , |eigVec[160]|-1 = 0.000000e+00 )
+eigVal[161] = 8.799337e+00 ( resid = 5.293231e-06 , |eigVec[161]|-1 = -2.220446e-16 )
+eigVal[162] = 8.863217e+00 ( resid = 9.266464e-06 , |eigVec[162]|-1 = -4.440892e-16 )
+eigVal[163] = 8.885957e+00 ( resid = 5.068678e-06 , |eigVec[163]|-1 = 2.220446e-16 )
+eigVal[164] = 8.928685e+00 ( resid = 3.671904e-06 , |eigVec[164]|-1 = -1.110223e-16 )
+eigVal[165] = 8.935879e+00 ( resid = 3.079277e-06 , |eigVec[165]|-1 = -2.220446e-16 )
+eigVal[166] = 8.978669e+00 ( resid = 3.619653e-06 , |eigVec[166]|-1 = 2.220446e-16 )
+eigVal[167] = 9.036297e+00 ( resid = 1.203064e-05 , |eigVec[167]|-1 = 0.000000e+00 )
+eigVal[168] = 9.086010e+00 ( resid = 6.045786e-06 , |eigVec[168]|-1 = -2.220446e-16 )
+eigVal[169] = 9.112060e+00 ( resid = 1.887535e-06 , |eigVec[169]|-1 = -2.220446e-16 )
+eigVal[170] = 9.140984e+00 ( resid = 3.650065e-06 , |eigVec[170]|-1 = -4.440892e-16 )
+eigVal[171] = 9.205702e+00 ( resid = 6.537082e-06 , |eigVec[171]|-1 = -1.110223e-16 )
+eigVal[172] = 9.217341e+00 ( resid = 3.071617e-06 , |eigVec[172]|-1 = -4.440892e-16 )
+eigVal[173] = 9.252181e+00 ( resid = 2.284877e-06 , |eigVec[173]|-1 = 2.220446e-16 )
+eigVal[174] = 9.319958e+00 ( resid = 2.029782e-06 , |eigVec[174]|-1 = 2.220446e-16 )
+eigVal[175] = 9.331431e+00 ( resid = 2.435444e-06 , |eigVec[175]|-1 = 4.440892e-16 )
+eigVal[176] = 9.368430e+00 ( resid = 9.205999e-06 , |eigVec[176]|-1 = 2.220446e-16 )
+eigVal[177] = 9.408848e+00 ( resid = 1.861577e-06 , |eigVec[177]|-1 = 2.220446e-16 )
+eigVal[178] = 9.429185e+00 ( resid = 7.676830e-06 , |eigVec[178]|-1 = 0.000000e+00 )
+eigVal[179] = 9.494463e+00 ( resid = 2.539703e-06 , |eigVec[179]|-1 = -3.330669e-16 )
+eigVal[180] = 9.526920e+00 ( resid = 8.398820e-06 , |eigVec[180]|-1 = 0.000000e+00 )
+eigVal[181] = 9.568079e+00 ( resid = 1.144876e-05 , |eigVec[181]|-1 = -2.220446e-16 )
+eigVal[182] = 9.591262e+00 ( resid = 9.697830e-06 , |eigVec[182]|-1 = -1.110223e-16 )
+eigVal[183] = 9.638210e+00 ( resid = 7.577815e-06 , |eigVec[183]|-1 = -1.110223e-16 )
+eigVal[184] = 9.670767e+00 ( resid = 3.355443e-06 , |eigVec[184]|-1 = 2.220446e-16 )
+eigVal[185] = 9.724019e+00 ( resid = 3.668945e-06 , |eigVec[185]|-1 = -1.110223e-16 )
+eigVal[186] = 9.735818e+00 ( resid = 4.820338e-06 , |eigVec[186]|-1 = 2.220446e-16 )
+eigVal[187] = 9.825900e+00 ( resid = 5.515429e-06 , |eigVec[187]|-1 = -1.110223e-16 )
+eigVal[188] = 9.915477e+00 ( resid = 8.299262e-06 , |eigVec[188]|-1 = 4.440892e-16 )
+eigVal[189] = 9.960673e+00 ( resid = 1.680060e-05 , |eigVec[189]|-1 = 0.000000e+00 )
+eigVal[190] = 9.993704e+00 ( resid = 8.432712e-06 , |eigVec[190]|-1 = 0.000000e+00 )
+eigVal[191] = 1.012076e+01 ( resid = 1.877754e-05 , |eigVec[191]|-1 = -1.110223e-16 )
+End of eigensolutions
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+The above were eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0):   0.485794
+eigenval(1):   0.490368
+eigenval(2):   0.499639
+eigenval(3):   0.503115
+eigenval(4):   0.574304
+eigenval(5):   0.584305
+eigenval(6):   0.594938
+eigenval(7):   0.601687
+eigenval(8):   0.635077
+eigenval(9):   0.642003
+eigenval(10):   0.647271
+eigenval(11):   0.649651
+eigenval(12):   0.652981
+eigenval(13):    0.65733
+eigenval(14):   0.666037
+eigenval(15):   0.672644
+eigenval(16):   0.692128
+eigenval(17):   0.695485
+eigenval(18):   0.704423
+eigenval(19):   0.709621
+eigenval(20):   0.728903
+eigenval(21):    0.73129
+eigenval(22):   0.736806
+eigenval(23):   0.740749
+eigenval(24):    0.74743
+eigenval(25):   0.748612
+eigenval(26):   0.754841
+eigenval(27):   0.759186
+eigenval(28):   0.783317
+eigenval(29):   0.789605
+eigenval(30):   0.793568
+eigenval(31):   0.797688
+eigenval(32):   0.803547
+eigenval(33):   0.809018
+eigenval(34):    0.81791
+eigenval(35):   0.824845
+eigenval(36):   0.828486
+eigenval(37):   0.835564
+eigenval(38):   0.844819
+eigenval(39):    0.84922
+eigenval(40):   0.867061
+eigenval(41):   0.875488
+eigenval(42):   0.878865
+eigenval(43):   0.882074
+eigenval(44):   0.893555
+eigenval(45):   0.897035
+eigenval(46):   0.901251
+eigenval(47):   0.910141
+eigenval(48):    1.08881
+eigenval(49):    1.10604
+eigenval(50):    1.12075
+eigenval(51):    1.13153
+eigenval(52):    1.13311
+eigenval(53):     1.1448
+eigenval(54):    1.15009
+eigenval(55):    1.15441
+eigenval(56):    1.16566
+eigenval(57):     1.1676
+eigenval(58):    1.16875
+eigenval(59):    1.17955
+eigenval(60):    1.18077
+eigenval(61):    1.18638
+eigenval(62):    1.19159
+eigenval(63):    1.19446
+eigenval(64):    1.19776
+eigenval(65):    1.20153
+eigenval(66):    1.20395
+eigenval(67):    1.20852
+eigenval(68):    1.21286
+eigenval(69):    1.21408
+eigenval(70):    1.22001
+eigenval(71):    1.22368
+eigenval(72):    1.22546
+eigenval(73):    1.23127
+eigenval(74):    1.23567
+eigenval(75):    1.23897
+eigenval(76):    1.24198
+eigenval(77):    1.24541
+eigenval(78):    1.25111
+eigenval(79):    1.25225
+eigenval(80):    1.25635
+eigenval(81):    1.25861
+eigenval(82):    1.26208
+eigenval(83):    1.26802
+eigenval(84):    1.26994
+eigenval(85):    1.27406
+eigenval(86):    1.27501
+eigenval(87):     1.2795
+eigenval(88):     1.2822
+eigenval(89):     1.2846
+eigenval(90):    1.28771
+eigenval(91):    1.29367
+eigenval(92):    1.29539
+eigenval(93):    1.29612
+eigenval(94):    1.30226
+eigenval(95):    1.30463
+eigenval(96):    1.30862
+eigenval(97):    1.30947
+eigenval(98):     1.3125
+eigenval(99):    1.31573
+eigenval(100):    1.31944
+eigenval(101):    1.32032
+eigenval(102):    1.32253
+eigenval(103):     1.3255
+eigenval(104):    1.32942
+eigenval(105):    1.33086
+eigenval(106):    1.33536
+eigenval(107):    1.34001
+eigenval(108):    1.34168
+eigenval(109):    1.34259
+eigenval(110):    1.34602
+eigenval(111):    1.35102
+eigenval(112):    1.35219
+eigenval(113):    1.35787
+eigenval(114):    1.35929
+eigenval(115):     1.3637
+eigenval(116):    1.36497
+eigenval(117):    1.36654
+eigenval(118):    1.36966
+eigenval(119):    1.37141
+eigenval(120):    1.37447
+eigenval(121):    1.37735
+eigenval(122):    1.38084
+eigenval(123):    1.38209
+eigenval(124):    1.38434
+eigenval(125):    1.38711
+eigenval(126):    1.39109
+eigenval(127):    1.39254
+eigenval(128):    1.39427
+eigenval(129):    1.40019
+eigenval(130):    1.40224
+eigenval(131):     1.4042
+eigenval(132):    1.40625
+eigenval(133):    1.40763
+eigenval(134):    1.41071
+eigenval(135):    1.41266
+eigenval(136):    1.41448
+eigenval(137):    1.42058
+eigenval(138):    1.42097
+eigenval(139):    1.42498
+eigenval(140):    1.42623
+eigenval(141):    1.42745
+eigenval(142):    1.43019
+eigenval(143):    1.43369
+eigenval(144):    1.43616
+eigenval(145):     1.4378
+eigenval(146):    1.44244
+eigenval(147):    1.44519
+eigenval(148):    1.44842
+eigenval(149):    1.44971
+eigenval(150):    1.45292
+eigenval(151):    1.45507
+eigenval(152):     1.4584
+eigenval(153):    1.46201
+eigenval(154):      1.464
+eigenval(155):    1.46694
+eigenval(156):    1.46952
+eigenval(157):    1.47188
+eigenval(158):    1.47531
+eigenval(159):    1.47813
+eigenval(160):    1.48073
+eigenval(161):    1.48318
+eigenval(162):    1.48856
+eigenval(163):    1.49047
+eigenval(164):    1.49405
+eigenval(165):    1.49465
+eigenval(166):    1.49822
+eigenval(167):    1.50302
+eigenval(168):    1.50715
+eigenval(169):    1.50931
+eigenval(170):     1.5117
+eigenval(171):    1.51704
+eigenval(172):      1.518
+eigenval(173):    1.52087
+eigenval(174):    1.52643
+eigenval(175):    1.52737
+eigenval(176):    1.53039
+eigenval(177):    1.53369
+eigenval(178):    1.53535
+eigenval(179):    1.54065
+eigenval(180):    1.54329
+eigenval(181):    1.54662
+eigenval(182):    1.54849
+eigenval(183):    1.55227
+eigenval(184):    1.55489
+eigenval(185):    1.55917
+eigenval(186):    1.56011
+eigenval(187):    1.56731
+eigenval(188):    1.57444
+eigenval(189):    1.57803
+eigenval(190):    1.58064
+eigenval(191):    1.59066
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+BEGIN JTMULOW
+JTMULOW LOW MODE MASS 0.01
+JTMULOW 0 0.071784 -0.0221483 0.126818 -0.0822949 
+JTMULOW 1 0.121429 -0.0301621 0.0226049 -0.0301324 
+JTMULOW 2 0.199943 -0.0706137 -0.0133092 -0.0248651 
+JTMULOW 3 0.158456 -0.0191733 0.0268962 0.0462842 
+END JTMULOW
+Solving for all EVEN displacements for mass 0.01
+ OK converged final_rsq= 5.1e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 14
+Solving for all ODD displacements for mass 0.01
+ OK converged final_rsq= 7.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 15
+BEGIN JTMUHI
+JTMUHI RANDOM_SOURCE 0 MASS 0.01
+JTMUHI 0 0 -0.415657 -0.977842 0.471364 -0.221794 
+JTMUHI 0 1 0.646178 -0.616725 -0.502661 0.591607 
+JTMUHI 0 2 0.434707 0.439133 -0.0133359 -0.859612 
+JTMUHI 0 3 -0.134905 -0.243421 0.0965794 -0.102416 
+END JTMUHI
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Solving sloppily for all EVEN displacements for mass 0.01
+ OK converged final_rsq= 7.5e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 1 iters= 7
+Solving sloppily for all ODD displacements for mass 0.01
+ OK converged final_rsq= 7.8e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 1 iters= 7
+Solving precisely for all EVEN displacements for mass 0.01
+ OK converged final_rsq= 4.6e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 14
+Solving precisely for all ODD displacements for mass 0.01
+ OK converged final_rsq= 7.4e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 14
+BEGIN JTMUDIFF
+JTMUDIFF RANDOM_SOURCE 0 MASS 0.01
+JTMUDIFF 0 0 -1.7187e-05 -6.49792e-05 -5.32877e-05 1.72605e-05 
+JTMUDIFF 0 1 4.9078e-06 3.29524e-05 -0.000101601 3.95912e-05 
+JTMUDIFF 0 2 7.3887e-05 1.91568e-05 6.93582e-05 -0.000180953 
+JTMUDIFF 0 3 2.22553e-05 2.06517e-05 -2.648e-05 -2.30774e-05 
+END JTMUDIFF
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Time to save 192 eigenvectors = 4.803801e-02
+RUNNING COMPLETED
+Time = 5.502344e+00 seconds
+total_iters = 569
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Wed Jul  1 13:07:57 2020
+

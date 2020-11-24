@@ -46,10 +46,11 @@ int  setup()   {
 
 	/* print banner, get volume, seed */
     prompt=initial_set();
-   	/* initialize the node random number generator */
-    initialize_prn( &node_prn, iseed, volume+mynode() );
 	/* Initialize the layout functions, which decide where sites live */
     setup_layout();
+    this_node = mynode();
+   	/* initialize the node random number generator */
+    initialize_prn( &node_prn, iseed, volume+mynode() );
 	/* allocate space for lattice, set up coordinate fields */
     make_lattice();
     node0_printf("Made lattice\n"); fflush(stdout);
@@ -73,7 +74,7 @@ node0_printf("Finished setup\n"); fflush(stdout);
 
 /* SETUP ROUTINES */
 int initial_set(){
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
@@ -129,9 +130,8 @@ int initial_set(){
     dyn_flavors[0] = nflavors1;
     dyn_flavors[1] = nflavors2;
     
-    this_node = mynode();
     number_of_nodes = numnodes();
-    volume=nx*ny*nz*nt;
+    volume=(size_t)nx*ny*nz*nt;
     total_iters=0;
     return(prompt);
 }

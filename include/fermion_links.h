@@ -271,35 +271,18 @@ void f_meas_imp( int npbp_reps, int prec,
 		 int naik_term_epsilon_index, fermion_links_t *fl);
 
 /* f_meas_current.c */
-void f_meas_current( int nrand, int nwrite, int thinning, quark_invert_control *qic, 
-		     Real mass, int naik_term_epsilon_index, fermion_links_t *fl, 
-		     char *filename);
-void f_meas_current_diff( int nrand, int nwrite, int thinning, 
-			  quark_invert_control *qic_precise, 
-			  quark_invert_control *qic_sloppy, 
-			  Real mass, int naik_term_epsilon_index, fermion_links_t *fl, 
-			  char *filename);
-void f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
-			   quark_invert_control *qic, ks_param *ksp, 
-			   fermion_links_t *fl, 
-			   char filenames[][MAXFILENAME]);
-void f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
-			       quark_invert_control *qic,
-			       su3_vector **eigVec, double *eigVal, int Nvecs,
-			       ks_param *ksp, fermion_links_t *fl, 
-			       char filenames[][MAXFILENAME]);
-void f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
-				quark_invert_control *qic_precise,
-				quark_invert_control *qic_sloppy, 
-				ks_param *ksp, fermion_links_t *fl, 
-				char filenames[][MAXFILENAME]);
-void f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning,
-				    quark_invert_control *qic_precise,
-				    quark_invert_control *qic_sloppy, 
-				    su3_vector **eigVec, double *eigVal, int Nvecs,
-				    ks_param *ksp, fermion_links_t *fl, 
-				    char filenames[][MAXFILENAME]);
+void f_meas_current( int n_masses, int nrand, int thinning,
+		     quark_invert_control *qic, 
+		     Real masses[], Real charges[],
+		     imp_ferm_links_t *fn_mass[], 
+		     Real *u1_A, char filenames[][MAXFILENAME]);
 
+void f_meas_current_diff( int n_masses, int nrand, int thinning,
+			  quark_invert_control *qic_precise,
+			  quark_invert_control *qic_sloppy,
+			  Real masses[], Real charges[],
+			  imp_ferm_links_t *fn_mass[], 
+			  Real *u1_A, char filenames[][MAXFILENAME]);
 /* mu.c and mu_fast.c */
 void M_derivatives(field_offset phi_off, field_offset xxx_off, 
 		   field_offset xxx1_off, Real mass,

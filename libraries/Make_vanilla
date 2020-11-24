@@ -34,6 +34,8 @@ else ifeq ($(strip ${COMPILER}),gnu)
   CC = gcc
 else ifeq ($(strip ${COMPILER}),cray-intel)
   CC = icc
+else ifeq ($(strip ${COMPILER}),ibm)
+  CC = xlc_r
 endif
 
 # Override
@@ -41,7 +43,7 @@ endif
 
 #----------------------------------------------------------------------
 # 2. Compiler optimization level
-OPT              = -O3 # ( -g -O, etc )
+OPT              = -O3 -g # ( -g -O, etc )
 
 #OCFLAGS = -DOLD_GAUSSRAND
 #----------------------------------------------------------------------
@@ -52,17 +54,19 @@ ifeq ($(strip ${COMPILER}),gnu)
 endif
 #------------------------ BlueGene -----------------------------------
 ifeq ($(strip ${COMPILER}),ibm)
-   OCFLAGS = -qarch=440d -qtune=440
+   OCFLAGS = # -qarch=440d -qtune=440
 endif
 
 #-------------- Intel icc/ecc -----------------------------------
-ifeq ($(strip ${COMPILER}),intel)
+ifeq ($(strip ${COMPILER}),cray-intel)
   
-  # Architecture choices: knl, knc, hsw
+  # Architecture choices: knl, skx, knc, hsw
   ifeq ($(strip ${ARCH}),knl)
     OCFLAGS +=  -xMIC-AVX512 
   else ifeq ($(strip ${ARCH}),knc)
     OCFLAGS +=  -mmic
+  else ifeq ($(strip ${ARCH}),skx)
+    OCFLAGS += -xCORE-AVX512 -qopt-zmm-usage=high
   else ifeq ($(strip ${ARCH}),hsw)
     OCFLAGS += -xCORE-AVX2
   else
@@ -71,6 +75,25 @@ ifeq ($(strip ${COMPILER}),intel)
   
   # Debugging and optimization
   OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+
+else ifeq ($(strip ${COMPILER}),intel)
+  
+  # Architecture choices: knl, skx, knc, hsw
+  ifeq ($(strip ${ARCH}),knl)
+    OCFLAGS +=  -xMIC-AVX512 
+  else ifeq ($(strip ${ARCH}),knc)
+    OCFLAGS +=  -mmic
+  else ifeq ($(strip ${ARCH}),skx)
+    OCFLAGS += -xCORE-AVX512 -qopt-zmm-usage=high
+  else ifeq ($(strip ${ARCH}),hsw)
+    OCFLAGS += -xCORE-AVX2
+  else
+    OCFLAGS += -xavx
+  endif
+  
+  # Debugging and optimization
+  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+
 endif
 
 #-------------- Portland Group ----------------------------
@@ -86,6 +109,13 @@ CODETYPE         = -DFAST # usually unchanged
 # 5. Choose archiver to match compiler for the QCDOC
 
 AR = ar
+
+#----------------------------------------------------------------------
+# 6. Check if we are using QUDA
+#----------------------------------------------------------------------
+ifeq ($(strip ${WANTQUDA}),true)
+  OCFLAGS += -DHAVE_QUDA
+endif
 
 #----------------------------------------------------------------------
 # End of user choices.  PLEASE, ALSO, CHECK include/config.h.

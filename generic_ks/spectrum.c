@@ -62,7 +62,7 @@ int spectrum(ferm_links_t *fn)
 
 	      /* do a C.G. (source in phi, result in xxx) */
 	      cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				niter, nrestart, rsqprop, PRECISION, 
+				niter, nrestart, rsqprop, MILC_PRECISION, 
 				EVEN, &finalrsq, fn);
 	      /* Multiply by -Madjoint */
 	      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, fn);

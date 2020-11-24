@@ -37,7 +37,8 @@ dot_corr( complex *dest, complex *src, int count )
 
   FORALLFIELDSITES(i){
     dest[i].real = 0.;
-    for(j = 0; j < count; j++)
+    /* Sum only the spatial components -- hence count-1 */
+    for(j = 0; j < count-1; j++)
       dest[i].real += 
 	(src[i*count+j].real*src[i*count+j].real + src[i*count+j].imag*src[i*count+j].imag)/volume; 
     
@@ -103,11 +104,10 @@ rcorr(Real *qblock[], Real *q2block[],
       complex *qin_diff[], int nrand_diff,
       int nblock, int block_size[]){
   complex *qtmp;
-  Real *q;
   int jrand;
 
   /* Average qin_diff, the differnece between precise and sloppy. */
-  /* Result in qcorr (corr means correlation) */
+  /* Result in qcorr */
   complex *qcorr = create_c_array_field(NMU);
 
   /* Add up the results in qin_diff */
@@ -141,8 +141,8 @@ rcorr(Real *qblock[], Real *q2block[],
 
       /* Compute average of current density for this block */
       clear_c_array_field(qtmp, NMU);
-      for(int i = 0; i < bs; i++)
-	sum_c_array_field(qtmp, qin_sloppy[jrand+i], NMU);
+      for(int kb = 0; kb < bs; kb++)
+	sum_c_array_field(qtmp, qin_sloppy[jrand+kb], NMU);
       mulreal_c_field(qtmp, 1./((double) bs), NMU);
   
       /* The forward FT is done separately for each current component */

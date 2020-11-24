@@ -28,7 +28,7 @@ int save_w_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
   recxml = QIO_string_create();
   QIO_string_set(recxml, recinfo);
 
-  if(PRECISION == 1)
+  if(MILC_PRECISION == 1)
     status = write_F3_D_from_field(outfile, recxml, src, count);
   else
     status = write_D3_D_from_field(outfile, recxml, src, count);
@@ -172,7 +172,11 @@ void restore_w_vector_scidac_to_field(char *filename, int serpar,
 
   /* Read the lattice field: "count" vectors per site */
   status = read_w_vector_scidac(infile, dest, count);
-  if(status)terminate(1);
+  if(status){
+    printf("restore_w_vector_scidac_to_field(%d): exiting due to read error %d on file %s\n",
+	   this_node, status, filename);
+    terminate(1);
+  }
 
   /* Close the file */
   r_close_scidac_file(infile);
@@ -246,7 +250,7 @@ int write_wpropsource_C_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml,
 				  complex *src, int t0){
   int status;
 
-  if(PRECISION == 1)
+  if(MILC_PRECISION == 1)
     status = write_F_C_timeslice_from_field(outfile, recxml, src, 1, t0);
   else
     status = write_D_C_timeslice_from_field(outfile, recxml, src, 1, t0);
@@ -280,12 +284,12 @@ int write_wpropsource_D_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml,
   int status;
 
   if(t0 == ALL_T_SLICES){
-    if(PRECISION == 1)
+    if(MILC_PRECISION == 1)
       status = write_F3_D_from_field(outfile, recxml, src, 1);
     else
       status = write_D3_D_from_field(outfile, recxml, src, 1);
   }  else {
-    if(PRECISION == 1)
+    if(MILC_PRECISION == 1)
       status = write_F3_D_timeslice_from_field(outfile, recxml, src, 1, t0);
     else
       status = write_D3_D_timeslice_from_field(outfile, recxml, src, 1, t0);
@@ -329,7 +333,7 @@ int write_prop_usqcd_sc(QIO_Writer *outfile, wilson_vector *src, int spin,
   QIO_encode_usqcd_proprecord_info(recxml, proprecord_info);
   QIO_destroy_usqcd_proprecord_info(proprecord_info);
 
-  if(PRECISION == 1)
+  if(MILC_PRECISION == 1)
     status = write_F3_D_from_field(outfile, recxml, src, 1);
   else
     status = write_D3_D_from_field(outfile, recxml, src, 1);

@@ -1,0 +1,77 @@
+Pure gauge SU3
+Microcanonical simulation with refreshing
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+Hybrid Monte Carlo algorithm
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 8352
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+warms 0
+trajecs 10
+traj_between_meas 1
+beta 6
+microcanonical_time_step 0.01
+steps_per_trajectory 4
+gauge configuration to be saved in gdummy
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked
+Time to check unitarity = 5.000000e-02
+START 3.000000e+00 3.000000e+00
+WARMUPS COMPLETED
+ACTION: g,h = -1.843200e+04  8.279644e+03  -1.015236e+04
+ACTION: g,h = -1.827631e+04  8.123864e+03  -1.015245e+04
+ACCEPT: delta S = -8.984375e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.974522e+00 2.974798e+00
+ACTION: g,h = -1.827631e+04  8.330820e+03  -9.945490e+03
+ACTION: g,h = -1.812056e+04  8.174989e+03  -9.945576e+03
+ACCEPT: delta S = -8.593750e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.948748e+00 2.949873e+00
+ACTION: g,h = -1.812056e+04  8.386228e+03  -9.734337e+03
+ACTION: g,h = -1.796922e+04  8.234807e+03  -9.734416e+03
+ACCEPT: delta S = -7.910156e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.923510e+00 2.925846e+00
+ACTION: g,h = -1.796922e+04  8.168833e+03  -9.800389e+03
+ACTION: g,h = -1.782966e+04  8.029192e+03  -9.800466e+03
+ACCEPT: delta S = -7.714844e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.900676e+00 2.903250e+00
+ACTION: g,h = -1.782966e+04  8.093245e+03  -9.736414e+03
+ACTION: g,h = -1.770238e+04  7.965909e+03  -9.736470e+03
+ACCEPT: delta S = -5.566406e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.879547e+00 2.882946e+00
+ACTION: g,h = -1.770238e+04  8.277884e+03  -9.424495e+03
+ACTION: g,h = -1.757149e+04  8.146935e+03  -9.424559e+03
+ACCEPT: delta S = -6.347656e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.858542e+00 2.861345e+00
+ACTION: g,h = -1.757149e+04  8.256525e+03  -9.314969e+03
+ACTION: g,h = -1.744256e+04  8.127504e+03  -9.315058e+03
+ACCEPT: delta S = -8.984375e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.837686e+00 2.840232e+00
+ACTION: g,h = -1.744256e+04  8.316104e+03  -9.126458e+03
+ACTION: g,h = -1.732335e+04  8.196830e+03  -9.126516e+03
+ACCEPT: delta S = -5.761719e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.818257e+00 2.820853e+00
+ACTION: g,h = -1.732335e+04  8.182516e+03  -9.140830e+03
+ACTION: g,h = -1.720064e+04  8.059753e+03  -9.140892e+03
+ACCEPT: delta S = -6.152344e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.798278e+00 2.800890e+00
+ACTION: g,h = -1.720064e+04  8.259393e+03  -8.941252e+03
+ACTION: g,h = -1.709815e+04  8.156866e+03  -8.941283e+03
+ACCEPT: delta S = -3.125000e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.781878e+00 2.783925e+00
+RUNNING COMPLETED
+Time = 1.369000e+01 seconds
+Saved gauge configuration serially to binary file gdummy
+Time stamp Sun Oct 19 10:00:21 1997
+Checksums ac9faa50 137733df
+Wrote info file gdummy.info
+Time to save = 8.000000e-02
+CHECK PLAQ: 2.781878e+00 2.783925e+00
+
+

@@ -158,7 +158,7 @@ dumpmat_hp( &lsum );
   //    THIS BASICALLY REUNITARIZES THE HYP-SMEARED LINKS,
   //    WHICH WERE ALREADY PROJECTED TO SU(3)
   //    MAY NOT WORK RIGHT IF U(3) PROJECTION IS USED
-  reunitarize();
+  reunitarize_cpu();
 
 }
 
@@ -201,7 +201,8 @@ void smooth()
       
       /* compute the decorated staple in tempmat1 */
       dsdu_ape2(dir,parity); 
-      
+
+      int status = 0;
       FORSOMEPARITY(i,st,parity){
 	
 	st->blocked_link[dir]=st->blocked_link[4+dir];
@@ -213,8 +214,11 @@ void smooth()
 				    &(st->tempmat1), alpha/6.0, &fatq );
 	
 	/* Project fatq onto SU(3) - result in blocked_link[dir] */
-	project_su3( &(st->blocked_link[dir]), &fatq, hits, 0.);
+	status += project_su3( &(st->blocked_link[dir]), &fatq, hits, 0.);
       } /* site */
+      g_intsum(&status);
+      if(this_node == 0 && status > 0)
+	printf("WARNING %d sites report no convergence in project_su3\n", status);
     }} /*  direction and parity */
   
   /* Replace original links with result */
@@ -224,7 +228,7 @@ void smooth()
   }
   
   /* reunitarize the gauge field */
-  reunitarize();
+  reunitarize_cpu();
   
 } /* smooth */
 
@@ -405,6 +409,7 @@ void dsdu_ape_ext1(register int dir1, register int dir3, int parity)
     cleanup_gather(tag3);
     cleanup_general_gather(tag4);
   }
+  int status = 0;
   FORSOMEPARITY(i,st,parity){
     scalar_mult_su3_matrix( &(st->tempmat1), 
 			    (alpha2/4.0), &(st->tempmat1));
@@ -413,9 +418,12 @@ void dsdu_ape_ext1(register int dir1, register int dir3, int parity)
     (st->blocked_link[8+count])= (st->blocked_link[4+dir1]);
     
     /* Project fatq onto SU(3) - result in blocked_link[8+count] */
-    project_su3( &(st->blocked_link[8+count]), &fatq, hits, 0.);
+    status += project_su3( &(st->blocked_link[8+count]), &fatq, hits, 0.);
     
   }
+  g_intsum(&status);
+  if(this_node == 0 && status > 0)
+    printf("WARNING %d sites report no convergence in project_su3\n", status);
 } /* dsdu_ape_ext1 */
 
 
@@ -494,6 +502,7 @@ void dsdu_ape_ext2(register int dir1, register int dir2, int parity)
   cleanup_gather(tag2);
   cleanup_gather(tag3);
   cleanup_general_gather(tag4);
+  int status = 0;
   FORSOMEPARITY(i,st,parity){
     scalar_mult_su3_matrix( &(st->tempmat1), 
 			    (alpha3/2.0), &(st->tempmat1));
@@ -502,8 +511,11 @@ void dsdu_ape_ext2(register int dir1, register int dir2, int parity)
     (st->blocked_link[20+count])= (st->blocked_link[4+dir1]);
     
     /* Project fatq onto SU(3) - result in blocked_link[20+count] */
-    project_su3( &(st->blocked_link[20+count]), &fatq, hits, 0.);
+    status += project_su3( &(st->blocked_link[20+count]), &fatq, hits, 0.);
   }
+  g_intsum(&status);
+  if(this_node == 0 && status > 0)
+    printf("WARNING %d sites report no convergence in project_su3\n", status);
 } /* dsdu_ape_ext2 */
 
 #endif

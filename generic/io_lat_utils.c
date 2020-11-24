@@ -124,7 +124,7 @@ int qcdhdr_get_float(char *s, QCDheader *hdr, Real *q) {
   char *p;
   qcdhdr_get_str(s,hdr,&p);
   if (p==NULL) return (FAILURE);
-#if PRECISION == 1
+#if MILC_PRECISION == 1
   sscanf(p,"%f",q);
 #else
   sscanf(p,"%lf",q);
@@ -174,7 +174,10 @@ QCDheader * qcdhdr_get_hdr(FILE *in)
   char *p, *q;
 
   /* Begin reading, and check for "BEGIN_HEADER" token */
-  fgets(line,MAX_LINE_LENGTH,in);
+  if (fgets(line,MAX_LINE_LENGTH,in) == NULL) {
+    node0_printf("Unexpected NULL pointer in fgets\n");
+    terminate(1);
+  }
   /*
   if (strcmp(line,"BEGIN_HEADER\n")!=0)
     error_exit("qcdhdr_get_hdr: Missing \"BEGIN_HEADER\"; punting \n");
@@ -190,7 +193,10 @@ QCDheader * qcdhdr_get_hdr(FILE *in)
   n = 0;
   printf("reading Archive header:\n");
   while (1) {
-    fgets(line,MAX_LINE_LENGTH,in);
+    if (fgets(line,MAX_LINE_LENGTH,in) == NULL) {
+      node0_printf("Unexpected NULL pointer in fgets\n");
+      terminate(1);
+    }
     printf("%s", line);
 
     if (strcmp(line,"END_HEADER\n")==0) break;
@@ -967,7 +973,7 @@ int read_v3_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
   /* Header byte length for this file */
@@ -1082,7 +1088,7 @@ int read_1996_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
   
@@ -1252,7 +1258,7 @@ int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
   
@@ -1450,7 +1456,7 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
 

@@ -10,7 +10,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#ifdef OMP
 #include <omp.h>
+#endif
 
 #define CG_DEBUG 1
 #define UNOPTIMIZED_PACK_UNPACK 0
@@ -90,10 +92,11 @@ initialize_qphix(int precision){
   layout.this_node = this_node;
   layout.even_sites_on_node = even_sites_on_node;
   layout.sites_on_node = sites_on_node;
+  layout.mpi_comm = mycomm();   /* void * pointer to the MPI communicator */
 
   node0_printf("Initializing QPhiX for precision %d\n", precision);
   node0_printf("NumCores = %d, ThreadsPerCore = %d, minCt = %d\n", numCores, threads_per_core, minCt);
-
+  fflush(stdout);
   status = QPHIX_init(&layout);
 
   if(status){

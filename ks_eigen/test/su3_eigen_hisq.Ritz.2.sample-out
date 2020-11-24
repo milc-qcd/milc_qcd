@@ -1,0 +1,237 @@
+SU3 with improved KS action
+Eigenvalues and eigenvectors
+MIMD version 6
+Machine = QMP (portable), with 1 nodes
+Host(0) = aquila.physics.utah.edu
+Username = detar
+start: Sun Feb 14 16:37:20 2016
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+HALF_MIXED
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+# Always 0 when this data is in a file
+# Lattice dimensions
+nx 4
+ny 4
+nz 4
+nt 4
+# random number seed
+iseed 5682304
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 0.3 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+
+
+# mass for psi-bar-psi
+mass 0.1
+# tadpole factor
+u0 1
+# CG for psi-bar-psi measurement (error_per_site is unused)
+max_cg_iterations 300
+max_cg_restarts 5
+error_per_site 5e-06
+error_for_propagator 2e-06
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 32
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+# Outer loop iterations
+Kalkreuter_iters 20
+# Eigenvalue tolerance
+eigenval_tolerance 1e-14
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease 0.3
+# Input lattice
+reload_serial ../../binary_samples/lat.sample.inst
+staple_weight 0
+ape_iter 0
+Reading as old-style gauge field configuration.
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.inst
+Checksums ed5b7449 68d34f64
+Checksums not verified in this format
+Time to reload gauge configuration = 6.480217e-04
+CHECK PLAQ: 2.973028e+00 2.973028e+00
+CHECK NERSC LINKTR: 9.916278e-01 CKSUM: a0e19040
+Unitarity checked.  Max deviation 1.49e-07
+Time to check unitarity = 3.879070e-04
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+Combined fattening and long-link calculation time: 0.038259
+Eigenvalues after diagonalization at iteration 20
+Eigenvalues after diagonalization at iteration 13
+BEGIN RESULTS
+Eigenvalue(0) = 0.04613507862594197 +/- 7.625158e-18	 cvg? 0  
+Eigenvalue(1) = 0.04613507862594207 +/- 5.337611e-17	 cvg? 0  
+Eigenvalue(2) = 1.984240261247253 +/- 1.708035e-15	 cvg? 0  
+Eigenvalue(3) = 1.984240261247256 +/- 8.296172e-15	 cvg? 0  
+Eigenvalue(4) = 2.033701817201998 +/- 2.440051e-15	 cvg? 0  
+Eigenvalue(5) = 2.033701817202003 +/- 5.807320e-14	 cvg? 0  
+Eigenvalue(6) = 2.073985251041798 +/- 4.392091e-15	 cvg? 0  
+Eigenvalue(7) = 2.0739852510418 +/- 3.904081e-15	 cvg? 0  
+Eigenvalue(8) = 2.092368340174408 +/- 4.392091e-15	 cvg? 0  
+Eigenvalue(9) = 2.092368340174416 +/- 8.784182e-15	 cvg? 0  
+Eigenvalue(10) = 2.135127120067371 +/- 2.928061e-15	 cvg? 0  
+Eigenvalue(11) = 2.135127120067379 +/- 1.171224e-14	 cvg? 0  
+Eigenvalue(12) = 2.175196572800652 +/- 1.464030e-15	 cvg? 0  
+Eigenvalue(13) = 2.175196572800658 +/- 5.709718e-14	 cvg? 0  
+Eigenvalue(14) = 2.347222222222225 +/- 2.928061e-15	 cvg? 0  
+Eigenvalue(15) = 2.347222222222225 +/- 1.464030e-15	 cvg? 0  
+Eigenvalue(16) = 2.347222222222226 +/- 2.440051e-15	 cvg? 0  
+Eigenvalue(17) = 2.347222222222226 +/- 1.952040e-15	 cvg? 0  
+Eigenvalue(18) = 2.347222222222227 +/- 1.464030e-15	 cvg? 0  
+Eigenvalue(19) = 2.347222222222227 +/- 4.880101e-16	 cvg? 0  
+Eigenvalue(20) = 2.347222222222228 +/- 6.344132e-15	 cvg? 0  
+Eigenvalue(21) = 2.34722222222223 +/- 5.856121e-15	 cvg? 0  
+Eigenvalue(22) = 2.347222222222234 +/- 3.416071e-15	 cvg? 0  
+Eigenvalue(23) = 2.347222222222235 +/- 4.392091e-15	 cvg? 0  
+Eigenvalue(24) = 2.347222222222238 +/- 7.320152e-15	 cvg? 0  
+Eigenvalue(25) = 2.347222222222243 +/- 8.296172e-15	 cvg? 0  
+Eigenvalue(26) = 2.347222222222249 +/- 6.344132e-15	 cvg? 0  
+Eigenvalue(27) = 2.347222222222255 +/- 3.904081e-14	 cvg? 0  
+Eigenvalue(28) = 2.34722222222226 +/- 6.148928e-14	 cvg? 0  
+Eigenvalue(29) = 2.347222222224254 +/- 2.093563e-12	 cvg? 0  
+Eigenvalue(30) = 2.445174899536306 +/- 3.904081e-15	 cvg? 0  
+Eigenvalue(31) = 2.445174899536318 +/- 1.952040e-15	 cvg? 0  
+Even site residuals
+Checking eigensolutions
+eigVal[0] = 4.613508e-02 ( resid = 3.420169e-10 , |eigVec[0]|-1 = 0.000000e+00 )
+eigVal[1] = 4.613508e-02 ( resid = 4.771706e-10 , |eigVec[1]|-1 = 0.000000e+00 )
+eigVal[2] = 1.984240e+00 ( resid = 4.615318e-08 , |eigVec[2]|-1 = 2.220446e-16 )
+eigVal[3] = 1.984240e+00 ( resid = 6.091669e-08 , |eigVec[3]|-1 = -1.110223e-16 )
+eigVal[4] = 2.033702e+00 ( resid = 4.760686e-08 , |eigVec[4]|-1 = 0.000000e+00 )
+eigVal[5] = 2.033702e+00 ( resid = 1.163488e-07 , |eigVec[5]|-1 = 0.000000e+00 )
+eigVal[6] = 2.073985e+00 ( resid = 8.399489e-08 , |eigVec[6]|-1 = 2.220446e-16 )
+eigVal[7] = 2.073985e+00 ( resid = 1.072177e-07 , |eigVec[7]|-1 = 0.000000e+00 )
+eigVal[8] = 2.092368e+00 ( resid = 8.038401e-08 , |eigVec[8]|-1 = 0.000000e+00 )
+eigVal[9] = 2.092368e+00 ( resid = 7.659205e-08 , |eigVec[9]|-1 = 0.000000e+00 )
+eigVal[10] = 2.135127e+00 ( resid = 6.242395e-08 , |eigVec[10]|-1 = 0.000000e+00 )
+eigVal[11] = 2.135127e+00 ( resid = 6.417337e-08 , |eigVec[11]|-1 = 2.220446e-16 )
+eigVal[12] = 2.175197e+00 ( resid = 8.435805e-08 , |eigVec[12]|-1 = -1.110223e-16 )
+eigVal[13] = 2.175197e+00 ( resid = 1.680941e-07 , |eigVec[13]|-1 = 2.220446e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 6.797595e-08 , |eigVec[14]|-1 = 2.220446e-16 )
+eigVal[15] = 2.347222e+00 ( resid = 6.043204e-08 , |eigVec[15]|-1 = -7.771561e-16 )
+eigVal[16] = 2.347222e+00 ( resid = 6.516231e-08 , |eigVec[16]|-1 = -4.440892e-16 )
+eigVal[17] = 2.347222e+00 ( resid = 6.002220e-08 , |eigVec[17]|-1 = -4.440892e-16 )
+eigVal[18] = 2.347222e+00 ( resid = 4.277008e-08 , |eigVec[18]|-1 = -1.110223e-16 )
+eigVal[19] = 2.347222e+00 ( resid = 9.118010e-08 , |eigVec[19]|-1 = -8.881784e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 1.043637e-07 , |eigVec[20]|-1 = 0.000000e+00 )
+eigVal[21] = 2.347222e+00 ( resid = 9.076778e-08 , |eigVec[21]|-1 = -1.110223e-16 )
+eigVal[22] = 2.347222e+00 ( resid = 8.683037e-08 , |eigVec[22]|-1 = 1.110223e-15 )
+eigVal[23] = 2.347222e+00 ( resid = 8.838310e-08 , |eigVec[23]|-1 = -1.110223e-16 )
+eigVal[24] = 2.347222e+00 ( resid = 7.072476e-08 , |eigVec[24]|-1 = 4.440892e-16 )
+eigVal[25] = 2.347222e+00 ( resid = 9.747970e-08 , |eigVec[25]|-1 = -3.330669e-16 )
+eigVal[26] = 2.347222e+00 ( resid = 1.050115e-07 , |eigVec[26]|-1 = 2.220446e-16 )
+eigVal[27] = 2.347222e+00 ( resid = 2.085379e-07 , |eigVec[27]|-1 = 0.000000e+00 )
+eigVal[28] = 2.347222e+00 ( resid = 1.809608e-07 , |eigVec[28]|-1 = 2.220446e-16 )
+eigVal[29] = 2.347222e+00 ( resid = 1.844905e-06 , |eigVec[29]|-1 = 0.000000e+00 )
+eigVal[30] = 2.445175e+00 ( resid = 4.996008e-08 , |eigVec[30]|-1 = 0.000000e+00 )
+eigVal[31] = 2.445175e+00 ( resid = 6.062493e-08 , |eigVec[31]|-1 = -1.110223e-16 )
+End of eigensolutions
+Odd site residuals
+Checking eigensolutions
+eigVal[0] = 4.613508e-02 ( resid = 5.264336e-09 , |eigVec[0]|-1 = -1.110223e-16 )
+eigVal[1] = 4.613508e-02 ( resid = 5.312047e-09 , |eigVec[1]|-1 = 0.000000e+00 )
+eigVal[2] = 1.984240e+00 ( resid = 9.648907e-08 , |eigVec[2]|-1 = 2.220446e-16 )
+eigVal[3] = 1.984240e+00 ( resid = 8.918998e-08 , |eigVec[3]|-1 = -1.110223e-16 )
+eigVal[4] = 2.033702e+00 ( resid = 1.357189e-07 , |eigVec[4]|-1 = 0.000000e+00 )
+eigVal[5] = 2.033702e+00 ( resid = 3.011249e-07 , |eigVec[5]|-1 = 0.000000e+00 )
+eigVal[6] = 2.073985e+00 ( resid = 2.305520e-07 , |eigVec[6]|-1 = -2.220446e-16 )
+eigVal[7] = 2.073985e+00 ( resid = 2.630654e-07 , |eigVec[7]|-1 = 0.000000e+00 )
+eigVal[8] = 2.092368e+00 ( resid = 2.276036e-07 , |eigVec[8]|-1 = -1.110223e-16 )
+eigVal[9] = 2.092368e+00 ( resid = 1.422673e-07 , |eigVec[9]|-1 = 0.000000e+00 )
+eigVal[10] = 2.135127e+00 ( resid = 1.427959e-07 , |eigVec[10]|-1 = -2.220446e-16 )
+eigVal[11] = 2.135127e+00 ( resid = 9.171632e-08 , |eigVec[11]|-1 = 2.220446e-16 )
+eigVal[12] = 2.175197e+00 ( resid = 1.984139e-07 , |eigVec[12]|-1 = 2.220446e-16 )
+eigVal[13] = 2.175197e+00 ( resid = 3.997602e-07 , |eigVec[13]|-1 = 2.220446e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 1.618576e-07 , |eigVec[14]|-1 = 0.000000e+00 )
+eigVal[15] = 2.347222e+00 ( resid = 1.470315e-07 , |eigVec[15]|-1 = -5.551115e-16 )
+eigVal[16] = 2.347222e+00 ( resid = 1.313268e-07 , |eigVec[16]|-1 = -1.110223e-16 )
+eigVal[17] = 2.347222e+00 ( resid = 1.226613e-07 , |eigVec[17]|-1 = 0.000000e+00 )
+eigVal[18] = 2.347222e+00 ( resid = 8.969042e-08 , |eigVec[18]|-1 = 0.000000e+00 )
+eigVal[19] = 2.347222e+00 ( resid = 2.164401e-07 , |eigVec[19]|-1 = 0.000000e+00 )
+eigVal[20] = 2.347222e+00 ( resid = 2.217207e-07 , |eigVec[20]|-1 = 2.220446e-16 )
+eigVal[21] = 2.347222e+00 ( resid = 1.889380e-07 , |eigVec[21]|-1 = 0.000000e+00 )
+eigVal[22] = 2.347222e+00 ( resid = 1.906270e-07 , |eigVec[22]|-1 = -4.440892e-16 )
+eigVal[23] = 2.347222e+00 ( resid = 1.789009e-07 , |eigVec[23]|-1 = -1.110223e-16 )
+eigVal[24] = 2.347222e+00 ( resid = 1.419116e-07 , |eigVec[24]|-1 = 2.220446e-16 )
+eigVal[25] = 2.347222e+00 ( resid = 2.017085e-07 , |eigVec[25]|-1 = 0.000000e+00 )
+eigVal[26] = 2.347222e+00 ( resid = 1.899888e-07 , |eigVec[26]|-1 = -1.110223e-16 )
+eigVal[27] = 2.347222e+00 ( resid = 4.908013e-07 , |eigVec[27]|-1 = -2.220446e-16 )
+eigVal[28] = 2.347222e+00 ( resid = 4.012279e-07 , |eigVec[28]|-1 = 4.440892e-16 )
+eigVal[29] = 2.347222e+00 ( resid = 4.377757e-06 , |eigVec[29]|-1 = -2.220446e-16 )
+eigVal[30] = 2.445175e+00 ( resid = 6.001956e-08 , |eigVec[30]|-1 = 4.440892e-16 )
+eigVal[31] = 2.445175e+00 ( resid = 1.083606e-07 , |eigVec[31]|-1 = -1.110223e-16 )
+End of eigensolutions
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+The above were eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0):   0.107395
+eigenval(1):   0.107395
+eigenval(2):   0.704315
+eigenval(3):   0.704315
+eigenval(4):    0.71304
+eigenval(5):    0.71304
+eigenval(6):   0.720067
+eigenval(7):   0.720067
+eigenval(8):   0.723251
+eigenval(9):   0.723251
+eigenval(10):   0.730604
+eigenval(11):   0.730604
+eigenval(12):   0.737427
+eigenval(13):   0.737427
+eigenval(14):   0.766032
+eigenval(15):   0.766032
+eigenval(16):   0.766032
+eigenval(17):   0.766032
+eigenval(18):   0.766032
+eigenval(19):   0.766032
+eigenval(20):   0.766032
+eigenval(21):   0.766032
+eigenval(22):   0.766032
+eigenval(23):   0.766032
+eigenval(24):   0.766032
+eigenval(25):   0.766032
+eigenval(26):   0.766032
+eigenval(27):   0.766032
+eigenval(28):   0.766032
+eigenval(29):   0.766032
+eigenval(30):   0.781853
+eigenval(31):   0.781853
+RUNNING COMPLETED
+Time = 2.265097e+00 seconds
+total Rayleigh iters = 7102
+exit: Tue Apr 17 22:17:58 2018
+
+

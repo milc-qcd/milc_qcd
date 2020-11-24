@@ -41,10 +41,11 @@ setup()
   /* print banner, get volume, nflavors1,nflavors2, seed */
   prompt = initial_set();
   if(prompt == 2)return prompt;
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   node0_printf("Made lattice\n"); fflush(stdout);
@@ -72,7 +73,7 @@ static double eps_naik[MAX_NAIK];
 int
 initial_set()
 {
-  int prompt,status;
+  int prompt=0,status;
 #ifdef FIX_NODE_GEOM
   int i;
 #endif
@@ -125,9 +126,8 @@ initial_set()
 #endif
 #endif
 
-  this_node = mynode();
   number_of_nodes = numnodes();
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
 #ifdef HISQ_SVD_COUNTER
   hisq_svd_counter = 0;
 #endif
@@ -228,7 +228,7 @@ readin(int prompt)
       par_buf.qic[i].nsrc = 1;
       par_buf.qic[i].max = par_buf.qic[0].max;
       par_buf.qic[i].nrestart = par_buf.qic[0].nrestart;
-      par_buf.qic[i].prec = PRECISION;
+      par_buf.qic[i].prec = MILC_PRECISION;
       par_buf.qic[i].parity = EVENANDODD;
       /* error for propagator conjugate gradient */
       IF_OK status += get_f(stdin, prompt, "error_for_propagator", 
@@ -335,9 +335,9 @@ readin(int prompt)
 #endif
 
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
-  fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 #else
-  fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+  fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 #endif
 
   return(0);

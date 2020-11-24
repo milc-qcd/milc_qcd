@@ -41,6 +41,10 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
     register Real eb3;
     register anti_hermitmat* momentum;
     su3_matrix *staple, *tempmat1;
+#ifdef ANISOTROPY
+    int is_anisotropic; /* to decide what kind of staple we have:
+                      0 - 3d-isotropic, 1 - anisotropic */
+#endif
 
     /* lengths of various kinds of loops */
     int *loop_length = get_loop_length();
@@ -67,7 +71,7 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
     Real action,act2,new_term;
 
     int ncount;
-    char myname[] = "imp_gauge_force";
+    char myname[] = "imp_gauge_force_cpu";
     su3_matrix *links;
 
 #ifdef GFTIME
@@ -96,7 +100,11 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
       terminate(1);
     }
 
+#ifndef ANISOTROPY
     eb3 = eps*beta/3.0;
+#else
+    eb3 = eps/3.0;
+#endif
     links = create_G_from_site();
 
     /* Loop over directions, update mom[dir] */
@@ -113,6 +121,10 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
 /**printf("UPD:  "); printpath( loop_table[iloop][ln], length );**/
 		/* set up dirs.  we are looking at loop starting in "XUP"
 		   direction, rotate so it starts in "dir" direction. */
+#ifdef ANISOTROPY
+                /* initialize staple flag as 3d-isotropic */
+                is_anisotropic=0;
+#endif
 		for(k=0;k<length;k++){
                     if( GOES_FORWARDS(loop_table[iloop][ln][k]) ){
                 	dirs[k]=(dir+loop_table[iloop][ln][k] )% 4;
@@ -121,6 +133,11 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
                         dirs[k]=OPP_DIR(
 			    (dir+OPP_DIR(loop_table[iloop][ln][k]))%4 );
 		    }
+#ifdef ANISOTROPY
+                    /* flip the flag if an anisotropic link is encountered */
+                    if( is_anisotropic==0 && ( dirs[k]==ani_dir || dirs[k]==OPP_DIR(ani_dir) ) )
+                      is_anisotropic=1;
+#endif
 		}
 
 		path_length= length-1;  /* generalized "staple" */
@@ -148,6 +165,12 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
 			su3_adjoint( &(tempmat1[i]), &tmat1 );
 			/* first we compute the fundamental term */
 			new_term = loop_coeff[iloop][0];
+#ifdef ANISOTROPY
+                        /* multiply the coefficient by the coupling -
+                           this weighs 3d-isotropic or anisotropic paths
+                           differently */
+                        new_term *= beta[is_anisotropic];
+#endif
 
 			/* now we add in the higher representations */
 			if(nreps > 1){
@@ -194,4 +217,10 @@ node0_printf("GFTIME:   time = %e (Symanzik1) mflops = %e\n",dtime,
  destroy_G(links);
  special_free(staple); 
  special_free(tempmat1); 
-} /* imp_gauge_force.c */
+} /* imp_gauge_force_cpu.c */
+
+/* Wrapper for backward compatibility */
+void imp_gauge_force( Real eps, field_offset mom_off ){
+  imp_gauge_force_cpu(eps, mom_off);
+}
+

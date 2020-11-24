@@ -40,6 +40,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0 
+time_bc antiperiodic
 # Chiral condensate and related measurements
 number_of_pbp_masses 0
 # Description of base sources
@@ -71,7 +72,6 @@ max_cg_iterations 300
 max_cg_restarts 5
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 1
 source 0
 number_of_propagators 1
@@ -87,7 +87,6 @@ max_cg_iterations 300
 max_cg_restarts 5
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 1
 source 1
 number_of_propagators 1
@@ -102,7 +101,6 @@ max_cg_iterations 300
 max_cg_restarts 5
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 1
 source 2
 number_of_propagators 1

@@ -18,6 +18,7 @@
 
 
 #include "defines.h"
+#include "params.h"
 #include "../include/generic_quark_types.h"
 #include "../include/generic_ks.h" /* For ferm_links_t and ks_action_paths */
 #include "../include/random.h"
@@ -50,14 +51,14 @@ typedef struct {
 /*   Now come the physical fields, program dependent            */
 /* ------------------------------------------------------------ */
 	/* gauge field */
-	su3_matrix link[4];	/* the fundamental field */
+	su3_matrix link[4] ALIGNMENT;	/* the fundamental field */
 #ifdef HMC_ALGORITHM
  	su3_matrix old_link[4];
 	/* For accept/reject */
 #endif
 
 	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4];
+ 	anti_hermitmat mom[4] ALIGNMENT;
 
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */
@@ -113,36 +114,39 @@ typedef struct {
    u0 is tadpole improvement factor, perhaps (plaq/3)^(1/4)
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
+#ifdef FIX_NODE_GEOM
+EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
+			    hypercubes) for the compute nodes in each
+			    coordinate direction.  Must be divisors of
+			    the lattice dimensions */
+#ifdef FIX_IONODE_GEOM
+EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
+			     partitions in each coordinate direction,
+			     one I/O node for each square.  The I/O
+			     node is at the origin of the square.
+			     Must be divisors of the node_geometry. */
+#endif
+#endif
 EXTERN	int niter,nrestart,nflavors;
-EXTERN  Real mass,u0;
+EXTERN  Real u0;
 EXTERN	Real rsqmin,rsqprop;
-EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
-			   RELOAD_CHECKPOINT, FRESH */
-EXTERN	char startfile[MAXFILENAME];
+EXTERN  params param;           /* user input parameters */
+EXTERN	int total_iters;
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
-EXTERN	int total_iters;
 EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
         /* source time, increment for it, and number of source slices */
 
-/* Eigenvalue related global variables */
-EXTERN  int Nvecs ; /* number of eigenvectors */
-EXTERN  Real eigenval_tol ; /* Tolerance for the eigenvalue computation */
-EXTERN  Real error_decr ; /* error decrease per Rayleigh minimization */
-EXTERN  int MaxIter ; /* max  Rayleigh iterations */
-EXTERN  int Restart ; /* Restart  Rayleigh every so many iterations */
-EXTERN  int Kiters ; /* Kalkreuter iterations */
-EXTERN  int active_parity ; /* parity used in eigenvalue calculation */
 /*******/
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
-EXTERN	int sites_on_node;		/* number of sites on this node */
-EXTERN	int even_sites_on_node;	/* number of even sites on this node */
-EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
+EXTERN	size_t sites_on_node;		/* number of sites on this node */
+EXTERN	size_t even_sites_on_node;	/* number of even sites on this node */
+EXTERN	size_t odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
@@ -150,6 +154,7 @@ EXTERN  int this_node;		/* node number of this node */
    generator state */
 EXTERN double_prn node_prn ;
 
+EXTERN  gauge_file *savelat_p;
 EXTERN  char utc_date_time[64];
 EXTERN  char hostname[128];
 
@@ -170,5 +175,10 @@ EXTERN fermion_links_t    *fn_links;
 
 EXTERN int n_naiks;	/* Only one (dummy) Naik correction (for HISQ) */
 EXTERN double eps_naik[1];	/* Naik correction */
+
+/* For eigenpair calculation */
+EXTERN int Nvecs_tot;
+EXTERN double *eigVal; /* eigenvalues of D^dag D */
+EXTERN su3_vector **eigVec; /* eigenvectors */
 
 #endif /* _LATTICE_H */

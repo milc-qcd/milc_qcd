@@ -129,7 +129,7 @@ int read_ks_eigen_hdr(ks_eigen_file *kseigf, int parallel){
       ny = kseigh->dims[1];
       nz = kseigh->dims[2];
       nt = kseigh->dims[3];
-      volume = nx*ny*nz*nt;
+      volume = (size_t) nx*ny*nz*nt;
     }
   }
   
@@ -1116,7 +1116,7 @@ ks_eigen_file *r_ascii_ks_eigen_i(char *filename){
 	ny = kseigh->dims[1];
 	nz = kseigh->dims[2];
 	nt = kseigh->dims[3];
-	volume = nx*ny*nz*nt;
+	volume = (size_t) nx*ny*nz*nt;
       }
     }
     kseigh->header_bytes = 0; /* Unused for ASCII */
@@ -1187,10 +1187,13 @@ int r_ascii_ks_eigen(ks_eigen_file *kseigf, int Nvecs, double *eigVal, su3_vecto
       /* Node 0 reads, and sends site to correct node */
       if(this_node == 0){
 	for(j = 0; j < 3; j++){
-	  if((fscanf(fp, "%lf%lf\n",&(eigbuf.c[j].real), &(eigbuf.c[j].imag))) != 2){
+	  double tmpreal, tmpimag;
+	  if(fscanf(fp, "%lf%lf\n",&tmpreal, &tmpimag) != 2){
 	    if(status == 0) printf("%s: Error reading su3_vector\n", myname); 
 	    status++;
 	  }
+	  eigbuf.c[j].real = tmpreal;
+	  eigbuf.c[j].imag = tmpimag;
 	}
 	if(destnode == 0){ /* just copy su3_vector */
 	  i = node_index(x, y, z, t);

@@ -530,7 +530,7 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset src_site,
 	  g_xor32(&kspf->check.sum31);
 	  
 	  if(this_node == 0){
-	    char sums[30]; char key[20];
+	    char sums[30]; char key[50];
 	    sprintf(key,"quark.t[%d].checksum ",t);
 	    sprintf(sums,"%0x %0x",kspf->check.sum29,kspf->check.sum31);
 	    write_ksprop_info_item(info_fp,key,"\"%s\"",sums,0,0);
@@ -689,7 +689,7 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
 	  ny = ksph->dims[1];
 	  nz = ksph->dims[2];
 	  nt = ksph->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
   

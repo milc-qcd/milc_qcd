@@ -3,6 +3,7 @@
 
 #include "../include/macros.h"  /* For MAXFILENAME */
 #include "defines.h"
+#include "../include/imp_ferm_links.h"
 
 /* structure for passing simulation parameters to each node */
 typedef struct {
@@ -44,6 +45,7 @@ typedef struct {
 	Real u0; /* tadpole parameter */
 	int niter; 	/* maximum number of c.g. iterations */
         int nrestart;   /* maximum number of c.g. restarts */
+        ks_eigen_param eigen_param; /* Parameters for eigensolver. Not used for HMC */
         int npbp_reps_in;   /* Number of random sources */
         int prec_pbp;       /* Precision of pbp measurements */
 	Real rsqmin,rsqprop;  /* for deciding on convergence */

@@ -1,0 +1,33 @@
+prompt 0
+
+# Lattice dimensions
+nx 4
+ny 4
+nz 4
+nt 4
+# random number seed
+iseed 5682304
+job_id 1412331
+
+# Input lattice
+reload_serial ../../binary_samples/lat.sample.inst
+u0   1.0
+no_gauge_fix
+forget
+
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
+
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+max_number_of_eigenpairs 32
+
+# Eigenvector file
+fresh_ks_eigen
+forget_ks_eigen
+
+Max_Rayleigh_iters 2000
+nArnoldi 384
+
+# Eigenvalue tolerance
+eigenval_tolerance 1.0e-13
+

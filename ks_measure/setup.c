@@ -2,23 +2,15 @@
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
-/* Modifications ... */
-
-//  $Log: setup.c,v $
-//  Revision 1.2  2012/11/24 05:21:42  detar
-//  Add support for future HYPISQ action
-//
-//  Revision 1.1  2011/12/02 04:38:15  detar
-//  Add
-//
-//
-
-
 #include "ks_measure_includes.h"
 #include <string.h>
 #include <unistd.h>
 extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #include "params.h"
+#ifdef U1_FIELD
+#include "../include/generic_u1.h"
+#include "../include/io_u1lat.h"
+#endif
 
 /* Forward declarations */
 
@@ -34,15 +26,16 @@ int setup()   {
   prompt=initial_set();
   if(prompt == 2)return prompt;
 
-  /* initialize the node random number generator */
-  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+  this_node = mynode();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
-  /* Initialize fermion links as unallocated */
-//  init_ferm_links(&fn_links, &ks_act_paths);
-//  init_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
+#ifdef U1_FIELD
+  u1_A = create_u1_A_field();
+#endif
   /* set up nearest neighbor gathers */
   make_nn_gathers();
   /* set up 3rd nearest neighbor pointers and comlink structures
@@ -55,14 +48,13 @@ int setup()   {
 
 static int n_naiks = 1;
 static double eps_naik[MAX_NAIK];
+static double charge[MAX_CHARGE];
 
 /* SETUP ROUTINES */
 static int 
 initial_set(){
-  int prompt,status;
-#ifdef FIX_NODE_GEOM
-  int i;
-#endif
+  int prompt=0,status;
+
   /* On node zero, read lattice size and send to others */
   if(mynode()==0){
     /* print banner */
@@ -83,9 +75,6 @@ initial_set(){
 #if FERM_ACTION == HISQ
     show_su3_mat_opts();
     show_hisq_links_opts();
-#elif FERM_ACTION == HYPISQ
-    show_su3_mat_opts();
-    show_hypisq_links_opts();
 #endif
     status = get_prompt(stdin,  &prompt );
     
@@ -122,17 +111,16 @@ initial_set(){
   iseed=param.iseed;
   
 #ifdef FIX_NODE_GEOM
-  for(i = 0; i < 4; i++)
+  for(int i = 0; i < 4; i++)
     node_geometry[i] = param.node_geometry[i];
 #ifdef FIX_IONODE_GEOM
-  for(i = 0; i < 4; i++)
+  for(int i = 0; i < 4; i++)
     ionode_geometry[i] = param.ionode_geometry[i];
 #endif
 #endif
 
-  this_node = mynode();
   number_of_nodes = numnodes();
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
 
   return(prompt);
 }
@@ -144,7 +132,8 @@ int readin(int prompt) {
   /* argument "prompt" is 1 if prompts are to be given for input	*/
   
   int status;
-  int i, k, npbp_masses;
+  char savebuf[128];
+  int i, k, npbp_masses = 0;
 #ifdef PRTIME
   double dtime;
 #endif
@@ -171,6 +160,13 @@ int readin(int prompt) {
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
 				  param.stringLFN );
 
+#ifdef U1_FIELD
+    /* what kind of starting U(1) lattice to use, read filename */
+    IF_OK status+=ask_starting_u1_lattice(stdin,prompt,
+					  &param.start_u1flag, param.start_u1file );
+    IF_OK status+=ask_ending_u1_lattice(stdin,prompt,
+					&param.save_u1flag, param.save_u1file );
+#endif
     /* Provision is made to build covariant sources from smeared
        links */
     /* APE smearing parameters (if needed) */
@@ -180,71 +176,114 @@ int readin(int prompt) {
     IF_OK status += get_i(stdin, prompt, "ape_iter",
 			  &param.ape_iter);
 
-#if EIGMODE == EIGCG
-    /* for eigcg */
-    /* restart for Lanczos */
-    IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
-
-    /* number of eigenvectors per inversion */
-    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigcgp.Nvecs);
-
-    if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
-      printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
-      status++;
+    /* Coordinate origin for KS phases and antiperiodic boundary condition */
+    IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
+    IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
+    IF_OK {
+      /* NOTE: The staggered default time bc is antiperiodic. */
+      if(strcmp(savebuf,"antiperiodic") == 0)param.time_bc = 0;
+      else if(strcmp(savebuf,"periodic") == 0)param.time_bc = 1;
+      else{
+	node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n", savebuf);
+	status++;
+      }
     }
+    
+    /* number of eigenpairs */
+    IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
 
-    /* maximum number of eigenvectors */
-    IF_OK status += get_i(stdin, prompt,"Max_Number_of_eigenvals",
-			  &param.eigcgp.Nvecs_max);
+    IF_OK if(param.eigen_param.Nvecs > 0){
 
-    /* eigenvector input */
-    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
-					  param.ks_eigen_startfile);
+      /* eigenvector input */
+      IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
+					    param.ks_eigen_startfile);
+      
+      /* eigenvector output */
+      IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
+					  param.ks_eigen_savefile);
 
-    /* eigenvector output */
-    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
-					param.ks_eigen_savefile);
+      /* If we are reading in eigenpairs, we don't regenerate them */
 
-    param.eigcgp.Nvecs_curr = 0;
-    param.eigcgp.H = NULL;
+#if EIGMODE == EIGCG
+      /* for eigcg */
+
+      /* maximum number of eigenvectors */
+      param.eigcgp.Nvecs_max =  param.eigen_param.Nvecs;
+
+      /* If we are reading in eigenpairs, we don't regenerate them */
+
+      if(param.ks_eigen_startflag == FRESH){
+	
+	/* restart for Lanczos */
+	IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
+	
+	/* number of eigenvectors per inversion */
+	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigcgp.Nvecs);
+	
+	if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
+	  printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
+	  status++;
+	}
+      } else {
+	param.eigcgp.m = 0;
+	param.eigcgp.Nvecs = 0;
+      }
+      
+      param.eigcgp.Nvecs_curr = 0;
+      param.eigcgp.H = NULL;
+#else
+
+      /*------------------------------------------------------------*/
+      /* Dirac eigenpair calculation                                */
+      /*------------------------------------------------------------*/
+      
+      if(param.ks_eigen_startflag == FRESH){
+	
+	/* max  Rayleigh iterations */
+	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
+	
+	/* Restart  Rayleigh every so many iterations */
+	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
+	
+	/* Kalkreuter iterations */
+	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
+	
+	/* Tolerance for the eigenvalue computation */
+	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
+	
+	/* error decrease per Rayleigh minimization */
+	IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
+	
+#ifdef POLY_EIGEN
+	/* Chebyshev preconditioner */
+#ifdef ARPACK
+	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
 #endif
-
-#if EIGMODE == DEFLATION
-    /*------------------------------------------------------------*/
-    /* Dirac eigenpair calculation                                */
-    /*------------------------------------------------------------*/
-
-    /* number of eigenvectors */
-    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.Nvecs);
-
-    /* max  Rayleigh iterations */
-    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.MaxIter);
-
-    /* Restart  Rayleigh every so many iterations */
-    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.Restart);
-
-    /* Kalkreuter iterations */
-    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.Kiters);
-
-     /* Tolerance for the eigenvalue computation */
-    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigenval_tol);
-
-     /* error decrease per Rayleigh minimization */
-    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.error_decr);
-
-    /* eigenvector input */
-    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
-					  param.ks_eigen_startfile);
-
-    /* eigenvector output */
-    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
-					param.ks_eigen_savefile);
+	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
+	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
+	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
+	
+#ifdef ARPACK
+	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
+	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
+	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
 #endif
+#endif
+      } else {
+	param.eigen_param.MaxIter = 0;
+	param.eigen_param.Restart = 0;
+	param.eigen_param.Kiters = 0;
+	param.eigen_param.tol = 0;
+	param.eigen_param.error_decr = 0.0;
+      }
+
+#endif
+    }
 
     /*------------------------------------------------------------*/
     /* Chiral condensate and related quantities                   */
     /*------------------------------------------------------------*/
-
+    
     IF_OK status += get_i(stdin,prompt,"number_of_sets", &param.num_set);
     if( param.num_set>MAX_SET ){
       printf("num_set = %d must be <= %d!\n", param.num_set, MAX_SET);
@@ -265,8 +304,13 @@ int readin(int prompt) {
 
 #ifdef CURRENT_DISC
       /* For some applications.  Random source count between writes */
-      IF_OK status += get_i(stdin, prompt, "nwrite", &param.nwrite[k] );
       IF_OK status += get_i(stdin, prompt, "source_spacing", &param.thinning[k] );
+      IF_OK {
+	if(param.thinning[k] < 2){
+	  printf("Source spacing must be at least 2\n");
+	  status++;
+	}
+      }
       /* For truncated solver Take difference of sloppy and precise?*/
       char savebuf[128];
       IF_OK status += get_s(stdin, prompt, "take_truncate_diff", savebuf);
@@ -321,30 +365,33 @@ int readin(int prompt) {
       /* Number of pbp masses in this set */
       IF_OK status += get_i(stdin, prompt, "number_of_pbp_masses",
 			    &param.num_pbp_masses[k]);
-      if(param.num_pbp_masses[k] > MAX_MASS_PBP){
-	printf("Number of masses exceeds dimension %d\n",MAX_MASS_PBP);
-	status++;
-      }
 
       /* Indexing range for set */
       param.begin_pbp_masses[k] = npbp_masses;
       param.end_pbp_masses[k] = npbp_masses + param.num_pbp_masses[k] - 1;
-      if(param.end_pbp_masses[k] > MAX_PBP_MASSES){
-	printf("Total number of masses must be <= %d!\n", MAX_PBP_MASSES);
+      if(param.end_pbp_masses[k] > MAX_MASS_PBP){
+	printf("Total number of masses must be <= %d!\n", MAX_MASS_PBP);
 	status++;
       }
 
-      IF_OK for(i = 0; i < param.num_pbp_masses[k]; i++){
+      IF_OK for(int i = 0; i < param.num_pbp_masses[k]; i++){
     
 	/* PBP mass parameters */
 	
 	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[npbp_masses] );
 	IF_OK param.ksp_pbp[npbp_masses].mass = atof(param.mass_label[npbp_masses]);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
 	IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 			      &param.ksp_pbp[npbp_masses].naik_term_epsilon );
 #else
 	IF_OK param.ksp_pbp[npbp_masses].naik_term_epsilon = 0.0;
+#endif
+#ifdef U1_FIELD
+	IF_OK status += get_s(stdin, prompt,"charge", param.charge_label[npbp_masses] );
+	IF_OK param.ksp_pbp[npbp_masses].charge = atof(param.charge_label[npbp_masses]);
+#else
+	IF_OK strcpy(param.charge_label[npbp_masses],"0.");
+	IF_OK param.ksp_pbp[npbp_masses].charge = 0.;
 #endif
 	/* error for staggered propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
@@ -361,7 +408,9 @@ int readin(int prompt) {
 				&rel_error_for_propagator_sloppy );
 	}
 
+#if 0 	/* Deprecate saving the entire site-wise density  */
 	IF_OK status += get_s(stdin, prompt, "save_file", param.pbp_filenames[npbp_masses] );
+#endif
 #endif
 
 	/* The set to which this pbp_mass belongs */
@@ -380,10 +429,21 @@ int readin(int prompt) {
 	param.qic_pbp[npbp_masses].resid = error_for_propagator;
 	param.qic_pbp[npbp_masses].relresid = rel_error_for_propagator;
 
+#ifdef CURRENT_DISC
+	param.qic_pbp[npbp_masses].parity = EVEN;
+#else
 	param.qic_pbp[npbp_masses].parity = EVENANDODD;
+#endif
 	param.qic_pbp[npbp_masses].min = 0;
 	param.qic_pbp[npbp_masses].start_flag = 0;
 	param.qic_pbp[npbp_masses].nsrc = 1;
+
+	/* Should we be deflating? */
+	param.qic_pbp[npbp_masses].deflate = 0;
+	IF_OK {
+	  /* Always deflate if we have eigenvectors */
+	  if(param.eigen_param.Nvecs > 0)param.qic_pbp[npbp_masses].deflate = 1;
+	}
 
 #ifdef CURRENT_DISC
       /* If we are taking the difference between a sloppy and a precise solve,
@@ -413,8 +473,8 @@ int readin(int prompt) {
 #endif
 	
 	npbp_masses++;
-      }
-    }
+      } /* i */
+    } /* k */
     
     /* End of input fields */
     if( status > 0)param.stopflag=1; else param.stopflag=0;
@@ -427,6 +487,8 @@ int readin(int prompt) {
 
   if(prompt==2)return 0;
 
+  npbp_masses = param.end_pbp_masses[param.num_set-1] + 1;
+
   /* Construct the eps_naik table of unique Naik epsilon
      coefficients.  Also build the hash table for mapping a mass term to
      its Naik epsilon index */
@@ -435,24 +497,50 @@ int readin(int prompt) {
   start_eps_naik(eps_naik, &n_naiks);
   
   /* Contribution from the chiral condensate epsilons */
-  for(k = 0; k < param.num_set; k++)
-    for(i = param.begin_pbp_masses[k]; i < param.num_pbp_masses[k]; i++){
-      param.ksp_pbp[i].naik_term_epsilon_index = 
-	fill_eps_naik(eps_naik, 
-		      &n_naiks, param.ksp_pbp[i].naik_term_epsilon);
-    }
-  
-  /* Do whatever is needed to get lattice */
-  if( param.startflag == CONTINUE ){
-    rephase( OFF );
-  }
-  if( param.startflag != CONTINUE ){
-    startlat_p = reload_lattice( param.startflag, param.startfile );
+  for(int i = 0; i < npbp_masses; i++){
+    param.ksp_pbp[i].naik_term_epsilon_index = 
+      fill_eps_naik(eps_naik, 
+		    &n_naiks, param.ksp_pbp[i].naik_term_epsilon);
   }
 
-  /* if a lattice was read in, put in KS phases and AP boundary condition */
-  phases_in = OFF;
+  /* Construct a table of quark charges and build a hash table
+     for mapping a charge to its charge index */
+
+  /* First term is always zero */
+  start_charge(charge, &n_charges);
+  
+  /* Contribution from the chiral condensate charges */
+  for(int i = 0; i < npbp_masses; i++){
+    param.ksp_pbp[i].charge_index = 
+      fill_charge(charge, &n_charges, param.ksp_pbp[i].charge);
+  }
+
+  /* Keep the current lattice or load a new one */
+  if( param.startflag == CONTINUE ){
+    rephase( OFF );
+  } else {
+    startlat_p = reload_lattice( param.startflag, param.startfile );
+    phases_in = OFF;
+  }
+
+#if 0
+  su3_matrix *G = create_random_m_field();
+  gauge_transform_links(G);
+  d_plaquette(&g_ssplaq,&g_stplaq);
+  d_linktrsum(&linktrsum);
+  nersc_checksum = nersc_cksum();
+  node0_printf("CHECK PLAQ: %.16e %.16e\n",g_ssplaq,g_stplaq);
+  node0_printf("CHECK NERSC LINKTR: %.16e CKSUM: %x\n",
+	       linktrsum.real/3.,nersc_checksum);
+#endif
+
+  /* By defailt KS and BC phases are in the gauge links */
   rephase( ON );
+
+#ifdef U1_FIELD
+  /* Read the U(1) gauge field, if wanted */
+  start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
+#endif
 
   /* Set options for fermion links */
   
@@ -465,19 +553,34 @@ int readin(int prompt) {
   fermion_links_want_du0(1);
 #endif
   
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) &  defined(DM_DEPS)
+  /* Don't need to save HISQ auxiliary links */
+  fermion_links_want_aux(0);
+
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
   fermion_links_want_deps(1);
 #endif
   
-  fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+  /* Create an array of fermion links structures for all unique Naik epsilon values and charges */
+  fn_links_charge = (fermion_links_t **)malloc(sizeof(fermion_links_t *) * n_charges);
+  for(int i = 0; i < n_charges; i++){
+#ifdef U1_FIELD
+    if(charge[i] != 0)u1phase_on(charge[i], u1_A);
+#endif
+    /* Create a set of fermion links for all eps_naik */
+    fn_links_charge[i] = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
+#ifdef U1_FIELD
+    if(charge[i] != 0)u1phase_off();
+#endif
+  }
+  /* For compatibility. The first charge is always zero */
+  fn_links = fn_links_charge[0];
 
   /* Construct APE smeared links, but without KS phases */
   rephase( OFF );
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+  /* We put in antiperiodic bc to the APE links to match what we did to the gauge field */
+  apply_apbc( ape_links, 0 );
   rephase( ON );
-
-/* We put in antiperiodic bc to match what we did to the gauge field */
-  apply_apbc( ape_links );
 
 #if EIGMODE == EIGCG
   int Nvecs_max = param.eigcgp.Nvecs_max;
@@ -491,44 +594,62 @@ int readin(int prompt) {
   eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
   eigVec = (su3_vector **)malloc(Nvecs_tot*sizeof(su3_vector *));
   node0_printf("Allocating space for %d eigenvectors\n", Nvecs_tot);
-  for(i = 0; i < Nvecs_tot; i++)
+  for(int i = 0; i < Nvecs_tot; i++)
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
-  /* Do whatever is needed to get eigenpairs */
+  /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
+  imp_ferm_links_t **fn = get_fm_links(fn_links);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &Nvecs_tot, eigVal, eigVec, 1);
+			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
   if(status != 0) terminate(1);
+  if(param.fixflag != NO_GAUGE_FIX){
+    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
+  }
 
   if(param.ks_eigen_startflag != FRESH){
     param.eigcgp.Nvecs = 0;
     param.eigcgp.Nvecs_curr = Nvecs_tot;
     param.eigcgp.H = (double_complex *)malloc(Nvecs_max*Nvecs_max
 					      *sizeof(double_complex));
-    for(i = 0; i < Nvecs_max; i++){
+    for(int i = 0; i < Nvecs_max; i++){
       for(k = 0; k < i; k++)
 	param.eigcgp.H[k + Nvecs_max*i] = dcmplx((double)0.0, (double)0.0);
       param.eigcgp.H[(Nvecs_max+1)*i] = dcmplx(eigVal[i], (double)0.0);
     }
   }
 #endif
-
-#if EIGMODE == DEFLATION
-  /* malloc for eigenpairs */
-  eigVal = (double *)malloc(param.Nvecs*sizeof(double));
-  eigVec = (su3_vector **)malloc(param.Nvecs*sizeof(su3_vector *));
-  for(i=0; i < param.Nvecs; i++)
-    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-
-  /* Do whatever is needed to get eigenpairs */
-  node0_printf("Reading %d eigenvectors\n", param.Nvecs); fflush(stdout);
-  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &param.Nvecs, eigVal, eigVec, 1);
-  if(status != 0)terminate(1);
+  
+#if EIGMODE != EIGCG
+  if(param.eigen_param.Nvecs > 0){
+    /* malloc for eigenpairs */
+    eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
+    eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
+    for(i=0; i < param.eigen_param.Nvecs; i++){
+      eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+      if(eigVec[i] == NULL){
+	printf("No room for eigenvector\n");
+	terminate(1);
+      }
+    }
+    
+    /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
+    imp_ferm_links_t **fn = get_fm_links(fn_links);
+    status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
+    if(status != 0)terminate(1);
+#if 0
+    for(int j = 0; j < param.eigen_param.Nvecs; j++){
+      gauge_transform_v_field(eigVec[j], G);
+    }
+    destroy_m_field(G);
+#endif
+  }
 #endif
 
   ENDTIME("readin");
+  fflush(stdout);
 
-  return(0);
+  return 0;
 }
 
 /* Set up comlink structures for 3rd nearest gather pattern; 

@@ -1,234 +1,125 @@
 /*******************************************************************************
- *   PRIMME PReconditioned Iterative MultiMethod Eigensolver
- *   Copyright (C) 2005  James R. McCombs,  Andreas Stathopoulos
- *
- *   This file is part of PRIMME.
- *
- *   PRIMME is free software; you can redistribute it and/or
- *   modify it under the terms of the GNU Lesser General Public
- *   License as published by the Free Software Foundation; either
- *   version 2.1 of the License, or (at your option) any later version.
- *
- *   PRIMME is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *   Lesser General Public License for more details.
- *
- *   You should have received a copy of the GNU Lesser General Public
- *   License along with this library; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
+ * THIS MODIFICATION USES THE MILC VERSION OF THE C complex TYPE IN ../include/complex.h
+ * Copyright (c) 2018, College of William & Mary
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the College of William & Mary nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COLLEGE OF WILLIAM & MARY BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * PRIMME: https://github.com/primme/primme
+ * Contact: Andreas Stathopoulos, a n d r e a s _at_ c s . w m . e d u
+ *******************************************************************************
  * File: primme.h
  * 
- * Purpose - To be included in user applications that wish to call primme.
+ * Purpose - Main header with the PRIMME C interface functions.
  * 
  ******************************************************************************/
 
 #ifndef PRIMME_H
 #define PRIMME_H
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <limits.h>
-#include "../include/Complex_primme.h"
+/* Define version */
 
-#define PRIMME_MAX_NAME_LENGTH 128
+#define PRIMME_VERSION_MAJOR      3
+#define PRIMME_VERSION_MINOR      0
 
-typedef enum {
-   Primme_dprimme,
-   Primme_zprimme,
-   Primme_check_input,
-   Primme_allocate_workspace,
-   Primme_main_iter,
-   Primme_init_basis,
-   Primme_init_block_krylov,
-   Primme_init_krylov,
-   Primme_ortho,
-   Primme_solve_h,
-   Primme_restart,
-   Primme_restart_h,
-   Primme_insert_submatrix,
-   Primme_lock_vectors,
-   Primme_num_dsyev,
-   Primme_num_zheev,
-   Primme_num_dspev,
-   Primme_num_zhpev,
-   Primme_ududecompose,
-   Primme_udusolve,
-   Primme_apply_projected_preconditioner,
-   Primme_apply_skew_projector,
-   Primme_inner_solve,
-   Primme_solve_correction,
-   Primme_fopen,
-   Primme_malloc
-} primme_function;
+#if defined(__clang__) && defined(__FLT16_EPSILON__)
+#  define PRIMME_HALF __fp16
+#  define PRIMME_WITH_NATIVE_HALF
+#else
+   struct _primme_half {int short a;};
+#  define PRIMME_HALF struct _primme_half
+#endif
 
+#define PRIMME_QUAD double long
 
-typedef enum {
-   primme_smallest,
-   primme_largest,
-   primme_closest_geq,
-   primme_closest_leq,
-   primme_closest_abs
-} primme_target;
+/* A C99 code with complex type is not a valid C++ code. However C++          */
+/* compilers usually can take it. Nevertheless in order to avoid the warnings */
+/* while compiling in pedantic mode, we use the proper complex type for C99   */
+/* (complex double and complex float) and C++ (std::complex<double> and       */
+/* std::complex<float>). Of course both complex types are binary compatible.  */
 
+#ifdef __cplusplus
+#  include <complex>
+   struct _primme_complex_half {PRIMME_HALF r; PRIMME_HALF i;};
+#  define PRIMME_COMPLEX_HALF struct _primme_complex_half
+#  define PRIMME_COMPLEX_FLOAT std::complex<float>
+#  define PRIMME_COMPLEX_DOUBLE std::complex<double>
+#  define PRIMME_COMPLEX_QUAD std::complex<PRIMME_QUAD>
+#else
+#  include "../include/complex.h"
+/* Complex half is not part of C99 */
+   struct _primme_complex_half {PRIMME_HALF r; PRIMME_HALF i;};
+#  define PRIMME_COMPLEX_HALF struct _primme_complex_half
+#  define PRIMME_COMPLEX_FLOAT fcomplex
+#  define PRIMME_COMPLEX_DOUBLE double_complex
+#  define PRIMME_COMPLEX_QUAD long_double_complex
+#endif
 
-typedef enum {
-   primme_thick,
-   primme_dtr
-} primme_restartscheme;
+/* Required by some C++ compilers when including inttypes.h */
+#if defined(__cplusplus) && !defined(__STDC_FORMAT_MACROS)
+#  define __STDC_FORMAT_MACROS
+#endif
 
+#if !defined(PRIMME_INT_SIZE) || PRIMME_INT_SIZE == 64
+#  include <stdint.h>
+#  include <inttypes.h>
+#  define PRIMME_INT int64_t
+#  define PRIMME_INT_P PRId64
+#  define PRIMME_INT_MAX INT64_MAX
+#  ifndef PRId64
+#     define PRId64 "ld"
+#  endif
+#elif PRIMME_INT_SIZE == 0
+#  include <limits.h>
+#  define PRIMME_INT int
+#  define PRIMME_INT_P "d"
+#  define PRIMME_INT_MAX INT_MAX
+#elif PRIMME_INT_SIZE == 32
+#  include <stdint.h>
+#  include <inttypes.h>
+#  define PRIMME_INT int32_t
+#  define PRIMME_INT_P PRId32
+#  define PRIMME_INT_MAX INT32_MAX
+#  ifndef PRId64
+#     define PRId64 "d"
+#  endif
+#else
+#  define PRIMME_INT PRIMME_INT_SIZE
+#  define PRIMME_INT_P "d"
+#  define PRIMME_INT_MAX INT_MAX
+#endif
 
-typedef enum {
-   primme_full_LTolerance,
-   primme_decreasing_LTolerance,
-   primme_adaptive_ETolerance,
-   primme_adaptive,
-} primme_convergencetest;
+#include "primme_eigs.h"
+#include "primme_svds.h"
 
+/* Error messages */
 
-typedef struct stackTraceNode {
-   primme_function callingFunction;
-   primme_function failedFunction;
-   int errorCode;
-   int lineNumber;
-   char fileName[PRIMME_MAX_NAME_LENGTH];
-   struct stackTraceNode *nextNode;
-} stackTraceNode;
-
-
-typedef struct primme_stats {
-   int numOuterIterations;
-   int numRestarts;
-   int numMatvecs;
-   int numPreconds;
-   double elapsedTime; 
-} primme_stats;
-   
-typedef struct JD_projectors {
-   int LeftQ;
-   int LeftX;
-   int RightQ;
-   int RightX;
-   int SkewQ;
-   int SkewX;
-} JD_projectors;
-
-typedef struct correction_params {
-   int precondition;
-   int robustShifts;
-   int maxInnerIterations;
-   struct JD_projectors projectors;
-   primme_convergencetest convTest;
-   double relTolBase;
-} correction_params;
-
-
-typedef struct restarting_params {
-   primme_restartscheme scheme;
-   int maxPrevRetain;
-} restarting_params;
-   
-
-//-----------------------------------------------------------------------------
-typedef struct primme_params {
-
-   // The user must input at least the following two arguments 
-   int n;
-   void (*matrixMatvec)
-      ( void *x,  void *y, int *blockSize, struct primme_params *primme);
-
-   // Preconditioner applied on block of vectors (if available) 
-   void (*applyPreconditioner)
-      ( void *x,  void *y, int *blockSize, struct primme_params *primme);
-
-   // Matrix times a multivector for mass matrix B for generalized Ax = xBl
-   void (*massMatrixMatvec)
-      ( void *x,  void *y, int *blockSize, struct primme_params *primme);
-
-   // input for the following is only required for parallel programs 
-   int numProcs;
-   int procID;
-   int nLocal;
-   void *commInfo;
-   void (*globalSumDouble)
-      (void *sendBuf, void *recvBuf, int *count, struct primme_params *primme );
-
-   // Though primme_initialize will assign defaults, most users will set these
-   int numEvals;          
-   primme_target target; 
-   int numTargetShifts;              // For targeting interior epairs,
-   double *targetShifts;             // at least one shift must also be set
-
-   /* the following will be given default values depending on the method */
-   int dynamicMethodSwitch;
-   int locking;
-   int initSize;
-   int numOrthoConst;
-   int maxBasisSize;
-   int minRestartSize;
-   int maxBlockSize;
-   int maxMatvecs;
-   int maxOuterIterations;
-   int intWorkSize;
-   long int realWorkSize;
-   int iseed[4];
-   int *intWork;
-   void *realWork;
-   double aNorm;
-   double eps;
-
-   int printLevel;
-   FILE *outputFile;
-   
-   void *matrix;
-   void *preconditioner;
-   double *ShiftsForPreconditioner;
-
-   struct restarting_params restartingParams;
-   struct correction_params correctionParams;
-   struct primme_stats stats;
-   struct stackTraceNode *stackTrace;
-   
-} primme_params;
-//-----------------------------------------------------------------------------
-
-typedef enum {
-   DYNAMIC,
-   DEFAULT_MIN_TIME,
-   DEFAULT_MIN_MATVECS,
-   Arnoldi,
-   GD,
-   GD_plusK,
-   GD_Olsen_plusK,
-   JD_Olsen_plusK,
-   RQI,
-   JDQR,
-   JDQMR,
-   JDQMR_ETol,
-   SUBSPACE_ITERATION,
-   LOBPCG_OrthoBasis,
-   LOBPCG_OrthoBasis_Window
-} primme_preset_method;
-
-
-
-int dprimme(double *evals, double *evecs, double *resNorms, 
-            primme_params *primme);
-int zprimme(double *evals, Complex_Z *evecs, double *resNorms, 
-            primme_params *primme);
-void primme_initialize(primme_params *primme);
-int  primme_set_method(primme_preset_method method, primme_params *params);
-void primme_display_params(primme_params primme);
-void *primme_valloc(size_t byteSize, const char *target);
-void *primme_calloc(size_t nelem, size_t elsize, const char *target);
-void primme_Free(primme_params *primme);
-void primme_seq_globalSumDouble(void *sendBuf, void *recvBuf, int *count,
-					           primme_params *params);
-void primme_PushErrorMessage(const primme_function callingFunction, 
-     const primme_function failedFunction, const int errorCode, 
-     const char *fileName, const int lineNumber, primme_params *primme);
-void primme_PrintStackTrace(const primme_params primme);
-void primme_DeleteStackTrace(primme_params *primme);
-
+#define PRIMME_UNEXPECTED_FAILURE         -1
+#define PRIMME_MALLOC_FAILURE             -2
+#define PRIMME_MAIN_ITER_FAILURE          -3
+#define PRIMME_LAPACK_FAILURE             -40
+#define PRIMME_USER_FAILURE               -41
+#define PRIMME_ORTHO_CONST_FAILURE        -42
+#define PRIMME_PARALLEL_FAILURE           -43
+#define PRIMME_FUNCTION_UNAVAILABLE       -44
 #endif /* PRIMME_H */

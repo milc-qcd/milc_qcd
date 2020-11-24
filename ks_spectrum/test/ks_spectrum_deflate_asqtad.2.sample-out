@@ -24,7 +24,6 @@ LAYOUT = Hypercubes, options = hyper_prime,
 QMP with automatic hyper_prime layout
 ON EACH NODE 8 x 8 x 8 x 8
 Mallocing 2.9 MBytes per node for lattice
-Aggregate time to setup 1.475096e-02
 
 
 ######################################################################
@@ -38,6 +37,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0 
+time_bc antiperiodic
 # Dirac eigenpair calculation
 # Number of eigenvalues to compute (storage required for all eigenvectors)
 Number_of_eigenvals 10
@@ -86,7 +86,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 0
 number_of_propagators 1
@@ -105,7 +104,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 1
 number_of_propagators 1
@@ -124,7 +122,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 2
 number_of_propagators 1
@@ -186,49 +183,58 @@ path coefficients: npath  path_coeff  multiplicity
                     4      -2.604167e-03     384
                     5      -6.250000e-02     48
 Time to APE smear 2.396107e-03 sec
-Aggregate time to readin 1.843090e-01
 Eigenvalues after diagonalization at iteration 8
 BEGIN RESULTS
-Eigenvalue(0) = 0.0362061 +/- 6.098004e-08	 cvg? 0  
-Eigenvalue(1) = 0.0416279 +/- 9.641009e-08	 cvg? 0  
-Eigenvalue(2) = 0.0518223 +/- 8.446440e-08	 cvg? 0  
-Eigenvalue(3) = 0.0556079 +/- 6.514060e-08	 cvg? 0  
-Eigenvalue(4) = 0.0572962 +/- 5.291518e-08	 cvg? 0  
-Eigenvalue(5) = 0.0637556 +/- 9.091474e-08	 cvg? 0  
-Eigenvalue(6) = 0.0685493 +/- 1.084724e-07	 cvg? 0  
-Eigenvalue(7) = 0.0777051 +/- 1.273040e-07	 cvg? 0  
-Eigenvalue(8) = 0.0807285 +/- 1.081959e-07	 cvg? 0  
-Eigenvalue(9) = 0.0852167 +/- 1.361107e-07	 cvg? 0  
-total Rayleigh iters = 1251
+Eigenvalue(0) = 0.03620596362418907 +/- 4.386753e-14	 cvg? 0  
+Eigenvalue(1) = 0.04162738422582638 +/- 1.839188e-14	 cvg? 0  
+Eigenvalue(2) = 0.05182204342587813 +/- 1.814788e-14	 cvg? 0  
+Eigenvalue(3) = 0.05560782123095421 +/- 7.168411e-14	 cvg? 0  
+Eigenvalue(4) = 0.05729598156873235 +/- 7.149348e-14	 cvg? 0  
+Eigenvalue(5) = 0.06375524243862185 +/- 8.087243e-14	 cvg? 0  
+Eigenvalue(6) = 0.06854891914959753 +/- 1.000726e-13	 cvg? 0  
+Eigenvalue(7) = 0.07770418346020423 +/- 7.291176e-14	 cvg? 0  
+Eigenvalue(8) = 0.08072770450266084 +/- 9.127314e-14	 cvg? 0  
+Eigenvalue(9) = 0.08521618686771823 +/- 1.055474e-13	 cvg? 0  
+total Rayleigh iters = 2329
 Checking eigensolutions
-eigVal[0] = 3.620608e-02 ( resid = 2.900069e-04 , ||eigVec[0]|| = 1.000000e+00 )
-eigVal[1] = 4.162786e-02 ( resid = 4.064736e-04 , ||eigVec[1]|| = 1.000000e+00 )
-eigVal[2] = 5.182235e-02 ( resid = 3.662681e-04 , ||eigVec[2]|| = 1.000000e+00 )
-eigVal[3] = 5.560793e-02 ( resid = 2.841354e-04 , ||eigVec[3]|| = 1.000000e+00 )
-eigVal[4] = 5.729621e-02 ( resid = 3.120192e-04 , ||eigVec[4]|| = 1.000000e+00 )
-eigVal[5] = 6.375558e-02 ( resid = 3.775871e-04 , ||eigVec[5]|| = 1.000000e+00 )
-eigVal[6] = 6.854934e-02 ( resid = 4.185577e-04 , ||eigVec[6]|| = 1.000000e+00 )
-eigVal[7] = 7.770508e-02 ( resid = 4.216121e-04 , ||eigVec[7]|| = 1.000000e+00 )
-eigVal[8] = 8.072846e-02 ( resid = 4.213329e-04 , ||eigVec[8]|| = 1.000000e+00 )
-eigVal[9] = 8.521673e-02 ( resid = 4.395156e-04 , ||eigVec[9]|| = 1.000000e+00 )
+eigVal[0] = 3.620596e-02 ( resid = 2.882758e-07 , |eigVec[0]|-1 = -5.551115e-16 )
+eigVal[1] = 4.162738e-02 ( resid = 2.027739e-07 , |eigVec[1]|-1 = -1.110223e-16 )
+eigVal[2] = 5.182204e-02 ( resid = 2.036780e-07 , |eigVec[2]|-1 = -1.110223e-16 )
+eigVal[3] = 5.560782e-02 ( resid = 3.950338e-07 , |eigVec[3]|-1 = -7.771561e-16 )
+eigVal[4] = 5.729598e-02 ( resid = 3.824317e-07 , |eigVec[4]|-1 = 4.440892e-16 )
+eigVal[5] = 6.375524e-02 ( resid = 4.427652e-07 , |eigVec[5]|-1 = 4.440892e-16 )
+eigVal[6] = 6.854892e-02 ( resid = 4.889712e-07 , |eigVec[6]|-1 = -4.440892e-16 )
+eigVal[7] = 7.770418e-02 ( resid = 3.650230e-07 , |eigVec[7]|-1 = 2.220446e-16 )
+eigVal[8] = 8.072770e-02 ( resid = 3.853061e-07 , |eigVec[8]|-1 = -1.110223e-16 )
+eigVal[9] = 8.521619e-02 ( resid = 4.026936e-07 , |eigVec[9]|-1 = -8.881784e-16 )
+End of eigensolutions
+Odd site residuals
+Checking eigensolutions
+eigVal[0] = 3.620596e-02 ( resid = 4.024644e-06 , |eigVec[0]|-1 = -8.881784e-16 )
+eigVal[1] = 4.162738e-02 ( resid = 2.646381e-06 , |eigVec[1]|-1 = 4.440892e-16 )
+eigVal[2] = 5.182204e-02 ( resid = 2.475149e-06 , |eigVec[2]|-1 = 4.440892e-16 )
+eigVal[3] = 5.560782e-02 ( resid = 4.437835e-06 , |eigVec[3]|-1 = 4.440892e-16 )
+eigVal[4] = 5.729598e-02 ( resid = 4.252909e-06 , |eigVec[4]|-1 = 6.661338e-16 )
+eigVal[5] = 6.375524e-02 ( resid = 4.616209e-06 , |eigVec[5]|-1 = 1.554312e-15 )
+eigVal[6] = 6.854892e-02 ( resid = 4.916463e-06 , |eigVec[6]|-1 = 1.776357e-15 )
+eigVal[7] = 7.770418e-02 ( resid = 3.407165e-06 , |eigVec[7]|-1 = 6.661338e-16 )
+eigVal[8] = 8.072770e-02 ( resid = 3.713908e-06 , |eigVec[8]|-1 = -3.330669e-16 )
+eigVal[9] = 8.521619e-02 ( resid = 3.609138e-06 , |eigVec[9]|-1 = -2.220446e-16 )
 End of eigensolutions
 The above were eigenvalues of -Dslash^2 in MILC normalization
 Here we also list eigenvalues of iDslash in continuum normalization
-eigenval(0):  0.0951395
-eigenval(1):   0.102015
-eigenval(2):   0.113823
+eigenval(0):  0.0951393
+eigenval(1):   0.102014
+eigenval(2):   0.113822
 eigenval(3):   0.117907
 eigenval(4):   0.119683
 eigenval(5):   0.126249
-eigenval(6):    0.13091
-eigenval(7):   0.139378
-eigenval(8):   0.142064
-eigenval(9):    0.14596
-Aggregate time to calculate Dirac eigenpairs 7.431257e+00
-Aggregate time to calculate pbp, etc 0.000000e+00
+eigenval(6):   0.130909
+eigenval(7):   0.139377
+eigenval(8):   0.142063
+eigenval(9):   0.145959
 Fixing to Coulomb gauge
 GFIX: Ended at step 85. Av gf action 8.77263803e-01, delta 1.980e-06
-Aggregate time to gauge fix 8.722479e-01
 Time to APE smear 1.935959e-03 sec
 END OF HEADER
 Mass= 1 source random_color_wall residue= 0 rel= 0
@@ -301,22 +307,16 @@ CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.122952e-03
  OK converged final_rsq= 9.8e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
 Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
-Aggregate time to compute propagators 1.838728e+00
 destroy prop[0]
 destroy prop[1]
-Aggregate time to generate sink operator 4.699230e-04
 destroy prop[2]
-Aggregate time to generate sink operator 4.589558e-04
 Mesons for quarks 0 and 0
 Time for diagonal mesons 1.231599e-02
 Time for printing correlator 5.898213e-02
 Mesons for quarks 0 and 1
 Time for offdiag mesons 1.801705e-02
 Time for printing correlator 4.037499e-02
-Aggregate time to tie meson correlators 1.297712e-01
-Aggregate time to tie baryon correlators 0.000000e+00
 Time to save 10 eigenvectors = 2.841420e-01
-Aggregate time to save eigenvectors (if requested) 2.841589e-01
 RUNNING COMPLETED
 Time = 1.076135e+01 seconds
 total_iters = 2312
@@ -333,6 +333,7 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0 
+time_bc antiperiodic
 # Dirac eigenpair calculation
 # Number of eigenvalues to compute (storage required for all eigenvectors)
 Number_of_eigenvals 5
@@ -382,7 +383,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 0
 number_of_propagators 1
@@ -401,7 +401,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 1
 number_of_propagators 1
@@ -420,7 +419,6 @@ max_cg_iterations 1000
 max_cg_restarts 2
 check yes
 momentum_twist 0 0 0 
-time_bc antiperiodic
 precision 2
 source 2
 number_of_propagators 1
@@ -492,23 +490,29 @@ Record info
 "<?xml version="1.0" encoding="UTF-8"?><info><eigVal>5.729620799233063611e-02</eigVal><resid>3.120192e-04</resid></info>"
 Checksums 5a12f01f 6d8d7a58
 Time to reload 5 eigenvectors = 1.902986e-02
-Aggregate time to readin 1.258872e-01
+Even site residuals
 Checking eigensolutions
-eigVal[0] = 3.620608e-02 ( resid = 7.753150e+00 , ||eigVec[0]|| = 1.000000e+00 )
-eigVal[1] = 4.162786e-02 ( resid = 7.729221e+00 , ||eigVec[1]|| = 1.000000e+00 )
-eigVal[2] = 5.182235e-02 ( resid = 7.778034e+00 , ||eigVec[2]|| = 1.000000e+00 )
-eigVal[3] = 5.560793e-02 ( resid = 7.776594e+00 , ||eigVec[3]|| = 1.000000e+00 )
-eigVal[4] = 5.729621e-02 ( resid = 7.758484e+00 , ||eigVec[4]|| = 1.000000e+00 )
+eigVal[0] = 3.620596e-02 ( resid = 2.882758e-07 , |eigVec[0]|-1 = -5.551115e-16 )
+eigVal[1] = 4.162738e-02 ( resid = 2.027739e-07 , |eigVec[1]|-1 = -1.110223e-16 )
+eigVal[2] = 5.182204e-02 ( resid = 2.036780e-07 , |eigVec[2]|-1 = -1.110223e-16 )
+eigVal[3] = 5.560782e-02 ( resid = 3.950338e-07 , |eigVec[3]|-1 = -7.771561e-16 )
+eigVal[4] = 5.729598e-02 ( resid = 3.824317e-07 , |eigVec[4]|-1 = 4.440892e-16 )
+End of eigensolutions
+Odd site residuals
+Checking eigensolutions
+eigVal[0] = 3.620596e-02 ( resid = 4.024644e-06 , |eigVec[0]|-1 = -8.881784e-16 )
+eigVal[1] = 4.162738e-02 ( resid = 2.646381e-06 , |eigVec[1]|-1 = 4.440892e-16 )
+eigVal[2] = 5.182204e-02 ( resid = 2.475149e-06 , |eigVec[2]|-1 = 4.440892e-16 )
+eigVal[3] = 5.560782e-02 ( resid = 4.437835e-06 , |eigVec[3]|-1 = 4.440892e-16 )
+eigVal[4] = 5.729598e-02 ( resid = 4.252909e-06 , |eigVec[4]|-1 = 6.661338e-16 )
 End of eigensolutions
 The above were eigenvalues of -Dslash^2 in MILC normalization
 Here we also list eigenvalues of iDslash in continuum normalization
-eigenval(0):  0.0951395
-eigenval(1):   0.102015
-eigenval(2):   0.113823
+eigenval(0):  0.0951393
+eigenval(1):   0.102014
+eigenval(2):   0.113822
 eigenval(3):   0.117907
 eigenval(4):   0.119683
-Aggregate time to calculate Dirac eigenpairs 2.442598e-02
-Aggregate time to calculate pbp, etc 0.000000e+00
 COULOMB GAUGE FIXING SKIPPED.
 END OF HEADER
 Mass= 1 source vector_field residue= 0 rel= 0
@@ -603,21 +607,15 @@ CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
 CGREMAP:  time = 1.152992e-03
  OK converged final_rsq= 9.3e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
 Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
-Aggregate time to compute propagators 1.663294e+00
 destroy prop[0]
 destroy prop[1]
-Aggregate time to generate sink operator 4.780293e-04
 destroy prop[2]
-Aggregate time to generate sink operator 4.639626e-04
 Mesons for quarks 0 and 0
 Time for diagonal mesons 1.287985e-02
 Time for printing correlator 4.787207e-02
 Mesons for quarks 0 and 1
 Time for offdiag mesons 1.382589e-02
 Time for printing correlator 4.469395e-02
-Aggregate time to tie meson correlators 1.193409e-01
-Aggregate time to tie baryon correlators 0.000000e+00
-Aggregate time to save eigenvectors (if requested) 4.053116e-06
 RUNNING COMPLETED
 Time = 1.269530e+01 seconds
 total_iters = 2288

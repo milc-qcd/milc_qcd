@@ -34,7 +34,7 @@ Real xrandom;
 
 /*DEBUG*/
 /**grsource_imp(F_OFFSET(phi), mass, EVENANDODD);
-ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,niter,nrestart,rsqmin,PRECISION,EVENANDODD,&final_rsq);
+ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,niter,nrestart,rsqmin,MILC_PRECISION,EVENANDODD,&final_rsq);
 checkmul();**/
 /*ENDDEBUG*/
 
@@ -44,7 +44,7 @@ checkmul();**/
 #ifdef PHI_ALGORITHM
         /* generate a pseudofermion configuration only at start*/
       if(step==1){
-	restore_fermion_links_from_site(fn_links, PRECISION);
+	restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	fn = get_fm_links(fn_links);
 	grsource_imp(F_OFFSET(phi), mass, EVEN, fn[0]); 
 	old_cg_time = cg_time = -1.0e6;
@@ -55,10 +55,10 @@ checkmul();**/
         /* do conjugate gradient to get (Madj M)inverse * phi */
         if(step==1){
             /* do conjugate gradient to get (Madj M)inverse * phi */
-	  restore_fermion_links_from_site(fn_links, PRECISION);
+	  restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	  fn = get_fm_links(fn_links);
 	    iters += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx), mass, 
-				 niter, nrestart, rsqmin, PRECISION, 
+				 niter, nrestart, rsqmin, MILC_PRECISION, 
 				 EVEN, &final_rsq, fn[0] );
 	    cg_time = 0.0;
 
@@ -80,7 +80,7 @@ checkmul();**/
        	update_u(epsilon*(0.5-nflavors/8.0));
 
         /* generate a pseudofermion configuration */
-	restore_fermion_links_from_site(fn_links, PRECISION);
+	restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	fn = get_fm_links(fn_links);
      	grsource_imp(F_OFFSET(phi), mass, EVEN, fn[0]); 
 	cg_time = -1.0e6;
@@ -90,10 +90,10 @@ checkmul();**/
 #endif
 
         /* do conjugate gradient to get (Madj M)inverse * phi */
-	restore_fermion_links_from_site(fn_links, PRECISION);
+	restore_fermion_links_from_site(fn_links, MILC_PRECISION);
 	fn = get_fm_links(fn_links);
      	iters += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx), mass, 
-			     niter, nrestart, rsqmin, PRECISION, 
+			     niter, nrestart, rsqmin, MILC_PRECISION, 
 			     EVEN, &final_rsq, fn[0] );
 	dslash_site( F_OFFSET(xxx), F_OFFSET(xxx), ODD, fn[0]);
 	cg_time = ((Real)step - 0.5)*epsilon;
@@ -104,9 +104,7 @@ checkmul();**/
     	update_u(epsilon*0.5);
 
         /* reunitarize the gauge field */
-	rephase( OFF );
-        reunitarize();
-	rephase( ON );
+        reunitarize_ks();
 
     }	/* end loop over microcanonical steps */
 
@@ -115,10 +113,10 @@ checkmul();**/
     /* do conjugate gradient to get (Madj M)inverse * phi */
     next_cg_time = steps*epsilon;
     predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
-    restore_fermion_links_from_site(fn_links, PRECISION);
+    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
     fn = get_fm_links(fn_links);
     iters += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx), mass,
-			 niter, nrestart, rsqmin, PRECISION, 
+			 niter, nrestart, rsqmin, MILC_PRECISION, 
 			 EVEN, &final_rsq, fn[0] );
     cg_time = steps*epsilon;
     endaction=d_action();

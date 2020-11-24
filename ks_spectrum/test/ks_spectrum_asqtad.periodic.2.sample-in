@@ -19,6 +19,11 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0
+time_bc periodic
+
+# Eigenpairs
+
+max_number_of_eigenpairs 0
 
 # Chiral condensate and related measurements
 
@@ -31,6 +36,7 @@ number_of_base_sources 1
 # base source 0
 
 point
+field_type KS
 subset full
 origin 0 0 0 0
 source_label d
@@ -46,11 +52,11 @@ number_of_sets 1
 
 # Parameters for set 0
 
+set_type multimass
 max_cg_iterations 1000
 max_cg_restarts 5
 check yes
 momentum_twist 0 0 0
-time_bc periodic
 precision 2
 
 source 0
@@ -65,7 +71,7 @@ error_for_propagator 1e-10
 rel_error_for_propagator 0
 
 fresh_ksprop
-save_serial_fm_ksprop ks.test.l4448_m0.05_t0_x0_y0_z0
+save_serial_scidac_ksprop ks.test.l4448_m0.05_t0_x0_y0_z0
 
 
 # propagator 1
@@ -76,7 +82,7 @@ error_for_propagator 1e-10
 rel_error_for_propagator 0
 
 fresh_ksprop
-save_serial_fm_ksprop ks.test.l4448_m0.02_t0_x0_y0_z0
+save_serial_scidac_ksprop ks.test.l4448_m0.02_t0_x0_y0_z0
 
 
 number_of_quarks 4

@@ -332,7 +332,7 @@ int main(int argc, char *argv[])
   }
 
   nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
-  volume = nx*ny*nz*nt;
+  volume = (size_t) nx*ny*nz*nt;
 
   /* Finish setting up, now we know the dimensions */
   setup();

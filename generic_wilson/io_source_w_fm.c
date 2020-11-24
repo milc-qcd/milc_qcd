@@ -326,20 +326,20 @@ r_source_w_fm(w_source_file *wsf,
 	      byterevn((int32type *)&wfix, 
 		       sizeof(fwilson_vector)/sizeof(int32type));
 	      
-	      /* Now copy the site data into the destination converting
-		 to generic precision if needed */
-	      
-	      i = node_index(x,y,z,t);
-	      
-	      /* We copy first to our buffer, filling all components */
-	      wp = wsf->source + i;
-	      for(s1=0;s1<4;s1++)for(c1=0;c1<3;c1++)
-  	         {
-		    c0 = irecord % 3;
-		    s0 = irecord / 3;
-		    wp->c[c0].d[s0].d[s1].c[c1].real = wfix.d[s1].c[c1].real;
-		    wp->c[c0].d[s0].d[s1].c[c1].imag = wfix.d[s1].c[c1].imag;
-		 }
+	    /* Now copy the site data into the destination converting
+	       to generic precision if needed */
+	    
+	    i = node_index(x,y,z,t);
+	    
+	    /* We copy first to our buffer, filling all components */
+	    wp = wsf->source + i;
+	    for(s1=0;s1<4;s1++)for(c1=0;c1<3;c1++)
+		{
+		  c0 = irecord % 3;
+		  s0 = irecord / 3;
+		  wp->c[c0].d[s0].d[s1].c[c1].real = wfix.d[s1].c[c1].real;
+		  wp->c[c0].d[s0].d[s1].c[c1].imag = wfix.d[s1].c[c1].imag;
+		}
 	  } /* if this_node == destnode */
 	} /* t */
 	
@@ -347,7 +347,7 @@ r_source_w_fm(w_source_file *wsf,
 	
       }  /* rcv_rank, irecord */
   
-  if(wbuff != NULL)free(wbuff); wbuff = NULL;
+  if(wbuff != NULL){free(wbuff); wbuff = NULL;}
   
   /* Finally convert spin basis from FNAL to MILC and then copy the
      requested MILC spin, color to the user Wilson vector */

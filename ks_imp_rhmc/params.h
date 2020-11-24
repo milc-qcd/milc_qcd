@@ -3,6 +3,7 @@
 
 #include "../include/macros.h"  /* For MAXFILENAME */
 #include "defines.h"
+#include "../include/imp_ferm_links.h"
 
 #define MAX_MASS_PBP 8
 /* structure for passing simulation parameters to each node */
@@ -29,6 +30,8 @@ typedef struct {
   Real dyn_mass[MAX_DYN_MASSES];  /* List of dynamical masses */
   int dyn_flavors[MAX_DYN_MASSES]; /* Numbers of dynamical flavors */
   Real u0;                /* tadpole parameter */
+  int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
+  int time_bc;          /* 0 for antiperiodic, 1 for periodic */
   /*  REPEATING BLOCK */
   int warms;	/* the number of warmup trajectories */
   int trajecs;	/* the number of real trajectories */
@@ -48,6 +51,8 @@ typedef struct {
   char rparamfile[MAXFILENAME];
   char startfile[MAXFILENAME],savefile[MAXFILENAME];
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
+  /* Eigenparameters (not used for RHMC) */
+  ks_eigen_param eigen_param; /* Parameters for eigensolver */
   /* PBP and related quantities */
   int num_pbp_masses;   /* Number of masses for pbp calculation */
   quark_invert_control qic_pbp[MAX_MASS_PBP];
@@ -55,5 +60,6 @@ typedef struct {
   int npbp_reps;     /* Number of random sources for pbp calculation */
   ks_param ksp_pbp[MAX_MASS_PBP];
 } params;
+
 
 #endif /* _PARAMS_H */

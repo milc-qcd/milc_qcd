@@ -25,7 +25,7 @@
 int update()  {
 int step, iters=0;
 #ifdef HMC_ALGORITHM
-double startaction,endaction,change;
+double startaction=0.,endaction,change;
 Real xrandom;
 #endif
 
@@ -55,7 +55,7 @@ Real xrandom;
 	else             update_u(0.5*epsilon);
 
 	/* reunitarize the gauge field */
-	reunitarize();
+	reunitarize_cpu();
 
     }	/* end loop over microcanonical steps */
 

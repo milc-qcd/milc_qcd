@@ -16,7 +16,7 @@
 
 #define Nc 3
 
-void project_su3(
+int project_su3(
    su3_matrix *w,         /* input initial guess. output resulting
                              SU(3) matrix */
    su3_matrix *q,         /* 3 x 3 complex matrix to be projected */
@@ -32,7 +32,7 @@ void project_su3(
    Real z;
    su3_matrix action;
    su2_matrix h;
-   Real conver, old_tr = 0, new_tr;
+   double conver, old_tr = 0, new_tr;
 
    if(tol > 0)
      old_tr = realtrace_su3(w,q)/3.0;
@@ -81,8 +81,9 @@ void project_su3(
       }
       
    } /* hits */
-   
+
+   int status = 0;
    if( Nhit > 0 && tol > 0 && conver > tol )
-     printf("project_su3: node %d No convergence: conver = %e\n",
-	    this_node, (double)conver);
+     status = 1;
+   return status;
 }

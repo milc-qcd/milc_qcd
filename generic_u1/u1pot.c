@@ -17,7 +17,7 @@
 
 void shift_cfield(field_offset src,field_offset dest,int dir);
 
-complex u1ploop(void)
+complex u1ploop(Real charge)
 {
 
   int d[4];
@@ -67,7 +67,7 @@ complex u1ploop(void)
       if(s->t>1) continue;
       //      plp.real=tempmat1[i].real;
       //      plp.imag=tempmat1[i].imag;
-      plp.real = cos(tempmat1[i]);
+      plp.real = cos(charge*tempmat1[i]);
       sum += plp.real;
       s->loop.real=plp.real;
       s->loop.imag=0.0;

@@ -145,7 +145,7 @@ int main(int argc, char *argv[])  {
 	    }
 	    
 	    /* Load inversion control structure */
-	    qic.prec = PRECISION;
+	    qic.prec = MILC_PRECISION;
 	    qic.min = 0;
 	    qic.max = MaxCG;
 	    qic.nrestart = nrestart;
