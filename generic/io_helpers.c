@@ -854,3 +854,32 @@ int get_prompt( FILE *fp, int *prompt ){
         return 1;
     }
 }
+
+int dirchar2index (char buf, int *status) {
+  short mydir;
+
+  if ( buf >= 'A' && buf <= 'Z' )
+    mydir = tolower(buf);
+  else
+    mydir = buf;
+  switch(mydir) {
+    case XUP:
+    case '0':
+    case 'x': mydir = XUP; break;
+    case YUP:
+    case '1':
+    case 'y': mydir = YUP; break;
+    case ZUP:
+    case '2':
+    case 'z': mydir = ZUP; break;
+    case TUP:
+    case '3':
+    case 't': mydir = TUP; break;
+    default:
+      node0_printf("Expecting direction \
+as x,y,z,t, X,Y,Z,T, or 0,1,2,3;  instead %c\n", mydir);
+     (*status)++;
+  }
+  return mydir;
+}
+
