@@ -2,6 +2,11 @@
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
+
+#include <string.h>
+#include <ctype.h>
+
+/* Forward declarations */
 #include "pure_gauge_includes.h"
 int initial_set();
 
@@ -108,12 +113,15 @@ char savebuf[128];
 	    get_i(stdin, prompt,"traj_between_meas", &par_buf.propinterval );
     
 	/* get couplings and broadcast to nodes	*/
-	/* beta, mass */
+	/* beta */
 #ifndef ANISOTROPY
 	IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
 #else
-    /* beta[0] - space, beta[1] - time */
-    IF_OK status += get_vf(stdin, prompt,"beta", par_buf.beta, 2 );
+        /* beta[0] - isotropic, beta[1] - anisotropic */
+        IF_OK status += get_vf(stdin, prompt,"beta", par_buf.beta, 2 );
+        /* Direction of anisotropy */
+        IF_OK status += get_s(stdin, prompt,"ani_dir",savebuf);
+        par_buf.ani_dir = dirchar2index( savebuf[0], &status);
 #endif
 
 #if ( defined HMC_ALGORITHM || defined RMD_ALGORITHM )
@@ -186,6 +194,8 @@ char savebuf[128];
 #ifndef ANISOTROPY
     beta = par_buf.beta;
 #else
+    ani_dir=par_buf.ani_dir;
+
     beta[0] = par_buf.beta[0];
     beta[1] = par_buf.beta[1];
 #endif
@@ -199,3 +209,4 @@ char savebuf[128];
 
     return(0);
 } /*readin()*/
+

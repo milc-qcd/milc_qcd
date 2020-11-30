@@ -9,7 +9,9 @@
 
 #include "symanzik_sl32_includes.h"
 #include <string.h>
+#include <ctype.h>
 
+/* Forward declarations */
 void make_sublattices();
 
 /* Each node has a params structure for passing simulation parameters */
@@ -157,6 +159,10 @@ int readin(int prompt) {
 /* argument "prompt" is 1 if prompts are to be given for input	*/
 
 int status;
+#ifdef ANISOTROPY
+  char savebuf[128];
+#endif
+
 
     /* On node zero, read parameters and send to all other nodes */
     if(this_node==0){
@@ -177,8 +183,11 @@ int status;
 #ifndef ANISOTROPY
 	IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
 #else
-	/* beta[0] - space, beta[1] - time */
-	IF_OK status += get_vf(stdin, prompt,"beta", par_buf.beta, 2 );
+        /* beta[0] - isotropic, beta[1] - anisotropic */
+        IF_OK status += get_vf(stdin, prompt,"beta", par_buf.beta, 2 );
+        /* Direction of anisotropy */
+        IF_OK status += get_s(stdin, prompt,"ani_dir",savebuf);
+        par_buf.ani_dir = dirchar2index( savebuf[0], &status);
 #endif
 
 	/* no dynamical masses for pure gauge */
@@ -186,7 +195,11 @@ int status;
 	dyn_flavors[0] = 0;
 
 	/* u0 */
-	IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+#ifndef ANISOTROPY
+        IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+#else
+        IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+#endif
 
 #ifdef HMC_ALGORITHM
 	/* steps per trajectory */
@@ -233,10 +246,18 @@ int status;
 #ifndef ANISOTROPY
     beta = par_buf.beta;
 #else
+    ani_dir = par_buf.ani_dir;
+
     beta[0] = par_buf.beta[0];
     beta[1] = par_buf.beta[1];
 #endif
+
+#ifndef ANISOTROPY
     u0 = par_buf.u0;
+#else
+    u0 = par_buf.u0;
+#endif
+
     strcpy(startfile,par_buf.startfile);
     strcpy(savefile,par_buf.savefile);
     strcpy(stringLFN, par_buf.stringLFN);
@@ -245,5 +266,14 @@ int status;
     if( startflag != CONTINUE )
       startlat_p = reload_lattice( startflag, startfile );
 
+    /* make table of coefficients and permutations of loops in gauge action */
+    make_loop_table();
+
+#ifdef ANISOTROPY
+    /* figure out which loops are temporal and which are spatial */
+    path_determine_ani();
+#endif
+
     return(0);
 }
+
