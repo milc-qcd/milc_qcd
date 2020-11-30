@@ -18,6 +18,10 @@
 #include "../include/ks_action_coeffs_qop.h"
 #include <qop.h>
 
+#ifdef ANISOTROPY
+BOMB THE COMPILE
+#endif 
+
 /*--------------------------------------------------------------------*/
 
 QOP_asqtad_coeffs_t *

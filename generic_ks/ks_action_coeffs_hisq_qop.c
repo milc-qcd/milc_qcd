@@ -121,6 +121,15 @@ create_hisq_coeffs_qop(ks_action_paths_hisq *ap){
   ac->ugroup  = convert_milc_to_qop_ugroup(ugroup);
   ac->umethod = convert_milc_to_qop_umethod(umethod);
 
+#ifdef ANISOTROPY
+  /* Transfer three anisotropy parameters to QOP_hisq_coeffs_t, JHW 2020/09/28 */
+  ac->ani_dir = (int)(ap->ani_dir);
+  ac->ani_xiq = (double)(ap->ani_xiq);
+#  ifdef ONEDIM_ANISO_TEST
+  ac->iso_xiq = (double)(ap->iso_xiq);
+#  endif
+#endif
+
   return ac;
 }
 

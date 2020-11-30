@@ -126,11 +126,11 @@ load_V_from_U(info_t *info, hisq_auxiliary_t *aux, ks_component_paths *ap1){
 #ifdef HISQ_REUNITARIZATION_DEBUG
   int i, idir;
   complex cdetV;
-  FORALLSITES_OMP(i,s,private(idir,cdetV)) 
+  FORALLFIELDSITES_OMP(i,private(idir,cdetV))
     for(idir=XUP;idir<=TUP;idir++) {
       if( lattice[i].on_step_V[idir] < global_current_time_step ) {
         lattice[i].on_step_V[idir] = global_current_time_step;
-        cdetV = det_su3( &(V_link[idir][i]) );
+        cdetV = det_su3( &(V_link[4*i+idir]) );
         lattice[i].Vdet[idir] = cabs( &cdetV );
       }
     }
@@ -434,10 +434,10 @@ load_W_from_Y(info_t *info, hisq_auxiliary_t *aux, int umethod, int ugroup){
 	   CAREFUL WITH FERMION PHASES! */
 #ifdef MILC_GLOBAL_DEBUG
 #ifdef HISQ_REUNITARIZATION_DEBUG
-	su3_spec_unitarize_index( &( Y_unitlink[dir][i] ), &tmat, 
+	su3_spec_unitarize_index( &( Y_unitlink[4*i+dir] ), &tmat, 
 				  &cdet, i, dir );
 #else  /* HISQ_REUNITARIZATION_DEBUG */
-	su3_spec_unitarize( &( Y_unitlink[dir][i] ), &tmat, &cdet );
+	su3_spec_unitarize( &( Y_unitlink[4*i+dir] ), &tmat, &cdet );
 #endif /* HISQ_REUNITARIZATION_DEBUG */
 #else  /* MILC_GLOBAL_DEBUG */
 	su3_spec_unitarize( &( Y_unitlink[4*i+dir] ), &tmat, &cdet );
@@ -598,19 +598,34 @@ load_hisq_fn_links(info_t *info, fn_links_t **fn, fn_links_t *fn_deps,
     // 3rd path table set
     load_X_from_W(info, fn[0], aux, &ap->p3);
     final_flop += info->final_flop;
+#ifdef ANISOTROPY
+    scalar_mult_fn_dir( fn[0], ap->ani_xiq, ap->ani_dir, fn[0] );
+    final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+    { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn[0], ap->iso_xiq, dir, fn[0] ); final_flop += 108.*volume/numnodes(); }
+#endif
+#endif
+
     if(want_deps)
       copy_fn(fn[0], fn_deps);
     for( inaik = 1; inaik < n_naiks; inaik++ ){
       scalar_mult_fn( fn[0], eps_naik[inaik], fn[inaik] );
-      final_flop += 18.*volume/numnodes();
+      final_flop +=144.*volume/numnodes();
     }
 
     // 2nd path table set
     load_X_from_W(info, fn[0], aux, &ap->p2);
     final_flop += info->final_flop;
+#ifdef ANISOTROPY
+    scalar_mult_fn_dir( fn[0], ap->ani_xiq, ap->ani_dir, fn[0] );
+    final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+    { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn[0], ap->iso_xiq, dir, fn[0] ); final_flop += 108.*volume/numnodes(); }
+#endif
+#endif
     for( inaik = 1; inaik < n_naiks; inaik++ ) {
       add_fn( fn[inaik], fn[0], fn[inaik] );
-      final_flop += 18.*volume/numnodes();
+      final_flop +=144.*volume/numnodes();
       fn[inaik]->eps_naik = eps_naik[inaik];
     }
   }
@@ -618,9 +633,23 @@ load_hisq_fn_links(info_t *info, fn_links_t **fn, fn_links_t *fn_deps,
     // 2nd path table set only, no other terms with Naik corrections
     load_X_from_W(info, fn[0], aux, &ap->p2);
     final_flop += info->final_flop;
+#ifdef ANISOTROPY
+    scalar_mult_fn_dir( fn[0], ap->ani_xiq, ap->ani_dir, fn[0] );
+    final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+    { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn[0], ap->iso_xiq, dir, fn[0] ); final_flop += 108.*volume/numnodes(); }
+#endif
+#endif
     if(want_deps){
       load_X_from_W(info, fn_deps, aux, &ap->p3);
       final_flop += info->final_flop;
+#ifdef ANISOTROPY
+      scalar_mult_fn_dir( fn_deps, ap->ani_xiq, ap->ani_dir, fn_deps );
+      final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+    { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn_deps, ap->iso_xiq, dir, fn_deps ); final_flop += 108.*volume/numnodes(); }
+#endif
+#endif
     }
   }
 

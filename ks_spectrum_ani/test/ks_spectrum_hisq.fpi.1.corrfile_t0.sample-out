@@ -1,0 +1,492 @@
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 15:58:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        random_color_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_ncolor:      3
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       r
+antiquark_sink_label:         d
+antiquark_mass:               "0.005"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            random_color_wall
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_ncolor:          3
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           r
+quark_sink_label:             d
+quark_mass:                   "0.005"
+quark_epsilon:                0
+...
+---
+correlator:                   POINT_KAON_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               POINT_KAON_5_r_r_d_d_m0.005_m0.005_p000
+...
+0	1.019116e-03	0.000000e+00
+1	2.169688e-04	0.000000e+00
+2	6.306094e-05	0.000000e+00
+3	3.935829e-05	0.000000e+00
+4	1.703375e-05	0.000000e+00
+5	3.756197e-05	0.000000e+00
+6	5.656375e-05	0.000000e+00
+7	2.096278e-04	0.000000e+00
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 15:58:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        random_color_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_ncolor:      3
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       r
+antiquark_sink_label:         EO
+antiquark_sink_ops:           [
+{ operation:                  even_and_odd_wall
+}
+]
+antiquark_mass:               "0.005"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            random_color_wall
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_ncolor:          3
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           r
+quark_sink_label:             EO
+quark_sink_ops:               [
+{ operation:                  even_and_odd_wall
+}
+]
+quark_mass:                   "0.005"
+quark_epsilon:                0
+...
+---
+correlator:                   WALL_KAON_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               WALL_KAON_5_r_r_EO_EO_m0.005_m0.005_p000
+...
+0	6.415131e-03	0.000000e+00
+1	5.131914e-03	0.000000e+00
+2	3.227292e-03	0.000000e+00
+3	3.120509e-03	0.000000e+00
+4	7.347263e-04	0.000000e+00
+5	3.597574e-03	0.000000e+00
+6	1.224485e-03	0.000000e+00
+7	3.562772e-03	0.000000e+00
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 15:58:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        even_and_odd_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_label:       q
+antiquark_sink_label:         d
+antiquark_mass:               "0.005"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            even_and_odd_wall
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_label:           q
+quark_sink_label:             d
+quark_mass:                   "0.005"
+quark_epsilon:                0
+...
+---
+correlator:                   POINT_KAON_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               POINT_KAON_5_q_q_d_d_m0.005_m0.005_p000
+...
+0	8.044061e-03	0.000000e+00
+1	7.295319e-03	0.000000e+00
+2	3.003346e-03	0.000000e+00
+3	5.085142e-03	0.000000e+00
+4	1.534000e-03	0.000000e+00
+5	4.837827e-03	0.000000e+00
+6	2.507807e-03	0.000000e+00
+7	6.902906e-03	0.000000e+00
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 15:58:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        even_and_odd_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_label:       q
+antiquark_sink_label:         EO
+antiquark_sink_ops:           [
+{ operation:                  even_and_odd_wall
+}
+]
+antiquark_mass:               "0.005"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            even_and_odd_wall
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_label:           q
+quark_sink_label:             EO
+quark_sink_ops:               [
+{ operation:                  even_and_odd_wall
+}
+]
+quark_mass:                   "0.005"
+quark_epsilon:                0
+...
+---
+correlator:                   WALL_KAON_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               WALL_KAON_5_q_q_EO_EO_m0.005_m0.005_p000
+...
+0	2.521839e+00	0.000000e+00
+1	5.854426e+00	0.000000e+00
+2	8.485436e-01	0.000000e+00
+3	3.771570e+00	0.000000e+00
+4	3.533777e-01	0.000000e+00
+5	3.857818e+00	0.000000e+00
+6	5.415430e-01	0.000000e+00
+7	5.158994e+00	0.000000e+00
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 15:58:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        random_color_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_ncolor:      3
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       r
+antiquark_sink_label:         d
+antiquark_mass:               "0.005"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            random_color_wall
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_ncolor:          3
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           r
+quark_sink_label:             d
+quark_mass:                   "0.007"
+quark_epsilon:                -0.1
+...
+---
+correlator:                   POINT_KAON_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               POINT_KAON_5_r_r_d_d_m0.005_m0.007_p000
+...
+0	1.029142e-03	3.444113e-09
+1	2.189774e-04	-1.148052e-08
+2	6.327310e-05	9.883152e-10
+3	3.953043e-05	-1.669780e-08
+4	1.714510e-05	-1.440215e-08
+5	3.771870e-05	-3.771962e-08
+6	5.673376e-05	-2.772734e-08
+7	2.115691e-04	-6.120811e-08
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 15:58:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        random_color_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_ncolor:      3
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       r
+antiquark_sink_label:         EO
+antiquark_sink_ops:           [
+{ operation:                  even_and_odd_wall
+}
+]
+antiquark_mass:               "0.005"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            random_color_wall
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_ncolor:          3
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           r
+quark_sink_label:             EO
+quark_sink_ops:               [
+{ operation:                  even_and_odd_wall
+}
+]
+quark_mass:                   "0.007"
+quark_epsilon:                -0.1
+...
+---
+correlator:                   WALL_KAON_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               WALL_KAON_5_r_r_EO_EO_m0.005_m0.007_p000
+...
+0	6.445784e-03	2.390031e-05
+1	5.169126e-03	-8.016010e-07
+2	3.230696e-03	8.666414e-06
+3	3.131174e-03	2.328031e-06
+4	7.374627e-04	1.512012e-06
+5	3.603650e-03	-5.014362e-06
+6	1.217085e-03	1.217620e-06
+7	3.580699e-03	-3.934809e-06
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 15:58:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        even_and_odd_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_label:       q
+antiquark_sink_label:         d
+antiquark_mass:               "0.005"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            even_and_odd_wall
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_label:           q
+quark_sink_label:             d
+quark_mass:                   "0.007"
+quark_epsilon:                -0.1
+...
+---
+correlator:                   POINT_KAON_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               POINT_KAON_5_q_q_d_d_m0.005_m0.007_p000
+...
+0	8.097257e-03	7.671607e-06
+1	7.343746e-03	-3.354525e-06
+2	3.012630e-03	3.354816e-06
+3	5.095391e-03	-1.322993e-06
+4	1.540414e-03	2.420526e-06
+5	4.845671e-03	8.124269e-07
+6	2.513558e-03	4.503788e-06
+7	6.945376e-03	5.048620e-06
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 15:58:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        even_and_odd_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_label:       q
+antiquark_sink_label:         EO
+antiquark_sink_ops:           [
+{ operation:                  even_and_odd_wall
+}
+]
+antiquark_mass:               "0.005"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            even_and_odd_wall
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_label:           q
+quark_sink_label:             EO
+quark_sink_ops:               [
+{ operation:                  even_and_odd_wall
+}
+]
+quark_mass:                   "0.007"
+quark_epsilon:                -0.1
+...
+---
+correlator:                   WALL_KAON_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               WALL_KAON_5_q_q_EO_EO_m0.005_m0.007_p000
+...
+0	2.537949e+00	7.405630e-03
+1	5.891392e+00	-3.723620e-03
+2	8.496549e-01	3.200882e-03
+3	3.774068e+00	-1.801653e-03
+4	3.544587e-01	1.696476e-03
+5	3.859658e+00	-4.256913e-04
+6	5.423434e-01	4.228042e-03
+7	5.189467e+00	1.914921e-03
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 15:58:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        random_color_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_ncolor:      3
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       r
+antiquark_sink_label:         d
+antiquark_mass:               "0.007"
+antiquark_epsilon:            -0.1
+quark_type:                   staggered
+quark_source_type:            random_color_wall
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_ncolor:          3
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           r
+quark_sink_label:             d
+quark_mass:                   "0.007"
+quark_epsilon:                -0.1
+...
+---
+correlator:                   POINT_KAON_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               POINT_KAON_5_r_r_d_d_m0.007_m0.007_p000
+...
+0	1.039286e-03	0.000000e+00
+1	2.210102e-04	0.000000e+00
+2	6.349025e-05	0.000000e+00
+3	3.970640e-05	0.000000e+00
+4	1.725953e-05	0.000000e+00
+5	3.787915e-05	0.000000e+00
+6	5.690841e-05	0.000000e+00
+7	2.135338e-04	0.000000e+00
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 15:58:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        random_color_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_ncolor:      3
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       r
+antiquark_sink_label:         EO
+antiquark_sink_ops:           [
+{ operation:                  even_and_odd_wall
+}
+]
+antiquark_mass:               "0.007"
+antiquark_epsilon:            -0.1
+quark_type:                   staggered
+quark_source_type:            random_color_wall
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_ncolor:          3
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           r
+quark_sink_label:             EO
+quark_sink_ops:               [
+{ operation:                  even_and_odd_wall
+}
+]
+quark_mass:                   "0.007"
+quark_epsilon:                -0.1
+...
+---
+correlator:                   WALL_KAON_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               WALL_KAON_5_r_r_EO_EO_m0.007_m0.007_p000
+...
+0	6.476976e-03	0.000000e+00
+1	5.206704e-03	0.000000e+00
+2	3.234287e-03	0.000000e+00
+3	3.141957e-03	0.000000e+00
+4	7.403180e-04	0.000000e+00
+5	3.609799e-03	0.000000e+00
+6	1.209864e-03	0.000000e+00
+7	3.598787e-03	0.000000e+00
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 15:58:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        even_and_odd_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_label:       q
+antiquark_sink_label:         d
+antiquark_mass:               "0.007"
+antiquark_epsilon:            -0.1
+quark_type:                   staggered
+quark_source_type:            even_and_odd_wall
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_label:           q
+quark_sink_label:             d
+quark_mass:                   "0.007"
+quark_epsilon:                -0.1
+...
+---
+correlator:                   POINT_KAON_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               POINT_KAON_5_q_q_d_d_m0.007_m0.007_p000
+...
+0	8.151673e-03	0.000000e+00
+1	7.392741e-03	0.000000e+00
+2	3.022310e-03	0.000000e+00
+3	5.105779e-03	0.000000e+00
+4	1.547007e-03	0.000000e+00
+5	4.853648e-03	0.000000e+00
+6	2.519677e-03	0.000000e+00
+7	6.988361e-03	0.000000e+00
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 15:58:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        even_and_odd_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_label:       q
+antiquark_sink_label:         EO
+antiquark_sink_ops:           [
+{ operation:                  even_and_odd_wall
+}
+]
+antiquark_mass:               "0.007"
+antiquark_epsilon:            -0.1
+quark_type:                   staggered
+quark_source_type:            even_and_odd_wall
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_label:           q
+quark_sink_label:             EO
+quark_sink_ops:               [
+{ operation:                  even_and_odd_wall
+}
+]
+quark_mass:                   "0.007"
+quark_epsilon:                -0.1
+...
+---
+correlator:                   WALL_KAON_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               WALL_KAON_5_q_q_EO_EO_m0.007_m0.007_p000
+...
+0	2.554875e+00	0.000000e+00
+1	5.928626e+00	0.000000e+00
+2	8.509855e-01	0.000000e+00
+3	3.776547e+00	0.000000e+00
+4	3.556114e-01	0.000000e+00
+5	3.861510e+00	0.000000e+00
+6	5.433615e-01	0.000000e+00
+7	5.220163e+00	0.000000e+00

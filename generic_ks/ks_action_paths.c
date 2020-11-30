@@ -62,17 +62,16 @@ void printpath( int *path, int length );
 int path_num[MAX_BASIC_PATHS];	/* number of rotations/reflections for each 
 					kind */
 static Real act_path_coeff[MAX_BASIC_PATHS]; /* actual path coefficient     *
-                                               * it is equal to path_coeff   *
-                                               * if not tadpole improvement  *
-                                               * is specified                *
-                                               * or path_coeff*u_0^(L-1) when*
-                                               * tadpole improvement is      *
-                                               * specified                   */
+                                              * it is equal to path_coeff   *
+                                              * if not tadpole improvement  *
+                                              * is specified                *
+                                              * or path_coeff*u_0^(L-1) when*
+                                              * tadpole improvement is      *
+                                              * specified                   */
 #ifdef DM_DU0
-#ifndef TADPOLE_IMPROVE
+#  ifndef TADPOLE_IMPROVE
 BOMB THE COMPILE
-#endif
-
+#  endif
 static Real act_path_coeff_dmdu0[MAX_BASIC_PATHS]; /* coefficient for
 						      d(Dslash)/d(u0) */
 #endif
@@ -93,6 +92,7 @@ add_basic_path( int *vec, int length, Real coeff );
 
 static void 
 load_asqtad_coeffs_t(asqtad_coeffs_t *apc, Real act_path_coeff[]){
+#ifndef ANISOTROPY
     apc->one_link =     act_path_coeff[0];
     apc->naik =	        act_path_coeff[1];
     apc->three_staple = act_path_coeff[2];
@@ -105,6 +105,41 @@ load_asqtad_coeffs_t(asqtad_coeffs_t *apc, Real act_path_coeff[]){
       apc->lepage =       act_path_coeff[5];
     else
       apc->lepage = 0.;
+#else
+#ifndef ABSORB_ANI_XIQ
+    // Minimal set of coefficients for a minimal setup without absorbing anisotropy factors. JHW, 2020/10/05
+    apc->one_link         = act_path_coeff[ 0];
+    apc->naik             = act_path_coeff[ 1];
+    apc->three_staple     = act_path_coeff[ 2];
+    apc->five_staple      = act_path_coeff[ 3];
+    apc->seven_staple     = act_path_coeff[ 4];
+    apc->lepage           = act_path_coeff[ 5];
+    apc->ani_naik         = act_path_coeff[ 6];
+    apc->ani_three_staple = act_path_coeff[ 7];
+    apc->ani_five_staple  = act_path_coeff[ 8];
+    apc->ani_seven_staple = act_path_coeff[ 9];
+    apc->ani_lepage       = act_path_coeff[10];
+#else
+    // Larger set of coefficients in a complete setup that absorbs the anisotropy factors. JHW, 2020/10/05
+    apc->one_link         = act_path_coeff[ 0];
+    apc->naik             = act_path_coeff[ 1];
+    apc->three_staple     = act_path_coeff[ 2];
+    apc->five_staple      = act_path_coeff[ 3];
+    apc->lepage           = act_path_coeff[ 4];
+    apc->ani_one_link     = act_path_coeff[ 5];
+    apc->ani_three_staple = act_path_coeff[ 6];
+    apc->ani_five_staple  = act_path_coeff[ 7];
+    apc->ani_lepage       = act_path_coeff[ 8];
+    apc->ani_seven_staple = act_path_coeff[ 9];
+    apc->ani2_three_staple= act_path_coeff[10];
+    apc->ani2_five_staple = act_path_coeff[11];
+    apc->seven_staple     = act_path_coeff[12]; // Necessarily contains two anisotropic links, JHW 2020/10/04
+    apc->ani_naik         = act_path_coeff[13];
+    apc->ani4_lepage      = act_path_coeff[14];
+
+#endif
+    apc->ani_dir = ani_dir;
+#endif
 }
 
 /********************************************************************/
@@ -136,6 +171,23 @@ int make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0) {
     /**int path_ind[MAX_BASIC_PATHS][MAX_LENGTH];**/
     /* table of coefficients in action, for each path */
 
+#ifdef ANISOTROPY
+     Real u0r1 = u0/ani_u0;
+     Real u0r2 = u0r1*u0r1;
+     Real u0r4 = u0r2*u0r2;
+     node0_printf("Ratio of tadpole factors %f \n",u0r1);
+#  ifndef ABSORB_ANI_XIQ
+#    define IS_ANI_PATH(j)   ( j >= ANI_NK ) 
+#    define IS_ANI_LEPAGE(j) ( j == ANI_LP ) 
+#  else
+#    define IS_ANI0_PATH(j) ( j <  ANI1_1L ) 
+#    define IS_ANI1_PATH(j) ( j >  ANI0_LP && j <  ANI2_3L ) 
+#    define IS_ANI2_PATH(j) ( j >  ANI1_LP && j <  ANI3_NK ) 
+#    define IS_ANI3_PATH(j) ( j == ANI3_NK ) 
+#    define IS_ANI4_PATH(j) ( j == ANI4_LP ) 
+#  endif
+#endif
+
     if(mynode()==0)printf("%s\n",QUARK_ACTION_DESCRIPTION);
     num_q_paths = 0;
     num_basic_paths = 0;
@@ -152,12 +204,50 @@ int make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0) {
 #ifdef TADPOLE_IMPROVE
 	for(k=1;k< path_length_in[j];k++)this_coeff /= u0;
 #endif
+#  ifndef ANISOTROPY
 	act_path_coeff[j] = this_coeff ;
-#ifdef DM_DU0
-	act_path_coeff_dmdu0[j] = this_coeff*(1-path_length_in[j])/u0;
+#  else
+#    ifndef ABSORB_ANI_XIQ
+#ifdef TADPOLE_IMPROVE
+        if ( IS_ANI_PATH(j) ) this_coeff *= (IS_ANI_LEPAGE(j)? u0r2 : u0r4 );
+        act_path_coeff[j] = this_coeff ; 
 #endif
-	i = add_basic_path( path_ind[j], path_length_in[j],
-	    this_coeff );
+#    else
+#ifdef TADPOLE_IMPROVE
+	for(k=0;k < path_u0rat_pow[j];k++) this_coeff *= u0r1;
+#endif
+
+#  ifdef ONEDIM_ANISO_TEST
+        act_path_coeff[j] = this_coeff * ( IS_ANI1_PATH(j) || IS_ANI3_PATH(j) ? ani_xiq : iso_xiq );
+#  else
+        act_path_coeff[j] = this_coeff * ( IS_ANI1_PATH(j) || IS_ANI3_PATH(j) ? ani_xiq : 1 );
+#  endif
+
+#    endif
+#  endif
+
+#ifdef DM_DU0
+#  ifndef ANISOTROPY
+	act_path_coeff_dmdu0[j] = this_coeff*(1-path_length_in[j])/u0;
+#  else
+#    ifndef ABSORB_ANI_XIQ
+	act_path_coeff_dmdu0[j] = this_coeff*(1+(IS_ANI_PATH(j)+IS_ANI_LEPAGE(j))*2-path_length_in[j])/u0;
+#    else
+        switch ( path_u0_rat_pow[j] ) {
+          case 0: 
+          case 2: 
+            act_path_coeff_dmdu0[j] = act_path_coeff[j] * (1+path_u0_rat_pow[j]-path_length_in[j])/u0 ;
+            break;
+            break;
+          case 4: // No u0 dependence like the isotropic one_link, JHW 2020/10/03
+          default:
+            act_path_coeff_dmdu0[j] = 0;
+            break;
+        }
+#    endif
+#  endif
+#endif
+	i = add_basic_path( path_ind[j], path_length_in[j], this_coeff );
 	if(mynode()==0)printf("                    %d      %e     %d\n",
 	    j,this_coeff,i);
     }
@@ -173,7 +263,26 @@ int make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0) {
     ap_dmdu0->constructed = 1;
 #endif
     ap->constructed = 1;
-    return 1;
+#ifdef ANISOTROPY
+  char ani_char[]="xyzt";
+  ap->ani_dir = ani_dir; 
+#  ifndef ABSORB_ANI_XIQ
+  node0_printf("Anisotropic action with bare quark anisotropy %.6f in the %c-direction\n", ani_xiq, ani_char[ani_dir]);
+  ap->ani_xiq = ani_xiq; 
+#  else
+  node0_printf("Anisotropic action with bare quark anisotropy %.6f in the %c-direction absorbed into path coefficients\n", ani_xiq, ani_char[ani_dir]);
+  ap->ani_xiq = 1; 
+#  endif
+#  ifdef ONEDIM_ANISO_TEST
+  node0_printf("using three isotropic directions with factor %.6f for debugging\n",iso_xiq);
+#    ifndef ABSORB_ANI_XIQ
+  ap->iso_xiq = iso_xiq; 
+#    else
+  ap->iso_xiq = 1; 
+#    endif
+#  endif
+#endif
+  return 1;
 }
 
 /********************************************************************/
@@ -217,6 +326,34 @@ add_basic_path( int *basic_vec, int length, Real coeff ) {
 	    for(j=length;j<MAX_LENGTH;j++) vec[j]=NODIR;
 
             flag=0;
+#ifdef ANISOTROPY
+            /* Distinguish between paths with multiple anisotropic links or without and 
+             * extend path table with that criterium. JHW 2020/10/02 */
+            int ani_len = 0;
+	    for(j=0;j<length;j++) ani_len += ( vec[j] == ani_dir || vec[j] == OPP_DIR(ani_dir) );
+#  ifndef ABSORB_ANI_XIQ
+            if ( ( ani_len > 1 && num_q_paths < ISO_NUM ) || ( ani_len <= 1 && num_q_paths >= ISO_NUM ) ) continue;
+#  else
+            /* Did not find any less ugly solution than giving minima and maxima for each combination of 
+             * length and length along the anisotropic direction (ani_len). Without separate limits for 
+             * lengths would not be able to discriminate between Lepage with one or without anisotropic 
+             * links. JHW 2020/10/05 */
+            if (  ( ( ani_len == 0 && length == 1 && (                              num_q_paths > ANI0_1L_MAX ) )
+                 || ( ani_len == 0 && length == 3 && ( num_q_paths < ANI0_1L_MAX || num_q_paths > ANI0_3L_MAX ) )
+                 || ( ani_len == 0 && length == 5 && ( num_q_paths < ANI0_3L_MAX || num_q_paths > ANI0_LP_MAX ) )
+                 || ( ani_len == 1 && length == 1 && ( num_q_paths < ANI0_LP_MAX || num_q_paths > ANI1_1L_MAX ) )
+                 || ( ani_len == 1 && length == 3 && ( num_q_paths < ANI1_1L_MAX || num_q_paths > ANI1_3L_MAX ) )
+                 || ( ani_len == 1 && length == 5 && ( num_q_paths < ANI1_3L_MAX || num_q_paths > ANI1_LP_MAX ) )
+                 || ( ani_len == 1 && length == 7 && ( num_q_paths < ANI1_5L_MAX || num_q_paths > ANI1_7L_MAX ) )
+                 || ( ani_len == 2 && length == 3 && ( num_q_paths < ANI1_LP_MAX || num_q_paths > ANI2_3L_MAX ) )
+                 || ( ani_len == 2 && length == 5 && ( num_q_paths < ANI2_3L_MAX || num_q_paths > ANI2_5L_MAX ) )
+                 || ( ani_len == 2 && length == 7 && ( num_q_paths < ANI2_5L_MAX || num_q_paths > ANI2_7L_MAX ) )
+                 || ( ani_len == 3 && length == 3 && ( num_q_paths < ANI2_7L_MAX || num_q_paths > ANI3_NK_MAX ) )
+                 || ( ani_len == 4 && length == 5 && ( num_q_paths < ANI3_NK_MAX                           ) )
+               )  )  continue;
+#  endif
+#endif
+//printf("PATH (%d,%d -- %d,%d): ",path_num,num_q_paths,length,ani_len); for(j=0;j<length;j++) printf(" %d ", vec[j]); printf("\n");
 	    /* check if it's a new set: */
 	    for(j=0;j<num_q_paths;j++){
 	      flag = is_path_equal( vec, q_paths[j].dir, MAX_LENGTH );

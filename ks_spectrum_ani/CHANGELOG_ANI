@@ -1,0 +1,1137 @@
+## CHANGELOG ANISOTROPIC STAGGERED (HISQ/ASQTAD/NAIVE) ##
+last changes: 11/29/2020
+
+Summary:
+In this CHANGELOG_ANI I first review the changes that were 
+necessary to implement anisotropic valence KS propagators,  
+mostly in the subfolders generic_ks and ks_spectrum_ani 
+(the latter being derived from the usual ks_spectrum). 
+
+General remarks:
+a)
+Anisotropic features are always marked and triggered by the 
+compiler macro ANISOTROPY.
+b)
+Another way of isolating anisotropic effects is marked and 
+triggered by the compiler macro ONEDIM_ANISO_TEST, which multiplies 
+the 3d-isotropic links in the Dirac operator by a number (e.g. zero).
+c)
+We have been working with the assumption of defining only 
+one u0 on the basis of the isotropic links (from the three 
+iso-iso plaquettes). Under this assumption, the anisotropic 
+average link would be considered as very smooth and close to 
+the unit matrix. I.e. it would not require a tadpole factor 
+different from 1. Alternatively, one could define a second, 
+anisotropic tadpole factor ani_u0 \simeq 1. 
+For the consistency of counting, we should drag ratios of 
+(u0/ani_u0) around in the code, which is done in the following. 
+d) 
+The implementation of naive (onelink), asq or HISQ action is 
+straightforward, since fermion links are constructed as usual 
+and anisotropy factors are multiplied at the end to the appropriate 
+fat- or longlinks. Anisotropy factors are passed through the 
+ks_action_paths struct.
+e)
+For the Asqtad action, one needs tadpole improvement.
+Moreover, one could argue whether one should define only the 
+dmdu0 derivative, or also the dmdani_u0 derivative. Here, we 
+have opted against defining the latter, although it is with 
+the presented code straightforward to include it. If one wants 
+to be fully consistent, one needs more direction resolution in 
+the path tables, and hence, a larger number of coefficients. 
+Then the anisotropy factors ani_xiq and iso_xiq could be absorbed 
+into these coefficients directly. However, we did not do so, to 
+keep the code's structure clearer. 
+
+With the standard implementation of Asqtad links this would pose a 
+problem on anisotropic lattice, since the u0 factors are absorbed into 
+the path coeffcients as 
+c_N^u0 = c_N/(u0)^2, 
+c_l^u0 = c_l/(u0)^(l-1), (l=1, 3, 5, 7) 
+and c_L^u0 = c_L/(u0)^4,
+where c_N is the Naik coefficient, c_l are the 1-, 3-, 5-, and 7-link 
+tree-level coefficients, and c_L is the Lepage coefficient. Obviously 
+l indicates path length. Thus, the tadpole factors u0 for paths with 
+either one, two, three, or four links in the anisotropic direction 
+would be overcounted. We have arranged two different path tables with 
+different degree of resolution.
+
+First, we can achieve the necessary resolution by defining a second set 
+of path coefficients (in total 11 = 6+5), namely 
+C_N^ani = c_N^u0*(u0/ani_u0)^2, 
+c_l^ani = c_l^u0*/(u0/ani_u0)^2, (l=3,5,7)
+C_L^ani = C_L^u0*(u0/ani_u0)^4.
+For any path with one anisotropic link, which only 
+contributes to the anisotropic fatlinks, we use c_l^u0 and 
+later multiply by ani_xiq. Then the powers are correct.
+For any path with two anisotropic links, that only 
+contributes to one of the isotropic fatlinks, we simply 
+use c_l^ani and have the powers right.
+For the anisotropic long-link, we use c_N^ani and later multiply by 
+ani_xiq. Then the powers are correct.
+For a path with four anisotropic links, that only 
+contributes in the Lepage staple to the isotropic 
+fatlinks, we use directly C_L^{ani} to have the right 
+power of tadpole factors.
+Now the fermion links routine needs to be keep track of how many 
+temporal links contribute to the path, and choose from the second 
+set of coefficients if there are at least two temporal links. 
+The struct, asqtad_coeffs_t must contain both sets of 
+coefficients and the direction of the anisotropy.
+
+Second, we have rearranged the path table to have one block of 5 paths 
+without anisotropic links, then a block of 5 paths with 1 anisotropic 
+link each, then a block of 3 paths with 2 anisotropic links each, 
+then the anisotropic Naik with 3 anisotropic links, and finally the 
+anisotropic contribution to the isotropic Lepage staple 
+with 4 anisotropic links. As a consequence, we distinguish between 15 
+different types of paths and also need 15 different path coefficients.
+Using the add_basic_path routine in generic_ks/ks_action_paths.c, 
+one has to be very careful about the counting to ensure that each path 
+gets its appropriate coefficient. We did not find an elegant solution 
+for that.
+f) 
+We provide a nontrivial, nonproduction level test on a free field 
+configuration in non_prod_tests.
+g) 
+For anisotropic HISQ we have implemented a QOP realization, which requires 
+a (still private) modified version of qopqdp-0.21.1. 
+No such QOP implementation exists for anisotropic asqtad, due to lack of 
+interest and technical difficulties with the implementation (it would 
+adversely affect the performance of the HISQ implementation).
+
+##############################################
+In the following, we list all files that have been changed.
+##############################################
+
+include/fn_links.h
+include/generic.h 
+include/ks_action_paths.h
+
+generic/generic_includes.h 
+generic/io_helpers.c 
+
+generic_ks/fermion_links_fn_load_milc.c
+generic_ks/fermion_links_hisq_load_milc.c
+generic_ks/fn_links_milc.c
+generic_ks/ks_action_paths.c
+generic_ks/ks_action_paths_hisq.c
+generic_ks/ks_action_paths_hypisq.c
+generic_ks/ks_action_coeffs_hisq_qop.c
+generic_ks/ks_action_coeffs_asqtad_qop.c
+generic_ks/imp_actions/onelink_action.h
+generic_ks/imp_actions/asq_action.h
+generic_ks/imp_actions/ani_asqtad_action.h
+
+ks_spectrum_ani/Make_template
+ks_spectrum_ani/lattice.h 
+ks_spectrum_ani/params.h 
+ks_spectrum_ani/setup.c 
+ks_spectrum_ani/test/build_input.ks_spectrum_ani_hisq.spectrum2.1.sh
+ks_spectrum_ani/test/build_input.ks_spectrum_ani_hisq.spectrum2.2.sh
+ks_spectrum_ani/test/checklist
+ks_spectrum_ani/test/ks_spectrum_ani_hisq.spectrum2.1.corrfile_t0.errtol
+ks_spectrum_ani/test/ks_spectrum_ani_hisq.spectrum2.1.corrfile_t0.sample-out
+ks_spectrum_ani/test/ks_spectrum_ani_hisq.spectrum2.1.sample-in
+ks_spectrum_ani/test/ks_spectrum_ani_hisq.spectrum2.1.sample-out
+ks_spectrum_ani/test/ks_spectrum_ani_hisq.spectrum2.1.test-param
+ks_spectrum_ani/test/ks_spectrum_ani_hisq.spectrum2.2.corrfile_t0.errtol
+ks_spectrum_ani/test/ks_spectrum_ani_hisq.spectrum2.2.corrfile_t0.sample-out
+ks_spectrum_ani/test/ks_spectrum_ani_hisq.spectrum2.2.errtol
+ks_spectrum_ani/test/ks_spectrum_ani_hisq.spectrum2.2.sample-in
+ks_spectrum_ani/test/ks_spectrum_ani_hisq.spectrum2.2.sample-out
+ks_spectrum_ani/test/ks_spectrum_ani_hisq.spectrum2.2.test-param
+
+qopqdp-0.21.1/include/qop_int.h
+qopqdp-0.21.1/include/qop_pc_internal.h
+qopqdp-0.21.1/include/qop_XY_internal_generic.h
+qopqdp-0.21.1/lib/asqtad_dslash_p.c
+qopqdp-0.21.1/lib/hisq_links_p.c
+
+##############################################
+##############################################
+In the following we list the relevant changes, mostly in  
+the generic_ks or ks_spectrum_ani folders.
+##############################################
+
+##############################################
+in ks_spectrum_ani/Make_template added new anisotropic targets.
+Note that anisotropic Asqtad needs revised path tables given in
+generic_ks/imp_actions/ani_asqtad_action.h
+
+# Anisotropic targets
+
+ks_spectrum_ani_naive::
+        ${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "QUARK = onelink_action.h" \
+        "DEFINES= -DFN -DHAVE_KS -UD_FN_GATHER13 \
+        -DANISOTROPY" \
+        "EXTRA_OBJECTS += ${FN_OBJECTS}"
+
+ks_spectrum_ani_asq::
+        ${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "QUARK = asq_action.h" \
+        "DEFINES= -DFN -DHAVE_KS \
+        -DANISOTROPY" \
+        "EXTRA_OBJECTS += ${FN_OBJECTS}"
+
+ks_spectrum_ani_asqtad::
+        ${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "QUARK = ani_asqtad_action.h" \
+        "DEFINES= -DFN -DHAVE_KS \
+        -DANISOTROPY" \
+        "EXTRA_OBJECTS += ${FN_OBJECTS}"
+
+ks_spectrum_ani_hisq::
+        ${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        ${HISQ_OPTIONS} "DEFINES += \
+        -DANISOTROPY"
+
+static_ks_spectrum_ani_hisq::
+        ${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+        "DEFINES += -DSKS -DSMEARED_STATIC -DREUSE_SINKOP \
+        -DANISOTROPY" \
+        "EXTRA_OBJECTS += statiq.o smearing_hyp.o fermion_links_hyp.o"
+
+Similar targets for other applications can be trivially defined, 
+but were not necessary for the tests and runs so far. New flags are
+ANISOTROPY and ONEDIM_ANISO_TEST.
+The first new flag triggers the anisotropic setting, the second flag 
+scales the links in the other three (non-anisotropic) directions by a 
+scalar, which is useful for testing and debugging.
+The compile is not bombed with the second flag but without the first 
+flag, since the second flag is never queried if the first flag isn't set.
+Anisotropic unimproved staggered simply uses the anisotropic asqtad branch.
+
+##############################################
+Anisotropic input files receive one (no tadpole improvement) or two (tadpole 
+improvement) additions.
+..........
+We added after lines
+coordinate_origin <x y z t> 
+time_bc antiperiodic
+..........
+# ANISOTROPY 
+ani_dir t
+ani_xiq 2.
+..........
+and immediately thereafter for debugging possibly
+..........
+iso_xiq 1.
+..........
+in input files for anisotropic Asqtad added after line
+u0 0.8696
+..........
+# ANISOTROPIC TADPOLE FACTOR
+ani_u0 0.8696
+..........
+
+
+##############################################
+in generic/generic_includes.h added 
+
+#include <ctype.h>
+
+##############################################
+in include/generic.h added function declaration
+int dirchar2index (char buf, int *status);
+
+##############################################
+in generic/io_helpers.c added function definition 
+
+int dirchar2index (char buf, int *status) {
+  short mydir;
+
+  if ( buf >= 'A' && buf <= 'Z' )
+    mydir = tolower(buf);
+  else
+    mydir = buf;
+  switch(mydir) {
+    case XUP:
+    case '0':
+    case 'x': mydir = XUP; break;
+    case YUP:
+    case '1':
+    case 'y': mydir = YUP; break;
+    case ZUP:
+    case '2':
+    case 'z': mydir = ZUP; break;
+    case TUP:
+    case '3':
+    case 't': mydir = TUP; break;
+    default:
+      node0_printf("Expecting direction \
+as x,y,z,t, X,Y,Z,T, or 0,1,2,3;  instead %c\n", mydir);
+     (*status)++;
+  }
+  return mydir;
+}
+
+##############################################
+in ks_spectrum_ani/lattice.h added
+
+#ifdef ANISOTROPY
+EXTERN short ani_dir; /* direction of anisotropy */
+EXTERN Real ani_xiq; /* bare quark anisotropy */
+EXTERN Real ani_u0; /* anisotropic tadpole factor, for Asqtad fermions */
+#ifdef ONEDIM_ANISO_TEST
+EXTERN Real iso_xiq; /* bare quark isotropic link factor for debugging */
+#endif
+#endif
+
+##############################################
+in ks_spectrum_ani/params.h added
+
+#ifdef ANISOTROPY
+  short ani_dir; /* direction of anisotropy */
+  Real ani_xiq; /* bare quark anisotropy */
+  Real ani_u0; /* anisotropic tadpole factor, for Asqtad fermions */
+#ifdef ONEDIM_ANISO_TEST
+  Real iso_xiq; /* bare quark isotropic link factor for debugging */
+#endif
+#endif
+
+##############################################
+in ks_spectrum_ani/setup.c added
+
+..........
+after reading the boundary conditions
+..........
+#ifdef ANISOTROPY
+    /* Direction of anisotropy */
+    IF_OK status += get_s(stdin, prompt,"ani_dir",savebuf);
+    IF_OK param.ani_dir = dirchar2index( savebuf[0], &status);
+    /* Bare fermion anisotropy */
+    IF_OK status += get_f(stdin, prompt, "ani_xiq", &param.ani_xiq);
+#ifdef ONEDIM_ANISO_TEST
+    /* bare quark isotropic link factor for debugging */
+    IF_OK status += get_f(stdin, prompt, "iso_xiq", &param.iso_xiq);
+#endif
+#endif
+..........
+and after broadcast_heap_params();
+..........
+#ifdef ANISOTROPY
+    /* Direction of anisotropy */
+    ani_dir = param.ani_dir;
+    /* Bare fermion anisotropy */
+    ani_xiq = param.ani_xiq;
+#ifdef ONEDIM_ANISO_TEST
+    /* bare quark isotropic link factor for debugging */
+    iso_xiq = param.iso_xiq;
+#endif
+#endif
+..........
+
+##############################################
+We provide tests on a nontrivial isotropic sample config 
+with the anisotropic code using t-anisotropy with factor 1.
+These tests are implemented only for anisotropic HISQ with 
+spectrum2, but more tests of the anisotropic code with 
+isotropic configurations would be trivial to do.
+
+##############################################
+This is the end of relevant changes to the
+ks_spectrum_ani folder.
+##############################################
+
+##############################################
+The following changes have been made to
+headers in the include folder, and to various
+files in the generic_ks folder.
+##############################################
+
+##############################################
+in include/fn_links.h added function declaration
+--------------------------------------
+#ifdef ANISOTROPY
+void scalar_mult_fn_dir(fn_links_t *fnsrc, Real s, int dir, fn_links_t *fndst);
+#endif
+--------------------------------------
+
+##############################################
+in include/ks_action_paths.h modified structs
+--------------------------------------
+typedef struct { ... } ks_action_paths_hisq;
+typedef struct { ... } ks_action_paths_hypisq;
+typedef struct { ... } ks_action_paths;
+--------------------------------------
+added to each the same as below
+--------------------------------------
+  /* Three anisotropy parameters included, JHW 2020/09/29 */
+#ifdef ANISOTROPY
+  int ani_dir;
+  Real ani_xiq;
+#ifdef ONEDIM_ANISO_TEST
+  Real iso_xiq;
+#endif
+#endif
+--------------------------------------
+--------------------------------------
+In order to permit Asqtad, too, additional path coefficients 
+and direction dependent resolution of paths is needed to extend 
+the basic typedef struct { ... } asqtad_coeffs_t as follows with 
+coefficients that have extra powers of the ratio of tadpole factors.
+We arrive at a slightly more complex extension.
+--------------------------------------
+#ifdef ANISOTROPY
+  Real ani_naik;
+  Real ani_three_staple;
+  Real ani_five_staple;
+  Real ani_seven_staple;// Anisotropuc seven_staple automatically has two anisotropic links. JHW 2020/10/05
+  Real ani_lepage;
+#  ifdef ABSORB_ANI_XIQ
+  // More coefficients are needed if anisotropy factors are absorbed into the links. JHW 2020/10/05
+  Real ani_one_link;
+  Real ani2_three_staple;
+  Real ani2_five_staple;
+  Real ani4_lepage;
+#  endif
+  // Need to retain knowledge of the direction of anisotropy. JHW 2020/10/05
+  int ani_dir;
+#endif
+
+
+##############################################
+in generic_ks/imp_actions/onelink_action.h
+--------------------------------------
+added
+--------------------------------------
+#ifdef ANISOTROPY
+#define ISO_NUM 8 /* Number of path with less than 2 anisotropic links */
+#endif
+
+##############################################
+in generic_ks/imp_actions/asq_action.h
+--------------------------------------
+added
+--------------------------------------
+#ifdef ANISOTROPY
+#define ISO_NUM 688 /* Number of path with less than 2 anisotropic links */
+#endif
+
+##############################################
+in generic_ks/imp_actions/ani_asqtad_action.h
+--------------------------------------
+added separate case for Asqtad with anisotropic tadpole factors; 
+still not a solution for the u0 derivative terms.
+in the minimal anisotropic path table, we need 11 paths that 
+resolve between anisotropic and isotropic paths
+--------------------------------------
+
+#ifdef ANISOTROPY
+...
+#  else
+#    ifndef ABSORB_ANI_XIQ
+#define MAX_BASIC_PATHS 11
+#define MAX_LENGTH 7
+#define MAX_NUM 688
+enum ani_path_type { ANI_NK = 6, ANI_LP = 10 };
+#define ISO_NUM 278 /* Number of path with less than 2 anisotropic links */
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
+    static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
+    { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link */
+    { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },      /* Naik */
+    { YUP, XUP, YDOWN, NODIR, NODIR, NODIR, NODIR },    /* Staple */
+    { YUP, ZUP, XUP, ZDOWN, YDOWN, NODIR, NODIR },      /* 5-link for flavor sym. */
+    { YUP, ZUP, TUP, XUP, TDOWN, ZDOWN, YDOWN}, /* 7-link for flavor sym. */
+    { YUP, YUP, XUP, YDOWN, YDOWN, NODIR, NODIR },      /* 5-link compensation    */
+    { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },      /* Naik w three anisotropic links */
+    { YUP, XUP, YDOWN, NODIR, NODIR, NODIR, NODIR },    /* Staple w two anisotropic links */
+    { YUP, ZUP, XUP, ZDOWN, YDOWN, NODIR, NODIR },      /* 5-link for flavor sym. w two anisotropic links  */
+    { YUP, ZUP, TUP, XUP, TDOWN, ZDOWN, YDOWN}, /* 7-link for flavor sym. w two anisotropic links*/
+    { YUP, YUP, XUP, YDOWN, YDOWN, NODIR, NODIR },      /* 5-link compensation w four anisotropic links   */
+    };
+    static int path_length_in[MAX_BASIC_PATHS] = {1,3,3,5,7,5,3,3,5,7,5};
+    static int quark_action_npaths = MAX_BASIC_PATHS ;
+    static Real path_coeff[MAX_BASIC_PATHS] = {
+       ( 1.0/8.0)+(6.0/16.0)+(1.0/8.0),        /* one link */
+            /*One link is 1/8 as in fat7 +3/8 for Lepage + 1/8 for Naik */
+       (-1.0/24.0),                 /* Naik */
+       (-1.0/8.0)*0.5,              /* simple staple */
+       ( 1.0/8.0)*0.25*0.5,         /* displace link in two directions */
+       (-1.0/8.0)*0.125*(1.0/6.0),  /* displace link in three directions */
+       (-1.0/16 ),                  /* Correct O(a^2) errors */
+       (-1.0/24.0),                 /* Naik w three anisotropic links */
+       (-1.0/8.0)*0.5,              /* simple staple w two anisotropic links */
+       ( 1.0/8.0)*0.25*0.5,         /* displace link in two directions w two anisotropic links */
+       (-1.0/8.0)*0.125*(1.0/6.0),  /* displace link in three directions w two anisotropic links */
+       (-1.0/16 ),                  /* Correct O(a^2) errors w four anisotropic links */
+    };
+#endif
+#    else
+#define MAX_BASIC_PATHS 15
+#define MAX_LENGTH 7
+#define MAX_NUM 688
+enum ani_path_type { ANI0_1L, ANI0_NK, ANI0_3L, ANI0_5L, ANI0_LP,
+                     ANI1_1L, ANI1_3L, ANI1_5L, ANI1_7L, ANI1_LP,
+                     ANI2_3L, ANI2_5L, ANI2_7L, ANI3_NK, ANI4_LP };
+#define ANI0_1L_MAX   6 // + 3*2 
+#define ANI0_NK_MAX  12 //       + 3*2
+#define ANI0_3L_MAX  36 //             + 6*4
+#define ANI0_5L_MAX  84 //                   +  6*8
+#define ANI0_LP_MAX 108 //                                  + 6*4
+#define ANI1_1L_MAX 110 // + 1*2
+#define ANI1_3L_MAX 122 //             + 3*4
+#define ANI1_5L_MAX 170 //                   +  6*8
+#define ANI1_7L_MAX 266 //                          +  6*16
+#define ANI1_LP_MAX 278 //                                  + 3*4
+#define ANI2_3L_MAX 290 //             + 3*4
+#define ANI2_5L_MAX 386 //                   + 12*8
+#define ANI2_7L_MAX 674 //                          + 18*16
+#define ANI3_NK_MAX 676 //       + 1*2
+#define ANI4_LP_MAX 688 //                                  + 3*4
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
+    static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
+    { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link iso */
+    { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },      /* Naik iso-iso-iso */
+    { YUP, XUP, YDOWN, NODIR, NODIR, NODIR, NODIR },    /* Staple iso-iso-iso */
+    { YUP, ZUP, XUP, ZDOWN, YDOWN, NODIR, NODIR },      /* 5-link for flavor sym. iso-iso-iso-iso-iso */
+    { YUP, YUP, XUP, YDOWN, YDOWN, NODIR, NODIR },      /* 5-link compensation iso-iso-iso-iso-iso   */
+    { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link ani */
+    { YUP, XUP, YDOWN, NODIR, NODIR, NODIR, NODIR },    /* Staple iso-ani-iso */
+    { YUP, ZUP, XUP, ZDOWN, YDOWN, NODIR, NODIR },      /* 5-link for flavor sym. iso-iso-ani-iso-iso */
+    { YUP, ZUP, TUP, XUP, TDOWN, ZDOWN, YDOWN}, /* 7-link for flavor sym. iso-iso-iso-ani-iso-iso-iso */
+    { YUP, YUP, XUP, YDOWN, YDOWN, NODIR, NODIR },      /* 5-link compensation iso-iso-ani-iso-iso   */
+    { YUP, XUP, YDOWN, NODIR, NODIR, NODIR, NODIR },    /* Staple ani-iso-ani */
+    { YUP, ZUP, XUP, ZDOWN, YDOWN, NODIR, NODIR },      /* 5-link for flavor sym. iso-ani-iso-ani-iso or perm */
+    { YUP, ZUP, TUP, XUP, TDOWN, ZDOWN, YDOWN}, /* 7-link for flavor sym. iso-iso-ani-iso-ani-iso-iso or perm */
+    { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },      /* Naik ani-ani-ani */
+    { YUP, YUP, XUP, YDOWN, YDOWN, NODIR, NODIR },      /* 5-link compensation ani-ani-iso-ani-ani   */
+    };
+    static int path_length_in[MAX_BASIC_PATHS] = {1,3,3,5,5, 1,3,5,7,5, 3,5,7, 3,5};
+    static int path_u0rat_pow[MAX_BASIC_PATHS] = {0,0,0,0,0, 0,0,0,0,0, 2,2,2, 2, 4};
+    static int quark_action_npaths = MAX_BASIC_PATHS ;
+    static Real path_coeff[MAX_BASIC_PATHS] = {
+       ( 1.0/8.0)+(6.0/16.0)+(1.0/8.0),        /* one link iso */
+            /*One link is 1/8 as in fat7 +3/8 for Lepage + 1/8 for Naik */
+       (-1.0/24.0),                 /* Naik iso-iso-iso */
+       (-1.0/8.0)*0.5,              /* simple staple iso-iso-iso */
+       ( 1.0/8.0)*0.25*0.5,         /* displace link in two directions iso-iso-iso-iso-iso */
+       (-1.0/16 ),                  /* Correct O(a^2) errors iso-iso-iso-iso-iso */
+       ( 1.0/8.0)+(6.0/16.0)+(1.0/8.0),        /* one link ani */
+            /*One link is 1/8 as in fat7 +3/8 for Lepage + 1/8 for Naik */
+       (-1.0/8.0)*0.5,              /* simple staple iso-ani-iso */
+       ( 1.0/8.0)*0.25*0.5,         /* displace link in two directions iso-iso-ani-iso-iso */
+       (-1.0/8.0)*0.125*(1.0/6.0),  /* displace link in three directions iso-iso-iso-ani-iso-iso-iso */
+       (-1.0/16 ),                  /* Correct O(a^2) errors iso-iso-ani-iso-iso */
+       (-1.0/8.0)*0.5,              /* simple staple ani-iso-ani */
+       ( 1.0/8.0)*0.25*0.5,         /* displace link in two directions iso-ani-iso-ani-iso or perm */
+       (-1.0/8.0)*0.125*(1.0/6.0),  /* displace link in three directions iso-iso-ani-iso-ani-iso-iso or perm */
+       (-1.0/24.0),                 /* Naik ani-ani-ani */
+       (-1.0/16 ),                  /* Correct O(a^2) errors ani-ani-iso-ani-ani */
+    };
+#endif
+#    endif
+#  endif
+
+
+##############################################
+in generic_ks/fermion_links_fn_load_milc.c added to functions 
+
+void load_fn_links_cpu( ... )
+
+after use of load_lnglinks
+  load_lnglinks(info, fn->lng, p, links);
+  final_flop += info->final_flop;
+
+#ifdef ANISOTROPY
+  scalar_mult_fn_dir( fn, ap->ani_xiq, ap->ani_dir, fn );
+  final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+  { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn, ap->iso_xiq, dir, fn ); final_flop +=108.*volume/numnodes(); }
+#endif
+#endif
+
+and 
+
+void load_fn_links_gpu( ... )
+
+after use of 
+  load_fatlonglinks_gpu(info, fn->fat, fn->lng, p, links);
+
+#ifdef ANISOTROPY
+  scalar_mult_fn_dir( fn, ap->ani_xiq, ap->ani_dir, fn );
+  final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+  { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn, ap->iso_xiq, dir, fn ); final_flop +=108.*volume/numnodes();  }
+#endif
+#endif
+
+This takes care of the anisotropic AsqTad implementation.
+
+##############################################
+in generic_ks/fermion_links_hisq_load_milc.c added to function 
+static void load_hisq_fn_links( ... )
+
+after use of load_X_from_W as
+    load_X_from_W(info, fn[0], aux, &ap->p<2,3>);
+    final_flop += info->final_flop;
+
+#ifdef ANISOTROPY
+    scalar_mult_fn( fn[0], ap->ani_xiq, ap->ani_dir, fn[0] );
+    final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+  { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn[0], ap->iso_xiq, dir, fn[0] ); final_flop +=108.*volume/numnodes();  }
+#endif
+#endif
+
+or after use of load_X_from_W as 
+      load_X_from_W(info, fn_deps, aux, &ap->p3);
+      final_flop += info->final_flop;
+
+
+#ifdef ANISOTROPY
+      scalar_mult_fn( fn_deps, ap->ani_xiq, ap->ani_dir, fn_deps );
+      final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+      { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn_deps, ap->iso_xiq, dir, fn_deps ); final_flop +=108.*volume/numnodes();  }
+#endif
+#endif
+
+in total in 4 locations 
+
+REMARK: The flop count in the original code is incorrect. 
+The usual routines for multiple NAIKS 
+
+      scalar_mult_fn( fn[0], eps_naik[inaik], fn[inaik] );
+      final_flop +=144.*volume/numnodes();
+and 
+      add_fn( fn[inaik], fn[0], fn[inaik] );
+      final_flop +=144.*volume/numnodes();
+
+undercount the number of flops by a factor 4 due to 4 directions, 
+and by another factor 2 due to fat- and longlinks.
+This undercount is fixed in the anisotropic version of KS spectrum.
+
+This takes care of the anisotropic HISQ implementation.
+
+
+##############################################
+in generic_ks/fn_links_milc.c added function doing scalar multiplication only in one specified direction
+
+#ifdef ANISOTROPY
+/* Multipy only one component by scalar: fndst = fnsrc * s.  OK to do this in place. */
+void
+scalar_mult_fn_dir(fn_links_t *fn_src, Real s, int dir, fn_links_t *fn_dst){
+  int i;
+
+  su3_matrix *fatsrc = get_fatlinks(fn_src);
+  su3_matrix *lngsrc = get_lnglinks(fn_src);
+  su3_matrix *fatbacksrc = get_fatbacklinks(fn_src);
+  su3_matrix *lngbacksrc = get_lngbacklinks(fn_src);
+
+  su3_matrix *fatdst = get_fatlinks(fn_dst);
+  su3_matrix *lngdst = get_lnglinks(fn_dst);
+  su3_matrix *fatbackdst = get_fatbacklinks(fn_dst);
+  su3_matrix *lngbackdst = get_lngbacklinks(fn_dst);
+
+  FORALLFIELDSITES_OMP(i,default(shared)) {
+      scalar_mult_su3_matrix( fatsrc + 4*i + dir, s, fatdst + 4*i + dir );
+      scalar_mult_su3_matrix( lngsrc + 4*i + dir, s, lngdst + 4*i + dir );
+      if(fatbacksrc != NULL && fatbackdst != NULL) 
+        scalar_mult_su3_matrix( fatbacksrc + 4*i + dir, s, fatbackdst + 4*i + dir );
+      if(lngbacksrc != NULL && lngbackdst != NULL) 
+        scalar_mult_su3_matrix( lngbacksrc + 4*i + dir, s, lngbackdst + 4*i + dir );
+  }
+  END_LOOP_OMP;
+}
+#endif
+
+##############################################
+in generic_ks/ks_action_paths.c 
+--------------------------------------
+--------------------------------------
+#ifdef DM_DU0
+#ifndef TADPOLE_IMPROVE
+BOMB THE COMPILE
+#endif
+static Real act_path_coeff_dmdu0[MAX_BASIC_PATHS]; /* coefficient for
+#endif
+--------------------------------------
+added to static void
+load_asqtad_coeffs_t(asqtad_coeffs_t *apc, Real act_path_coeff[])
+to initialize new coefficients
+--------------------------------------
+#ifndef ANISOTROPY
+    apc->one_link =     act_path_coeff[0];
+    apc->naik =         act_path_coeff[1];
+    apc->three_staple = act_path_coeff[2];
+    apc->five_staple =  act_path_coeff[3];
+    if(MAX_BASIC_PATHS > 4)
+      apc->seven_staple = act_path_coeff[4];
+    else
+      apc->seven_staple = 0.; 
+    if(MAX_BASIC_PATHS > 5)
+      apc->lepage =       act_path_coeff[5];
+    else
+      apc->lepage = 0.; 
+#else
+#ifndef ABSORB_ANI_XIQ
+    // Minimal set of coefficients for a minimal setup without absorbing anisotropy factors. JHW, 2020/10/05
+    apc->one_link         = act_path_coeff[ 0]; 
+    apc->naik             = act_path_coeff[ 1]; 
+    apc->three_staple     = act_path_coeff[ 2]; 
+    apc->five_staple      = act_path_coeff[ 3]; 
+    apc->seven_staple     = act_path_coeff[ 4]; 
+    apc->lepage           = act_path_coeff[ 5]; 
+    apc->ani_naik         = act_path_coeff[ 6]; 
+    apc->ani_three_staple = act_path_coeff[ 7]; 
+    apc->ani_five_staple  = act_path_coeff[ 8]; 
+    apc->ani_seven_staple = act_path_coeff[ 9]; 
+    apc->ani_lepage       = act_path_coeff[10];
+#else
+    // Larger set of coefficients in a complete setup that absorbs the anisotropy factors. JHW, 2020/10/05
+    apc->one_link         = act_path_coeff[ 0]; 
+    apc->naik             = act_path_coeff[ 1]; 
+    apc->three_staple     = act_path_coeff[ 2]; 
+    apc->five_staple      = act_path_coeff[ 3]; 
+    apc->lepage           = act_path_coeff[ 4]; 
+    apc->ani_one_link     = act_path_coeff[ 5]; 
+    apc->ani_three_staple = act_path_coeff[ 6]; 
+    apc->ani_five_staple  = act_path_coeff[ 7]; 
+    apc->ani_lepage       = act_path_coeff[ 8]; 
+    apc->ani_seven_staple = act_path_coeff[ 9]; 
+    apc->ani2_three_staple= act_path_coeff[10];
+    apc->ani2_five_staple = act_path_coeff[11];
+    apc->seven_staple     = act_path_coeff[12]; // Necessarily contains two anisotropic links, JHW 2020/10/04
+    apc->ani_naik         = act_path_coeff[13];
+    apc->ani4_lepage      = act_path_coeff[14];
+
+#endif
+    apc->ani_dir = ani_dir;
+#endif
+--------------------------------------
+added to 
+int make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0) 
+--------------------------------------
+#ifdef ANISOTROPY
+     Real u0r1 = u0/ani_u0;
+     Real u0r2 = u0r1*u0r1;
+     Real u0r4 = u0r2*u0r2;
+     node0_printf("Ratio of tadpole factors %f \n",u0r1);
+#  ifndef ABSORB_ANI_XIQ
+#    define IS_ANI_PATH(j)   ( j >= ANI_NK ) 
+#    define IS_ANI_LEPAGE(j) ( j == ANI_LP ) 
+#  else
+#    define IS_ANI0_PATH(j) ( j <  ANI1_1L ) 
+#    define IS_ANI1_PATH(j) ( j >  ANI0_LP && j <  ANI2_3L ) 
+#    define IS_ANI2_PATH(j) ( j >  ANI1_LP && j <  ANI3_NK ) 
+#    define IS_ANI3_PATH(j) ( j == ANI3_NK ) 
+#    define IS_ANI4_PATH(j) ( j == ANI4_LP ) 
+#  endif
+#endif
+--------------------------------------
+#ifdef TADPOLE_IMPROVE
+        for(k=1;k< path_length_in[j];k++)this_coeff /= u0;
+#endif
+#  ifndef ANISOTROPY
+        act_path_coeff[j] = this_coeff ;
+#  else
+#    ifndef ABSORB_ANI_XIQ
+#ifdef TADPOLE_IMPROVE
+        if ( IS_ANI_PATH(j) ) this_coeff *= (IS_ANI_LEPAGE(j)? u0r2 : u0r4 );
+        act_path_coeff[j] = this_coeff ;
+#endif
+#    else
+#ifdef TADPOLE_IMPROVE
+        for(k=0;k < path_u0rat_pow[j];k++) this_coeff *= u0r1;
+#endif
+
+#  ifdef ONEDIM_ANISO_TEST
+        act_path_coeff[j] = this_coeff * ( IS_ANI1_PATH(j) || IS_ANI3_PATH(j) ? ani_xiq : iso_xiq );
+#  else
+        act_path_coeff[j] = this_coeff * ( IS_ANI1_PATH(j) || IS_ANI3_PATH(j) ? ani_xiq : 1 );
+#  endif
+
+#    endif
+#  endif
+--------------------------------------
+#ifdef DM_DU0
+#  ifndef ANISOTROPY
+        act_path_coeff_dmdu0[j] = this_coeff*(1-path_length_in[j])/u0;
+#  else
+#    ifndef ABSORB_ANI_XIQ
+        act_path_coeff_dmdu0[j] = this_coeff*(1+(IS_ANI_PATH(j)+IS_ANI_LEPAGE(j))*2-path_length_in[j])/u0;
+#    else
+        switch ( path_u0_rat_pow[j] ) {
+          case 0:
+          case 2:
+            act_path_coeff_dmdu0[j] = act_path_coeff[j] * (1+path_u0_rat_pow[j]-path_length_in[j])/u0 ;
+            break;
+            break;
+          case 4: // No u0 dependence like the isotropic one_link, JHW 2020/10/03
+          default:
+            act_path_coeff_dmdu0[j] = 0;
+            break;
+        }
+#    endif
+#  endif
+#endif
+--------------------------------------
+#ifdef ANISOTROPY
+  char ani_char[]="xyzt";
+  ap->ani_dir = ani_dir;
+#  ifndef ABSORB_ANI_XIQ
+  node0_printf("Anisotropic action with bare quark anisotropy %.6f in the %c-direction\n", ani_xiq, ani_char[ani_dir]);
+  ap->ani_xiq = ani_xiq;
+#  else
+  node0_printf("Anisotropic action with bare quark anisotropy %.6f in the %c-direction absorbed into path coefficients\n", ani_xiq, ani_char[ani_dir]);
+  ap->ani_xiq = 1;
+#  endif
+#  ifdef ONEDIM_ANISO_TEST
+  node0_printf("using three isotropic directions with factor %.6f for debugging\n",iso_xiq);
+#    ifndef ABSORB_ANI_XIQ
+  ap->iso_xiq = iso_xiq;
+#    else
+  ap->iso_xiq = 1;
+#    endif
+#  endif
+#endif
+--------------------------------------
+added to 
+static int add_basic_path( int *basic_vec, int length, Real coeff ) 
+the distinction between paths with multiple anisotropic links
+to obtain fully resolving path table
+--------------------------------------
+#ifdef ANISOTROPY
+            /* Distinguish between paths with multiple anisotropic links or without and 
+             * extend path table with that criterium. JHW 2020/10/02 */
+            int ani_len = 0;
+            for(j=0;j<length;j++) ani_len += ( vec[j] == ani_dir || vec[j] == OPP_DIR(ani_dir) );
+#  ifndef ABSORB_ANI_XIQ
+            if ( ( ani_len > 1 && num_q_paths < ISO_NUM ) || ( ani_len <= 1 && num_q_paths >= ISO_NUM ) ) continue;
+#  else
+            /* Did not find any less ugly solution than giving minima and maxima for each combination of 
+             * length and length along the anisotropic direction (ani_len). Without separate limits for 
+             * lengths would not be able to discriminate between Lepage with one or without anisotropic 
+             * links. JHW 2020/10/05 */
+            if (  ( ( ani_len == 0 && length == 1 && (                              num_q_paths > ANI0_1L_MAX ) )
+                 || ( ani_len == 0 && length == 3 && ( num_q_paths < ANI0_1L_MAX || num_q_paths > ANI0_3L_MAX ) )
+                 || ( ani_len == 0 && length == 5 && ( num_q_paths < ANI0_3L_MAX || num_q_paths > ANI0_LP_MAX ) )
+                 || ( ani_len == 1 && length == 1 && ( num_q_paths < ANI0_LP_MAX || num_q_paths > ANI1_1L_MAX ) )
+                 || ( ani_len == 1 && length == 3 && ( num_q_paths < ANI1_1L_MAX || num_q_paths > ANI1_3L_MAX ) )
+                 || ( ani_len == 1 && length == 5 && ( num_q_paths < ANI1_3L_MAX || num_q_paths > ANI1_LP_MAX ) )
+                 || ( ani_len == 1 && length == 7 && ( num_q_paths < ANI1_5L_MAX || num_q_paths > ANI1_7L_MAX ) )
+                 || ( ani_len == 2 && length == 3 && ( num_q_paths < ANI1_LP_MAX || num_q_paths > ANI2_3L_MAX ) )
+                 || ( ani_len == 2 && length == 5 && ( num_q_paths < ANI2_3L_MAX || num_q_paths > ANI2_5L_MAX ) )
+                 || ( ani_len == 2 && length == 7 && ( num_q_paths < ANI2_5L_MAX || num_q_paths > ANI2_7L_MAX ) )
+                 || ( ani_len == 3 && length == 3 && ( num_q_paths < ANI2_7L_MAX || num_q_paths > ANI3_NK_MAX ) )
+                 || ( ani_len == 4 && length == 5 && ( num_q_paths < ANI3_NK_MAX                           ) )
+               )  )  continue;
+#  endif
+#endif
+--------------------------------------
+
+##############################################
+in generic_ks/ks_action_paths_hisq.c added to function
+--------------------------------------
+void load_act_path_coeff_hisq(ks_action_paths_hisq *ap, 
+ int n_naiks,double *eps_naik){ ... };
+--------------------------------------
+#ifdef ANISOTROPY
+  char ani_char[]="xyzt";
+  node0_printf("Anisotropic action with bare quark anisotropy %.6f in the %c-direction\n", ani_xiq, ani_char[ani_dir]);
+  ap->ani_dir = ani_dir; 
+  ap->ani_xiq = ani_xiq; 
+#ifdef ONEDIM_ANISO_TEST
+  node0_printf("using three isotropic directions with factor %.6f for debugging\n",iso_xiq); 
+  ap->iso_xiq = iso_xiq;
+#endif
+#endif
+--------------------------------------
+
+##############################################
+in generic_ks/ks_action_paths_hypisq.c added to function
+--------------------------------------
+void load_act_path_coeff_hypisq(ks_action_paths_hypisq *ap, 
+ int n_naiks,double *eps_naik){ ... };
+--------------------------------------
+#ifdef ANISOTROPY
+  char ani_char[]="xyzt";
+  node0_printf("Anisotropic action with bare quark anisotropy %.6f in the %c-direction\n", ani_xiq, ani_char[ani_dir]);
+  ap->ani_dir = ani_dir; 
+  ap->ani_xiq = ani_xiq; 
+#ifdef ONEDIM_ANISO_TEST
+  node0_printf("using three isotropic directions with factor %.6f for debugging\n",iso_xiq); 
+  ap->iso_xiq = iso_xiq;
+#endif
+#endif
+--------------------------------------
+
+##############################################
+in generic_ks/ks_action_coeffs_asqtad_qop.c added to function
+--------------------------------------
+
+#ifdef ANISOTROPY
+BOMB THE COMPILE
+#endif
+
+##############################################
+in generic_ks/ks_action_coeffs_hisq_qop.c added to function
+--------------------------------------
+QOP_hisq_coeffs_t *
+create_hisq_coeffs_qop(ks_action_paths_hisq *ap)
+--------------------------------------
+#ifdef ANISOTROPY
+  /* Transfer three anisotropy parameters to QOP_hisq_coeffs_t, JHW 2020/09/2 */
+  ac->ani_dir = (int)(ap->ani_dir);
+  ac->ani_xiq = (double)(ap->ani_xiq);
+#ifdef ONEDIM_ANISO_TEST
+  ac->iso_xiq = (double)(ap->iso_xiq);
+#endif
+#endif
+--------------------------------------
+
+##############################################
+This is the end of relevant changes pertaining to
+to generic_ks.
+##############################################
+
+
+##############################################
+The following changes have been made to QOP 
+(specifically qopqdp-0.21.1) to accommodate 
+anisotropic HISQ.
+##############################################
+
+##############################################
+in qopqdp-0.21.1/include/qop_int.h added to 
+--------------------------------------
+typedef struct { ... } QOP_asqtad_coeffs_t;
+--------------------------------------
+  /* Three anisotropy parameters, JHW 2020/09/29 */
+  int ani_dir;
+  double ani_xiq;
+  double iso_xiq;
+--------------------------------------
+modified #define QOP_ASQTAD_COEFFS_ZERO
+--------------------------------------
+, -1,1,1 }) \
+/* Three anisotropy parameters of isotropic case, JHW 2020/09/29 */
+--------------------------------------
+--------------------------------------
+typedef struct { ... } QOP_hisq_coeffs_t;
+--------------------------------------
+  /* Three anisotropy parameters, JHW 2020/09/29 */
+  int ani_dir;
+  double ani_xiq;
+  double iso_xiq;
+--------------------------------------
+modified #define QOP_HISQ_COEFFS_ZERO
+--------------------------------------
+, -1,1,1 }) \
+/* Three anisotropy parameters of isotropic case, JHW 2020/09/29 */
+--------------------------------------
+
+##############################################
+in qopqdp-0.21.1/include/qop_pc_internal.h
+--------------------------------------
+QOP_PC_FermionLinksAsqtad *QOP_IPC_asqtad_create_ani_L_from_(QOP_asqtad_coeffs_t *coef,
+                                                             QOP_PC_FermionLinksAsqtad *fla_src);
+--------------------------------------
+Those changes propagate to the various 
+qopqdp-0.21.1/include/qop_XY_internal_generic.h
+and qopqdp-0.21.1/include/qop_XY_internal.h
+files as outlined in the following.
+--------------------------------------
+qopqdp-0.21.1/include/qop_d1_internal_generic.h added  
+--------------------------------------
+#define QOP_asqtad_create_ani_L_from_L QOP_D1_asqtad_create_ani_L_from_L
+--------------------------------------
+qopqdp-0.21.1/include/qop_d2_internal_generic.h
+--------------------------------------
+#define QOP_asqtad_create_ani_L_from_L QOP_D2_asqtad_create_ani_L_from_L
+--------------------------------------
+qopqdp-0.21.1/include/qop_d3_internal_generic.h
+--------------------------------------
+#define QOP_asqtad_create_ani_L_from_L QOP_D3_asqtad_create_ani_L_from_L
+--------------------------------------
+qopqdp-0.21.1/include/qop_dn_internal_generic.h
+--------------------------------------
+#define QOP_asqtad_create_ani_L_from_L QOP_DN_asqtad_create_ani_L_from_L
+--------------------------------------
+in qopqdp-0.21.1/include/qop_f1_internal_generic.h added  
+--------------------------------------
+#define QOP_asqtad_create_ani_L_from_L QOP_F1_asqtad_create_ani_L_from_L
+--------------------------------------
+qopqdp-0.21.1/include/qop_f2_internal_generic.h
+--------------------------------------
+#define QOP_asqtad_create_ani_L_from_L QOP_F2_asqtad_create_ani_L_from_L
+--------------------------------------
+qopqdp-0.21.1/include/qop_f3_internal_generic.h
+--------------------------------------
+#define QOP_asqtad_create_ani_L_from_L QOP_F3_asqtad_create_ani_L_from_L
+--------------------------------------
+qopqdp-0.21.1/include/qop_fn_internal_generic.h
+--------------------------------------
+#define QOP_asqtad_create_ani_L_from_L QOP_FN_asqtad_create_ani_L_from_L
+--------------------------------------
+in qopqdp-0.21.1/include/qop_df1_internal_generic.h added  
+--------------------------------------
+#define QOP_FD_asqtad_create_ani_L_from_L QOP_FD1_asqtad_create_ani_L_from_L
+#define QOP_DF_asqtad_create_ani_L_from_L QOP_DF1_asqtad_create_ani_L_from_L
+--------------------------------------
+qopqdp-0.21.1/include/qop_df2_internal_generic.h
+--------------------------------------
+#define QOP_FD_asqtad_create_ani_L_from_L QOP_FD2_asqtad_create_ani_L_from_L
+#define QOP_DF_asqtad_create_ani_L_from_L QOP_DF2_asqtad_create_ani_L_from_L
+--------------------------------------
+qopqdp-0.21.1/include/qop_df3_internal_generic.h
+--------------------------------------
+#define QOP_FD_asqtad_create_ani_L_from_L QOP_FD3_asqtad_create_ani_L_from_L
+#define QOP_DF_asqtad_create_ani_L_from_L QOP_DF3_asqtad_create_ani_L_from_L
+--------------------------------------
+qopqdp-0.21.1/include/qop_dfn_internal_generic.h
+--------------------------------------
+#define QOP_FD_asqtad_create_ani_L_from_L QOP_FDN_asqtad_create_ani_L_from_L
+#define QOP_DF_asqtad_create_ani_L_from_L QOP_DFN_asqtad_create_ani_L_from_L
+--------------------------------------
+
+in qopqdp-0.21.1/include/qop_d1_internal.h added  
+--------------------------------------
+QOP_D1_FermionLinksAsqtad *QOP_D1_asqtad_create_ani_L_from_(QOP_asqtad_coeffs_t *coef,
+                                                             QOP_D1_FermionLinksAsqtad *fla_src);
+--------------------------------------
+in qopqdp-0.21.1/include/qop_d2_internal.h added  
+--------------------------------------
+QOP_D2_FermionLinksAsqtad *QOP_D2_asqtad_create_ani_L_from_(QOP_asqtad_coeffs_t *coef,
+                                                             QOP_D2_FermionLinksAsqtad *fla_src);
+--------------------------------------
+in qopqdp-0.21.1/include/qop_d3_internal.h added  
+--------------------------------------
+QOP_D3_FermionLinksAsqtad *QOP_D3_asqtad_create_ani_L_from_(QOP_asqtad_coeffs_t *coef,
+                                                             QOP_D3_FermionLinksAsqtad *fla_src);
+--------------------------------------
+in qopqdp-0.21.1/include/qop_dn_internal.h added  
+--------------------------------------
+QOP_DN_FermionLinksAsqtad *QOP_DN_asqtad_create_ani_L_from_(QOP_asqtad_coeffs_t *coef,
+                                                             QOP_DN_FermionLinksAsqtad *fla_src);
+--------------------------------------
+in qopqdp-0.21.1/include/qop_f1_internal.h added  
+--------------------------------------
+QOP_F1_FermionLinksAsqtad *QOP_F1_asqtad_create_ani_L_from_(QOP_asqtad_coeffs_t *coef,
+                                                             QOP_F1_FermionLinksAsqtad *fla_src);
+--------------------------------------
+in qopqdp-0.21.1/include/qop_f2_internal.h added  
+--------------------------------------
+QOP_F2_FermionLinksAsqtad *QOP_F2_asqtad_create_ani_L_from_(QOP_asqtad_coeffs_t *coef,
+                                                             QOP_F2_FermionLinksAsqtad *fla_src);
+--------------------------------------
+in qopqdp-0.21.1/include/qop_f3_internal.h added  
+--------------------------------------
+QOP_F3_FermionLinksAsqtad *QOP_F3_asqtad_create_ani_L_from_(QOP_asqtad_coeffs_t *coef,
+                                                             QOP_F3_FermionLinksAsqtad *fla_src);
+--------------------------------------
+in qopqdp-0.21.1/include/qop_fn_internal.h added  
+--------------------------------------
+QOP_FN_FermionLinksAsqtad *QOP_FN_asqtad_create_ani_L_from_(QOP_asqtad_coeffs_t *coef,
+                                                             QOP_FN_FermionLinksAsqtad *fla_src);
+--------------------------------------
+
+##############################################
+in qopqdp-0.21.1/lib/asqtad_dslash_p.c defined functions 
+--------------------------------------
+/* Direction senstitive multiplication of arbitrary precision fermion links using
+   anisotropy parameters included in QOP_asqtad_coeffs_t struct, JHW 2020/09/29 */
+QOP_FermionLinksAsqtad *
+QOP_asqtad_create_ani_L_from_L(QOP_asqtad_coeffs_t *coeffs,
+                               QOP_FermionLinksAsqtad *fla_src) {...};
+--------------------------------------
+/* Direction senstitive multiplication of fermion links from double 
+   to single precision using anisotropy parameters included in 
+   QOP_asqtad_coeffs_t struct, JHW 2020/09/29 */
+QOP_F_FermionLinksAsqtad *
+QOP_FD_asqtad_create_ani_L_from_L(QOP_asqtad_coeffs_t *coeffs,
+                               QOP_D_FermionLinksAsqtad *fla_src) {...};
+--------------------------------------
+/* Direction senstitive multiplication of fermion links from single 
+   to double precision using anisotropy parameters included in 
+   QOP_asqtad_coeffs_t struct, JHW 2020/09/29 */
+QOP_D_FermionLinksAsqtad *
+QOP_DF_asqtad_create_ani_L_from_L(QOP_asqtad_coeffs_t *coeffs,
+                               QOP_F_FermionLinksAsqtad *fla_src) {...};
+--------------------------------------
+
+##############################################
+in qopqdp-0.21.1/lib/hisq_links_p.c modified functions
+--------------------------------------
+QOP_FermionLinksHisq *
+QOP_hisq_create_L_from_G(QOP_info_t *info,
+                         QOP_hisq_coeffs_t *coeffs,
+                         QOP_GaugeField *gauge) {...};
+--------------------------------------
+Pass three anisotropy parameters on to the QOP_asqtad_coeffs_t objects.
+Note that acoeffs1 never needs this information.
+--------------------------------------
+  /* Initialize the anisotropy parameters in all QOP_asqtad_coeffs_t objects, JHW 2020/09/29 */
+  acoeffs1.ani_dir = -1;
+  acoeffs1.ani_xiq =  1;
+  acoeffs1.iso_iqr =  1;
+  acoeffs2.ani_dir = coeffs->ani_dir;
+  acoeffs2.ani_xiq = coeffs->ani_xiq;
+  acoeffs2.iso_xiq = coeffs->iso_xiq;
+  acoeffs3.ani_dir = coeffs->ani_dir;
+  acoeffs3.ani_xiq = coeffs->ani_xiq;
+  acoeffs3.iso_xiq = coeffs->iso_xiq;
+--------------------------------------
+Redirect the immediate assignments of all instances of 
+QOP_asqtad_create_L_from_G to an intermediate container
+"QOP_FermionLinksAsqtad *fla", which is then converted 
+to the anisotropic links in "QOP_FermionLinksHisq *flh"'s 
+element "fn[0]" "fn_deps", respectively.
+In three instances:
+--------------------------------------
+    if ( coeffs->ani_dir == -1 ||
+     ( coeffs->ani_xiq == 1 && coeffs->iso_xiq == 1 ) ) {
+      flh->fn[0] = QOP_asqtad_create_L_from_G(info, &acoeffs3, qopgf_tmp);
+    } else {
+      // Need intermediate step for anisotropic case, JHW 2020/09/29
+      fla        = QOP_asqtad_create_L_from_G(info, &acoeffs3, qopgf_tmp);
+      flh->fn[0] = QOP_asqtad_create_ani_L_from_L(&acoeffs3, fla);
+      QOP_asqtad_destroy_L(fla);
+      final_flop += 18*QDP_sites_on_node
+                  *( (flh->fn[0]->longlinks) ? 2 : 1)
+                  *( (coeffs->ani_xiq != 1 ? 1 : 0) 
+                    +(coeffs->iso_xiq != 1 ? 3 : 0) );
+    }
+--------------------------------------
+And for fn_deps with a single Naik:
+--------------------------------------
+      if ( coeffs->ani_dir == -1 ||
+         ( coeffs->ani_xiq == 1 && coeffs->iso_xiq == 1 ) ) {
+        flh->fn_deps = QOP_asqtad_create_L_from_G(info, &acoeffs3, qopgf_tmp);
+      } else {
+        // Need intermediate step for anisotropic case, JHW 2020/09/29
+        fla          = QOP_asqtad_create_L_from_G(info, &acoeffs3, qopgf_tmp);
+        flh->fn_deps = QOP_asqtad_create_ani_L_from_L(&acoeffs3, fla);
+        QOP_asqtad_destroy_L(fla);
+        final_flop += 18*QDP_sites_on_node
+                    *( (flh->fn_deps->longlinks) ? 2 : 1)
+                    *( (coeffs->ani_xiq != 1 ? 1 : 0)
+                      +(coeffs->iso_xiq != 1 ? 3 : 0) );
+      }
+      final_flop += info->final_flop;
+--------------------------------------
+
+
+##############################################
+This is the end of relevant changes pertaining to QOP.
+##############################################
+
+
+##############################################
+A new folder non-production tests (free or special 
+field configs) which is still being extended for 
+non-trivial tests of anisotropic rhmc 
+(folder ks_imp_rhmc_ani).
+Applications have been built based on ks_spectrum_ani 
+or symanzik_sl32_ani so far, will probably undergo 
+major modifications where needed. Folder is not linked 
+to from anything else.No further details are provided 
+currently, since this is not in its final form yet.
+##############################################
+
+##############################################
+This is the complete list of changes.
+##############################################

@@ -35,6 +35,9 @@ void cancel_quda_notification(fn_links_t *fn);
 
 void copy_fn(fn_links_t *fn_src, fn_links_t *fn_dst);
 void scalar_mult_fn(fn_links_t *fnsrc, Real s, fn_links_t *fndst);
+#ifdef ANISOTROPY
+void scalar_mult_fn_dir(fn_links_t *fnsrc, Real s, int dir, fn_links_t *fndst);
+#endif
 void add_fn(fn_links_t *fnA, fn_links_t *fnB, fn_links_t *fnC);
 
 #endif /* _FN_LINKS_H */

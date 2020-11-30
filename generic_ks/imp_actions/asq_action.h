@@ -20,6 +20,9 @@
 #define MAX_BASIC_PATHS 6
 #define MAX_LENGTH 7
 #define MAX_NUM 688
+#ifdef ANISOTROPY
+#define ISO_NUM 688 /* Number of path with less than 2 anisotropic links */
+#endif
 #ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },	/* One Link */

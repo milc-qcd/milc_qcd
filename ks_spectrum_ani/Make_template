@@ -1,0 +1,312 @@
+#  Staggered inverter with spectroscopy
+#  MIMD version 7
+
+#  Generic make-include file for ks_spectrum codes
+
+#  This template file defines rules and macros common to all architectures
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  Select the inverter algorithm in the Makefile
+#
+#	"ks_spectrum" flavor-diagonal mesons and baryons
+
+
+MYINCLUDEDIR = .
+INCLUDEDIR = ../include ../include/mGrid
+#Where the complex and su3 libraries are
+LIBDIR = ../libraries
+
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
+
+INLINE_HEADERS = \
+  ../sse/include/ \
+  ../sse2/include/ \
+  ../libraries/include/
+
+MY_HEADERS = \
+  lattice.h \
+  params.h \
+  defines.h \
+  ks_spectrum_includes.h \
+  quark_action.h
+
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} \
+  ${QUDA_HEADERS} ${QPHIX_HEADERS} ${GRID_HEADERS} ${SCIDAC_HEADERS}
+
+# All required object files
+# Basic set from current directory
+MY_OBJECTS =         \
+  control.o          \
+  gauge_info.o       \
+  ks_source_info.o   \
+  ksprop_info.o      \
+  make_prop.o        \
+  setup.o            \
+  spectrum_ks.o
+
+G_U1_OBJECTS =       \
+  io_u1lat.o         \
+  u1link.o           \
+  u1plaq.o
+
+# # Objects depending on architecture and software package 
+
+# Selection of layout
+
+LAYOUT = layout_hyper_prime.o # Choices possible here
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG}
+
+# Always use PRIMME if it is provided
+ifeq ($(strip ${HAVEPRIMME}),true)
+  ADDDEFINES += -DPRIMME
+# Always use ARPACK if it is provided
+else ifeq ($(strip ${HAVEARPACK}),true)
+  ADDDEFINES += -DARPACK
+else
+  ADDDEFINES += -DKalkreuter_Ritz
+endif
+
+DEFLATE_OBJECTS = \
+ eigen_stuff_helpers.o \
+ io_helpers_ks_eigen.o \
+ io_ks_eigen.o \
+ jacobi.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  DEFLATE_OBJECTS += io_scidac_ks_eigen.o
+endif
+
+OBJECTS = \
+  ${MY_OBJECTS} \
+  ${GAUGE_OBJECTS} \
+  ${KS_IO_OBJECTS} \
+  ${LAYOUT} \
+  ${FFT_OBJECTS} \
+  ${FERMION_OBJECTS} \
+  ${KS_SPECTRUM_OBJECTS} \
+  ${STANDARD_OBJECTS} \
+  ${DEFLATE_OBJECTS} \
+  ${ADD_OBJECTS} \
+  ${EXTRA_OBJECTS}
+
+EIGCG_OBJECTS = \
+ inc_eigcg.o
+
+# Selection of eigensolver program
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP (not supported, so use default)
+  DEFLATE_OBJECTS += eigen_stuff_Ritz.o
+  DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
+else ifeq ($(strip ${HAVEQDP}),true)
+  DEFLATE_OBJECTS += eigen_stuff_qdp.o
+else
+  DEFLATE_OBJECTS += eigen_stuff_Ritz.o
+  DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
+endif
+
+#Libraries for complex numbers and su3 functions
+P = $(strip ${PRECISION})
+QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
+
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
+LIBRARIES += ${QPHIX_LIBRARIES} ${QPHIXJ_LIBRARIES} ${GRID_LIBRARIES}
+
+# Default rule for C compilation
+.c.o: ; ${CC} -c ${CFLAGS} $<
+.cc.o: ; ${CXX} -c ${CXXFLAGS} $<
+
+# To force a full remake when changing targets
+LASTMAKE = .lastmake.${MAKEFILE}.${P}.${MYTARGET}
+
+${LASTMAKE}: ${ALL_MAKES}
+	-/bin/rm -f .lastmake.* quark_action.h
+	${MAKE} -f ${MAKEFILE} clean
+	touch ${LASTMAKE}
+
+# All make files used in this compilation
+ALL_MAKES = \
+  Make_template \
+  ${MAKEFILE} \
+  ../Make_template_qop \
+  ../Make_template_combos \
+  ../Make_template_scidac \
+  ../generic/Make_template \
+  ../generic_ks/Make_template \
+  ../generic_u1/Make_template
+
+# To force a remake when changing any make file, header, or target
+${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
+
+# Directories where we store the improved action headers
+QUARKIMP = ../generic_ks/imp_actions
+
+quark_action.h: ${QUARKIMP}/${QUARK}
+	@echo Copying quark_action.h from ${QUARKIMP}/${QUARK}
+	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
+
+
+##### Targets:
+
+# Common compiler macros
+
+# -DFN          identifies fat-Naik-like actions with only next and 3rd
+#               next neighbor linkage
+
+# -DDM_DU0      (for EOS) calculate quantities involving the deriv of
+#               action wrto u0
+
+# -DDM_DEPS     (for EOS) calculate quantities involving the deriv of
+#               HISQ action wrto eps
+
+# -DCHEM_POT    compute quantities needed for quark number susceptibility
+
+# -DD_CHEM_POT  compute quantities needed for nonzero chemical potential
+
+# Asqtad targets
+ks_spectrum_asqtad::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"QUARK = asqtad_action.h" \
+	"DEFINES= -DFN -DHAVE_KS" \
+	"EXTRA_OBJECTS += ${FN_OBJECTS}"
+
+ks_spectrum_eigcg_asqtad::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"QUARK = asqtad_action.h" \
+	"DEFINES= -DFN -DHAVE_KS" \
+	"DEFINES += -DEIGMODE=EIGCG" \
+	"EXTRA_OBJECTS += ${FN_OBJECTS} ${EIGCG_OBJECTS}"
+
+ks_spectrum_asqtad_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"QUARK = asqtad_action.h" \
+	"DEFINES= -DFN -DHAVE_KS -DDM_DU0 -DCHEM_POT" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS}"
+
+ks_spectrum_asqtad_mu_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"QUARK = asqtad_action.h" \
+	"DEFINES= -DFN -DHAVE_KS -DTR_MM_INV \
+	-DDM_DU0 -DCHEM_POT -DD_CHEM_POT" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} mu_fast.o"
+
+# Unimproved staggered targets
+
+ks_spectrum_naive::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"QUARK = onelink_action.h" \
+	"DEFINES= -DFN -DHAVE_KS -UD_FN_GATHER13" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS}"
+
+ks_spectrum_naive_debug::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"QUARK = onelink_action.h" \
+	"DEFINES= -DFN -DHAVE_KS \
+	-DDEBUG_NAIVE"	\
+	"EXTRA_OBJECTS= ${FN_OBJECTS} dslash_w3.o staggered2naive.o gammas.o"
+
+# Asqtad + U(1) targets
+
+ks_spectrum_asqtad_u1::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"QUARK = asqtad_action.h" \
+	"DEFINES= -DFN -DHAVE_KS -DU1_FIELD" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${G_U1_OBJECTS}"
+# HISQ targets
+
+HISQ_OPTIONS = "DEFINES= -DFN -DHAVE_KS \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS}"
+
+ks_spectrum_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS}
+
+
+ks_spectrum_eigcg_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DEIGMODE=EIGCG" \
+	"EXTRA_OBJECTS += ${EIGCG_OBJECTS}"
+
+ks_spectrum_hisq_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DDM_DEPS -DCHEM_POT"
+
+ks_spectrum_hisq_mu_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DDM_DEPS -DCHEM_POT -DD_CHEM_POT -DTR_MM_INV" \
+	"EXTRA_OBJECTS += mu_fast.o"
+
+# HISQ + U(1) targets WARNING: Naive implementation
+
+ks_spectrum_hisq_u1::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DU1_FIELD" "EXTRA_OBJECTS += ${G_U1_OBJECTS}"
+
+# Anisotropic targets
+
+ks_spectrum_ani_naive::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"QUARK = onelink_action.h" \
+	"DEFINES= -DFN -DHAVE_KS -UD_FN_GATHER13 \
+	-DANISOTROPY" \
+	"EXTRA_OBJECTS += ${FN_OBJECTS}"
+
+ks_spectrum_ani_asq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"QUARK = asq_action.h" \
+	"DEFINES= -DFN -DHAVE_KS \
+	-DANISOTROPY " \
+	"EXTRA_OBJECTS += ${FN_OBJECTS}"
+
+ks_spectrum_ani_asqtad::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"QUARK = ani_asqtad_action.h" \
+	"DEFINES= -DFN -DHAVE_KS \
+	-DANISOTROPY " \
+	"EXTRA_OBJECTS += ${FN_OBJECTS}"
+
+ks_spectrum_ani_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += \
+	-DANISOTROPY"
+
+clean:
+	-/bin/rm -f *.o quark_action.h
+
+# Rules for generic routines
+include ../generic/Make_template
+
+# Rules for generic_ks routines
+include ../generic_ks/Make_template
+
+# Rules for generic_u1 routines
+include ../generic_u1/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_wilson/Make_template
+
+# Rules for packages
+Grid:
+	@echo Building Grid
+	cd ${HOME}/Grid && \
+	./build.sh ${GRID_ARCH} ${CC} ${CXX}
+
+packagemake: ${PACKAGE_DEPS}
+
+libmake:
+	@echo Building libraries with ${MAKELIBRARIES}
+	cd ${LIBDIR} ;\
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" \
+        "ARCH=${ARCH}" "COMPILER=${COMPILER}" all
+
+localmake: ${OBJECTS} ${LIBRARIES}
+	${LD} -o ${MYTARGET} ${LDFLAGS} \
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	touch localmake
+
+target: libmake localmake 

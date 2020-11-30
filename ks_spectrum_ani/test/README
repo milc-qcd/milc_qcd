@@ -1,0 +1,23 @@
+Regression tests for ks_spectrum code.
+
+C. DeTar 6/11/2011
+
+This directory contains test input and output files.  The test input
+files are created from the corresponding abbreviated *.param files
+using
+
+  make sample-in
+
+Note that you can also create custom input files by hand from the
+example patterns by first creating an appropriate *.param file and
+then running the build_input*.sh scripts as follows
+
+  build_input.<name>.sh  <name>.param > <inputfile>
+
+The regression test suite is specified by the "checklist" file.  To
+run all the regression tests specified in the checklist file, run
+
+  make check
+
+in the source code directory.
+

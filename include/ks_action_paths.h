@@ -27,6 +27,22 @@ typedef struct {
   Real five_staple;
   Real seven_staple;
   Real lepage;
+#ifdef ANISOTROPY
+  Real ani_naik;
+  Real ani_three_staple;
+  Real ani_five_staple;
+  Real ani_seven_staple;// Anisotropic seven_staple automatically has two anisotropic links. JHW 2020/10/05
+  Real ani_lepage;
+#  ifdef ABSORB_ANI_XIQ
+  // More coefficients are needed if anisotropy factors are absorbed into the links. JHW 2020/10/05
+  Real ani_one_link;
+  Real ani2_three_staple;
+  Real ani2_five_staple;
+  Real ani4_lepage;
+#  endif
+  // Need to retain knowledge of the direction of anisotropy. JHW 2020/10/05
+  int ani_dir;
+#endif
 } asqtad_coeffs_t;
 
 typedef struct {
@@ -42,6 +58,14 @@ typedef struct {
   int umethod;
   int ugroup;
   int constructed;       /* Boolean */
+  /* Three anisotropy parameters included, JHW 2020/09/29 */
+#ifdef ANISOTROPY
+  int ani_dir;
+  Real ani_xiq;
+#  ifdef ONEDIM_ANISO_TEST
+  Real iso_xiq;
+#  endif
+#endif
 } ks_action_paths_hisq;
 
 typedef struct {
@@ -51,11 +75,27 @@ typedef struct {
   int umethod;
   int ugroup;
   int constructed;       /* Boolean */
+  /* Three anisotropy parameters included, JHW 2020/09/29 */
+#ifdef ANISOTROPY
+  int ani_dir;
+  Real ani_xiq;
+#  ifdef ONEDIM_ANISO_TEST
+  Real iso_xiq;
+#  endif
+#endif
 } ks_action_paths_hypisq;
 
 typedef struct {
   ks_component_paths p;
   int constructed;         /* Boolean */
+  /* Three anisotropy parameters included, JHW 2020/09/29 */
+#ifdef ANISOTROPY
+  int ani_dir;
+  Real ani_xiq;
+#  ifdef ONEDIM_ANISO_TEST
+  Real iso_xiq;
+#  endif
+#endif
 } ks_action_paths;
 
 

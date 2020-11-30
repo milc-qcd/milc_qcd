@@ -17,6 +17,9 @@
 #define MAX_BASIC_PATHS 1
 #define MAX_LENGTH 1
 #define MAX_NUM 8
+#ifdef ANISOTROPY
+#define ISO_NUM 8 /* Number of path with less than 2 anisotropic links */
+#endif
 #ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP }
