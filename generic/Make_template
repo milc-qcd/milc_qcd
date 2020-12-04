@@ -19,6 +19,7 @@ G_ALL = \
  com_vanilla.o \
  d_plaq2.o \
  d_plaq4.o \
+ d_plaq6.o \
  discretize_wf.o \
  field_strength.o \
  field_translation.o \
@@ -40,6 +41,7 @@ G_ALL = \
  glueball_op.o \
  gridMap.o \
  hvy_pot.o \
+ hvy_pot2.o \
  io_ansi.o \
  io_dcap.o \
  io_detect.o \
@@ -147,6 +149,8 @@ d_plaq2.o: ../generic/d_plaq2.c
 	${CC} -c ${CFLAGS} $<
 d_plaq4.o: ../generic/d_plaq4.c
 	${CC} -c ${CFLAGS} $<
+d_plaq6.o: ../generic/d_plaq6.c
+	${CC} -c ${CFLAGS} $<
 d_linktrsum.o: ../generic/d_linktrsum.c
 	${CC} -c ${CFLAGS} $<
 discretize_wf.o: ../generic/discretize_wf.c
@@ -190,6 +194,8 @@ glueball_op.o: ../generic/glueball_op.c
 gridMap.o: ../generic/gridMap.cc ../generic/gridMap.h
 	${CXX} -c ${CXXFLAGS} $<
 hvy_pot.o: ../generic/hvy_pot.c
+	${CC} -c ${CFLAGS} $<
+hvy_pot2.o: ../generic/hvy_pot2.c
 	${CC} -c ${CFLAGS} $<
 io_ansi.o: ../generic/io_ansi.c
 	${CC} -c ${CFLAGS} $<

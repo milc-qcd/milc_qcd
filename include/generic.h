@@ -107,6 +107,46 @@ void ape_smear(
 			     as a prescribed number of hits. */ 
   );
 
+/* Smear in a specified source direction and set of staples. */
+void ape_smear_dir_stap(
+  field_offset src,       /* field offset for su3_matrix[4] type 
+                             input unsmeared links */
+  int dir1,               /* link direction to smear */
+  field_offset dest,      /* field offset for su3_matrix type 
+                             pointing to a specific direction 
+                             output smeared links */
+  Real staple_weight,    /* single staple weight */
+  Real link_u0,          /* single link weight - used in normalization
+                             if SU(3) projection is turned off */
+  int stap[],            /*  stap[mu] = 1 (true) if mu staples used, 
+                             else stap[mu]=0 (false) */
+  int nhits,              /* reproject onto SU(3): number of 
+                             SU(2) hits. 0 for no reprojection */
+  Real tol               /* tolerance for SU(3) projection.
+                             If nonzero, treat nhits as a maximum
+                             number of hits.  If zero, treat nhits
+                             as a prescribed number of hits. */
+  );
+
+/* Smear in a specified source direction and set of staples. */
+void ape_smear_field_dir_stap(
+  su3_matrix *src,        /* su3_matrix[4] type 
+                             input unsmeared links */
+  int dir1,               /* link direction to smear */
+  su3_matrix *dest,       /* su3_matrix[4] type smeared links */
+  Real staple_weight,    /* single staple weight */
+  Real link_u0,          /* single link weight - used in normalization
+                             if SU(3) projection is turned off */
+  int stap[],            /*  stap[mu] = 1 (true) if mu staples used, 
+                             else stap[mu]=0 (false) */
+  int nhits,              /* reproject onto SU(3): number of 
+                             SU(2) hits. 0 for no reprojection */
+  Real tol               /* tolerance for SU(3) projection.
+                             If nonzero, treat nhits as a maximum
+                             number of hits.  If zero, treat nhits
+                             as a prescribed number of hits. */
+  );
+
 su3_matrix *ape_smear_3D(Real staple_weight, int iters);
 su3_matrix *ape_smear_4D(Real staple_weight, int iters);
 void destroy_ape_links_3D(su3_matrix *ape_links);

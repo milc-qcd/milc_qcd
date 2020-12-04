@@ -5,6 +5,7 @@
 /* Doug Toussaint 1/30/96 
    CD 11/25/01 Consolidated with other smearing routines 
    CD 11/15/01 malloc temp field
+   JHW 05/14/20 added smearing with specified set of staples
 
    Entry point ape_smear_dir for smearing links in one specified direction.
    Entry point ape_smear for smearing links in all four directions.
@@ -122,7 +123,7 @@ void ape_smear_dir(
   w_link = norm_factor;
   
   /* dest <- src w_link */ 
-  FORALLSITES_OMP(i,s,)
+  FORALLSITES_OMP(i,s, default(shared) )
     {
       scalar_mult_su3_matrix( 
 		     &(((su3_matrix *)F_PT(s,src))[dir1]), w_link, 
@@ -171,7 +172,7 @@ void ape_smear_dir(
     wait_gather(mtag1);
     
     /* dest += w_staple * lower staple */ 
-    FORALLSITES_OMP(i,s,){
+    FORALLSITES_OMP(i,s, default(shared) ){
       scalar_mult_add_su3_matrix( 
 			 (su3_matrix *)F_PT(s,dest),
 			 (su3_matrix *)gen_pt[1][i], w_staple, 
@@ -282,7 +283,7 @@ void ape_smear_field_dir(
   w_link = norm_factor;
   
   /* dest <- src w_link */ 
-  FORALLSITES_OMP(i,s,)
+  FORALLSITES_OMP(i,s, default(shared) )
     {
       scalar_mult_su3_matrix( &src[4*i+dir1], w_link, &dest[4*i+dir1] );
     } END_LOOP_OMP;
@@ -335,7 +336,7 @@ void ape_smear_field_dir(
     wait_gather(mtag1);
     
     /* dest += w_staple * lower staple */ 
-    FORALLSITES_OMP(i,s,){
+    FORALLSITES_OMP(i,s, default(shared) ){
       scalar_mult_add_su3_matrix( &dest[4*i+dir1], 
 			 (su3_matrix *)gen_pt[1][i], w_staple, 
 			 &dest[4*i+dir1] );
@@ -506,4 +507,256 @@ void destroy_ape_links_4D(su3_matrix *ape_links){
     destroy_G(ape_links);
 } /* destroy_ape_links_4D */
 
+/* Smear in a specified source direction and set of staples. */
+void ape_smear_dir_stap(
+  field_offset src,       /* field offset for su3_matrix[4] type 
+			     input unsmeared links */
+  int dir1,               /* link direction to smear */
+  field_offset dest,      /* field offset for su3_matrix type 
+			     pointing to a specific direction 
+			     output smeared links */
+  Real staple_weight,    /* single staple weight */
+  Real link_u0,          /* single link weight - used in normalization
+                             if SU(3) projection is turned off */
+  int stap[],            /*  stap[mu] = 1 (true) if mu staples used, 
+                             else stap[mu]=0 (false) */
+  int nhits,              /* reproject onto SU(3): number of 
+			     SU(2) hits. 0 for no reprojection */
+  Real tol               /* tolerance for SU(3) projection.
+			     If nonzero, treat nhits as a maximum
+			     number of hits.  If zero, treat nhits
+			     as a prescribed number of hits. */ 
+  )
+{
+  register int i,dir2;
+  register site *s;
+  su3_matrix tmat1,tmat2;
+  msg_tag *mtag0,*mtag1;
+  Real w_link, w_staple, norm_factor;
+  int nstaples=0;
+  su3_matrix *temp;
+  
+  /* Allocate temporary space for staple calculation */
+  temp = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+  if(temp == NULL){
+    printf("ape_smear_dir: No room for temp\n");
+    terminate(1);
+  }
+  
+  for ( dir2 = XUP; dir2 <= TUP; dir2++ ) if ( dir2 != dir1 ) { nstaples += ( stap[dir2]==1 ? 2 : 0 ); }
+  norm_factor = 1.0/(staple_weight*nstaples*link_u0*link_u0 + 1.0);
+  w_staple = norm_factor*staple_weight;
+  w_link = norm_factor;
+  
+  /* dest <- src w_link */ 
+  FORALLSITES_OMP(i,s, default(shared) )
+    {
+      scalar_mult_su3_matrix( 
+		     &(((su3_matrix *)F_PT(s,src))[dir1]), w_link, 
+		     (su3_matrix *)F_PT(s,dest) );
+    } END_LOOP_OMP;
+  for ( dir2 = XUP; dir2 <= TUP; dir2++ ) if( dir2 != dir1 && stap[dir2] == 1 ){
+    
+    /* Upper staple, and simple link */
+    mtag0 = start_gather_site( src+dir2*sizeof(su3_matrix),
+			  sizeof(su3_matrix), dir1, EVENANDODD, gen_pt[0] );
+    mtag1 = start_gather_site( src+dir1*sizeof(su3_matrix),
+			  sizeof(su3_matrix), dir2, EVENANDODD, gen_pt[1] );
+    wait_gather(mtag0);
+    wait_gather(mtag1);
+    
+    /* dest += w_staple * upper staple */ 
+    FORALLSITES_OMP(i,s,private(tmat1,tmat2))
+      {
+	mult_su3_na( (su3_matrix *)gen_pt[1][i],
+		     (su3_matrix *)gen_pt[0][i], &tmat1 );
+	mult_su3_nn( &(((su3_matrix *)F_PT(s,src))[dir2]), 
+		     &tmat1, &tmat2 );
+	scalar_mult_add_su3_matrix( 
+			   (su3_matrix *)F_PT(s,dest),
+			   &tmat2, w_staple,
+			   (su3_matrix *)F_PT(s,dest) );
+      } END_LOOP_OMP;
+    cleanup_gather(mtag0);
+    cleanup_gather(mtag1);
+    
+    /* lower staple */
+    mtag0 = start_gather_site( src+dir2*sizeof(su3_matrix),
+			  sizeof(su3_matrix), dir1,
+			  EVENANDODD, gen_pt[0] );
+    wait_gather(mtag0);
+    FORALLSITES_OMP(i,s,private(tmat1))
+      {
+	mult_su3_nn( &(((su3_matrix *)F_PT(s,src))[dir1]),
+		     (su3_matrix *)gen_pt[0][i], &tmat1 );
+	mult_su3_an( &(((su3_matrix *)F_PT(s,src))[dir2]),
+		     &tmat1, &temp[i] );
+      } END_LOOP_OMP;
+    cleanup_gather(mtag0);
+    mtag1 = start_gather_field( temp, sizeof(su3_matrix),
+				    OPP_DIR(dir2), EVENANDODD, gen_pt[1] );
+    wait_gather(mtag1);
+    
+    /* dest += w_staple * lower staple */ 
+    FORALLSITES_OMP(i,s, default(shared) ){
+      scalar_mult_add_su3_matrix( 
+			 (su3_matrix *)F_PT(s,dest),
+			 (su3_matrix *)gen_pt[1][i], w_staple, 
+			 (su3_matrix *)F_PT(s,dest) );
+    } END_LOOP_OMP;
+    cleanup_gather(mtag1);
+    
+  } /* dir2 loop */
+  
+  /* project links onto SU(3) if nhits > 0 */
+  if(nhits > 0){
+    int status = 0;
+    FORALLSITES_OMP(i,s,private(tmat1) reduction(+:status)){
+      /* Use partially reunitarized link for guess */
+      tmat1 = *((su3_matrix *)F_PT(s,dest));
+      reunit_su3(&tmat1);
+      status += project_su3(&tmat1,
+			    (su3_matrix *)F_PT(s,dest),nhits,tol);
+      /* Copy projected matrix to dest */
+      *((su3_matrix *)F_PT(s,dest)) = tmat1;
+    } END_LOOP_OMP;
 
+    g_intsum(&status);
+    if(this_node == 0 && status > 0)
+      printf("WARNING %d sites report no convergence in project_su3\n", status);
+  }
+
+  free(temp);
+  
+} /* ape_smear_dir_stap */
+
+/* Smear in a specified source direction. 
+   Gauge matrices are stored four per site. They are taken at
+   stride 4 (matrices) starting from the matrix src[dir] 
+   The result is stored likewise in dest */
+
+/* NOTE: This code can be unified with the ape_smear_dir code if we
+   specify the start and stride and use declare_strided_gather
+   throughout - CD */
+
+/* Smear in a specified source direction and set of staples. */
+void ape_smear_field_dir_stap(
+  su3_matrix *src,        /* su3_matrix[4] type 
+			     input unsmeared links */
+  int dir1,               /* link direction to smear */
+  su3_matrix *dest,       /* su3_matrix[4] type smeared links */
+  Real staple_weight,    /* single staple weight */
+  Real link_u0,          /* single link weight - used in normalization
+                             if SU(3) projection is turned off */
+  int stap[],            /*  stap[mu] = 1 (true) if mu staples used, 
+                             else stap[mu]=0 (false) */
+  int nhits,              /* reproject onto SU(3): number of 
+			     SU(2) hits. 0 for no reprojection */
+  Real tol               /* tolerance for SU(3) projection.
+			     If nonzero, treat nhits as a maximum
+			     number of hits.  If zero, treat nhits
+			     as a prescribed number of hits. */ 
+  )
+{
+  register int i,dir2;
+  register site *s;
+  su3_matrix tmat1,tmat2;
+  msg_tag *mtag0,*mtag1;
+  Real w_link, w_staple, norm_factor;
+  int nstaples=0;
+  su3_matrix *temp;
+  
+  /* Allocate temporary space for staple calculation */
+  temp = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+  if(temp == NULL){
+    printf("ape_smear_field_dir: No room for temp\n");
+    terminate(1);
+  }
+   
+  for ( dir2 = XUP; dir2 <= TUP; dir2++ ) if ( dir2 != dir1 ) { nstaples += ( stap[dir2]==1 ? 2 : 0 ); }
+  norm_factor = 1.0/(staple_weight*nstaples*link_u0*link_u0 + 1.0);
+  w_staple = norm_factor*staple_weight;
+  w_link = norm_factor;
+  
+  /* dest <- src w_link */ 
+  FORALLSITES_OMP(i,s, default(shared) )
+    {
+      scalar_mult_su3_matrix( &src[4*i+dir1], w_link, &dest[4*i+dir1] );
+    } END_LOOP_OMP;
+  for ( dir2 = XUP; dir2 <= TUP; dir2++ ) if( dir2 != dir1 && stap[dir2] == 1 ){
+    
+    /* Upper staple, and simple link */
+    mtag0 = declare_strided_gather( (char *)&src[dir2], 4*sizeof(su3_matrix),
+				    sizeof(su3_matrix), dir1, 
+				    EVENANDODD, gen_pt[0] );
+    prepare_gather(mtag0);
+    do_gather(mtag0);
+
+    mtag1 = declare_strided_gather( (char *)&src[dir1], 4*sizeof(su3_matrix),
+				    sizeof(su3_matrix), dir2, 
+				    EVENANDODD, gen_pt[1] );
+    prepare_gather(mtag1);
+    do_gather(mtag1);
+
+    wait_gather(mtag0);
+    wait_gather(mtag1);
+    
+    /* dest += w_staple * upper staple */ 
+    FORALLSITES_OMP(i,s,private(tmat1,tmat2))
+      {
+	mult_su3_na( (su3_matrix *)gen_pt[1][i],
+		     (su3_matrix *)gen_pt[0][i], &tmat1 );
+	mult_su3_nn( &src[4*i+dir2], &tmat1, &tmat2 );
+	scalar_mult_add_su3_matrix( &dest[4*i+dir1], &tmat2, w_staple,
+				    &dest[4*i+dir1] );
+      } END_LOOP_OMP;
+    cleanup_gather(mtag0);
+    cleanup_gather(mtag1);
+    
+    /* lower staple */
+    mtag0 = declare_strided_gather( (char *)&src[dir2], 4*sizeof(su3_matrix),
+				    sizeof(su3_matrix), dir1,
+				    EVENANDODD, gen_pt[0] );
+    prepare_gather(mtag0);
+    do_gather(mtag0);
+
+    wait_gather(mtag0);
+    FORALLSITES_OMP(i,s,private(tmat1))
+      {
+	mult_su3_nn( &src[4*i+dir1], (su3_matrix *)gen_pt[0][i], &tmat1 );
+	mult_su3_an( &src[4*i+dir2], &tmat1, &temp[i] );
+      } END_LOOP_OMP;
+    cleanup_gather(mtag0);
+    mtag1 = start_gather_field( temp, sizeof(su3_matrix),
+				    OPP_DIR(dir2), EVENANDODD, gen_pt[1] );
+    wait_gather(mtag1);
+    
+    /* dest += w_staple * lower staple */ 
+    FORALLSITES_OMP(i,s, default(shared) ){
+      scalar_mult_add_su3_matrix( &dest[4*i+dir1], 
+			 (su3_matrix *)gen_pt[1][i], w_staple, 
+			 &dest[4*i+dir1] );
+    } END_LOOP_OMP;
+    cleanup_gather(mtag1);
+    
+  } /* dir2 loop */
+  
+  /* project links onto SU(3) if nhits > 0 */
+  if(nhits > 0){
+    int status = 0;
+    FORALLSITES_OMP(i,s,private(tmat1)){
+      /* Use partially reunitarized link for guess */
+      tmat1 = dest[4*i+dir1];
+      reunit_su3(&tmat1);
+      status += project_su3(&tmat1, &dest[4*i+dir1], nhits, tol);
+      /* Copy projected matrix to dest */
+      dest[4*i+dir1] = tmat1;
+    } END_LOOP_OMP;
+    g_intsum(&status);
+    if(this_node == 0 && status > 0)
+      printf("WARNING %d sites report no convergence in project_su3\n", status);
+  }
+  
+  free(temp);
+  
+} /* ape_smear_dir_stap */
