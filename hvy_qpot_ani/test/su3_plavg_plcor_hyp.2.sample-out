@@ -1,0 +1,65 @@
+com_qmp: set thread-safety level to 0
+Pure gauge SU3 Wilson loops
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
+start: Tue Dec  1 14:23:35 2020
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 6
+ny 6
+nz 6
+nt 6
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE (RANK) 6 x 6 x 6 x 6
+Mallocing 1.6 MBytes per node for lattice
+
+
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 1
+forget 
+cor_dir t
+max_x 3
+max_y 3
+max_z 3
+max_t 6
+no_smear_level 1
+smear_num[0] 1
+smear_num[1] 0
+smear_num[2] 0
+smear_num[3] 0
+smear_num[4] 0
+hyp_alpha1 0.75
+hyp_alpha2 0.6
+hyp_alpha3 0.3
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666
+Time stamp Sat Aug 10 10:46:56 2002
+Checksums c1d08f5 68164bef OK
+Time to reload gauge configuration = 6.079674e-04
+CHECK PLAQ: 1.9827179876982384e+00 1.9811715330156243e+00
+CHECK NERSC LINKTR: 9.0159201231658637e-01 CKSUM: ba83dea8
+Reunitarized for double precision. Max deviation 2.72e-07 changed to 4.44e-16
+Time to check unitarity = 9.090900e-04
+HYP 4D smearing completed
+1 Smearing steps (total 1): 6.101298e-02 seconds
+plane_avg_plc with 1 times smeared links                  
+P_LOOP_1:	2.729956e+00	-3.536699e-04
+PAP_CORR_1: [0] 0 0 0 6 	1.749040e-04 0.000000e+00
+PAP_CORR_1: [0] 0 0 1 6 	-1.654111e-05 -2.179844e-05
+PAP_CORR_1: [0] 0 0 2 6 	-1.390448e-05 -8.523968e-06
+PAP_CORR_1: [0] 0 0 3 6 	-1.140129e-04 0.000000e+00
+PAP_CORR_1: [1] 0 0 0 6 	3.156360e-04 0.000000e+00
+PAP_CORR_1: [1] 0 0 1 6 	5.578193e-05 1.667941e-05
+PAP_CORR_1: [1] 0 0 2 6 	-8.950495e-05 1.621748e-05
+PAP_CORR_1: [1] 0 0 3 6 	-2.481900e-04 8.470329e-22
+PAP_CORR_1: [2] 0 0 0 6 	3.516531e-05 0.000000e+00
+PAP_CORR_1: [2] 0 0 1 6 	1.553136e-05 -4.984087e-06
+PAP_CORR_1: [2] 0 0 2 6 	-1.579148e-05 -5.099851e-06
+PAP_CORR_1: [2] 0 0 3 6 	-3.464509e-05 -2.117582e-22
+RUNNING COMPLETED
+Time = 6.122112e-02 seconds
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Tue Dec  1 14:23:35 2020
+

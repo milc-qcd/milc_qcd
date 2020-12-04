@@ -1,0 +1,19 @@
+prompt 0
+nx 6
+ny 6
+nz 6
+nt 6
+
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 1.
+coulomb_gauge_fix
+forget
+
+cor_dir t
+min_ct  1
+max_x  2
+max_y  2
+max_z  2
+max_t  1
+
+max_r 6

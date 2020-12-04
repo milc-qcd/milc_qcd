@@ -1,0 +1,54 @@
+com_qmp: set thread-safety level to 0
+Pure gauge SU3 Wilson loops
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
+start: Tue Dec  1 14:23:47 2020
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 6
+ny 6
+nz 6
+nt 6
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE (RANK) 6 x 6 x 6 x 6
+Mallocing 1.6 MBytes per node for lattice
+
+
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 1
+forget 
+cor_dir t
+max_x 3
+max_y 3
+max_z 3
+max_t 6
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666
+Time stamp Sat Aug 10 10:46:56 2002
+Checksums c1d08f5 68164bef OK
+Time to reload gauge configuration = 2.075911e-03
+CHECK PLAQ: 1.9827179876982384e+00 1.9811715330156241e+00
+CHECK NERSC LINKTR: 9.0159201231658637e-01 CKSUM: ba83dea8
+Reunitarized for double precision. Max deviation 2.72e-07 changed to 4.44e-16
+Time to check unitarity = 1.913786e-03
+plane_avg_plc with 0 times smeared links                  
+P_LOOP:	1.218071e+00	-1.073147e-02
+PAP_CORR: [0] 0 0 0 6 	3.407104e-03 0.000000e+00
+PAP_CORR: [0] 0 0 1 6 	-5.780437e-04 -1.302095e-03
+PAP_CORR: [0] 0 0 2 6 	-3.648221e-04 -1.184708e-03
+PAP_CORR: [0] 0 0 3 6 	-1.521372e-03 2.710505e-20
+PAP_CORR: [1] 0 0 0 6 	3.074819e-03 0.000000e+00
+PAP_CORR: [1] 0 0 1 6 	-9.257863e-04 -1.039843e-03
+PAP_CORR: [1] 0 0 2 6 	-1.761232e-04 3.591701e-04
+PAP_CORR: [1] 0 0 3 6 	-8.710004e-04 -4.065758e-20
+PAP_CORR: [2] 0 0 0 6 	2.271471e-03 0.000000e+00
+PAP_CORR: [2] 0 0 1 6 	-9.307195e-04 -9.484559e-04
+PAP_CORR: [2] 0 0 2 6 	-3.248880e-04 6.454347e-04
+PAP_CORR: [2] 0 0 3 6 	2.397443e-04 -2.710505e-20
+RUNNING COMPLETED
+Time = 1.960993e-03 seconds
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Tue Dec  1 14:23:47 2020
+

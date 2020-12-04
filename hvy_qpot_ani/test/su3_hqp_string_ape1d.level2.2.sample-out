@@ -1,0 +1,120 @@
+com_qmp: set thread-safety level to 0
+Pure gauge SU3 Wilson loops
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
+start: Tue Dec  1 11:07:13 2020
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 6
+ny 6
+nz 6
+nt 6
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE (RANK) 6 x 6 x 6 x 6
+Mallocing 0.9 MBytes per node for lattice
+
+
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 1
+forget 
+cor_dir t
+min_ct 1
+max_x 2
+max_y 0
+max_z 0
+max_t 3
+max_r 2
+off_axis_flag 0
+no_smear_level 2
+smear_num[0] 0
+smear_num[1] 1
+smear_num[2] 0
+smear_num[3] 0
+smear_num[4] 0
+smear_fac 2.5
+stap_dir y
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666
+Time stamp Sat Aug 10 10:46:56 2002
+Checksums c1d08f5 68164bef OK
+Time to reload gauge configuration = 1.189947e-03
+CHECK PLAQ: 1.982718e+00 1.981172e+00
+CHECK NERSC LINKTR: 9.015920e-01 CKSUM: ba83dea8
+Unitarity checked.  Max deviation 2.98e-07
+Time to check unitarity = 1.955080e-02
+GBALL_OP1_0  0  0  6.799805e-01  1.177567e-03
+GBALL_OP1_0  0  1  6.551971e-01  1.727881e-03
+GBALL_OP1_0  0  2  6.414383e-01  -3.094835e-04
+GBALL_OP1_0  0  3  6.702797e-01  -4.487872e-03
+GBALL_OP1_0  0  4  6.548831e-01  2.795925e-03
+GBALL_OP1_0  0  5  6.544356e-01  2.055889e-03
+GBALL_OP1_0  1  0  6.685344e-01  -3.976066e-03
+GBALL_OP1_0  1  1  6.618556e-01  9.871635e-04
+GBALL_OP1_0  1  2  6.668855e-01  -9.012463e-03
+GBALL_OP1_0  1  3  6.574078e-01  1.270673e-03
+GBALL_OP1_0  1  4  6.446588e-01  -2.049489e-03
+GBALL_OP1_0  1  5  6.596200e-01  -2.220400e-03
+GBALL_OP1_0  2  0  6.774646e-01  -1.775018e-04
+GBALL_OP1_0  2  1  6.510742e-01  4.633517e-03
+GBALL_OP1_0  2  2  6.641427e-01  -3.068908e-03
+GBALL_OP1_0  2  3  6.662441e-01  1.183097e-03
+GBALL_OP1_0  2  4  6.569928e-01  2.643157e-03
+GBALL_OP1_0  2  5  6.652141e-01  2.366109e-03
+GBALL_OP1_0  0  0  6.799805e-01  1.177567e-03
+GBALL_OP1_0  0  1  6.551971e-01  1.727881e-03
+GBALL_OP1_0  0  2  6.414383e-01  -3.094835e-04
+GBALL_OP1_0  0  3  6.702797e-01  -4.487872e-03
+GBALL_OP1_0  0  4  6.548831e-01  2.795925e-03
+GBALL_OP1_0  0  5  6.544356e-01  2.055889e-03
+GBALL_OP1_0  1  0  6.685344e-01  -3.976066e-03
+GBALL_OP1_0  1  1  6.618556e-01  9.871635e-04
+GBALL_OP1_0  1  2  6.668855e-01  -9.012463e-03
+GBALL_OP1_0  1  3  6.574078e-01  1.270673e-03
+GBALL_OP1_0  1  4  6.446588e-01  -2.049489e-03
+GBALL_OP1_0  1  5  6.596200e-01  -2.220400e-03
+GBALL_OP1_0  2  0  6.774646e-01  -1.775018e-04
+GBALL_OP1_0  2  1  6.510742e-01  4.633517e-03
+GBALL_OP1_0  2  2  6.641427e-01  -3.068908e-03
+GBALL_OP1_0  2  3  6.662441e-01  1.183097e-03
+GBALL_OP1_0  2  4  6.569928e-01  2.643157e-03
+GBALL_OP1_0  2  5  6.652141e-01  2.366109e-03
+new_w_loop1 with 0 times smeared links              
+WILS_LOOP1_0   1  0  0   1 	6.583356e-01
+WILS_LOOP1_0   2  0  0   1 	4.852494e-01
+WILS_LOOP1_0   1  0  0   2 	4.801740e-01
+WILS_LOOP1_0   2  0  0   2 	3.424053e-01
+WILS_LOOP1_0   1  0  0   3 	3.576633e-01
+WILS_LOOP1_0   2  0  0   3 	2.461173e-01
+APE 1D SMEARING COMPLETED
+GBALL_OP1_1  0  0  8.719881e-01  -1.292746e-04
+GBALL_OP1_1  0  1  8.614357e-01  1.990292e-03
+GBALL_OP1_1  0  2  8.587304e-01  1.116084e-03
+GBALL_OP1_1  0  3  8.716252e-01  -1.020086e-03
+GBALL_OP1_1  0  4  8.627774e-01  1.306539e-03
+GBALL_OP1_1  0  5  8.699129e-01  -6.444860e-04
+GBALL_OP1_1  1  0  7.160358e-01  -3.900804e-04
+GBALL_OP1_1  1  1  7.062081e-01  1.368373e-03
+GBALL_OP1_1  1  2  7.065258e-01  -5.239869e-03
+GBALL_OP1_1  1  3  6.878295e-01  1.546855e-03
+GBALL_OP1_1  1  4  6.844199e-01  -3.236105e-03
+GBALL_OP1_1  1  5  6.980029e-01  -1.403681e-03
+GBALL_OP1_1  2  0  6.774646e-01  -1.775018e-04
+GBALL_OP1_1  2  1  6.510742e-01  4.633517e-03
+GBALL_OP1_1  2  2  6.641427e-01  -3.068908e-03
+GBALL_OP1_1  2  3  6.662441e-01  1.183097e-03
+GBALL_OP1_1  2  4  6.569928e-01  2.643157e-03
+GBALL_OP1_1  2  5  6.652141e-01  2.366109e-03
+new_w_loop1 with 1 times smeared links              
+WILS_LOOP1_1   1  0  0   1 	6.968264e-01
+WILS_LOOP1_1   2  0  0   1 	5.790467e-01
+WILS_LOOP1_1   1  0  0   2 	5.136483e-01
+WILS_LOOP1_1   2  0  0   2 	4.184971e-01
+WILS_LOOP1_1   1  0  0   3 	3.840150e-01
+WILS_LOOP1_1   2  0  0   3 	3.032684e-01
+RUNNING COMPLETED
+Time = 2.323866e-03 seconds
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Tue Dec  1 11:07:13 2020
+

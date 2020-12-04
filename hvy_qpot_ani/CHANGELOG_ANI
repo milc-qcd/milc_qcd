@@ -1,0 +1,982 @@
+## CHANGELOG ANISOTROPIC HVY_QPOT ##
+last changes: 12/01/2020
+
+Summary:
+In this CHANGELOG_ANI I first review the changes that were 
+necessary to implement anisotropic heavy quark-antiquark correlators
+mostly in the subfolder hvy_qpot_ani (being derived from the usual hvy_qpot).
+Most routines have been remade from scratch over the last years. 
+Moreover, some physics-wise errors of the original hvy_qpot Wilson loops 
+have been corrected in their new versions.
+
+General remarks:
+a)
+The hvy_qpot application had to be redone almost from scratch, since 
+- the MIMD v6 code (generic/hvy_pot.c) was prohibitively inefficient for 
+  large lattices, and 
+- the off-axis Wilson loop code (hvy_qpot/w_loop2.c) was affected by a 
+  severe bug producing physically incorrect results (see below).
+b) 
+New key features are 
+- all codes have been adapted to use OMP
+
+- mixed precision code permits local single precision, keeping all global 
+  operations in double precision
+
+- individual spatial directions with different max correlation paths
+
+- correlations within a sphere, including consistency checks between these
+
+- max_t < nt can be specified, and t > max_t can be skipped, while still 
+  including free energies (by building the "_plcor" observables)
+
+- a flexible axis direction for correlations/Coulomb gauge/axial gauge
+
+- massively improved performance through two new communication 
+  paradigms (FLUTE or SNAKE, see hvy_qpot/new_hvy_pot.c) -- usually 
+  little performance difference between both
+
+- internal 8D loop has been reduced to internal 7D loop through a dynamic 
+  HASH TABLE
+
+- on the fly measurement of smeared Polyakov loops
+
+- correlators of real and imaginary parts of Polyakov loops
+
+- diquark tr(WW) operators in Coulomb gauge (besides the meson tr(WW^+) operators)
+
+- experimental target FORCE in Coulomb gauge for direct static force calculation, 
+  not yet fully debugged
+
+- 4D HYP, or 4D APE or 1D2 APE smearing for the Coulomb gauge/Polyakov loop correlators
+
+- gaugefix-only runs are possible
+
+- gauge fixing with either fixed GF tolerance or GF steps
+
+- runs without Coulomb gauge fixing (only sensible when reading gauge-fixed configs)
+
+- plane averaged Polyakov loop correlators
+
+- bug in off-axis Wilson loops identified (old executables su3_hqp_old_... can still be made)
+
+- provide corrected, compact, and performant Wilson loop code
+
+- averaging over different directions is optional (compiler macro AVERAGE_DIRECTIONS),
+  otherwise output in the style of Coulomb gauge/Polyakov loop correlators
+
+- 3D HYP, 3D APE, 2D APE, 1D APE, or 1D2 APE smearing for the Wilson loops
+
+- experimental octet Wilson loop target, not yet fully debugged
+
+- improved version of existing generic/hvy_qpot.c code in generic/hvy_pot2.c,
+  without any of the new features (build as su3_hqp_coulomb_old)
+c)
+Anisotropic features are always marked and triggered by the compiler macro ANISOTROPY
+Another way of isolating anisotropic effects is marked and triggered by the 
+compiler macro ONEDIM_ANISO_TEST, which multiplies the 3d-isotropic links 
+for heavy quarks by a number (could set these to zero). 
+The bare anisotropic and isotropic factors are included in the definition of the 
+radii of the "spatial" correlation functions.
+d) 
+There are two separate gauge fixing applications, namely,
+su3_gfix_coulomb and su3_gfix_coulomb_nstepsgf. 
+These were necessary to provide the gauge fixed configurations for large, 
+fine MILC lattices that are reused for heavy-light applications. Since 
+the standard gauge-fixing pattern has been up to some tolerance of the 
+gfix action for small, coarse lattices, and for a fixed number of steps 
+for large, fine lattices, we introduced two separate applications for this.
+Standard gauge fixing with tolerance 2e-6 or 320 steps.
+e)
+Coulomb gauge with flexible cor_dir worked out of the box.
+Introduced more generic version ax_gauge() in hvy_qpot/new_ax_gauge with 
+flexible cor_dir != TUP. Required some marcos and arrays of reshuffled 
+directions, which are not genericall available.
+f)
+Introduced new smearing options for Coulomb gauge correlators (see hvy_qpot/smearing.c and 
+hvy_qpot/smearing_hyp.c). Modifications in the latter (hvy_qpot/smearing_hyp.c) are trivial.
+Introduced new smearing options for Wilson loops (see hvy_qpot/smearing.c and 
+additions in generic/new_ape_smear.c, include/generic.h). In particular:
+- 2D APE smearing (e.g. smear in x-y plane, with cor_dir = ZUP)
+- 1D APE smearing (e.g. smear x-dir via y-staples, with cor_dir = ZUP and maxc[YUP] = 0)
+- 1D2 APE smearing (i.e. smear x-dir and z-dir via y-staples, with cor_dir = ZUP and maxc[YUP] = 0) 
+besides the known 3D HYP and 3D APE smearing.
+For 1D2 APE smearing implemented the clearing of axial gauge buffers and later recovery of these. 
+Could in principle add 4D HYP and 4D APE for Wilson loops if that is desired. 
+g)
+Reworked Wilson loop codes from scratch, now much more readable and faster than in my 
+previous private version due to restructuring the code. 
+Fixed the physics-wise incorrect implementation of previous off-axis Wilson loops 
+due to the spurious plaquette factors in the off-axis links. The incorrectness of the 
+old code can be understood from following Gedanken experiment:
+Choose a configuration with all TUP links unity and all spatial slices identical copies.
+Then the r-step off-axis path for sqrt(2) yields contribution W~((1+Re(Pmunu)/Nc)/2)^r. 
+For more steps or sqrt(5) or sqrt(3) the results are correspondingly. However, on-axis 
+paths yield generally W~1 for arbitrary r as it should (no t or r dependence, effective 
+mass is exactly zero). This inconsistency is a physics-wise error, not a mere coding bug.
+It is caused by averaging about the upper and lower elementary paths for each displacements,
+i.e. averaging the mu->nu and the nu->mu paths, before contracting to the Wilson loop. 
+This is solved in the new version, which computes the off-axis Wilson loops for the 
+upper and lower elementary paths separately. There is a corresponding issue with sqrt(5) 
+or sqrt(3) loops (just higher degree of complexity), which has been solved similarly.
+h)
+Introduced experimental target OCTET_WLOOP to determine the octet contribution 
+and check that it sums up to the Polyakov loop correlator. Not fully debugged.
+
+##############################################
+In the following, we list all files that have been changed.
+##############################################
+
+include/generic.h
+
+generic/Make_template
+generic/ape_smear.c
+generic/io_detect.c
+generic/hvy_pot2.c
+
+hvy_qpot_ani/defines.h
+hvy_qpot_ani/hvy_qpot_includes.h
+hvy_qpot_ani/lattice.h
+hvy_qpot_ani/params.h
+hvy_qpot_ani/new_ax_gauge.c
+hvy_qpot_ani/control.c
+hvy_qpot_ani/gball_simp.c
+hvy_qpot_ani/hybrid_loop1.c
+hvy_qpot_ani/new_hybrid_loop1.c
+hvy_qpot_ani/new_hvy_pot.c
+hvy_qpot_ani/plane_avg_plc.c
+hvy_qpot_ani/setup.c
+hvy_qpot_ani/smearing.c
+hvy_qpot_ani/smearing_hyp.c
+hvy_qpot_ani/w_loop1.c
+hvy_qpot_ani/new_w_loop1.c
+hvy_qpot_ani/w_loop2.c
+hvy_qpot_ani/new_w_loop2.c
+hvy_qpot_ani/test/checklist
+hvy_qpot_ani/test/su3_gfix_coulomb.2.sample-in
+hvy_qpot_ani/test/su3_hqp_ani_hyp.level2.2.errtol
+hvy_qpot_ani/test/su3_hqp_ani_hyp.level2.2.sample-in
+hvy_qpot_ani/test/su3_hqp_ani_hyp.level2.2.sample-out
+hvy_qpot_ani/test/su3_hqp_coulomb.1.errtol
+hvy_qpot_ani/test/su3_hqp_coulomb.1.sample-in
+hvy_qpot_ani/test/su3_hqp_coulomb.1.sample-out
+hvy_qpot_ani/test/su3_hqp_coulomb_hyp.1.errtol
+hvy_qpot_ani/test/su3_hqp_coulomb_hyp.1.sample-in
+hvy_qpot_ani/test/su3_hqp_coulomb_hyp.1.sample-out
+hvy_qpot_ani/test/su3_hqp_coulomb_old.1.errtol
+hvy_qpot_ani/test/su3_hqp_coulomb_old.1.sample-in
+hvy_qpot_ani/test/su3_hqp_coulomb_old.1.sample-out
+hvy_qpot_ani/test/su3_hqp_coulomb_plcor.2.errtol
+hvy_qpot_ani/test/su3_hqp_coulomb_plcor.2.sample-in
+hvy_qpot_ani/test/su3_hqp_coulomb_plcor.2.sample-out
+hvy_qpot_ani/test/su3_hqp_coulomb_string.1.errtol
+hvy_qpot_ani/test/su3_hqp_coulomb_string.1.sample-in
+hvy_qpot_ani/test/su3_hqp_coulomb_string.1.sample-out
+hvy_qpot_ani/test/su3_hqp_coulomb_string_ape1d2.1.errtol
+hvy_qpot_ani/test/su3_hqp_coulomb_string_ape1d2.1.sample-in
+hvy_qpot_ani/test/su3_hqp_coulomb_string_ape1d2.1.sample-out
+hvy_qpot_ani/test/su3_hqp_diquark_plcor.2.errtol
+hvy_qpot_ani/test/su3_hqp_diquark_plcor.2.sample-in
+hvy_qpot_ani/test/su3_hqp_diquark_plcor.2.sample-out
+hvy_qpot_ani/test/su3_hqp_hyp.level1.2.errtol
+hvy_qpot_ani/test/su3_hqp_hyp.level1.2.sample-in
+hvy_qpot_ani/test/su3_hqp_hyp.level1.2.sample-out
+hvy_qpot_ani/test/su3_hqp_old_hyp.level2.1.errtol
+hvy_qpot_ani/test/su3_hqp_old_hyp.level2.1.sample-in
+hvy_qpot_ani/test/su3_hqp_old_hyp.level2.1.sample-out
+hvy_qpot_ani/test/su3_hqp_string_ape1d.level2.2.errtol
+hvy_qpot_ani/test/su3_hqp_string_ape1d.level2.2.sample-in
+hvy_qpot_ani/test/su3_hqp_string_ape1d.level2.2.sample-out
+hvy_qpot_ani/test/su3_hybrid_hqp_hyp.level1.2.errtol
+hvy_qpot_ani/test/su3_hybrid_hqp_hyp.level1.2.sample-in
+hvy_qpot_ani/test/su3_hybrid_hqp_hyp.level1.2.sample-out
+hvy_qpot_ani/test/su3_plavg_plcor.2.errtol
+hvy_qpot_ani/test/su3_plavg_plcor.2.sample-in
+hvy_qpot_ani/test/su3_plavg_plcor.2.sample-out
+hvy_qpot_ani/test/su3_plavg_plcor_hyp.2.errtol
+hvy_qpot_ani/test/su3_plavg_plcor_hyp.2.sample-in
+hvy_qpot_ani/test/su3_plavg_plcor_hyp.2.sample-out
+
+
+##############################################
+In the following, we list the relevant changes.
+##############################################
+
+##############################################
+restructured the input files, i.e. 
+
+---------------------------------
+replaced 
+---------------------------------
+prompt 0
+nx 6
+ny 6
+nz 6
+nt 6
+ 
+u0 1.
+staple_weight 0.0
+ape_iter 0
+max_t 1
+max_x 1 
+reload_serial ../../binary_samples/lat.sample.l6666
+forget
+---------------------------------
+
+---------------------------------
+by the following
+---------------------------------
+prompt 0
+nx 6
+ny 6
+nz 6
+nt 6
+
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 1.
+coulomb_gauge_fix # skip for Wilson loops, could be replaced by no_gauge_fix
+forget
+
+ani_dir t # Only needed for anisotropy
+ani_xiq 1. # Only needed for anisotropy
+iso_xiq 1. # Only needed for anisotropy
+
+cor_dir t # correlation-time direction, always needed, last line in gauge-fixing runs
+min_ct  1 # Only needed for experimental FORCE calculation
+max_x  3 # maximal x displacement, always needed
+max_y  3 # maximal y displacement, always needed
+max_z  3 # maximal z displacement, always needed
+max_t  6 # maximal t displacement, always needed
+
+max_r 6 # maximal radial displacement
+
+off_axis_flag 1 # needed only for Wilson loops
+
+no_smear_level 1 # needed only for compliling of executables with smearing
+smear_num[0] 0 # needed only for compliling of executables with smearing
+smear_num[1] 1 # needed only for compliling of executables with smearing
+smear_num[2] 0 # needed only for compliling of executables with smearing
+smear_num[3] 0 # needed only for compliling of executables with smearing
+smear_num[4] 0 # needed only for compliling of executables with smearing
+
+hyp_alpha1 0.75 # needed only for compliling of executables with 4D hyp smearing
+hyp_alpha2 0.6 # needed only for compliling of executables with hyp smearing
+hyp_alpha3 0.3 # needed only for compliling of executables with hyp smearing
+
+smear_fac 2.5 # needed only for compliling of executables with ape smearing
+stap_dir 1 # needed for 1D and 1D2 ape smearing
+
+---------------------------------
+the following considerations are behind these changes:
+1)
+The gauge fixing is optional now as one could read g-fixed 
+lattices with fixed number of steps prescription. Cb gauge 
+must know which direction (cor_dir) is not included in the 
+3D gauge fixing, previously always TUP.
+2)
+The correlations can be along arbitrary lattice axes. 
+This is relevant for spatial string tension measurements at T>0.
+So far implemented only for Cb gauge correlators.
+3)
+Introduced a min_ct entry. So far this is largely ignored in the 
+code. 
+Will be relevant for Wilson loops with operator insertions in 
+the temporal Wilson lines, i.e. static force.
+4)
+The max directions can be different for different 'spatial' 
+directions. Again, makes obviously sense for spatial string 
+tension measurements.
+5)
+ani_dir, ani_xiq, iso_xiq are only relevant for anisotropic 
+settings. The latter is only for tests of the correctness of the 
+code, and should be set to 1 unless the compiler macro 
+ONEDIM_ANISO_TEST is deactivated.
+6)
+max_r permits calculation inside of a sphere (in particular, 
+cutting out large off-axis distances).
+7)
+Smearing input is largely the same as in previous versions, 
+but now also for Cb gauge Wilson line correlator. Here, only 
+smearing which includes the 'temporal' direction.
+8)
+hyp_alphaX read for hyp smearing (including hyp_alpha1 for the 4D smearing)
+smear_fac read for ape smearing
+9)
+stap_dir if only one spatial direction is used for spatial correlations 
+and only one other direction is used in the staples for ape smearing
+---------------------------------
+
+##############################################
+in hvy_qpot_ani/lattice.h added
+
+----------------------------
+changed data types to size_t according to milc 7.8.1 conventions
+----------------------------
+
+----------------------------
+added site_prn to site struct to avoid clash 
+with generic/io_helpers.c when compiling
+----------------------------
+  /* The state information for a random number generator */
+  double_prn site_prn;
+  /* align to double word boundary (kludge for Intel compiler) */
+  int space1;
+----------------------------
+
+----------------------------
+added new description for correlations along arbitrary lattice axes
+cor_dir permits correlations in spatial directions
+max_x, max_y, max_z, max_t are in the original coordinates
+xc, nc, maxc are buffers for the permuted directions
+----------------------------
+/*  details of the correlations to be considered */
+EXTERN  short cor_dir;
+EXTERN  int min_ct;
+EXTERN  int max_x, max_y, max_z, max_t;
+EXTERN  int xc[NDIRS];
+EXTERN  int nc[4];
+EXTERN  int maxc[4];
+----------------------------
+
+----------------------------
+added for anisotropic settings
+----------------------------
+#ifdef ANISOTROPY
+EXTERN short ani_dir; /* direction of anisotropy */
+EXTERN Real ani_xiq; /* bare quark anisotropy */
+#ifdef ONEDIM_ANISO_TEST
+EXTERN Real iso_xiq; /* bare quark isotropic link factor for debugging */
+#endif
+#endif
+----------------------------
+
+----------------------------
+added maximal radial distance
+off_axis_flag only for Wilson loops
+----------------------------
+EXTERN  Real max_r;
+EXTERN  int off_axis_flag;
+----------------------------
+
+----------------------------
+added stap_dir variable for 1D versions of ape smearing
+----------------------------
+#if (defined APE_1D_SMEARING || defined APE_1D2_SMEARING)
+EXTERN  int stap_dir;
+#endif
+----------------------------
+
+##############################################
+in hvy_qpot_ani/params.h added
+
+----------------------------
+  int fixflag; /* whether to gauge fix */
+----------------------------
+
+----------------------------
+  /*  details of the correlations to be considered; 
+   *  the time direction for the correlation function does not 
+   *  necessarily agree with the time direction TUP of the lattice */
+  short cor_dir;
+  int min_ct;
+  int max_x, max_y, max_z, max_t;
+----------------------------
+
+----------------------------
+#ifdef ANISOTROPY
+  short ani_dir; /* direction of anisotropy */
+  Real ani_xiq; /* bare quark anisotropy */
+#ifdef ONEDIM_ANISO_TEST
+  Real iso_xiq; /* bare quark isotropic link factor for debugging */
+#endif
+#endif
+----------------------------
+
+----------------------------
+  Real max_r;
+  int off_axis_flag;    /* off-axis Wilson loops or not? */
+----------------------------
+
+----------------------------
+  /*  details of the smearing to be used */
+  int no_smear_level;   /* number of smearing levels (<=5) */
+  int smear_num[5];     /* the number of smearing iterations */
+#ifdef HYP_SMEARING /* BOTH in 3D and 4D HYP smearing */
+  Real hyp_alpha1;      /* parameters for 4D HYP smearing */
+  Real hyp_alpha2;
+  Real hyp_alpha3;
+#else /* APE smearing */
+  int ape_iter;
+  Real staple_weight;
+#endif
+  Real smear_fac;       /* smearing factor = weight of direct link */
+----------------------------
+
+----------------------------
+added stap_dir variable for 1D versions of ape smearing
+----------------------------
+#if (defined APE_1D_SMEARING || defined APE_1D2_SMEARING)
+  int stap_dir;
+#endif
+----------------------------
+
+
+##############################################
+in hvy_qpot_ani/hvy_qpot_includes.h added
+
+#if (defined HYP_3D_SMEARING || defined HYP_4D_SMEARING) 
+#define HYP_SMEARING
+#define SMEARING
+#endif
+
+#if ( defined APE_1D2_SMEARING /* Smear one spatial and the temporal direction with a single direction of staples */\
+   || defined APE_1D_SMEARING  /* Smear one spatial direction with a single direction of staples */\
+   || defined APE_2D_SMEARING  /* Smear two spatial directions with the opposed direction of staples */\
+   || defined APE_3D_SMEARING  /* Smear three spatial directions with the two opposed directions of staples */\
+   || defined APE_4D_SMEARING) /* Smear all four directions with each three directions of staples */
+#define SMEARING
+#if ( (defined APE_1D2_SMEARING && defined APE_1D_SMEARING ) \
+   || (defined APE_1D2_SMEARING && defined APE_2D_SMEARING ) \
+   || (defined APE_1D2_SMEARING && defined APE_3D_SMEARING ) \
+   || (defined APE_1D2_SMEARING && defined APE_4D_SMEARING ) \
+   || (defined APE_1D_SMEARING && defined APE_2D_SMEARING ) \
+   || (defined APE_1D_SMEARING && defined APE_3D_SMEARING ) \
+   || (defined APE_1D_SMEARING && defined APE_4D_SMEARING ) \
+   || (defined APE_2D_SMEARING && defined APE_3D_SMEARING ) \
+   || (defined APE_2D_SMEARING && defined APE_4D_SMEARING ) \
+   || (defined APE_3D_SMEARING && defined APE_4D_SMEARING ) )
+BOMB THE COMPILE
+#endif
+#endif
+#if ( (defined APE_4D_SMEARING || defined HYP_4D_SMEARING || defined APE_1D2_SMEARING) && (defined AX_GAUGE) )
+BOMB THE COMPILE
+#endif
+#if ( (defined APE_2D_SMEARING || defined APE_1D_SMEARING || defined APE_1D2_SMEARING ) )
+#define STAP_APE
+#endif
+
+#if (defined SMEARING && defined GFIXONLY) 
+BOMB THE COMPILE
+#endif
+
+#if (defined DIQUARK && ! defined COULOMB )
+BOMB THE COMPILE
+#endif
+
+#if (!(defined COULOMB)&&!(defined PLOOPCOR_MEAS)&&!(defined PLANE_AVERAGED_PLC))
+#define WLOOP_MEAS
+#endif
+
+#if (!(defined COULOMB)&&!(defined WLOOP_MEAS) &&(defined PLOOPCOR_MEAS||defined PLANE_AVERAGED_PLC))
+#define PLOOPCOR_EXCLUSIVE
+#endif
+
+
+#define site_coord(s,mu) \
+        (((short*)&(s->x))[mu])
+
+#ifdef NEW_HVY_POT
+void local_lattice_size (int *llat);
+#define NLLXUP (X3UP)
+#define NLLYUP (Y3UP)
+#define NLLZUP (Z3UP)
+#define NLLTUP (T3UP)
+#define NLLTDOWN (T3DOWN)
+#define NLLZDOWN (Z3DOWN)
+#define NLLYDOWN (Y3DOWN)
+#define NLLXDOWN (X3DOWN)
+#define OPP_NLL_DIR(dir) (23-(dir))
+#define DIR_NLL(dir) ((dir)+1*NDIRS)
+#endif
+
+#ifdef NEW_HVY_POT
+void new_hvy_pot( su3_matrix *links );
+#endif
+
+#ifdef PLANE_AVERAGED_PLC
+void plane_averaged_plc( su3_matrix *links );
+#endif
+
+#ifdef OCTET_WLOOP
+void free_gen(su3_matrix *genT);
+su3_matrix *set_gen(void);
+#endif
+
+##############################################
+in hvy_qpot_ani/defines.h modified macros for gauge fixing
+
+/* Compiler macros common to all targets in this application */
+#ifdef FIX_GAUGE_FIX_STEPS
+#define GAUGE_FIX_TOL 0
+#define GAUGE_FIX_STEPS FIX_GAUGE_FIX_STEPS
+#else
+#define GAUGE_FIX_TOL 2e-6
+#define GAUGE_FIX_STEPS 500
+#endif
+
+
+##############################################
+in hvy_qpot_ani/smearing.c included arbitrary lattice axes
+
+load_hyp_links(U_link, hyp_link, xc[TUP], &hc);
+
+##############################################
+in hvy_qpot_ani/setup.c we did an extensive overhaul of the 
+int readin(int prompt) function, which we adapted to 
+the style of ks_spectrum_ani/setup.c
+
+------------------------------------
+adapted to style of ks_spectrum_ani functions 
+to set up special gathers for the new potential code
+------------------------------------
+/* Forward declarations */
+static int initial_set(void);
+#if (defined NEW_HVY_POT || defined PLANE_AVERAGED_PLC)
+/* Forward declarations */
+static int locx[4];
+static void next_local_lattice(int x, int y, int z, int t, int *dirpt, int FB, 
+                               int *xp, int *yp, int *zp, int *tp);
+static void make_nll_gathers(void);
+#endif
+------------------------------------
+
+------------------------------------
+restructured function int setup() with marginal changes
+------------------------------------
+  /* print banner, get volume */
+  int prompt=initial_set();
+  if(prompt == 2)return prompt;
+  /* Initialize the layout functions, which decide where sites live, and 
+     initialize the node random number generator */
+  setup_layout();
+  this_node = mynode();
+  /* allocate space for lattice, set up coordinate fields */
+  make_lattice();
+  /* set up nearest neighbor pointers and comlink structures */
+  make_nn_gathers();
+------------------------------------
+------------------------------------
+added at the end to function int setup() the special gathers
+------------------------------------
+#ifdef NEW_HVY_POT 
+        /* set up pointers for passing full local lattices and 
+           comlink structures code for this routine is below */
+    make_nll_gathers();
+#endif
+------------------------------------
+
+------------------------------------
+largely rearranged function int readin() 
+------------------------------------
+int readin(int prompt){
+/* read in parameters for su3 monte carlo       */
+/* argument "prompt" is 1 if prompts are to be given for input  */
+
+  int status;
+  int mu;
+  char savebuf[128];
+
+  /* On node zero, read parameters and send to all other nodes */
+  if(this_node==0){
+
+  printf("\n\n");
+  status = 0;
+
+  IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
+  if( status > 0) return status;
+#ifdef COULOMB
+  IF_OK if (prompt==1)
+    printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
+  IF_OK scanf("%s",savebuf);
+  IF_OK printf("%s\n",savebuf);
+  IF_OK {
+    if (strcmp("coulomb_gauge_fix",savebuf) == 0 ){
+      param.fixflag = COULOMB_GAUGE_FIX;
+    } else {
+      if(strcmp("no_gauge_fix",savebuf) == 0 ) {
+        param.fixflag = NO_GAUGE_FIX;
+      } else{
+        printf("error in input: fixing_command %s is invalid\n",savebuf); status++;
+      }
+    }
+  }
+#else
+  param.fixflag = NO_GAUGE_FIX;
+#endif
+    /* find out what to do with lattice at end */
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.saveflag),
+        param.savefile );
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
+                                      param.stringLFN );
+
+#ifdef ANISOTROPY
+    /* Direction of anisotropy */
+    IF_OK status += get_s(stdin, prompt,"ani_dir",savebuf);
+    IF_OK param.ani_dir = dirchar2index( savebuf[0], &status);
+    /* Heavy quark anisotropy */
+    IF_OK status += get_f(stdin, prompt, "ani_xiq", &param.ani_xiq);
+#ifdef ONEDIM_ANISO_TEST
+    /* Heavy quark isotropic link factor for debugging */
+    IF_OK status += get_f(stdin, prompt, "iso_xiq", &param.iso_xiq);
+#endif
+#endif
+    /* cor-time direction for the heavy-quark correlation function */
+    IF_OK status += get_s(stdin, prompt,"cor_dir",savebuf);
+    IF_OK param.cor_dir = dirchar2index( savebuf[0], &status);
+
+#ifndef GFIXONLY
+#if ( ( ( defined COULOMB || defined WLOOP_MEAS) \
+     && ( ! ( defined PLANE_AVERAGED_PLC ) ) ) )
+    /* minimum cor-time value for loops */
+    IF_OK status += get_i(stdin, prompt,"min_ct",&param.min_ct);
+#endif // END #if (defined COULOMB || defined WLOOP_MEAS)
+#if (defined COULOMB || defined WLOOP_MEAS || defined PLOOPCOR_EXCLUSIVE)
+    /* maximum cor-spatial distance */
+    IF_OK status += get_i(stdin, prompt,"max_x",&param.max_x);
+    IF_OK status += get_i(stdin, prompt,"max_y",&param.max_y);
+    IF_OK status += get_i(stdin, prompt,"max_z",&param.max_z);
+    IF_OK status += get_i(stdin, prompt,"max_t",&param.max_t);
+#endif // END #if (defined COULOMB || defined WLOOP_MEAS || defined PLOOPCOR_EXCLUSIVE)
+
+#if (defined COULOMB || defined WLOOP_MEAS || defined PLOOPCOR_MEAS)
+    IF_OK status += get_f(stdin, prompt,"max_r",&param.max_r);
+#endif // END #if (defined COULOMB || defined WLOOP_MEAS || defined PLOOPCOR_EXCLUSIVE)
+
+#ifdef WLOOP_MEAS
+    /* off_axis_flag : do off-axis Wilson loops? */
+    IF_OK status += get_i(stdin, prompt,"off_axis_flag",&param.off_axis_flag);
+#endif // END #ifdef WLOOP_MEAS
+
+#ifndef SMEARING        
+    IF_OK param.no_smear_level=1;
+    IF_OK param.smear_num[0] = 0;
+    IF_OK param.smear_num[1] = 0;
+    IF_OK param.smear_num[2] = 0;
+    IF_OK param.smear_num[3] = 0;
+    IF_OK param.smear_num[4] = 0;
+#else
+    IF_OK status += get_i(stdin, prompt,"no_smear_level",
+                              &param.no_smear_level);
+    if (param.no_smear_level > 0) {
+      IF_OK status += get_i(stdin, prompt,"smear_num[0]",&param.smear_num[0]);
+      IF_OK status += get_i(stdin, prompt,"smear_num[1]",&param.smear_num[1]);
+      IF_OK status += get_i(stdin, prompt,"smear_num[2]",&param.smear_num[2]);
+      IF_OK status += get_i(stdin, prompt,"smear_num[3]",&param.smear_num[3]);
+      IF_OK status += get_i(stdin, prompt,"smear_num[4]",&param.smear_num[4]);
+
+#ifdef HYP_4D_SMEARING /* ONLY in 4D HYP smearing */
+      IF_OK status += get_f(stdin, prompt,"hyp_alpha1",&param.hyp_alpha1);
+#elif defined HYP_3D_SMEARING /* SET TO ZERO for 3D HYP smearing */
+      IF_OK param.hyp_alpha1=0.;
+#endif // END #ifdef HYP_4D_SMEARING
+#ifdef HYP_SMEARING /* BOTH in 3D and 4D HYP smearing */
+      IF_OK status += get_f(stdin, prompt,"hyp_alpha2",&param.hyp_alpha2);
+      IF_OK status += get_f(stdin, prompt,"hyp_alpha3",&param.hyp_alpha3);
+#else /* spatial APE smearing */
+      /* this block is never needed 
+      IF_OK status += get_f(stdin, prompt, "staple_weight",
+                            &param.staple_weight);
+      IF_OK status += get_i(stdin, prompt, "ape_iter",&param.ape_iter);
+      */
+      IF_OK status += get_f(stdin, prompt,"smear_fac",&param.smear_fac);
+#if (defined APE_1D_SMEARING || defined APE_1D2_SMEARING) 
+      IF_OK status += get_s(stdin, prompt,"stap_dir",savebuf);
+      IF_OK param.stap_dir = dirchar2index( savebuf[0],&status);
+#endif
+#endif // END #ifdef HYP_SMEARING 
+    }
+#endif // END #ifndef SMEARING
+#endif // END #ifndef GFIXONLY
+
+    if( status > 0)param.stopflag=1; else param.stopflag=0;
+  } /* end if(this_node==0) */
+
+  /* Node 0 broadcasts parameter buffer to all other nodes */
+  broadcast_bytes((char *)&param,sizeof(param));
+
+  if( param.stopflag != 0 ) normal_exit(0);
+
+  if(prompt==2)return prompt;
+
+  fixflag = param.fixflag;
+  u0 = param.u0;
+
+#if (defined COULOMB || defined WLOOP_MEAS)
+  min_ct = param.min_ct;
+#endif // END #if (defined COULOMB || defined WLOOP_MEAS)
+#if (defined COULOMB || defined WLOOP_MEAS || defined PLOOPCOR_EXCLUSIVE)
+  max_x = param.max_x;
+  max_y = param.max_y;
+  max_z = param.max_z;
+  max_t = param.max_t;
+#endif // END #if (defined COULOMB || PLOOPCOR_MEAS)
+
+  /* Set initial values in xc[], nc[] and maxc[] arrays assuming standard geometry */
+  xc[XUP]=XUP; xc[YUP]=YUP; xc[ZUP]=ZUP; xc[TUP]=TUP;
+  nc[XUP]=nx; nc[YUP]=ny; nc[ZUP]=nz; nc[TUP]=nt;
+  maxc[XUP]=max_x; maxc[YUP]=max_y; maxc[ZUP]=max_z; maxc[TUP]=max_t;
+
+  /* Initialize cor-time direction */
+  cor_dir = param.cor_dir;
+  if ( cor_dir != TUP ) {
+    xc  [TUP] = cor_dir;
+    nc  [TUP] = nc[cor_dir];
+    maxc[TUP] = maxc[cor_dir];
+    xc  [cor_dir] = TUP;
+    nc  [cor_dir] = nt;
+    maxc[cor_dir] = max_t;
+  }
+#ifdef ANISOTROPY
+  if ( ani_dir != cor_dir && ani_dir != TUP ) {
+    int tmp;
+    tmp = xc[XUP];
+    xc  [XUP] = ani_dir;
+    xc[ani_dir] = tmp;
+    tmp = nc[XUP];
+    nc  [XUP] = nc[ani_dir];
+    nc  [ani_dir] = tmp;
+    tmp =maxc[XUP];
+    maxc[XUP] = maxc[ani_dir];
+    maxc[ani_dir] = tmp;
+  }
+  ani_xiq = param.ani_xiq;
+#ifdef ONEDIM_ANISO_TEST
+  iso_xiq = param.iso_xiq;
+#endif
+#endif
+  for ( mu=XUP; mu <=TUP; mu++) xc[OPP_DIR(mu)] = OPP_DIR(xc[mu]);
+
+#if (defined COULOMB || defined WLOOP_MEAS || defined PLOOPCOR_EXCLUSIVE)
+  max_r = param.max_r;
+#endif // END #if (defined COULOMB || PLOOPCOR_MEAS)
+
+#ifdef WLOOP_MEAS
+  off_axis_flag = param.off_axis_flag;
+#endif
+
+  no_smear_level = param.no_smear_level;
+  smear_num[0] = param.smear_num[0];
+  smear_num[1] = param.smear_num[1];
+  smear_num[2] = param.smear_num[2];
+  smear_num[3] = param.smear_num[3];
+  smear_num[4] = param.smear_num[4];
+#ifdef HYP_SMEARING
+  hyp_alpha1 = param.hyp_alpha1;
+  hyp_alpha2 = param.hyp_alpha2;
+  hyp_alpha3 = param.hyp_alpha3;
+#else
+  staple_weight = param.staple_weight;
+  ape_iter = param.ape_iter;
+#endif
+  smear_fac = param.smear_fac;
+#if (defined APE_1D_SMEARING || defined APE_1D2_SMEARING) 
+  stap_dir = param.stap_dir;
+  if ( maxc[stap_dir] > 0 ) {
+    node0_printf("readin: inconsistent choice of stap_dir=%d and maxc[%d]=%d\n",stap_dir,stap_dir,maxc[stap_dir]);
+    terminate(1);
+  }
+#endif
+
+  startflag = param.startflag;
+  saveflag = param.saveflag;
+  strcpy(startfile,param.startfile);
+  strcpy(savefile,param.savefile);
+  strcpy(stringLFN, param.stringLFN);
+
+  /* Do whatever is needed to get lattice */
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( startflag, startfile );
+
+  return(0);
+}
+
+--------------------------------------
+added new functions for specical next-local-lattice gathers
+--------------------------------------
+#if defined NEW_HVY_POT 
+/* Set up comlink structures for nearest local lattice gather pattern; 
+   make_lattice() and  make_nn_gathers() must be called first, 
+   preferably just before calling make_3n_gathers().
+*/
+static void
+make_nll_gathers(void)
+{
+  int i;
+  int x,y,z,t;
+  int of=0;
+  int ox,oy,oz,ot;
+  int ix[4]={0,0,0,0};
+
+  /* get the displacement of local lattices, assumes 
+     that all local lattices have the same size */
+  for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
+    if(node_number(x,y,z,t)==mynode()){
+      if (!of) { of=1; ox=x; oy=y; oz=z; ot=t; }
+      if (ox==x&&oy==y&&oz==z) { ix[TUP]++;}
+      if (ot==t&&ox==x&&oy==y) { ix[ZUP]++;}
+      if (oz==z&&ot==t&&ox==x) { ix[YUP]++;}
+      if (oy==y&&oz==z&&ot==t) { ix[XUP]++;}
+    }
+  }
+  for(i=XUP; i<=TUP; i++) { locx[i]=ix[i]; }
+
+  /* Wouldn't need the inverse if the shifts traveled around
+     the lattice always in positive directions only */
+  /* However, that is pretty inefficient for max_x << nxyz/2,
+     for which I should introduce the inverse */
+  /* keep in mind that parity in SAME for even displaments 
+     and SWITCH for odd displacements */
+  for(i=XUP; i<=TUP; i++) {
+    if (locx[i]&1) {
+      make_gather(next_local_lattice, &i, WANT_INVERSE,
+                ALLOW_EVEN_ODD, SWITCH_PARITY);
+    }
+    else {
+      make_gather(next_local_lattice, &i, WANT_INVERSE,
+                ALLOW_EVEN_ODD, SAME_PARITY);
+    }
+  }
+
+  /* need that only due to use of inverse */
+  sort_eight_gathers(NLLXUP);
+}
+
+/* this routine uses only fundamental directions (XUP..TDOWN) as directions */
+/* returning the displaccement of the origin of the next sublattice in that direction */
+
+static void
+next_local_lattice(int x, int y, int z, int t, int *dirpt, int FB,
+               int *xp, int *yp, int *zp, int *tp)
+     /* int x,y,z,t,*dirpt,FB;  coordinates of site, direction (eg XUP), and
+        "forwards/backwards"  */
+     /* int *xp,*yp,*zp,*tp;    pointers to coordinates of neighbor */
+{
+  int dir;
+  dir = (FB==FORWARDS) ? *dirpt : OPP_DIR(*dirpt);
+  *xp = x; *yp = y; *zp = z; *tp = t;
+  switch(dir){
+  case XUP: *xp = (x+locx[XUP])%nx; break;
+  case XDOWN: *xp = (x+(locx[XUP]+1)*nx-locx[XUP])%nx; break;
+  case YUP: *yp = (y+locx[YUP])%ny; break;
+  case YDOWN: *yp = (y+(locx[YUP]+1)*ny-locx[YUP])%ny; break;
+  case ZUP: *zp = (z+locx[ZUP])%nz; break;
+  case ZDOWN: *zp = (z+(locx[ZUP]+1)*nz-locx[ZUP])%nz; break;
+  case TUP: *tp = (t+locx[TUP])%nt; break;
+  case TDOWN: *tp = (t+(locx[TUP]+1)*nt-locx[TUP])%nt; break;
+  default: printf("next_local_lattice: bad direction\n"); exit(1);
+  } 
+} 
+
+/* this routine returns the local lattice size which is needed */
+/* for shifts of the coordinates of the new_hvy_pot.c */
+
+void local_lattice_size (int *llat) {
+  int i;
+  for (i=XUP;i<=TUP;i++) { llat[i]=locx[i]; }
+}
+--------------------------------------
+
+##############################################
+added file hvy_qpot_ani/new_ax_gauge.c
+
+axial gauge with flexible correlation-time direction.
+Otherwise nothing special.
+
+##############################################
+changed file hvy_qpot_ani/smearing.c
+
+Permits new 2D, 1D, or 1D2 APE smearing options now.
+Revised buffers and chooses between existing routines or new ones.
+Otherwise nothing special.
+Uses existing code for 3D or 4D with usual make options.
+
+##############################################
+added to file generic/new_ape_smear.c and include/generic.h
+
+permits new 2D, 1D, or 1D2 options. Could also handle all others.
+Largely follows existing code in generic/ape_smear.c with obvious 
+	changes from replacing space_only with an array of staple directions.
+
+##############################################
+added file generic/hvy_pot2.c
+
+entirely new file. Does not share new functionalities, but is significantly 
+more performant than old hvy_pot.c (requiring a few new buffers to reduce 
+the number of necessary operations). Output is identical as generic/hvy_pot.c.
+
+##############################################
+added file hvy_qpot_ani/new_hvy_pot.c
+
+entirely new file. includes flexible correlation time direction 
+and variable max spatial correlation extents in different directions.
+allows calculation in an octant of a sphere.
+Calculates Cb gauge Wilson line correlator <WW^+>,
+Polyakov loop correlators <LL^+>, <RR>, <II>, diquark Wilson line <W^2> 
+and Polyakov loops.
+Permits restriction of length of Wilson lines while still doing 
+all suitable free energies if PLOOPCORR_MEAS is specified.
+Contains incomplete implementation of static FORCE calculation.
+
+##############################################
+added file hvy_qpot_ani/plane_avg_plc.c
+
+entirely new file. Calculates plane averaged Polyakov loop correlator. 
+very poor signal. not particularly useful.
+
+##############################################
+added file hvy_qpot/new_w_loop1.c
+
+new file, reorganized code. includes flexible correlation time direction 
+and variable max spatial correlation extents in different directions.
+Calculates standard on-axis Wilson loops in flexible axial gauge.
+allows calculation in an octant of a sphere.
+Writes Wilson loops separated by directions in the same format as for 
+Coulomb gauge correlators, or averaged over directions in previous format 
+if the compiler macro AVERAGED_DIRECTIONS is used.
+
+##############################################
+added file hvy_qpot/new_hybrid_loop1.c
+
+new file, reorganized code. includes flexible correlation time direction 
+and variable max spatial correlation extents in different directions.
+Calculates standard on-axis hybrid loops in flexible axial gauge.
+Writes hybrid loops separated by directions in the same format as for 
+Coulomb gauge correlators, or averaged over directions in previous format
+if the compiler macro AVERAGED_DIRECTIONS is used.
+
+##############################################
+added file hvy_qpot/new_w_loop2.c
+
+new file, reorganized code, fixes the physics-wise error of MIMD 6 version 
+(see above). includes flexible correlation time direction and variable max 
+spatial correlation extents in different directions.
+Calculates standard off-axis Wilson loops in flexible axial gauge.
+Writes Wilson loops separated by directions in the same format as for 
+Coulomb gauge correlators, or averaged over directions in previous format.
+
+##############################################
+added many new targets to Make_template (not listed)
+
+##############################################
+input files need to be adapted. For a list of all input file options see 
+hvy_qpot/setup.c. 
+
+
+##############################################
+Some tests have been written for a subset of the new routines. More 
+could be done easily, but it's probably not worth the effort.
+
+##############################################
+had to modify generic/io_detect.c by taking 
+out the QIO based quark field I/O unless 
+FERM_ACTION is defined. 
+Otherwise, the code does not compile with QIO.
+
+#ifdef FERM_ACTION
+#include "../include/io_scidac_ks.h"
+#include "../include/io_scidac_w.h"
+#endif
+
+##############################################
+This is the complete list of changes.
+##############################################

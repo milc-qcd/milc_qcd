@@ -1,0 +1,16 @@
+prompt 0
+nx 6
+ny 6
+nz 6
+nt 6
+ 
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 1.
+forget
+
+cor_dir t
+max_x  3
+max_y  3
+max_z  3
+max_t  6
+

@@ -1,0 +1,101 @@
+com_qmp: set thread-safety level to 0
+Pure gauge SU3 Wilson loops
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
+start: Tue Dec  1 12:52:15 2020
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 6
+ny 6
+nz 6
+nt 6
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE (RANK) 6 x 6 x 6 x 6
+Mallocing 0.5 MBytes per node for lattice
+
+
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 1
+coulomb_gauge_fix
+forget 
+cor_dir t
+min_ct 1
+max_x 2
+max_y 2
+max_z 2
+max_t 2
+max_r 6
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666
+Time stamp Sat Aug 10 10:46:56 2002
+Checksums c1d08f5 68164bef OK
+Time to reload gauge configuration = 1.687050e-03
+CHECK PLAQ: 1.982718e+00 1.981172e+00
+CHECK NERSC LINKTR: 9.015920e-01 CKSUM: ba83dea8
+Unitarity checked.  Max deviation 2.98e-07
+Time to check unitarity = 4.539490e-04
+Fixing to Coulomb gauge, 500 steps, 2.0e-06 tol
+GFIX: Ended at step 1. Av gf action 9.24589992e-01, delta 1.073e-06
+Gauge fixing: 3.441095e-03 seconds
+hvy_pot(): MAX_T = 2, MAX_X = 2
+POT_LOOP: 0 0 0 1 	3.000000e+00
+POT_LOOP: 0 0 1 1 	2.261044e+00
+POT_LOOP: 0 0 2 1 	2.114710e+00
+POT_LOOP: 0 1 0 1 	2.240758e+00
+POT_LOOP: 0 1 1 1 	2.154609e+00
+POT_LOOP: 0 1 2 1 	2.115247e+00
+POT_LOOP: 0 2 0 1 	2.121194e+00
+POT_LOOP: 0 2 1 1 	2.109547e+00
+POT_LOOP: 0 2 2 1 	2.085521e+00
+POT_LOOP: 1 0 0 1 	2.242611e+00
+POT_LOOP: 1 0 1 1 	2.137839e+00
+POT_LOOP: 1 0 2 1 	2.091730e+00
+POT_LOOP: 1 1 0 1 	2.140714e+00
+POT_LOOP: 1 1 1 1 	2.110473e+00
+POT_LOOP: 1 1 2 1 	2.093863e+00
+POT_LOOP: 1 2 0 1 	2.104817e+00
+POT_LOOP: 1 2 1 1 	2.095541e+00
+POT_LOOP: 1 2 2 1 	2.080122e+00
+POT_LOOP: 2 0 0 1 	2.119041e+00
+POT_LOOP: 2 0 1 1 	2.110941e+00
+POT_LOOP: 2 0 2 1 	2.099318e+00
+POT_LOOP: 2 1 0 1 	2.095338e+00
+POT_LOOP: 2 1 1 1 	2.085832e+00
+POT_LOOP: 2 1 2 1 	2.072289e+00
+POT_LOOP: 2 2 0 1 	2.090201e+00
+POT_LOOP: 2 2 1 1 	2.094174e+00
+POT_LOOP: 2 2 2 1 	2.086965e+00
+POT_LOOP: 0 0 0 2 	3.000000e+00
+POT_LOOP: 0 0 1 2 	1.693243e+00
+POT_LOOP: 0 0 2 2 	1.518062e+00
+POT_LOOP: 0 1 0 2 	1.639664e+00
+POT_LOOP: 0 1 1 2 	1.545192e+00
+POT_LOOP: 0 1 2 2 	1.524734e+00
+POT_LOOP: 0 2 0 2 	1.529790e+00
+POT_LOOP: 0 2 1 2 	1.514909e+00
+POT_LOOP: 0 2 2 2 	1.504562e+00
+POT_LOOP: 1 0 0 2 	1.665411e+00
+POT_LOOP: 1 0 1 2 	1.528917e+00
+POT_LOOP: 1 0 2 2 	1.486594e+00
+POT_LOOP: 1 1 0 2 	1.540638e+00
+POT_LOOP: 1 1 1 2 	1.521611e+00
+POT_LOOP: 1 1 2 2 	1.503074e+00
+POT_LOOP: 1 2 0 2 	1.515282e+00
+POT_LOOP: 1 2 1 2 	1.512126e+00
+POT_LOOP: 1 2 2 2 	1.499397e+00
+POT_LOOP: 2 0 0 2 	1.545804e+00
+POT_LOOP: 2 0 1 2 	1.510091e+00
+POT_LOOP: 2 0 2 2 	1.508241e+00
+POT_LOOP: 2 1 0 2 	1.503068e+00
+POT_LOOP: 2 1 1 2 	1.506492e+00
+POT_LOOP: 2 1 2 2 	1.479646e+00
+POT_LOOP: 2 2 0 2 	1.509499e+00
+POT_LOOP: 2 2 1 2 	1.517791e+00
+POT_LOOP: 2 2 2 2 	1.512790e+00
+RUNNING COMPLETED
+Time = 7.666826e-03 seconds
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Tue Dec  1 12:52:15 2020
+

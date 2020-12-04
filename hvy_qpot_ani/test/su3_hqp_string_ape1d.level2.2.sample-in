@@ -1,0 +1,31 @@
+prompt 0
+nx 6
+ny 6
+nz 6
+nt 6
+
+
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 1.
+forget
+
+cor_dir t
+min_ct 1
+max_x 2
+max_y 0
+max_z 0
+max_t 3
+
+max_r 2
+
+off_axis_flag 0
+ 
+no_smear_level 2
+smear_num[0] 0
+smear_num[1] 1
+smear_num[2] 0
+smear_num[3] 0
+smear_num[4] 0
+
+smear_fac 2.5
+stap_dir y

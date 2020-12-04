@@ -1,0 +1,206 @@
+CHECK PLAQ: 4e-05 4e-05
+CHECK NERSC LINKTR: 2e-05 CKSUM: ba83dea8
+Reunitarized for double precision. Max deviation 2e-05 changed to 2e-05
+Time to check unitarity = XXX
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+GBALL_OP1_0 0 0 2e-05 2e-05
+HYP SMEARING COMPLETED
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+GBALL_OP1_1 0 0 2e-05 2e-05
+new_hybrid_loop1 with 1 times smeared links
+WILS_LOOP1_1   1  0  0   1     2e-05 
+WILS_LOOP1_1   2  0  0   1     2e-05 
+WILS_LOOP1_1   3  0  0   1     2e-05 
+WILS_LOOP1_1   0  1  0   1     2e-05 
+WILS_LOOP1_1   0  2  0   1     2e-05 
+WILS_LOOP1_1   0  3  0   1     2e-05 
+WILS_LOOP1_1   0  0  1   1     2e-05 
+WILS_LOOP1_1   0  0  2   1     2e-05 
+WILS_LOOP1_1   0  0  3   1     2e-05 
+WILS_LOOP1_1   1  0  0   2     2e-05 
+WILS_LOOP1_1   2  0  0   2     2e-05 
+WILS_LOOP1_1   3  0  0   2     2e-05 
+WILS_LOOP1_1   0  1  0   2     2e-05 
+WILS_LOOP1_1   0  2  0   2     2e-05 
+WILS_LOOP1_1   0  3  0   2     2e-05 
+WILS_LOOP1_1   0  0  1   2     2e-05 
+WILS_LOOP1_1   0  0  2   2     2e-05 
+WILS_LOOP1_1   0  0  3   2     2e-05 
+WILS_LOOP1_1   1  0  0   3     2e-05 
+WILS_LOOP1_1   2  0  0   3     2e-05 
+WILS_LOOP1_1   3  0  0   3     2e-05 
+WILS_LOOP1_1   0  1  0   3     2e-05 
+WILS_LOOP1_1   0  2  0   3     2e-05 
+WILS_LOOP1_1   0  3  0   3     2e-05 
+WILS_LOOP1_1   0  0  1   3     2e-05 
+WILS_LOOP1_1   0  0  2   3     2e-05 
+WILS_LOOP1_1   0  0  3   3     2e-05 
+WILS_LOOP1_1   1  0  0   4     2e-05 
+WILS_LOOP1_1   2  0  0   4     2e-05 
+WILS_LOOP1_1   3  0  0   4     2e-05 
+WILS_LOOP1_1   0  1  0   4     2e-05 
+WILS_LOOP1_1   0  2  0   4     2e-05 
+WILS_LOOP1_1   0  3  0   4     2e-05 
+WILS_LOOP1_1   0  0  1   4     2e-05 
+WILS_LOOP1_1   0  0  2   4     2e-05 
+WILS_LOOP1_1   0  0  3   4     2e-05 
+WILS_LOOP1_1   1  0  0   5     2e-05 
+WILS_LOOP1_1   2  0  0   5     2e-05 
+WILS_LOOP1_1   3  0  0   5     2e-05 
+WILS_LOOP1_1   0  1  0   5     2e-05 
+WILS_LOOP1_1   0  2  0   5     2e-05 
+WILS_LOOP1_1   0  3  0   5     2e-05 
+WILS_LOOP1_1   0  0  1   5     2e-05 
+WILS_LOOP1_1   0  0  2   5     2e-05 
+WILS_LOOP1_1   0  0  3   5     2e-05 
+WILS_LOOP1_1   1  0  0   6     2e-05 
+WILS_LOOP1_1   2  0  0   6     2e-05 
+WILS_LOOP1_1   3  0  0   6     2e-05 
+WILS_LOOP1_1   0  1  0   6     2e-05 
+WILS_LOOP1_1   0  2  0   6     2e-05 
+WILS_LOOP1_1   0  3  0   6     2e-05 
+WILS_LOOP1_1   0  0  1   6     2e-05 
+WILS_LOOP1_1   0  0  2   6     2e-05 
+WILS_LOOP1_1   0  0  3   6     2e-05 
+new_w_loop2 with 1 times smeared links
+WILS_LOOP2_1   1  1  0   1      2e-05
+WILS_LOOP2_1   2  2  0   1      2e-05
+WILS_LOOP2_1   3  3  0   1      2e-05
+WILS_LOOP2_1   1  0  1   1      2e-05
+WILS_LOOP2_1   2  0  2   1      2e-05
+WILS_LOOP2_1   3  0  3   1      2e-05
+WILS_LOOP2_1   0  1  1   1      2e-05
+WILS_LOOP2_1   0  2  2   1      2e-05
+WILS_LOOP2_1   0  3  3   1      2e-05
+WILS_LOOP2_1   1  2  0   1      2e-05
+WILS_LOOP2_1   1  0  2   1      2e-05
+WILS_LOOP2_1   0  1  2   1      2e-05
+WILS_LOOP2_1   2  1  0   1      2e-05
+WILS_LOOP2_1   2  0  1   1      2e-05
+WILS_LOOP2_1   0  2  1   1      2e-05
+WILS_LOOP2_1   1  1  1   1      2e-05
+WILS_LOOP2_1   2  2  2   1      2e-05
+WILS_LOOP2_1   3  3  3   1      2e-05
+WILS_LOOP2_1   1  1  0   2      2e-05
+WILS_LOOP2_1   2  2  0   2      2e-05
+WILS_LOOP2_1   3  3  0   2      2e-05
+WILS_LOOP2_1   1  0  1   2      2e-05
+WILS_LOOP2_1   2  0  2   2      2e-05
+WILS_LOOP2_1   3  0  3   2      2e-05
+WILS_LOOP2_1   0  1  1   2      2e-05
+WILS_LOOP2_1   0  2  2   2      2e-05
+WILS_LOOP2_1   0  3  3   2      2e-05
+WILS_LOOP2_1   1  2  0   2      2e-05
+WILS_LOOP2_1   1  0  2   2      2e-05
+WILS_LOOP2_1   0  1  2   2      2e-05
+WILS_LOOP2_1   2  1  0   2      2e-05
+WILS_LOOP2_1   2  0  1   2      2e-05
+WILS_LOOP2_1   0  2  1   2      2e-05
+WILS_LOOP2_1   1  1  1   2      2e-05
+WILS_LOOP2_1   2  2  2   2      2e-05
+WILS_LOOP2_1   3  3  3   2      2e-05
+WILS_LOOP2_1   1  1  0   3      2e-05
+WILS_LOOP2_1   2  2  0   3      2e-05
+WILS_LOOP2_1   3  3  0   3      2e-05
+WILS_LOOP2_1   1  0  1   3      2e-05
+WILS_LOOP2_1   2  0  2   3      2e-05
+WILS_LOOP2_1   3  0  3   3      2e-05
+WILS_LOOP2_1   0  1  1   3      2e-05
+WILS_LOOP2_1   0  2  2   3      2e-05
+WILS_LOOP2_1   0  3  3   3      2e-05
+WILS_LOOP2_1   1  2  0   3      2e-05
+WILS_LOOP2_1   1  0  2   3      2e-05
+WILS_LOOP2_1   0  1  2   3      2e-05
+WILS_LOOP2_1   2  1  0   3      2e-05
+WILS_LOOP2_1   2  0  1   3      2e-05
+WILS_LOOP2_1   0  2  1   3      2e-05
+WILS_LOOP2_1   1  1  1   3      2e-05
+WILS_LOOP2_1   2  2  2   3      2e-05
+WILS_LOOP2_1   3  3  3   3      2e-05
+WILS_LOOP2_1   1  1  0   4      2e-05
+WILS_LOOP2_1   2  2  0   4      2e-05
+WILS_LOOP2_1   3  3  0   4      2e-05
+WILS_LOOP2_1   1  0  1   4      2e-05
+WILS_LOOP2_1   2  0  2   4      2e-05
+WILS_LOOP2_1   3  0  3   4      2e-05
+WILS_LOOP2_1   0  1  1   4      2e-05
+WILS_LOOP2_1   0  2  2   4      2e-05
+WILS_LOOP2_1   0  3  3   4      2e-05
+WILS_LOOP2_1   1  2  0   4      2e-05
+WILS_LOOP2_1   1  0  2   4      2e-05
+WILS_LOOP2_1   0  1  2   4      2e-05
+WILS_LOOP2_1   2  1  0   4      2e-05
+WILS_LOOP2_1   2  0  1   4      2e-05
+WILS_LOOP2_1   0  2  1   4      2e-05
+WILS_LOOP2_1   1  1  1   4      2e-05
+WILS_LOOP2_1   2  2  2   4      2e-05
+WILS_LOOP2_1   3  3  3   4      2e-05
+WILS_LOOP2_1   1  1  0   5      2e-05
+WILS_LOOP2_1   2  2  0   5      2e-05
+WILS_LOOP2_1   3  3  0   5      2e-05
+WILS_LOOP2_1   1  0  1   5      2e-05
+WILS_LOOP2_1   2  0  2   5      2e-05
+WILS_LOOP2_1   3  0  3   5      2e-05
+WILS_LOOP2_1   0  1  1   5      2e-05
+WILS_LOOP2_1   0  2  2   5      2e-05
+WILS_LOOP2_1   0  3  3   5      2e-05
+WILS_LOOP2_1   1  2  0   5      2e-05
+WILS_LOOP2_1   1  0  2   5      2e-05
+WILS_LOOP2_1   0  1  2   5      2e-05
+WILS_LOOP2_1   2  1  0   5      2e-05
+WILS_LOOP2_1   2  0  1   5      2e-05
+WILS_LOOP2_1   0  2  1   5      2e-05
+WILS_LOOP2_1   1  1  1   5      2e-05
+WILS_LOOP2_1   2  2  2   5      2e-05
+WILS_LOOP2_1   3  3  3   5      2e-05
+WILS_LOOP2_1   1  1  0   6      2e-05
+WILS_LOOP2_1   2  2  0   6      2e-05
+WILS_LOOP2_1   3  3  0   6      2e-05
+WILS_LOOP2_1   1  0  1   6      2e-05
+WILS_LOOP2_1   2  0  2   6      2e-05
+WILS_LOOP2_1   3  0  3   6      2e-05
+WILS_LOOP2_1   0  1  1   6      2e-05
+WILS_LOOP2_1   0  2  2   6      2e-05
+WILS_LOOP2_1   0  3  3   6      2e-05
+WILS_LOOP2_1   1  2  0   6      2e-05
+WILS_LOOP2_1   1  0  2   6      2e-05
+WILS_LOOP2_1   0  1  2   6      2e-05
+WILS_LOOP2_1   2  1  0   6      2e-05
+WILS_LOOP2_1   2  0  1   6      2e-05
+WILS_LOOP2_1   0  2  1   6      2e-05
+WILS_LOOP2_1   1  1  1   6      2e-05
+WILS_LOOP2_1   2  2  2   6      2e-05
+WILS_LOOP2_1   3  3  3   6      2e-05
+RUNNING COMPLETED

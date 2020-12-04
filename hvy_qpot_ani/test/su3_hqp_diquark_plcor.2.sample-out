@@ -1,0 +1,319 @@
+com_qmp: set thread-safety level to 0
+Pure gauge SU3 Wilson loops
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
+start: Tue Dec  1 11:22:24 2020
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 6
+ny 6
+nz 6
+nt 6
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE (RANK) 6 x 6 x 6 x 6
+Mallocing 0.9 MBytes per node for lattice
+
+
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 1
+coulomb_gauge_fix
+forget 
+cor_dir t
+min_ct 1
+max_x 2
+max_y 2
+max_z 2
+max_t 1
+max_r 6
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666
+Time stamp Sat Aug 10 10:46:56 2002
+Checksums c1d08f5 68164bef OK
+Time to reload gauge configuration = 1.475096e-03
+CHECK PLAQ: 1.9827179876982384e+00 1.9811715330156234e+00
+CHECK NERSC LINKTR: 9.0159201231658637e-01 CKSUM: ba83dea8
+Reunitarized for double precision. Max deviation 2.72e-07 changed to 4.44e-16
+Time to check unitarity = 1.374960e-03
+Fixing to Coulomb gauge, 500 steps, 2.0e-06 tol
+GFIX: Ended at step 1. Av gf action 9.24589996e-01, delta 1.102e-06
+Gauge fixing: 3.407001e-03 seconds
+new_hvy_pot with 0 times smeared links                  
+HASH TABLE ASSEMBLED
+POT_LOOP:  0  0  0   1 	3.000000e+00
+DIQUARK:    0  0  0   1 	1.454909e+00
+POL_CORR:   0  0  0   1 	6.300709e+00
+POL_C_RE:   0  0  0   1 	6.298601e+00
+POL_C_IM:   0  0  0   1 	2.107637e-03
+POT_LOOP:  0  0  1   1 	2.261044e+00
+DIQUARK:    0  0  1   1 	1.939163e+00
+POL_CORR:   0  0  1   1 	6.242917e+00
+POL_C_RE:   0  0  1   1 	6.242856e+00
+POL_C_IM:   0  0  1   1 	6.144511e-05
+POT_LOOP:  0  0  2   1 	2.114710e+00
+DIQUARK:    0  0  2   1 	2.041370e+00
+POL_CORR:   0  0  2   1 	6.238372e+00
+POL_C_RE:   0  0  2   1 	6.238368e+00
+POL_C_IM:   0  0  2   1 	4.090729e-06
+POT_LOOP:  0  1  0   1 	2.240758e+00
+DIQUARK:    0  1  0   1 	1.923989e+00
+POL_CORR:   0  1  0   1 	6.239081e+00
+POL_C_RE:   0  1  0   1 	6.239062e+00
+POL_C_IM:   0  1  0   1 	1.831756e-05
+POT_LOOP:  0  1  1   1 	2.154609e+00
+DIQUARK:    0  1  1   1 	1.992540e+00
+POL_CORR:   0  1  1   1 	6.238331e+00
+POL_C_RE:   0  1  1   1 	6.238353e+00
+POL_C_IM:   0  1  1   1 	-2.202614e-05
+POT_LOOP:  0  1  2   1 	2.115247e+00
+DIQUARK:    0  1  2   1 	2.039446e+00
+POL_CORR:   0  1  2   1 	6.235030e+00
+POL_C_RE:   0  1  2   1 	6.235104e+00
+POL_C_IM:   0  1  2   1 	-7.397996e-05
+POT_LOOP:  0  2  0   1 	2.121194e+00
+DIQUARK:    0  2  0   1 	2.030724e+00
+POL_CORR:   0  2  0   1 	6.241642e+00
+POL_C_RE:   0  2  0   1 	6.241581e+00
+POL_C_IM:   0  2  0   1 	6.084501e-05
+POT_LOOP:  0  2  1   1 	2.109547e+00
+DIQUARK:    0  2  1   1 	2.038401e+00
+POL_CORR:   0  2  1   1 	6.240975e+00
+POL_C_RE:   0  2  1   1 	6.241015e+00
+POL_C_IM:   0  2  1   1 	-4.037977e-05
+POT_LOOP:  0  2  2   1 	2.085520e+00
+DIQUARK:    0  2  2   1 	2.069032e+00
+POL_CORR:   0  2  2   1 	6.238211e+00
+POL_C_RE:   0  2  2   1 	6.238119e+00
+POL_C_IM:   0  2  2   1 	9.194048e-05
+POT_LOOP:  1  0  0   1 	2.242611e+00
+DIQUARK:    1  0  0   1 	1.940644e+00
+POL_CORR:   1  0  0   1 	6.242295e+00
+POL_C_RE:   1  0  0   1 	6.242235e+00
+POL_C_IM:   1  0  0   1 	5.981848e-05
+POT_LOOP:  1  0  1   1 	2.137839e+00
+DIQUARK:    1  0  1   1 	2.023116e+00
+POL_CORR:   1  0  1   1 	6.240117e+00
+POL_C_RE:   1  0  1   1 	6.240188e+00
+POL_C_IM:   1  0  1   1 	-7.081084e-05
+POT_LOOP:  1  0  2   1 	2.091730e+00
+DIQUARK:    1  0  2   1 	2.059431e+00
+POL_CORR:   1  0  2   1 	6.237407e+00
+POL_C_RE:   1  0  2   1 	6.237429e+00
+POL_C_IM:   1  0  2   1 	-2.188572e-05
+POT_LOOP:  1  1  0   1 	2.140714e+00
+DIQUARK:    1  1  0   1 	2.024732e+00
+POL_CORR:   1  1  0   1 	6.237008e+00
+POL_C_RE:   1  1  0   1 	6.236961e+00
+POL_C_IM:   1  1  0   1 	4.762098e-05
+POT_LOOP:  1  1  1   1 	2.110473e+00
+DIQUARK:    1  1  1   1 	2.036545e+00
+POL_CORR:   1  1  1   1 	6.238752e+00
+POL_C_RE:   1  1  1   1 	6.238816e+00
+POL_C_IM:   1  1  1   1 	-6.390421e-05
+POT_LOOP:  1  1  2   1 	2.093863e+00
+DIQUARK:    1  1  2   1 	2.055892e+00
+POL_CORR:   1  1  2   1 	6.237399e+00
+POL_C_RE:   1  1  2   1 	6.237425e+00
+POL_C_IM:   1  1  2   1 	-2.590024e-05
+POT_LOOP:  1  2  0   1 	2.104817e+00
+DIQUARK:    1  2  0   1 	2.042940e+00
+POL_CORR:   1  2  0   1 	6.238518e+00
+POL_C_RE:   1  2  0   1 	6.238446e+00
+POL_C_IM:   1  2  0   1 	7.224659e-05
+POT_LOOP:  1  2  1   1 	2.095541e+00
+DIQUARK:    1  2  1   1 	2.058953e+00
+POL_CORR:   1  2  1   1 	6.237731e+00
+POL_C_RE:   1  2  1   1 	6.237823e+00
+POL_C_IM:   1  2  1   1 	-9.196428e-05
+POT_LOOP:  1  2  2   1 	2.080122e+00
+DIQUARK:    1  2  2   1 	2.070090e+00
+POL_CORR:   1  2  2   1 	6.235976e+00
+POL_C_RE:   1  2  2   1 	6.236099e+00
+POL_C_IM:   1  2  2   1 	-1.225478e-04
+POT_LOOP:  2  0  0   1 	2.119041e+00
+DIQUARK:    2  0  0   1 	2.037966e+00
+POL_CORR:   2  0  0   1 	6.238126e+00
+POL_C_RE:   2  0  0   1 	6.238186e+00
+POL_C_IM:   2  0  0   1 	-5.948108e-05
+POT_LOOP:  2  0  1   1 	2.110941e+00
+DIQUARK:    2  0  1   1 	2.049910e+00
+POL_CORR:   2  0  1   1 	6.237189e+00
+POL_C_RE:   2  0  1   1 	6.237178e+00
+POL_C_IM:   2  0  1   1 	1.118604e-05
+POT_LOOP:  2  0  2   1 	2.099318e+00
+DIQUARK:    2  0  2   1 	2.046335e+00
+POL_CORR:   2  0  2   1 	6.237552e+00
+POL_C_RE:   2  0  2   1 	6.237559e+00
+POL_C_IM:   2  0  2   1 	-6.156583e-06
+POT_LOOP:  2  1  0   1 	2.095338e+00
+DIQUARK:    2  1  0   1 	2.055084e+00
+POL_CORR:   2  1  0   1 	6.236439e+00
+POL_C_RE:   2  1  0   1 	6.236416e+00
+POL_C_IM:   2  1  0   1 	2.270439e-05
+POT_LOOP:  2  1  1   1 	2.085832e+00
+DIQUARK:    2  1  1   1 	2.066223e+00
+POL_CORR:   2  1  1   1 	6.239576e+00
+POL_C_RE:   2  1  1   1 	6.239583e+00
+POL_C_IM:   2  1  1   1 	-7.008814e-06
+POT_LOOP:  2  1  2   1 	2.072289e+00
+DIQUARK:    2  1  2   1 	2.068528e+00
+POL_CORR:   2  1  2   1 	6.236665e+00
+POL_C_RE:   2  1  2   1 	6.236715e+00
+POL_C_IM:   2  1  2   1 	-5.000472e-05
+POT_LOOP:  2  2  0   1 	2.090201e+00
+DIQUARK:    2  2  0   1 	2.053178e+00
+POL_CORR:   2  2  0   1 	6.239394e+00
+POL_C_RE:   2  2  0   1 	6.239345e+00
+POL_C_IM:   2  2  0   1 	4.945564e-05
+POT_LOOP:  2  2  1   1 	2.094174e+00
+DIQUARK:    2  2  1   1 	2.064968e+00
+POL_CORR:   2  2  1   1 	6.235890e+00
+POL_C_RE:   2  2  1   1 	6.235885e+00
+POL_C_IM:   2  2  1   1 	5.101201e-06
+POT_LOOP:  2  2  2   1 	2.086965e+00
+DIQUARK:    2  2  2   1 	2.060719e+00
+POL_CORR:   2  2  2   1 	6.235445e+00
+POL_C_RE:   2  2  2   1 	6.235413e+00
+POL_C_IM:   2  2  2   1 	3.152569e-05
+P_LOOP:	1.218071e+00	-1.073147e-02
+POT_LOOP:  0  0  0   6 	3.000000e+00
+DIQUARK:    0  0  0   6 	-3.593021e-01
+POL_CORR:   0  0  0   6 	2.034756e+00
+POL_C_RE:   0  0  0   6 	1.936163e+00
+POL_C_IM:   0  0  0   6 	9.859310e-02
+POT_LOOP:  0  0  1   6 	5.669559e-01
+DIQUARK:    0  0  1   6 	4.530899e-01
+POL_CORR:   0  0  1   6 	1.493956e+00
+POL_C_RE:   0  0  1   6 	1.494388e+00
+POL_C_IM:   0  0  1   6 	-4.319669e-04
+POT_LOOP:  0  0  2   6 	4.647360e-01
+DIQUARK:    0  0  2   6 	5.196068e-01
+POL_CORR:   0  0  2   6 	1.474573e+00
+POL_C_RE:   0  0  2   6 	1.469575e+00
+POL_C_IM:   0  0  2   6 	4.997965e-03
+POT_LOOP:  0  1  0   6 	4.902974e-01
+DIQUARK:    0  1  0   6 	4.865693e-01
+POL_CORR:   0  1  0   6 	1.478858e+00
+POL_C_RE:   0  1  0   6 	1.487543e+00
+POL_C_IM:   0  1  0   6 	-8.685189e-03
+POT_LOOP:  0  1  1   6 	4.858114e-01
+DIQUARK:    0  1  1   6 	4.383650e-01
+POL_CORR:   0  1  1   6 	1.455485e+00
+POL_C_RE:   0  1  1   6 	1.457657e+00
+POL_C_IM:   0  1  1   6 	-2.171656e-03
+POT_LOOP:  0  1  2   6 	4.904863e-01
+DIQUARK:    0  1  2   6 	4.741990e-01
+POL_CORR:   0  1  2   6 	1.466449e+00
+POL_C_RE:   0  1  2   6 	1.465743e+00
+POL_C_IM:   0  1  2   6 	7.057776e-04
+POT_LOOP:  0  2  0   6 	5.080294e-01
+DIQUARK:    0  2  0   6 	4.567577e-01
+POL_CORR:   0  2  0   6 	1.423735e+00
+POL_C_RE:   0  2  0   6 	1.429569e+00
+POL_C_IM:   0  2  0   6 	-5.834684e-03
+POT_LOOP:  0  2  1   6 	5.195439e-01
+DIQUARK:    0  2  1   6 	4.503079e-01
+POL_CORR:   0  2  1   6 	1.514997e+00
+POL_C_RE:   0  2  1   6 	1.505303e+00
+POL_C_IM:   0  2  1   6 	9.693688e-03
+POT_LOOP:  0  2  2   6 	5.122864e-01
+DIQUARK:    0  2  2   6 	4.962752e-01
+POL_CORR:   0  2  2   6 	1.521486e+00
+POL_C_RE:   0  2  2   6 	1.519860e+00
+POL_C_IM:   0  2  2   6 	1.626451e-03
+POT_LOOP:  1  0  0   6 	5.456602e-01
+DIQUARK:    1  0  0   6 	4.329655e-01
+POL_CORR:   1  0  0   6 	1.478925e+00
+POL_C_RE:   1  0  0   6 	1.474566e+00
+POL_C_IM:   1  0  0   6 	4.359039e-03
+POT_LOOP:  1  0  1   6 	4.158999e-01
+DIQUARK:    1  0  1   6 	5.248135e-01
+POL_CORR:   1  0  1   6 	1.415227e+00
+POL_C_RE:   1  0  1   6 	1.414205e+00
+POL_C_IM:   1  0  1   6 	1.022428e-03
+POT_LOOP:  1  0  2   6 	4.584634e-01
+DIQUARK:    1  0  2   6 	5.594083e-01
+POL_CORR:   1  0  2   6 	1.492549e+00
+POL_C_RE:   1  0  2   6 	1.501897e+00
+POL_C_IM:   1  0  2   6 	-9.348267e-03
+POT_LOOP:  1  1  0   6 	4.986012e-01
+DIQUARK:    1  1  0   6 	5.224068e-01
+POL_CORR:   1  1  0   6 	1.501393e+00
+POL_C_RE:   1  1  0   6 	1.498864e+00
+POL_C_IM:   1  1  0   6 	2.528866e-03
+POT_LOOP:  1  1  1   6 	4.827966e-01
+DIQUARK:    1  1  1   6 	4.727548e-01
+POL_CORR:   1  1  1   6 	1.453939e+00
+POL_C_RE:   1  1  1   6 	1.461166e+00
+POL_C_IM:   1  1  1   6 	-7.227183e-03
+POT_LOOP:  1  1  2   6 	5.512312e-01
+DIQUARK:    1  1  2   6 	4.856352e-01
+POL_CORR:   1  1  2   6 	1.546004e+00
+POL_C_RE:   1  1  2   6 	1.539683e+00
+POL_C_IM:   1  1  2   6 	6.321085e-03
+POT_LOOP:  1  2  0   6 	4.868425e-01
+DIQUARK:    1  2  0   6 	5.128806e-01
+POL_CORR:   1  2  0   6 	1.479080e+00
+POL_C_RE:   1  2  0   6 	1.478107e+00
+POL_C_IM:   1  2  0   6 	9.732451e-04
+POT_LOOP:  1  2  1   6 	5.278237e-01
+DIQUARK:    1  2  1   6 	4.848513e-01
+POL_CORR:   1  2  1   6 	1.516467e+00
+POL_C_RE:   1  2  1   6 	1.509920e+00
+POL_C_IM:   1  2  1   6 	6.547403e-03
+POT_LOOP:  1  2  2   6 	5.037417e-01
+DIQUARK:    1  2  2   6 	5.077247e-01
+POL_CORR:   1  2  2   6 	1.460178e+00
+POL_C_RE:   1  2  2   6 	1.461292e+00
+POL_C_IM:   1  2  2   6 	-1.113720e-03
+POT_LOOP:  2  0  0   6 	5.160284e-01
+DIQUARK:    2  0  0   6 	4.526029e-01
+POL_CORR:   2  0  0   6 	1.483477e+00
+POL_C_RE:   2  0  0   6 	1.482867e+00
+POL_C_IM:   2  0  0   6 	6.090889e-04
+POT_LOOP:  2  0  1   6 	5.110205e-01
+DIQUARK:    2  0  1   6 	4.836520e-01
+POL_CORR:   2  0  1   6 	1.498610e+00
+POL_C_RE:   2  0  1   6 	1.492012e+00
+POL_C_IM:   2  0  1   6 	6.597269e-03
+POT_LOOP:  2  0  2   6 	5.091913e-01
+DIQUARK:    2  0  2   6 	4.570187e-01
+POL_CORR:   2  0  2   6 	1.521620e+00
+POL_C_RE:   2  0  2   6 	1.520807e+00
+POL_C_IM:   2  0  2   6 	8.129908e-04
+POT_LOOP:  2  1  0   6 	4.699886e-01
+DIQUARK:    2  1  0   6 	4.971405e-01
+POL_CORR:   2  1  0   6 	1.475854e+00
+POL_C_RE:   2  1  0   6 	1.478257e+00
+POL_C_IM:   2  1  0   6 	-2.402949e-03
+POT_LOOP:  2  1  1   6 	4.827533e-01
+DIQUARK:    2  1  1   6 	4.906738e-01
+POL_CORR:   2  1  1   6 	1.462154e+00
+POL_C_RE:   2  1  1   6 	1.465989e+00
+POL_C_IM:   2  1  1   6 	-3.835024e-03
+POT_LOOP:  2  1  2   6 	5.089993e-01
+DIQUARK:    2  1  2   6 	4.807700e-01
+POL_CORR:   2  1  2   6 	1.486823e+00
+POL_C_RE:   2  1  2   6 	1.488692e+00
+POL_C_IM:   2  1  2   6 	-1.868792e-03
+POT_LOOP:  2  2  0   6 	5.442775e-01
+DIQUARK:    2  2  0   6 	4.345417e-01
+POL_CORR:   2  2  0   6 	1.483333e+00
+POL_C_RE:   2  2  0   6 	1.472011e+00
+POL_C_IM:   2  2  0   6 	1.132145e-02
+POT_LOOP:  2  2  1   6 	5.244896e-01
+DIQUARK:    2  2  1   6 	4.842886e-01
+POL_CORR:   2  2  1   6 	1.494120e+00
+POL_C_RE:   2  2  1   6 	1.491973e+00
+POL_C_IM:   2  2  1   6 	2.147374e-03
+POT_LOOP:  2  2  2   6 	4.820409e-01
+DIQUARK:    2  2  2   6 	4.822188e-01
+POL_CORR:   2  2  2   6 	1.479541e+00
+POL_C_RE:   2  2  2   6 	1.488441e+00
+POL_C_IM:   2  2  2   6 	-8.899293e-03
+RUNNING COMPLETED
+Time = 3.093410e-02 seconds
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Tue Dec  1 11:22:24 2020
+

@@ -1,0 +1,18 @@
+exec su3_gfix_coulomb              2      -         -        CHECK RUNNING
+
+exec su3_hqp_hyp                   2      -         level1   CHECK RUNNING
+exec su3_hqp_old_hyp               1      -         level2   CHECK RUNNING
+exec su3_hqp_ani_hyp               2      -         level2   CHECK RUNNING
+exec su3_hqp_string_ape1d          2      -         level2   CHECK RUNNING
+exec su3_hybrid_hqp_hyp            2      -         level1   CHECK RUNNING
+
+exec su3_hqp_coulomb               1      -         -        CHECK RUNNING
+exec su3_hqp_coulomb_old           1      -         -        CHECK RUNNING
+exec su3_hqp_coulomb_string        1      -         -        CHECK RUNNING
+exec su3_hqp_coulomb_plcor         2      -         -        CHECK RUNNING
+exec su3_hqp_diquark_plcor         2      -         -        CHECK RUNNING
+exec su3_hqp_coulomb_hyp           1      -         -        CHECK RUNNING
+exec su3_hqp_coulomb_string_ape1d2 1      -         -        CHECK RUNNING
+
+exec su3_plavg_plcor               2      -         -        CHECK RUNNING
+exec su3_plavg_plcor_hyp           2      -         -        CHECK RUNNING

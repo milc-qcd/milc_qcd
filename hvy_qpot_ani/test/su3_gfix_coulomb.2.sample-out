@@ -1,0 +1,47 @@
+com_qmp: set thread-safety level to 0
+Pure gauge SU3 Wilson loops
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
+start: Wed Dec  2 19:11:26 2020
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 6
+ny 6
+nz 6
+nt 6
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE (RANK) 6 x 6 x 6 x 6
+Mallocing 0.9 MBytes per node for lattice
+
+
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 1
+coulomb_gauge_fix
+save_serial ../../binary_samples/lat.dump.l6666
+cor_dir t
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666
+Time stamp Sat Aug 10 10:46:56 2002
+Checksums c1d08f5 68164bef OK
+Time to reload gauge configuration = 1.214027e-03
+CHECK PLAQ: 1.9827179876982384e+00 1.9811715330156239e+00
+CHECK NERSC LINKTR: 9.0159201231658637e-01 CKSUM: ba83dea8
+Reunitarized for double precision. Max deviation 2.72e-07 changed to 4.44e-16
+Time to check unitarity = 9.040833e-04
+Fixing to Coulomb gauge, 500 steps, 2.0e-06 tol
+GFIX: Ended at step 1. Av gf action 9.24589996e-01, delta 1.102e-06
+Gauge fixing: 1.055956e-03 seconds
+RUNNING COMPLETED
+Time = 1.452208e-03 seconds
+Saved gauge configuration serially to binary file ../../binary_samples/lat.dump.l6666
+Time stamp Wed Dec  2 19:11:26 2020
+Checksums 9eab3192 c282a3ea
+Wrote info file ../../binary_samples/lat.dump.l6666.info
+Time to save = 5.203962e-03
+CHECK PLAQ: 1.9827179198385783e+00 1.9811714694569365e+00
+CHECK NERSC LINKTR: 9.0157590728627346e-01 CKSUM: 3a1a2768
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Wed Dec  2 19:11:26 2020
+

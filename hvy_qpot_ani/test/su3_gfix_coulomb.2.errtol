@@ -1,0 +1,8 @@
+CHECK PLAQ: 4e-05 4e-05
+CHECK NERSC LINKTR: 2e-05 CKSUM: ba83dea8
+Reunitarized for double precision. Max deviation 2e-05 changed to 2e-05
+Time to check unitarity = XXX
+Fixing to Coulomb gauge, 10 steps, 2e-05 tol 
+GFIX: Ended at step 2e-05 Av gf action 2e-05 delta 2e-05
+Gauge fixing: 1 seconds 
+RUNNING COMPLETED

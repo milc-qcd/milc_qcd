@@ -1,0 +1,33 @@
+# Makefile for testing code by comparing test output with sample output
+# For hvy_qpot
+
+#------------------------------------------------------------
+# Examples for vanilla tests:
+
+#    make -f Make_test "ARCH=vanilla" test
+# or, for a specific project or projects
+#    make -f Make_test "ARCH=vanilla" "PROJS=su3_rmd" test
+
+# For tests on the SP, do the same, but use "ARCH=sp_mpi" with
+# the appropriate MP_PROCS environment variable set.
+
+# For tests on other platforms, first edit the file ../Make_test_template
+# to select the appropriate LAUNCH and ARCH.  Then run
+# commands as above, but without the command line "ARCH=..." definition.
+
+# Results are in the files out.test.diff.* 
+#------------------------------------------------------------
+
+# For comparing test output with sample output
+
+PROJS = su3_hqp
+PRECLIST = 1
+
+PATTERNS = CHECK RUNNING
+TOL = 1e-5
+
+include ../Make_test_template
+
+check: test
+
+clean: test_clean
