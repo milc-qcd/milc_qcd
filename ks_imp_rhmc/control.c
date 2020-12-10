@@ -11,6 +11,7 @@
 
 #ifdef HAVE_QUDA
 #include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
 #endif
 
 #ifdef HAVE_QPHIX

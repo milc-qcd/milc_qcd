@@ -1001,7 +1001,7 @@ static void w_parallel(gauge_file *gf)
     short x,y,z,t;
     fsu3_matrix link[4];
   } msg;
-  int isite,ksite,site_block;
+  size_t isite,ksite,site_block;
   size_t rcv_coords,rcv_rank,tmp_rank;
   int destnode,sendnode;
   char myname[] = "w_parallel";
@@ -1341,10 +1341,11 @@ static void r_parallel(gauge_file *gf)
   int buf_length,where_in_buf;
   gauge_check test_gc;
   u_int32type *val;
-  int rank29,rank31;
-  int destnode,sendnode,isite,ksite,site_block;
+  size_t rank29,rank31;
+  int destnode,sendnode;
+  size_t isite,ksite,site_block;
   int x,y,z,t;
-  int rcv_rank,rcv_coords;
+  size_t rcv_rank,rcv_coords;
   register int i,k;
 
   off_t offset ;            /* File stream pointer */
