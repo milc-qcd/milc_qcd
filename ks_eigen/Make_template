@@ -52,7 +52,13 @@ LAYOUT = layout_hyper_prime.o # Choices possible here
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} jacobi.o spin_taste_ops.o gammas.o
 
-ADD_OBJECTS += eigen_stuff_ARPACK.o eigen_stuff_PRIMME.o eigen_stuff_Ritz.o 
+ADD_OBJECTS += eigen_stuff_ARPACK.o eigen_stuff_PRIMME.o eigen_stuff_Ritz.o
+#hc
+ADD_OBJECTS += eigen_stuff_Grid.o
+ifeq ($(strip ${HAVE_GRID}),true)
+	ADD_OBJECTS += gridStaggEigen.o
+endif
+
 ADD_OBJECTS += eigen_stuff_helpers.o io_helpers_ks_eigen.o io_ks_eigen.o io_scidac_ks_eigen.o
 
 # Always use PRIMME if it is provided
@@ -61,6 +67,9 @@ ifeq ($(strip ${HAVEPRIMME}),true)
 # Always use ARPACK if it is provided
 else ifeq ($(strip ${HAVEARPACK}),true)
   ADDDEFINES += -DARPACK
+#hc
+else ifeq ($(strip ${HAVE_GRID}),true)
+  ADDDEFINES += -DGrid_EIG
 else
   ADDDEFINES += -DKalkreuter_Ritz
 endif
@@ -130,6 +139,13 @@ su3_eigen_hisq::
 	"DEFINES = -DFN -DEIGEN_QIO" \
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS = ${HISQ_OBJECTS}"
+
+#hc
+# su3_eigen_hisq::
+# 	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \
+# 	"DEFINES = -DFN -DEIGEN_QIO -DEIGTIME -DPRIMME_PRINTLEVEL=3" \
+# 	"QUARK = hisq/hisq_u3_action.h" \
+# 	"EXTRA_OBJECTS = ${HISQ_OBJECTS}"
 
 su3_eigen_hisq_pack::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \

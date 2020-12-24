@@ -18,5 +18,7 @@
 #define GRID_ColorVector                GRID_F3_ColorVector
 #define GRID_ColorVectorBlock           GRID_F3_ColorVectorBlock
 #define GRID_FermionLinksAsqtad         GRID_F3_FermionLinksAsqtad
+//hc
+#define GRID_implicitly_restarted_lanczos GRID_F3_implicitly_restarted_lanczos
 
 #endif /* _MGRID_F3_GENERIC_H */

@@ -14,7 +14,7 @@ MAKEFILE = Makefile
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH ?= # skx knl knc hsw pow8 pow9
+ARCH ?= hsw # skx knl knc hsw pow8 pow9
 
 #----------------------------------------------------------------------
 # 2. Compiler family
@@ -25,13 +25,13 @@ COMPILER ?= gnu # intel, ibm, portland, cray-intel
 # 3. MPP vs Scalar
 
 # Compiling for a parallel machine?  blank for a scalar machine
-MPP ?= false
+MPP ?= true
 
 #----------------------------------------------------------------------
 # 4. Precision 
 
 # 1 = single precision; 2 = double
-PRECISION ?= 1
+PRECISION ?= 2
 
 #----------------------------------------------------------------------
 # 5. Compiler
@@ -104,7 +104,7 @@ OPT              ?= -O3
 
 # OpenMP?
 
-OMP ?= #true
+OMP ?= true
 
 #----------------------------------------------------------------------
 # 7. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -129,6 +129,15 @@ ifeq ($(strip ${COMPILER}),gnu)
     OCXXFLAGS += -fopenmp
     LDFLAGS += -fopenmp
   endif
+
+#hc -----------------------------
+	ifeq ($(strip ${ARCH}),hsw)
+		ARCH_FLAG = -mavx
+	endif
+
+	OCFLAGS += $(ARCH_FLAG)
+	OCXXFLAGS += $(ARCH_FLAG)
+#--------------------------------
 
 # Other Gnu options
 #OCFLAGS += -mavx # depends on architecture
@@ -288,9 +297,9 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 
 WANTQOP ?= # true # or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
 
-WANTQIO ?= # true # or blank.  Implies HAVEQMP.
+WANTQIO ?= true # true or blank.  Implies HAVEQMP.
 
-WANTQMP ?= # true or blank.
+WANTQMP ?= true # true or blank.
 
 # QMP_MPI or QMP_SPI
 QMP_BACKEND = QMP_MPI
@@ -298,18 +307,18 @@ QMP_BACKEND = QMP_MPI
 # Edit these locations for the installed SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
-SCIDAC = ${HOME}/scidac/install
+SCIDAC = ${HOME}/install/scidac
 TAG=
 # Parallel versions
 QMPPAR ?= ${SCIDAC}/qmp${TAG}
 QIOPAR ?= $(SCIDAC)/qio${TAG}
 # Single processor versions
-QMPSNG ?= ${SCIDAC}/qmp-single${TAG}
-QIOSNG ?= $(SCIDAC)/qio-single${TAG}
-QLA ?= ${SCIDAC}/qla${TAG}
+QMPSNG ?= #${SCIDAC}/qmp-single${TAG}
+QIOSNG ?= #$(SCIDAC)/qio-single${TAG}
+QLA ?= #${SCIDAC}/qla${TAG}
 # Either version
-QDP ?= ${SCIDAC}/qdp${TAG}
-QOPQDP ?= ${SCIDAC}/qopqdp${TAG}
+QDP ?= #${SCIDAC}/qdp${TAG}
+QOPQDP ?= #${SCIDAC}/qopqdp${TAG}
 
 QOP = ${QOPQDP}
 
@@ -351,7 +360,8 @@ else
   LIBFFTW = -L${FFTW}/double-mvapich2/lib
   LIBFFTW += -lfftw3
 endif
-  PACKAGE_HEADERS += ${FFTW_HEADERS}
+
+	PACKAGE_HEADERS += ${FFTW_HEADERS}
 endif
 
 #----------------------------------------------------------------------
@@ -379,18 +389,23 @@ endif
 # NERSC Edison
 # LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/ivybridge/lib -lsci_intel
 
+#hc
+# cheoling4
+LIBLAPACK = -llapacke -llapack -lcblas -lblas -lgfortran
+
 #----------------------------------------------------------------------
 # 14. PRIMME Options (for arb_overlap and ks_eigen).  REQUIRES LAPACK AS WELL.
 
-WANTPRIMME = #true
+WANTPRIMME = #true 
 
 # PRIMME version 2.0
 
+PRIMME_DIR=${HOME}/play/primme.git
 ifeq ($(strip ${WANTPRIMME}),true)
-  PRIMME_HEADERS = ${HOME}/PRIMME/include
+  PRIMME_HEADERS = ${PRIMME_DIR}/include
   INCPRIMME = -I${PRIMME_HEADERS}
   PACKAGE_HEADERS += ${PRIMME_HEADERS}
-  LIBPRIMME = -L${HOME}/PRIMME/lib -lprimme
+  LIBPRIMME = -L${PRIMME_DIR}/lib -lprimme
 endif
 
 #----------------------------------------------------------------------
@@ -541,15 +556,16 @@ endif
 #----------------------------------------------------------------------
 # 16. Grid Options
 
-WANTGRID = #true
+WANTGRID = true
 
 ifeq ($(strip ${WANTGRID}), true)
 
   HAVE_GRID = true
   CPHI += -DHAVE_GRID
 
-  CPHI += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
-  CPHI += -DGRID_SHMEM_MAX=2048
+#hc
+  # CPHI += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
+  # CPHI += -DGRID_SHMEM_MAX=2048
 
   ifeq ($(strip ${MPP}),true)
     ifeq ($(strip ${ARCH}),knl)
@@ -568,7 +584,11 @@ ifeq ($(strip ${WANTGRID}), true)
 
   GRID_HOME = ../Grid/install-${GRID_ARCH}
   GRID_LIBRARIES = ${GRID_HOME}/lib
-  LIBGRID = -L${GRID_LIBRARIES} -lGrid
+	LIBGRID = -L${GRID_LIBRARIES} -lGrid
+#hc
+  LIBGRID += -L/home/cheoling/install/clime/lib -L/usr/lib/openmpi \
+						-llapacke -llapack -lcblas -lblas -lgfortran -lfftw3f -lfftw3 \
+						-lmpi_cxx -lmpi -llime -lz -lrt -lstdc++ -lm
   GRID_HEADERS = ${GRID_HOME}/include
   INCGRID = -I${GRID_HEADERS}
 
@@ -773,7 +793,7 @@ CCOMPAT += #-DOLD_STAGGERED2NAIVE
 #     and extra list of dimensions in the parameter input file.
 #     See e.g. ks_imp_rhmc.
 
-CGEOM ?=#-DFIX_NODE_GEOM
+CGEOM ?= #-DFIX_NODE_GEOM
 
 #------------------------------
 # I/O node grid layout
@@ -787,7 +807,7 @@ CGEOM ?=#-DFIX_NODE_GEOM
 #     by the macro FIX_IONODE_GEOM.  Then the parameter input file
 #     includes a list of dimensions.
 
-CGEOM +=# -DFIX_IONODE_GEOM
+CGEOM += # -DFIX_IONODE_GEOM
 
 #------------------------------
 # Improved staggered CG inverter and Dslash

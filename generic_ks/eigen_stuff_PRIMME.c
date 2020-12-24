@@ -247,7 +247,9 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   /* Optimized Parameter Setting */
   primme.correctionParams.robustShifts = 1; // led to faster convergence with 0 for tol=1e-8  
   primme.locking=1;
-#if 1 /* James Osborn's and Xiao-Yong Jin's optimal setting */
+//#if 1 /* James Osborn's and Xiao-Yong Jin's optimal setting */
+  /*hc*/
+#if 0 /* James Osborn's and Xiao-Yong Jin's optimal setting */
   primme.minRestartSize=120;  /* relevant if locking != 0 */
   primme.maxBasisSize=192;    /* relevant if locking != 0 */
   primme.maxBlockSize=8;
