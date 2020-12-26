@@ -5,7 +5,8 @@ PK_CC=$2
 PK_CXX=$3
 #GIT_REPO=https://github.com/paboyle/Grid
 GIT_REPO=https://github.com/milc-qcd/Grid
-GIT_BRANCH=feature/CGinfo
+#GIT_BRANCH=feature/CGinfo
+GIT_BRANCH=develop
 
 if [ -z ${PK_CXX} ]
 then
@@ -62,7 +63,7 @@ then
 	    --with-fftw=${HOME}/fftw/build-gcc \
             --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
             CXX="${PK_CXX}" \
-            CXXFLAGS="-std=c++14" \
+            CXXFLAGS="-std=gnu++14" \
 
 # 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
 
@@ -154,7 +155,7 @@ then
       echo "Quitting because of configure errors"
   else
     echo "Building in ${BUILDDIR}"
-    ${MAKE} -j4
+    ${MAKE}
 
     echo "Installing in ${INSTALLDIR}"
     ${MAKE} install
