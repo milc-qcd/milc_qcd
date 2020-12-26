@@ -26,6 +26,7 @@
 extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
+#include "../include/generic_u1.h"
 #endif
 
 //#ifdef HAVE_QOP

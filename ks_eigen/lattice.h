@@ -155,6 +155,7 @@ EXTERN  int this_node;		/* node number of this node */
 EXTERN double_prn node_prn ;
 
 EXTERN  gauge_file *savelat_p;
+EXTERN  gauge_file *start_u1lat_p;
 EXTERN  char utc_date_time[64];
 EXTERN  char hostname[128];
 
@@ -175,6 +176,9 @@ EXTERN fermion_links_t    *fn_links;
 
 EXTERN int n_naiks;	/* Only one (dummy) Naik correction (for HISQ) */
 EXTERN double eps_naik[1];	/* Naik correction */
+
+EXTERN Real *u1_A;
+EXTERN Real g_splaq,g_tplaq;	/* global U(1) plaquette measures */
 
 /* For eigenpair calculation */
 EXTERN int Nvecs_tot;

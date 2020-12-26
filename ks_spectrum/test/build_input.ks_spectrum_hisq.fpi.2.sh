@@ -8,7 +8,7 @@ then
     exit 1
 fi
 
-source $paramfile
+source ${paramfile}
 
 vol3=$[${nx}*${ny}*${nz}]
 
@@ -20,7 +20,7 @@ wwnorm=`echo $vol3 | awk '{print 4./(3*$1**3)}'`
 reload_gauge_cmd="reload_serial ${inlat}"
 
 for ((i=0; i<${fpi_nmasses}; i++)); do
-case $action in
+case ${action} in
 hisq)
   naik_cmd[$i]="naik_term_epsilon ${naik_term_epsilon[i]}"
 ;;
@@ -60,6 +60,11 @@ forget
 staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0
+time_bc antiperiodic
+
+# Eigenpairs
+
+max_number_of_eigenpairs 0
 
 # Chiral condensate and related measurements
 
@@ -72,6 +77,7 @@ number_of_base_sources 2
 # base source 0
 
 random_color_wall
+field_type KS
 subset full
 t0 ${t0}
 ncolor ${nrand_source}
@@ -82,6 +88,7 @@ forget_source
 # base source 1
 
 evenandodd_wall
+field_type KS
 subset full
 t0 ${t0}
 source_label q
@@ -104,11 +111,11 @@ number_of_sets 2
 
 # Parameters for set 0
 
+set_type multimass
 max_cg_iterations ${max_cg_iterations}
 max_cg_restarts 5
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision ${precision}
 
 source 0
@@ -140,11 +147,11 @@ cat  <<EOF
 
 # Parameters for set 1
 
+set_type multimass
 max_cg_iterations ${max_cg_iterations}
 max_cg_restarts 5
 check yes
 momentum_twist 0 0 0
-time_bc antiperiodic
 precision ${precision}
 
 source 1
