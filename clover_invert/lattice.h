@@ -56,7 +56,7 @@ typedef struct {
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 #ifdef FIX_NODE_GEOM
 EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
 			    hypercubes) for the compute nodes in each
