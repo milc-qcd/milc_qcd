@@ -124,14 +124,18 @@ typedef struct {
   Real Kappa;        /* hopping */
 } dirac_wilson_param;
 
+/* Size of a bookkeeping table holding unique charges */
+#define MAX_CHARGE 16
+
 /* Same for plain KS case */
 typedef struct {
   Real mass;
+  Real charge;
   Real offset;    /* For RHMC, the pole position */
   Real residue;   /* For RHMC, the pole residue */
   int naik_term_epsilon_index;
+  int charge_index;
   Real naik_term_epsilon;
-
 } ks_param;
 
 /* This is the IFLA case */
@@ -155,6 +159,18 @@ typedef struct {
 
 /* Structure defining quark inversion parameters for most inverters */
 
+enum inv_type {
+  MGTYPE,
+  CGTYPE
+};
+
+enum mg_rebuild_type {
+  FULLREBUILD,               /* do a full rebuild, expensive but best solve */
+  THINREBUILD,               /* do a thin rebuild, skips overhead of rebuild but
+                         leads to less effective preconditioner */
+  CGREBUILD                  /* override and perform CG instead */
+};
+
 typedef struct {
   int prec;           /* precision of the inversion 1 = single; 2 = double */
   int min;            /* minimum number of iterations (being phased out) */
@@ -175,6 +191,9 @@ typedef struct {
   int converged;      /* returned 0 if not converged; 1 if converged */
   int  final_iters;
   int  final_restart;
+  enum inv_type inv_type;  /* requested inverter type */
+  char mgparamfile[MAXFILENAME];        /* Name of file with the staggered multigrid parameters */
+  enum mg_rebuild_type mg_rebuild_type;    /* how to refresh MG solve if mass/gauge links change */
                       /* Add further parameters as needed...  */
 } quark_invert_control;
 

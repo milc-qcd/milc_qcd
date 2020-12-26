@@ -27,7 +27,11 @@
 #include "ks_measure_includes.h"
 #include <string.h>
 #ifdef HAVE_QUDA
+#include "../include/generic_quda.h"
 #include <quda_milc_interface.h>
+#endif
+#ifdef U1_FIELD
+#include "../include/io_u1lat.h"
 #endif
 
 extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
@@ -41,9 +45,8 @@ int main(int argc, char *argv[])
   double dtime;
 #endif
 
-  int Nvecs_curr;
+  int Nvecs_curr = 0;
   double *resid = NULL;
-  imp_ferm_links_t *fn;
   
   initialize_machine(&argc,&argv);
 
@@ -88,7 +91,8 @@ int main(int argc, char *argv[])
       STARTTIME;
       
       param.eigen_param.parity = EVEN;  /* EVEN is required */
-      fn = get_fm_links(fn_links)[0];
+      /* First set of fn links is always charge 0 and Naik epsilon 0 */
+      imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
 
       /* Move KS phases and apply time boundary condition, based on the
 	 coordinate origin and time_bc */
@@ -102,10 +106,9 @@ int main(int argc, char *argv[])
       Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
       
       /* compute eigenpairs if requested */
-      int total_R_iters;
       if(param.ks_eigen_startflag == FRESH){
-	total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param,
-				    param.ks_eigen_startflag == FRESH);
+	int total_R_iters;
+	total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
 	construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn);
 	node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
       }
@@ -158,32 +161,44 @@ int main(int argc, char *argv[])
 #endif
 
       int num_pbp_masses = param.num_pbp_masses[k];
+      Real masses[num_pbp_masses];
+      Real charges[num_pbp_masses];
+      imp_ferm_links_t *fn_mass[num_pbp_masses];
       int i0 = param.begin_pbp_masses[k];
-      
-      restore_fermion_links_from_site(fn_links, param.qic_pbp[i0].prec);
-      fn = get_fm_links(fn_links)[0];
-      
-      /* Move KS phases and apply time boundary condition, based on the
-	 coordinate origin and time_bc */
       Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
-      /* Set values in the structure fn */
-      set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
-      /* Apply the operation */
-      boundary_twist_fn(fn, ON);
+      
+      /* Make table of FN links and masses and set boundary phases if
+	 requested */
+      for(int j = 0; j < num_pbp_masses; j++){
+	int naik_index = param.ksp_pbp[i0+j].naik_term_epsilon_index;
+	int charge_index = param.ksp_pbp[i0+j].charge_index;
+	imp_ferm_links_t **fn_pt = get_fm_links(fn_links_charge[charge_index]);
+	fn_mass[j] = fn_pt[naik_index];
+	masses[j] = param.ksp_pbp[i0+j].mass;
+	charges[j] = param.ksp_pbp[i0+j].charge;
+
+	/* Move KS phases and apply time boundary condition, based on the
+	   coordinate origin and time_bc */
+	/* Set values in the structure fn */
+	set_boundary_twist_fn(fn_mass[j], bdry_phase, param.coord_origin);
+	/* Apply the operation if not already done */
+	if(twist_status(fn_mass[j]) == OFF)boundary_twist_fn(fn_mass[j], ON);
+      }
       
 #ifdef CURRENT_DISC
       if(param.truncate_diff[k])
 	f_meas_current_diff( num_pbp_masses, param.npbp_reps[k],
 			     param.thinning[k],
 			     &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
-			     &param.ksp_pbp[i0],
-			     fn_links, &param.pbp_filenames[i0] );
-	else
-	  f_meas_current( num_pbp_masses, param.npbp_reps[k],
-			  param.thinning[k],
-			  &param.qic_pbp[i0], &param.ksp_pbp[i0],
-			  fn_links, &param.pbp_filenames[i0] );
+			     masses, charges, fn_mass, u1_A,
+			     &param.pbp_filenames[i0] );
+      else
+	f_meas_current( num_pbp_masses, param.npbp_reps[k],
+			param.thinning[k],
+			&param.qic_pbp[i0], masses, charges,
+			fn_mass, u1_A, &param.pbp_filenames[i0] );
 #else
+      // THESE NEED FIXING NOW
       if(num_pbp_masses == 1)
 	f_meas_imp_field( param.npbp_reps[k], &param.qic_pbp[i0],
 			  param.ksp_pbp[i0].mass, 
@@ -209,7 +224,9 @@ int main(int argc, char *argv[])
       /* Unapply twisted boundary conditions on the fermion links and
 	 restore conventional KS phases and antiperiodic BC, if
 	 changed. */
-      boundary_twist_fn(fn, OFF);
+      for(int j = 0; j < num_pbp_masses; j++)
+	if(twist_status(fn_mass[j]) == ON)
+	   boundary_twist_fn(fn_mass[j], OFF);
       
     } /* k num_set */
  
@@ -228,13 +245,19 @@ int main(int argc, char *argv[])
       ENDTIME("save lattice");
     }
 
+#ifdef U1_FIELD
+    if( param.save_u1flag != FORGET ){
+      save_u1_lattice( param.save_u1flag, param.save_u1file );
+    }
+#endif
+
 #if EIGMODE == EIGCG
 
     STARTTIME;
 
     Nvecs_curr = param.eigcgp.Nvecs_curr;
 
-    fn = get_fm_links(fn_links)[0];
+    imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
     resid = (double *)malloc(Nvecs_curr*sizeof(double));
 
     if(param.ks_eigen_startflag == FRESH)
@@ -271,17 +294,18 @@ int main(int argc, char *argv[])
 
     /* Destroy fermion links (created in readin() */
 
+    for(int j = 0; j < n_charges; j++){
 #if FERM_ACTION == HISQ
-    destroy_fermion_links_hisq(fn_links);
+      destroy_fermion_links_hisq(fn_links_charge[j]);
 #else
-    destroy_fermion_links(fn_links);
+      destroy_fermion_links(fn_links_charge[j]);
 #endif
-    fn_links = NULL;
-
+      fn_links_charge[j] = NULL;
+    }
   } /* readin(prompt) */
 
 #ifdef HAVE_QUDA
-  qudaFinalize();
+  finalize_quda();
 #endif
 
   normal_exit(0);

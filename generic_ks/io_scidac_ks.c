@@ -443,7 +443,7 @@ QIO_Reader *open_usqcd_ksprop_read(char *filename, int serpar, char **fileinfo){
     printf("open_usqcd_ksprop_read: No room for fileinfo\n");
     terminate(1);
   }
-  strncpy(*fileinfo, s, len);
+  strncpy(*fileinfo, s, len+1);
   (*fileinfo)[len] = '\0';
   QIO_string_destroy(xml_file);
 

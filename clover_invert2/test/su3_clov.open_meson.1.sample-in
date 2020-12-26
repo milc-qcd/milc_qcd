@@ -29,6 +29,7 @@ number_of_base_sources 1
 # source 0
 
 point
+field_type Dirac
 subset full
 origin 0 0 0 0
 source_label d
