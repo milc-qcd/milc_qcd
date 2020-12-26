@@ -526,6 +526,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
     /* FIXME: what do we do if the mgparamfile changes? */
     
     if (mg_preconditioner == NULL ){
+      double mg_regen_time = -dclock();
       mg_preconditioner = qudaMultigridCreate(MILC_PRECISION,
                               quda_precision,
                               mass,
@@ -534,7 +535,9 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
                               longlink,
                               qic->mgparamfile);
 
-      node0_printf("%s: MG inverter setup complete\n", myname);
+      mg_regen_time += dclock();
+      node0_printf("%s: MG inverter setup complete. Time = %g\n", myname,
+		   mg_regen_time);
     } else {
       node0_printf("%s: MG inverter already set up.  Skipping.\n", myname);
     }
