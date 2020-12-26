@@ -79,7 +79,7 @@ ks_eigen_file *r_open_ks_eigen(int flag, char *filename){
 /*---------------------------------------------------------------*/
 
 /* Open KS eigenvector file for writing eigenvectors. */
-static ks_eigen_file *w_open_ks_eigen(int flag, char *filename, int parity) {
+ks_eigen_file *w_open_ks_eigen(int flag, char *filename, int parity) {
 
   ks_eigen_file *kseigf = NULL;
   char myname[] = "w_open_ks_eigen";
