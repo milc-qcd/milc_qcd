@@ -59,7 +59,7 @@ then
 	    --with-fftw=${HOME}/fftw/build-gcc \
             --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
             CXX="${PK_CXX}" \
-            CXXFLAGS="-std=gnu++17" \
+            CXXFLAGS="-std=gnu++14" \
 
 # 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
 
@@ -152,7 +152,6 @@ then
   else
     echo "Building in ${BUILDDIR}"
     ${MAKE} -k -j4
-
     echo "Installing in ${INSTALLDIR}"
     ${MAKE} install
   fi
