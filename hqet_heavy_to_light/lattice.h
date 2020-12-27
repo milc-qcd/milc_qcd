@@ -119,7 +119,7 @@ enum quark_type_choices { STANDARD_QUARK , STATIC_LIGHT_QUARK  } ;
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;	        /* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;	        /* volume of lattice = nx*ny*nz*nt */
 
 EXTERN	Real clov_c,u0;
 EXTERN  Real byterevReal;  /* flag to bytereverse lattice */

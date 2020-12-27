@@ -16,7 +16,7 @@ typedef struct {
 /* Structure defining the fermion action using paths or optimized
    coefficients */
 
-#define MAX_NAIK 12 // max number of quarks that require Naik epsilon correction
+#define MAX_NAIK 24 // max number of quarks that require Naik epsilon correction
                     // without c quark this is normally 1, however this
                     // constant should be set to at least 2
 
