@@ -3,9 +3,7 @@
 ARCH=$1
 PK_CC=$2
 PK_CXX=$3
-#GIT_REPO=https://github.com/paboyle/Grid
-GIT_REPO=https://github.com/milc-qcd/Grid
-#GIT_BRANCH=feature/CGinfo
+GIT_REPO=https://github.com/aportelli/Hadrons
 GIT_BRANCH=develop
 
 if [ -z ${PK_CXX} ]
@@ -23,14 +21,13 @@ case ${ARCH} in
       exit 1
 esac
 
-MAKE="make -j4"
-
 TOPDIR=`pwd`
-SRCDIR=${TOPDIR}/Grid
-BUILDDIR=${TOPDIR}/build-${ARCH}
-INSTALLDIR=${TOPDIR}/install-${ARCH}
+SRCDIR=${TOPDIR}/Hadrons
+BUILDDIR=${TOPDIR}/build-hadrons-${ARCH}
+INSTALLDIR=${TOPDIR}/install-hadrons-${ARCH}
+GRIDINSTALLDIR=${TOPDIR}/install-grid-${ARCH}
 
-MAKE="make -j4 V=1"
+MAKE="make V=1"
 
 if [ ! -d ${SRCDIR} ]
 then
@@ -38,7 +35,7 @@ then
   git clone ${GIT_REPO} -b ${GIT_BRANCH}
 fi
 
-# Fetch Eigen package, set up Make.inc files and create Grid configure
+# Initialization
 pushd ${SRCDIR}
 ./bootstrap.sh
 popd
@@ -48,7 +45,7 @@ mkdir -p ${BUILDDIR}
 pushd ${BUILDDIR}
 if [ ! -f Makefile ]
 then
-  echo "Configuring Grid for ${ARCH} in ${BUILDDIR}"
+  echo "Configuring Hadrons for ${ARCH} in ${BUILDDIR}"
 
   case ${ARCH} in
 
@@ -56,16 +53,9 @@ then
 
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
-            --enable-precision=double \
-            --enable-simd=GEN \
-            --enable-comms=none \
-	    --with-lime=${HOME}/scidac/install/qio-single \
-	    --with-fftw=${HOME}/fftw/build-gcc \
-            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
+            --with-grid=${GRIDINSTALLDIR} \
             CXX="${PK_CXX}" \
-            CXXFLAGS="-std=gnu++14" \
-
-# 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
+            CXXFLAGS="-std=gnu++17" \
 
        status=$?
              ;;
@@ -74,16 +64,9 @@ then
 
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
-            --enable-mkl=yes \
-            --enable-precision=double \
-            --enable-simd=GEN \
-            --enable-comms=mpi \
-	    --with-lime=${HOME}/scidac/install/qio-skx \
-            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
+            --with-grid=${GRIDINSTALLDIR} \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++11 -xCORE-AVX2" \
-
-#	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
+            CXXFLAGS="-std=c++17 -xCORE-AVX2" \
 
        status=$?
              ;;
@@ -94,16 +77,10 @@ then
 
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
-            --enable-precision=double \
-            --enable-simd=KNL \
-            --enable-comms=mpi \
+            --with-grid=${GRIDINSTALLDIR} \
             --host=x86_64-unknown-linux-gnu \
-	    --with-lime=${HOME}/scidac/install/qio-impi-knl \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++17 -xMIC-AVX512 -O2 -g -vec -simd -qopenmp" \
-
-	    # --with-hdf5=/opt/cray/pe/hdf5/1.10.0.3/INTEL/16.0 \
-            # --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
+            CXXFLAGS="-std=c++17 -xMIC-AVX512 -DHAVE_LIME -O2 -g -simd -qopenmp" \
 
        status=$?
        echo "Configure exit status $status"
@@ -115,16 +92,10 @@ then
 
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
-            --enable-precision=double \
-            --enable-simd=KNL \
-            --enable-comms=mpi \
+            --with-grid=${GRIDINSTALLDIR} \
             --host=x86_64-unknown-linux-gnu \
-	    --with-lime=${HOME}/scidac/install/qio-impi-knl \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++17 -xCORE-AVX512 -O2 -g -vec -simd -qopenmp" \
-
-	    # --with-hdf5=/opt/cray/pe/hdf5/1.10.0.3/INTEL/16.0 \
-            # --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
+            CXXFLAGS="-std=c++17 -xCORE-AVX512 -O2 -g -simd -qopenmp" \
 
        status=$?
        echo "Configure exit status $status"
@@ -132,18 +103,14 @@ then
     gpu-cuda)
 	# Cori: salloc -C gpu -t 60 -N 1 -c 10 --gres=gpu:1 -A m1759
 	${SRCDIR}/configure \
-             --prefix ${INSTALLDIR}      \
-             --enable-precision=double \
-	     --enable-comms=mpi          \
-             --host=x86_64-unknown-linux-gnu \
-             CXX=nvcc                    \
-             LDFLAGS=-L$HOME/prefix/lib/ \
-             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -I$HOME/prefix/include/ -std=c++11" 
+            --prefix ${INSTALLDIR}      \
+            --with-grid=${GRIDINSTALLDIR} \
+            CXX=nvcc                    \
+            LDFLAGS=-L$HOME/prefix/lib/ \
+            CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -I$HOME/prefix/include/ -std=c++11" 
         status=$?
         echo "Configure exit status $status"
 	;;
-
-    #              --enable-simd=GEN           \
 
     *)
     echo "Unsupported ARCH ${ARCH}"
@@ -155,7 +122,7 @@ then
       echo "Quitting because of configure errors"
   else
     echo "Building in ${BUILDDIR}"
-    ${MAKE}
+    ${MAKE} -k -j4
 
     echo "Installing in ${INSTALLDIR}"
     ${MAKE} install
