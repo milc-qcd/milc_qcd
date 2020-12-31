@@ -75,7 +75,7 @@ then
 	    --with-lime=${HOME}/scidac/install/qio-skx \
             --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++11 -xCORE-AVX2 -Wno-psabi" \
+            CXXFLAGS="-std=c++11 -xCORE-AVX2" \
 
 #	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
 
@@ -93,7 +93,7 @@ then
             --host=x86_64-unknown-linux-gnu \
 	    --with-lime=${HOME}/scidac/install/qio-cori-extend-omp-knl-icc \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++17 -xMIC-AVX512 -O2 -g -simd -qopenmp -Wno-psabi" \
+            CXXFLAGS="-std=c++17 -xMIC-AVX512 -O2 -g -simd -qopenmp" \
 
 	    # --with-hdf5=/opt/cray/pe/hdf5/1.10.0.3/INTEL/16.0 \
             # --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
@@ -113,7 +113,7 @@ then
             --host=x86_64-unknown-linux-gnu \
 	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++17 -xCORE-AVX512 -O2 -g -simd -qopenmp -Wno-psabi" \
+            CXXFLAGS="-std=c++17 -xCORE-AVX512 -O2 -g -simd -qopenmp" \
 
 	    # --with-hdf5=/opt/cray/pe/hdf5/1.10.0.3/INTEL/16.0 \
             # --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
@@ -129,7 +129,7 @@ then
              --host=x86_64-unknown-linux-gnu \
              CXX=nvcc                    \
              LDFLAGS=-L$HOME/prefix/lib/ \
-             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -I$HOME/prefix/include/ -std=c++11 -Wno-psabi" 
+             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -I$HOME/prefix/include/ -std=c++11" 
         status=$?
         echo "Configure exit status $status"
 	;;
