@@ -74,10 +74,9 @@ then
             --enable-comms=mpi \
 	    --with-lime=${HOME}/scidac/install/qio-skx \
             --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
+	    --with-hdf5=/opt/cray/pe/hdf5/1.12.0.0/INTEL/19.1 \
             CXX="${PK_CXX}" CC="${PK_CC}" \
             CXXFLAGS="-std=c++11 -xCORE-AVX2 -Wno-psabi" \
-
-#	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
 
        status=$?
              ;;
@@ -92,11 +91,11 @@ then
             --enable-comms=mpi \
             --host=x86_64-unknown-linux-gnu \
 	    --with-lime=${HOME}/scidac/install/qio-cori-extend-omp-knl-icc \
+	    --with-hdf5=/opt/cray/pe/hdf5/1.12.0.0/INTEL/19.1 \
+            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
             CXX="${PK_CXX}" CC="${PK_CC}" \
             CXXFLAGS="-std=c++17 -xMIC-AVX512 -O2 -g -simd -qopenmp -Wno-psabi" \
 
-	    # --with-hdf5=/opt/cray/pe/hdf5/1.10.0.3/INTEL/16.0 \
-            # --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
 
        status=$?
        echo "Configure exit status $status"
@@ -146,7 +145,7 @@ then
       echo "Quitting because of configure errors"
   else
     echo "Building in ${BUILDDIR}"
-    ${MAKE} -k -j4
+    ${MAKE} -k -j20
 
     echo "Installing in ${INSTALLDIR}"
     ${MAKE} install

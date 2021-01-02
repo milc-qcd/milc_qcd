@@ -66,7 +66,7 @@ then
             --prefix=${INSTALLDIR} \
             --with-grid=${GRIDINSTALLDIR} \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++17 -xCORE-AVX2 -Wno-psabi" \
+            CXXFLAGS="-std=c++17 -xCORE-AVX2" \
 
        status=$?
              ;;
@@ -80,7 +80,7 @@ then
             --with-grid=${GRIDINSTALLDIR} \
             --host=x86_64-unknown-linux-gnu \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++17 -xMIC-AVX512 -DHAVE_LIME -O2 -g -simd -qopenmp -Wno-psabi" \
+            CXXFLAGS="-std=c++17 -xMIC-AVX512 -DHAVE_LIME -O2 -g -simd -qopenmp" \
 
        status=$?
        echo "Configure exit status $status"
@@ -107,7 +107,7 @@ then
             --with-grid=${GRIDINSTALLDIR} \
             CXX=nvcc  CC="${PK_CC}"      \
             LDFLAGS=-L$HOME/prefix/lib/ \
-            CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -I$HOME/prefix/include/ -std=c++11 -Wno-psabi" 
+            CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -I$HOME/prefix/include/ -std=c++11" 
         status=$?
         echo "Configure exit status $status"
 	;;
