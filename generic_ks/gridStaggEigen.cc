@@ -36,7 +36,7 @@ using namespace Grid;
 template< typename FT,
           typename LatticeGaugeField,
           typename ImprovedStaggeredFermion >
-static void impResLanczos( GRID_ColorVector_struct<ImprovedStaggeredFermion> ** eigVecs,
+static void impResLanczos( GRID_ColorVectorArray_struct<ImprovedStaggeredFermion> * eigVecs,
                            FT * eigVals,
                            GRID_FermionLinksAsqtad_struct<LatticeGaugeField> * link,
                            GRID_eig_arg_t * eig_arg,
@@ -109,7 +109,7 @@ static void impResLanczos( GRID_ColorVector_struct<ImprovedStaggeredFermion> ** 
 
   // eigenvalues and eigenvectors 
   vector< RealD > _eigVals( Nm, 0 );
-  vector< FermionField > _eigVecs( Nm, RBGrid );
+  eigVecs->cv->resize( Nm, RBGrid );
 
   // initial vector for Lanczos
   FermionField src(RBGrid);
@@ -130,21 +130,17 @@ static void impResLanczos( GRID_ColorVector_struct<ImprovedStaggeredFermion> ** 
 #endif
   
   // Calculate eigenvalues and eigenvectors
-  irl.calc( _eigVals, _eigVecs, src, Nconv );
+  irl.calc( _eigVals, *(eigVecs->cv), src, Nconv );
 
 #ifdef EIGTIME
   dtimec += usecond()/1.0e6;
   cout << "[irl.calc] time = " << dtimec << " s" << endl;
 #endif
 
-  // Copy resulting eigenvalues and eigenvectors
+  // Copy resulting eigenvalues
   for( ii=0; ii<Nstop; ii+=1 )
   {
     *(eigVals+ii) = _eigVals[ii];
-  }
-  for( ii=0; ii<Nstop; ii+=1 )
-  {
-    *((*(eigVecs+ii))->cv) = _eigVecs[ii];
   }
   
 #ifdef EIG_DEBUG
@@ -156,7 +152,7 @@ static void impResLanczos( GRID_ColorVector_struct<ImprovedStaggeredFermion> ** 
 
 // double preicision version wrapper
 void GRID_D3_implicitly_restarted_lanczos(
-  GRID_D3_ColorVector ** eigVecs,
+  GRID_D3_ColorVectorArray * eigVecs,
   double * eigVals,
   GRID_D3_FermionLinksAsqtad * link,
   GRID_eig_arg_t * eig_arg,
@@ -174,7 +170,7 @@ void GRID_D3_implicitly_restarted_lanczos(
 
 // single preicision version wrapper
 void GRID_F3_implicitly_restarted_lanczos(
-  GRID_F3_ColorVector ** eigVecs,
+  GRID_F3_ColorVectorArray * eigVecs,
   float * eigVals,
   GRID_F3_FermionLinksAsqtad * link,
   GRID_eig_arg_t * eig_arg,
@@ -189,4 +185,3 @@ void GRID_F3_implicitly_restarted_lanczos(
   
   return ;
 }
-

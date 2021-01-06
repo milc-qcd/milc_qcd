@@ -18,7 +18,14 @@
 #define GRID_ColorVector                GRID_D3_ColorVector
 #define GRID_ColorVectorBlock           GRID_D3_ColorVectorBlock
 #define GRID_FermionLinksAsqtad         GRID_D3_FermionLinksAsqtad
-//hc
+
+/*hc******************************/
+#define GRID_ColorVectorArray GRID_D3_ColorVectorArray
 #define GRID_implicitly_restarted_lanczos GRID_D3_implicitly_restarted_lanczos
+#define GRID_create_V_array GRID_D3_create_V_array
+#define GRID_destroy_V_array GRID_D3_destroy_V_array
+#define GRID_create_V_array_from_vec_array GRID_D3_create_V_array_from_vec_array
+#define GRID_extract_V_array_to_vec_array GRID_D3_extract_V_array_to_vec_array
+/******************************hc*/
 
 #endif /* _MGRID_D3_GENERIC_H */
