@@ -71,7 +71,7 @@ read_w_fm_source_hdr(w_source_file *wsf)
   if(wsh->magic_number == IO_UNI_MAGIC) byterevflag = 0;
   else 
     {
-      byterevn((int32type *)&wsh->magic_number,1);
+      byterevn((u_int32type *)&wsh->magic_number,1);
       if(wsh->magic_number == IO_UNI_MAGIC) 
 	{
 	  byterevflag = 1; 
@@ -323,7 +323,7 @@ r_source_w_fm(w_source_file *wsf,
 	  {
 	    wfix = wmsg.q;
 	    if(byterevflag==1)
-	      byterevn((int32type *)&wfix, 
+	      byterevn((u_int32type *)&wfix, 
 		       sizeof(fwilson_vector)/sizeof(int32type));
 	      
 	    /* Now copy the site data into the destination converting
