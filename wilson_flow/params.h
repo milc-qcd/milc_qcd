@@ -15,6 +15,7 @@ typedef struct {
   Real stoptime; /* maximum flow time, -1 means auto-determined */
   int exp_order; /* where to end series expansion of exponential */
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
   Real local_tol; /* local tolerance for adaptive integrators */
 #endif

@@ -32,6 +32,7 @@
 // adaptive schemes
 #define INTEGRATOR_ADAPT_LUSCHER 20
 #define INTEGRATOR_ADAPT_BS 21
+#define INTEGRATOR_ADAPT_CF3 22
 
 // Safety factor for adaptive schemes
 // to prevent too many rejected steps
@@ -46,13 +47,14 @@
 #define flow_step integrate_RKMK3
 #elif GF_INTEGRATOR==INTEGRATOR_RKMK4 || GF_INTEGRATOR==INTEGRATOR_RKMK5 || GF_INTEGRATOR==INTEGRATOR_RKMK8
 #define flow_step integrate_RKMK_generic
-#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER
+#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3
 #define flow_step integrate_adapt_RK_2N
 #elif GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
 #define flow_step integrate_adapt_bs
 #endif
 
 // dump lattice in double precision for debugging purposes
-#define DEBUG_FIELDS
+// BE CAREFULL with this
+//#define DEBUG_FIELDS
 
 #endif /* _DEFINES_H */

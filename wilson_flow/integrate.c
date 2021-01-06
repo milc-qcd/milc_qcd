@@ -255,7 +255,7 @@ commutator_ah( anti_hermitmat *a, anti_hermitmat *b, anti_hermitmat *c ) {
 }
 #endif
 
-/* derivative of the inverse matrix exponential,
+/* inverse derivative of the matrix exponential,
    required for generic RKMK methods */
 void
 dexpinv( anti_hermitmat *u, anti_hermitmat *v, int q, anti_hermitmat *d ) {
@@ -338,7 +338,7 @@ su3mat_distance( su3_matrix *a, su3_matrix *b ) {
  *    U = exp(cB*A)*U   -> update gauge links
  */
 void
-integrate_RK_2N_one_step( Real cA, Real cB )
+integrate_RK_2N_one_stage( Real cA, Real cB )
 {
   register int dir, i;
   register site *s;
@@ -387,7 +387,7 @@ integrate_RK_2N()
   for( i=0; i<N_stages; i++ ) {
     /* be careful with stepsize: Nathan's convention on the staple
        is such that stepsize should be taken negative */
-    integrate_RK_2N_one_step( A_2N[i], -B_2N[i]*stepsize );
+    integrate_RK_2N_one_stage( A_2N[i], -B_2N[i]*stepsize );
   }
 }
 #elif GF_INTEGRATOR==INTEGRATOR_RKMK4 || GF_INTEGRATOR==INTEGRATOR_RKMK5 || GF_INTEGRATOR==INTEGRATOR_RKMK8
@@ -517,9 +517,9 @@ integrate_RKMK3() {
       mult_su3_nn( &tempS1, &(s->link0[dir]), &(s->link[dir]) );
   }
 }
-#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER
+#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3
 void
-integrate_adapt_RK_2N_one_step( Real cA, Real cB, int istep )
+integrate_adapt_RK_2N_one_stage( Real cA, Real cB, int istep )
 {
   register int dir, i;
   register site *s;
@@ -574,15 +574,18 @@ integrate_adapt_RK_2N()
     for( i=0; i<N_stages; i++ ) {
       /* be careful with stepsize: Nathan's convention on the staple
          is such that stepsize should be taken negative */
-      integrate_adapt_RK_2N_one_step( A_2N[i], -B_2N[i]*stepsize, i );
+      integrate_adapt_RK_2N_one_stage( A_2N[i], -B_2N[i]*stepsize, i );
     }
 
     dist = 0;
     FORALLUPDIR(dir)
       FORALLSITES(i, s) {
         /* Construct lower order approximation */
-        scalar_mult_add_ah( &(s->K[0][dir]), &(s->K[1][dir]), -2, &tempA1 );
-        scalar_mult_ah( &tempA1, stepsize, &tempA1 );
+        scalar_mult_ah( &(s->K[0][dir]), Lambda[0], &tempA1 );
+        scalar_mult_add_ah( &tempA1, &(s->K[1][dir]), Lambda[1], &tempA1 );
+        scalar_mult_add_ah( &tempA1, &(s->K[2][dir]), Lambda[2], &tempA1 );
+        // NOTE: Nathan Brown's convention: stepsize is negative
+        scalar_mult_ah( &tempA1, -stepsize, &tempA1 );
         exp_anti_hermitian( &tempA1, &tempS1, exp_order );
         mult_su3_nn( &tempS1, &(s->link0[dir]), &tempS2 );
         /* Calculate distance between the two approximations */
@@ -799,96 +802,4 @@ void dump_double_lattice() {
   fclose( fp );
 
 }
-#endif
-
-
-
-#ifdef ABA
-//TODO: remove once all integrators are tested, flow_step is now
-// chosen inside defines.h
-/* one step of the flow, here branching into different integrators happens */
-void
-flow_step()
-{
-
-#if GF_INTEGRATOR==INTEGRATOR_LUSCHER || GF_INTEGRATOR==INTEGRATOR_CK
-  integrate_RK_2N();
-#elif GF_INTEGRATOR==INTEGRATOR_RKMK3
-  integrate_RKMK3();
-#elif GF_INTEGRATOR==INTEGRATOR_RKMK4 || GF_INTEGRATOR==INTEGRATOR_RKMK5 || GF_INTEGRATOR==INTEGRATOR_RKMK8
-  integrate_RKMK_generic();
-#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER
-  integrate_adapt_RK_2N();
-#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
-  integrate_adapt_bs();
-#endif
-
-}
-#endif
-
-
-// original Nathan's routines that are being phased out
-#ifdef ABA
-
-/* Computes a single smearing steps (three smear steps per time step)
- *  A: accumulating matrix over all smear steps in a single time step
- *  S: staple (action dependent); recalculated before each smear step
- *  U: gauge links
- *  c1,c2: constants
- *    Calculating a single smear step is done by:
- *    A += c1*proj(S*U) -> update accumulation matrix
- *    U = exp(c2*A)*U   -> update gauge links
- */
-void
-stout_smear_step( Real c1, Real c2 )
-{
-  register int dir, i;
-  register site *s;
-
-  /* Temporary matrix holders */
-  anti_hermitmat *Acur, tempA1;
-  su3_matrix *U, tempS1, tempS2;
-
-  /* Calculate the new staple */
-  staple();
-
-  FORALLUPDIR(dir)
-    FORALLSITES(i, s) {
-      /* Retrieve the current link and accumulation matrix */
-      U = &(s->link[dir]);
-      Acur = &(s->accumulate[dir]);
-
-      /* Update the accumulation matrix A += c1*proj(U*S) */
-      mult_su3_na( U, &(s->staple[dir]), &tempS1 );
-      anti_hermitian_traceless_proj( &tempS1, &tempA1 );
-      scalar_mult_add_ah( Acur, &tempA1, c1, Acur );
-
-      /* Update the links U = exp(c2*A)*U */
-      scalar_mult_ah( Acur, c2, &tempA1 );
-      exp_anti_hermitian( &tempA1, &tempS1, exp_order );
-      mult_su3_nn( &tempS1, U, &tempS2 );
-      su3mat_copy( &tempS2, U );
-  }
-}
-
-/* Luscher's integration routine (essentially Runga-Kutta) */
-/*  Outlined in 'arXiv:1006.4518 [hep-lat]'                */
-void
-stout_step_rk()
-{
-  register int dir, i;
-  register site *s;
-
-  /* Clear the accumulation matrix */
-  FORALLSITES(i, s)
-    FORALLUPDIR(dir)
-      clear_anti_hermitian(&(s->accumulate[dir]));
-
-  /* Infinitesimal stout smearing */
-  stout_smear_step( 17./36.*stepsize, -9./17. );
-  stout_smear_step( -8./9.*stepsize, 1. );
-  stout_smear_step( 3./4.*stepsize, -1. );
-}
-
-
 #endif

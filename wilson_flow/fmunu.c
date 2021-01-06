@@ -74,8 +74,6 @@ fmunu_fmunu( double *time, double *space, double *charge )
 }
 
 
-//TODO: debug Symanzik part, compare to GACTION from other applications
-// (e.g. HMC with 0 steps)
 /* Compute loops: 1x1 -- plaquette, 1x2 + 2x1 -- rectangle
    for Wilson (one-plaquette) and
    Symanzik tree-level (plaquette and rectangle) action,

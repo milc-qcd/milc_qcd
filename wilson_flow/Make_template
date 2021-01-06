@@ -143,6 +143,10 @@ wilson_flow_adpt::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_LUSCHER" \
 
+wilson_flow_adpt_cf3::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_CF3" \
+
 wilson_flow_adpt_bs::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_BS" \

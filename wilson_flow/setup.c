@@ -141,6 +141,7 @@ readin(int prompt)
     IF_OK status += get_i(stdin, prompt, "exp_order", &par_buf.exp_order);
     IF_OK status += get_f(stdin, prompt, "stepsize", &par_buf.stepsize);
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
     IF_OK status += get_f(stdin, prompt, "local_tol", &par_buf.local_tol);
 #endif
@@ -175,6 +176,7 @@ readin(int prompt)
   stepsize = par_buf.stepsize;
   stoptime = par_buf.stoptime;
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
   local_tol = par_buf.local_tol;
 #endif
@@ -239,33 +241,39 @@ initialize_integrator()
   node0_printf("Integrator = INTEGRATOR_BBB\n");
 #elif GF_INTEGRATOR==INTEGRATOR_CF3
   N_stages = 3;
-  // Commutator-free 2N-storage for experiments
-  // with coefficients
+  // Commutator-free 2N-storage with arbitrary coefficients
 
-//TODO: this is experimental, it should be removed once
-// the optimal set of coefficients is found
-// (lowest truncation error)
 #define READ_CF3_FROM_FILE
 #ifdef READ_CF3_FROM_FILE
   FILE *fp;
+  int st = 0;
   fp = fopen( "cf3_coeff.dat", "rt" );
   if( fp==NULL ) {
     node0_printf( "ERROR: cf3_coeff.dat file cannot be read\n" );
     terminate(1);
   }
-  fscanf( fp, "%le", &(A_2N[0]) );
-  fscanf( fp, "%le", &(A_2N[1]) );
-  fscanf( fp, "%le", &(A_2N[2]) );
-  fscanf( fp, "%le", &(B_2N[0]) );
-  fscanf( fp, "%le", &(B_2N[1]) );
-  fscanf( fp, "%le", &(B_2N[2]) );
+#if (MILC_PRECISION==1)
+  st += fscanf( fp, "%e", &(A_2N[0]) );
+  st += fscanf( fp, "%e", &(A_2N[1]) );
+  st += fscanf( fp, "%e", &(A_2N[2]) );
+  st += fscanf( fp, "%e", &(B_2N[0]) );
+  st += fscanf( fp, "%e", &(B_2N[1]) );
+  st += fscanf( fp, "%e", &(B_2N[2]) );
+#else
+  st += fscanf( fp, "%le", &(A_2N[0]) );
+  st += fscanf( fp, "%le", &(A_2N[1]) );
+  st += fscanf( fp, "%le", &(A_2N[2]) );
+  st += fscanf( fp, "%le", &(B_2N[0]) );
+  st += fscanf( fp, "%le", &(B_2N[1]) );
+  st += fscanf( fp, "%le", &(B_2N[2]) );
+#endif
   fclose( fp );
-/*  printf( "%.16g\n", A_2N[0] );
-  printf( "%.16g\n", A_2N[1] );
-  printf( "%.16g\n", A_2N[2] );
-  printf( "%.16g\n", B_2N[0] );
-  printf( "%.16g\n", B_2N[1] );
-  printf( "%.16g\n", B_2N[2] );*/
+  node0_printf( "%.16g\n", A_2N[0] );
+  node0_printf( "%.16g\n", A_2N[1] );
+  node0_printf( "%.16g\n", A_2N[2] );
+  node0_printf( "%.16g\n", B_2N[0] );
+  node0_printf( "%.16g\n", B_2N[1] );
+  node0_printf( "%.16g\n", B_2N[2] );
 #else
   // optimized with Ralston procedure
   A_2N[0] = 0;
@@ -387,7 +395,53 @@ initialize_integrator()
   B_2N[0] = 1/4.;
   B_2N[1] = 8/9.;
   B_2N[2] = 3/4.;
+  Lambda[0] = -1;
+  Lambda[1] = 2;
+  Lambda[2] = 0;
   node0_printf("Integrator = INTEGRATOR_ADAPT_LUSCHER\n");
+#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3
+  N_stages = 3;
+  // Commutator-free 2N-storage with arbitrary coefficients
+
+  FILE *fp;
+  int st;
+  fp = fopen( "cf3adpt_coeff.dat", "rt" );
+  if( fp==NULL ) {
+    node0_printf( "ERROR: cf3adpt_coeff.dat file cannot be read\n" );
+    terminate(1);
+  }
+#if (MILC_PRECISION==1)
+  st = fscanf( fp, "%e", &(A_2N[0]) );
+  st += fscanf( fp, "%e", &(A_2N[1]) );
+  st += fscanf( fp, "%e", &(A_2N[2]) );
+  st += fscanf( fp, "%e", &(B_2N[0]) );
+  st += fscanf( fp, "%e", &(B_2N[1]) );
+  st += fscanf( fp, "%e", &(B_2N[2]) );
+  st += fscanf( fp, "%e", &(Lambda[0]) );
+  st += fscanf( fp, "%e", &(Lambda[1]) );
+  st += fscanf( fp, "%e", &(Lambda[2]) );
+#else
+  st = fscanf( fp, "%le", &(A_2N[0]) );
+  st += fscanf( fp, "%le", &(A_2N[1]) );
+  st += fscanf( fp, "%le", &(A_2N[2]) );
+  st += fscanf( fp, "%le", &(B_2N[0]) );
+  st += fscanf( fp, "%le", &(B_2N[1]) );
+  st += fscanf( fp, "%le", &(B_2N[2]) );
+  st += fscanf( fp, "%le", &(Lambda[0]) );
+  st += fscanf( fp, "%le", &(Lambda[1]) );
+  st += fscanf( fp, "%le", &(Lambda[2]) );
+#endif
+  fclose( fp );
+  node0_printf( "%.16g\n", A_2N[0] );
+  node0_printf( "%.16g\n", A_2N[1] );
+  node0_printf( "%.16g\n", A_2N[2] );
+  node0_printf( "%.16g\n", B_2N[0] );
+  node0_printf( "%.16g\n", B_2N[1] );
+  node0_printf( "%.16g\n", B_2N[2] );
+  node0_printf( "%.16g\n", Lambda[0] );
+  node0_printf( "%.16g\n", Lambda[1] );
+  node0_printf( "%.16g\n", Lambda[2] );
+  node0_printf("Integrator = INTEGRATOR_ADAPT_CF3\n");
 #elif GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
   // Bogacki-Shampine integrator based on Ralston coefficients
   // NOTE: there is a fourth stage that produces a lower order approximation

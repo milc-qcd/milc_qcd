@@ -58,6 +58,7 @@ main( int argc, char **argv )
     /* Print flow output column labels */
     node0_printf("#LABEL time Clover_t Clover_s Plaq_t Plaq_s Rect_t Rect_s charge\n");
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
     node0_printf("#ADAPT time stepsize distance local_tol/distance\n");
 #endif
@@ -72,6 +73,7 @@ main( int argc, char **argv )
     node0_printf("GFLOW: %g %.16g %.16g %.16g %.16g %.16g %.16g %.16g\n", 0.0, Et_C, Es_C, Et_W, Es_W, Et_S, Es_S, charge);
 #endif
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
 #if (MILC_PRECISION==1)
       node0_printf("ADAPT: %g %g %g %g\n", 0.0, stepsize, 0.0, 0.0 );
@@ -82,6 +84,7 @@ main( int argc, char **argv )
     fflush(stdout);
 
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
     steps_rejected = 0; // count rejected steps in adaptive schemes
 #endif
@@ -96,12 +99,6 @@ main( int argc, char **argv )
     i = 0;
     /* Loop over the flow time */
     while( stoptime==AUTO_STOPTIME || ( flowtime<stoptime && is_final_step==0 ) ) {
-// NOTE: the for loop below is the original Nathan's code, it does not
-// fit well with adaptive and also reaching exact time, which is needed
-// for scaling studies, this will be cleaned up once the code is stable
-//    for( flowtime=stepsize, i=0;
-//         stoptime==AUTO_STOPTIME || flowtime<stoptime;
-//         flowtime+=stepsize, i++ ) {
       /* Adjust last time step to fit exactly stoptime */
       if( stepsize>stoptime-flowtime && stoptime!=AUTO_STOPTIME ) {
         stepsize = stoptime-flowtime;
@@ -124,6 +121,7 @@ main( int argc, char **argv )
       node0_printf("GFLOW: %.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g\n", flowtime, Et_C, Es_C, Et_W, Es_W, Et_S, Es_S, charge);
 #endif
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
 #if (MILC_PRECISION==1)
       node0_printf("ADAPT: %g %g %g %g\n", flowtime, stepsize, dist, local_tol/dist );
@@ -147,6 +145,7 @@ main( int argc, char **argv )
       } /* end: auto stoptime */
 
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
       if( is_final_step==0 ) {
         // adjust step size for the next step except if it is final
@@ -160,6 +159,7 @@ main( int argc, char **argv )
     total_steps = i;
     node0_printf("Number of steps = %i\n", total_steps);
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
     node0_printf("Number of rejected steps = %i\n", steps_rejected);
 #endif

@@ -32,6 +32,7 @@ typedef struct {
 #if GF_INTEGRATOR==INTEGRATOR_RKMK3 || GF_INTEGRATOR==INTEGRATOR_RKMK4 || \
     GF_INTEGRATOR==INTEGRATOR_RKMK5 || GF_INTEGRATOR==INTEGRATOR_RKMK8 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
   /* gauge field at the beginning of RK step */
   su3_matrix link0[4] ALIGNMENT;
@@ -46,7 +47,7 @@ typedef struct {
   anti_hermitmat K[6][4]; /* right-hand-side in RK method for all stages */
 #elif GF_INTEGRATOR==INTEGRATOR_RKMK8
   anti_hermitmat K[13][4]; /* right-hand-side in RK method for all stages */
-#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER
+#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3
   anti_hermitmat K[3][4]; /* right-hand-side in RK method for all stages */
 #elif GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
   anti_hermitmat K[4][4]; /* right-hand-side in RK method for all stages */
@@ -99,10 +100,12 @@ EXTERN Real B_2N[MAX_RK_NS];
 // RK coefficients in Butcher table
 EXTERN Real a_RK[MAX_RK_NS][MAX_RK_NS];
 EXTERN Real b_RK[MAX_RK_NS];
-#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER
+#elif GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3
 // A, B coefficients
 EXTERN Real A_2N[MAX_RK_NS];
 EXTERN Real B_2N[MAX_RK_NS];
+// second-order coefficients
+EXTERN Real Lambda[3];
 // rejeted steps in adaptive integrators
 EXTERN int steps_rejected;
 // local tolerance for adaptive integrators
