@@ -40,7 +40,6 @@ typedef struct GRID_ColorVector_struct<ImprovedStaggeredFermionD> GRID_D3_ColorV
 typedef struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5DD> GRID_D3_ColorVectorBlock_struct;
 typedef struct GRID_FermionLinksAsqtad_struct<LatticeGaugeFieldD> GRID_D3_FermionLinksAsqtad_struct;
 
-//hc
 template< typename ISF >
 struct GRID_ColorVectorArray_struct
 {

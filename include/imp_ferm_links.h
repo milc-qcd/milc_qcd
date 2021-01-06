@@ -330,7 +330,6 @@ typedef struct {
   int parity; 
   ks_eigen_poly poly; /* Preconditioning polynomial */
 } ks_eigen_param;
-/*hc*/
 #elif defined(Grid_EIG)
 #define ks_eigensolve ks_eigensolve_Grid
 typedef struct {
@@ -370,7 +369,6 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 				  ks_eigen_param *eigen_param, int init );
 int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal, 
 				  ks_eigen_param *eigen_param, int init );
-/*hc*/
 int ks_eigensolve_Grid( su3_vector ** eigVec, double * eigVal, ks_eigen_param * eigen_param, int init );
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *eigen_param, 
 		     imp_ferm_links_t *fn );

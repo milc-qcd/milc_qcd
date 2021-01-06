@@ -256,7 +256,7 @@ int readin(int prompt) {
     IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
     IF_OK status += get_i(stdin, prompt,"nArnoldi", &param.eigen_param.nArnoldi );
     IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
-#elif defined(Grid_EIG) /*hc*/
+#elif defined(Grid_EIG)
     /* Grid */
     IF_OK status += get_i(stdin, prompt, "Max_Lanczos_restart_iters", &param.eigen_param.MaxIter );
     IF_OK status += get_f(stdin, prompt, "eigenval_tolerance", &param.eigen_param.tol );

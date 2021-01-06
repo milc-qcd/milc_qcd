@@ -101,7 +101,7 @@ void GRID_D3_asqtad_invert_block (GRID_info_t *info,
 				  GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
 				  GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
 
-/*hc**************************/
+
 typedef STRUCT GRID_D3_ColorVectorArray_struct GRID_D3_ColorVectorArray;
 
 /* implicitly restarted Lanczos */
@@ -138,7 +138,6 @@ void GRID_D3_extract_V_array_to_vec_array(
   int n,
   GRID_D3_ColorVectorArray * src,
   int milc_parity );
-/******************************hc*/
   
   /**************************************************/
   /* Mapping of generic names to specific precision */

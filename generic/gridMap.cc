@@ -627,9 +627,8 @@ GRID_D3_asqtad_destroy_L( GRID_D3_FermionLinksAsqtad *gl ){
   asqtad_destroy_L<LatticeGaugeFieldD>( gl );
 }
 
-//hc----------------------------
-// Interfaces for GRID_ColorVectorArray ---------------------
 
+// Create the color vector array interface object
 template< typename ImprovedStaggeredFermion >
 static struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > *
 create_V_array( int n, int milc_parity, GridCartesian * CGrid, GridRedBlackCartesian * RBGrid )
@@ -678,7 +677,7 @@ create_V_array( int n, int milc_parity, GridCartesian * CGrid, GridRedBlackCarte
   return out;
 }
 
-// free color vector array
+// Free color vector array
 template< typename ImprovedStaggeredFermion >
 static void destroy_V_array( struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * V )
 {
@@ -686,6 +685,9 @@ static void destroy_V_array( struct GRID_ColorVectorArray_struct< ImprovedStagge
   if( V != NULL ) free(V);
 }
 
+// Create the color vector array interface object
+// and map a MILC color vector field array from MILC to Grid layout
+// Precision conversion takes place in the copies if need be
 template< typename ImprovedStaggeredFermion, typename ColourVector, typename Complex >
 static struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > *
 create_V_array_from_vec_array( su3_vector ** src, int n, int milc_parity, GridCartesian * CGrid,
@@ -700,7 +702,7 @@ create_V_array_from_vec_array( su3_vector ** src, int n, int milc_parity, GridCa
   int loopend = (milc_parity)==EVEN ? even_sites_on_node : sites_on_node;
   int loopstart = (milc_parity)==ODD ? even_sites_on_node : 0;
 
-//#pragma omp parallel for collapse(1)
+#pragma omp parallel for collapse(1)
   for( i=0; i<n; i++ )
   {
     for( uint64_t idx=loopstart; idx<loopend; idx++ )
@@ -724,6 +726,7 @@ create_V_array_from_vec_array( su3_vector ** src, int n, int milc_parity, GridCa
   return out;
 }
 
+// Map a color vector field array from Grid layout to MILC layout
 template< typename ImprovedStaggeredFermion, typename ColourVector >
 static void extract_V_array_to_vec_array(
   su3_vector ** dest, int n,
@@ -735,7 +738,7 @@ static void extract_V_array_to_vec_array(
   int loopend = (milc_parity)==EVEN ? even_sites_on_node : sites_on_node;
   int loopstart = (milc_parity)==ODD ? even_sites_on_node : 0;
 
-//#pragma omp parallel for collapse(1)
+#pragma omp parallel for collapse(1)
   for( i=0; i<n; i++ )
   {
     for( uint64_t idx=loopstart; idx<loopend; idx++ )
@@ -759,7 +762,7 @@ static void extract_V_array_to_vec_array(
   return ;
 }
 
-// create color vector array
+// Create color vector array
 GRID_F3_ColorVectorArray * GRID_F3_create_V_array(
   int n,
   int milc_parity,
@@ -769,7 +772,7 @@ GRID_F3_ColorVectorArray * GRID_F3_create_V_array(
   create_V_array< ImprovedStaggeredFermionF >( n, milc_parity, grid_full->gridF, grid_rb->gridF );
 }
 
-// create color vector array
+// Create color vector array
 GRID_D3_ColorVectorArray * GRID_D3_create_V_array(
   int n,
   int milc_parity,
@@ -779,19 +782,19 @@ GRID_D3_ColorVectorArray * GRID_D3_create_V_array(
   create_V_array< ImprovedStaggeredFermionD >( n, milc_parity, grid_full->gridD, grid_rb->gridD );
 }
 
-// free color vector array
+// Free color vector array
 void GRID_F3_destroy_V_array( GRID_F3_ColorVectorArray * V )
 {
   destroy_V_array< ImprovedStaggeredFermionF >( V );
 }
 
-// free color vector array
+// Free color vector array
 void GRID_D3_destroy_V_array( GRID_D3_ColorVectorArray * V )
 {
   destroy_V_array< ImprovedStaggeredFermionD >( V );
 }
 
-// create color vector array from MILC type
+// Create color vector array from MILC type
 GRID_F3_ColorVectorArray * GRID_F3_create_V_array_from_vec_array(
   su3_vector ** src,
   int n,
@@ -803,7 +806,7 @@ GRID_F3_ColorVectorArray * GRID_F3_create_V_array_from_vec_array(
     src, n, milc_parity, grid_full->gridF, grid_rb->gridF );
 }
 
-// create color vector array from MILC type
+// Create color vector array from MILC type
 GRID_D3_ColorVectorArray * GRID_D3_create_V_array_from_vec_array(
   su3_vector ** src,
   int n,
@@ -815,7 +818,7 @@ GRID_D3_ColorVectorArray * GRID_D3_create_V_array_from_vec_array(
     src, n, milc_parity, grid_full->gridD, grid_rb->gridD );
 }
 
-// copy color vector array from Grid structure to MILC type
+// Copy color vector array from Grid structure to MILC type
 void GRID_F3_extract_V_array_to_vec_array(
   su3_vector ** dest,
   int n,
@@ -826,7 +829,7 @@ void GRID_F3_extract_V_array_to_vec_array(
   return ;
 }
 
-// copy color vector array from Grid structure to MILC type
+// Copy color vector array from Grid structure to MILC type
 void GRID_D3_extract_V_array_to_vec_array(
   su3_vector ** dest,
   int n,
@@ -836,7 +839,5 @@ void GRID_D3_extract_V_array_to_vec_array(
   extract_V_array_to_vec_array< ImprovedStaggeredFermionD, ColourVectorD >( dest, n, src, milc_parity );
   return ;
 }
-
-//--------------------------------- Interfaces for GRID_ColorVectorArray
 
 

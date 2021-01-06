@@ -1,4 +1,3 @@
-//hc
 //------------- gridStaggEigen.cc --------------
 // MILC-Grid interfaces for eigensolver routines
 // 
@@ -150,7 +149,7 @@ static void impResLanczos( GRID_ColorVectorArray_struct<ImprovedStaggeredFermion
   return ;
 }
 
-// double preicision version wrapper
+// Double preicision version wrapper
 void GRID_D3_implicitly_restarted_lanczos(
   GRID_D3_ColorVectorArray * eigVecs,
   double * eigVals,
@@ -168,7 +167,7 @@ void GRID_D3_implicitly_restarted_lanczos(
   return ;
 }
 
-// single preicision version wrapper
+// Single preicision version wrapper
 void GRID_F3_implicitly_restarted_lanczos(
   GRID_F3_ColorVectorArray * eigVecs,
   float * eigVals,

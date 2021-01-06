@@ -1,4 +1,3 @@
-/*hc*/
 /************ eigen_stuff_Grid.c **************/
 /* Eigenvalue and Eigevector computation routines.
  * This version uses Grid (https://github.com/paboyle/Grid)

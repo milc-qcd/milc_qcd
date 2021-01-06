@@ -87,7 +87,6 @@ typedef struct {
 } GRID_resid_arg_t;
 #define GRID_RESID_ARG_DEFAULT ((GRID_resid_arg_t){1e-6,0,0,0,0,0})
 
-/*hc --------------------------*/
 /* Parameters for Chebyshev polynomial */
 typedef struct
 {
@@ -118,7 +117,6 @@ typedef struct
   GRID_ChebyParams chebyParams;
   GRID_IRLdiagonalisation diag;
 } GRID_eig_arg_t;
-/*-------------------------- hc*/
   
   /**********************/
   /*  General routines  */
