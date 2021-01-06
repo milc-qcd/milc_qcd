@@ -22,7 +22,7 @@ int io_detect(char *filename, file_table ft[], int ntypes){
   FILE *fp;
   int i, status, words;
   int32type magic_no;
-  int32type revmagic_no;
+  u_int32type revmagic_no;
   char editfilename[513];
 
   /* Node 0 reads and checks */
@@ -171,7 +171,7 @@ int io_detect_w_usqcd(char *filename){
 int io_detect_fm(char *filename){
   FILE *fp;
   int status, words;
-  int32type magic_no, revmagic_no, gmtime_stamp, size_of_element,
+  u_int32type magic_no, revmagic_no, gmtime_stamp, size_of_element,
     elem_per_site;
   int byterevflag = 0;
 
