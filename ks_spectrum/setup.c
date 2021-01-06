@@ -518,7 +518,8 @@ int readin(int prompt) {
       int check = CHECK_NO;
       char mgparamfile[MAXFILENAME] = "";
 
-#ifdef MULTISOURCE
+/*hc*/
+/* #ifdef MULTISOURCE */
       IF_OK status += get_s(stdin, prompt, "set_type", savebuf);
       IF_OK {
 	if(strcmp(savebuf,"multimass") == 0)
@@ -533,9 +534,10 @@ int readin(int prompt) {
 	  status++;
 	}
       }
-#else
-      param.set_type[k] = MULTIMASS_SET;
-#endif
+/*hc*/
+/* #else */
+/*       param.set_type[k] = MULTIMASS_SET; */
+/* #endif */
 
 #ifdef MULTIGRID
       IF_OK status += get_s(stdin, prompt, "inv_type", savebuf);
