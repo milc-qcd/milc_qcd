@@ -53,6 +53,10 @@
 #define flow_step integrate_adapt_bs
 #endif
 
+// for tuning of the coefficients of generic third-order and adaptive
+//#define READ_CF3_FROM_FILE
+//#define READ_ADPT_CF3_FROM_FILE
+
 // dump lattice in double precision for debugging purposes
 // BE CAREFULL with this
 //#define DEBUG_FIELDS

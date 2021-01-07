@@ -243,7 +243,6 @@ initialize_integrator()
   N_stages = 3;
   // Commutator-free 2N-storage with arbitrary coefficients
 
-#define READ_CF3_FROM_FILE
 #ifdef READ_CF3_FROM_FILE
   FILE *fp;
   int st = 0;
@@ -275,13 +274,20 @@ initialize_integrator()
   node0_printf( "%.16g\n", B_2N[1] );
   node0_printf( "%.16g\n", B_2N[2] );
 #else
-  // optimized with Ralston procedure
+  // Williamson scheme 7
   A_2N[0] = 0;
+  A_2N[1] = -5/9.;
+  A_2N[2] = -153/128.;
+  B_2N[0] = 1/3.;
+  B_2N[1] = 15/16.;
+  B_2N[2] = 8/15.;
+  // optimized with Ralston procedure
+/*A_2N[0] = 0;
   A_2N[1] = -0.637694471842202;
   A_2N[2] = -1.306647717737108;
   B_2N[0] = 0.457379997569388;
   B_2N[1] = 0.925296410920922;
-  B_2N[2] = 0.393813594675071;
+  B_2N[2] = 0.393813594675071;*/
 #endif
   node0_printf("Integrator = INTEGRATOR_CF3\n");
 #elif GF_INTEGRATOR==INTEGRATOR_RKMK3
@@ -403,6 +409,7 @@ initialize_integrator()
   N_stages = 3;
   // Commutator-free 2N-storage with arbitrary coefficients
 
+#ifdef READ_ADPT_CF3_FROM_FILE
   FILE *fp;
   int st;
   fp = fopen( "cf3adpt_coeff.dat", "rt" );
@@ -441,6 +448,18 @@ initialize_integrator()
   node0_printf( "%.16g\n", Lambda[0] );
   node0_printf( "%.16g\n", Lambda[1] );
   node0_printf( "%.16g\n", Lambda[2] );
+#else
+  // Luscher coefficients -- default
+  A_2N[0] = 0;
+  A_2N[1] = -17/32.;
+  A_2N[2] = -32/27.;
+  B_2N[0] = 1/4.;
+  B_2N[1] = 8/9.;
+  B_2N[2] = 3/4.;
+  Lambda[0] = -1;
+  Lambda[1] = 2;
+  Lambda[2] = 0;
+#endif
   node0_printf("Integrator = INTEGRATOR_ADAPT_CF3\n");
 #elif GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
   // Bogacki-Shampine integrator based on Ralston coefficients
