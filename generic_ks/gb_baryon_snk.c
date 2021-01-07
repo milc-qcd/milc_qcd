@@ -1606,7 +1606,7 @@ gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2[],
   if (mom[0] != 0 || mom[1] != 0 || mom[2] != 0){
     // if nonzero, compute Fourier phase once and reuse many times
     // negative sign is necessary to get momentum conservation
-    px = -mom[0]; py = -mom[1]; pz = -mom[2];
+    px = mom[0]; py = mom[1]; pz = mom[2];
     ex = par[0]; ey = par[1]; ez = par[2];
     FORALLSITES(i,s) {
       tmp.real = 1.; tmp.imag = 0.;
