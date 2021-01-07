@@ -2,15 +2,15 @@
 /* For the Grid interface */
 /* MIMD version 7 */
 
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+
 #include <Grid/Grid.h>
 #include <Grid/communicator/Communicator.h>
 #include <vector>
 #include <iostream>
 //#include <qmp.h>
-
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 #undef GRID_EXTERN
 

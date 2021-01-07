@@ -1,3 +1,9 @@
+// Wrappers for Grid Staggered Inverters
+
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+
 #include <Grid/Grid.h>
 
 #include "../include/mGrid/mGrid_internal.h"

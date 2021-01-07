@@ -32,7 +32,7 @@
 
 #ifdef PRTIME
 #define STARTTIME dtime = -dclock();
-#define ENDTIME(string) dtime += dclock(); node0_printf("Aggregate time to %s %e\n",(string),dtime);
+#define ENDTIME(string) dtime += dclock(); node0_printf("Aggregate time to %s %e\n",(string),dtime);  fflush(stdout);
 #else
 #define STARTTIME
 #define ENDTIME(string)

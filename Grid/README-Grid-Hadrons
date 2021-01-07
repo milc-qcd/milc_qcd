@@ -1,0 +1,19 @@
+Instructions for downloading and building the Grid and Hadrons
+packages for the "develop" branches for use with the MILC code.
+
+Check the configure options for the desired build architecture in
+build_Grid.sh and build_Hadrons.sh
+
+Then run 
+   ./build_Grid.sh scalar|avx512|avx2 PK_CC PK_CXX
+
+On Cray systems, use PK_CC = cc and PK_CXX = CC.  Also, be sure the modules
+include compiler, architecture (KNL), and MPI support.  For example,
+
+PrgEnv-intel/6.0.4 
+craype-mic-knl 
+cray-mpich/7.6.2
+
+C. DeTar
+12/25/2020
+

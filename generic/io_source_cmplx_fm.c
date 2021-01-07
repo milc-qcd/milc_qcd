@@ -63,7 +63,7 @@ read_cmplx_fm_source_hdr(cmplx_source_file *csf)
   if(csh->magic_number == IO_UNI_MAGIC) byterevflag = 0;
   else 
     {
-      byterevn((int32type *)&csh->magic_number,1);
+      byterevn((u_int32type *)&csh->magic_number,1);
       if(csh->magic_number == IO_UNI_MAGIC) 
 	{
 	  byterevflag = 1; 
@@ -297,7 +297,7 @@ r_source_cmplx_fm(cmplx_source_file *csf, field_offset dest_site,
 	    /* Byte reverse a copy, since we may need to reuse cmsg.q */
 	    cfix = cmsg.q;
 	    if(byterevflag==1){
-		byterevn((int32type *)&cfix, 
+		byterevn((u_int32type *)&cfix, 
 			 sizeof(fcomplex)/sizeof(int32type));
 	    }
 	    

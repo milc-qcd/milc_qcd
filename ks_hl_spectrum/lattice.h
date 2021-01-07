@@ -103,7 +103,7 @@ typedef struct {
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  char job_id[MAXFILENAME];
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int nrestart,wallflag;
 #define MAX_KAP 6
 EXTERN	double kappa,source_r0,kap[MAX_KAP],resid[MAX_KAP];
