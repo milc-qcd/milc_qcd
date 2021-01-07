@@ -3,7 +3,7 @@ MIMD version 7
 Machine = MPI (portable), with 1 nodes
 Host(0) = computer
 Username = bazavov
-start: Tue Jan  5 19:01:07 2021
+start: Thu Jan  7 00:08:02 2021
 
 Options selected...
 Generic double precision
@@ -19,15 +19,6 @@ ON EACH NODE (RANK) 4 x 4 x 4 x 8
 Mallocing 2.0 MBytes per node for lattice
 Made lattice
 Made nn gathers
-0
--0.53125
--1.185185185185185
-0.25
-0.8888888888888888
-0.75
--1
-2
-0
 Integrator = INTEGRATOR_ADAPT_CF3
 Finished setup
 
@@ -43,11 +34,11 @@ forget
 Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4448
 Time stamp Wed Oct 10 14:27:08 2001
 Checksums 13f3b413 161f7dde OK
-Time to reload gauge configuration = 8.180141e-04
+Time to reload gauge configuration = 1.769066e-04
 CHECK PLAQ: 1.7237482807974562e+00 1.6905860654166089e+00
 CHECK NERSC LINKTR: 6.9216590060585517e-02 CKSUM: b3be9b3b
 Reunitarized for double precision. Max deviation 2.26e-07 changed to 4.44e-16
-Time to check unitarity = 1.056910e-03
+Time to check unitarity = 2.181530e-04
 #LABEL time Clover_t Clover_s Plaq_t Plaq_s Rect_t Rect_s charge
 #ADAPT time stepsize distance local_tol/distance
 GFLOW: 0 1.0578659327458 1.030934998403563 1.723748273963273 1.690586048164112 1.073598789709706 1.027570247980367 0.09554287095824406
@@ -74,11 +65,11 @@ GFLOW: 1 0.04194154668274509 0.0274348058969209 2.99427469462497 2.9915084113182
 ADAPT: 1 0.0296103340646392 0.00015349341050008 65.14937655903336
 Number of steps = 10
 Number of rejected steps = 2
-Time to complete flow = 2.901208e-01 seconds
+Time to complete flow = 2.609689e-01 seconds
 
 
 ask_starting_lattice(0): EOF on input.
 RUNNING COMPLETED
-Time = 2.977202e-01 seconds
-exit: Tue Jan  5 19:01:07 2021
+Time = 2.625742e-01 seconds
+exit: Thu Jan  7 00:08:03 2021
 
