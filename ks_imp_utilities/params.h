@@ -4,6 +4,7 @@
 #include "../include/macros.h"  /* For MAXFILENAME */
 #include "defines.h"
 #include "../include/generic_quark_types.h"
+#include "../include/imp_ferm_links.h"
 
 #define MAX_MASS 8
 
@@ -39,6 +40,12 @@ typedef struct {
   int srcflag[MAX_MASS]; /* what to do for source lattice */
   int ansflag[MAX_MASS]; /* what to do for answer lattice */
   
+  char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
+  char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
+  int ks_eigen_startflag; /* what to do for beginning eigenvectors */
+  int ks_eigen_saveflag; /* what to do for ending eigenvectors */
+  ks_eigen_param eigen_param; /* Parameters for eigensolver */
+
   char startfile[MAXFILENAME],savefile[MAXFILENAME];
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
   char savelongfile[MAXFILENAME],savefatfile[MAXFILENAME];

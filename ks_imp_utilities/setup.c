@@ -177,6 +177,9 @@ readin(int prompt)
     IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.savefatflag),
 				       par_buf.savefatfile );
 
+    /* Eigenpairs not supported */
+    param.eigen_param.Nvecs = 0;
+
     /* Inversion parameters */
     IF_OK status += get_i(stdin, prompt,"number_of_masses", &par_buf.nmass );
 
