@@ -18,8 +18,8 @@
 extern GRID_4Dgrid * grid_full;
 extern GRID_4DRBgrid * grid_rb;
 
-#define EIG_DEBUG
-#define EIGTIME
+/* #define EIG_DEBUG */
+/* #define EIGTIME */
 
 /* Compute eigenvalues and eigenvectors of the Kogut-Susskind
  * dslash^2. */

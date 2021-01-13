@@ -1,0 +1,139 @@
+BEGIN RESULTS
+Eigenvalue(0) = 0.0002
+Eigenvalue(1) = 0.0002
+Eigenvalue(2) = 0.0004
+Eigenvalue(3) = 0.0004
+Eigenvalue(4) = 0.0004
+Eigenvalue(5) = 0.0004
+Eigenvalue(6) = 0.0004
+Eigenvalue(7) = 0.0004
+Eigenvalue(8) = 0.0004
+Eigenvalue(9) = 0.0004
+Eigenvalue(10) = 0.0004
+Eigenvalue(11) = 0.0004
+Eigenvalue(12) = 0.0004
+Eigenvalue(13) = 0.0004
+Eigenvalue(14) = 0.0005
+Eigenvalue(15) = 0.0005
+Eigenvalue(16) = 0.0005
+Eigenvalue(17) = 0.0005
+Eigenvalue(18) = 0.0005
+Eigenvalue(19) = 0.0005
+Eigenvalue(20) = 0.0005
+Eigenvalue(21) = 0.0005
+Eigenvalue(22) = 0.0005
+Eigenvalue(23) = 0.0005
+Eigenvalue(24) = 0.0005
+Eigenvalue(25) = 0.0005
+Eigenvalue(26) = 0.0005
+Eigenvalue(27) = 0.0005
+Eigenvalue(28) = 0.2
+Eigenvalue(29) = 0.2
+Eigenvalue(30) = 0.05
+Eigenvalue(31) = 0.05
+Even site residuals
+Checking eigensolutions
+eigVal[0] = 0.0002 ( resid = 0.0002 , ||eigVec[0]|-1| = 0.0002 )
+eigVal[1] = 0.0002 ( resid = 0.0002 , ||eigVec[1]|-1| = 0.0002 )
+eigVal[2] = 0.0004 ( resid = 0.0002 , ||eigVec[2]|-1| = 0.0002 )
+eigVal[3] = 0.0004 ( resid = 0.0002 , ||eigVec[3]|-1| = 0.0002 )
+eigVal[4] = 0.0004 ( resid = 0.0002 , ||eigVec[4]|-1| = 0.0002 )
+eigVal[5] = 0.0004 ( resid = 0.0002 , ||eigVec[5]|-1| = 0.0002 )
+eigVal[6] = 0.0004 ( resid = 0.0002 , ||eigVec[6]|-1| = 0.0002 )
+eigVal[7] = 0.0004 ( resid = 0.0002 , ||eigVec[7]|-1| = 0.0002 )
+eigVal[8] = 0.0004 ( resid = 0.0002 , ||eigVec[8]|-1| = 0.0002 )
+eigVal[9] = 0.0004 ( resid = 0.0002 , ||eigVec[9]|-1| = 0.0002 )
+eigVal[10] = 0.0004 ( resid = 0.0002 , ||eigVec[10]|-1| = 0.0002 )
+eigVal[11] = 0.0004 ( resid = 0.0002 , ||eigVec[11]|-1| = 0.0002 )
+eigVal[12] = 0.0004 ( resid = 0.0002 , ||eigVec[12]|-1| = 0.0002 )
+eigVal[13] = 0.0004 ( resid = 0.0002 , ||eigVec[13]|-1| = 0.0002 )
+eigVal[14] = 0.0005 ( resid = 0.0002 , ||eigVec[14]|-1| = 0.0002 )
+eigVal[15] = 0.0005 ( resid = 0.0002 , ||eigVec[15]|-1| = 0.0002 )
+eigVal[16] = 0.0005 ( resid = 0.0002 , ||eigVec[16]|-1| = 0.0002 )
+eigVal[17] = 0.0005 ( resid = 0.0002 , ||eigVec[17]|-1| = 0.0002 )
+eigVal[18] = 0.0005 ( resid = 0.0002 , ||eigVec[18]|-1| = 0.0002 )
+eigVal[19] = 0.0005 ( resid = 0.0002 , ||eigVec[19]|-1| = 0.0002 )
+eigVal[20] = 0.0005 ( resid = 0.0002 , ||eigVec[20]|-1| = 0.0002 )
+eigVal[21] = 0.0005 ( resid = 0.0002 , ||eigVec[21]|-1| = 0.0002 )
+eigVal[22] = 0.0005 ( resid = 0.0002 , ||eigVec[22]|-1| = 0.0002 )
+eigVal[23] = 0.0005 ( resid = 0.0002 , ||eigVec[23]|-1| = 0.0002 )
+eigVal[24] = 0.0005 ( resid = 0.0002 , ||eigVec[24]|-1| = 0.0002 )
+eigVal[25] = 0.0005 ( resid = 0.0002 , ||eigVec[25]|-1| = 0.0002 )
+eigVal[26] = 0.0005 ( resid = 0.0002 , ||eigVec[26]|-1| = 0.0002 )
+eigVal[27] = 0.0005 ( resid = 0.0002 , ||eigVec[27]|-1| = 0.0002 )
+eigVal[28] = 0.2 ( resid = 0.0002 , ||eigVec[28]|-1| = 0.0002 )
+eigVal[29] = 0.2 ( resid = 0.0002 , ||eigVec[29]|-1| = 0.0002 )
+eigVal[30] = 0.05 ( resid = 0.0002 , ||eigVec[30]|-1| = 0.0002 )
+eigVal[31] = 0.05 ( resid = 0.0002 , ||eigVec[31]|-1| = 0.0002 )
+End of eigensolutions
+Odd site residuals
+Checking eigensolutions
+eigVal[0] = 0.0002 ( resid = 0.0002 , ||eigVec[0]|-1| = 0.0002 )
+eigVal[1] = 0.0002 ( resid = 0.0002 , ||eigVec[1]|-1| = 0.0002 )
+eigVal[2] = 0.0004 ( resid = 0.0002 , ||eigVec[2]|-1| = 0.02 )
+eigVal[3] = 0.0004 ( resid = 0.0002 , ||eigVec[3]|-1| = 0.02 )
+eigVal[4] = 0.0004 ( resid = 0.0002 , ||eigVec[4]|-1| = 0.003 )
+eigVal[5] = 0.0004 ( resid = 0.0002 , ||eigVec[5]|-1| = 0.01 )
+eigVal[6] = 0.0004 ( resid = 0.0002 , ||eigVec[6]|-1| = 0.0002 )
+eigVal[7] = 0.0004 ( resid = 0.0002 , ||eigVec[7]|-1| = 0.0002 )
+eigVal[8] = 0.0004 ( resid = 0.0002 , ||eigVec[8]|-1| = 0.02 )
+eigVal[9] = 0.0004 ( resid = 0.0002 , ||eigVec[9]|-1| = 0.02 )
+eigVal[10] = 0.0004 ( resid = 0.0002 , ||eigVec[10]|-1| = 0.002 )
+eigVal[11] = 0.0004 ( resid = 0.0002 , ||eigVec[11]|-1| = 0.02 )
+eigVal[12] = 0.0004 ( resid = 0.0002 , ||eigVec[12]|-1| = 0.0002 )
+eigVal[13] = 0.0004 ( resid = 0.0002 , ||eigVec[13]|-1| = 0.0002 )
+eigVal[14] = 0.0005 ( resid = 0.0002 , ||eigVec[14]|-1| = 0.03 )
+eigVal[15] = 0.0005 ( resid = 0.0002 , ||eigVec[15]|-1| = 0.03 )
+eigVal[16] = 0.0005 ( resid = 0.0002 , ||eigVec[16]|-1| = 0.02 )
+eigVal[17] = 0.0005 ( resid = 0.0002 , ||eigVec[17]|-1| = 0.003 )
+eigVal[18] = 0.0005 ( resid = 0.0002 , ||eigVec[18]|-1| = 0.0002 )
+eigVal[19] = 0.0005 ( resid = 0.0002 , ||eigVec[19]|-1| = 0.0002 )
+eigVal[20] = 0.0005 ( resid = 0.0002 , ||eigVec[20]|-1| = 0.05 )
+eigVal[21] = 0.0005 ( resid = 0.0002 , ||eigVec[21]|-1| = 0.06 )
+eigVal[22] = 0.0005 ( resid = 0.0002 , ||eigVec[22]|-1| = 0.04 )
+eigVal[23] = 0.0005 ( resid = 0.0002 , ||eigVec[23]|-1| = 0.004 )
+eigVal[24] = 0.0005 ( resid = 0.0002 , ||eigVec[24]|-1| = 0.0002 )
+eigVal[25] = 0.0005 ( resid = 0.0002 , ||eigVec[25]|-1| = 0.0002 )
+eigVal[26] = 0.0005 ( resid = 0.0002 , ||eigVec[26]|-1| = 0.02 )
+eigVal[27] = 0.0005 ( resid = 0.0002 , ||eigVec[27]|-1| = 0.02 )
+eigVal[28] = 0.2 ( resid = 0.0002 , ||eigVec[28]|-1| = 0.002 )
+eigVal[29] = 0.2 ( resid = 0.0002 , ||eigVec[29]|-1| = 0.01 )
+eigVal[30] = 0.05 ( resid = 0.0002 , ||eigVec[30]|-1| = 0.0002 )
+eigVal[31] = 0.05 ( resid = 0.0002 , ||eigVec[31]|-1| = 0.0002 )
+End of eigensolutions
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+The above were eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0): 0.0002
+eigenval(1): 0.0002
+eigenval(2): 0.0002
+eigenval(3): 0.0002
+eigenval(4): 0.0002
+eigenval(5): 0.0002
+eigenval(6): 0.0002
+eigenval(7): 0.0002
+eigenval(8): 0.0002
+eigenval(9): 0.0002
+eigenval(10): 0.0002
+eigenval(11): 0.0002
+eigenval(12): 0.0002
+eigenval(13): 0.0002
+eigenval(14): 0.0002
+eigenval(15): 0.0002
+eigenval(16): 0.0002
+eigenval(17): 0.0002
+eigenval(18): 0.0002
+eigenval(19): 0.0002
+eigenval(20): 0.0002
+eigenval(21): 0.0002
+eigenval(22): 0.0002
+eigenval(23): 0.0002
+eigenval(24): 0.0002
+eigenval(25): 0.0002
+eigenval(26): 0.0002
+eigenval(27): 0.0002
+eigenval(28): 0.03
+eigenval(29): 0.03
+eigenval(30): 0.008
+eigenval(31): 0.008
+RUNNING COMPLETED

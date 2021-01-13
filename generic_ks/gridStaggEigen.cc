@@ -14,8 +14,8 @@
 using namespace std;
 using namespace Grid;
 
-#define EIG_DEBUG
-#define EIG_TIME
+// #define EIG_DEBUG
+// #define EIG_TIME
 
 // Run implicitly restarted Lanczos routine in Grid.
 // Mainly use ImplicitlyRestartedLanczos class.
