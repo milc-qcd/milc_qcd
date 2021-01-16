@@ -294,7 +294,7 @@ initialize_integrator()
   N_stages = 3;
   p_order = 3;
   // Ralston coefficients
-  // NOTE: indexing is shifted by -1 in C compared to usual Bucher tables
+  // NOTE: indexing is shifted by -1 in C compared to usual Butcher tables
   a_RK[1][0] = 1/2.;
   a_RK[2][0] = 0; a_RK[2][1] = 3/4.;
   b_RK[0] = 2/9.; b_RK[1] = 1/3.; b_RK[2] = 4/9.;
@@ -302,7 +302,7 @@ initialize_integrator()
 #elif GF_INTEGRATOR==INTEGRATOR_RKMK4
   N_stages = 4;
   p_order = 4;
-  // NOTE: indexing is shifted by -1 in C compared to usual Bucher tables
+  // NOTE: indexing is shifted by -1 in C compared to usual Butcher tables
   a_RK[1][0] =  1/3.;
   a_RK[2][0] = -1/3.;
   a_RK[2][1] =  1;
@@ -323,7 +323,7 @@ initialize_integrator()
   N_stages = 6;
   p_order = 5;
   // Butcher coefficients
-  // NOTE: indexing is shifted by -1 in C compared to usual Bucher tables
+  // NOTE: indexing is shifted by -1 in C compared to usual Butcher tables
   a_RK[1][0] = 1/4.;
   a_RK[2][0] = 1/8.; a_RK[2][1] = 1/8.;
   a_RK[3][0] = 0; a_RK[3][1] = -1/2.; a_RK[3][2] = 1;
@@ -333,7 +333,7 @@ initialize_integrator()
   b_RK[0] = 7/90.; b_RK[1] = 0; b_RK[2] = 32/90.; b_RK[3] = 12/90.;
   b_RK[4] = 32/90.; b_RK[5] = 7/90.;
   // Dormand-Prince coefficients
-  // NOTE: indexing is shifted by -1 in C compared to usual Bucher tables
+  // NOTE: indexing is shifted by -1 in C compared to usual Butcher tables
 /*  a_RK[1][0] = 1/5.;
   a_RK[2][0] = 3/40.; a_RK[2][1] = 9/40.;
   a_RK[3][0] = 44/45.; a_RK[3][1] = -56/15.; a_RK[3][2] = 32/9.;
@@ -348,7 +348,7 @@ initialize_integrator()
   N_stages = 13;
   p_order = 8;
   // Dormand-Prince coefficients
-  // NOTE: indexing is shifted by -1 in C compared to usual Bucher tables
+  // NOTE: indexing is shifted by -1 in C compared to usual Butcher tables
   a_RK[1][0] = 1/18.;
   a_RK[2][0] = 1/48.; a_RK[2][1] = 1/16.;
   a_RK[3][0] = 1/32.; a_RK[3][1] = 0; a_RK[3][2] = 3/32.;
@@ -465,7 +465,7 @@ initialize_integrator()
   // Bogacki-Shampine integrator based on Ralston coefficients
   // NOTE: there is a fourth stage that produces a lower order approximation
   N_stages = 3;
-  // NOTE: indexing is shifted by -1 in C compared to usual Bucher tables
+  // NOTE: indexing is shifted by -1 in C compared to usual Butcher tables
   a_RK[1][0] = 1/2.;
   a_RK[2][0] = 0; a_RK[2][1] = 3/4.;
   b_RK[0] = 2/9.; b_RK[1] = 1/3.; b_RK[2] = 4/9.;
