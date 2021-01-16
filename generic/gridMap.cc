@@ -776,7 +776,7 @@ GRID_F3_ColorVectorArray * GRID_F3_create_V_array(
   GRID_4Dgrid * grid_full,
   GRID_4DRBgrid * grid_rb )
 {
-  create_V_array< ImprovedStaggeredFermionF >( n, milc_parity, grid_full->gridF, grid_rb->gridF );
+  return create_V_array< ImprovedStaggeredFermionF >( n, milc_parity, grid_full->gridF, grid_rb->gridF );
 }
 
 // Create color vector array
@@ -786,7 +786,7 @@ GRID_D3_ColorVectorArray * GRID_D3_create_V_array(
   GRID_4Dgrid * grid_full,
   GRID_4DRBgrid * grid_rb )
 {
-  create_V_array< ImprovedStaggeredFermionD >( n, milc_parity, grid_full->gridD, grid_rb->gridD );
+  return create_V_array< ImprovedStaggeredFermionD >( n, milc_parity, grid_full->gridD, grid_rb->gridD );
 }
 
 // Free color vector array
