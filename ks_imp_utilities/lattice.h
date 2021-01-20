@@ -132,9 +132,9 @@ EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  char savelongfile[MAXFILENAME],savefatfile[MAXFILENAME];
+EXTERN  char stringLFNlong[MAXFILENAME], stringLFNfat[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  char srcfile[MAXFILENAME],ansfile[MAXFILENAME];
 EXTERN  int inverttype;
-EXTERN  params par_buf;
 EXTERN  int niter;
 EXTERN  int nrestart;
 EXTERN  Real rsqprop;
