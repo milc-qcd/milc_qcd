@@ -32,7 +32,7 @@ forget_ks_eigen
 Max_Lanczos_restart_iters 100
 
 # Eigenvalue tolerance
-eigenval_tolerance 5.0e-14
+eigenval_tolerance 5.0e-13
 
 # Stop Lanczos at Lanczos_max (number of eigenvalues) and restart from Lanczos_restart (number of eigenvalues)
 # Lanczos_max > lanczos_restart >= max_number_of_eigenpairs
