@@ -1,0 +1,29 @@
+All -
+
+Investigations by Kate Clark last week of mysterious segfaults in QUDA MILC revealed a potential dangerous bug, depending on compilation switches, in newer versions of qio.
+
+THIS DOES NOT AFFECT the qio versions 2.4.1 and earlier installed in /usr/local/scidac on ds, bc, or pi0.
+
+However, if you have been building 2.4.2 or later (and recall that qio is included with QDP++), the source module
+
+     lib/lrl/LRL_main.c
+
+will include these lines near the top:
+
+     #ifndef _POSIX_SOURCE
+     #define _POSIX_SOURCE 1 // for fdopen in stdio
+     #endif
+
+If you use "-std=c99" in your compilation (likely, since other source modules declare variable types within "for" statements), you will get the warnings
+
+
+lrl/LRL_main.c:89:7: warning: implicit declaration of function ?fdopen? [-Wimplicit-function-declaration]
+       fw->file = fdopen(fd, "w");
+       ^
+lrl/LRL_main.c:89:16: warning: assignment makes pointer from integer without a cast [enabled by default]
+       fw->file = fdopen(fd, "w");
+       ^
+
+Because the default integer size is 32 bits and implicitly defined functions return an int, this can result in 64-bit pointers that have the upper 32-bits truncated to zeroes.  Depending when and were the fw->file function pointer is declared, this can lead to corruption; if you are lucky, the bogus pointer will reuslt in a segfault rather than hidden memory corruption.
+
+Switching from "-std=c99" to "-std=gnu99" will fix this problem.  Also, a fix has been checked into the qio git repository that is compatible with "-std=c99". 

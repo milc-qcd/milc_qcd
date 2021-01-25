@@ -1,0 +1,5 @@
+SRCDIR/configure \
+ --prefix=INSDIR \
+ --with-qmp-comms-type=SINGLE \
+ CC=gcc \
+ CFLAGS="-fPIC -O -std=c99"

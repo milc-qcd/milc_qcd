@@ -1,0 +1,6 @@
+SRCDIR/configure \
+ --prefix=INSDIR \
+ --with-qmp-comms-type=MPI \
+ CC=mpiicc \
+ CFLAGS="-fPIC -Wall -O3 -std=c99"
+
