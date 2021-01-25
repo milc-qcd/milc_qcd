@@ -3,7 +3,7 @@
 For gb_baryon applications, only QMP and QIO are needed. Fisrt, you need to change the configuration files at ```qinstall/qio```
 and ```qinstall/qmp```, especially specifying the C compiler with the ```CC``` option.
 
-Once this is done, you can access the folder ```qio`` and do
+Once this is done, you can access the folder ```qio``` and do
 
 ```sh
 make install_qio
