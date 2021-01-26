@@ -150,14 +150,14 @@ void check_fermion_force( char srcfile[MAX_MASS][MAXFILENAME], int srcflag,
   if(ansflag == SAVE_SERIAL){
     filexml = create_QCDML();
     save_color_matrix_scidac_from_field(ansfile, filexml, 
-        recxml, QIO_SINGLEFILE, ansmom, 4, MILC_PRECISION);
+	recxml, QIO_SINGLEFILE, ansmom, 4, MILC_PRECISION, NULL);
     free_QCDML(filexml);
   }
   else if(ansflag == SAVE_PARTFILE_SCIDAC){
     node0_printf("Saving the momentum matrix\n");
     filexml = create_QCDML();
     save_color_matrix_scidac_from_field(ansfile, filexml, 
-       recxml, QIO_PARTFILE, ansmom, 4, MILC_PRECISION);
+	recxml, QIO_PARTFILE, ansmom, 4, MILC_PRECISION, NULL);
     free_QCDML(filexml);
   }
 #endif

@@ -100,6 +100,44 @@ void GRID_D3_asqtad_invert_block (GRID_info_t *info,
 				  GRID_D3_ColorVectorBlock *in,
 				  GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
 				  GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
+
+
+typedef STRUCT GRID_D3_ColorVectorArray_struct GRID_D3_ColorVectorArray;
+
+/* implicitly restarted Lanczos */
+void GRID_D3_implicitly_restarted_lanczos(
+  GRID_D3_ColorVectorArray * eigVecs,
+  double * eigVals,
+  GRID_D3_FermionLinksAsqtad * asqtad,
+  GRID_eig_arg_t * eig_arg,
+  double mass,
+  GRID_4Dgrid * grid_full,
+  GRID_4DRBgrid * grid_rb );
+  
+/* create color vector array */
+GRID_D3_ColorVectorArray * GRID_D3_create_V_array(
+  int n,
+  int milc_parity,
+  GRID_4Dgrid * grid_full,
+  GRID_4DRBgrid * grid_rb );
+
+/* free color vector array */
+void GRID_D3_destroy_V_array( GRID_D3_ColorVectorArray * V );
+  
+/* create color vector array from MILC type */
+GRID_D3_ColorVectorArray * GRID_D3_create_V_array_from_vec_array(
+  su3_vector ** src,
+  int n,
+  int milc_parity,
+  GRID_4Dgrid * grid_full,
+  GRID_4DRBgrid * grid_rb );
+
+/* copy color vector array from Grid structure to MILC type */
+void GRID_D3_extract_V_array_to_vec_array(
+  su3_vector ** dest,
+  int n,
+  GRID_D3_ColorVectorArray * src,
+  int milc_parity );
   
   /**************************************************/
   /* Mapping of generic names to specific precision */

@@ -692,7 +692,7 @@ int read_ks_prop_hdr(ks_prop_file *kspf, int parallel)
     byterevflag=0;
   else 
     {
-      byterevn((int32type *)&ksph->magic_number,1);
+      byterevn((u_int32type *)&ksph->magic_number,1);
       if(ksph->magic_number == KSPROP_VERSION_NUMBER) 
 	{
 	  byterevflag=1;
@@ -1016,7 +1016,7 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset dest_site,
       if(this_node==destnode)
 	{
 	  if(byterevflag==1)
-	    byterevn((int32type *)(&msg.ksv),
+	    byterevn((u_int32type *)(&msg.ksv),
 		     sizeof(fsu3_vector)/sizeof(int32type));
 	  /* Accumulate checksums */
 	  for(k = 0, val = (u_int32type *)(&msg.ksv); 

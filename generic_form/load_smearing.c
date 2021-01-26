@@ -60,7 +60,7 @@ void load_scalar_smear(Real *data, int dim, char filename[])
   }
 
   if(  byte_rev_flag ==  byte_rev ) 
-    byterevn( (int32type*) header_data , three_object ) ; 
+    byterevn( (u_int32type*) header_data , three_object ) ; 
 
   if( header_data[0] != magic_number )
   {
@@ -95,7 +95,7 @@ void load_scalar_smear(Real *data, int dim, char filename[])
 
 
   if(  byte_rev_flag ==  byte_rev ) 
-    byterevn( (int32type*) data , nobj ) ; 
+    byterevn( (u_int32type*) data , nobj ) ; 
 
 
 

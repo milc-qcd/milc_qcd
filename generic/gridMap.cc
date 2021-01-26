@@ -635,3 +635,216 @@ GRID_D3_asqtad_destroy_L( GRID_D3_FermionLinksAsqtad *gl ){
 }
 
 
+// Create the color vector array interface object
+template< typename ImprovedStaggeredFermion >
+static struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > *
+create_V_array( int n, int milc_parity, GridCartesian * CGrid, GridRedBlackCartesian * RBGrid )
+{
+  int i; // loop index
+  struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * out;
+
+  out = ( struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * )
+    malloc( sizeof( struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > ) );
+  GRID_ASSERT( out != NULL, GRID_MEM_ERROR );
+
+  switch( milc_parity )
+  {
+  case EVEN:
+    out->N = n;
+    out->cv = new std::vector< typename ImprovedStaggeredFermion::FermionField >( n, RBGrid );
+    GRID_ASSERT( out->cv != NULL, GRID_MEM_ERROR );
+    
+    for( i=0; i<n; i++ )
+    {
+      ( ( *(out->cv) )[i] ).Checkerboard() = Even;
+    }
+    break;
+
+  case ODD:
+    out->N = n;
+    out->cv = new std::vector< typename ImprovedStaggeredFermion::FermionField >( n, RBGrid );
+    GRID_ASSERT( out->cv != NULL, GRID_MEM_ERROR );
+    
+    for( i=0; i<n; i++ )
+    {
+      ( ( *(out->cv) )[i] ).Checkerboard() = Odd;
+    }
+    break;
+
+  case EVENANDODD:
+    out->N = n;
+    out->cv = new std::vector< typename ImprovedStaggeredFermion::FermionField >( n, CGrid );
+    GRID_ASSERT( out->cv != NULL, GRID_MEM_ERROR );
+    break;
+
+  default:
+    break;
+  }
+
+  return out;
+}
+
+// Free color vector array
+template< typename ImprovedStaggeredFermion >
+static void destroy_V_array( struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * V )
+{
+  if( V->cv != NULL ) delete V->cv;
+  if( V != NULL ) free(V);
+}
+
+// Create the color vector array interface object
+// and map a MILC color vector field array from MILC to Grid layout
+// Precision conversion takes place in the copies if need be
+template< typename ImprovedStaggeredFermion, typename ColourVector, typename Complex >
+static struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > *
+create_V_array_from_vec_array( su3_vector ** src, int n, int milc_parity, GridCartesian * CGrid,
+                               GridRedBlackCartesian * RBGrid )
+{
+  uint64_t i; // loop index
+  
+  struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * out;
+
+  out = create_V_array< ImprovedStaggeredFermion >( n, milc_parity, CGrid, RBGrid );
+
+  int loopend = (milc_parity)==EVEN ? even_sites_on_node : sites_on_node;
+  int loopstart = (milc_parity)==ODD ? even_sites_on_node : 0;
+
+#pragma omp parallel for collapse(1)
+  for( i=0; i<n; i++ )
+  {
+    for( uint64_t idx=loopstart; idx<loopend; idx++ )
+    {
+      Coordinate x(4);
+      indexToCoords( idx, x );
+
+      ColourVector cVec;
+
+      for( int col=0; col<Nc; col++ )
+      {
+        cVec._internal._internal._internal[col] =
+          Complex( (*(src+i))[idx].c[col].real, (*(src+i))[idx].c[col].imag );
+      }
+
+      autoView( Dst_cv, ( *(out->cv) )[i], CpuWrite );
+      pokeLocalSite( cVec, Dst_cv, x );      
+    }
+  }
+  
+  return out;
+}
+
+// Map a color vector field array from Grid layout to MILC layout
+template< typename ImprovedStaggeredFermion, typename ColourVector >
+static void extract_V_array_to_vec_array(
+  su3_vector ** dest, int n,
+  struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * src,
+  int milc_parity )
+{
+  uint64_t i; // loop index
+  
+  int loopend = (milc_parity)==EVEN ? even_sites_on_node : sites_on_node;
+  int loopstart = (milc_parity)==ODD ? even_sites_on_node : 0;
+
+#pragma omp parallel for collapse(1)
+  for( i=0; i<n; i++ )
+  {
+    for( uint64_t idx=loopstart; idx<loopend; idx++ )
+    {
+      Coordinate x(4);
+      indexToCoords( idx, x );
+
+      ColourVector cVec;
+      autoView( Src_cv, ( *(src->cv) )[i], CpuRead );
+      peekLocalSite( cVec, Src_cv, x );
+
+      for( int col=0; col<Nc; col++ )
+      {
+        (*(dest+i))[idx].c[col].real = cVec._internal._internal._internal[col].real();
+        (*(dest+i))[idx].c[col].imag = cVec._internal._internal._internal[col].imag();
+      }
+      
+    }
+  }
+
+  return ;
+}
+
+// Create color vector array
+GRID_F3_ColorVectorArray * GRID_F3_create_V_array(
+  int n,
+  int milc_parity,
+  GRID_4Dgrid * grid_full,
+  GRID_4DRBgrid * grid_rb )
+{
+  return create_V_array< ImprovedStaggeredFermionF >( n, milc_parity, grid_full->gridF, grid_rb->gridF );
+}
+
+// Create color vector array
+GRID_D3_ColorVectorArray * GRID_D3_create_V_array(
+  int n,
+  int milc_parity,
+  GRID_4Dgrid * grid_full,
+  GRID_4DRBgrid * grid_rb )
+{
+  return create_V_array< ImprovedStaggeredFermionD >( n, milc_parity, grid_full->gridD, grid_rb->gridD );
+}
+
+// Free color vector array
+void GRID_F3_destroy_V_array( GRID_F3_ColorVectorArray * V )
+{
+  destroy_V_array< ImprovedStaggeredFermionF >( V );
+}
+
+// Free color vector array
+void GRID_D3_destroy_V_array( GRID_D3_ColorVectorArray * V )
+{
+  destroy_V_array< ImprovedStaggeredFermionD >( V );
+}
+
+// Create color vector array from MILC type
+GRID_F3_ColorVectorArray * GRID_F3_create_V_array_from_vec_array(
+  su3_vector ** src,
+  int n,
+  int milc_parity,
+  GRID_4Dgrid * grid_full,
+  GRID_4DRBgrid * grid_rb )
+{
+  return create_V_array_from_vec_array< ImprovedStaggeredFermionF, ColourVectorF, ComplexF >(
+    src, n, milc_parity, grid_full->gridF, grid_rb->gridF );
+}
+
+// Create color vector array from MILC type
+GRID_D3_ColorVectorArray * GRID_D3_create_V_array_from_vec_array(
+  su3_vector ** src,
+  int n,
+  int milc_parity,
+  GRID_4Dgrid * grid_full,
+  GRID_4DRBgrid * grid_rb )
+{
+  return create_V_array_from_vec_array< ImprovedStaggeredFermionD, ColourVectorD, ComplexD >(
+    src, n, milc_parity, grid_full->gridD, grid_rb->gridD );
+}
+
+// Copy color vector array from Grid structure to MILC type
+void GRID_F3_extract_V_array_to_vec_array(
+  su3_vector ** dest,
+  int n,
+  GRID_F3_ColorVectorArray * src,
+  int milc_parity )
+{
+  extract_V_array_to_vec_array< ImprovedStaggeredFermionF, ColourVectorF >( dest, n, src, milc_parity );
+  return ;
+}
+
+// Copy color vector array from Grid structure to MILC type
+void GRID_D3_extract_V_array_to_vec_array(
+  su3_vector ** dest,
+  int n,
+  GRID_D3_ColorVectorArray * src,
+  int milc_parity )
+{
+  extract_V_array_to_vec_array< ImprovedStaggeredFermionD, ColourVectorD >( dest, n, src, milc_parity );
+  return ;
+}
+
+
