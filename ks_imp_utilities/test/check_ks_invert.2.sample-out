@@ -33,7 +33,6 @@ read_gauge_hdr: Reading as a SciDAC formatted file
 Restoring binary SciDAC file ../../binary_samples/lat.sample.l8
 File info 
 "Dummy user file XML"
-DML_partition_in times: read 0.01  send 0.00  total 0.03
 Record info 
 "Dummy user record XML for lattice field"
 Checksums d2f7866d 5f48ca3e
@@ -57,6 +56,7 @@ path coefficients: npath  path_coeff  multiplicity
                     4      -1.627221e-01     384
                     5      -9.841587e-01     48
 BEGIN
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Restoring binary SciDAC file ../../binary_samples/ksvector.src.sample.l8
 File info 
 "
@@ -74,7 +74,6 @@ asqtad_arg.sign MILC-convention
 inv_arg.mass 0.1
 inv_arg.rsqprop 1.000000e-18
 "
-DML_partition_in times: read 0.01  send 0.00  total 0.03
 Record info 
 "source color vector field"
 Checksums 18c175b6 adc0f9ee
@@ -88,11 +87,14 @@ Max err. = 3.438522e-05 frac. = 8.375591e-07
 Saved KS vector serially to binary file ksvector.ans.MdaggerMinv.test.l8
 Checksums 19251ec7 98f4fe35
 total_iters = 124
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 
 
 continue 
 u0 0.502
 forget 
+coordinate_origin 0 0 0 0 
+time_bc antiperiodic
 forget 
 forget 
 number_of_masses 1
@@ -113,6 +115,7 @@ path coefficients: npath  path_coeff  multiplicity
                     4      -1.627221e-01     384
                     5      -9.841587e-01     48
 BEGIN
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Restoring binary SciDAC file ../../binary_samples/ksvector.src.sample.l8
 File info 
 "
@@ -130,7 +133,6 @@ asqtad_arg.sign MILC-convention
 inv_arg.mass 0.1
 inv_arg.rsqprop 1.000000e-18
 "
-DML_partition_in times: read 0.01  send 0.00  total 0.02
 Record info 
 "source color vector field"
 Checksums 18c175b6 adc0f9ee
@@ -144,6 +146,7 @@ Max err. = 8.511958e-07 frac. = 2.073353e-08
 Saved KS vector serially to binary file ksvector.ans.Minv.test.l8
 Checksums f769c39b aa3f5f77
 total_iters = 77
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 
 
 ask_starting_lattice(0): EOF on input.

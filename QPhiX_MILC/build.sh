@@ -12,7 +12,7 @@
 ARCH=$1     # Choices: scalar, knl, hsw
 PK_CC=$2
 PK_CXX=$3
-GIT_BRANCH=gauge_force
+GIT_BRANCH=extend
 
 if [ -z "${ARCH}" ]
 then

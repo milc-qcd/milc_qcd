@@ -89,7 +89,7 @@ complex hvc[4],hvct[4];
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 #ifdef RANDOM
 EXTERN  int iseed;              /* random number seed */
 #endif

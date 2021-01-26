@@ -1,4 +1,5 @@
 BEGIN
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Restoring binary SciDAC file ../binary_samples/ksvector.src.sample.l8
 File inf
 "
@@ -23,7 +24,8 @@ Computing the fermion force
 Saved KS matrix serially to binary file colormatrix.mom.test.l8
 Checksums XXX XXX
 Done checking fermion force
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 
 
-get_f: EOF on STDIN.
-RUNNING COMPLETED
+ask_starting_lattice(0): EOF on input.
+exit: XXX XXX XXX XXX XXX

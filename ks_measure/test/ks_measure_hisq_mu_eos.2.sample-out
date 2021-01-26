@@ -568,17 +568,17 @@ Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
  OK converged final_rsq= 5.1e-23 (cf 0) rel = 7.4e-11 (cf 1e-10) restarts = 1 iters= 51
  OK converged final_rsq= 3e-23 (cf 0) rel = 5.8e-11 (cf 1e-10) restarts = 1 iters= 7
-PB_DMDEPS_P: mass 7.000000e-02  3.218623e-01  3.227077e-01 ( 1 of 1 )
-PBP: mass 7.000000e-02     4.147538e-02  7.190225e-02  -2.405155e-02  -2.405155e-02 ( 1 of 1 )
-FACTION: mass = 7.000000e-02,  1.494791e+00 ( 1 of 1 )
-PB_DMDMU_P: mass 7.000000e-02  -8.215772e-02  -9.880936e-03  -2.776567e-02  -5.402135e-02 ( 1 of 1 )
-PB_D2MDMU2_P: mass 7.000000e-02  6.867009e-01  6.898035e-01  4.600005e-02  2.639796e-02 ( 1 of 1 )
+PB_DMDEPS_P: mass 7.000000e-02  3.252917e-01  3.261434e-01 ( 1 of 1 )
+PBP: mass 7.000000e-02     4.236657e-02  7.321386e-02  -2.420301e-02  -2.420301e-02 ( 1 of 1 )
+FACTION: mass = 7.000000e-02,  1.494762e+00 ( 1 of 1 )
+PB_DMDMU_P: mass 7.000000e-02  -8.194601e-02  -1.007030e-02  -2.792704e-02  -5.396508e-02 ( 1 of 1 )
+PB_D2MDMU2_P: mass 7.000000e-02  6.945686e-01  6.989534e-01  4.583965e-02  2.544436e-02 ( 1 of 1 )
  OK converged final_rsq= 2.7e-22 (cf 0) rel = 9.4e-11 (cf 1e-10) restarts = 1 iters= 52
  OK converged final_rsq= 2.2e-22 (cf 0) rel = 8.7e-11 (cf 1e-10) restarts = 1 iters= 7
-TR_MidM_MidM: mass 7.000000e-02,  4.005966e-01 ( 1 of 1 )
+TR_MidM_MidM: mass 7.000000e-02,  3.998482e-01 ( 1 of 1 )
  OK converged final_rsq= 3.7e-23 (cf 0) rel = 6.3e-11 (cf 1e-10) restarts = 1 iters= 51
  OK converged final_rsq= 2.6e-23 (cf 0) rel = 5.5e-11 (cf 1e-10) restarts = 1 iters= 7
-trM_inv: mass 7.000000e-02,  R: 5.499865e-02  Im: 4.428262e-03 ( 1 of 1 )
+trM_inv: mass 7.000000e-02,  R: 5.608275e-02  Im: 4.369409e-03 ( 1 of 1 )
  OK converged final_rsq= 2.1e-22 (cf 0) rel = 8.5e-11 (cf 1e-10) restarts = 1 iters= 52
  OK converged final_rsq= 1.8e-22 (cf 0) rel = 7.8e-11 (cf 1e-10) restarts = 1 iters= 7
  OK converged final_rsq= 4.1e-22 (cf 0) rel = 5.7e-11 (cf 1e-10) restarts = 1 iters= 52
@@ -787,25 +787,25 @@ trM_inv: mass 7.000000e-02,  R: 5.499865e-02  Im: 4.428262e-03 ( 1 of 1 )
  OK converged final_rsq= 2.3e-21 (cf 0) rel = 9.8e-11 (cf 1e-10) restarts = 1 iters= 6
  OK converged final_rsq= 2.5e-22 (cf 0) rel = 6.1e-11 (cf 1e-10) restarts = 1 iters= 52
  OK converged final_rsq= 4.3e-22 (cf 0) rel = 8.5e-11 (cf 1e-10) restarts = 1 iters= 5
-d1_trlnM_dmu1: mass 7.000000e-02,  R: 9.617035e-03  Im: -4.943727e-03 ( 1 of 1 )
-d2_trlnM_dmu2: mass 7.000000e-02,  R: 2.531914e-01  Im: 2.471054e-02 ( 1 of 1 )
-d3_trlnM_dmu3: mass 7.000000e-02,  R: 8.178408e-03  Im: -3.764977e-02 ( 1 of 1 )
-d4_trlnM_dmu4: mass 7.000000e-02,  R: -3.867085e+00  Im: -1.252553e-01 ( 1 of 1 )
-d5_trlnM_dmu5: mass 7.000000e-02,  R: 1.853823e-01  Im: -1.144583e-01 ( 1 of 1 )
-d6_trlnM_dmu6: mass 7.000000e-02,  R: 1.771167e+02  Im: 2.068878e+01 ( 1 of 1 )
-d1_trMi_dmu1: mass 7.000000e-02,  R: 1.003904e-02  Im: -2.004345e-03 ( 1 of 1 )
-d2_trMi_dmu2: mass 7.000000e-02,  R: -1.774042e-01  Im: 1.981136e-03 ( 1 of 1 )
-d3_trMi_dmu3: mass 7.000000e-02,  R: 1.363484e-01  Im: 9.807164e-02 ( 1 of 1 )
-d4_trMi_dmu4: mass 7.000000e-02,  R: 1.119641e+01  Im: -9.280331e-01 ( 1 of 1 )
-d5_trMi_dmu5: mass 7.000000e-02,  R: -1.007653e+01  Im: -9.428102e+00 ( 1 of 1 )
-d6_trMi_dmu6: mass 7.000000e-02,  R: -1.552781e+03  Im: 1.103845e+02 ( 1 of 1 )
-d0_trdMdeMi_dmu0: mass 7.000000e-02,  R: 3.172667361e-01  Im: -2.125901252e-03 ( 1 of 1 )
-d1_trdMdeMi_dmu1: mass 7.000000e-02,  R: -6.212155945e-04  Im: 6.650397460e-05 ( 1 of 1 )
-d2_trdMdeMi_dmu2: mass 7.000000e-02,  R: -8.876880520e-02  Im: -1.596398487e-02 ( 1 of 1 )
-d3_trdMdeMi_dmu3: mass 7.000000e-02,  R: 3.185012731e-02  Im: -3.583805783e-03 ( 1 of 1 )
-d4_trdMdeMi_dmu4: mass 7.000000e-02,  R: -3.291221150e+00  Im: -1.768919221e-01 ( 1 of 1 )
-d5_trdMdeMi_dmu5: mass 7.000000e-02,  R: -5.038507604e-01  Im: -2.981705606e-01 ( 1 of 1 )
-d6_trdMdeMi_dmu6: mass 7.000000e-02,  R: -1.052108916e+02  Im: 2.459197398e+00 ( 1 of 1 )
+d1_trlnM_dmu1: mass 7.000000e-02,  R: 9.507000e-03  Im: -4.940868e-03 ( 1 of 1 )
+d2_trlnM_dmu2: mass 7.000000e-02,  R: 2.622729e-01  Im: 2.638791e-02 ( 1 of 1 )
+d3_trlnM_dmu3: mass 7.000000e-02,  R: 7.104981e-03  Im: -3.759443e-02 ( 1 of 1 )
+d4_trlnM_dmu4: mass 7.000000e-02,  R: -3.534084e+00  Im: -1.120516e-01 ( 1 of 1 )
+d5_trlnM_dmu5: mass 7.000000e-02,  R: 1.477882e-01  Im: -8.673508e-02 ( 1 of 1 )
+d6_trlnM_dmu6: mass 7.000000e-02,  R: 1.882298e+02  Im: 2.028407e+01 ( 1 of 1 )
+d1_trMi_dmu1: mass 7.000000e-02,  R: 1.018534e-02  Im: -2.018296e-03 ( 1 of 1 )
+d2_trMi_dmu2: mass 7.000000e-02,  R: -1.784553e-01  Im: 1.162475e-03 ( 1 of 1 )
+d3_trMi_dmu3: mass 7.000000e-02,  R: 1.374393e-01  Im: 9.875987e-02 ( 1 of 1 )
+d4_trMi_dmu4: mass 7.000000e-02,  R: 1.117188e+01  Im: -9.244369e-01 ( 1 of 1 )
+d5_trMi_dmu5: mass 7.000000e-02,  R: -1.017718e+01  Im: -9.494044e+00 ( 1 of 1 )
+d6_trMi_dmu6: mass 7.000000e-02,  R: -1.554387e+03  Im: 1.098987e+02 ( 1 of 1 )
+d0_trdMdeMi_dmu0: mass 7.000000e-02,  R: 3.206471054e-01  Im: -2.171459724e-03 ( 1 of 1 )
+d1_trdMdeMi_dmu1: mass 7.000000e-02,  R: -6.313281434e-04  Im: 5.672166493e-05 ( 1 of 1 )
+d2_trdMdeMi_dmu2: mass 7.000000e-02,  R: -9.229732437e-02  Im: -1.627653365e-02 ( 1 of 1 )
+d3_trdMdeMi_dmu3: mass 7.000000e-02,  R: 3.214752473e-02  Im: -4.177635605e-03 ( 1 of 1 )
+d4_trdMdeMi_dmu4: mass 7.000000e-02,  R: -3.405624347e+00  Im: -1.777702790e-01 ( 1 of 1 )
+d5_trdMdeMi_dmu5: mass 7.000000e-02,  R: -5.225832734e-01  Im: -3.252012996e-01 ( 1 of 1 )
+d6_trdMdeMi_dmu6: mass 7.000000e-02,  R: -1.072161750e+02  Im: 2.655923315e+00 ( 1 of 1 )
 Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 RUNNING COMPLETED
 Time = 4.791203e+01 seconds
