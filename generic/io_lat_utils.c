@@ -329,7 +329,7 @@ int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, char *myn
 
   status = pread_data(fp,src,size,myname,descrip);
   if(byterevflag==1)
-    byterevn((int32type *)src,size/sizeof(int32type));
+    byterevn((u_int32type *)src,size/sizeof(int32type));
   return status;
 }
 /*---------------------------------------------------------------------------*/
@@ -339,7 +339,7 @@ int sread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, char *myn
 
   status = sread_data(fp,src,size,myname,descrip);
   if(byterevflag==1)
-    byterevn((int32type *)src,size/sizeof(int32type));
+    byterevn((u_int32type *)src,size/sizeof(int32type));
   return status;
 }
 /*---------------------------------------------------------------------------*/
@@ -820,7 +820,7 @@ void read_site_list(int parallel,gauge_file *gf)
 
   if(gf->header->order != NATURAL_ORDER)
     {
-      gf->rank2rcv = (int32type *)malloc(volume*sizeof(int32type));
+      gf->rank2rcv = (u_int32type *)malloc(volume*sizeof(u_int32type));
       if(gf->rank2rcv == NULL)
 	{
 	  printf("read_site_list: Can't malloc rank2rcv table\n");
@@ -835,7 +835,7 @@ void read_site_list(int parallel,gauge_file *gf)
 	  /* Reads receiving site coordinate if file is not in natural order */
 	  if(parallel)
 	    {
-	      if((int)g_read(gf->rank2rcv,sizeof(int32type),volume,gf->fp) != volume )
+	      if((size_t)g_read(gf->rank2rcv,sizeof(u_int32type),volume,gf->fp) != volume )
 		{
 		  int errsv = errno;
 		  printf("read_site_list: Node %d site list read error %d %s\n",
@@ -845,7 +845,7 @@ void read_site_list(int parallel,gauge_file *gf)
 	    }
 	  else
 	    {
-	      if((int)g_read(gf->rank2rcv,sizeof(int32type),volume,gf->fp) != volume )
+	      if((size_t)g_read(gf->rank2rcv,sizeof(u_int32type),volume,gf->fp) != volume )
 		{
 		  int errsv = errno;
 		  printf("read_site_list: Node %d site list read error %d %s\n",
@@ -859,7 +859,7 @@ void read_site_list(int parallel,gauge_file *gf)
 
       /* Broadcast result to all nodes */
 
-      broadcast_bytes((char *)gf->rank2rcv,volume*sizeof(int32type));
+      broadcast_bytes((char *)gf->rank2rcv,volume*sizeof(u_int32type));
     }
       
   else gf->rank2rcv = NULL;  /* If no site list */
@@ -878,7 +878,7 @@ int read_v3_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 
   FILE *fp;
   gauge_header *gh;
-  int32type tmp;
+  u_int32type tmp;
   int j;
   int sixtyfourbits;
   float fc1,fc2;
@@ -913,7 +913,7 @@ int read_v3_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
     }
   else 
     {
-      byterevn((int32type *)&gh->magic_number,1);
+      byterevn((u_int32type *)&gh->magic_number,1);
       if(gh->magic_number == GAUGE_VERSION_NUMBER_V1) 
 	{
 	  *byterevflag=1;
@@ -1010,7 +1010,7 @@ int read_1996_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 
   FILE *fp;
   gauge_header *gh;
-  int32type tmp;
+  u_int32type tmp;
   int j;
   /* We keep this part of the old gauge header, but
      we ignore all but the two parameters */
@@ -1037,7 +1037,7 @@ int read_1996_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
     }
   else 
     {
-      byterevn((int32type *)&gh->magic_number,1);
+      byterevn((u_int32type *)&gh->magic_number,1);
       if(gh->magic_number == GAUGE_VERSION_NUMBER_1996) 
 	{
 	  *byterevflag=1;
@@ -1175,10 +1175,10 @@ int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 
   FILE *fp;
   gauge_header *gh;
-  int32type tmp;
+  u_int32type tmp;
   int j;
   char myname[] = "read_fnal_gauge_hdr";
-  int32type size_of_element, elements_per_site, gmtime_stamp;
+  u_int32type size_of_element, elements_per_site, gmtime_stamp;
 
 
   fp = gf->fp;
@@ -1195,7 +1195,7 @@ int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
     }
   else 
     {
-      byterevn((int32type *)&gh->magic_number,1);
+      byterevn((u_int32type *)&gh->magic_number,1);
       if(gh->magic_number == IO_UNI_MAGIC) 
 	{
 	  *byterevflag=1;
@@ -1221,13 +1221,13 @@ int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
      if necessary, and check consistency */
 
   if(psread_byteorder(*byterevflag,parallel,fp,&gmtime_stamp,
-	sizeof(int32type), myname,"gmtime_stamp")!=0)terminate(1);
+	sizeof(u_int32type), myname,"gmtime_stamp")!=0)terminate(1);
 
   if(psread_byteorder(*byterevflag,parallel,fp,&size_of_element,
-	sizeof(int32type), myname,"size_of_element")!=0)terminate(1);
+	sizeof(u_int32type), myname,"size_of_element")!=0)terminate(1);
   
   if(psread_byteorder(*byterevflag,parallel,fp,&elements_per_site,
-	sizeof(int32type), myname,"elements_per_site")!=0)terminate(1);
+	sizeof(u_int32type), myname,"elements_per_site")!=0)terminate(1);
   
   if( (size_of_element != 4 )|| (elements_per_site != 72) ) 
 	node0_printf("This does not look like a single precision gauge field\nsize-of-element= %d\t elements-per-site= %d\n",size_of_element,elements_per_site);
@@ -1284,7 +1284,7 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
 
   FILE *fp;
   gauge_header *gh;
-  int32type tmp, btmp;
+  u_int32type tmp, btmp;
   int j;
   int byterevflag;
   char myname[] = "read_gauge_hdr";
@@ -1309,7 +1309,7 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
 
   tmp = gh->magic_number;
   btmp = gh->magic_number;
-  byterevn((int32type *)&btmp,1);
+  byterevn((u_int32type *)&btmp,1);
 
   /** See if header chunk is BEGI = 1111836489 for big endian
       or the byte reverse 1229407554 for little endian **/
@@ -1498,9 +1498,9 @@ void write_site_list(FILE *fp, gauge_header *gh)
 {
   off_t offset;
   int i;
-  int buf_length;
+  size_t buf_length;
   register site *s;
-  int32type coords, *cbuf;
+  u_int32type coords, *cbuf;
 
   /* All nodes write their site coordinate list in sequential
      blocks after the header.  The list is in the order of appearance
@@ -1514,7 +1514,7 @@ void write_site_list(FILE *fp, gauge_header *gh)
   offset = gh->header_bytes + 
     sizeof(int32type)*sites_on_node*this_node;
 
-  cbuf = (int32type *)malloc(sites_on_node*sizeof(int32type));
+  cbuf = (u_int32type *)malloc(sites_on_node*sizeof(u_int32type));
   if(cbuf == NULL)
     {
       printf("write_site_list: node %d can't malloc cbuf\n",this_node);
@@ -1635,7 +1635,7 @@ fsu3_matrix *w_parallel_setup(gauge_file *gf, off_t *checksum_offset)
   gauge_node_size = sites_on_node*4*sizeof(fsu3_matrix) ;
 
   if(gf->header->order == NATURAL_ORDER)coord_list_size = 0;
-  else coord_list_size = sizeof(int32type)*volume;
+  else coord_list_size = sizeof(u_int32type)*volume;
   head_size = gf->header->header_bytes + coord_list_size;
   *checksum_offset = head_size;
   gauge_check_size = sizeof(gf->check.sum29) + sizeof(gf->check.sum31);

@@ -4,5 +4,6 @@ exec su3_eigen_asqtad   2 "WANTARPACK=true","WANTPRIMME=false" ARPACK  BEGIN RUN
 exec su3_eigen_hisq     2 "WANTARPACK=false","WANTPRIMME=true"  PRIMME  BEGIN RUNNING
 exec su3_eigen_hisq     2 "WANTARPACK=false","WANTPRIMME=false" Ritz    BEGIN RUNNING
 exec su3_eigen_hisq     2 "WANTARPACK=true","WANTPRIMME=false" ARPACK  BEGIN RUNNING
+exec su3_eigen_hisq     2 "WANTARPACK=false","WANTPRIMME=false","WANTGRID=true" Grid BEGIN RUNNING
 #exec su3_eigen_p4fat3   2 "WANTARPACK=false","WANTPRIMME=true"  PRIMME  BEGIN RUNNING
 #exec su3_eigen_p4fat3   2 "WANTARPACK=false","WANTPRIMME=false" Ritz    BEGIN RUNNING

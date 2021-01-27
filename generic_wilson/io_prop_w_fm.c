@@ -52,7 +52,7 @@ int read_w_fm_prop_hdr(w_prop_file *wpf)
   if(wph->magic_number == IO_UNI_MAGIC) byterevflag = 0;
   else 
     {
-      byterevn((int32type *)&wph->magic_number,1);
+      byterevn((u_int32type *)&wph->magic_number,1);
       if(wph->magic_number == IO_UNI_MAGIC) 
 	{
 	  byterevflag = 1; 
@@ -858,7 +858,7 @@ void r_serial_w_fm(w_prop_file *wpf, field_offset dest_site,
       if(this_node==destnode)
 	{
 	  if(byterevflag==1)
-	    byterevn((int32type *)&msg.q, 
+	    byterevn((u_int32type *)&msg.q, 
 		     sizeof(fwilson_matrix)/sizeof(int32type));
 	  
 	  /* Accumulate checksums */
@@ -1034,7 +1034,7 @@ void r_serial_w_fm_sc(w_prop_file *wpf, field_offset dest_site,
 	  if(this_node==destnode)
 	    {
 	      if(byterevflag==1)
-		byterevn((int32type *)&msg.q, 
+		byterevn((u_int32type *)&msg.q, 
 			 sizeof(fwilson_vector)/sizeof(int32type));
 	      
 	      /* Accumulate checksums */

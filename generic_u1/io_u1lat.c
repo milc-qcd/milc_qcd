@@ -1302,7 +1302,7 @@ static void r_u1_serial(gauge_file *gf)
       if(this_node==destnode)
         {
           if(byterevflag==1)
-            byterevn((int32type *)tmpu1,
+            byterevn((u_int32type *)tmpu1,
                      4*sizeof(float)/sizeof(int32type));
           /* Accumulate checksums */
           for(k = 0, val = (u_int32type *)tmpu1;
@@ -1451,7 +1451,7 @@ int read_u1_gauge_hdr(gauge_file *gf, int parallel)
 
   tmp = gh->magic_number;
   btmp = gh->magic_number;
-  byterevn((int32type *)&btmp,1);
+  byterevn((u_int32type *)&btmp,1);
 
   if(tmp == U1GAUGE_VERSION_NUMBER_BINARY) 
     {

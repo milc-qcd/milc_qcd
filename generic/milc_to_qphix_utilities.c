@@ -25,7 +25,7 @@ static int milc_node_number(const int coords[]){
   return node_number(coords[0],coords[1],coords[2],coords[3]);
 }
 
-static int milc_node_index(const int coords[]){
+static size_t milc_node_index(const int coords[]){
   return node_index(coords[0],coords[1],coords[2],coords[3]);
 }
 
@@ -69,6 +69,10 @@ initialize_qphix(int precision){
 
   static int latsize[4];
   static QPHIX_layout_t layout;
+
+#ifndef QPHIX_EXTENDED_LAYOUT
+#error Requires QPhiX version with extended layout
+#endif
   
   latsize[0] = nx;
   latsize[1] = ny;

@@ -322,8 +322,8 @@
 *	file "gaussrand.c"
 * Real z2_rand_no( double_prn *prn_pt );
 *	file "z2rand.c"
-* void byterevn(int32type w[], int n)
-* void byterevn64(int32type w[], int n)
+* void byterevn(u_int32type w[], int n)
+* void byterevn64(u_int32type w[], int n)
 *
 */
 
@@ -425,8 +425,8 @@ Real gaussian_rand_no( double_prn *prn_pt );
 complex complex_gaussian_rand_no( double_prn *prn_pt );
 Real z2_rand_no( double_prn *prn_pt );
 #include "../include/int32type.h"
-void byterevn(int32type w[], int n);
-void byterevn64(int32type w[], int n);
+void byterevn(u_int32type w[], int n);
+void byterevn64(u_int32type w[], int n);
 
 
 /********************************************************************/

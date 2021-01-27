@@ -139,9 +139,9 @@ int make_path_table(ks_action_paths *ap,
 #endif
 
 #if ( UNITARIZATION_GROUP==UNITARIZE_SU3 )
-  node0_printf("Unitarizaton group = SU(3)\n");
+  node0_printf("Unitarization group = SU(3)\n");
 #elif ( UNITARIZATION_GROUP==UNITARIZE_U3 )
-  node0_printf("Unitarizaton group = U(3)\n");
+  node0_printf("Unitarization group = U(3)\n");
 #else
   node0_printf("Unknown unitarization group. Set U(3) or SU(3)\n");
   terminate(0);
