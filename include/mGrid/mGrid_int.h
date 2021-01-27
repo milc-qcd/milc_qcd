@@ -87,6 +87,37 @@ typedef struct {
 } GRID_resid_arg_t;
 #define GRID_RESID_ARG_DEFAULT ((GRID_resid_arg_t){1e-6,0,0,0,0,0})
 
+/* Parameters for Chebyshev polynomial */
+typedef struct
+{
+  double alpha;
+  double beta;
+  int Npoly;
+} GRID_ChebyParams;
+
+/* Grid diagonalization algorithms */
+typedef enum
+{
+  GRID_IRLdiagonaliseWithDSTEGR,
+  GRID_IRLdiagonaliseWithQR,
+  GRID_IRLdiagonaliseWithEigen
+} GRID_IRLdiagonalisation;
+
+/* Parameters for Grid implicitly restarted Lanczos */
+typedef struct
+{
+  GRID_evenodd_t parity;
+  int Nstop;
+  int Nk;
+  int Nm;
+  double tol;
+  int maxIter;
+  int restartMin;
+  int reorth_period;
+  GRID_ChebyParams chebyParams;
+  GRID_IRLdiagonalisation diag;
+} GRID_eig_arg_t;
+  
   /**********************/
   /*  General routines  */
   /**********************/

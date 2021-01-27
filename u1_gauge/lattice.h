@@ -60,7 +60,7 @@ EXTERN int this_node;		/* node number of this node */
 EXTERN size_t sites_on_node;	/* = volume */
 EXTERN size_t number_of_nodes;	/* number of nodes in use */
 EXTERN size_t even_sites_on_node;	/* = volume / 2 */
-EXTERN int odd_sites_on_node;	/* = volume / 2 */
+EXTERN size_t odd_sites_on_node;	/* = volume / 2 */
 
 EXTERN int start_u1flag;	/* begin u(1) lattice: FRESH or RELOAD */
 EXTERN char start_u1file[MAXFILENAME];

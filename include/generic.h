@@ -559,6 +559,7 @@ void cleanup_restrict_fourier(void);
 /* reunitarize2.c */
 void reunitarize( void );
 void reunitarize_cpu( void );
+void reunitarize_gpu( void );
 int reunit_su3(su3_matrix *c);
 
 /* show_generic_opts.c */

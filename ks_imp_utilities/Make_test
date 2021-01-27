@@ -2,7 +2,7 @@
 # For ks_imp_utilities
 
 #------------------------------------------------------------
-# Examples:
+# Examples for tests:
 
 #    make -f Make_test check
 # or, for a specific project or projects

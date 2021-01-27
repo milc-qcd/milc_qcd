@@ -44,11 +44,12 @@ void restore_complex_scidac_to_field(char *filename, int serpar,
 				     complex *dest, int count);
 int read_real_scidac_xml(QIO_Reader *infile, Real *dest, int count, QIO_String *recxml);
 int read_real_scidac(QIO_Reader *infile, Real *dest, int count);
-void save_color_matrix_scidac_from_site(char *filename, char *filexml,
-	char *recxml, int volfmt, field_offset src, int count, int prec);
-
-void save_color_matrix_scidac_from_field(char *filename, char *filexml,
-        char *recxml, int volfmt, su3_matrix *src, int count, int prec);
+void save_color_matrix_scidac_from_site(char *filename, char *fileinfo, 
+	char *recinfo, int volfmt,  field_offset src, int count, int prec,
+	char *stringLFN);
+void save_color_matrix_scidac_from_field(char *filename,
+        char *fileinfo, char *recinfo, int volfmt, su3_matrix *src, int count, int prec,
+        char *stringLFN);
 void save_random_state_scidac_from_site(char *filename, 
 	char *filexml, char *recxml, int volfmt, field_offset src);
 
