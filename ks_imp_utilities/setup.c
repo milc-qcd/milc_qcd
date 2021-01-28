@@ -86,43 +86,43 @@ initial_set()
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 
     status=get_prompt(stdin, &prompt);
-    IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
-    IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
-    IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
-    IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+    IF_OK status += get_i(stdin, prompt,"nx", &param.nx );
+    IF_OK status += get_i(stdin, prompt,"ny", &param.ny );
+    IF_OK status += get_i(stdin, prompt,"nz", &param.nz );
+    IF_OK status += get_i(stdin, prompt,"nt", &param.nt );
 #ifdef FIX_NODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "node_geometry", 
-			   par_buf.node_geometry, 4);
+			   param.node_geometry, 4);
 #ifdef FIX_IONODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
-			   par_buf.ionode_geometry, 4);
+			   param.ionode_geometry, 4);
 #endif
 #endif
-    IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
+    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
 
-    if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
+    if(status>0) param.stopflag=1; else param.stopflag=0;
   } /* end if(mynode()==0) */
 
   /* Node 0 broadcasts parameter buffer to all other nodes */
-  broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+  broadcast_bytes((char *)&param,sizeof(param));
 
-  if( par_buf.stopflag != 0 )
+  if( param.stopflag != 0 )
     normal_exit(0);
 
   if(prompt==2)return prompt;
 
-  nx=par_buf.nx;
-  ny=par_buf.ny;
-  nz=par_buf.nz;
-  nt=par_buf.nt;
-  iseed=par_buf.iseed;
+  nx=param.nx;
+  ny=param.ny;
+  nz=param.nz;
+  nt=param.nt;
+  iseed=param.iseed;
 
 #ifdef FIX_NODE_GEOM
   for(i = 0; i < 4; i++)
-    node_geometry[i] = par_buf.node_geometry[i];
+    node_geometry[i] = param.node_geometry[i];
 #ifdef FIX_IONODE_GEOM
   for(i = 0; i < 4; i++)
-    ionode_geometry[i] = par_buf.ionode_geometry[i];
+    ionode_geometry[i] = param.ionode_geometry[i];
 #endif
 #endif
 
@@ -147,6 +147,7 @@ readin(int prompt)
   /* argument "prompt" is 1 if prompts are to be given for input	*/
 
   int i, status, current_index;
+  char savebuf[128];
 #ifdef CHECK_INVERT
   char invert_string[16];
 #endif
@@ -158,61 +159,83 @@ readin(int prompt)
     status=0;
 
     /* find out what kind of starting lattice to use */
-    IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
-					  par_buf.startfile );
+    IF_OK status += ask_starting_lattice(stdin,  prompt, &(param.startflag),
+					  param.startfile );
 
-    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+    IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
 
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
-					par_buf.savefile );
-    IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
-				  par_buf.stringLFN );
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.saveflag),
+					param.savefile );
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
+				  param.stringLFN );
 
-    /* find out what to do with longlinks at end */
-    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.savelongflag),
-				       par_buf.savelongfile );
+    /* Coordinate origin for KS phases and antiperiodic boundary condition */
+    IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
+    IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
+    IF_OK {
+      /* NOTE: The staggered default time bc is antiperiodic. */
+      if(strcmp(savebuf,"antiperiodic") == 0)param.time_bc = 0;
+      else if(strcmp(savebuf,"periodic") == 0)param.time_bc = 1;
+      else{
+	node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n", savebuf);
+	status++;
+      }
+    }
     
-    /* find out what to do with fatlinks at end */
-    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.savefatflag),
-				       par_buf.savefatfile );
+    /* find out what to do with longlinks at end */
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.savelongflag),
+				       param.savelongfile );
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, param.savelongflag,
+				  param.stringLFNlong );
 
+    /* find out what to do with fatlinks at end */
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.savefatflag),
+				       param.savefatfile );
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, param.savefatflag,
+				  param.stringLFNfat );
+
+    /* Eigenpairs not supported */
+    param.eigen_param.Nvecs = 0;
+
+#if defined(CHECK_INVERT) || defined(FERMION_FORCE)    
     /* Inversion parameters */
-    IF_OK status += get_i(stdin, prompt,"number_of_masses", &par_buf.nmass );
+    IF_OK status += get_i(stdin, prompt,"number_of_masses", &param.nmass );
 
     /* maximum no. of conjugate gradient iterations */
-    IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.qic[0].max );
+    IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &param.qic[0].max );
 
     /* maximum no. of conjugate gradient restarts */
-    IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &par_buf.qic[0].nrestart );
-    
-    /* find out what kind of color vector source to use */
+    IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &param.qic[0].nrestart );
+#endif    
 #ifdef CHECK_INVERT
-    IF_OK status += ask_color_vector( prompt, &(par_buf.srcflag[0]),
-				      par_buf.srcfile[0] );
+    /* find out what kind of color vector source to use */
+    IF_OK status += ask_color_vector( prompt, &(param.srcflag[0]),
+				      param.srcfile[0] );
 #endif
-    IF_OK for(i = 0; i < par_buf.nmass; i++){
+#if defined(CHECK_INVERT) || defined(FERMION_FORCE)    
+    IF_OK for(i = 0; i < param.nmass; i++){
     
-#ifndef CHECK_INVERT
-      IF_OK status += ask_color_vector( prompt, &(par_buf.srcflag[i]),
-					par_buf.srcfile[i] );
-      IF_OK if(par_buf.srcflag[i] != par_buf.srcflag[0]){
+#ifdef FERMION_FORCE
+      IF_OK status += ask_color_vector( prompt, &(param.srcflag[i]),
+					param.srcfile[i] );
+      IF_OK if(param.srcflag[i] != param.srcflag[0]){
 	node0_printf("Must reload all or save all alike.");
 	status++;
       }
 #endif
-      IF_OK status += get_f(stdin, prompt,"mass", &par_buf.ksp[i].mass );
-#if FERM_ACTION == HISQ || FERM_ACTION == HYPISQ
+      IF_OK status += get_f(stdin, prompt,"mass", &param.ksp[i].mass );
+#if FERM_ACTION == HISQ
       IF_OK status += get_f(stdin, prompt, "naik_term_epsilon", 
-			    &par_buf.ksp[i].naik_term_epsilon);
+			    &param.ksp[i].naik_term_epsilon);
       IF_OK {
 	if(i == 0){
-	  if(par_buf.ksp[i].naik_term_epsilon != 0.0){
+	  if(param.ksp[i].naik_term_epsilon != 0.0){
 	    node0_printf("First Naik term epsilon must be zero.");
 	    status++;
 	  }
 	} else {
-	  if(par_buf.ksp[i].naik_term_epsilon > par_buf.ksp[i-1].naik_term_epsilon){
+	  if(param.ksp[i].naik_term_epsilon > param.ksp[i-1].naik_term_epsilon){
 	    node0_printf("Naik term epsilons must be in descending order.");
 	    status++;
 	  }
@@ -220,35 +243,36 @@ readin(int prompt)
       }
 
 #else
-      par_buf.ksp[i].naik_term_epsilon = 0.0;
+      param.ksp[i].naik_term_epsilon = 0.0;
 #endif
 
-      par_buf.qic[i].min = 0;
-      par_buf.qic[i].start_flag = 0;
-      par_buf.qic[i].nsrc = 1;
-      par_buf.qic[i].max = par_buf.qic[0].max;
-      par_buf.qic[i].nrestart = par_buf.qic[0].nrestart;
-      par_buf.qic[i].prec = MILC_PRECISION;
-      par_buf.qic[i].parity = EVENANDODD;
+      param.qic[i].min = 0;
+      param.qic[i].start_flag = 0;
+      param.qic[i].nsrc = 1;
+      param.qic[i].max = param.qic[0].max;
+      param.qic[i].nrestart = param.qic[0].nrestart;
+      param.qic[i].prec = MILC_PRECISION;
+      param.qic[i].parity = EVENANDODD;
       /* error for propagator conjugate gradient */
       IF_OK status += get_f(stdin, prompt, "error_for_propagator", 
-			    &par_buf.qic[i].resid);
+			    &param.qic[i].resid);
       IF_OK status += get_f(stdin, prompt, "rel_error_for_propagator", 
-			    &par_buf.qic[i].relresid );
+			    &param.qic[i].relresid );
 #ifdef CHECK_INVERT
       /* find out what kind of color vector result to use */
-      IF_OK status += ask_color_vector( prompt, &(par_buf.ansflag[i]),
-					par_buf.ansfile[i] );
-      IF_OK if(par_buf.ansflag[i] != par_buf.ansflag[0]){
+      IF_OK status += ask_color_vector( prompt, &(param.ansflag[i]),
+					param.ansfile[i] );
+      IF_OK if(param.ansflag[i] != param.ansflag[0]){
 	node0_printf("Must reload all or save all alike.");
 	status++;
       }
 #endif
     }
-#ifndef CHECK_INVERT
+#endif
+#ifdef FERMION_FORCE
     /* find out what kind of color matrix momentum to use */
-    IF_OK status += ask_color_matrix( prompt, &(par_buf.ansflag[0]),
-				      par_buf.ansfile[0] );
+    IF_OK status += ask_color_matrix( prompt, &(param.ansflag[0]),
+				      param.ansfile[0] );
 #endif
 
 
@@ -257,9 +281,9 @@ readin(int prompt)
     IF_OK status += get_s(stdin,  prompt, "invert", invert_string);
     if(status == 0){
       if(strcmp(invert_string,"M")==0)
-	par_buf.inverttype = INVERT_M;
+	param.inverttype = INVERT_M;
       else if(strcmp(invert_string,"MdaggerM")==0)
-	par_buf.inverttype = INVERT_MdaggerM;
+	param.inverttype = INVERT_MdaggerM;
       else{
 	printf("Unrecognized invert string %s\n",invert_string);
 	status++;
@@ -267,33 +291,35 @@ readin(int prompt)
     }
 #endif
 
-    if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
+    if( status > 0)param.stopflag=1; else param.stopflag=0;
   } /* end if(this_node==0) */
 
   /* Node 0 broadcasts parameter buffer to all other nodes */
-  broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+  broadcast_bytes((char *)&param,sizeof(param));
 
-  if( par_buf.stopflag != 0 )
+  if( param.stopflag != 0 )
     normal_exit(0);
 
   if(prompt==2)return 0;
 
-  nmass = par_buf.nmass;
-  niter = par_buf.qic[0].max;
-  nrestart = par_buf.qic[0].nrestart;
-  u0 = par_buf.u0;
-  startflag = par_buf.startflag;
-  saveflag = par_buf.saveflag;
-  savelongflag = par_buf.savelongflag;
-  savefatflag = par_buf.savefatflag;
-  ansflag = par_buf.ansflag[0];  /* Must all be the same */
-  srcflag = par_buf.srcflag[0];
-  strcpy(startfile,par_buf.startfile);
-  strcpy(savefile,par_buf.savefile);
-  strcpy(stringLFN, par_buf.stringLFN);
-  strcpy(savelongfile,par_buf.savelongfile);
-  strcpy(savefatfile,par_buf.savefatfile);
-  inverttype = par_buf.inverttype;
+  nmass = param.nmass;
+  niter = param.qic[0].max;
+  nrestart = param.qic[0].nrestart;
+  u0 = param.u0;
+  startflag = param.startflag;
+  saveflag = param.saveflag;
+  savelongflag = param.savelongflag;
+  savefatflag = param.savefatflag;
+  ansflag = param.ansflag[0];  /* Must all be the same */
+  srcflag = param.srcflag[0];
+  strcpy(startfile,param.startfile);
+  strcpy(savefile,param.savefile);
+  strcpy(stringLFN, param.stringLFN);
+  strcpy(savelongfile,param.savelongfile);
+  strcpy(stringLFNlong, param.stringLFNlong);
+  strcpy(savefatfile,param.savefatfile);
+  strcpy(stringLFNfat, param.stringLFNfat);
+  inverttype = param.inverttype;
 
   /* Construct the eps_naik table of unique Naik epsilon
      coefficients.  Also build the hash table for mapping a mass term to
@@ -306,10 +332,10 @@ readin(int prompt)
   n_orders_naik[current_index] = 0;
   n_order_naik_total = nmass;
   
-  for(i = 0; i < par_buf.nmass; i++){
+  for(i = 0; i < param.nmass; i++){
     int next_index = 
-      fill_eps_naik(eps_naik, &n_naiks, par_buf.ksp[i].naik_term_epsilon);
-    par_buf.ksp[i].naik_term_epsilon_index = next_index;
+      fill_eps_naik(eps_naik, &n_naiks, param.ksp[i].naik_term_epsilon);
+    param.ksp[i].naik_term_epsilon_index = next_index;
     if(next_index == current_index)
       n_orders_naik[current_index]++;
     else {
@@ -334,7 +360,7 @@ readin(int prompt)
   fermion_links_want_back(1);
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if FERM_ACTION == HISQ
   fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 #else
   fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);

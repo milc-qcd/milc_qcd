@@ -14,15 +14,19 @@ void QIO_set_trelease(double t_in, double t_out);
 
 /* Map QIO layout functions to MILC functions */
 
-int qio_node_number(const int x[]){
+#ifndef QIO_HAS_EXTENDED_LAYOUT
+#error Requires a QIO version that supports the extended layout for large files.
+#endif
+
+int qio_node_number(const int x[], void *arg){
   return node_number(x[0],x[1],x[2],x[3]);
 }
 
-size_t qio_node_index(const int x[]){
+QIO_Index qio_node_index(const int x[], void *arg){
   return node_index(x[0],x[1],x[2],x[3]);
 }
 
-void qio_get_coords(int x[], int node, size_t index){
+void qio_get_coords(int x[], int node, QIO_Index index, void *arg){
   /* For this node we have a table */
   if(node == this_node){
     x[0] = lattice[index].x;
@@ -35,7 +39,7 @@ void qio_get_coords(int x[], int node, size_t index){
     get_coords( x, node, index );
 }
 
-size_t qio_num_sites(int node){
+QIO_Index qio_num_sites(int node, void *arg){
   return num_sites(node);
 }
 
@@ -47,10 +51,18 @@ void build_qio_layout(QIO_Layout *layout){
   lattice_size[2] = nz;
   lattice_size[3] = nt;
 
-  layout->node_number     = qio_node_number;
-  layout->node_index      = qio_node_index;
-  layout->get_coords      = qio_get_coords;
-  layout->num_sites       = qio_num_sites;
+  /* Members for smaller lattices are not used here. */
+  layout->node_number = NULL;;
+  layout->node_index  = NULL;
+  layout->get_coords  = NULL;
+  layout->num_sites   = 0;
+  /* Members using the extended layout for large-lattice support */
+  layout->node_number_ext = qio_node_number;
+  layout->node_index_ext  = qio_node_index;
+  layout->get_coords_ext  = qio_get_coords;
+  layout->num_sites_ext   = qio_num_sites;
+  layout->arg             = NULL;
+  /* End of extended-layout members */
   layout->latsize         = lattice_size;
   layout->latdim          = LATDIM;
   layout->volume          = volume;
@@ -617,13 +629,15 @@ void restore_color_matrix_scidac_to_field(char *filename,
 /* Write a set of color matrices in SciDAC format, taking data from the site
    structure */
 void save_color_matrix_scidac_from_site(char *filename, char *fileinfo, 
-	char *recinfo, int volfmt,  field_offset src, int count, int prec)
+		char *recinfo, int volfmt,  field_offset src, int count, int prec,
+		char *stringLFN)
 {
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Writer *outfile;
   QIO_String *filexml;
   QIO_String *recxml;
+  int ildgType;
   int status;
 
   QIO_verbose(QIO_VERB_OFF);
@@ -634,11 +648,17 @@ void save_color_matrix_scidac_from_site(char *filename, char *fileinfo,
   /* Define the I/O system */
   build_qio_filesystem(&fs);
 
+  /* Is this ILDG format? */
+  if(stringLFN != NULL)
+    ildgType = QIO_ILDGLAT;
+  else
+    ildgType = QIO_ILDGNO;
+
   /* Open file for writing */
   filexml = QIO_string_create();
   QIO_string_set(filexml,fileinfo);
   outfile = open_scidac_output(filename, volfmt, QIO_SERIAL,
-			       QIO_ILDGNO, NULL, &layout, &fs, filexml);
+			       ildgType, stringLFN, &layout, &fs, filexml);
   if(outfile == NULL)terminate(1);
   QIO_string_destroy(filexml);
 
@@ -681,13 +701,15 @@ void save_color_matrix_scidac_from_site(char *filename, char *fileinfo,
 /* Save a set of color matrices. */
 
 void save_color_matrix_scidac_from_field(char *filename,
-  char *fileinfo, char *recinfo, int volfmt, su3_matrix *src, int count, int prec)
+        char *fileinfo, char *recinfo, int volfmt, su3_matrix *src, int count, int prec,
+	char *stringLFN)
 {
   QIO_Layout layout;
   QIO_Writer *outfile;
   QIO_Filesystem fs;
   QIO_String *filexml;
   QIO_String *recxml;
+  int ildgType;
   int status;
 
   QIO_verbose(QIO_VERB_OFF);
@@ -698,11 +720,17 @@ void save_color_matrix_scidac_from_field(char *filename,
   /* Build the structure defining the I/O nodes */
   build_qio_filesystem(&fs);
 
+  /* Is this ILDG format? */
+  if(stringLFN != NULL)
+    ildgType = QIO_ILDGLAT;
+  else
+    ildgType = QIO_ILDGNO;
+
   /* Open file for writing */
   filexml = QIO_string_create();
   QIO_string_set(filexml, fileinfo);
   outfile = open_scidac_output(filename, volfmt, QIO_SERIAL,
-                               QIO_ILDGNO, NULL, &layout, &fs, filexml);
+                               ildgType, stringLFN, &layout, &fs, filexml);
   if(outfile == NULL)terminate(1);
   QIO_string_destroy(filexml);
 
