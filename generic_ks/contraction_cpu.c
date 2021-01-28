@@ -10,6 +10,11 @@
 #ifdef OMP
 #include <omp.h>
 #endif
+#include <assert.h>
+
+#ifndef static_cast
+#define static_cast(ty,obj) ((ty)(obj))
+#endif
 
 /* Calculate FT weight factor */
 
@@ -18,56 +23,81 @@
 #define EVENANDODD 0x03
 
 /*******************************************/
-static complex **
+typedef struct {
+  complex* meson_q;     /* cache aligned thread local storage */
+  void*    alloc_base;  /* base address of this allocation */
+} meson_storage_t;
+
+static meson_storage_t*
 create_meson_q_thread(int nt, int max_threads, int num_corr_mom){
   char myname[] = "create_meson_q_thread";
   
-  complex ** meson_q_thread = (complex **)malloc(max_threads*nt*sizeof(complex *));
-  
-  for(int mythread=0; mythread<max_threads; mythread++) {
-    for(int t = 0; t < nt; t++){
-      meson_q_thread[mythread*nt+t] = (complex *)malloc(num_corr_mom*sizeof(complex));
-      if(meson_q_thread[mythread*nt+t] == NULL){
-	printf("%s(%d): No room for meson_q_thread array\n",myname,this_node);
-      }
-      for(int k=0; k<num_corr_mom; k++)
-	{   
-	  meson_q_thread[mythread*nt+t][k].real = 0.;
-	  meson_q_thread[mythread*nt+t][k].imag = 0.;
-	}
+  meson_storage_t* threadstore = static_cast(meson_storage_t*,malloc(max_threads*sizeof(meson_storage_t)));
+    if(threadstore == NULL){
+      printf("%s(%d): No room for meson_q_thread array\n",myname,this_node);
     }
+  size_t allocsz = nt*num_corr_mom*sizeof(complex);
+  size_t align = 128; /* bytes; cache line is 64b on x86_64 and 128b on ppc64 */
+  allocsz += align; // padding
+  for(int mythread=0; mythread<max_threads; mythread++) {
+    threadstore[mythread].alloc_base = malloc(allocsz);
+    //printf("threadstore[%d].alloc_base = %p [%lu]\n", mythread, threadstore[mythread].alloc_base, allocsz);
+    if(threadstore[mythread].alloc_base == NULL){
+      printf("%s(%d): No room for meson_q_thread array\n",myname,this_node);
+    }
+    off_t offset = align - static_cast(size_t,threadstore[mythread].alloc_base) % align;
+    threadstore[mythread].meson_q = static_cast(complex*,threadstore[mythread].alloc_base + offset);
+    assert(static_cast(size_t,threadstore[mythread].meson_q) % align == 0);
+    //printf("threadstore[%d].meson_q = %p\n", mythread, threadstore[mythread].meson_q);
   }
-  
-  return meson_q_thread;
+
+  /* first touch initialization by owning thread */
+  #pragma omp parallel
+  {
+    #ifdef OMP
+    int mythread = omp_get_thread_num();
+    #else
+    int mythread = 0;
+    #endif
+    //printf("thread %d touch %p\n",mythread,threadstore[mythread].meson_q);
+
+    for(int j=0; j<nt*num_corr_mom; ++j)
+      {
+	threadstore[mythread].meson_q[j].real = 0.;
+	threadstore[mythread].meson_q[j].imag = 0.;
+      }
+  }
+  return threadstore;
 }
 
 /*******************************************/
 static void
-destroy_meson_q_thread(complex **meson_q_thread, int nt, int max_threads){
-  if(meson_q_thread == NULL)return;
+destroy_meson_q_thread(meson_storage_t* threadstore, int max_threads){
+  if(threadstore == NULL)return;
   for(int mythread=0; mythread<max_threads; mythread++) {
-    for(int t = 0; t < nt; t++){
-      if(meson_q_thread[mythread*nt+t] != NULL)
-	free(meson_q_thread[mythread*nt+t]);
-    }
+      if(threadstore[mythread].alloc_base != NULL)
+	free(threadstore[mythread].alloc_base);
   }
+  free(threadstore);
 }
 
 /*******************************************/
 static Real
-sum_meson_q(complex **meson_q, complex **meson_q_thread, int nonzero[],
+sum_meson_q(complex **meson_q, meson_storage_t* threadstore, int nonzero[],
 	    int max_threads, int nt, int num_corr_mom){
 
   for(int mythread=0; mythread<max_threads; mythread++) {
     for(int t = 0; t < nt; t++)if(nonzero[t]){
-      for(int k=0; k<num_corr_mom; k++)
-	{
-	  meson_q[t][k].real += meson_q_thread[mythread*nt+t][k].real;
-	  meson_q[t][k].imag += meson_q_thread[mythread*nt+t][k].imag;
-	  meson_q_thread[mythread*nt+t][k].real =
-	    meson_q_thread[mythread*nt+t][k].imag = 0.; // Prevent re-add
-	}
-    }
+	int tt = num_corr_mom*t;
+	for(int k=0; k<num_corr_mom; k++)
+	  {
+	    int idx = tt+k;
+	    meson_q[t][k].real += threadstore[mythread].meson_q[idx].real;
+	    meson_q[t][k].imag += threadstore[mythread].meson_q[idx].imag;
+	    threadstore[mythread].meson_q[idx].real = 0.;
+	    threadstore[mythread].meson_q[idx].imag = 0.; // Prevent re-add
+	  }
+      }
   }
 
   Real flops = (Real)sites_on_node*8*num_corr_mom;
@@ -78,19 +108,23 @@ sum_meson_q(complex **meson_q, complex **meson_q_thread, int nonzero[],
 /* Calculate a single Fourier phase factor */
 static complex ff(Real theta, char parity, complex tmp)
 {
-  complex z = {0.,0.};
+  complex z; // = {0.,0.};
   
   if(parity == EVEN){
-    z.real = tmp.real*cos(theta);
-    z.imag = tmp.imag*cos(theta);
+    Real costh = cos(theta);
+    z.real = tmp.real*costh;
+    z.imag = tmp.imag*costh;
   }
   else if(parity == ODD){
-    z.real = -tmp.imag*sin(theta);
-    z.imag =  tmp.real*sin(theta);
+    Real sinth = sin(theta);
+    z.real = -tmp.imag*sinth;
+    z.imag =  tmp.real*sinth;
   }
   else if(parity == EVENANDODD){
-    z.real = tmp.real*cos(theta)-tmp.imag*sin(theta);
-    z.imag = tmp.imag*cos(theta)+tmp.real*sin(theta);
+    Real costh = cos(theta);
+    Real sinth = sin(theta);
+    z.real = tmp.real*costh-tmp.imag*sinth;
+    z.imag = tmp.imag*costh+tmp.real*sinth;
   }
   else{
     printf("ff(%d): bad parity %d\n", this_node, parity);
@@ -197,7 +231,7 @@ void qudaContract(int milc_precision,
 #endif
 
   /* Working space for threaded time-slice reductions */
-  complex **meson_q_thread = create_meson_q_thread(nt, max_threads, num_corr_mom);
+  meson_storage_t* threadstore = create_meson_q_thread(nt, max_threads, num_corr_mom);
 
   /* Fourier factors for FT */
 
@@ -234,31 +268,32 @@ void qudaContract(int milc_precision,
     double real = meson.real;
     double imag = meson.imag;
     nonzero[st] = 1;
-    st += mythread*nt;
-  
+
+    complex* meson_q_thread = threadstore[mythread].meson_q;
+
     /* Each thread accumulates its own time-slice values in meson_q_thread
        Each thread works with all of the momenta */
+
+    st *= num_corr_mom; // meson_q_thread[t][k]
     for(int k=0; k<num_corr_mom; k++)
       {
 	complex fourier_fact = ftfact[k+num_corr_mom*i];
 	
-	meson_q_thread[st][k].real += 
-	  real*fourier_fact.real -  
-	  imag*fourier_fact.imag;
-	meson_q_thread[st][k].imag += 
-	  real*fourier_fact.imag +  
-	  imag*fourier_fact.real;
+	meson_q_thread[st+k].real += 
+	  real*fourier_fact.real - imag*fourier_fact.imag;
+	meson_q_thread[st+k].imag += 
+	  real*fourier_fact.imag + imag*fourier_fact.real;
       }
   } END_LOOP_OMP;
 
   flops += (Real)num_corr_mom*8*sites_on_node;
 
   /* sum meson_q over all the threads */
-  flops += sum_meson_q(meson_q, meson_q_thread, nonzero,
+  flops += sum_meson_q(meson_q, threadstore, nonzero,
 		       max_threads, nt, num_corr_mom);
   
   destroy_ftfact(ftfact);
-  destroy_meson_q_thread(meson_q_thread, nt, max_threads);
+  destroy_meson_q_thread(threadstore, max_threads);
   
   dtime += dclock();
   cont_args->dtime = dtime;
