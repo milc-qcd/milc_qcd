@@ -664,9 +664,10 @@ eo_fermion_force_twoterms_hwv( Real eps, Real weight1, Real weight2,
 
 	  /* Length 3 paths (Not the Naik term) */
 	  /* Add the force F_mu the 0(2) link in the path: +     */
-	  if(GOES_FORWARDS(mu)) 
+	 if(GOES_FORWARDS(mu)) {
 	    P3mu = hw[mu];  /* OK to clobber P5nu */
 	    u_shift_hw_fermion(P3[sig], P3mu, mu, &mt[mu], temp_hw[mu]);
+	  }
 	    /* The above shift is not needed if mu is backwards */
 	  side_link_3f_force(mu, sig, ThreeSt, temp_x, P3[sig], Pmu, P3mu);
 	}

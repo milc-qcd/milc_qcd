@@ -29,6 +29,8 @@ typedef struct {
   int iseed;	/* for random numbers */
   /*  REPEATING BLOCK */
   Real u0; /* tadpole parameter */
+  int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
+  int time_bc;          /* 0 for antiperiodic, 1 for periodic */
   int nmass;    /* number of masses */
   ks_param ksp[MAX_MASS];
   quark_invert_control qic[MAX_MASS];
@@ -49,6 +51,7 @@ typedef struct {
   char startfile[MAXFILENAME],savefile[MAXFILENAME];
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
   char savelongfile[MAXFILENAME],savefatfile[MAXFILENAME];
+  char stringLFNlong[MAXFILENAME],stringLFNfat[MAXFILENAME];  /** ILDG LFN if applicable ***/
   char srcfile[MAX_MASS][MAXFILENAME],ansfile[MAX_MASS][MAXFILENAME];
   int inverttype;
 }  params;
