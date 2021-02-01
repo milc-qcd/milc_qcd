@@ -161,7 +161,8 @@ typedef struct {
 
 enum inv_type {
   MGTYPE,
-  CGTYPE
+  CGTYPE,
+  UMLTYPE
 };
 
 enum mg_rebuild_type {

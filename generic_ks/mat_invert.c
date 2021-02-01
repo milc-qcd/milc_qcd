@@ -198,6 +198,8 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
     su3_vector *tmp;
     double dtime;
 
+    node0_printf("Plain CG inversion with mass %f\n", mass);
+
     tmp = (su3_vector *)malloc(sites_on_node * sizeof(su3_vector));
     if(tmp==NULL){
       printf("mat_invert_cg_field(%d): no room for tmp\n",this_node);
@@ -346,6 +348,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     int even_iters;
     double dtime;
 
+    node0_printf("UML inversion with mass %f\n", mass);
     /* "Precondition" both even and odd sites */
     /* temp <- M_adj * src */
 
@@ -747,34 +750,47 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 
 int mat_invert_field(su3_vector *src, su3_vector *dst, 
 		     quark_invert_control *qic,
-		     Real mass, imp_ferm_links_t *fn, int use_precond){
+		     Real mass, imp_ferm_links_t *fn){
 
   int cgn = 0;
 
   /* Use a CG solve for a CGTYPE inversion or an MGTYPE inversion with a CG override */
-  if(qic->inv_type == CGTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD)) {
-    if(use_precond)
-      /* Preconditioned inversion */
+  switch(qic->inv_type){
+  case  CGTYPE:
+
+    cgn = mat_invert_cg_field(src, dst, qic, mass, fn );
+    break;
+
+  case UMLTYPE:
+
+    cgn = mat_invert_uml_field(src, dst, qic, mass, fn );
+    break;
+
+  case MGTYPE:
+
+    if(qic->mg_rebuild_type == CGREBUILD){    
       cgn = mat_invert_uml_field(src, dst, qic, mass, fn );
-    else
-      /* Unpreconditioned inversion */
-      cgn = mat_invert_cg_field(src, dst, qic, mass, fn );
-    if (qic->inv_type == MGTYPE) {
       node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
 #ifdef HAVE_QUDA
       /* Force a reload b/c of sloppy link precision changes */
       refresh_fn_links(fn);
 #endif
-    }
-  } else {
-    /* inv_type == MGTYPE */
+    } else {
+      /* inv_type == MGTYPE */
 #ifdef USE_CG_GPU
-    /* Currently only available through QUDA on GPUs */
-    cgn = mat_invert_mg_field_gpu(src, dst, qic, mass, fn );
+      /* Currently only available through QUDA on GPUs */
+      cgn = mat_invert_mg_field_gpu(src, dst, qic, mass, fn );
 #else
-    node0_printf("mat_invert_field: ERROR. Multigrid is available only with GPU compilation\n");
-    terminate(1);
+      node0_printf("mat_invert_field: ERROR. Multigrid is available only with GPU compilation\n");
+      terminate(1);
 #endif
+    }
+    break;
+
+  default:
+
+    node0_printf("mat_invert_field: Bad inv_type %d\n", qic->inv_type);
+    terminate(1);
   }
   return cgn;
 }
