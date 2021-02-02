@@ -234,9 +234,9 @@ void qudaContract(int milc_precision,
   meson_storage_t* threadstore = create_meson_q_thread(nt, max_threads, num_corr_mom);
 
   /* Fourier factors for FT */
-
-  complex *ftfact = create_ftfact(nx, ny, nz, nt, num_corr_mom,
-				  corr_mom, corr_parity, r0, &flops );
+  double factx = 2.0*PI/(1.0*nx) ; 
+  double facty = 2.0*PI/(1.0*ny) ; 
+  double factz = 2.0*PI/(1.0*nz) ; 
 
   /* For avoiding adding unecessary zeros */
   int *nonzero = (int *)malloc(nt*sizeof(int));
@@ -277,22 +277,31 @@ void qudaContract(int milc_precision,
     st *= num_corr_mom; // meson_q_thread[t][k]
     for(int k=0; k<num_corr_mom; k++)
       {
-	complex fourier_fact = ftfact[k+num_corr_mom*i];
-	
+	/* compute Fourier phase */
+	int px = corr_mom[k][0];
+	int py = corr_mom[k][1];
+	int pz = corr_mom[k][2];
+	char ex = corr_parity[k][0];
+	char ey = corr_parity[k][1];
+	char ez = corr_parity[k][2];
+	complex fourier_fact; fourier_fact.real=1.0; fourier_fact.imag=0.0;
+	fourier_fact = ff(factx*(s->x-r0[0])*px, ex, fourier_fact);
+	fourier_fact = ff(facty*(s->y-r0[1])*py, ey, fourier_fact);
+	fourier_fact = ff(factz*(s->z-r0[2])*pz, ez, fourier_fact);
+
 	meson_q_thread[st+k].real += 
 	  real*fourier_fact.real - imag*fourier_fact.imag;
 	meson_q_thread[st+k].imag += 
 	  real*fourier_fact.imag + imag*fourier_fact.real;
       }
   } END_LOOP_OMP;
-
-  flops += (Real)num_corr_mom*8*sites_on_node;
+  flops += (Real)sites_on_node*18*num_corr_mom; // Fourier phase; does not count sin(x), cos(x)?
+  flops += (Real)num_corr_mom*8*sites_on_node; // contraction
 
   /* sum meson_q over all the threads */
   flops += sum_meson_q(meson_q, threadstore, nonzero,
 		       max_threads, nt, num_corr_mom);
   
-  destroy_ftfact(ftfact);
   destroy_meson_q_thread(threadstore, max_threads);
   
   dtime += dclock();
