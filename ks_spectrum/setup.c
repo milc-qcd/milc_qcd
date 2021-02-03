@@ -551,13 +551,13 @@ int readin(int prompt) {
           IF_OK status += get_s(stdin, prompt, "MGparams", mgparamfile);
         }
 
-	  /* maximum no. of conjugate gradient iterations */
+	/* maximum no. of conjugate gradient iterations */
         IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
- 				&max_cg_iterations );
-	  
-	  /* maximum no. of conjugate gradient restarts */
+			      &max_cg_iterations );
+	
+	/* maximum no. of conjugate gradient restarts */
         IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
-				&max_cg_restarts );
+			      &max_cg_restarts );
       }
 	  
       /* Should we be checking (computing) the propagator by running
