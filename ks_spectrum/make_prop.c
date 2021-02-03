@@ -240,12 +240,16 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
           /* In most use cases they are either all restored, or all fresh */
 
           for(j = 0; j < num_prop; j++){
-            if(set_type == MULTISOURCE_SET)
+            if(set_type == MULTISOURCE_SET){
               /* Multisource inversion -- we don't support singles for multisource */
               mat_invert_field(src[j], dst[j], my_qic+j, my_ksp[0].mass, fn_multi[j]);
-            else
+            } else {
               /* Multimass or singles inversion -- iterate over masses */
+	      enum inv_type it = my_qic[0].inv_type;
+	      if(startflag[j] != FRESH)my_qic[0].inv_type = CGTYPE;
               mat_invert_field(src[0], dst[j], my_qic+j, my_ksp[j].mass, fn_multi[j]);
+	      my_qic[0].inv_type = it;
+	    }
           }
         } else {
 

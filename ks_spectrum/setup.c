@@ -537,11 +537,13 @@ int readin(int prompt) {
 	  param.inv_type[k] = MGTYPE;
 	else if(strcmp(savebuf,"CG") == 0)
 	  param.inv_type[k] = CGTYPE;
+	else if(strcmp(savebuf,"CGZ") == 0)
+	  param.inv_type[k] = CGZTYPE;
 	else if(strcmp(savebuf,"UML") == 0)
 	  param.inv_type[k] = UMLTYPE;
 	else {
 	  printf("Unrecognized inverter type %s\n",savebuf);
-	  printf("Choices are 'CG', 'MG', 'UML'\n");
+	  printf("Choices are 'CG', 'CGZ', 'MG', 'UML'\n");
 	  status++;
 	}
       }

@@ -162,6 +162,7 @@ typedef struct {
 enum inv_type {
   MGTYPE,
   CGTYPE,
+  CGZTYPE,
   UMLTYPE
 };
 
