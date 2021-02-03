@@ -59,7 +59,7 @@ int ks_eigensolve_Grid( su3_vector ** eigVec,
   assert( eig_arg.Nk >= eig_arg.Nstop );
   assert( eig_arg.Nm > eig_arg.Nk );
 
-  if( eigen_param->tol > 0 ) eig_arg.tol = sqrt(eigen_param->tol);
+  if( eigen_param->tol > 0 ) eig_arg.tol = eigen_param->tol;
   else
   {
 #if MILC_PRECISION == 1
