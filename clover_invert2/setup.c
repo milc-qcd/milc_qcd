@@ -510,6 +510,7 @@ int readin(int prompt) {
       param.qic[i].parity = EVENANDODD;
       param.qic[i].min = 0;
       param.qic[i].nsrc = 1;
+      param.qic[i].inv_type = UMLTYPE;
       
       /* Momentum twist and time boundary condition */
 

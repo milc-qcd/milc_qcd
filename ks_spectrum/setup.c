@@ -90,9 +90,6 @@ static int initial_set(void){
 #if FERM_ACTION == HISQ
     show_su3_mat_opts();
     show_hisq_links_opts();
-#elif FERM_ACTION == HYPISQ
-    show_su3_mat_opts();
-    show_hypisq_links_opts();
 #endif
 
     status = get_prompt(stdin,  &prompt );
@@ -341,7 +338,7 @@ int readin(int prompt) {
       IF_OK status += get_i(stdin, prompt, "prec_pbp", &param.qic_pbp[0].prec);
       IF_OK for(i = 0; i < param.num_pbp_masses; i++){
 	IF_OK status += get_f(stdin, prompt, "mass", &param.ksp_pbp[i].mass);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
 	IF_OK status += get_f(stdin, prompt, "naik_term_epsilon", 
 			      &param.ksp_pbp[i].naik_term_epsilon);
 #else
@@ -370,6 +367,7 @@ int readin(int prompt) {
 #ifdef HALF_MIXED
 	IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic_pbp[i].mixed_rsq );
 #endif
+	IF_OK param.qic_pbp[i].inv_type = UMLTYPE;
       }
     }
 
@@ -518,7 +516,6 @@ int readin(int prompt) {
       int check = CHECK_NO;
       char mgparamfile[MAXFILENAME] = "";
 
-#ifdef MULTISOURCE
       IF_OK status += get_s(stdin, prompt, "set_type", savebuf);
       IF_OK {
 	if(strcmp(savebuf,"multimass") == 0)
@@ -526,46 +523,43 @@ int readin(int prompt) {
 	else if(strcmp(savebuf,"multisource") == 0)
 	  param.set_type[k] = MULTISOURCE_SET;
 	else if(strcmp(savebuf,"single") == 0)
-	  param.set_type[k] = MULTIMASS_SET;
+	  param.set_type[k] = SINGLES_SET;
 	else {
 	  printf("Unrecognized set type %s\n",savebuf);
 	  printf("Choices are 'multimass', 'multisource', 'single'\n");
 	  status++;
 	}
       }
-#else
-      param.set_type[k] = MULTIMASS_SET;
-#endif
 
-#ifdef MULTIGRID
       IF_OK status += get_s(stdin, prompt, "inv_type", savebuf);
       IF_OK {
 	if(strcmp(savebuf,"MG") == 0)
 	  param.inv_type[k] = MGTYPE;
 	else if(strcmp(savebuf,"CG") == 0)
 	  param.inv_type[k] = CGTYPE;
+	else if(strcmp(savebuf,"CGZ") == 0)
+	  param.inv_type[k] = CGZTYPE;
+	else if(strcmp(savebuf,"UML") == 0)
+	  param.inv_type[k] = UMLTYPE;
 	else {
 	  printf("Unrecognized inverter type %s\n",savebuf);
-	  printf("Choices are 'CG', 'MG'\n");
+	  printf("Choices are 'CG', 'CGZ', 'MG', 'UML'\n");
 	  status++;
 	}
       }
-#else
-      param.inv_type[k] = CGTYPE;
-#endif
       
       IF_OK {
         if (param.inv_type[k] == MGTYPE) {
           IF_OK status += get_s(stdin, prompt, "MGparams", mgparamfile);
         }
 
-	  /* maximum no. of conjugate gradient iterations */
+	/* maximum no. of conjugate gradient iterations */
         IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
- 				&max_cg_iterations );
-	  
-	  /* maximum no. of conjugate gradient restarts */
+			      &max_cg_iterations );
+	
+	/* maximum no. of conjugate gradient restarts */
         IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
-				&max_cg_restarts );
+			      &max_cg_restarts );
       }
 	  
       /* Should we be checking (computing) the propagator by running
@@ -620,22 +614,20 @@ int readin(int prompt) {
       
       IF_OK {
 
-	if(param.set_type[k] == MULTIMASS_SET){
-	  
-	  /* Get source index common to this set */
-	  IF_OK status += get_i(stdin,prompt,"source", &tmp_src);
-	} else {
-	  
+	if(param.set_type[k] == MULTISOURCE_SET){
 	  /* Get mass label common to this set */
 	  IF_OK status += get_s(stdin,prompt,"mass", savebuf);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
 	  IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 				&tmp_naik);
 #else
 	  tmp_naik = 0.0;
 #endif
+	} else {
+	  /* MULTIMASS_SET or SINGLES_SET */
+	  /* Get source index common to this set */
+	  IF_OK status += get_i(stdin,prompt,"source", &tmp_src);
 	}
-	
       }
 
       /* Number of propagators in this set */
@@ -665,25 +657,26 @@ int readin(int prompt) {
 
 	IF_OK {
 	  
-	  if(param.set_type[k]  == MULTIMASS_SET){
+	  if(param.set_type[k]  == MULTISOURCE_SET){
+
+	    /* Get source index common to this set */
+	    IF_OK status += get_i(stdin,prompt,"source", &param.source[nprop]);
+	    strcpy(param.mass_label[nprop], savebuf);
+	    param.ksp[nprop].naik_term_epsilon = tmp_naik;
 	    
+	  } else {
+
+	    /* MULTIMASS_SET or SINGLES_SET */
 	    /* Get mass label common to this set */
 	    IF_OK status += get_s(stdin,prompt,"mass", param.mass_label[nprop]);
 	    
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
 	    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 				  &param.ksp[nprop].naik_term_epsilon);
 #else
 	    param.ksp[nprop].naik_term_epsilon = 0.0;
 #endif
 	    param.source[nprop] = tmp_src;
-	    
-	  } else {
-	    
-	    /* Get source index common to this set */
-	    IF_OK status += get_i(stdin,prompt,"source", &param.source[nprop]);
-	    strcpy(param.mass_label[nprop], savebuf);
-	    param.ksp[nprop].naik_term_epsilon = tmp_naik;
 	  }
 	}
 
@@ -736,24 +729,24 @@ int readin(int prompt) {
 #ifdef MULTIGRID
   /* parameter within MG solve to specify how to refresh the coarse op */
 
-  IF_OK {
-    if (param.inv_type[k] == MGTYPE) {
-      IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
-      IF_OK {
-        if(strcmp(savebuf,"FULL") == 0)
-          param.qic[nprop].mg_rebuild_type = FULLREBUILD;
-        else if(strcmp(savebuf,"THIN") == 0)
-          param.qic[nprop].mg_rebuild_type = THINREBUILD;
-        else if(strcmp(savebuf,"CG") == 0)
-          param.qic[nprop].mg_rebuild_type = CGREBUILD;
-        else {
-          printf("Unrecognized rebuild type %s\n",savebuf);
-          printf("Choices are 'FULL', 'THIN', 'CG'\n");
-          status++;
-        }
-      }
-    }
-  }
+	IF_OK {
+	  if (param.inv_type[k] == MGTYPE) {
+	    IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
+	    IF_OK {
+	      if(strcmp(savebuf,"FULL") == 0)
+		param.qic[nprop].mg_rebuild_type = FULLREBUILD;
+	      else if(strcmp(savebuf,"THIN") == 0)
+		param.qic[nprop].mg_rebuild_type = THINREBUILD;
+	      else if(strcmp(savebuf,"CG") == 0)
+		param.qic[nprop].mg_rebuild_type = CGREBUILD;
+	      else {
+		printf("Unrecognized rebuild type %s\n",savebuf);
+		printf("Choices are 'FULL', 'THIN', 'CG'\n");
+		status++;
+	      }
+	    }
+	  }
+	}
 #else
   param.qic[nprop].mg_rebuild_type = CGREBUILD;
 #endif
