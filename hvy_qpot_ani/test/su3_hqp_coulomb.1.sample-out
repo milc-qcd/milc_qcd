@@ -2,7 +2,7 @@ com_qmp: set thread-safety level to 0
 Pure gauge SU3 Wilson loops
 MIMD version 7
 Machine = QMP (portable), with 1 nodes
-start: Wed Dec  2 19:48:53 2020
+start: Tue Feb  9 10:37:46 2021
 
 type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nx 6
@@ -26,19 +26,19 @@ max_y 2
 max_z 2
 max_t 2
 max_r 6
+hqp_alg 5
 Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666
 Time stamp Sat Aug 10 10:46:56 2002
 Checksums c1d08f5 68164bef OK
-Time to reload gauge configuration = 5.140305e-04
+Time to reload gauge configuration = 5.970001e-04
 CHECK PLAQ: 1.982718e+00 1.981172e+00
 CHECK NERSC LINKTR: 9.015920e-01 CKSUM: ba83dea8
 Unitarity checked.  Max deviation 2.98e-07
-Time to check unitarity = 1.981258e-04
+Time to check unitarity = 1.637936e-04
 Fixing to Coulomb gauge, 500 steps, 2.0e-06 tol
 GFIX: Ended at step 1. Av gf action 9.24589992e-01, delta 1.073e-06
-Gauge fixing: 1.373053e-03 seconds
-new_hvy_pot with 0 times smeared links
-HASH TABLE ASSEMBLED
+Gauge fixing: 2.646923e-03 seconds
+hvy_pot_alg_new with 0 times smeared links
 POT_LOOP:  0  0  0   1 	3.000000e+00
 POT_LOOP:  0  0  1   1 	2.261044e+00
 POT_LOOP:  0  0  2   1 	2.114710e+00
@@ -93,10 +93,11 @@ POT_LOOP:  2  1  2   2 	1.479646e+00
 POT_LOOP:  2  2  0   2 	1.509499e+00
 POT_LOOP:  2  2  1   2 	1.517791e+00
 POT_LOOP:  2  2  2   2 	1.512790e+00
+Number of gathers = 17(0 stale)
 RUNNING COMPLETED
-Time = 3.007603e-02 seconds
+Time = 9.348869e-03 seconds
 
 
 ask_starting_lattice(0): EOF on input.
-exit: Wed Dec  2 19:48:54 2020
+exit: Tue Feb  9 10:37:46 2021
 

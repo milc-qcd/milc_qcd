@@ -44,8 +44,12 @@
 
 #ifdef PLANE_AVERAGED_PLC
 
-#define site_coord(s,mu) \
-        (((short*)&(s->x))[mu])
+#ifdef OMP
+#define ATOMIC \
+_Pragma( STR(omp atomic) ) 
+#else
+#define ATOMIC
+#endif
 
 void plane_averaged_plc( su3_matrix *links ) {
     register int i,j,mu;
@@ -103,12 +107,7 @@ void plane_averaged_plc( su3_matrix *links ) {
      *
      ***************************************************************/
 
-    owline = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
-    if(owline == NULL) {
-      printf("%s(%d): Can't malloc temporary\n",myname,this_node);
-      terminate(1);
-    }
-    memset (owline,0,sites_on_node*sizeof(su3_matrix));
+    owline = hqp_alloc_su3mat_buffer(1);
     /* averaged correlations of PL */
     plc = (double_complex **)malloc(3*sizeof(double_complex*));
     if(plc == NULL){
@@ -175,33 +174,22 @@ void plane_averaged_plc( su3_matrix *links ) {
     /* Trace the Polyakov loop and sum up the xy,yz and zx slices */
     FORSOMEPARITY_OMP(i,s, EVEN, private(ctr1) ) {
       if ( site_coord(s,xc[TUP]) <= 1 ) {
+//printf("i %d xyzt %d %d %d %d\n",i,site_coord(s,xc[XUP]),site_coord(s,xc[YUP]),site_coord(s,xc[ZUP]),site_coord(s,xc[TUP]));
         ctr1 = trace_su3( owline+i );
         plf[i].real = (double)(ctr1.real);
         plf[i].imag = (double)(ctr1.imag);
-#  ifdef OMP
-#  pragma omp atomic 
+        ATOMIC
         plp[XUP][site_coord(s,xc[XUP])].real += plf[i].real;
-#  endif
-#  ifdef OMP
-#  pragma omp atomic 
+        ATOMIC
         plp[XUP][site_coord(s,xc[XUP])].imag += plf[i].imag;
-#  endif
-#  ifdef OMP
-#  pragma omp atomic 
+        ATOMIC
         plp[YUP][site_coord(s,xc[YUP])].real += plf[i].real;
-#  endif
-#  ifdef OMP
-#  pragma omp atomic 
+        ATOMIC
         plp[YUP][site_coord(s,xc[YUP])].imag += plf[i].imag;
-#  endif
-#  ifdef OMP
-#  pragma omp atomic 
+        ATOMIC
         plp[ZUP][site_coord(s,xc[ZUP])].real += plf[i].real;
-#  endif
-#  ifdef OMP
-#  pragma omp atomic 
+        ATOMIC
         plp[ZUP][site_coord(s,xc[ZUP])].imag += plf[i].imag;
-#  endif
       }
     } END_LOOP_OMP;
 

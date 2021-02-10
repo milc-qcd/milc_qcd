@@ -21,6 +21,7 @@ void smearing( void ) {
   register int mu,i;
   register site *s;
   su3_matrix **apelinks=NULL;
+  su3_matrix *src=NULL,*diag=NULL;
   int idir;
 #ifdef STAP_APE
   int stap[4]={0,0,0,0};
@@ -74,12 +75,12 @@ mat.e[2][2].real=1.; }
 #endif
 
   /* Allocate space for temporary storage of results */
+  src  = create_G_from_site();
+  diag = hqp_alloc_su3mat_buffer(4);
   apelinks = (su3_matrix **)malloc(ndirs*sizeof(su3_matrix*));
   assert( ( apelinks !=NULL ) );
-  for ( idir = 0; idir < ndirs; idir++ ) { 
-    apelinks[idir] = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
-    memset (apelinks[idir],0,sites_on_node*sizeof(su3_matrix));
-  }
+  for ( idir = 0; idir < ndirs; idir++ )  
+    apelinks[idir] =hqp_alloc_su3mat_buffer(1); 
 
   /* Loop over the space directions and APE-smear the links.
      The results will temporarily be stored in x_link, y_link
@@ -95,20 +96,20 @@ mat.e[2][2].real=1.; }
     /* Do the APE smearing and SU(3) projection for all links in mu */
 #ifdef STAP_APE
     if ( stap_dir == xc[mu] ) continue;
-    ape_smear_dir_stap(F_OFFSET(link[0]),xc[mu],F_OFFSET(diag),
+    ape_smear_field_dir_stap(src,xc[mu],diag,
 		  1./smear_fac,1., stap ,3*MAXCOUNT,TOL);
 #else
 #ifdef APE_4D_SMEARING
-    ape_smear_dir(F_OFFSET(link[0]),xc[mu],F_OFFSET(diag),
+    ape_smear_field_dir(src,xc[mu],diag,
 		  1./smear_fac,1., 0 ,3*MAXCOUNT,TOL);
 #elif (defined APE_3D_SMEARING)
-    ape_smear_dir(F_OFFSET(link[0]),xc[mu],F_OFFSET(diag),
+    ape_smear_field_dir(src,xc[mu],diag,
 		  1./smear_fac,1., 1 ,3*MAXCOUNT,TOL);
 #endif
 #endif
     
     /* Storage management: Temporarily store the new link */
-    FORALLSITES_OMP(i,s, default(shared) ){ su3mat_copy( &(s->diag), &(apelinks[idir][i]) ); } END_LOOP_OMP;
+    FORALLSITES_OMP(i,s, default(shared) ){ su3mat_copy( &(diag[xc[mu]+4*i]), &(apelinks[idir][i]) ); } END_LOOP_OMP;
     
     idir++; 
   } /* end loop over mu */
@@ -127,7 +128,9 @@ mat.e[2][2].real=1.; }
     idir++; 
   } /* end loop over mu */
 
-  for ( idir = 0; idir < ndirs; idir++ ) { free(apelinks[idir]); }
+  hqp_free_su3mat_buffer( src );
+  hqp_free_su3mat_buffer( diag );
+  for ( idir = 0; idir < ndirs; idir++ ) { hqp_free_su3mat_buffer(apelinks[idir]); }
   free(apelinks);
 
 #if ( (defined AX_GAUGE && (defined APE_4D_SMEARING || defined APE_1D2_SMEARING ) ) )

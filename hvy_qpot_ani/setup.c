@@ -17,12 +17,9 @@ params param;
 
 /* Forward declarations */
 static int initial_set(void);
-#if (defined NEW_HVY_POT || defined PLANE_AVERAGED_PLC)
-static int locx[4];
 static void next_local_lattice(int x, int y, int z, int t, int *dirpt, int FB,
                                int *xp, int *yp, int *zp, int *tp);
 static void make_nll_gathers(void);
-#endif
 
 int  setup()   {
   /* print banner, get volume */
@@ -37,11 +34,9 @@ int  setup()   {
   /* set up nearest neighbor pointers and comlink structures */
   make_nn_gathers();
 
-#ifdef NEW_HVY_POT 
   /* set up pointers for passing full local lattices and 
      comlink structures code for this routine is below */
   make_nll_gathers();
-#endif
   return(prompt);
 }
 
@@ -199,6 +194,9 @@ int readin(int prompt){
 #endif // END #ifdef HYP_SMEARING 
     }
 #endif // END #ifndef SMEARING
+#ifdef NEW_HVY_POT 
+    IF_OK status += get_i(stdin, prompt,"hqp_alg",&param.hqp_alg);
+#endif
 #endif // END #ifndef GFIXONLY
 
     if( status > 0)param.stopflag=1; else param.stopflag=0;
@@ -290,6 +288,9 @@ int readin(int prompt){
     terminate(1);
   }
 #endif
+#ifdef NEW_HVY_POT 
+  hqp_alg = param.hqp_alg;
+#endif
 
   startflag = param.startflag;
   saveflag = param.saveflag;
@@ -304,7 +305,6 @@ int readin(int prompt){
   return(0);
 }
 
-#if defined NEW_HVY_POT 
 /* Set up comlink structures for nearest local lattice gather pattern; 
    make_lattice() and  make_nn_gathers() must be called first, 
    preferably just before calling make_3n_gathers().
@@ -377,13 +377,3 @@ next_local_lattice(int x, int y, int z, int t, int *dirpt, int FB,
   default: printf("next_local_lattice: bad direction\n"); exit(1);
   }
 }
-
-/* this routine returns the local lattice size which is needed */
-/* for shifts of the coordinates of the new_hvy_pot.c */
-
-void local_lattice_size (int *llat) {
-  int i;
-  for (i=XUP;i<=TUP;i++) { llat[i]=locx[i]; }
-}
-#endif
-

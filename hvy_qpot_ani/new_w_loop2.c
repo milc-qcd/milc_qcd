@@ -15,118 +15,115 @@
 #include "../include/openmp_defs.h"
 #include <assert.h>
 
-/* makes Wilson loops and adds them up into the array */
-static void make_loops ( int t,
-                         Real *wils_loop2, 
-                         su3_matrix *s_link, 
-                         su3_matrix *s_link_f, 
-                         su3_matrix *t_link_f ) ; 
+static hqp_geom *geom=NULL;
+static double *wils_loop2=NULL;
 
-/* loops over r and t, extends Wilson lines as needed, then calls make_loops */
-static void loop_rt ( int nr, int disp[], Real *wils_loop2 ) ;
+static su3_matrix *s_link=NULL, *s_link_f=NULL, *t_link_f=NULL;
+
+static inline void global_sums( int mysize );
+static inline int hqp_buffer_dim (void );
+static void hqp_free_buffers( void );
+static void hqp_setup_buffers( int mysize );
+static inline void output_all( char smtag[], int mi );
 
 /* constructs elementary sqrt(2) transporters, then calls loop_rt */
-static void fw_sqrt2_loops ( int mu1, int mu2, Real *wils_loop2 );
-static void bw_sqrt2_loops ( int mu1, int mu2, Real *wils_loop2 );
+static void fw_sqrt2_loops ( int mu1, int mu2, double *wils_loop2 );
+static void bw_sqrt2_loops ( int mu1, int mu2, double *wils_loop2 );
 /* loops over possible sqrt(2) loops */
-static int sqrt2_loops( Real *wils_loop2 );
+static int sqrt2_loops( double *wils_loop2 );
 
 /* constructs elementary sqrt(5) transporters, then calls loop_rt */
-static void fw_sqrt5_loops ( int mu1, int mu2, Real *wils_loop2 );
-static void bw_sqrt5_loops ( int mu1, int mu2, Real *wils_loop2 );
+static void fw_sqrt5_loops ( int mu1, int mu2, double *wils_loop2 );
+static void bw_sqrt5_loops ( int mu1, int mu2, double *wils_loop2 );
 /* loops over possible sqrt(5) loops, two steps always only forward */
-static int sqrt5_loops( Real *wils_loop2 );
+static int sqrt5_loops( double *wils_loop2 );
 
 /* constructs all elementary forward sqrt(3) transporters, then calls loop_rt */
-static void fffw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 );
+static void fffw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 );
 /* constructs all elementary two forward-one backward sqrt(3) transporters, then calls loop_rt */
-static void ffbw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 );
-static void fbfw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 );
-static void bffw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 );
+static void ffbw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 );
+static void fbfw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 );
+static void bffw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 );
 /* not really needed, but good to have for bugfixing the two forward-one backward sqrt(3) transporters */
-static void fbbw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 );
-static void bfbw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 );
-static void bbfw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 );
+static void fbbw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 );
+static void bfbw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 );
+static void bbfw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 );
 /* loops over possible sqrt(3) loops, using only all forward or two forward-one backward transporters */
-static int sqrt3_loops( Real *wils_loop2 );
+static int sqrt3_loops( double *wils_loop2 );
 
 static int max11[3], max12[6], max111;
-static int nrmax;
-static int nct;
+static int nr11,nr12,nr111;
+static int mi;
 
 void w_loop2(int tot_smear) {
 
   register int r,t;
   register int mu, mu1, mu2;
-  double max_r2;
-  int nr11,nr12,nr111;
   int nr,avgr=0;
   int base_r=0;
   int disp3[4];
-  Real *wils_loop2=NULL;
+
   char myname[] = "new_w_loop2";
 
-  /*******************************************************
-   *
-   * Start of header:
-   *
-   * Text output concerning the geometry and its consistency.
-   * In particular, the correlation directions 'xc[mu]' are
-   * permuted from the original lattice directions 'mu'
-   * to permit static quark correlations with arbitrary 
-   * correlation time direction and arbitrary anisotropic 
-   * direction.
-   *
-   ******************************************************/
-
-#ifdef AVERAGE_DIRECTIONS
-#ifdef ANISOTROPY
-  assert( (ani_dir==xc[TUP]) );
-#endif
-  assert( (maxc[XUP]==maxc[YUP] && maxc[XUP] == maxc[ZUP] ) );
+  char smtag[MAXSMTAG]="";
+#ifdef SMEARING
+  sprintf(smtag,"_%d",tot_smear);
 #endif
 
-  node0_printf("%s with %d times smeared links\n",myname,tot_smear);
-#ifdef DEBUG
-  node0_printf(" [min,max](CT)[%d] = [%d,%d], \
-                \n max(C0)[%x] = %d, max(C1)[%x] = %d, max(C2)[%x] = %d, \
-                \n max_r = %.3g\n",cor_dir, min_ct,maxc[TUP], xc[XUP],maxc[XUP] ,xc[YUP],maxc[YUP] ,xc[ZUP],maxc[ZUP] ,max_r);
-#endif
-  assert ( maxc[XUP] <= nc[XUP]/2 && maxc[YUP] <= nc[YUP]/2 && maxc[ZUP] <= nc[ZUP]/2 );  
-  assert ( min_ct <= maxc[TUP] && maxc[TUP] <= nc[TUP] );
-  assert ( max_r >= 0 );  
-  if ( max_r == 0 ) {   
-#ifndef ANISOTROPY
-    max_r=sqrt(maxc[XUP]*maxc[XUP] + maxc[YUP]*maxc[YUP] + maxc[ZUP]*maxc[ZUP] ) + 1e-6;
-#else
-#ifndef ONEDIM_ANISO_TEST
-    max_r=sqrt( ( ani_dir != cor_dir ? ani_xiq*ani_xiq : 1 ) * maxc[XUP]*maxc[XUP] + maxc[YUP]*maxc[YUP] + maxc[ZUP]*maxc[ZUP] ) + 1e-6;
-#else
-    max_r=sqrt( ( ani_dir != cor_dir ? ani_xiq*ani_xiq : iso_xiq ) * maxc[XUP]*maxc[XUP] + (iso_xiq*iso_xiq)*(maxc[YUP]*maxc[YUP] + maxc[ZUP]*maxc[ZUP]) ) + 1e-6;
-#endif
-#endif
-    node0_printf("max_r being automatically  reset to = %g\n",max_r);
-  }
-  for (mu=XUP; mu <TUP; mu++) {
-#ifndef ANISOTROPY
-    if ( max_r < maxc[mu] ) { 
-      maxc[mu] = ceil(max_r);
-      node0_printf("Decrease to max(C%d) = %d\n",mu,maxc[mu]);
-#else
-    if ( mu==XUP && max_r < ( ani_dir != cor_dir ? ani_xiq : 1 ) * maxc[mu] ) { 
-      maxc[mu] = ceil(max_r/ani_xiq);
-#ifndef ONEDIM_ANISO_TEST
-      if ( max_r < ( mu == XUP && ani_dir != cor_dir ? ani_xiq : iso_xiq ) * maxc[mu] ) { 
-        maxc[mu] = ceil(max_r/( mu == XUP && ani_dir != cor_dir ? ani_xiq : iso_xiq )); 
-        node0_printf("Decrease to max(C%d) = %d\n",mu,maxc[mu]);
-      } // END if ( max_r < ( mu == XUP && ani_dir != cor_dir ? ani_xiq : iso_xiq ) * maxc[mu] )
-#else
-      node0_printf("Decrease to max(C%d) = %d\n",mu,maxc[mu]);
-#endif
-#endif
-    } // END if ( max_r < maxc[mu] ) or if ( mu==XUP && max_r < ( ani_dir != cor_dir ? ani_xiq : 1 ) * maxc[mu] )
-  } // END for (mu=XUP; mu <TUP; mu++) 
-  max_r2 = max_r*max_r;
+  geom = hqp_geometry( myname );
+  mi = hqp_buffer_dim();
+  geom->maxlen=maxc[TUP];
+  hqp_setup_buffers( geom->maxlen*mi );
+
+  /****************************************************************
+   * 
+   * Proceed to loop over directions and recursively construct the 
+   * space-like segments and compute the Wilson loops with these
+   *
+   ***************************************************************/
+
+  /* Do off-axis "sqrt(2)" loops */
+  base_r+=sqrt2_loops ( wils_loop2+base_r );
+  /* Do off-axis "sqrt(5)" loops */
+  base_r+=sqrt5_loops ( wils_loop2+base_r );
+  /* Do off-axis "sqrt(3)" loops */
+  base_r+=sqrt3_loops ( wils_loop2+base_r );
+  assert( (base_r==mi) );
+
+  /****************************************************************
+   * 
+   * Proceed to normalizing and printing of the Wilson loops
+   * Remark: do not average the directions (impossible if anisotropic),
+   * instead print the direction into one column
+   * can activate averaging of directions via compiler macro AVERAGE_DIRECTIONS
+   *
+   ***************************************************************/
+
+  global_sums( geom->maxlen*mi );
+
+  output_all( smtag, mi );
+
+  free( wils_loop2);
+
+} /* w_loop2 */
+
+
+static void hqp_setup_buffers( int mysize ) { 
+
+  wils_loop2 = hqp_alloc_dble_buffer( mysize );
+}
+
+static void hqp_free_buffers( void ) { 
+
+  hqp_free_dble_buffer( wils_loop2 );
+}
+
+static inline void global_sums( int mysize ) {
+
+  g_vecdoublesum(wils_loop2, mysize );
+}
+
+static inline int hqp_buffer_dim ( void ) {
 
   /* Determine number of distinct geometries to consider, ignoring anisotropy here */
   max11[XUP] = ( maxc[YUP]<maxc[ZUP] ? maxc[YUP] : maxc[ZUP] );
@@ -157,8 +154,6 @@ void w_loop2(int tot_smear) {
   max111 = ( maxc[YUP]<maxc[ZUP] ? maxc[XUP]<maxc[YUP] ? maxc[XUP] : maxc[YUP] : maxc[ZUP] );
   if (max111 > max_r/sqrt(3) ) max111=ceil(max_r/sqrt(5)); 
   nr111 = max111;
-  nrmax = nr11 + nr12 + nr111;
-  nct = maxc[TUP];
 
 #ifdef DEBUG
   node0_printf("\n maxc  = %d, %d, %d",maxc[XUP],maxc[YUP],maxc[ZUP]);
@@ -169,145 +164,142 @@ void w_loop2(int tot_smear) {
                 \n####################################\n\n",nr11,nr12,nr111);
 #endif
 
-  /****************************************************************
-   * 
-   * End of header
-   * Setup of buffers and prefabrication of 
-   * elements to insert in static FORCE calculation (not active)
-   * 
-   ***************************************************************/
+  return( nr11 + nr12 + nr111 );
+}
 
-  wils_loop2 = (Real *)malloc(nct*nrmax*sizeof(Real));
-  assert(wils_loop2!=NULL);
-  memset (wils_loop2,0,nct*nrmax*sizeof(Real));
+static inline void output_all( char smtag[], int mi ) {
 
-  /****************************************************************
-   * 
-   * End of setup 
-   * Proceed to loop over directions and 
-   * recursively construct the space-like segments and compute
-   * the Wilson loops with that segment 
-   *
-   ***************************************************************/
+  int avgr, nr, base_r;
+  int *r;
+  int disp[4]={0,0,0,0};
+  double fact;
 
-  /* Do off-axis "sqrt(2)" loops */
-  base_r+=sqrt2_loops ( wils_loop2+base_r );
-  /* Do off-axis "sqrt(5)" loops */
-  base_r+=sqrt5_loops ( wils_loop2+base_r );
-  /* Do off-axis "sqrt(3)" loops */
-  base_r+=sqrt3_loops ( wils_loop2+base_r );
-  assert( (base_r==nrmax) );
+  for(disp[TUP]=1;disp[TUP]<=geom->maxlen;disp[TUP]++) { 
 
-  /****************************************************************
-   * 
-   * End of calculation 
-   * Proceed to normalizing and printing of the Wilson loops
-   * Remark: do not average the directions (impossible if anisotropic),
-   * instead print the direction into one column
-   * can activate averaging of directions via compiler macro AVERAGE_DIRECTIONS
-   *
-   ***************************************************************/
-
-  g_vecfloatsum(wils_loop2,nct*nrmax);
-  /* Normalize and print the sqrt(2) Wilson loops */
-  for(t=0;t<nct;t++) {
     avgr = nr = base_r = 0;
-    for( mu1=XUP; mu1<=YUP; mu1++) for( mu2= mu1+1; mu2<=ZUP; mu2++){ mu=3-mu1-mu2;
-      for(r=0;r<max11[mu];r++) {
+
 #ifndef ONLYONEPATH
-        wils_loop2[r+base_r+nrmax*t] = ((double)wils_loop2[r+base_r+nrmax*t]/(double)(12*volume));
+  fact=0.25/3.;
 #else
-        wils_loop2[r+base_r+nrmax*t] = ((double)wils_loop2[r+base_r+nrmax*t]/(double)( 3*volume));
+  fact=1./3;
 #endif
+    /* Normalize and print the sqrt(2) Wilson loops */
+    for( int mu1=XUP; mu1<=YUP; mu1++) for( int mu2= mu1+1; mu2<=ZUP; mu2++){ 
+      int mu=3-mu1-mu2;
+      memset(disp, 0,3*sizeof(int));
+      r=&(disp[(mu+1)%3]);
+      for(*r=1;*r<=max11[mu];(*r)++){
+        disp[(mu+2)%3]=*r;
+        if ( hqp_disp_rsq_ok( disp, geom ) == 1 ) 
 #ifndef AVERAGE_DIRECTIONS
-        memset(disp3, 0,4*sizeof(int));
-        disp3[xc[(mu+1)%3]]=r+1;
-        disp3[xc[(mu+2)%3]]=r+1;
-        node0_printf("WILS_LOOP2_%d   %d  %d  %d   %d \t%e\n", tot_smear, 
-                      disp3[xc[XUP]],disp3[xc[YUP]],disp3[xc[ZUP]], t+1, (double)wils_loop2[r+base_r+nrmax*t]);
-#else
-        wils_loop2[r+nr+nrmax*t] += ( mu > XUP ? wils_loop2[r+base_r+nrmax*t] : 0 );
+          hqp_output_corr("WILS_LOOP2",smtag, disp, 
+          wils_loop2[((*r-1)+base_r+mi*(disp[TUP]-1))]*fact);
+#else 
+          wils_loop2[(*r-1)+mi*(disp[TUP]-1)]+=((mu+1)%3>XUP?1.:-2.)* 
+            wils_loop2[(*r-1)+base_r+mi*(disp[TUP]-1)]/3. ;
 #endif
       }
       base_r += max11[mu];
     }
 #ifdef AVERAGE_DIRECTIONS
-    for(r=0;r<max11[XUP];r++){
-      node0_printf("WILS_LOOP2_%d  %d  %d \t%e\n", tot_smear, r+avgr, t, (double)wils_loop2[r+nr+nrmax*t]/3.);
-    }
+    memset(disp, 0,3*sizeof(int));
+    disp[TUP]--;
+    r=&(disp[(XUP)%3]);
+    for(*r=1;*r<=max11[XUP];(*r)++)
+      if ( hqp_disp_rsq_ok( disp, geom ) == 1 ) {
+        (*r)--;
+        hqp_output_corr("WILS_LOOP2",smtag, disp, wils_loop2[((*r+avgr)+mi*(disp[TUP]))]*fact);
+        (*r)++;
+      }
+    disp[TUP]++;
 #endif
-    nr = base_r;
-    avgr=nr/3;
+
+  nr = base_r;
+  avgr=nr/3;
+
     /* Normalize and print the sqrt(5) Wilson loops */
-    for( mu1=XUP; mu1<=YUP; mu1++) for( mu2= mu1+1; mu2<=ZUP; mu2++){ mu=3-mu1-mu2;
-      for(r=0;r<max12[3-mu1-mu2];r++) {
-#ifndef ONLYONEPATH
-        wils_loop2[r+base_r+nrmax*t] = ((double)wils_loop2[r+base_r+nrmax*t]/(double)(12*volume));
-#else
-        wils_loop2[r+base_r+nrmax*t] = ((double)wils_loop2[r+base_r+nrmax*t]/(double)( 3*volume));
-#endif
+    for( int mu1=XUP; mu1<=YUP; mu1++) for( int mu2= mu1+1; mu2<=ZUP; mu2++){ 
+      int mu=3-mu1-mu2;
+      memset(disp, 0,3*sizeof(int));
+      r=&(disp[(mu1)%3]);
+      for(*r=1;*r<=max12[3-mu1-mu2];(*r)++) {
+        disp[(mu2)%3]=2*(*r);
+        if ( hqp_disp_rsq_ok( disp, geom ) == 1 ) 
 #ifndef AVERAGE_DIRECTIONS
-        memset(disp3, 0,4*sizeof(int));
-        disp3[xc[(mu1)%3]]=r+1;
-        disp3[xc[(mu2)%3]]=2*(r+1);
-        node0_printf("WILS_LOOP2_%d   %d  %d  %d   %d \t%e\n", tot_smear, 
-                      disp3[xc[XUP]],disp3[xc[YUP]],disp3[xc[ZUP]], t+1, (double)wils_loop2[r+base_r+nrmax*t]);
-#else
-        wils_loop2[r+nr+nrmax*t] += ( mu2 > YUP ? wils_loop2[r+base_r+nrmax*t] : 0 );
+          hqp_output_corr("WILS_LOOP2",smtag, disp, 
+          wils_loop2[((*r-1)+base_r+mi*(disp[TUP]-1))]*fact);
+#else 
+          wils_loop2[(*r-1)+nr+mi*(disp[TUP]-1)]+=(mu2>YUP?+1:-5)* 
+            wils_loop2[(*r-1)+base_r+mi*(disp[TUP]-1)]/6. ;
 #endif
       }
       base_r += max12[3-mu1-mu2];
     }
 
-    for( mu2=XUP; mu2<=YUP; mu2++) for( mu1= mu2+1; mu1<=ZUP; mu1++){ mu=6-mu1-mu2;
-      for(r=0;r<max12[6-mu1-mu2];r++) {
+    for( int mu2=XUP; mu2<=YUP; mu2++) for( int mu1= mu2+1; mu1<=ZUP; mu1++){
+      int mu=6-mu1-mu2;
+      memset(disp, 0,3*sizeof(int));
+      r=&(disp[(mu1)%3]);
+      for(*r=1;*r<=max12[6-mu1-mu2];(*r)++) {
+        disp[xc[(mu2)%3]]=2*(*r);
 #ifndef ONLYONEPATH
-        wils_loop2[r+base_r+nrmax*t] = ((double)wils_loop2[r+base_r+nrmax*t]/(double)(12*volume));
-#ifndef AVERAGE_DIRECTIONS
-        memset(disp3, 0,4*sizeof(int));
-        disp3[xc[(mu1)%3]]=r+1;
-        disp3[xc[(mu2)%3]]=2*(r+1);
-        node0_printf("WILS_LOOP2_%d   %d  %d  %d   %d \t%e\n", tot_smear, 
-                      disp3[xc[XUP]],disp3[xc[YUP]],disp3[xc[ZUP]], t+1, (double)wils_loop2[r+base_r+nrmax*t]);
-#else
-        wils_loop2[r+nr+nrmax*t] += wils_loop2[r+base_r+nrmax*t];
-#endif
+        if ( hqp_disp_rsq_ok( disp, geom ) == 1 ) 
+#  ifndef AVERAGE_DIRECTIONS
+          hqp_output_corr("WILS_LOOP2",smtag, disp, 
+            wils_loop2[((*r-1)+base_r+mi*(disp[TUP]-1))]*fact);
+#  else 
+          wils_loop2[(*r-1)+nr+mi*(disp[TUP]-1)]+= 
+            wils_loop2[(*r-1)+base_r+mi*(disp[TUP]-1)]/6. ;
+#  endif
 #endif
       }
       base_r += max12[6-mu1-mu2];
     }
 #ifdef AVERAGE_DIRECTIONS
-    for(r=0;r<max12[XUP];r++){
-      node0_printf("WILS_LOOP2_%d  %d  %d \t%e\n", tot_smear, r+avgr, t, (double)wils_loop2[r+nr+nrmax*t]/6.);
-    }
+    memset(disp, 0,3*sizeof(int));
+    disp[TUP]--;
+    r=&(disp[XUP]);
+    for(*r=1;*r<=max12[XUP];(*r)++)
+      if ( hqp_disp_rsq_ok( disp, geom ) == 1 ) {
+        (*r) += avgr-1;
+        hqp_output_corr("WILS_LOOP2",smtag, disp, wils_loop2[((*r+nr-avgr)+mi*(disp[TUP]))]*fact);
+        (*r) -= avgr-1;
+      }
+    disp[TUP]++;
 #endif
+
     nr = base_r;
     avgr += (nr-3*avgr)/6;
 
     /* Normalize and print the sqrt(3) Wilson loops */
-    for(r=0;r<max111;r++) {
 #ifndef ONLYONEPATH
-        wils_loop2[r+base_r+nrmax*t] = ((double)wils_loop2[r+base_r+nrmax*t]/(double)(72*volume));
+  fact=0.0416666666666666667/3.;
 #else
-        wils_loop2[r+base_r+nrmax*t] = ((double)wils_loop2[r+base_r+nrmax*t]/(double)( 3*volume));
+  fact=1./3.;
 #endif
-#ifdef AVERAGE_DIRECTIONS
-        node0_printf("WILS_LOOP2_%d  %d  %d \t%e\n", tot_smear,
-                       r+avgr, t, (double)wils_loop2[r+base_r+nrmax*t]);
-#else
-        node0_printf("WILS_LOOP2_%d   %d  %d  %d   %d \t%e\n", tot_smear,
-                       r+1,r+1,r+1, t+1, (double)wils_loop2[r+base_r+nrmax*t]);
+    r=&(disp[YUP]);
+    for(*r=1;*r<=max111;(*r)++) {
+      disp[XUP]=(*r);
+      disp[ZUP]=(*r);
+      if ( hqp_disp_rsq_ok( disp, geom ) == 1 ) {
+#ifndef AVERAGE_DIRECTIONS
+        hqp_output_corr("WILS_LOOP2",smtag, disp, 
+          wils_loop2[((*r-1)+base_r+mi*(disp[TUP]-1))]*fact);
+#else 
+        disp[TUP]--;
+        disp[XUP]=(*r-1+avgr);
+        hqp_output_corr("WILS_LOOP2",smtag, disp, 
+          wils_loop2[((*r-1)+base_r+mi*(disp[TUP]))]*fact);
+        disp[TUP]++;
 #endif
+      }
     }
     base_r += max111;
     nr = base_r;
-    assert( (base_r==nrmax && nr==nrmax) );
+    assert( (base_r==mi && nr==mi) );
+
   }
-
-  free( wils_loop2);
-
-} /* w_loop2 */
-
+}
 
 /********************************************************************************
  *
@@ -317,104 +309,7 @@ void w_loop2(int tot_smear) {
  *
  *******************************************************************************/
 
-static void make_loops ( int t, 
-                  Real *wils_loop2,
-                  su3_matrix *s_link,
-                  su3_matrix *s_link_f,
-                  su3_matrix *t_link_f ) {
-  register int i;
-  register site *s;
-  su3_matrix tmat1,tmat2;
-
-  FORALLSITES_OMP(i,s, private(tmat1,tmat2) reduction(+:wils_loop2[nrmax*t]) ){
-    /* If the loop extends past t = nc[TUP] - 1 the temporal axial gauge link is nontrivial */
-    if( (site_coord(s,xc[TUP])+t+1)>=nc[TUP] ){
-      mult_su3_nn( &(s->link[xc[TUP]]), s_link_f+i, &tmat1);
-      mult_su3_na( &tmat1, t_link_f+i, &tmat2);
-      wils_loop2[nrmax*t] += realtrace_su3( &tmat2, s_link+i);
-    }else{
-      wils_loop2[nrmax*t] += realtrace_su3( s_link_f+i, s_link+i);
-    }
-  } END_LOOP_OMP;
-
-} /* make_loops */
-
-
-static void loop_rt ( int nr, int disp[], Real *wils_loop2 ) {
-  register int i,t,r;
-  register site *s;
-  su3_matrix *s_link=NULL, *s_link_f=NULL, *t_link_f=NULL;
-  msg_tag *mtag, *gmtag;
-
-  /* Allocate space for space-link product and shifted time-links */
-  s_link   = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
-  s_link_f = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
-  t_link_f = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
-  assert( ( s_link  !=NULL ) && ( s_link_f!=NULL ) && ( t_link_f!=NULL ) );
-  memset (s_link  ,0,sites_on_node*sizeof(su3_matrix));
-  memset (s_link_f,0,sites_on_node*sizeof(su3_matrix));
-  memset (t_link_f,0,sites_on_node*sizeof(su3_matrix));
-
-  for(r=0;r<nr;r++){
-
-    if( r==0 ){
-      /* Start gather of time-like links across the diagonal. */
-      FORALLSITES_OMP(i,s, default(shared) ){ su3mat_copy( &(s->link[xc[TUP]]), t_link_f+i); } END_LOOP_OMP;
-      gmtag = start_general_gather_field( (void *)t_link_f, sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
-      FORALLSITES_OMP(i,s, default(shared) ){ su3mat_copy( &(s->diag), s_link+i); } END_LOOP_OMP;
-    }else{
-      wait_general_gather( gmtag);
-      FORALLSITES_OMP(i,s, default(shared) ){ su3mat_copy( (su3_matrix *)(gen_pt[4][i]), &(s->staple)); } END_LOOP_OMP;
-
-      /* Inbetween gather time-like links across the diagonal. */
-      cleanup_general_gather( gmtag);
-      gmtag = start_general_gather_field( (void *)t_link_f, sizeof(su3_matrix), disp, EVENANDODD,gen_pt[4]);
-
-      FORALLSITES_OMP(i,s, default(shared) ){ mult_su3_nn( &(s->diag), &(s->staple), s_link+i); } END_LOOP_OMP;
-    }
-    FORALLSITES_OMP(i,s, default(shared) ){ su3mat_copy( s_link+i, s_link_f+i); } END_LOOP_OMP;
-
-    /* Start gather of forward space-like segments */
-    mtag = start_gather_field( (void *)s_link_f, sizeof(su3_matrix), xc[TUP], EVENANDODD, gen_pt[0] );
-
-    /* Collect forward time-like links. */
-    wait_general_gather( gmtag);
-    FORALLSITES_OMP(i,s, default(shared) ){ su3mat_copy( (su3_matrix *)(gen_pt[4][i]), &(s->staple)); } END_LOOP_OMP;
-    FORALLSITES_OMP(i,s, default(shared) ){ su3mat_copy( &(s->staple), t_link_f+i); } END_LOOP_OMP;
-
-    /* Inbetween gather space-links across the diagonal for next r. */
-    cleanup_general_gather( gmtag);
-    if( r<(nr-1) ){
-      gmtag = start_general_gather_field( (void *)s_link, sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
-    }
-
-    /* Recursively compute the Wilson loops of different time extent */
-    for(t=0;t<nct;t++){
-
-      /* Collect forward space-like segments */
-      wait_gather( mtag);
-      FORALLSITES_OMP(i,s, default(shared) ){ su3mat_copy( (su3_matrix *)(gen_pt[0][i]), &(s->staple)); } END_LOOP_OMP;
-      FORALLSITES_OMP(i,s, default(shared) ){ su3mat_copy( &(s->staple), s_link_f+i); } END_LOOP_OMP;
-
-      /* Start gather for next t, if still needed. */
-      if( t<(nct-1) ){
-        restart_gather_field( (void *)s_link_f, sizeof(su3_matrix), xc[TUP], EVENANDODD, gen_pt[0], mtag );
-      }else{
-        cleanup_gather( mtag);
-      }
-
-      /* Finally, compute the Wilson loops. */
-      make_loops (t,(wils_loop2+r), s_link, s_link_f, t_link_f );
-
-    } /* end loop over t */
-  } /* end loop over r */
-
-  free(s_link  );
-  free(s_link_f);
-  free(t_link_f);
-} /* loop_rt */
-
-static void fw_sqrt2_loops ( int mu1, int mu2, Real *wils_loop2 ) {
+static void fw_sqrt2_loops ( int mu1, int mu2, double *wils_loop2 ) {
   register int i;
   register site *s;
   int disp[]={0,0,0,0};
@@ -429,10 +324,10 @@ static void fw_sqrt2_loops ( int mu1, int mu2, Real *wils_loop2 ) {
   disp[xc[mu1]] = 1;
   disp[xc[mu2]] = 1;
   /* Recursively construct the space-like segments and compute the Wilson loops with that segment */
-  loop_rt ( max11[3-mu1-mu2], disp, wils_loop2 );
+  loop_rt ( geom, max11[3-mu1-mu2], mi, disp, wils_loop2 );
 }
 
-static void bw_sqrt2_loops ( int mu1, int mu2, Real *wils_loop2 ) {
+static void bw_sqrt2_loops ( int mu1, int mu2, double *wils_loop2 ) {
   register int i;
   register site *s;
   int disp[]={0,0,0,0};
@@ -471,10 +366,10 @@ static void bw_sqrt2_loops ( int mu1, int mu2, Real *wils_loop2 ) {
   }
 
   /* Recursively construct the space-like segments and compute the Wilson loops with that segment */
-  loop_rt ( nr, disp, wils_loop2 );
+  loop_rt ( geom, nr, mi, disp, wils_loop2 );
 }
 
-static void fw_sqrt5_loops ( int mu1, int mu2, Real *wils_loop2 ) {
+static void fw_sqrt5_loops ( int mu1, int mu2, double *wils_loop2 ) {
   register int i;
   register site *s;
   int nr, nu1,nu2,twolow=-1;
@@ -515,10 +410,10 @@ static void fw_sqrt5_loops ( int mu1, int mu2, Real *wils_loop2 ) {
   disp[xc[(mu2%X3UP)]] += 1; 
 
   /* Recursively construct the space-like segments and compute the Wilson loops with that segment */
-  loop_rt ( nr, disp, wils_loop2 );
+  loop_rt ( geom, nr, mi, disp, wils_loop2 );
 }
 
-static void bw_sqrt5_loops ( int mu1, int mu2, Real *wils_loop2 ) {
+static void bw_sqrt5_loops ( int mu1, int mu2, double *wils_loop2 ) {
   register int i;
   register site *s;
   int disp[]={0,0,0,0};
@@ -578,10 +473,10 @@ static void bw_sqrt5_loops ( int mu1, int mu2, Real *wils_loop2 ) {
   }
 
   /* Recursively construct the space-like segments and compute the Wilson loops with that segment */
-  loop_rt ( nr, disp, wils_loop2 );
+  loop_rt ( geom, nr, mi, disp, wils_loop2 );
 }
 
-static void fffw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
+static void fffw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 ) {
   register int i;
   register site *s;
   int disp[]={0,0,0,0};
@@ -611,10 +506,10 @@ static void fffw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
   disp[xc[mu3]] = 1;
 
   /* Recursively construct the space-like segments and compute the Wilson loops with that segment */
-  loop_rt ( max111, disp, wils_loop2 );
+  loop_rt ( geom, max111, mi, disp, wils_loop2 );
 }
 
-static void ffbw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
+static void ffbw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 ) {
   register int i;
   register site *s;
   int disp[]={0,0,0,0};
@@ -644,10 +539,10 @@ static void ffbw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
   cleanup_general_gather( gmtag);
 
   /* Recursively construct the space-like segments and compute the Wilson loops with that segment */
-  loop_rt ( max111, disp, wils_loop2 );
+  loop_rt ( geom, max111, mi, disp, wils_loop2 );
 }
 
-static void fbfw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
+static void fbfw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 ) {
   register int i;
   register site *s;
   int disp[]={0,0,0,0};
@@ -658,7 +553,7 @@ static void fbfw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
 #endif
 
   /* Make second corner in (-mu2,mu3) direction */
-  FORALLSITES_OMP(i,s, default(shared) ){ mult_su3_an( &(s->link[mu2]), &(s->link[mu3]),&(s->staple)); } END_LOOP_OMP;
+  FORALLSITES_OMP(i,s, default(shared) ){ mult_su3_an( &(s->link[xc[mu2]]), &(s->link[xc[mu3]]),&(s->staple)); } END_LOOP_OMP;
 
   /* Gather second corner from across the diagonal (mu1,-mu2) direction, then make lower body diagonal mu1,-mu2,mu3 link */
   disp[xc[mu1]] =  1;
@@ -670,10 +565,10 @@ static void fbfw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
   disp[xc[mu3]] = 1;
 
   /* Recursively construct the space-like segments and compute the Wilson loops with that segment */
-  loop_rt ( max111, disp, wils_loop2 );
+  loop_rt ( geom, max111, mi, disp, wils_loop2 );
 }
 
-static void bffw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
+static void bffw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 ) {
   register int i;
   register site *s;
   int disp[]={0,0,0,0};
@@ -704,10 +599,10 @@ static void bffw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
   cleanup_gather( mtag);
 
   /* Recursively construct the space-like segments and compute the Wilson loops with that segment */
-  loop_rt ( max111, disp, wils_loop2 );
+  loop_rt ( geom, max111, mi, disp, wils_loop2 );
 }
 
-static void fbbw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
+static void fbbw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 ) {
   register int i;
   register site *s;
   int disp[]={0,0,0,0};
@@ -735,10 +630,10 @@ static void fbbw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
   cleanup_general_gather( gmtag);
 
   /* Recursively construct the space-like segments and compute the Wilson loops with that segment */
-  loop_rt ( max111, disp, wils_loop2 );
+  loop_rt ( geom, max111, mi, disp, wils_loop2 );
 }
 
-static void bfbw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
+static void bfbw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 ) {
   register int i;
   register site *s;
   int disp[]={0,0,0,0};
@@ -769,10 +664,10 @@ static void bfbw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
   cleanup_gather( mtag);
 
   /* Recursively construct the space-like segments and compute the Wilson loops with that segment */
-  loop_rt ( max111, disp, wils_loop2 );
+  loop_rt ( geom, max111, mi, disp, wils_loop2 );
 }
 
-static void bbfw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
+static void bbfw_sqrt3_loops ( int mu1, int mu2, int mu3, double *wils_loop2 ) {
   register int i;
   register site *s;
   int disp[]={0,0,0,0};
@@ -802,10 +697,10 @@ static void bbfw_sqrt3_loops ( int mu1, int mu2, int mu3, Real *wils_loop2 ) {
   disp[xc[mu3]] = 1;
 
   /* Recursively construct the space-like segments and compute the Wilson loops with that segment */
-  loop_rt ( max111, disp, wils_loop2 );
+  loop_rt ( geom, max111, mi, disp, wils_loop2 );
 }
 
-static int sqrt2_loops ( Real * wils_loop2 ) {
+static int sqrt2_loops ( double * wils_loop2 ) {
   register int mu1, mu2;
   int base_r=0;
 
@@ -828,7 +723,7 @@ static int sqrt2_loops ( Real * wils_loop2 ) {
   return base_r;
 }
 
-static int sqrt3_loops ( Real * wils_loop2 ) {
+static int sqrt3_loops ( double * wils_loop2 ) {
 /* define four constants that indicate which of the three directions go backwards */
   int base_r=0;
   int i,mu,npaths=6;
@@ -870,7 +765,7 @@ static int sqrt3_loops ( Real * wils_loop2 ) {
   return base_r;
 }
 
-static int sqrt5_loops ( Real * wils_loop2 ) {
+static int sqrt5_loops ( double * wils_loop2 ) {
   register int mu1, mu2;
   int base_r=0;
   /* Split this into two separate loops, mu1<mu2, or mu2<mu1 */

@@ -42,6 +42,9 @@ typedef struct {
 #if (defined APE_1D_SMEARING || defined APE_1D2_SMEARING)
   int stap_dir;
 #endif
+#ifdef NEW_HVY_POT
+int hqp_alg;
+#endif
 
   /*  details of starting and saving */
   int startflag;	/* what to do for beginning lattice */

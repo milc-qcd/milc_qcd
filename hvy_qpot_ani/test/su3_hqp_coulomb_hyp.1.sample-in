@@ -29,3 +29,4 @@ hyp_alpha1 0.75
 hyp_alpha2 0.6 
 hyp_alpha3 0.3 
 
+hqp_alg 5

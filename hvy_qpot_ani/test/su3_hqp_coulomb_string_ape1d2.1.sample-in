@@ -28,3 +28,4 @@ smear_num[4] 0
 smear_fac 2.5
 stap_dir y
 
+hqp_alg 5

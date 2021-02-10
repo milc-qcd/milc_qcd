@@ -20,7 +20,7 @@ GBALL_OP1_0 0 0 2e-05 2e-05
 GBALL_OP1_0 0 0 2e-05 2e-05
 GBALL_OP1_0 0 0 2e-05 2e-05
 GBALL_OP1_0 0 0 2e-05 2e-05
-HYP SMEARING COMPLETED
+HYP 3D SMEARING COMPLETED
 GBALL_OP1_1 0 0 2e-05 2e-05
 GBALL_OP1_1 0 0 2e-05 2e-05
 GBALL_OP1_1 0 0 2e-05 2e-05
@@ -39,49 +39,49 @@ GBALL_OP1_1 0 0 2e-05 2e-05
 GBALL_OP1_1 0 0 2e-05 2e-05
 GBALL_OP1_1 0 0 2e-05 2e-05
 GBALL_OP1_1 0 0 2e-05 2e-05
-new_hybrid_loop1 with 1 times smeared links
-WILS_LOOP1_1   0  0  0   0     2e-05 
-WILS_LOOP1_1   0  0  0   0     2e-05 
-WILS_LOOP1_1   0  0  0   0     2e-05 
-WILS_LOOP1_1   0  0  0   0     2e-05 
-WILS_LOOP1_1   0  0  0   0     2e-05 
-WILS_LOOP1_1   0  0  0   0     2e-05 
-WILS_LOOP1_1   0  0  0   0     2e-05 
-WILS_LOOP1_1   0  0  0   0     2e-05 
-WILS_LOOP1_1   0  0  0   0     2e-05 
-WILS_LOOP1_1   0  0  0   0     2e-05 
-WILS_LOOP1_1   0  0  0   0     2e-05 
-WILS_LOOP1_1   0  0  0   0     2e-05 
+new_w_loop1 with 1 times smeared links
+WILS_LOOP1_1:  0  0  0   0     2e-05 
+WILS_LOOP1_1:  0  0  0   0     2e-05 
+WILS_LOOP1_1:  0  0  0   0     2e-05 
+WILS_LOOP1_1:  0  0  0   0     2e-05 
+WILS_LOOP1_1:  0  0  0   0     2e-05 
+WILS_LOOP1_1:  0  0  0   0     2e-05 
+WILS_LOOP1_1:  0  0  0   0     2e-05 
+WILS_LOOP1_1:  0  0  0   0     2e-05 
+WILS_LOOP1_1:  0  0  0   0     2e-05 
+WILS_LOOP1_1:  0  0  0   0     2e-05 
+WILS_LOOP1_1:  0  0  0   0     2e-05 
+WILS_LOOP1_1:  0  0  0   0     2e-05 
 new_w_loop2 with 1 times smeared links
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-WILS_LOOP2_1   0  0  0   0      2e-05
-HYP SMEARING COMPLETED
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+WILS_LOOP2_1:  0  0  0   0      2e-05
+HYP 3D SMEARING COMPLETED
 GBALL_OP1_2 0 0 2e-05 2e-05
 GBALL_OP1_2 0 0 2e-05 2e-05
 GBALL_OP1_2 0 0 2e-05 2e-05
@@ -100,46 +100,46 @@ GBALL_OP1_2 0 0 2e-05 2e-05
 GBALL_OP1_2 0 0 2e-05 2e-05
 GBALL_OP1_2 0 0 2e-05 2e-05
 GBALL_OP1_2 0 0 2e-05 2e-05
-new_hybrid_loop1 with 2 times smeared links
-WILS_LOOP1_2   0  0  0   0     2e-05 
-WILS_LOOP1_2   0  0  0   0     2e-05 
-WILS_LOOP1_2   0  0  0   0     2e-05 
-WILS_LOOP1_2   0  0  0   0     2e-05 
-WILS_LOOP1_2   0  0  0   0     2e-05 
-WILS_LOOP1_2   0  0  0   0     2e-05 
-WILS_LOOP1_2   0  0  0   0     2e-05 
-WILS_LOOP1_2   0  0  0   0     2e-05 
-WILS_LOOP1_2   0  0  0   0     2e-05 
-WILS_LOOP1_2   0  0  0   0     2e-05 
-WILS_LOOP1_2   0  0  0   0     2e-05 
-WILS_LOOP1_2   0  0  0   0     2e-05 
+new_w_loop1 with 2 times smeared links
+WILS_LOOP1_2:  0  0  0   0     2e-05 
+WILS_LOOP1_2:  0  0  0   0     2e-05 
+WILS_LOOP1_2:  0  0  0   0     2e-05 
+WILS_LOOP1_2:  0  0  0   0     2e-05 
+WILS_LOOP1_2:  0  0  0   0     2e-05 
+WILS_LOOP1_2:  0  0  0   0     2e-05 
+WILS_LOOP1_2:  0  0  0   0     2e-05 
+WILS_LOOP1_2:  0  0  0   0     2e-05 
+WILS_LOOP1_2:  0  0  0   0     2e-05 
+WILS_LOOP1_2:  0  0  0   0     2e-05 
+WILS_LOOP1_2:  0  0  0   0     2e-05 
+WILS_LOOP1_2:  0  0  0   0     2e-05 
 new_w_loop2 with 2 times smeared links
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
-WILS_LOOP2_2   0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
+WILS_LOOP2_2:  0  0  0   0      2e-05
 RUNNING COMPLETED

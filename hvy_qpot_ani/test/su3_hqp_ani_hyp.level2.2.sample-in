@@ -31,3 +31,5 @@ smear_num[3] 0
 smear_num[4] 0
 hyp_alpha2 0.6
 hyp_alpha3 0.3
+
+hqp_alg 5

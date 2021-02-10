@@ -2,7 +2,7 @@ com_qmp: set thread-safety level to 0
 Pure gauge SU3 Wilson loops
 MIMD version 7
 Machine = QMP (portable), with 1 nodes
-start: Tue Dec  1 12:45:23 2020
+start: Tue Feb  9 11:50:26 2021
 
 type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nx 6
@@ -12,7 +12,7 @@ nt 6
 LAYOUT = Hypercubes, options = hyper_prime,
 QMP with automatic hyper_prime layout
 ON EACH NODE (RANK) 6 x 6 x 6 x 6
-Mallocing 1.1 MBytes per node for lattice
+Mallocing 0.5 MBytes per node for lattice
 
 
 reload_serial ../../binary_samples/lat.sample.l6666
@@ -34,52 +34,53 @@ smear_num[3] 0
 smear_num[4] 0
 smear_fac 2.5
 stap_dir y
+hqp_alg 5
 Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666
 Time stamp Sat Aug 10 10:46:56 2002
 Checksums c1d08f5 68164bef OK
-Time to reload gauge configuration = 5.290508e-04
-CHECK PLAQ: 1.9827179876982381e+00 1.9811715330156237e+00
-CHECK NERSC LINKTR: 9.0159201231658637e-01 CKSUM: ba83dea8
-Reunitarized for double precision. Max deviation 2.72e-07 changed to 4.44e-16
-Time to check unitarity = 1.323223e-03
+Time to reload gauge configuration = 6.399155e-04
+CHECK PLAQ: 1.982718e+00 1.981172e+00
+CHECK NERSC LINKTR: 9.015920e-01 CKSUM: ba83dea8
+Unitarity checked.  Max deviation 2.98e-07
+Time to check unitarity = 1.630783e-04
 Fixing to Coulomb gauge, 500 steps, 2.0e-06 tol
-GFIX: Ended at step 1. Av gf action 9.24589996e-01, delta 1.102e-06
-Gauge fixing: 6.051064e-03 seconds
+GFIX: Ended at step 1. Av gf action 9.24589992e-01, delta 1.073e-06
+Gauge fixing: 2.661943e-03 seconds
 0 Smearing steps (total 0): 0.000000e+00 seconds
-new_hvy_pot with 0 times smeared links                  
-HASH TABLE ASSEMBLED
-POT_LOOP_0:   0  0  0   1 	3.000000e+00
-POT_LOOP_0:   1  0  0   1 	2.242611e+00
-POT_LOOP_0:   2  0  0   1 	2.119041e+00
-POT_LOOP_0:   3  0  0   1 	2.102871e+00
-POT_LOOP_0:   0  0  0   2 	3.000000e+00
-POT_LOOP_0:   1  0  0   2 	1.665411e+00
-POT_LOOP_0:   2  0  0   2 	1.545804e+00
-POT_LOOP_0:   3  0  0   2 	1.511260e+00
-POT_LOOP_0:   0  0  0   3 	3.000000e+00
-POT_LOOP_0:   1  0  0   3 	1.252315e+00
-POT_LOOP_0:   2  0  0   3 	1.133156e+00
-POT_LOOP_0:   3  0  0   3 	1.099480e+00
+hvy_pot_alg_new with 0 times smeared links
+POT_LOOP_0:  0  0  0   1 	3.000000e+00
+POT_LOOP_0:  1  0  0   1 	2.242611e+00
+POT_LOOP_0:  2  0  0   1 	2.119041e+00
+POT_LOOP_0:  3  0  0   1 	2.102871e+00
+POT_LOOP_0:  0  0  0   2 	3.000000e+00
+POT_LOOP_0:  1  0  0   2 	1.665411e+00
+POT_LOOP_0:  2  0  0   2 	1.545804e+00
+POT_LOOP_0:  3  0  0   2 	1.511260e+00
+POT_LOOP_0:  0  0  0   3 	3.000000e+00
+POT_LOOP_0:  1  0  0   3 	1.252315e+00
+POT_LOOP_0:  2  0  0   3 	1.133156e+00
+POT_LOOP_0:  3  0  0   3 	1.099480e+00
+Number of gathers = 2(0 stale)
 APE 1D2 smearing completed
-1 Smearing steps (total 1): 1.116991e-03 seconds
-new_hvy_pot with 1 times smeared links                  
-HASH TABLE ASSEMBLED
-POT_LOOP_1:   0  0  0   1 	3.000000e+00
-POT_LOOP_1:   1  0  0   1 	2.494041e+00
-POT_LOOP_1:   2  0  0   1 	2.419572e+00
-POT_LOOP_1:   3  0  0   1 	2.417938e+00
-POT_LOOP_1:   0  0  0   2 	3.000000e+00
-POT_LOOP_1:   1  0  0   2 	2.124619e+00
-POT_LOOP_1:   2  0  0   2 	2.053986e+00
-POT_LOOP_1:   3  0  0   2 	2.043733e+00
-POT_LOOP_1:   0  0  0   3 	3.000000e+00
-POT_LOOP_1:   1  0  0   3 	1.828742e+00
-POT_LOOP_1:   2  0  0   3 	1.755852e+00
-POT_LOOP_1:   3  0  0   3 	1.734003e+00
+1 Smearing steps (total 1): 2.582073e-03 seconds
+hvy_pot_alg_new with 1 times smeared links
+POT_LOOP_1:  0  0  0   1 	3.000000e+00
+POT_LOOP_1:  1  0  0   1 	2.494041e+00
+POT_LOOP_1:  2  0  0   1 	2.419572e+00
+POT_LOOP_1:  3  0  0   1 	2.417937e+00
+POT_LOOP_1:  0  0  0   2 	3.000000e+00
+POT_LOOP_1:  1  0  0   2 	2.124618e+00
+POT_LOOP_1:  2  0  0   2 	2.053986e+00
+POT_LOOP_1:  3  0  0   2 	2.043730e+00
+POT_LOOP_1:  0  0  0   3 	3.000000e+00
+POT_LOOP_1:  1  0  0   3 	1.828739e+00
+POT_LOOP_1:  2  0  0   3 	1.755852e+00
+POT_LOOP_1:  3  0  0   3 	1.733998e+00
+Number of gathers = 2(0 stale)
 RUNNING COMPLETED
-Time = 9.528708e-02 seconds
+Time = 8.174896e-03 seconds
 
 
 ask_starting_lattice(0): EOF on input.
-exit: Tue Dec  1 12:45:24 2020
+exit: Tue Feb  9 11:50:26 2021
 

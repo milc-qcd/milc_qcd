@@ -5,8 +5,7 @@ Time to check unitarity = XXX
 Fixing to Coulomb gauge, 10 steps, 2e-05 tol 
 GFIX: Ended at step 2e-05 Av gf action 2e-05 delta 2e-05
 Gauge fixing: 1 seconds 
-new_hvy_pot with 0 times smeared links    
-HASH TABLE ASSEMBLED
+hvy_pot_alg_new with 0 times smeared links
 POT_LOOP: 0 0 0 0 6e-05
 POT_LOOP: 0 0 0 0 5e-05
 POT_LOOP: 0 0 0 0 4e-05

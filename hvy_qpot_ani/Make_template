@@ -30,6 +30,7 @@ LAYOUT = layout_hyper_prime.o
 MY_OBJECTS = \
   control.o \
   gauge_info.o \
+  hqp_helpers.o \
   setup.o
 
 G_KS_OBJECTS = \
@@ -75,19 +76,19 @@ ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
 su3_hqp_old_ape::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DAPE_3D_SMEARING -DOCTET_WLOOP " \
+	"DEFINES= -DAPE_3D_SMEARING -DOCTET_WLOOP" \
 	"EXTRA_OBJECTS= new_ax_gauge.o gball_simp.o \
 	  hybrid_loop1.o smearing.o  w_loop1.o w_loop2.o"
 
 su3_hqp_old_hyp::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DHYP_3D_SMEARING -DOCTET_WLOOP " \
+	"DEFINES= -DHYP_3D_SMEARING -DOCTET_WLOOP" \
 	"EXTRA_OBJECTS= ax_gauge.o gball_simp.o \
 	  hybrid_loop1.o smearing_hyp.o  w_loop1.o w_loop2.o"
 
 su3_hybrid_hqp_old_ape::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DHYBRIDS_MEASURE -DAPE_3D_SMEARING -DOCTET_WLOOP " \
+	"DEFINES= -DHYBRIDS_MEASURE -DAPE_3D_SMEARING -DOCTET_WLOOP" \
 	"EXTRA_OBJECTS= new_ax_gauge.o gball_simp.o \
 	  hybrid_loop1.o smearing.o  w_loop1.o w_loop2.o"
 
@@ -103,19 +104,19 @@ su3_hybrid_hqp_old_hyp::
 
 su3_hqp_ape::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DAPE_3D_SMEARING -DOCTET_WLOOP " \
+	"DEFINES= -DAPE_3D_SMEARING -DOCTET_WLOOP" \
 	"EXTRA_OBJECTS= new_ax_gauge.o gball_simp.o \
 	  new_hybrid_loop1.o smearing.o  new_w_loop1.o new_w_loop2.o"
 
 su3_hqp_hyp::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DHYP_3D_SMEARING -DOCTET_WLOOP " \
+	"DEFINES= -DHYP_3D_SMEARING -DOCTET_WLOOP" \
 	"EXTRA_OBJECTS= ax_gauge.o gball_simp.o \
 	  new_hybrid_loop1.o smearing_hyp.o  new_w_loop1.o new_w_loop2.o"
 
 su3_hybrid_hqp_ape::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DHYBRIDS_MEASURE -DAPE_3D_SMEARING -DOCTET_WLOOP " \
+	"DEFINES= -DHYBRIDS_MEASURE -DAPE_3D_SMEARING -DOCTET_WLOOP" \
 	"EXTRA_OBJECTS= new_ax_gauge.o gball_simp.o \
 	  new_hybrid_loop1.o smearing.o  new_w_loop1.o new_w_loop2.o"
 
@@ -217,6 +218,12 @@ su3_hqp_coulomb_hyp::
 	"DEFINES= -DCOULOMB -DHYP_4D_SMEARING -DNEW_HVY_POT" \
 	"EXTRA_OBJECTS= smearing_hyp.o  new_hvy_pot.o"
 
+su3_hqp_coulomb_hyp_enlarge::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DCOULOMB -DHYP_4D_SMEARING -DNEW_HVY_POT" \
+	"DEFINES+= -DENLARGE_MAX_XYZ_AFTER_SMEARING " \
+	"EXTRA_OBJECTS= smearing_hyp.o new_hvy_pot.o"
+
 su3_hqp_diquark_hyp::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DDIQUARK -DCOULOMB -DHYP_4D_SMEARING -DNEW_HVY_POT" \
@@ -236,6 +243,12 @@ su3_hqp_diquark_plcor_ape::
 su3_hqp_coulomb_plcor_hyp::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DCOULOMB -DHYP_4D_SMEARING -DPLOOPCOR_MEAS -DNEW_HVY_POT" \
+	"EXTRA_OBJECTS= smearing_hyp.o  new_hvy_pot.o"
+
+su3_hqp_coulomb_plcor_hyp_enlarge::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DCOULOMB -DHYP_4D_SMEARING -DPLOOPCOR_MEAS -DNEW_HVY_POT" \
+	"DEFINES+= -DENLARGE_MAX_XYZ_AFTER_SMEARING " \
 	"EXTRA_OBJECTS= smearing_hyp.o  new_hvy_pot.o"
 
 su3_hqp_diquark_plcor_hyp::

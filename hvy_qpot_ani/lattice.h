@@ -12,7 +12,6 @@
 #include "../include/io_lat.h"    /* For gauge_file */
 
 /* Begin definition of site structure */
-
 #include "../include/su3.h"
 
 /* The lattice is an array of sites.  */
@@ -33,11 +32,8 @@ struct site {
 	/* gauge field */
 	su3_matrix link[4] ALIGNMENT;
 
-  /*	su3_matrix s_link,s_link_f,t_link_f; */
 #ifndef COULOMB
         su3_matrix diag,staple,tempmat1,tempmat2;
-#elif defined SMEARING
-        su3_matrix diag;
 #endif
 };
 typedef struct site site;
@@ -65,21 +61,23 @@ EXTERN  int max_x, max_y, max_z, max_t;
 EXTERN  int xc[NDIRS];
 EXTERN  int nc[4];
 EXTERN  int maxc[4];
+EXTERN int locx[4];
 #ifdef ANISOTROPY
 EXTERN  short ani_dir; /* direction of anisotropy */
 EXTERN  Real ani_xiq; /* bare quark anisotropy */
-#ifdef ONEDIM_ANISO_TEST
+#  ifdef ONEDIM_ANISO_TEST
 EXTERN  Real iso_xiq; /* bare quark isotropic link factor for debugging */
-#endif
+#  endif
 #endif
 EXTERN  Real max_r;
 EXTERN  int off_axis_flag;
+EXTERN  int hqp_alg; /* choosing an algorithm for the Coulomb gauge hvy_pot */
 
 /*  details of the smearing ot be used */
 EXTERN	int no_smear_level,smear_num[5];
 EXTERN  int tot_smear;  /* running total of smearing steps for lattice */
-#ifdef HYP_SMEARING /* BOTH in 3D and 4D HYP smearing */
-EXTERN  Real hyp_alpha1; /* parameters for 4D HYP smearing */
+#if (defined HYP_3D_SMEARING || defined HYP_4D_SMEARING)
+EXTERN  Real hyp_alpha1; /* parameters for HYP smearing */
 EXTERN  Real hyp_alpha2;
 EXTERN  Real hyp_alpha3;
 #else  /* APE smearing */

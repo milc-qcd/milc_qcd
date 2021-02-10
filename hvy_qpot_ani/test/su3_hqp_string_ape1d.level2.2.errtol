@@ -39,12 +39,12 @@ GBALL_OP1_0 0 0 2e-05 2e-05
 GBALL_OP1_0 0 0 2e-05 2e-05
 GBALL_OP1_0 0 0 2e-05 2e-05
 new_w_loop1 with 0 times smeared links
-WILS_LOOP1_0   1  0  0   1     2e-05 
-WILS_LOOP1_0   2  0  0   1     2e-05 
-WILS_LOOP1_0   1  0  0   2     2e-05 
-WILS_LOOP1_0   2  1  0   2     2e-05 
-WILS_LOOP1_0   1  2  0   3     2e-05 
-WILS_LOOP1_0   2  3  0   3     2e-05 
+WILS_LOOP1_0:  1  0  0   1     2e-05 
+WILS_LOOP1_0:  2  0  0   1     2e-05 
+WILS_LOOP1_0:  1  0  0   2     2e-05 
+WILS_LOOP1_0:  2  1  0   2     2e-05 
+WILS_LOOP1_0:  1  2  0   3     2e-05 
+WILS_LOOP1_0:  2  3  0   3     2e-05 
 APE 1D SMEARING COMPLETED
 GBALL_OP1_1 0 0 2e-05 2e-05
 GBALL_OP1_1 0 0 2e-05 2e-05
@@ -65,10 +65,10 @@ GBALL_OP1_1 0 0 2e-05 2e-05
 GBALL_OP1_1 0 0 2e-05 2e-05
 GBALL_OP1_1 0 0 2e-05 2e-05
 new_w_loop1 with 1 times smeared links
-WILS_LOOP1_1   1  0  0   1     2e-05 
-WILS_LOOP1_1   2  0  0   1     2e-05 
-WILS_LOOP1_1   1  0  0   2     2e-05 
-WILS_LOOP1_1   2  1  0   2     2e-05 
-WILS_LOOP1_1   1  2  0   3     2e-05 
-WILS_LOOP1_1   2  3  0   3     2e-05 
+WILS_LOOP1_1:  1  0  0   1     2e-05 
+WILS_LOOP1_1:  2  0  0   1     2e-05 
+WILS_LOOP1_1:  1  0  0   2     2e-05 
+WILS_LOOP1_1:  2  1  0   2     2e-05 
+WILS_LOOP1_1:  1  2  0   3     2e-05 
+WILS_LOOP1_1:  2  3  0   3     2e-05 
 RUNNING COMPLETED

@@ -5,9 +5,8 @@ Time to check unitarity = XXX
 Fixing to Coulomb gauge, 10 steps, 2e-05 tol 
 GFIX: Ended at step 2e-05 Av gf action 2e-05 delta 2e-05
 Gauge fixing: 1 seconds 
-0 Smearing steps (total 0): XXX seconds
-new_hvy_pot with 0 times smeared links    
-HASH TABLE ASSEMBLED
+0 Smearing steps (total 0): 1 seconds
+new_hvy_pot_new with 0 times smeared links    
 POT_LOOP_0: 0 0 0 0 6e-05
 POT_LOOP_0: 0 0 0 0 5e-05
 POT_LOOP_0: 0 0 0 0 4e-05
@@ -20,10 +19,10 @@ POT_LOOP_0: 0 0 0 0 4e-05
 POT_LOOP_0: 0 0 0 0 4e-05
 POT_LOOP_0: 0 0 0 0 4e-05
 POT_LOOP_0: 0 0 0 0 4e-05
+Number of gathers = XXX(XXX stale)
 APE 1D2 smearing completed
-1 Smearing steps (total 1): XXX seconds
-new_hvy_pot with 0 times smeared links    
-HASH TABLE ASSEMBLED
+1 Smearing steps (total 1): 1 seconds
+new_hvy_pot_new with 0 times smeared links    
 POT_LOOP_1: 0 0 0 0 6e-05
 POT_LOOP_1: 0 0 0 0 5e-05
 POT_LOOP_1: 0 0 0 0 4e-05
@@ -36,4 +35,5 @@ POT_LOOP_1: 0 0 0 0 4e-05
 POT_LOOP_1: 0 0 0 0 4e-05
 POT_LOOP_1: 0 0 0 0 4e-05
 POT_LOOP_1: 0 0 0 0 4e-05
+Number of gathers = XXX(XXX stale)
 RUNNING COMPLETED

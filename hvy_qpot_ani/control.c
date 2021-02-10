@@ -95,13 +95,24 @@ int main(int argc, char *argv[])  {
       node0_printf("%d Smearing steps (total %d): %e seconds\n",smear_num[sm_lev],tot_smear,etime);
 #endif // END #ifndef SMEARING
 
+#ifdef ENLARGE_MAX_XYZ_AFTER_SMEARING
+      if (sm_lev > 0)
+        for (int mu=XUP; mu<TUP;mu++) 
+          maxc[mu] = (2*maxc[mu]<nc[mu]/2?2*maxc[mu]:nc[mu]/2);
+#endif 
+
       links = create_G_from_site();
 
 #ifndef PLANE_AVERAGED_PLC
 #ifndef NEW_HVY_POT
+      /* keep old function interface available, too. At least for the time being. */
       hvy_pot( links, max_t, max_x );
 #else 
-      new_hvy_pot( links); 
+/* previous code distinguished at compile time between new and old hvy_pot versions, to be phased out and replaced */
+/* future code to distinguish at run time between new and old hvy_pot algorithms, to be phased out and replaced */
+/* hqp_switch function distinguishes and switches between both algorithms */
+/* hvy_pot needs to be revised to provide interface and functionality of new_hvy_pot */
+      hqp_switch( links, hqp_alg );
 #endif // END #ifndef NEW_HVY_POT
 #else
       plane_averaged_plc( links );
