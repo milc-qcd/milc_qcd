@@ -1047,10 +1047,10 @@ static void spectrum_ks_print_diag(int pair){
 
       print_start_meson_prop(pair, m);
       print_start_fnal_meson_prop(corr_fp, pair, m);
+      g_veccomplexsum(pmes_prop[m], nt);
       for(t=0; t<nt; t++){
 	tp = (t + param.r_offset_m[pair][3]) % nt;
 	prop = pmes_prop[m][tp];
-	g_complexsum( &prop );
 	CDIVREAL(prop, norm_fac, prop);
 	print_meson_prop(pair, t, prop);
 	print_fnal_meson_prop(corr_fp, pair, t, prop);
@@ -1089,10 +1089,10 @@ static void spectrum_ks_print_offdiag(int pair){
       
       print_start_meson_prop(pair, m);
       print_start_fnal_meson_prop(corr_fp, pair, m);
+      g_veccomplexsum(pmes_prop[m], nt);
       for(t=0; t<nt; t++){
 	tp = (t + param.r_offset_m[pair][3]) % nt;
 	prop = pmes_prop[m][tp];
-	g_complexsum( &prop );
 	CDIVREAL(prop, norm_fac, prop);
 	print_meson_prop(pair, t, prop);
 	print_fnal_meson_prop(corr_fp, pair, t, prop);
@@ -1127,10 +1127,10 @@ static void spectrum_ks_print_baryon(int triplet){
 
       print_start_baryon_prop(triplet, b);
       print_start_fnal_baryon_prop(corr_fp, triplet, b);
+      g_veccomplexsum(baryon_prop[b], nt);
       for(t=0; t<nt; t++){
 	tp = (t + param.r_offset_b[triplet][3]) % nt;
 	prop = baryon_prop[b][tp];
-	g_complexsum( &prop );
 	// CDIVREAL(prop, space_vol, prop);
 	/* Fix sign for antiperiodic bc */
 	if( (((t+param.r_offset_b[triplet][3])/nt
