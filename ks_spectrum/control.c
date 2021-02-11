@@ -380,6 +380,7 @@ int main(int argc, char *argv[])
       /* We pass the beginning addresses of the set data */
       
       total_iters += solve_ksprop(param.set_type[k],
+				  param.inv_type[k],
 				  num_prop,
 				  param.startflag_ks + i0,
 				  param.startfile_ks + i0,

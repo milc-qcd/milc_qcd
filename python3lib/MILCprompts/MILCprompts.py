@@ -1061,19 +1061,22 @@ class KSsolveSet:
     """A set of KS solves that have a common source specification, momentum twist, and precision."""
     _Template = """
     #== ${_classType} ==
-    set_type multimass
+    set_type ${set_type}
+    inv_type ${inv_type}
     max_cg_iterations ${maxCG.iters}
     max_cg_restarts ${maxCG.restarts}
     check ${check}
     momentum_twist #echo ' '.join(map(str,$twist))#
     precision ${precision}
     source ${source.id}"""
-    def __init__(self,source,twist,check,maxCG,precision):
+    def __init__(self,source,twist,check,set_type,inv_type,maxCG,precision):
         self._classType = self.__class__.__name__
         self._objectID = self._classType+'_'+base36(id(self))
         self.source = source
         self.twist = twist
         self.check = check
+        self.set_type = set_type
+        self.inv_type = inv_type
         self.maxCG = maxCG
         self.precision = precision
         self.propagator = list()

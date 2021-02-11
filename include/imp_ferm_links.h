@@ -485,7 +485,7 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec, imp_ferm_links_t *fn );
 int mat_invert_field(su3_vector *src, su3_vector *dst, 
 		     quark_invert_control *qic,
-		     Real mass, imp_ferm_links_t *fn, int use_precond );
+		     Real mass, imp_ferm_links_t *fn );
 int mat_invert_cg_field(su3_vector *src, su3_vector *dst, 
 			quark_invert_control *qic,
 			Real mass, imp_ferm_links_t *fn );
