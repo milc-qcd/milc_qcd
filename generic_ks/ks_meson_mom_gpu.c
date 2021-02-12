@@ -63,6 +63,7 @@ propagators together to form a meson correlator.
 #ifdef OMP
 #include <omp.h>
 #endif
+#include "../include/static_cast.h"
 
 /*******************************************/
 /* Take this from an appropriate header */
@@ -81,109 +82,101 @@ void qudaContract(int milc_precision,
 		  QudaContractArgs_t *cont_args,
 		  su3_vector *antiquark,
 		  su3_vector *quark,
-		  complex *meson_q[]
+		  complex meson_q[]
 		  );
 
 /*******************************************/
 /* Normalize the correlator contributions */
 
-static double norm_v(complex *tr, complex src[], 
+static double norm_v(complex tr[], complex meson_q[], 
 		     int phase[], Real factor[],
-		     int ct[], int nc)
+		     int ct[], int nk, int nt)
 {
-  int k, c, p, ph;
   complex z = {0.,0.};
-  Real fact;
   double flops = 0;
   
   /* For each momentum in list, normalize, and phase */
 
-  for(k=0; k<nc; k++){
-    c = ct[k];
-    tr[k] = src[k];
-    ph = phase[c];
-    fact = factor[c];
-    switch(ph){
-    case 0:
-      z =            tr[k];
-      break;
-    case 1:
-      TIMESPLUSI(    tr[k], z);
-      break;
-    case 2:
-      TIMESMINUSONE( tr[k], z);
-      break;
-    case 3:
-      TIMESMINUSI(   tr[k], z);
-    }
-    CMULREAL(z,fact,tr[k]);
+  for(int k=0; k<nk; k++){
+    int c = ct[k];
+    int ph = phase[c];
+    Real fact = factor[c];
+    for(int t=0; t<nt; ++t)
+      {
+	int idx = k*nt + t;
+	tr[idx] = meson_q[idx];
+	switch(ph){
+	case 0:
+	  z =            tr[idx];
+	  break;
+	case 1:
+	  TIMESPLUSI(    tr[idx], z);
+	  break;
+	case 2:
+	  TIMESMINUSONE( tr[idx], z);
+	  break;
+	case 3:
+	  TIMESMINUSI(   tr[idx], z);
+	}
+	CMULREAL(z,fact,tr[idx]);
+      }
   }
 
-  flops = 2*nc;
+  flops = 2*nk*nt;
   
   return flops;
   
 } /* norm_v */
 
 /*******************************************/
-static complex **
+static complex *
 create_meson_q(int nt, int num_corr_mom){
   char myname[] = "create_meson_q";
 
   /* Unlike the CPU version, meson_q here is indexed by the 
      actual momenta, rather than the hashed momentum. */
-  complex** meson_q = (complex **)malloc(nt*sizeof(complex *));
-  for(int t = 0; t < nt; t++){
-    meson_q[t] = (complex *)malloc(num_corr_mom*sizeof(complex));
-    if(meson_q[t] == NULL){
-      printf("%s(%d): No room for meson_q\n",myname,this_node);
-      terminate(1);
-    }
+  complex* meson_q = static_cast(complex*,malloc(num_corr_mom*nt*sizeof(complex))); // index as meson_q[k*nt+t]
+  if(meson_q == NULL){
+    printf("%s(%d): No room for meson_q\n",myname,this_node);
+    terminate(1);
   }
   
-  for(int t = 0; t < nt; t++){
-    for(int k=0; k<num_corr_mom; k++)
-      {   
-	meson_q[t][k].real = 0.;
-	meson_q[t][k].imag = 0.;
-      }
-  }
+  for(int j=0; j<nt*num_corr_mom; j++)
+    {   
+      meson_q[j].real = 0.;
+      meson_q[j].imag = 0.;
+    }
   return meson_q;
-
 }
 
 /*******************************************/
 static void
-destroy_meson_q(complex **meson_q, int nt, int num_corr_mom){
+destroy_meson_q(complex *meson_q){
   if(meson_q == NULL)return;
-  for(int t = 0; t < nt; t++){
-    if(meson_q[t] != NULL)
-      free(meson_q[t]);
-  }
   free(meson_q);
 }
 /*******************************************/
 static Real
-update_props(complex **prop, complex **meson_q, int nt, int num_corr_mom,
+update_props(complex **prop, complex *meson_q, int nt, int num_corr_mom,
 	     int meson_phase[], Real meson_factor[],
 	     int *corr_table, int corr_index[]){
 
   Real flops = 0.;
 
-  for(int t=0; t < nt; t++) {
-    complex tr[num_corr_mom];
-    /* Normalize for all sink momenta q */
-    flops += norm_v(tr, meson_q[t], meson_phase, meson_factor,
-		    corr_table, num_corr_mom);
-    /* Accumulate in corr_index location */
-    for(int k=0; k<num_corr_mom; k++)
+  complex tr[num_corr_mom*nt];
+  /* Normalize for all sink momenta q */
+  flops += norm_v(tr, meson_q, meson_phase, meson_factor,
+		  corr_table, num_corr_mom, nt);
+  /* Accumulate in corr_index location */
+  for(int k=0; k<num_corr_mom; k++)
+    for(int t=0; t<nt; ++t)
       {
 	int c = corr_table[k];
 	int m = corr_index[c];
-	prop[m][t].real += tr[k].real;
-	prop[m][t].imag += tr[k].imag;
+	int idx = k*nt + t;
+	prop[m][t].real += tr[idx].real;
+	prop[m][t].imag += tr[idx].imag;
       }
-  }
 
   flops += 2. * num_corr_mom * nt;
   
@@ -246,7 +239,7 @@ void ks_meson_cont_mom(
   /* Run through the sink spin-taste combinations */
   for(g = 0; g < no_spin_taste_corr; g++)
     {
-      complex **meson_q = create_meson_q(nt, num_corr_mom[g]);
+      complex *meson_q = create_meson_q(nt, num_corr_mom[g]);
 
       /* Transfer momenta and parity from q_momstore to corr_mom table */
       int *corr_mom[num_corr_mom[g]];
@@ -280,11 +273,8 @@ void ks_meson_cont_mom(
 	spin_taste_op_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
 	qudaContract(MILC_PRECISION, quda_precision, &cont_args, src1, q, meson_q);
 	destroy_v_field(q);
-	for(int t = 0; t < nt; t++){
-	  for(int k=0; k<num_corr_mom[g]; k++)
-	    {   
-	      CMULREAL(meson_q[t][k], 0.5, meson_q[t][k]);
-	    }
+	for(int j = 0; j < nt*num_corr_mom[g]; ++j){
+	  CMULREAL(meson_q[j], 0.5, meson_q[j]);
 	}
       } else if(is_rhosffn_index(spin_taste) || is_rhosfape_index(spin_taste)){
 	/* Apply forward sink spin-taste operator to src2 */
@@ -309,7 +299,7 @@ void ks_meson_cont_mom(
       flops += update_props(prop, meson_q, nt, num_corr_mom[g], meson_phase,
 			    meson_factor, corr_table[g], corr_index);
 
-      destroy_meson_q(meson_q, nt, num_corr_mom[g]);
+      destroy_meson_q(meson_q);
     }  /**** end of the loop over the spin-taste table ******/
   
   dtime += dclock();
