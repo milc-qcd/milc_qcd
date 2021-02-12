@@ -12,9 +12,7 @@
 #endif
 #include <assert.h>
 
-#ifndef static_cast
-#define static_cast(ty,obj) ((ty)(obj))
-#endif
+#include "../include/static_cast.h"
 
 /* Calculate FT weight factor */
 
@@ -24,7 +22,7 @@
 
 /*******************************************/
 typedef struct {
-  complex* meson_q;     /* cache aligned thread local storage */
+  complex* meson_q;     /* cache aligned thread local storage. order meson_q[k*nt+t] */
   void*    alloc_base;  /* base address of this allocation */
 } meson_storage_t;
 
@@ -83,17 +81,16 @@ destroy_meson_q_thread(meson_storage_t* threadstore, int max_threads){
 
 /*******************************************/
 static Real
-sum_meson_q(complex **meson_q, meson_storage_t* threadstore, int nonzero[],
+sum_meson_q(complex *meson_q, meson_storage_t* threadstore, int nonzero[],
 	    int max_threads, int nt, int num_corr_mom){
 
   for(int mythread=0; mythread<max_threads; mythread++) {
     for(int t = 0; t < nt; t++)if(nonzero[t]){
-	int tt = num_corr_mom*t;
 	for(int k=0; k<num_corr_mom; k++)
 	  {
-	    int idx = tt+k;
-	    meson_q[t][k].real += threadstore[mythread].meson_q[idx].real;
-	    meson_q[t][k].imag += threadstore[mythread].meson_q[idx].imag;
+	    int idx = nt*k + t;
+	    meson_q[idx].real += threadstore[mythread].meson_q[idx].real;
+	    meson_q[idx].imag += threadstore[mythread].meson_q[idx].imag;
 	    threadstore[mythread].meson_q[idx].real = 0.;
 	    threadstore[mythread].meson_q[idx].imag = 0.; // Prevent re-add
 	  }
@@ -210,7 +207,7 @@ void qudaContract(int milc_precision,
 		  QudaContractArgs_t *cont_args,
 		  su3_vector *antiquark,  /* Color vector field (propagator) */
 		  su3_vector *quark,   /* Color vector field (propagator) */
-                  complex *meson_q[]  /* Resulting hadron correlator indexed by time and momentum */
+                  complex meson_q[]  /* Resulting hadron correlator indexed by time and momentum: idx=nt*k+t */
 		  )
 {
 
@@ -234,9 +231,9 @@ void qudaContract(int milc_precision,
   meson_storage_t* threadstore = create_meson_q_thread(nt, max_threads, num_corr_mom);
 
   /* Fourier factors for FT */
-
-  complex *ftfact = create_ftfact(nx, ny, nz, nt, num_corr_mom,
-				  corr_mom, corr_parity, r0, &flops );
+  double factx = 2.0*PI/(1.0*nx) ; 
+  double facty = 2.0*PI/(1.0*ny) ; 
+  double factz = 2.0*PI/(1.0*nz) ; 
 
   /* For avoiding adding unecessary zeros */
   int *nonzero = (int *)malloc(nt*sizeof(int));
@@ -274,25 +271,34 @@ void qudaContract(int milc_precision,
     /* Each thread accumulates its own time-slice values in meson_q_thread
        Each thread works with all of the momenta */
 
-    st *= num_corr_mom; // meson_q_thread[t][k]
     for(int k=0; k<num_corr_mom; k++)
       {
-	complex fourier_fact = ftfact[k+num_corr_mom*i];
-	
-	meson_q_thread[st+k].real += 
+	/* compute Fourier phase */
+	int px = corr_mom[k][0];
+	int py = corr_mom[k][1];
+	int pz = corr_mom[k][2];
+	char ex = corr_parity[k][0];
+	char ey = corr_parity[k][1];
+	char ez = corr_parity[k][2];
+	complex fourier_fact; fourier_fact.real=1.0; fourier_fact.imag=0.0;
+	fourier_fact = ff(factx*(s->x-r0[0])*px, ex, fourier_fact);
+	fourier_fact = ff(facty*(s->y-r0[1])*py, ey, fourier_fact);
+	fourier_fact = ff(factz*(s->z-r0[2])*pz, ez, fourier_fact);
+
+	int idx = k*nt + st;
+	meson_q_thread[idx].real += 
 	  real*fourier_fact.real - imag*fourier_fact.imag;
-	meson_q_thread[st+k].imag += 
+	meson_q_thread[idx].imag += 
 	  real*fourier_fact.imag + imag*fourier_fact.real;
       }
   } END_LOOP_OMP;
-
-  flops += (Real)num_corr_mom*8*sites_on_node;
+  flops += (Real)sites_on_node*18*num_corr_mom; // Fourier phase; does not count sin(x), cos(x)?
+  flops += (Real)num_corr_mom*8*sites_on_node; // contraction
 
   /* sum meson_q over all the threads */
   flops += sum_meson_q(meson_q, threadstore, nonzero,
 		       max_threads, nt, num_corr_mom);
   
-  destroy_ftfact(ftfact);
   destroy_meson_q_thread(threadstore, max_threads);
   
   dtime += dclock();
