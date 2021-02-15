@@ -133,6 +133,9 @@ static hqp_geom *geom=NULL;
 static int nstale, ngather; 
 
 /* buffers for correlators */
+#ifdef DEBUG
+static double *counter=NULL;
+#endif
 #ifdef COULOMB
 static double *wlc=NULL;
 #endif
@@ -227,6 +230,10 @@ static void free_coord_hash( int *hash );
  * made very small; one has to be used; for more details see 
  * the detailed description at the end of this file */ 
 #define FLUTE
+#ifdef SNAKE
+static int raising_y=1;
+static int raising_z=1;
+#endif
 #if ( !( (defined FLUTE) ^ (defined SNAKE) ) )
 BOMB THE COMPILE
 #endif
@@ -732,6 +739,11 @@ void hvy_pot_alg_new( su3_matrix *links ) {
   hash = setup_coord_hash( &ncs );   
 #endif
 
+#ifdef SNAKE
+  raising_y=1;
+  raising_z=1;
+#endif
+
   /****************************************************************
    * 
    * Proceed to loop over local sublattices
@@ -1010,6 +1022,10 @@ static inline void clear_buffers( int mysize ) {
 
 static inline void contractions( int gi, int i, int j, double_complex *ctr1) {
 
+#ifdef DEBUG
+  counter[gi] +=1;
+#endif
+
 #ifdef COULOMB
   wlc[gi] += (double)realtrace_su3( owline+i,swline+j );
 #  ifdef DIQUARK
@@ -1052,6 +1068,10 @@ static inline void disp_from_sites( int mlat[], site *s, site *t, int *disp ) {
 
 static inline void global_sums( int mysize ) {
 
+#ifdef DEBUG
+  g_vecdoublesum(counter,mysize);
+#endif 
+
 #ifdef COULOMB
   g_vecdoublesum(wlc,mysize); 
 #endif
@@ -1087,6 +1107,10 @@ static void hqp_free_buffers( void ) {
     hqp_free_su3mat_buffer(buffer1);
     buflvl--;
   }
+#endif
+
+#ifdef DEBUG
+  hqp_free_dble_buffer(counter);
 #endif
 
 #ifdef COULOMB 
@@ -1130,6 +1154,10 @@ static void hqp_setup_buffers( su3_matrix *links, int mysize ) {
     buffer2 = hqp_alloc_su3mat_buffer( 1 );
 #endif
 
+#ifdef DEBUG
+  counter = hqp_alloc_dble_buffer( mysize );
+#endif
+
 #ifdef COULOMB
   wlc = hqp_alloc_dble_buffer( mysize );
 #endif
@@ -1168,6 +1196,11 @@ static inline void output_all( char smtag[], int mi , int mlt ) {
   for ( register int gi=0; gi<mi; gi++ ) {
     disp_from_index( gi, disp );
     if ( hqp_disp_rsq_ok( disp, geom ) == 1 ) {
+
+#ifdef DEBUG
+      hqp_output_corr("CCOUNTER",smtag, disp, counter[gi]);
+#endif
+
 #ifdef COULOMB 
       hqp_output_corr("POT_LOOP",smtag, disp, wlc[gi]);
 #  ifdef DIQUARK
@@ -1206,6 +1239,10 @@ static void hqp_print_timings(char myalg[]) {
 /************************************************************************/
 
 static inline void contractions_old( int gi, int i, su3_matrix *sfield, double_complex *ctr1) {
+
+#ifdef DEBUG
+  counter[gi]+=1;
+#endif
 
 #ifdef COULOMB
   wlc[gi] += (double)realtrace_su3( owline+i,sfield+i );
@@ -1461,7 +1498,11 @@ static next_gather find_gather( int mlat[], int nlat[], int base[], next_gather 
       if (base[xc[this.raise]] <=maxc[this.raise]) { 
         this.insphere = INSPHERE(base,llat,geom->max_r2); /* within sphere? */
         this.gengather = GENGATHER;
-      }
+      } else 
+        if (nlat[this.raise] == 1 && llat[xc[this.raise]] < nc[this.raise]) {
+          this.insphere = IN;
+          this.gengather = SIMGATHER;
+        }
     }
   }
   //node0_printf("###444\nnlat %d %d %d %d raise %d insphere %d gengather %d\n",
@@ -1471,8 +1512,6 @@ static next_gather find_gather( int mlat[], int nlat[], int base[], next_gather 
 #endif
 
 #ifdef SNAKE
-static int raising_y=1;
-static int raising_z=1;
 #define SNAKEZSHIFT(mlat,llat,maxc) \
   ( ( raising_z == 1 && mlat[ZUP]*llat[xc[ZUP]] < maxc[ZUP] ) \
  || ( raising_z == 0 && mlat[ZUP]*llat[xc[ZUP]] > 0 ) ) 
