@@ -126,13 +126,12 @@ then
              --prefix ${INSTALLDIR}      \
 	     --enable-comms=mpi          \
 	     --enable-simd=GPU            \
-	     --enable-accelerator=cuda     \
+	     --enable-accelerator=cuda    \
              --host=x86_64-unknown-linux-gnu \
 	     --with-mpfr=${HOME}/mpfr \
 	     --with-lime=${HOME}/scidac/install/qio \
              CXX=nvcc                    \
-             LDFLAGS=-L$HOME/prefix/lib/ \
-             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -I$HOME/prefix/include/ -std=c++11" 
+             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -std=c++14" 
         status=$?
         echo "Configure exit status $status"
 	;;
