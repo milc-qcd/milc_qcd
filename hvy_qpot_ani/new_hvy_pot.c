@@ -303,6 +303,38 @@ static next_gather find_gather( int mlat[], int nlat[], int base[], next_gather 
       +( (base[xc[YUP]]-llat[xc[YUP]]+1)*(base[xc[YUP]]-llat[xc[YUP]]+1) + (base[xc[ZUP]]-llat[xc[ZUP]]+1)*(base[xc[ZUP]]-llat[xc[ZUP]]+1) ) <= max_r2 )? IN : OUT )
 #endif
 #endif
+/************************************************************************/
+/* externally accessible function for cycling spatial components of maxc */
+/************************************************************************/
+
+void hqp_cycle_spatial( su3_matrix *links, int hqp_alg ) {
+  char myname[] = "hqp_cycle_spatial";
+
+  int mmxc[4];
+  memcpy(mmxc,maxc,4*sizeof(int));
+  int any_dirs_are_equal=(maxc[XUP]==maxc[YUP])
+                        +(maxc[YUP]==maxc[ZUP])
+                        +(maxc[ZUP]==maxc[XUP]);
+  if ( any_dirs_are_equal>1 ) {
+    hqp_switch(links, hqp_alg );
+  } else {
+    for (int pxc=1;pxc<=6;pxc++) {
+      if (pxc>3) {
+        if ( any_dirs_are_equal==0 ) {  
+          maxc[XUP] = mmxc[(YUP+pxc)%3];
+          maxc[YUP] = mmxc[(XUP+pxc)%3];
+        } else 
+          continue;
+      } else {
+        maxc[XUP] = mmxc[(XUP+pxc)%3];
+        maxc[YUP] = mmxc[(YUP+pxc)%3];
+      }    
+      maxc[ZUP] = mmxc[(ZUP+pxc)%3];
+      hqp_switch(links, hqp_alg );
+    }    
+  }    
+  memcpy(maxc,mmxc,4*sizeof(int));
+}
 
 /************************************************************************/
 /* externally accessible function for switching between both algorithms */

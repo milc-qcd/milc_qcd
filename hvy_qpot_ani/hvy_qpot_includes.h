@@ -137,6 +137,7 @@ enum { HQPALG_AUTO=0, HQPALG_ONE=1, HQPALG_TWO=2,
        HQPALG_TIME=6 };
 #define LLS_THRESH 512
 
+void hqp_cycle_spatial( su3_matrix *links, int hqp_alg );
 void hqp_switch( su3_matrix *links, int hqp_alg );
 void hvy_pot_alg_old( su3_matrix *links );
 void hvy_pot_alg_new( su3_matrix *links );

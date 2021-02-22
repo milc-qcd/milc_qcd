@@ -99,6 +99,9 @@ int main(int argc, char *argv[])  {
       if (sm_lev > 0)
         for (int mu=XUP; mu<TUP;mu++) 
           maxc[mu] = (2*maxc[mu]<nc[mu]/2?2*maxc[mu]:nc[mu]/2);
+#elif (defined ENLARGE_MAX_X_AFTER_SMEARING)
+      if (sm_lev > 0)
+        maxc[XUP] = (2*maxc[XUP]<nc[XUP]/2?2*maxc[XUP]:nc[XUP]/2);
 #endif 
 
       links = create_G_from_site();
@@ -112,7 +115,8 @@ int main(int argc, char *argv[])  {
 /* future code to distinguish at run time between new and old hvy_pot algorithms, to be phased out and replaced */
 /* hqp_switch function distinguishes and switches between both algorithms */
 /* hvy_pot needs to be revised to provide interface and functionality of new_hvy_pot */
-      hqp_switch( links, hqp_alg );
+      hqp_cycle_spatial( links, hqp_alg );
+//      hqp_switch( links, hqp_alg );
 #endif // END #ifndef NEW_HVY_POT
 #else
       plane_averaged_plc( links );

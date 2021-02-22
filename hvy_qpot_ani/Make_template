@@ -224,6 +224,12 @@ su3_hqp_coulomb_hyp_enlarge::
 	"DEFINES+= -DENLARGE_MAX_XYZ_AFTER_SMEARING " \
 	"EXTRA_OBJECTS= smearing_hyp.o new_hvy_pot.o"
 
+su3_hqp_coulomb_hyp_xenlarge::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DCOULOMB -DHYP_4D_SMEARING -DNEW_HVY_POT" \
+	"DEFINES+= -DENLARGE_MAX_X_AFTER_SMEARING " \
+	"EXTRA_OBJECTS= smearing_hyp.o new_hvy_pot.o"
+
 su3_hqp_diquark_hyp::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DDIQUARK -DCOULOMB -DHYP_4D_SMEARING -DNEW_HVY_POT" \
@@ -251,11 +257,16 @@ su3_hqp_coulomb_plcor_hyp_enlarge::
 	"DEFINES+= -DENLARGE_MAX_XYZ_AFTER_SMEARING " \
 	"EXTRA_OBJECTS= smearing_hyp.o  new_hvy_pot.o"
 
+su3_hqp_coulomb_plcor_hyp_xenlarge::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DCOULOMB -DHYP_4D_SMEARING -DPLOOPCOR_MEAS -DNEW_HVY_POT" \
+	"DEFINES+= -DENLARGE_MAX_X_AFTER_SMEARING " \
+	"EXTRA_OBJECTS= smearing_hyp.o  new_hvy_pot.o"
+
 su3_hqp_diquark_plcor_hyp::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DDIQUARK -DCOULOMB -DHYP_4D_SMEARING -DPLOOPCOR_MEAS -DNEW_HVY_POT" \
 	"EXTRA_OBJECTS= smearing_hyp.o  new_hvy_pot.o"
-
 
 su3_hqp_coulomb_nstepsgf::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
