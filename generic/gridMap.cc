@@ -1,6 +1,6 @@
 // Mapping between MILC and Grid types
 
-#if defined(_OPENMP)
+#if defined(_OPENMP) || defined(OMP)
 #include "../include/openmp_defs.h"
 #endif
 
@@ -11,7 +11,7 @@
 #include "../include/mGrid/mGrid_assert.h"
 
 extern "C" {
-  void get_coords(int coords[], int node, int index);
+  void get_coords(int coords[], int node, size_t index);
 }
 
 #include "../include/milc_datatypes.h"
@@ -28,7 +28,7 @@ using namespace std;
 extern Coordinate squaresize;
 
 static void
-indexToCoords(uint64_t idx, Coordinate &x){
+indexToCoords(size_t idx, Coordinate &x){
 
   int r[4];
 
@@ -149,7 +149,7 @@ create_V_from_vec( su3_vector *src, int milc_parity,
 
   auto start = std::chrono::system_clock::now();
   #pragma omp parallel for 
-    for( uint64_t idx = loopstart; idx < loopend; idx++){
+    for( size_t idx = loopstart; idx < loopend; idx++){
 
       Coordinate x(4);
       indexToCoords(idx,x);
@@ -194,7 +194,7 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
 	    << " ColourVectorField size = " << sizeof(*(out->cv)) << "\n" << std::flush;
   auto start = std::chrono::system_clock::now();
   #pragma omp parallel for
-    for( uint64_t idx = loopstart; idx < loopend; idx++){
+    for( size_t idx = loopstart; idx < loopend; idx++){
 
       Coordinate x(4);
       indexToCoords(idx,x);
@@ -229,7 +229,7 @@ template<typename ImprovedStaggeredFermion, typename ColourVector>
 static void extract_V_to_vec( su3_vector *dest, 
 			      struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *src, 
 			      int milc_parity ){
-  uint64_t idx;
+  size_t idx;
 
   FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
     {
@@ -255,7 +255,7 @@ template<typename ImprovedStaggeredFermion5D, typename ColourVector>
 static void extract_nV_to_vecs( su3_vector *dest[], int n,
 				struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *src, 
 				int milc_parity ){
-  uint64_t idx;
+  size_t idx;
 
   FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
     {
@@ -307,7 +307,7 @@ static void milcGaugeFieldToGrid(su3_matrix *in, LatticeGaugeField &out){
   std::vector<sobj> scalardata(lsites);
 
   #pragma omp parallel for
-    for (uint64_t milc_idx = 0; milc_idx < sites_on_node; milc_idx++){
+    for (size_t milc_idx = 0; milc_idx < sites_on_node; milc_idx++){
       Coordinate x(4);
       indexToCoords(milc_idx, x);
       int grid_idx;
@@ -700,7 +700,7 @@ static struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > *
 create_V_array_from_vec_array( su3_vector ** src, int n, int milc_parity, GridCartesian * CGrid,
                                GridRedBlackCartesian * RBGrid )
 {
-  uint64_t i; // loop index
+  size_t i; // loop index
   
   struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * out;
 
@@ -712,7 +712,7 @@ create_V_array_from_vec_array( su3_vector ** src, int n, int milc_parity, GridCa
 #pragma omp parallel for collapse(1)
   for( i=0; i<n; i++ )
   {
-    for( uint64_t idx=loopstart; idx<loopend; idx++ )
+    for( size_t idx=loopstart; idx<loopend; idx++ )
     {
       Coordinate x(4);
       indexToCoords( idx, x );
@@ -740,7 +740,7 @@ static void extract_V_array_to_vec_array(
   struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * src,
   int milc_parity )
 {
-  uint64_t i; // loop index
+  size_t i; // loop index
   
   int loopend = (milc_parity)==EVEN ? even_sites_on_node : sites_on_node;
   int loopstart = (milc_parity)==ODD ? even_sites_on_node : 0;
@@ -748,7 +748,7 @@ static void extract_V_array_to_vec_array(
 #pragma omp parallel for collapse(1)
   for( i=0; i<n; i++ )
   {
-    for( uint64_t idx=loopstart; idx<loopend; idx++ )
+    for( size_t idx=loopstart; idx<loopend; idx++ )
     {
       Coordinate x(4);
       indexToCoords( idx, x );

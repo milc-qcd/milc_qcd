@@ -137,7 +137,7 @@ typedef struct {
    */
 
 #ifdef CONTROL
-char *gauge_info_keyword[] = {
+const char *gauge_info_keyword[] = {
       "magic_number",
       "time_stamp",
       "checksums",
@@ -290,7 +290,7 @@ typedef struct {
 typedef struct {
   FILE *         fp;            /* File pointer */
   gauge_header*  header;        /* Pointer to header for file */
-  char *         filename;       /* Pointer to file name string */
+  const char *   filename;       /* Pointer to file name string */
   int            byterevflag;   /* Byte reverse flag - used only for reading */
   u_int32type *  rank2rcv;      /* File site list - used only for 
 				   serial reading */ 
@@ -313,41 +313,41 @@ EXTERN  int sequence_number;
 
 int big_endian(void);
 
-void read_lat_dim_gf(char *filename, int *ndim, int dims[]);
-gauge_file *restore_ascii(char *filename);
-gauge_file *save_ascii(char *filename);
-gauge_file *restore_serial(char *filename);
-gauge_file *save_serial(char *filename);
-gauge_file *restore_parallel(char *filename);
-gauge_file *save_parallel(char *filename);
-gauge_file *save_checkpoint(char *filename);
-gauge_file *save_serial_archive(char *filename);
-gauge_file *save_parallel_archive(char *filename);
+void read_lat_dim_gf(const char *filename, int *ndim, int dims[]);
+gauge_file *restore_ascii(const char *filename);
+gauge_file *save_ascii(const char *filename);
+gauge_file *restore_serial(const char *filename);
+gauge_file *save_serial(const char *filename);
+gauge_file *restore_parallel(const char *filename);
+gauge_file *save_parallel(const char *filename);
+gauge_file *save_checkpoint(const char *filename);
+gauge_file *save_serial_archive(const char *filename);
+gauge_file *save_parallel_archive(const char *filename);
 int write_gauge_info_item( FILE *fpout, /* ascii file pointer */
-		       char *keyword,   /* keyword */
-		       char *fmt,       /* output format -
+		       const char *keyword,   /* keyword */
+		       const char *fmt,       /* output format -
 					      must use s, d, f, or e */
-		       char *src,       /* address of starting data */
+		       const char *src,       /* address of starting data */
 		       int count,       /* number of data items if > 1 */
 		       int stride);     /* byte stride of data if
 					   count > 1 */
 int sprint_gauge_info_item( 
   char *string,    /* character string */
   size_t nstring,     /* string length */			    
-  char *keyword,   /* keyword */
-  char *fmt,       /* output format -
+  const char *keyword,   /* keyword */
+  const char *fmt,       /* output format -
 		      must use s, d, e, f, or g */
-  char *src,       /* address of starting data
+  const char *src,       /* address of starting data
 		      floating point data must be
 		      of type (Real) */
   int count,       /* number of data items if > 1 */
   int stride);     /* byte stride of data if
 		      count > 1 */
 gauge_file *setup_output_gauge_file(void);
-gauge_file *setup_input_gauge_file(char *filename);
+gauge_file *setup_input_gauge_file(const char *filename);
 
 /* For compatibility */
-gauge_file *save_old_binary(char *filename, Real c1, Real c2);
+gauge_file *save_old_binary(const char *filename, Real c1, Real c2);
 
 /**********************************************************************/
 /* In gauge_info.c (application dependent) */
@@ -355,18 +355,18 @@ void write_appl_gauge_info(FILE *fp, gauge_file *gf);
 
 /**********************************************************************/
 /* Prototypes for io_scidac routines */
-gauge_file *file_scan_serial_scidac(char *filename);
-gauge_file *file_scan_parallel_scidac(char *filename);
-gauge_file *save_serial_scidac(char *filename);
-gauge_file *save_parallel_scidac(char *filename);
-gauge_file *save_multifile_scidac(char *filename);
-gauge_file *save_partfile_scidac(char *filename);
-gauge_file *save_serial_ildg(char *filename, char *stringLFN);
-gauge_file *save_parallel_ildg(char *filename, char *stringLFN);
-gauge_file *save_partfile_ildg(char *filename, char *stringLFN);
-gauge_file *save_multifile_ildg(char *filename, char *stringLFN);
-gauge_file *restore_serial_scidac(char *filename);
-gauge_file *restore_parallel_scidac(char *filename);
+gauge_file *file_scan_serial_scidac(const char *filename);
+gauge_file *file_scan_parallel_scidac(const char *filename);
+gauge_file *save_serial_scidac(const char *filename);
+gauge_file *save_parallel_scidac(const char *filename);
+gauge_file *save_multifile_scidac(const char *filename);
+gauge_file *save_partfile_scidac(const char *filename);
+gauge_file *save_serial_ildg(const char *filename, const char *stringLFN);
+gauge_file *save_parallel_ildg(const char *filename, const char *stringLFN);
+gauge_file *save_partfile_ildg(const char *filename, const char *stringLFN);
+gauge_file *save_multifile_ildg(const char *filename, const char *stringLFN);
+gauge_file *restore_serial_scidac(const char *filename);
+gauge_file *restore_parallel_scidac(const char *filename);
 
 /**********************************************************************/
 /* Prototypes for parallel I/O routine interfaces:
@@ -391,46 +391,24 @@ void complete_Ud(double *u);
 QCDheader * qcdhdr_get_hdr(FILE *in);
 void f2d_4mat(fsu3_matrix *a, su3_matrix *b);
 void d2f_4mat(su3_matrix *a, fsu3_matrix *b);
-void swrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip);
-void pwrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip);
+void swrite_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
+void pwrite_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
 void pswrite_data(int parallel, FILE* fp, void *src, size_t size, 
-		  char *myname, char *descrip);
-int sread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip);
-int pread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip);
-int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, char *myname, char *descrip);
-int sread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, char *myname, char *descrip);
+		  const char *myname, const char *descrip);
+int sread_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
+int pread_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
+int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
+int sread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
 int psread_data(int parallel, FILE* fp, void *src, size_t size, 
-		char *myname, char *descrip);
+		const char *myname, const char *descrip);
 int psread_byteorder(int byterevflag, int parallel, FILE* fp, 
 		      void *src, size_t size, 
-		     char *myname, char *descrip);
+		     const char *myname, const char *descrip);
 void pwrite_gauge_hdr(FILE *fp, gauge_header *gh);
 void swrite_gauge_hdr(FILE *fp, gauge_header *gh);
-int write_gauge_info_item( FILE *fpout,    /* ascii file pointer */
-		       char *keyword,   /* keyword */
-		       char *fmt,       /* output format -
-					      must use s, d, e, f, or g */
-		       char *src,       /* address of starting data
-					   floating point data must be
-					   of type (Real) */
-		       int count,       /* number of data items if > 1 */
-		       int stride);      /* byte stride of data if
-                                           count > 1 */
-int sprint_gauge_info_item( 
-  char *string,    /* character string */
-  size_t nstring,     /* string length */			    
-  char *keyword,   /* keyword */
-  char *fmt,       /* output format -
-		      must use s, d, e, f, or g */
-  char *src,       /* address of starting data
-		      floating point data must be
-		      of type (Real) */
-  int count,       /* number of data items if > 1 */
-  int stride);      /* byte stride of data if
-		      count > 1 */
 void write_generic_gauge_info(FILE *fp, gauge_file *gf);
 void write_gauge_info_file(gauge_file *gf);
-gauge_file *setup_input_gauge_file(char *filename);
+gauge_file *setup_input_gauge_file(const char *filename);
 void free_input_gauge_file(gauge_file *gf);
 gauge_file *setup_output_gauge_file(void);
 void free_output_gauge_file(gauge_file *gf);
@@ -442,16 +420,16 @@ int read_1996_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag);
 int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag);
 int read_gauge_hdr(gauge_file *gf, int parallel);
 void write_site_list(FILE *fp, gauge_header *gh);
-gauge_file *parallel_open(int order, char *filename);
+gauge_file *parallel_open(int order, const char *filename);
 fsu3_matrix *w_parallel_setup(gauge_file *gf, off_t *checksum_offset);
-gauge_file *w_parallel_i(char *filename);
-gauge_file *w_checkpoint_i(char *filename);
-gauge_file *r_serial_i(char *filename);
+gauge_file *w_parallel_i(const char *filename);
+gauge_file *w_checkpoint_i(const char *filename);
+gauge_file *r_serial_i(const char *filename);
 void w_serial_f(gauge_file *gf);
 void r_serial_f(gauge_file *gf);
 void w_parallel_f(gauge_file *gf);
 void r_parallel_f(gauge_file *gf);
-char *read_info_file(char base_filename[]);
+char *read_info_file(const char base_filename[]);
 
 void byterevn(u_int32type w[], int n);
 

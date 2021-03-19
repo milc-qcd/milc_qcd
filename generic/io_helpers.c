@@ -17,7 +17,7 @@
 /* save a lattice in any of the formats:
     SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_CHECKPOINT
 */
-gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
+gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN){
     double dtime;
     gauge_file *gf = NULL;
 
@@ -142,7 +142,7 @@ gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
 void coldlat(void);
 void warmlat(void);
 
-gauge_file *reload_lattice( int flag, char *filename){
+gauge_file *reload_lattice( int flag, const char *filename){
     double dtime;
     gauge_file *gf = NULL;
     Real max_deviation;
@@ -225,7 +225,7 @@ gauge_file *reload_lattice( int flag, char *filename){
 
 /* Get next tag, but skip past end of line if we encounter # for comments */
 #define MAX_TAG 512
-char *get_next_tag(FILE *fp, char *tag, char *myname){
+const char *get_next_tag(FILE *fp, const char *tag, const char *myname){
   static char line[MAX_TAG];
   int s;
 
@@ -257,8 +257,8 @@ char *get_next_tag(FILE *fp, char *tag, char *myname){
 /* Comments begin with # and apply to the rest of the line */
 /* Verify that the input tag agrees with the expected tag */
 
-int get_check_tag(FILE *fp, char *tag, char *myname){
-  char *checktag;
+int get_check_tag(FILE *fp, const char *tag, const char *myname){
+  const char *checktag;
   
   checktag = get_next_tag(fp, tag, myname);
   if(checktag == NULL)return 1;
@@ -273,7 +273,7 @@ int get_check_tag(FILE *fp, char *tag, char *myname){
 }
 
 /* Check return value of scanf */
-static int check_read(int s, char *myname, char *tag){
+static int check_read(int s, const char *myname, const char *tag){
 
   if (s == EOF){
     printf("\n%s: Expecting value for %s but found EOF.\n",
@@ -293,10 +293,10 @@ static int check_read(int s, char *myname, char *tag){
 /* find out what kind of starting lattice to use, and lattice name if
    necessary.  This routine is only called by node 0.
 */
-int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename ){
-  char *savebuf;
+int ask_starting_lattice( FILE *fp, int prompt, int *flag, const char *filename ){
+  const char *savebuf;
   int status;
-  char myname[] = "ask_starting_lattice";
+  const char myname[] = "ask_starting_lattice";
   
   if (prompt==1) printf(
 			"enter 'continue', 'fresh', 'reload_ascii', 'reload_serial', or 'reload_parallel'\n");
@@ -348,10 +348,10 @@ int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename ){
 /* find out what do to with lattice at end, and lattice name if
    necessary.  This routine is only called by node 0.
 */
-int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
-  char *savebuf;
+int ask_ending_lattice(FILE *fp, int prompt, int *flag, const char *filename ){
+  const char *savebuf;
   int status;
-  char myname[] = "ask_ending_lattice";
+  const char myname[] = "ask_ending_lattice";
   
   if (prompt==1) printf(
 			"'forget' lattice at end,  'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partfile_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_partfile_ildg', or 'save_multifile_ildg'\n");
@@ -469,9 +469,9 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
 
 int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename){
 
-  char *savebuf;
+  const char *savebuf;
   int status;
-  char myname[] = "ask_corr_file";
+  const char myname[] = "ask_corr_file";
 
   if (prompt==1)
     printf("'forget_corr', 'save_corr_fnal' for correlator file type\n");
@@ -510,7 +510,7 @@ int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename){
 
 /*--------------------------------------------------------------------*/
 
-int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN){
+int ask_ildg_LFN(FILE *fp, int prompt, int flag, const char *stringLFN){
   int status = 0;
 
   /* For ILDG output formats we require a logical file name next */
@@ -521,7 +521,7 @@ int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN){
     status = get_s(fp, prompt, "ILDG_LFN", stringLFN);
   }
   else
-    stringLFN[0] = '\0';
+    stringLFN = "";
   return status;
 }
 
@@ -605,10 +605,10 @@ prompt is zero, it will require that variable_name_string precede the
 input value.  get_i gets an integer.
 get_i and get_f return the values, and exit on error */
 
-int get_f( FILE *fp, int prompt, char *tag, Real *value ){
+int get_f( FILE *fp, int prompt, const char *tag, Real *value ){
     int s;
     char checkvalue[80];
-    char myname[] = "get_f";
+    const char myname[] = "get_f";
 
     if(prompt==1)  {
 	s = 0;
@@ -640,10 +640,10 @@ int get_f( FILE *fp, int prompt, char *tag, Real *value ){
     return 0;
 }
 
-int get_i( FILE *fp, int prompt, char *tag, int *value ){
+int get_i( FILE *fp, int prompt, const char *tag, int *value ){
     int s;
     char checkvalue[80];
-    char myname[] = "get_i";
+    const char myname[] = "get_i";
 
     if(prompt==1)  {
       s = 0;
@@ -670,9 +670,9 @@ int get_i( FILE *fp, int prompt, char *tag, int *value ){
 
 /* Read a single word as a string without printing an end-of-line  */
 
-int get_sn( FILE *fp, int prompt, char *tag, char *value ){
+int get_sn( FILE *fp, int prompt, const char *tag, const char *value ){
     int s;
-    char myname[] = "get_sn";
+    const char myname[] = "get_sn";
 
     if(prompt==1)  {
       s = 0;
@@ -696,7 +696,7 @@ int get_sn( FILE *fp, int prompt, char *tag, char *value ){
 
 /* Read a single word as a string */
 
-int get_s( FILE *fp, int prompt, char *tag, char *value ){
+int get_s( FILE *fp, int prompt, const char *tag, const char *value ){
     int s;
 
     s = get_sn(fp, prompt, tag, value);
@@ -705,10 +705,10 @@ int get_s( FILE *fp, int prompt, char *tag, char *value ){
 }
 
 /* Read a vector of integers */
-int get_vi( FILE* fp, int prompt, char *tag, 
+int get_vi( FILE* fp, int prompt, const char *tag, 
 	    int *value, int nvalues ){
     int s,i;
-    char myname[] = "get_vi";
+    const char myname[] = "get_vi";
 
     if(prompt==1)  {
       printf("enter %s with %d values",tag, nvalues);
@@ -739,10 +739,10 @@ int get_vi( FILE* fp, int prompt, char *tag,
 }
 
 /* Read a vector of reals */
-int get_vf( FILE* fp, int prompt, char *tag, 
+int get_vf( FILE* fp, int prompt, const char *tag, 
 	    Real *value, int nvalues ){
     int s,i;
-    char myname[] = "get_vf";
+    const char myname[] = "get_vf";
 
     if(prompt==1)  {
       printf("enter %s with %d values",tag, nvalues);
@@ -781,8 +781,8 @@ int get_vf( FILE* fp, int prompt, char *tag,
 
 /* Read a vector of strings */
 
-int get_vs( FILE *fp, int prompt, char *tag, char **value, int nvalues ){
-  char myname[] = "get_vs";
+int get_vs( FILE *fp, int prompt, const char *tag, const char *value[], int nvalues ){
+  const char myname[] = "get_vs";
 
   int s, i;
   
@@ -820,7 +820,7 @@ int get_vs( FILE *fp, int prompt, char *tag, char **value, int nvalues ){
 int get_prompt( FILE *fp, int *prompt ){
     char initial_prompt[512];
     int status;
-    char myname[] = "get_prompt";
+    const char myname[] = "get_prompt";
 
     *prompt = -1;
     printf( "type 0 for no prompts, 1 for prompts, or 2 for proofreading\n");

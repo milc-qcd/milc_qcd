@@ -448,7 +448,7 @@ int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
 
 /* ks_baryon.c */
 int baryon_type_index(char *label);
-char *baryon_type_label(int index);
+const char *baryon_type_label(int index);
 void ks_baryon_nd(complex *prop[],
 		  ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *qp2,
 		  int num_corr_b, int baryon_type_snk[], int phase[], Real fact[]);

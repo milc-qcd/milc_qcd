@@ -122,21 +122,25 @@ then
        ;;
     gpu-cuda)
 	# Cori: salloc -C gpu -t 60 -N 1 -c 10 --gres=gpu:1 -A m1759
+	# Summit: ./build-Grid.sh gpu-cuda mpicc mpiCC
 	${SRCDIR}/configure \
              --prefix ${INSTALLDIR}      \
 	     --enable-comms=mpi          \
 	     --enable-simd=GPU            \
+	     --enable-shm=no              \
 	     --enable-accelerator=cuda    \
+	     --enable-unfied=no           \
+             --enable-gen-simd-width=64   \
              --host=x86_64-unknown-linux-gnu \
 	     --with-mpfr=${HOME}/mpfr \
 	     --with-lime=${HOME}/scidac/install/qio \
              CXX=nvcc                    \
-             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -std=c++14" 
+             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -std=c++11" \
         status=$?
         echo "Configure exit status $status"
 	;;
 
-    #              --enable-simd=GEN           \
+#	     --enable-unified=yes         \
 
     *)
     echo "Unsupported ARCH ${ARCH}"

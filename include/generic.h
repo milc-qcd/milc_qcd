@@ -116,7 +116,7 @@ void destroy_ape_links_4D(su3_matrix *ape_links);
 void ax_gauge(void);
 
 /* bsd_sum.c */
-int32type bsd_sum (char *data,int32type total_bytes);
+int32type bsd_sum (const char *data,int32type total_bytes);
 
 /* check_unitarity.c */
 Real check_unitarity( void );
@@ -130,7 +130,7 @@ void d_plaquette(double *ss_plaq,double *st_plaq);
 /* discretize_wf.c */
 void fnal_wavefunction(complex *wf, int stride,
 		       int x0, int y0, int z0, int t0, 
-		       Real a, char wf_file[]);
+		       Real a, const char wf_file[]);
 
 /* field_strength.c */
 void make_field_strength(
@@ -148,7 +148,7 @@ void shift_wilson_vector(wilson_vector *src, int rshift[]);
 
 /* field_utilities.c */
 double start_timing(void);
-void print_timing(double dtime, char *str);
+void print_timing(double dtime, const char *str);
 
 Real* create_r_field(void);
 void clear_r_field(Real *r);
@@ -342,38 +342,38 @@ void measure_glueball_ops(void);
 void hvy_pot( su3_matrix *links, int max_t, int max_x );
 
 /* io_detect.c */
-int get_file_type(char *filename);
-int io_detect(char *filename, file_table ft[], int ntypes);
-int io_detect_fm(char *filename);
-int io_detect_ks_usqcd(char *filename);
-int io_detect_w_usqcd(char *filename);
+int get_file_type(const char *filename);
+int io_detect(const char *filename, file_table ft[], int ntypes);
+int io_detect_fm(const char *filename);
+int io_detect_ks_usqcd(const char *filename);
+int io_detect_w_usqcd(const char *filename);
 
 /* io_helpers.c */
-gauge_file *save_lattice( int flag, char *filename, char *stringLFN );
-gauge_file *reload_lattice( int flag, char *filename);
+gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN );
+gauge_file *reload_lattice( int flag, const char *filename);
 int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename);
-int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename );
-int ask_ending_lattice( FILE *fp, int prompt, int *flag, char *filename );
-int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN);
+int ask_starting_lattice( FILE *fp, int prompt, int *flag, const char *filename );
+int ask_ending_lattice( FILE *fp, int prompt, int *flag, const char *filename );
+int ask_ildg_LFN(FILE *fp, int prompt, int flag, const char *stringLFN);
 void coldlat(void);
 void funnylat(void);
-int get_check_tag(FILE *fp, char *tag, char *myname);
-int get_f( FILE *fp, int prompt, char *variable_name_string, Real *value );
-int get_i( FILE *fp, int prompt, char *variable_name_string, int *value );
-char *get_next_tag(FILE *fp, char *tag, char *myname);
-int get_vi( FILE *fp, int prompt, char *variable_name_string, 
+int get_check_tag(FILE *fp, const char *tag, const char *myname);
+int get_f( FILE *fp, int prompt, const char *variable_name_string, Real *value );
+int get_i( FILE *fp, int prompt, const char *variable_name_string, int *value );
+const char *get_next_tag(FILE *fp, const char *tag, const char *myname);
+int get_vi( FILE *fp, int prompt, const char *variable_name_string, 
 	    int *value, int nvalues );
-int get_vf( FILE *fp, int prompt, char *variable_name_string, 
+int get_vf( FILE *fp, int prompt, const char *variable_name_string, 
 	    Real *value, int nvalues );
-int get_s( FILE *fp, int prompt, char *variable_name_string, char *value );
-int get_sn( FILE *fp, int prompt, char *variable_name_string, char *value );
-int get_vs( FILE *fp, int prompt, char *tag, char *value[], int nvalues );
+int get_s( FILE *fp, int prompt, const char *variable_name_string, const char *value );
+int get_sn( FILE *fp, int prompt, const char *variable_name_string, const char *value );
+int get_vs( FILE *fp, int prompt, const char *tag, const char *value[], int nvalues );
 int get_prompt( FILE *fp, int *value );
 
 /* io_source_cmplx_fm.c */
-void r_source_cmplx_fm_to_site(char *filename, field_offset dest_site,
+void r_source_cmplx_fm_to_site(const char *filename, field_offset dest_site,
 			       int x0, int y0, int z0, int t0);
-void r_source_cmplx_fm_to_field(char *filename, complex *dest_field, int stride,
+void r_source_cmplx_fm_to_field(const char *filename, complex *dest_field, int stride,
 				int x0, int y0, int z0, int t0);
 
 /* layout_*.c */
@@ -414,7 +414,7 @@ void path_prod_subl(const int *dir, const int length, const int subl,
 		    su3_matrix *tempmat1);
 
 /* phases.c */
-int decode_phase(char *label);
+int decode_phase(const char *label);
 void mult_c_by_phase(complex *a, complex *b, int ph);
 
 
@@ -444,14 +444,14 @@ void init_qs(quark_source *qs);
 void alloc_cached_c_source(quark_source *qs);
 void alloc_cached_v_source(quark_source *qs);
 void alloc_cached_wv_source(quark_source *qs);
-int ask_starting_source( FILE *fp, int prompt, int *flag, char *filename );
+int ask_starting_source( FILE *fp, int prompt, int *flag, const char *filename );
 complex *get_cached_c_source(quark_source *qs);
 su3_vector *get_cached_v_source(quark_source *qs);
 wilson_vector *get_cached_wv_source(quark_source *qs);
 void clear_qs(quark_source *qs);
 int convert_ksource_to_color(int ksource);
 int convert_ksource_to_spin(int ksource);
-char *decode_mask(int mask);
+const char *decode_mask(int mask);
 int encode_mask(int *mask, char c_mask[]);
 void even_and_odd_wall(complex *c, int t0);
 void gaussian_source(complex *src, Real r0, 
@@ -481,22 +481,22 @@ void r_source_close(quark_source *qs);
 #ifdef HAVE_QIO
 int r_source_cmplx_scidac(QIO_Reader *infile, complex *src,  
 			  int x0, int y0, int z0, int t0);
-QIO_Reader *r_source_cmplx_scidac_open(char source_file[]);
+QIO_Reader *r_source_cmplx_scidac_open(const char source_file[]);
 #endif
 int r_source_vector(quark_source *qs);
 int r_source_dirac(quark_source *qs);
-int w_source_open_ks(quark_source *qs, char *fileinfo);
-int w_source_open_dirac(quark_source *qs, char *fileinfo);
+int w_source_open_ks(quark_source *qs, const char *fileinfo);
+int w_source_open_dirac(quark_source *qs, const char *fileinfo);
 void w_source_close(quark_source *qs);
 int w_source_ks(su3_vector *src, quark_source *qs);
 int w_source_dirac(wilson_vector *src, quark_source *qs);
 int w_source_dirac_site(field_offset src, quark_source *qs);
 void print_output_quark_source_choices(void);
 int parse_output_quark_source_choices(int *flag, int *save_type, 
-				      char *descrp, char* savebuf);
+				      char *descrp, const char* savebuf);
 int ask_output_quark_source_file( FILE *fp, int prompt, 
 				  int *flag, int *source_type,
-				  int *t0, char *descrp, char *filename);
+				  int *t0, char *descrp, const char *filename);
 
 /* quark_source_sink_op.c */
 void init_qss_op(quark_source_sink_op *qss_op);
@@ -517,7 +517,7 @@ int get_v_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op);
 int get_qss_eps_naik(Real *eps_naik, quark_source_sink_op *qss_op);
 void print_field_op_info(FILE *fp, char prefix[], 
 			 quark_source_sink_op *qss_op);
-void print_field_op_info_list(FILE *fp, char prefix[], 
+void print_field_op_info_list(FILE *fp, const char prefix[], 
 			      quark_source_sink_op *qss_op[], int n);
 void set_qss_op_offset(quark_source_sink_op *qss_op, int r0[]);
 

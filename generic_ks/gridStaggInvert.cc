@@ -282,8 +282,6 @@ asqtadInvertBlock (GRID_info_t *info,
 
 	SchurStaggeredOperator<ImprovedStaggeredFermion5D,FermionField> HermOp(Ds);
 
-	int blockDim = 0;
-
 #if GRID_MULTI_CG == GRID_5DCG
 
 	// 5D CG
