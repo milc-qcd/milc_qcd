@@ -209,8 +209,12 @@ static void w_serial_old(gauge_file *gf)
   gf->check.sum29 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here only node 0 uses these values */
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 31;
+  u_int32type r29 = sites_on_node % 29;
+  r29 = r29 * this_node % 29;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+  u_int32type r31 = sites_on_node % 31;
+  r31 = r31 * this_node % 31;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
 
   g_sync();
   currentnode=0;
@@ -451,8 +455,12 @@ static void w_serial(gauge_file *gf)
   gf->check.sum29 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here only node 0 uses these values -- both start at 0 */ 
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 31;
+  u_int32type r29 = sites_on_node % 29;
+  r29 = r29 * this_node % 29;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+  u_int32type r31 = sites_on_node % 31;
+  r31 = r31 * this_node % 31;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
 
   g_sync();
   currentnode=0;  /* The node delivering data */
@@ -1080,8 +1088,10 @@ static void w_parallel(gauge_file *gf)
 		i = node_index(x,y,z,t);
 		where_in_buf = buf_length;
 		d2f_4mat(&lattice[i].link[0],&lbuf[4*where_in_buf]);
-		rank29 = rank31 = 
-		  4*sizeof(fsu3_matrix)/sizeof(int32type)*rcv_rank;
+		u_int32type r29 = rcv_rank % 29;
+		rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+		u_int32type r31 = rcv_rank % 31;
+		rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
 	      }
 	      else {
 		/* Receive a message */
@@ -1097,7 +1107,10 @@ static void w_parallel(gauge_file *gf)
 		/* Move data to buffer */
 		memcpy((void *)&lbuf[4*where_in_buf],
 		       (void *)msg.link,4*sizeof(fsu3_matrix));
-		rank29 = rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*tmp_rank;
+		u_int32type r29 = tmp_rank % 29;
+		rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+		u_int32type r31 = tmp_rank % 31;
+		rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
 	      }
 
 	      /* Receiving node accumulates checksums as the values
@@ -1199,8 +1212,12 @@ static void w_checkpoint(gauge_file *gf)
   gf->check.sum29 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here all nodes use these values */
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 31;
+  u_int32type r29 = sites_on_node % 29;
+  r29 = r29 * this_node % 29;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+  u_int32type r31 = sites_on_node % 31;
+  r31 = r31 * this_node % 31;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
 
   buf_length = 0;
 
@@ -1407,8 +1424,12 @@ static void r_parallel(gauge_file *gf)
   test_gc.sum31 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here all nodes use these values */
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 31;
+  u_int32type r29 = sites_on_node % 29;
+  r29 = r29 * this_node % 29;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+  u_int32type r31 = sites_on_node % 31;
+  r31 = r31 * this_node % 31;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
 
   /* Read and deal */
 
