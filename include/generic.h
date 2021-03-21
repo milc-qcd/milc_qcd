@@ -352,9 +352,9 @@ int io_detect_w_usqcd(const char *filename);
 gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN );
 gauge_file *reload_lattice( int flag, const char *filename);
 int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename);
-int ask_starting_lattice( FILE *fp, int prompt, int *flag, const char *filename );
-int ask_ending_lattice( FILE *fp, int prompt, int *flag, const char *filename );
-int ask_ildg_LFN(FILE *fp, int prompt, int flag, const char *stringLFN);
+int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename );
+int ask_ending_lattice( FILE *fp, int prompt, int *flag, char *filename );
+int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN);
 void coldlat(void);
 void funnylat(void);
 int get_check_tag(FILE *fp, const char *tag, const char *myname);
@@ -365,9 +365,9 @@ int get_vi( FILE *fp, int prompt, const char *variable_name_string,
 	    int *value, int nvalues );
 int get_vf( FILE *fp, int prompt, const char *variable_name_string, 
 	    Real *value, int nvalues );
-int get_s( FILE *fp, int prompt, const char *variable_name_string, const char *value );
-int get_sn( FILE *fp, int prompt, const char *variable_name_string, const char *value );
-int get_vs( FILE *fp, int prompt, const char *tag, const char *value[], int nvalues );
+int get_s( FILE *fp, int prompt, const char *variable_name_string, char *value );
+int get_sn( FILE *fp, int prompt, const char *variable_name_string, char *value );
+int get_vs( FILE *fp, int prompt, const char *tag, char *value[], int nvalues );
 int get_prompt( FILE *fp, int *value );
 
 /* io_source_cmplx_fm.c */
@@ -444,7 +444,7 @@ void init_qs(quark_source *qs);
 void alloc_cached_c_source(quark_source *qs);
 void alloc_cached_v_source(quark_source *qs);
 void alloc_cached_wv_source(quark_source *qs);
-int ask_starting_source( FILE *fp, int prompt, int *flag, const char *filename );
+int ask_starting_source( FILE *fp, int prompt, int *flag, char *filename );
 complex *get_cached_c_source(quark_source *qs);
 su3_vector *get_cached_v_source(quark_source *qs);
 wilson_vector *get_cached_wv_source(quark_source *qs);
@@ -496,7 +496,7 @@ int parse_output_quark_source_choices(int *flag, int *save_type,
 				      char *descrp, const char* savebuf);
 int ask_output_quark_source_file( FILE *fp, int prompt, 
 				  int *flag, int *source_type,
-				  int *t0, char *descrp, const char *filename);
+				  int *t0, char *descrp, char *filename);
 
 /* quark_source_sink_op.c */
 void init_qss_op(quark_source_sink_op *qss_op);

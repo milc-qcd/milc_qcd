@@ -696,7 +696,7 @@ convert_outflag_to_inflag_ksprop(int outflag){
    This routine is only called by node 0.
 */
 int 
-ask_starting_ksprop( FILE *fp, int prompt, int *flag, const char *filename ){
+ask_starting_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
   const char *savebuf;
   int status;
   char myname[] = "ask_starting_ksprop";
@@ -758,7 +758,7 @@ print_options(void)
 }
 
 int 
-ask_ending_ksprop( FILE *fp, int prompt, int *flag, const char *filename ){
+ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
   const char *savebuf;
   int status;
   char myname[] = "ask_ending_ksprop";

@@ -2300,9 +2300,9 @@ static int get_field_op(int *status_p, FILE *fp,
 			int prompt, quark_source_sink_op *qss_op){
 
   Real a = 0;
-  const char c_dir0[3] = " ";
-  const char c_dir1[3] = " ";
-  const char *c_dir[2] = {c_dir0, c_dir1};
+  char c_dir0[3] = " ";
+  char c_dir1[3] = " ";
+  char *c_dir[2] = {c_dir0, c_dir1};
   int  stride = 1;
   int  source_iters = 0;
   Real source_r0 = 0;

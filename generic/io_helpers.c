@@ -293,7 +293,7 @@ static int check_read(int s, const char *myname, const char *tag){
 /* find out what kind of starting lattice to use, and lattice name if
    necessary.  This routine is only called by node 0.
 */
-int ask_starting_lattice( FILE *fp, int prompt, int *flag, const char *filename ){
+int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename ){
   const char *savebuf;
   int status;
   const char myname[] = "ask_starting_lattice";
@@ -348,7 +348,7 @@ int ask_starting_lattice( FILE *fp, int prompt, int *flag, const char *filename 
 /* find out what do to with lattice at end, and lattice name if
    necessary.  This routine is only called by node 0.
 */
-int ask_ending_lattice(FILE *fp, int prompt, int *flag, const char *filename ){
+int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
   const char *savebuf;
   int status;
   const char myname[] = "ask_ending_lattice";
@@ -510,7 +510,7 @@ int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename){
 
 /*--------------------------------------------------------------------*/
 
-int ask_ildg_LFN(FILE *fp, int prompt, int flag, const char *stringLFN){
+int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN){
   int status = 0;
 
   /* For ILDG output formats we require a logical file name next */
@@ -670,7 +670,7 @@ int get_i( FILE *fp, int prompt, const char *tag, int *value ){
 
 /* Read a single word as a string without printing an end-of-line  */
 
-int get_sn( FILE *fp, int prompt, const char *tag, const char *value ){
+int get_sn( FILE *fp, int prompt, const char *tag, char *value ){
     int s;
     const char myname[] = "get_sn";
 
@@ -696,7 +696,7 @@ int get_sn( FILE *fp, int prompt, const char *tag, const char *value ){
 
 /* Read a single word as a string */
 
-int get_s( FILE *fp, int prompt, const char *tag, const char *value ){
+int get_s( FILE *fp, int prompt, const char *tag, char *value ){
     int s;
 
     s = get_sn(fp, prompt, tag, value);
@@ -781,7 +781,7 @@ int get_vf( FILE* fp, int prompt, const char *tag,
 
 /* Read a vector of strings */
 
-int get_vs( FILE *fp, int prompt, const char *tag, const char *value[], int nvalues ){
+int get_vs( FILE *fp, int prompt, const char *tag, char *value[], int nvalues ){
   const char myname[] = "get_vs";
 
   int s, i;
