@@ -519,7 +519,7 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
 static enum gammatype 
 dir2gi(int dir, char *myname){
 
-  enum gammatype gi = 0;
+  enum gammatype gi = GT;
 
   switch(dir){
   case XUP: gi = GX; break;
@@ -535,7 +535,7 @@ dir2gi(int dir, char *myname){
 static enum gammatype 
 dir2gi0(int dir, char *myname){
 
-  enum gammatype gi0 = 0;
+  enum gammatype gi0 = GT;
 
   switch(dir){
   case XUP: gi0 = GXT; break;
@@ -553,7 +553,7 @@ dir2gi0(int dir, char *myname){
 static enum gammatype 
 dir2g5i(int dir, char *myname){
 
-  enum gammatype g5i = 0;
+  enum gammatype g5i =GT;
   
   switch(dir){
   case XUP: g5i = G5X; break;
@@ -570,7 +570,7 @@ dir2g5i(int dir, char *myname){
 static enum gammatype 
 dir2gij(int dir, char *myname){
 
-  enum gammatype gij = 0;
+  enum gammatype gij = GT;
   
   switch(dir){
   case XUP: gij = GYZ; break;
@@ -853,7 +853,7 @@ enum spin_taste_type {
 };
 
 /* NOTE: The following labels must match the above enum exactly */
-static char *spin_taste_string[MAX_SPIN_TASTE]  = { 
+static const char *spin_taste_string[MAX_SPIN_TASTE]  = { 
   /* Traditional names for local/non-local mesons */
   "pion5",
   "pion05",
@@ -962,14 +962,14 @@ encode_gamma_gamma_index(int s, int t){
   return s*16+t+128;
 }
 
-static int
+static enum gammatype
 decode_gamma_spin_index(int index){
-  return (index-128)/16;
+  return (enum gammatype)((index-128)/16);
 }
 
-static int
+static enum gammatype
 decode_gamma_taste_index(int index){
-  return (index-128)%16;
+  return (enum gammatype)((index-128)%16);
 }
 
 /* True if the index is gamma-gamma type */
@@ -1094,7 +1094,7 @@ static char *
 gamma_gamma_string(int index){
 
   static char label[32];
-  int gamma_spin_index, gamma_taste_index;
+  enum gammatype gamma_spin_index, gamma_taste_index;
 
   if( ! is_gamma_gamma_index(index) )
     return "\0";
@@ -1191,7 +1191,7 @@ spin_taste_index(char *label){
 /*------------------------------------------------------------------*/
 /* Map an index to the corresponding label */
 
-char *
+const char *
 spin_taste_label(int index){
   if(is_gamma_gamma_index(index))
     return gamma_gamma_string(index);
@@ -1368,8 +1368,8 @@ static void
 gamma_gamma_spin_taste_op(int index, int r0[], 
 			  su3_vector *dest, su3_vector *src){
 
-  int spin_index = decode_gamma_spin_index(index);
-  int taste_index = decode_gamma_taste_index(index);
+  enum gammatype spin_index = decode_gamma_spin_index(index);
+  enum gammatype taste_index = decode_gamma_taste_index(index);
 
 #ifdef NO_GAUGE_FIELD
   general_spin_taste_op(spin_index, taste_index, r0, dest, src, NULL);

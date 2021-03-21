@@ -56,7 +56,7 @@ int grid2milc_parity(GRID_evenodd_t grid_parity){
   return -999;
 }
 
-void finalize_grid(void)
+void finalize_grid()
 {
   /* We omit MPI_Finalize() because most likely it will break a lot of things */
   Grid_unquiesce_nodes();

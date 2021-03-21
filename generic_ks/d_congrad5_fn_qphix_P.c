@@ -117,8 +117,8 @@ create_qphix_resid_arg( quark_invert_control *qic )
   }
   *res_arg = QPHIX_RESID_ARG_DEFAULT;
   /* For now the residuals are the same for all sources and masses */
-  res_arg->resid = qic->resid * qic->resid;
-  res_arg->relresid     = 0.;  /* NOT SUPPORTED */
+  res_arg->resid        = qic->resid * qic->resid;
+  res_arg->relresid     = qic->relresid * qic->relresid;
   res_arg->final_rsq    = 0.;
   res_arg->final_rel    = 0.;
 
@@ -132,7 +132,7 @@ get_qphix_resid_arg( quark_invert_control *qic,
 		     QPHIX_resid_arg_t* qphix_resid_arg, int iters )
 {
   qic->final_rsq     = qphix_resid_arg->final_rsq;
-  qic->final_relrsq  = 0.;                          /* Not supported at the moment */
+  qic->final_relrsq  = qphix_resid_arg->final_rel;
   qic->size_r        = qphix_resid_arg->size_r;
   qic->size_relr     = qphix_resid_arg->size_relr;
   qic->final_iters   = iters;

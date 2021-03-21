@@ -11,58 +11,57 @@ void build_qio_layout(QIO_Layout *layout);
 void build_qio_filesystem(QIO_Filesystem *fs);
 void close_scidac_input(QIO_Reader *infile);
 void close_scidac_output(QIO_Writer *outfile);
-QIO_Writer *open_scidac_output(char *filename, int volfmt, 
+QIO_Writer *open_scidac_output(const char *filename, int volfmt, 
 			       int serpar, int ildgtype, 
-			       char *stringLFN, QIO_Layout *layout,
+			       const char *stringLFN, QIO_Layout *layout,
 			       QIO_Filesystem *fs, QIO_String *filexml);
-QIO_Reader *open_scidac_input(char *filename, QIO_Layout *layout, 
+QIO_Reader *open_scidac_input(const char *filename, QIO_Layout *layout, 
 			      QIO_Filesystem *fs, int serpar);
-QIO_Reader *open_scidac_input_xml(char *filename, QIO_Layout *layout,
+QIO_Reader *open_scidac_input_xml(const char *filename, QIO_Layout *layout,
 				  QIO_Filesystem *fs, int serpar,
 				  QIO_String *xml_file_in);
 int qio_status(int status);
-int read_lat_dim_scidac(char *filename, int *ndim, int dims[]);
+int read_lat_dim_scidac(const char *filename, int *ndim, int dims[]);
 void r_close_scidac_file(QIO_Reader *infile);
-QIO_Reader *r_open_scidac_file_xml(char *filename, int serpar,
+QIO_Reader *r_open_scidac_file_xml(const char *filename, int serpar,
 				   QIO_String *xml_file);
-QIO_Reader *r_open_scidac_file(char *filename, int serpar);
-void restore_color_matrix_scidac_to_site(char *filename, 
+QIO_Reader *r_open_scidac_file(const char *filename, int serpar);
+void restore_color_matrix_scidac_to_site(const char *filename, 
 			 field_offset dest, int count);
-void restore_color_matrix_scidac_to_field(char *filename, 
+void restore_color_matrix_scidac_to_field(const char *filename, 
 			  su3_matrix *dest, int count, int prec);
-void restore_random_state_scidac_to_site(char *filename, field_offset dest);
+void restore_random_state_scidac_to_site(const char *filename, field_offset dest);
 
-int read_lat_dim_scidac(char *filename, int *ndim, int dims[]);
-void restore_real_scidac_to_field(char *filename, int serpar,
+void restore_real_scidac_to_field(const char *filename, int serpar,
 				  Real *dest, int count);
 
-void restore_real_scidac_to_site(char *filename, field_offset dest, int count);
+void restore_real_scidac_to_site(const char *filename, field_offset dest, int count);
 
 int read_complex_scidac_xml(QIO_Reader *infile, complex *dest, int count, QIO_String *recxml);
 int read_complex_scidac(QIO_Reader *infile, complex *dest, int count);
-void restore_complex_scidac_to_field(char *filename, int serpar,
+void restore_complex_scidac_to_field(const char *filename, int serpar,
 				     complex *dest, int count);
 int read_real_scidac_xml(QIO_Reader *infile, Real *dest, int count, QIO_String *recxml);
 int read_real_scidac(QIO_Reader *infile, Real *dest, int count);
-void save_color_matrix_scidac_from_site(char *filename, char *fileinfo, 
-	char *recinfo, int volfmt,  field_offset src, int count, int prec,
-	char *stringLFN);
-void save_color_matrix_scidac_from_field(char *filename,
-        char *fileinfo, char *recinfo, int volfmt, su3_matrix *src, int count, int prec,
-        char *stringLFN);
-void save_random_state_scidac_from_site(char *filename, 
-	char *filexml, char *recxml, int volfmt, field_offset src);
+void save_color_matrix_scidac_from_site(const char *filename, const char *fileinfo, 
+	const char *recinfo, int volfmt,  field_offset src, int count, int prec,
+	const char *stringLFN);
+void save_color_matrix_scidac_from_field(const char *filename,
+        const char *fileinfo, const char *recinfo, int volfmt, su3_matrix *src, 
+	int count, int prec, const char *stringLFN);
+void save_random_state_scidac_from_site(const char *filename, 
+	const char *filexml, const char *recxml, int volfmt, field_offset src);
 
-void save_real_scidac_from_field(char *filename, 
-    char *filexml, char *recxml, int volfmt, Real *src, int count);
+void save_real_scidac_from_field(const char *filename, 
+    const char *filexml, const char *recxml, int volfmt, Real *src, int count);
 
-void save_real_scidac_from_site(char *filename, 
-    char *filexml, char *recxml, int volfmt, field_offset src, int count);
-void save_complex_scidac_from_field(char *filename, char *fileinfo,
+void save_real_scidac_from_site(const char *filename, 
+    const char *filexml, const char *recxml, int volfmt, field_offset src, int count);
+void save_complex_scidac_from_field(const char *filename, char *fileinfo,
 				    char *recinfo, int volfmt, int serpar, 
 				    complex *src, int count);
 void w_close_scidac_file(QIO_Writer *outfile);
-QIO_Writer *w_open_scidac_file(char *filename, char *fileinfo, 
+QIO_Writer *w_open_scidac_file(const char *filename, const char *fileinfo, 
 			       int volfmt, int serpar);
 
 

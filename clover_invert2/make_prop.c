@@ -334,8 +334,10 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 	   inverter algorithm dependent on the propagator start flag.
 	   FRESH -> uml and otherwise cg. */
 	
-	avs_iters += mat_invert_field(src, dst, my_qic, my_ksp->mass,
-				      fn, startflag == FRESH);
+	enum inv_type it = my_qic[0].inv_type;
+	if(startflag != FRESH)my_qic[0].inv_type = CGTYPE;
+	avs_iters += mat_invert_field(src, dst, my_qic, my_ksp->mass, fn);
+	my_qic[0].inv_type = it;
 
 	/* Transform solution, completing the U(1) gauge transformation */
 	mybdry_phase[3] = 0; 
@@ -552,8 +554,10 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
 	   inverter algorithm dependent on the propagator start flag.
 	   FRESH -> uml and otherwise cg. */
 	
-	avs_iters += mat_invert_field(src, dst, my_qic, my_ksp->mass,
-				      fn, startflag == FRESH);
+	enum inv_type it = my_qic[0].inv_type;
+	if(startflag != FRESH)my_qic[0].inv_type = CGTYPE;
+	avs_iters += mat_invert_field(src, dst, my_qic, my_ksp->mass, fn);
+	my_qic[0].inv_type = it;
 
 	/* Transform solution, completing the U(1) gauge transformation */
 	mybdry_phase[3] = 0; 

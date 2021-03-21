@@ -89,10 +89,10 @@ void swrite_ks_prop_hdr(FILE *fp, ks_prop_header *ksph)
 /*------------------------------------------------------------------------*/
 /* Write a data item to the prop info file */
 int write_ksprop_info_item( FILE *fpout,    /* ascii file pointer */
-			    char *keyword,   /* keyword */
-			    char *fmt,       /* output format -
+			    const char *keyword,   /* keyword */
+			    const char *fmt,       /* output format -
 						must use s, d, e, f, or g */
-			    char *src,       /* address of starting data
+			    const char *src,       /* address of starting data
 						floating point data must be
 						of type (Real) */
 			    int count,       /* number of data items if > 1 */
@@ -199,14 +199,14 @@ void write_ksprop_info_file(ks_prop_file *pf)
   
   /* Write required information */
 
-  write_ksprop_info_item(info_fp,"magic_number","%d",(char *)&ph->magic_number,0,0);
+  write_ksprop_info_item(info_fp,"magic_number","%d",(const char *)&ph->magic_number,0,0);
   write_ksprop_info_item(info_fp,"time_stamp","\"%s\"",ph->time_stamp,0,0);
   sprintf(sums,"%x %x",pf->check.sum29,pf->check.sum31);
   write_ksprop_info_item(info_fp,"checksums","\"%s\"",sums,0,0);
-  write_ksprop_info_item(info_fp,"nx","%d",(char *)&nx,0,0);
-  write_ksprop_info_item(info_fp,"ny","%d",(char *)&ny,0,0);
-  write_ksprop_info_item(info_fp,"nz","%d",(char *)&nz,0,0);
-  write_ksprop_info_item(info_fp,"nt","%d",(char *)&nt,0,0);
+  write_ksprop_info_item(info_fp,"nx","%d",(const char *)&nx,0,0);
+  write_ksprop_info_item(info_fp,"ny","%d",(const char *)&ny,0,0);
+  write_ksprop_info_item(info_fp,"nz","%d",(const char *)&nz,0,0);
+  write_ksprop_info_item(info_fp,"nt","%d",(const char *)&nt,0,0);
 
   write_appl_ksprop_info(info_fp);
 
@@ -221,7 +221,7 @@ void write_ksprop_info_file(ks_prop_file *pf)
 
 /* Set up the input prop file and prop header structures */
 
-ks_prop_file *create_input_ksprop_file_handle(char *filename)
+ks_prop_file *create_input_ksprop_file_handle(const char *filename)
 {
   ks_prop_file *pf;
   ks_prop_header *ph;
@@ -343,7 +343,7 @@ void destroy_ksprop_file_handle(ks_prop_file *kspf){
 
   if(kspf->header   != NULL)free(kspf->header);
   if(kspf->prop     != NULL)free(kspf->prop);
-  if(kspf->info     != NULL)free(kspf->info);
+  if(kspf->info     != NULL)free((void *)kspf->info);
   free(kspf);
 }
 
@@ -351,7 +351,7 @@ void destroy_ksprop_file_handle(ks_prop_file *kspf){
 
 /* Open a binary file for serial writing by node 0 */
 
-ks_prop_file *w_serial_ks_i(char *filename)
+ks_prop_file *w_serial_ks_i(const char *filename)
 {
   /* Only node 0 opens the file filename */
   /* Returns a file structure describing the opened file */
@@ -772,7 +772,7 @@ int read_ks_prop_hdr(ks_prop_file *kspf, int parallel)
 
 /*---------------------------------------------------------------------------*/
 
-ks_prop_file *r_serial_ks_i(char *filename)
+ks_prop_file *r_serial_ks_i(const char *filename)
 {
   /* Returns file descriptor for opened file */
 
@@ -836,7 +836,7 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset dest_site,
 
   FILE *fp;
   ks_prop_header *ksph;
-  char *filename;
+  const char *filename;
   int byterevflag;
 
   off_t offset ;            /* File stream pointer */
@@ -1150,7 +1150,7 @@ void r_serial_ks_f(ks_prop_file *kspf)
 /*---------------------------------------------------------------------------*/
 /* Open and write header info for ascii propagator file */
 
-ks_prop_file *w_ascii_ks_i(char *filename)
+ks_prop_file *w_ascii_ks_i(const char *filename)
 {
   ks_prop_header *ksph;
   ks_prop_file *kspf;
@@ -1303,7 +1303,7 @@ void w_ascii_ks_f(ks_prop_file *kspf)
 /*---------------------------------------------------------------------------*/
 /* Open ASCII propagator file and read header information */
 
-ks_prop_file *r_ascii_ks_i(char *filename)
+ks_prop_file *r_ascii_ks_i(const char *filename)
 {
   ks_prop_file *kspf;
   ks_prop_header *ksph;
@@ -1504,7 +1504,7 @@ void r_ascii_ks_f(ks_prop_file *kspf)
 /* Quick and dirty code for binary output of propagator, separated
    into one file per timeslice */
 
-void w_serial_ksprop_tt( char *filename, field_offset prop)
+void w_serial_ksprop_tt( const char *filename, field_offset prop)
 {
 
   char myname[] = "w_serial_ksprop_tt";
@@ -1668,7 +1668,7 @@ void w_serial_ksprop_tt( char *filename, field_offset prop)
 /* Quick and dirty code for ascii output of propagator, separated
    into one file per timeslice */
 
-void w_ascii_ksprop_tt( char *filename, field_offset prop) 
+void w_ascii_ksprop_tt( const char *filename, field_offset prop) 
 {
 
   char myname[] = "w_ascii_ksprop_tt";
@@ -1803,7 +1803,7 @@ void w_ascii_ksprop_tt( char *filename, field_offset prop)
 */
 
 /* one su3_vector for each source color */
-ks_prop_file *restore_ksprop_ascii( char *filename, field_offset prop )
+ks_prop_file *restore_ksprop_ascii( const char *filename, field_offset prop )
 {
 
   ks_prop_header *ph;
@@ -1960,7 +1960,7 @@ ks_prop_file *restore_ksprop_ascii( char *filename, field_offset prop )
 /* Save a KS propagator in ASCII format serially (node 0 only) */
 
 /* one su3_vector for each source color */
-ks_prop_file *save_ksprop_ascii(char *filename, field_offset prop)
+ks_prop_file *save_ksprop_ascii(const char *filename, field_offset prop)
 {
 
   ks_prop_header *ph;
