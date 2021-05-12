@@ -12,6 +12,10 @@
 #include "../include/io_u1lat.h"
 #endif
 
+#ifdef HAVE_GRID
+#include "../include/generic_grid.h"
+#endif
+
 int main( int argc, char **argv ){
   register site *s;
   int i,si;
@@ -196,6 +200,10 @@ int main( int argc, char **argv ){
   
 #ifdef HAVE_QUDA
   finalize_quda();
+#endif
+
+#ifdef HAVE_GRID
+  finalize_grid();
 #endif
   
   normal_exit(0);
