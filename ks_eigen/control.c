@@ -197,6 +197,8 @@ int main( int argc, char **argv ){
   destroy_fermion_links(fn_links);
 #endif
   fn_links = NULL;
+
+  free_lattice();
   
 #ifdef HAVE_QUDA
   finalize_quda();
