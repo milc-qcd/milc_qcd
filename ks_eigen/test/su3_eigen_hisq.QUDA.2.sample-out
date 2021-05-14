@@ -1,0 +1,478 @@
+com_qmp: set thread-safety level to 0
+SU3 with improved KS action
+Eigenvalues and eigenvectors
+MIMD version 7.8.1
+Machine = QMP (portable), with 1 nodes(ranks)
+Host(0) = cheoling0
+Username = cheoling
+start: Fri May 14 16:42:56 2021
+
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+FEWSUMS
+KS_MULTICG=HYBRID
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+# Lattice dimensions
+nx 4
+ny 4
+nz 4
+nt 4
+# random number seed
+iseed 5682304
+job_id 1412331
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE (RANK) 4 x 4 x 4 x 4
+Mallocing 0.5 MBytes per node for lattice
+QUDA 1.0.0 (git v0.9.0-3756-gb689670b1-dirty-sm_37)
+CUDA Driver version = 11020
+CUDA Runtime version = 11020
+Found device 0: Tesla K80
+Found device 1: Tesla K80
+Using device 0: Tesla K80
+WARNING: Data reordering done on GPU (set with QUDA_REORDER_LOCATION=GPU/CPU)
+cublasCreated successfully
+WARNING: Using device memory pool allocator
+WARNING: Using pinned memory pool allocator
+WARNING: Environment variable QUDA_RESOURCE_PATH is not set.
+WARNING: Caching of tuned parameters will be disabled.
+WARNING!!: Resetting random seed
+
+
+# Input lattice
+reload_serial ../../binary_samples/lat.sample.inst
+u0 1
+no_gauge_fix
+forget 
+coordinate_origin 0 0 0 0 
+time_bc antiperiodic
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+max_number_of_eigenpairs 32
+# Eigenvector file
+fresh_ks_eigen 
+forget_ks_eigen 
+# Parameters for QUDA's Thick Restarted (Block) Lanczos --------------------------
+# Maximum number of restarting iterations
+Max_Lanczos_restart_iters 100
+# Eigenvalue tolerance
+eigenval_tolerance 5e-13
+# Stop Lanczos at Lanczos_max (number of eigenvalues) and restart from Lanczos_restart (number of eigenvalues)
+# Lanczos_max > lanczos_restart >= max_number_of_eigenpairs
+Lanczos_max 60
+Lanczos_restart 40
+# Chebyshev polynomial (makes region (alpha,beta) smooth and outside diverge. even order gives even function.)
+Chebyshev_alpha 10
+Chebyshev_beta 100
+Chebyshev_order 20
+# block_size = 1: Thick Restarted Lanczos
+# block_size > 1: Thick Restarted Block Lanczos
+block_size 1
+Reading as old-style gauge field configuration.
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.inst
+Checksums ed5b7449 68d34f64
+Checksums not verified in this format
+Time to reload gauge configuration = 4.708767e-04
+CHECK PLAQ: 2.9730278122732798e+00 2.9730278122732785e+00
+CHECK NERSC LINKTR: 9.9162775115109980e-01 CKSUM: a0e19040
+Reunitarized for double precision. Max deviation 1.46e-07 changed to 4.44e-16
+Time to check unitarity = 2.949238e-04
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarization group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+Combined fattening and long-link calculation time: 0.008890
+Even site residuals
+Checking eigensolutions
+End of eigensolutions
+COULOMB GAUGE FIXING SKIPPED.
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+========= parameters for eigensolver =========
+Number of wanted eigenvalues: 32
+Krylov subspace size: 60
+Eigenvalue search space size: 40
+Eigenvalue equation tolerance: 5.000000e-13
+Maximum iterations of Lanczos restarts: 100
+Chebyshev polynomial - alpha (lower bound for exclusion): 10
+Chebyshev polynomial - beta (upper bound for exclusion): 100
+Chebyshev polynomial order: 20
+Block size: 1
+==============================================
+Tuned block=(32,1,1), grid=(1,1,1), shared_bytes=0, aux=(1,1,1,1) giving 0.00 Gflop/s, 0.96 GB/s for cudaMemsetAsync with zero,cuda_color_spinor_field.cpp,332
+Creating TR Lanczos eigensolver
+Running eigensolver in double precision
+Using curandStateMRG32k3a
+Tuned block=(32,1,1), grid=(1,1,1), shared_bytes=0, aux=(1,1,1,1) giving 0.00 Gflop/s, 0.95 GB/s for cudaMemset with AllocateRNG,random.cu,124
+Tuned block=(128,1,1), grid=(25,1,1), shared_bytes=0, aux=(1,1,1,1) giving 0.08 Gflop/s, 0.32 GB/s for N4quda4blas5Norm2IddEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(96,1,1), grid=(2,1,1), shared_bytes=8193, aux=(1,1,1,1) giving 0.00 Gflop/s, 0.48 GB/s for N4quda11SpinorNoiseIdLi1ELi3EL15QudaNoiseType_s1ENS_3ArgIdLi1ELi3EL16QudaFieldOrder_s2EEEEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,GPU
+Tuned block=(256,1,1), grid=(26,1,1), shared_bytes=0, aux=(1,1,1,1) giving 0.12 Gflop/s, 1.98 GB/s for N4quda4blas3ax_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Orthonormalising initial guess
+Tuned block=(64,1,1), grid=(14,1,1), shared_bytes=0, aux=(1,1,1,1) giving 0.13 Gflop/s, 0.51 GB/s for 11N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1,norm
+Tuned block=(32,1,1), grid=(1,1,1), shared_bytes=0, aux=(1,1,0,0) giving 0.00 Gflop/s, 0.00 GB/s for N4quda4blas12TileSizeTuneINS0_9multiCdotES2_St7complexIdEEE with policy,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,hermitian,n=1,m=1,multi-blas-n=4
+********************************
+**** START QUDA EIGENSOLVER ****
+********************************
+spectrum LR
+tol 5.0000e-13
+n_conv 32
+n_ev 40
+n_kr 60
+polyDeg 20
+a-min 10.000000
+a-max 100.000000
+Tuned block=(528,1,1), grid=(1,1,1), shared_bytes=24577, aux=(1,1,0,0) giving 4.09 Gflop/s, 11.13 GB/s for N4quda9StaggeredINS_12StaggeredArgIdLi3ELi4EL21QudaReconstructType_s18ELS2_18ELb1EL20QudaStaggeredPhase_s1EEEEE with policy_kernel=interior,comm=0000,commDim=0000
+Tuned block=(32,1,1), grid=(1,1,1), shared_bytes=0, aux=(8,0,0,0) giving 3.93 Gflop/s, 10.70 GB/s for N4quda9StaggeredINS_12StaggeredArgIdLi3ELi4EL21QudaReconstructType_s18ELS2_18ELb1EL20QudaStaggeredPhase_s1EEEEE with policy,commDim=0000,topo=1111,order=01,p2p=0,gdr=0,pol=110000111100110
+Tuned block=(352,1,1), grid=(1,1,1), shared_bytes=24577, aux=(8,0,0,0) giving 4.51 Gflop/s, 12.28 GB/s for N4quda9StaggeredINS_12StaggeredArgIdLi3ELi4EL21QudaReconstructType_s18ELS2_18ELb1EL20QudaStaggeredPhase_s1EEEEE with policy_kernel=interior,comm=0000,commDim=0000,dagger
+Tuned block=(32,1,1), grid=(1,1,1), shared_bytes=0, aux=(9,0,0,0) giving 4.37 Gflop/s, 11.90 GB/s for N4quda9StaggeredINS_12StaggeredArgIdLi3ELi4EL21QudaReconstructType_s18ELS2_18ELb1EL20QudaStaggeredPhase_s1EEEEE with policy,commDim=0000,dagger,topo=1111,order=01,p2p=0,gdr=0,pol=110000111100110
+Tuned block=(384,1,1), grid=(26,1,1), shared_bytes=0, aux=(9,0,0,0) giving 0.88 Gflop/s, 3.00 GB/s for N4quda4blas7caxpby_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(416,1,1), grid=(1,1,1), shared_bytes=0, aux=(9,0,0,0) giving 0.00 Gflop/s, 1.71 GB/s for N4quda15CopyColorSpinorILi1ENS_18CopyColorSpinorArgIddLi1ELi3ENS_11colorspinor11FloatNOrderIdLi1ELi3ELi2ELb0ELb0EEES4_EEEE with out_stride=128,in_stride=128
+Tuned block=(672,1,1), grid=(26,1,1), shared_bytes=0, aux=(9,0,0,0) giving 1.03 Gflop/s, 5.15 GB/s for N4quda4blas11caxpbypczw_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(32,1,1), grid=(20,1,1), shared_bytes=0, aux=(9,0,0,0) giving 0.08 Gflop/s, 0.68 GB/s for N4quda4blas3DotIddEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(608,1,1), grid=(26,1,1), shared_bytes=0, aux=(9,0,0,0) giving 0.39 Gflop/s, 3.10 GB/s for N4quda4blas7axpbyz_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(32,1,1), grid=(24,1,1), shared_bytes=0, aux=(9,0,0,0) giving 0.14 Gflop/s, 0.58 GB/s for 11N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(736,1,1), grid=(26,1,1), shared_bytes=0, aux=(1,0,0,0) giving 0.26 Gflop/s, 1.56 GB/s for 11N4quda4blas11multicaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(640,1,1), grid=(26,1,1), shared_bytes=0, aux=(1,0,0,0) giving 0.13 Gflop/s, 1.55 GB/s for 11N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(64,1,1), grid=(16,2,1), shared_bytes=0, aux=(1,0,0,0) giving 0.28 Gflop/s, 1.14 GB/s for 12N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(256,1,1), grid=(26,1,1), shared_bytes=0, aux=(2,0,0,0) giving 0.56 Gflop/s, 2.24 GB/s for 21N4quda4blas11multicaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(64,1,1), grid=(8,3,1), shared_bytes=0, aux=(2,0,0,0) giving 0.42 Gflop/s, 1.67 GB/s for 13N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(320,1,1), grid=(26,1,1), shared_bytes=0, aux=(1,0,0,0) giving 0.90 Gflop/s, 3.00 GB/s for 31N4quda4blas11multicaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(128,1,1), grid=(3,4,1), shared_bytes=0, aux=(1,0,0,0) giving 0.55 Gflop/s, 2.21 GB/s for 14N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(832,1,1), grid=(26,1,1), shared_bytes=0, aux=(1,0,0,0) giving 1.25 Gflop/s, 3.76 GB/s for 41N4quda4blas11multicaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(32,1,1), grid=(16,5,1), shared_bytes=0, aux=(1,0,0,0) giving 0.69 Gflop/s, 2.75 GB/s for 15N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(96,1,1), grid=(9,6,1), shared_bytes=0, aux=(1,0,0,0) giving 0.85 Gflop/s, 3.38 GB/s for 16N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(23,7,1), shared_bytes=0, aux=(1,0,0,0) giving 0.95 Gflop/s, 3.79 GB/s for 17N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(96,1,1), grid=(4,8,1), shared_bytes=0, aux=(1,0,0,0) giving 1.06 Gflop/s, 4.25 GB/s for 18N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(224,1,1), grid=(26,1,1), shared_bytes=0, aux=(2,0,0,0) giving 2.59 Gflop/s, 6.46 GB/s for 81N4quda4blas11multicaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(32,1,1), grid=(16,9,1), shared_bytes=0, aux=(2,0,0,0) giving 1.25 Gflop/s, 4.99 GB/s for 19N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(20,10,1), shared_bytes=0, aux=(2,0,0,0) giving 1.30 Gflop/s, 5.22 GB/s for 110N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(128,1,1), grid=(9,11,1), shared_bytes=0, aux=(2,0,0,0) giving 1.44 Gflop/s, 5.77 GB/s for 111N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(128,1,1), grid=(6,12,1), shared_bytes=0, aux=(2,0,0,0) giving 1.59 Gflop/s, 6.38 GB/s for 112N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(12,13,1), shared_bytes=0, aux=(2,0,0,0) giving 1.71 Gflop/s, 6.86 GB/s for 113N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(8,14,1), shared_bytes=0, aux=(2,0,0,0) giving 1.89 Gflop/s, 7.54 GB/s for 114N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(64,1,1), grid=(4,15,1), shared_bytes=0, aux=(2,0,0,0) giving 1.96 Gflop/s, 7.85 GB/s for 115N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(64,1,1), grid=(4,16,1), shared_bytes=0, aux=(2,0,0,0) giving 2.09 Gflop/s, 8.37 GB/s for 116N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(64,1,1), grid=(26,1,1), shared_bytes=0, aux=(1,0,0,0) giving 4.29 Gflop/s, 9.66 GB/s for 161N4quda4blas11multicaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(64,1,1), grid=(8,17,1), shared_bytes=0, aux=(1,0,0,0) giving 2.22 Gflop/s, 8.89 GB/s for 117N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(6,18,1), shared_bytes=0, aux=(1,0,0,0) giving 2.31 Gflop/s, 9.24 GB/s for 118N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(96,1,1), grid=(4,19,1), shared_bytes=0, aux=(1,0,0,0) giving 2.43 Gflop/s, 9.73 GB/s for 119N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(10,20,1), shared_bytes=0, aux=(1,0,0,0) giving 2.57 Gflop/s, 10.27 GB/s for 120N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(4,21,1), shared_bytes=0, aux=(1,0,0,0) giving 2.62 Gflop/s, 10.48 GB/s for 121N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(9,22,1), shared_bytes=0, aux=(1,0,0,0) giving 2.78 Gflop/s, 11.13 GB/s for 122N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(4,23,1), shared_bytes=0, aux=(1,0,0,0) giving 2.93 Gflop/s, 11.73 GB/s for 123N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(96,1,1), grid=(4,24,1), shared_bytes=0, aux=(1,0,0,0) giving 3.04 Gflop/s, 12.17 GB/s for 124N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(4,25,1), shared_bytes=0, aux=(1,0,0,0) giving 3.16 Gflop/s, 12.63 GB/s for 125N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(6,26,1), shared_bytes=0, aux=(1,0,0,0) giving 3.35 Gflop/s, 13.40 GB/s for 126N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(7,27,1), shared_bytes=0, aux=(1,0,0,0) giving 3.44 Gflop/s, 13.76 GB/s for 127N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(64,1,1), grid=(5,28,1), shared_bytes=0, aux=(1,0,0,0) giving 3.57 Gflop/s, 14.27 GB/s for 128N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(32,1,1), grid=(6,29,1), shared_bytes=0, aux=(1,0,0,0) giving 3.72 Gflop/s, 14.88 GB/s for 129N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(128,1,1), grid=(2,30,1), shared_bytes=0, aux=(1,0,0,0) giving 3.70 Gflop/s, 14.78 GB/s for 130N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(128,1,1), grid=(2,31,1), shared_bytes=0, aux=(1,0,0,0) giving 3.74 Gflop/s, 14.95 GB/s for 131N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(64,1,1), grid=(5,32,1), shared_bytes=0, aux=(1,0,0,0) giving 3.78 Gflop/s, 15.10 GB/s for 132N4quda4blas9multiCdotIddEE with policy_kernel,vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Tuned block=(224,1,1), grid=(26,1,1), shared_bytes=0, aux=(1,0,0,0) giving 6.29 Gflop/s, 13.37 GB/s for 321N4quda4blas11multicaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Resizing kSpace to 106 vectors
+Tuned block=(32,23,1), grid=(26,2,1), shared_bytes=0, aux=(1,0,0,0) giving 15.83 Gflop/s, 105.54 GB/s for 345N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(32,22,1), grid=(26,3,1), shared_bytes=0, aux=(1,0,0,0) giving 20.39 Gflop/s, 122.36 GB/s for 445N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(32,32,1), grid=(26,2,1), shared_bytes=0, aux=(1,0,0,0) giving 36.61 Gflop/s, 183.05 GB/s for 845N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+0015 converged eigenvalues at restart iter 0001
+Tuned block=(320,1,1), grid=(26,1,1), shared_bytes=0, aux=(2,0,0,0) giving 0.26 Gflop/s, 2.11 GB/s for 21N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(896,1,1), grid=(26,1,1), shared_bytes=0, aux=(1,0,0,0) giving 0.38 Gflop/s, 2.50 GB/s for 31N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(48,7,1), grid=(26,4,1), shared_bytes=0, aux=(2,0,0,0) giving 5.94 Gflop/s, 47.55 GB/s for 222N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(96,8,1), grid=(26,3,1), shared_bytes=0, aux=(1,0,0,0) giving 8.81 Gflop/s, 58.72 GB/s for 322N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+0013 converged eigenvalues at restart iter 0002
+Tuned block=(128,1,1), grid=(26,1,1), shared_bytes=0, aux=(2,0,0,0) giving 1.19 Gflop/s, 5.96 GB/s for 81N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(608,1,1), grid=(26,1,1), shared_bytes=0, aux=(1,0,0,0) giving 0.56 Gflop/s, 3.37 GB/s for 41N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(16,17,1), grid=(26,2,1), shared_bytes=0, aux=(2,0,0,0) giving 6.38 Gflop/s, 51.06 GB/s for 224N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(48,9,1), grid=(26,3,1), shared_bytes=0, aux=(2,0,0,0) giving 9.80 Gflop/s, 65.33 GB/s for 324N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+0014 converged eigenvalues at restart iter 0003
+Tuned block=(64,14,1), grid=(26,3,1), shared_bytes=0, aux=(1,0,0,0) giving 9.22 Gflop/s, 73.78 GB/s for 235N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+Tuned block=(64,11,1), grid=(26,4,1), shared_bytes=0, aux=(1,0,0,0) giving 13.63 Gflop/s, 90.89 GB/s for 335N4quda4blas10multiaxpy_IdEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3
+0043 converged eigenvalues at restart iter 0004
+TRLM computed the requested 32 vectors in 4 restart steps and 123 OP*x operations.
+RitzValue[0000]: (+9.7262690917586780e-01, +0.0000000000000000e+00) residual 0.0000000000000000e+00
+RitzValue[0001]: (+9.7262690917586692e-01, +0.0000000000000000e+00) residual 0.0000000000000000e+00
+RitzValue[0002]: (+2.8238873667337283e-01, +0.0000000000000000e+00) residual 2.3072631384521842e-25
+RitzValue[0003]: (+2.8238873667337233e-01, +0.0000000000000000e+00) residual 2.4803249550371515e-39
+RitzValue[0004]: (+2.7306258216840457e-01, +0.0000000000000000e+00) residual 8.1599480355041436e-24
+RitzValue[0005]: (+2.7306258216840379e-01, +0.0000000000000000e+00) residual 2.8174618140855687e-22
+RitzValue[0006]: (+2.6567288684157603e-01, +0.0000000000000000e+00) residual 2.8498935730145657e-19
+RitzValue[0007]: (+2.6567288684157531e-01, +0.0000000000000000e+00) residual 2.5579242225036010e-23
+RitzValue[0008]: (+2.6236085862853675e-01, +0.0000000000000000e+00) residual 2.3248402147083120e-19
+RitzValue[0009]: (+2.6236085862853603e-01, +0.0000000000000000e+00) residual 6.8061849810340350e-21
+RitzValue[0010]: (+2.5480039914899377e-01, +0.0000000000000000e+00) residual 1.9995161548649196e-18
+RitzValue[0011]: (+2.5480039914899355e-01, +0.0000000000000000e+00) residual 1.0405065038611165e-19
+RitzValue[0012]: (+2.4789397674562522e-01, +0.0000000000000000e+00) residual 9.7162536674769726e-23
+RitzValue[0013]: (+2.4789397674562444e-01, +0.0000000000000000e+00) residual 0.0000000000000000e+00
+RitzValue[0014]: (+2.2011614304160534e-01, +0.0000000000000000e+00) residual 6.8760649058340330e-20
+RitzValue[0015]: (+2.2011614304160429e-01, +0.0000000000000000e+00) residual 6.5043934817341377e-16
+RitzValue[0016]: (+2.2011614304160407e-01, +0.0000000000000000e+00) residual 4.9740744081780125e-16
+RitzValue[0017]: (+2.2011614304160390e-01, +0.0000000000000000e+00) residual 1.9022701139231402e-16
+RitzValue[0018]: (+2.2011614304160362e-01, +0.0000000000000000e+00) residual 4.6980825269422493e-15
+RitzValue[0019]: (+2.2011614304160348e-01, +0.0000000000000000e+00) residual 4.7738486305366103e-16
+RitzValue[0020]: (+2.2011614304160346e-01, +0.0000000000000000e+00) residual 1.0579986392286024e-15
+RitzValue[0021]: (+2.2011614304160343e-01, +0.0000000000000000e+00) residual 8.6267508674582890e-16
+RitzValue[0022]: (+2.2011614304160340e-01, +0.0000000000000000e+00) residual 1.6492380011672569e-15
+RitzValue[0023]: (+2.2011614304160329e-01, +0.0000000000000000e+00) residual 2.8948349490167468e-15
+RitzValue[0024]: (+2.0558080218809466e-01, +0.0000000000000000e+00) residual 5.7281491495681982e-20
+RitzValue[0025]: (+2.0558080218809405e-01, +0.0000000000000000e+00) residual 2.4133368831123855e-21
+RitzValue[0026]: (+2.0184170170653468e-01, +0.0000000000000000e+00) residual 3.1957405267443972e-20
+RitzValue[0027]: (+2.0184170170653462e-01, +0.0000000000000000e+00) residual 1.1392891763035675e-19
+RitzValue[0028]: (+1.9948979935726235e-01, +0.0000000000000000e+00) residual 1.8255407929615390e-21
+RitzValue[0029]: (+1.9948979935726210e-01, +0.0000000000000000e+00) residual 3.1184525744375929e-20
+RitzValue[0030]: (+1.9909382705132242e-01, +0.0000000000000000e+00) residual 1.5916842830920016e-20
+RitzValue[0031]: (+1.9909382705132136e-01, +0.0000000000000000e+00) residual 2.8883391385406890e-21
+Tuned block=(96,1,1), grid=(4,1,1), shared_bytes=0, aux=(1,0,0,0) giving 0.18 Gflop/s, 0.72 GB/s for N4quda4blas4CdotIddEE with vol=128,stride=128,precision=8,order=2,Ns=1,Nc=3,nParity=1
+Eval[0000] = (+4.6135078625941968e-02,+1.4099550940477014e-17) residual = +3.1448247008915426e-15
+Eval[0001] = (+4.6135078625942030e-02,+6.6622823914502496e-19) residual = +3.2415817616039769e-15
+Eval[0002] = (+1.9842402612472516e+00,-6.3977972364724146e-18) residual = +4.3323792434155797e-15
+Eval[0003] = (+1.9842402612472543e+00,+5.7125504349314627e-17) residual = +6.9819405868659171e-15
+Eval[0004] = (+2.0337018172020005e+00,+1.7239702079375374e-17) residual = +5.3211947565605822e-15
+Eval[0005] = (+2.0337018172019983e+00,-3.5799445974831121e-17) residual = +5.6942061757446372e-15
+Eval[0006] = (+2.0739852510417980e+00,+1.0936413653063555e-17) residual = +4.5828584275815536e-15
+Eval[0007] = (+2.0739852510417967e+00,+9.5928521790849728e-18) residual = +5.9728702062469354e-15
+Eval[0008] = (+2.0923683401744082e+00,-4.6698469710750736e-17) residual = +4.1347659237661094e-15
+Eval[0009] = (+2.0923683401744069e+00,-1.1042907973894131e-17) residual = +6.2482098968087056e-15
+Eval[0010] = (+2.1351271200673723e+00,+1.3436987116427083e-17) residual = +5.6208876953341127e-15
+Eval[0011] = (+2.1351271200673700e+00,-1.0475188734396680e-17) residual = +5.4457732793602278e-15
+Eval[0012] = (+2.1751965728006502e+00,+4.8681872915464447e-17) residual = +6.4148304358658238e-15
+Eval[0013] = (+2.1751965728006475e+00,-4.3167255881405261e-17) residual = +4.4097557865420764e-15
+Eval[0014] = (+2.3472222222222352e+00,+4.6338823042548740e-17) residual = +1.3501604908406833e-14
+Eval[0015] = (+2.3472222222222241e+00,+2.1258640357092856e-17) residual = +2.0061155007516916e-14
+Eval[0016] = (+2.3472222222222250e+00,+7.4124541559553942e-17) residual = +1.7483829522083738e-14
+Eval[0017] = (+2.3472222222222245e+00,-6.6098090546121821e-18) residual = +9.1184872645407095e-15
+Eval[0018] = (+2.3472222222222254e+00,+3.1232105218682647e-17) residual = +1.4611782314449759e-13
+Eval[0019] = (+2.3472222222222259e+00,+6.7525111738396756e-17) residual = +1.5032823956513541e-14
+Eval[0020] = (+2.3472222222222263e+00,+9.8374065634077969e-17) residual = +3.4712602573033563e-14
+Eval[0021] = (+2.3472222222222276e+00,-6.8054231136043921e-17) residual = +2.6245497724562259e-14
+Eval[0022] = (+2.3472222222222259e+00,-1.4813914639841232e-17) residual = +5.0930714127569147e-14
+Eval[0023] = (+2.3472222222222263e+00,-7.1935754703519144e-17) residual = +8.9783089957228425e-14
+Eval[0024] = (+2.4451748995362812e+00,+2.9978126270375803e-17) residual = +9.4420690333324027e-15
+Eval[0025] = (+2.4451748995362781e+00,+5.9047094688708928e-20) residual = +6.7571553521259135e-15
+Eval[0026] = (+2.4713772991478988e+00,-2.2832132926151499e-17) residual = +7.2350296516378579e-15
+Eval[0027] = (+2.4713772991478984e+00,-3.8316847667955839e-17) residual = +6.0939636739398185e-15
+Eval[0028] = (+2.4880828766604681e+00,+1.2891905391282511e-17) residual = +7.1634778605683804e-15
+Eval[0029] = (+2.4880828766604690e+00,+3.3302807593905608e-17) residual = +8.6972285860582835e-15
+Eval[0030] = (+2.4909128482649421e+00,-1.7027275280984723e-17) residual = +1.5488700749111955e-14
+Eval[0031] = (+2.4909128482649336e+00,-2.7701826465047757e-17) residual = +8.7398091158842086e-15
+********************************
+***** END QUDA EIGENSOLVER *****
+********************************
+Tuned block=(896,1,1), grid=(1,1,1), shared_bytes=0, aux=(1,0,0,0) giving 0.00 Gflop/s, 1.79 GB/s for N4quda15CopyColorSpinorILi1ENS_18CopyColorSpinorArgIddLi1ELi3ENS_11colorspinor21SpaceSpinorColorOrderIdLi1ELi3EEENS2_11FloatNOrderIdLi1ELi3ELi2ELb0ELb0EEEEEEE with out_stride=128,in_stride=128
+Tuned block=(32,1,1), grid=(1,1,1), shared_bytes=0, aux=(1,0,0,0) giving 0.00 Gflop/s, 0.33 GB/s for cudaMemcpyDefault with saveSpinorField,cuda_color_spinor_field.cpp,481
+BEGIN RESULTS
+Eigenvalue(0) = 0.0461351 
+Eigenvalue(1) = 0.0461351 
+Eigenvalue(2) = 1.98424 
+Eigenvalue(3) = 1.98424 
+Eigenvalue(4) = 2.0337 
+Eigenvalue(5) = 2.0337 
+Eigenvalue(6) = 2.07399 
+Eigenvalue(7) = 2.07399 
+Eigenvalue(8) = 2.09237 
+Eigenvalue(9) = 2.09237 
+Eigenvalue(10) = 2.13513 
+Eigenvalue(11) = 2.13513 
+Eigenvalue(12) = 2.1752 
+Eigenvalue(13) = 2.1752 
+Eigenvalue(14) = 2.34722 
+Eigenvalue(15) = 2.34722 
+Eigenvalue(16) = 2.34722 
+Eigenvalue(17) = 2.34722 
+Eigenvalue(18) = 2.34722 
+Eigenvalue(19) = 2.34722 
+Eigenvalue(20) = 2.34722 
+Eigenvalue(21) = 2.34722 
+Eigenvalue(22) = 2.34722 
+Eigenvalue(23) = 2.34722 
+Eigenvalue(24) = 2.44517 
+Eigenvalue(25) = 2.44517 
+Eigenvalue(26) = 2.47138 
+Eigenvalue(27) = 2.47138 
+Eigenvalue(28) = 2.48808 
+Eigenvalue(29) = 2.48808 
+Eigenvalue(30) = 2.49091 
+Eigenvalue(31) = 2.49091 
+dslash_fn_field: fn, notify: Signal QUDA to refresh links
+Even site residuals
+Checking eigensolutions
+eigVal[0] = 4.613508e-02 ( resid = 3.144951e-15 , |eigVec[0]|-1 = 0.000000e+00 )
+eigVal[1] = 4.613508e-02 ( resid = 3.241573e-15 , |eigVec[1]|-1 = 4.440892e-16 )
+eigVal[2] = 1.984240e+00 ( resid = 4.332122e-15 , |eigVec[2]|-1 = 4.440892e-16 )
+eigVal[3] = 1.984240e+00 ( resid = 6.983132e-15 , |eigVec[3]|-1 = 1.776357e-15 )
+eigVal[4] = 2.033702e+00 ( resid = 5.322610e-15 , |eigVec[4]|-1 = 1.110223e-15 )
+eigVal[5] = 2.033702e+00 ( resid = 5.697293e-15 , |eigVec[5]|-1 = 2.220446e-16 )
+eigVal[6] = 2.073985e+00 ( resid = 4.585431e-15 , |eigVec[6]|-1 = 1.110223e-15 )
+eigVal[7] = 2.073985e+00 ( resid = 5.975590e-15 , |eigVec[7]|-1 = 4.440892e-16 )
+eigVal[8] = 2.092368e+00 ( resid = 4.136797e-15 , |eigVec[8]|-1 = 4.440892e-16 )
+eigVal[9] = 2.092368e+00 ( resid = 6.249070e-15 , |eigVec[9]|-1 = 2.220446e-16 )
+eigVal[10] = 2.135127e+00 ( resid = 5.622170e-15 , |eigVec[10]|-1 = 1.110223e-15 )
+eigVal[11] = 2.135127e+00 ( resid = 5.448400e-15 , |eigVec[11]|-1 = -1.110223e-16 )
+eigVal[12] = 2.175197e+00 ( resid = 6.412576e-15 , |eigVec[12]|-1 = 1.776357e-15 )
+eigVal[13] = 2.175197e+00 ( resid = 4.410359e-15 , |eigVec[13]|-1 = 2.220446e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 1.351837e-14 , |eigVec[14]|-1 = 4.662937e-15 )
+eigVal[15] = 2.347222e+00 ( resid = 2.006138e-14 , |eigVec[15]|-1 = 8.881784e-16 )
+eigVal[16] = 2.347222e+00 ( resid = 1.748776e-14 , |eigVec[16]|-1 = 2.220446e-16 )
+eigVal[17] = 2.347222e+00 ( resid = 9.118977e-15 , |eigVec[17]|-1 = -1.110223e-16 )
+eigVal[18] = 2.347222e+00 ( resid = 1.461177e-13 , |eigVec[18]|-1 = 2.220446e-16 )
+eigVal[19] = 2.347222e+00 ( resid = 1.503159e-14 , |eigVec[19]|-1 = -2.220446e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 3.471287e-14 , |eigVec[20]|-1 = 0.000000e+00 )
+eigVal[21] = 2.347222e+00 ( resid = 2.624546e-14 , |eigVec[21]|-1 = -1.110223e-16 )
+eigVal[22] = 2.347222e+00 ( resid = 5.093073e-14 , |eigVec[22]|-1 = 2.220446e-16 )
+eigVal[23] = 2.347222e+00 ( resid = 8.978507e-14 , |eigVec[23]|-1 = 2.220446e-16 )
+eigVal[24] = 2.445175e+00 ( resid = 9.441847e-15 , |eigVec[24]|-1 = 1.998401e-15 )
+eigVal[25] = 2.445175e+00 ( resid = 6.757155e-15 , |eigVec[25]|-1 = 4.440892e-16 )
+eigVal[26] = 2.471377e+00 ( resid = 7.227270e-15 , |eigVec[26]|-1 = 6.661338e-16 )
+eigVal[27] = 2.471377e+00 ( resid = 6.096833e-15 , |eigVec[27]|-1 = 2.220446e-16 )
+eigVal[28] = 2.488083e+00 ( resid = 7.161699e-15 , |eigVec[28]|-1 = 1.332268e-15 )
+eigVal[29] = 2.488083e+00 ( resid = 8.703319e-15 , |eigVec[29]|-1 = 1.998401e-15 )
+eigVal[30] = 2.490913e+00 ( resid = 1.548746e-14 , |eigVec[30]|-1 = 5.773160e-15 )
+eigVal[31] = 2.490913e+00 ( resid = 8.742260e-15 , |eigVec[31]|-1 = 1.998401e-15 )
+End of eigensolutions
+Odd site residuals
+Checking eigensolutions
+eigVal[0] = 4.613508e-02 ( resid = 5.355447e-14 , |eigVec[0]|-1 = -1.110223e-16 )
+eigVal[1] = 4.613508e-02 ( resid = 4.807642e-14 , |eigVec[1]|-1 = 2.220446e-16 )
+eigVal[2] = 1.984240e+00 ( resid = 1.055288e-14 , |eigVec[2]|-1 = 0.000000e+00 )
+eigVal[3] = 1.984240e+00 ( resid = 1.563668e-14 , |eigVec[3]|-1 = 2.220446e-16 )
+eigVal[4] = 2.033702e+00 ( resid = 1.158293e-14 , |eigVec[4]|-1 = 0.000000e+00 )
+eigVal[5] = 2.033702e+00 ( resid = 1.286984e-14 , |eigVec[5]|-1 = -1.110223e-16 )
+eigVal[6] = 2.073985e+00 ( resid = 8.627564e-15 , |eigVec[6]|-1 = 0.000000e+00 )
+eigVal[7] = 2.073985e+00 ( resid = 1.095357e-14 , |eigVec[7]|-1 = 0.000000e+00 )
+eigVal[8] = 2.092368e+00 ( resid = 8.492032e-15 , |eigVec[8]|-1 = 2.220446e-16 )
+eigVal[9] = 2.092368e+00 ( resid = 1.213534e-14 , |eigVec[9]|-1 = -1.110223e-16 )
+eigVal[10] = 2.135127e+00 ( resid = 1.286286e-14 , |eigVec[10]|-1 = 0.000000e+00 )
+eigVal[11] = 2.135127e+00 ( resid = 1.189585e-14 , |eigVec[11]|-1 = 0.000000e+00 )
+eigVal[12] = 2.175197e+00 ( resid = 1.155506e-14 , |eigVec[12]|-1 = 0.000000e+00 )
+eigVal[13] = 2.175197e+00 ( resid = 8.991219e-15 , |eigVec[13]|-1 = 2.220446e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 1.982218e-14 , |eigVec[14]|-1 = -1.110223e-16 )
+eigVal[15] = 2.347222e+00 ( resid = 4.318145e-14 , |eigVec[15]|-1 = 2.220446e-16 )
+eigVal[16] = 2.347222e+00 ( resid = 3.992193e-14 , |eigVec[16]|-1 = 0.000000e+00 )
+eigVal[17] = 2.347222e+00 ( resid = 2.190170e-14 , |eigVec[17]|-1 = -1.110223e-16 )
+eigVal[18] = 2.347222e+00 ( resid = 3.202334e-13 , |eigVec[18]|-1 = 0.000000e+00 )
+eigVal[19] = 2.347222e+00 ( resid = 3.257847e-14 , |eigVec[19]|-1 = -1.110223e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 7.615307e-14 , |eigVec[20]|-1 = -2.220446e-16 )
+eigVal[21] = 2.347222e+00 ( resid = 5.599876e-14 , |eigVec[21]|-1 = 0.000000e+00 )
+eigVal[22] = 2.347222e+00 ( resid = 1.108937e-13 , |eigVec[22]|-1 = 0.000000e+00 )
+eigVal[23] = 2.347222e+00 ( resid = 1.979338e-13 , |eigVec[23]|-1 = 0.000000e+00 )
+eigVal[24] = 2.445175e+00 ( resid = 1.844881e-14 , |eigVec[24]|-1 = 0.000000e+00 )
+eigVal[25] = 2.445175e+00 ( resid = 1.479417e-14 , |eigVec[25]|-1 = 0.000000e+00 )
+eigVal[26] = 2.471377e+00 ( resid = 1.553043e-14 , |eigVec[26]|-1 = -1.110223e-16 )
+eigVal[27] = 2.471377e+00 ( resid = 1.316410e-14 , |eigVec[27]|-1 = 0.000000e+00 )
+eigVal[28] = 2.488083e+00 ( resid = 1.393158e-14 , |eigVec[28]|-1 = 0.000000e+00 )
+eigVal[29] = 2.488083e+00 ( resid = 1.622674e-14 , |eigVec[29]|-1 = -1.110223e-16 )
+eigVal[30] = 2.490913e+00 ( resid = 1.967429e-14 , |eigVec[30]|-1 = 0.000000e+00 )
+eigVal[31] = 2.490913e+00 ( resid = 1.562040e-14 , |eigVec[31]|-1 = 0.000000e+00 )
+End of eigensolutions
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+The above were eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0):   0.107395
+eigenval(1):   0.107395
+eigenval(2):   0.704315
+eigenval(3):   0.704315
+eigenval(4):    0.71304
+eigenval(5):    0.71304
+eigenval(6):   0.720067
+eigenval(7):   0.720067
+eigenval(8):   0.723251
+eigenval(9):   0.723251
+eigenval(10):   0.730604
+eigenval(11):   0.730604
+eigenval(12):   0.737427
+eigenval(13):   0.737427
+eigenval(14):   0.766032
+eigenval(15):   0.766032
+eigenval(16):   0.766032
+eigenval(17):   0.766032
+eigenval(18):   0.766032
+eigenval(19):   0.766032
+eigenval(20):   0.766032
+eigenval(21):   0.766032
+eigenval(22):   0.766032
+eigenval(23):   0.766032
+eigenval(24):   0.781853
+eigenval(25):   0.781853
+eigenval(26):   0.786031
+eigenval(27):   0.786031
+eigenval(28):   0.788683
+eigenval(29):   0.788683
+eigenval(30):   0.789131
+eigenval(31):   0.789131
+RUNNING COMPLETED
+Time = 1.809104e+00 seconds
+total Rayleigh iters = 0
+
+
+# --------------------------------------------------------------------------------
+ask_starting_lattice(0): EOF on input.
+
+               initQuda Total time =     7.279 secs
+                     init     =     7.279 secs (100.000%),	 with        2 calls at 3.639e+06 us per call
+        total accounted       =     7.279 secs (100.000%)
+        total missing         =     0.000 secs (  0.000%)
+
+          loadGaugeQuda Total time =     0.196 secs
+                 download     =     0.183 secs ( 93.027%),	 with      322 calls at 5.668e+02 us per call
+                     init     =     0.012 secs (  6.233%),	 with      322 calls at 3.798e+01 us per call
+                  compute     =     0.000 secs (  0.041%),	 with      322 calls at 2.484e-01 us per call
+                     free     =     0.001 secs (  0.456%),	 with      322 calls at 2.776e+00 us per call
+        total accounted       =     0.196 secs ( 99.757%)
+        total missing         =     0.000 secs (  0.243%)
+
+             dslashQuda Total time =     0.034 secs
+                 download     =     0.010 secs ( 30.651%),	 with      160 calls at 6.472e+01 us per call
+                   upload     =     0.009 secs ( 26.965%),	 with      160 calls at 5.694e+01 us per call
+                     init     =     0.007 secs ( 19.740%),	 with      160 calls at 4.168e+01 us per call
+                  compute     =     0.007 secs ( 20.486%),	 with      160 calls at 4.326e+01 us per call
+                     free     =     0.000 secs (  1.187%),	 with      160 calls at 2.506e+00 us per call
+        total accounted       =     0.033 secs ( 99.029%)
+        total missing         =     0.000 secs (  0.971%)
+
+         eigensolveQuda Total time =     1.513 secs
+                   upload     =     0.003 secs (  0.197%),	 with        1 calls at 2.982e+03 us per call
+                     init     =     0.001 secs (  0.064%),	 with        3 calls at 3.227e+02 us per call
+                  compute     =     1.307 secs ( 86.349%),	 with       13 calls at 1.005e+05 us per call
+                     free     =     0.000 secs (  0.007%),	 with        1 calls at 1.120e+02 us per call
+                    eigen     =     0.002 secs (  0.102%),	 with        4 calls at 3.850e+02 us per call
+        total accounted       =     1.312 secs ( 86.719%)
+        total missing         =     0.201 secs ( 13.281%)
+
+                endQuda Total time =     0.004 secs
+
+       initQuda-endQuda Total time =     9.146 secs
+
+                   QUDA Total time =     9.026 secs
+                 download     =     0.193 secs (  2.138%),	 with      482 calls at 4.003e+02 us per call
+                   upload     =     0.012 secs (  0.134%),	 with      161 calls at 7.535e+01 us per call
+                     init     =     7.299 secs ( 80.865%),	 with      487 calls at 1.499e+04 us per call
+                  compute     =     1.314 secs ( 14.557%),	 with      495 calls at 2.654e+03 us per call
+                     free     =     0.001 secs (  0.016%),	 with      483 calls at 2.934e+00 us per call
+                    eigen     =     0.002 secs (  0.017%),	 with        4 calls at 3.855e+02 us per call
+        total accounted       =     8.820 secs ( 97.727%)
+        total missing         =     0.205 secs (  2.273%)
+
+Device memory used = 2.5 MB
+Pinned device memory used = 0.0 MB
+Managed memory used = 0.0 MB
+Page-locked host memory used = 1.8 MB
+Total host memory used >= 2.4 MB
+
+exit: Fri May 14 16:43:05 2021
+
