@@ -407,6 +407,9 @@ endif
 # 15. GPU/QUDA Options
 
 WANTQUDA    ?= #true
+
+ifeq ($(strip ${WANTQUDA}),true)
+
 WANT_CL_BCG_GPU ?= #true
 WANT_FN_CG_GPU ?= #true
 WANT_FL_GPU ?= #true
@@ -422,6 +425,8 @@ ifeq ($(strip ${WANTQUDACPU}),true)
     HAVE_KS_CONT_GPU = true
     CGPU += -DUSE_KS_CONT_GPU
   endif
+endif
+
 endif
 
 # enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)

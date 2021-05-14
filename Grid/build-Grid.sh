@@ -13,11 +13,11 @@ then
 fi
 
 case ${ARCH} in
-    scalar|avx512-knl|avx512-skx|avx2|gpu-cuda)
+    scalar|avx512-knl|avx512-skx|avx2|gpu-cuda|gpu-hip)
       ;;
     *)
       echo "Unsupported ARCH"
-      echo "Usage $0 <scalar|avx2|avx512-knl|avx512-skx|gpu-cuda> <PK_CC> <PK_CXX>"
+      echo "Usage $0 <scalar|avx2|avx512-knl|avx512-skx|gpu-cuda|gpu-hip> <PK_CC> <PK_CXX>"
       exit 1
 esac
 
@@ -122,19 +122,41 @@ then
        ;;
     gpu-cuda)
 	# Cori: salloc -C gpu -t 60 -N 1 -c 10 --gres=gpu:1 -A m1759
+	# Summit: ./build-Grid.sh gpu-cuda mpicc mpiCC
 	${SRCDIR}/configure \
              --prefix ${INSTALLDIR}      \
 	     --enable-comms=mpi          \
+	     --enable-simd=GPU            \
+	     --enable-shm=no              \
+	     --enable-accelerator=cuda    \
+	     --enable-unfied=no           \
+             --enable-gen-simd-width=64   \
              --host=x86_64-unknown-linux-gnu \
+	     --with-mpfr=${HOME}/mpfr \
+	     --with-lime=${HOME}/scidac/install/qio \
              CXX=nvcc                    \
-             LDFLAGS=-L$HOME/prefix/lib/ \
-             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -I$HOME/prefix/include/ -std=c++11" 
+             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -std=c++11" \
         status=$?
         echo "Configure exit status $status"
 	;;
+    gpu-hip)
+	export PATH=/opt/rocm/bin:${PATH}
+	${SRCDIR}/configure \
+             --prefix ${INSTALLDIR}      \
+             --enable-unified=no \
+	     --enable-accelerator=hip \
+	     --enable-comms=mpi3-auto \
+	     --enable-simd=GPU \
+	     --enable-gen-simd-width=64 \
+	     --with-mpfr=${HOME}/mpfr \
+	     --with-lime=${HOME}/scidac/install/qio \
+             --host=x86_64-unknown-linux-gnu \
+	     CXX=hipcc \
+	     MPICXX=mpicxx \
+	     CPPFLAGS="-I/opt/rocm/rocthrust/include" \
+	     LDFLAGS="-L/opt/rocm/rocthrust/lib"
 
-    #              --enable-simd=GEN           \
-
+#	     --enable-unified=yes         \
     *)
     echo "Unsupported ARCH ${ARCH}"
           exit 1;

@@ -105,9 +105,7 @@ then
 	${SRCDIR}/configure \
             --prefix ${INSTALLDIR}      \
             --with-grid=${GRIDINSTALLDIR} \
-            CXX=nvcc  CC="${PK_CC}"      \
-            LDFLAGS=-L$HOME/prefix/lib/ \
-            CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -I$HOME/prefix/include/ -std=c++11" 
+            --host=x86_64-unknown-linux-gnu
         status=$?
         echo "Configure exit status $status"
 	;;
@@ -122,10 +120,11 @@ then
       echo "Quitting because of configure errors"
   else
     echo "Building in ${BUILDDIR}"
-    ${MAKE} -k -j4
+#    ${MAKE} -k -j4
+    ${MAKE}
 
     echo "Installing in ${INSTALLDIR}"
-    ${MAKE} install
+#    ${MAKE} install
   fi
 
 fi     

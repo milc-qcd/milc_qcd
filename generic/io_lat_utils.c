@@ -95,7 +95,7 @@ int qcdhdr_get_str(char *s, QCDheader *hdr, char **q) {
   /* find a token and return the value */
   int i;
   for (i=0; i<(char)(*hdr).ntoken; i++) {
-    if (strcmp(s,(char *)(*hdr).token[i])==0) {
+    if (strcmp(s,(const char *)(*hdr).token[i])==0) {
       *q = (*hdr).value[i];
       return(SUCCESS);
     }
@@ -268,7 +268,7 @@ void d2f_4mat(su3_matrix *a, fsu3_matrix *b){
 }
 
 /*---------------------------------------------------------------------------*/
-void swrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
+void swrite_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
 {
   if(g_write(src,size,1,fp) != 1)
     {
@@ -279,7 +279,7 @@ void swrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
     }
 }
 /*---------------------------------------------------------------------------*/
-void pwrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
+void pwrite_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
 {
   if(g_write(src,size,1,fp) != 1)
     {
@@ -291,13 +291,13 @@ void pwrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
 }
 /*---------------------------------------------------------------------------*/
 void pswrite_data(int parallel, FILE* fp, void *src, size_t size, 
-		 char *myname, char *descrip)
+		 const char *myname, const char *descrip)
 {
   if(parallel)pwrite_data(fp,src,size,myname,descrip);
   else        swrite_data(fp,src,size,myname,descrip);
 }
 /*---------------------------------------------------------------------------*/
-int sread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
+int sread_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
 {
   if(g_read(src,size,1,fp) != 1)
     {
@@ -310,7 +310,7 @@ int sread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
   return 0;
 }
 /*---------------------------------------------------------------------------*/
-int pread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
+int pread_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
 {
   if(g_read(src,size,1,fp) != 1)
     {
@@ -323,7 +323,7 @@ int pread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
   return 0;
 }
 /*---------------------------------------------------------------------------*/
-int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, char *myname, char *descrip)
+int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
 {
   int status;
 
@@ -333,7 +333,7 @@ int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, char *myn
   return status;
 }
 /*---------------------------------------------------------------------------*/
-int sread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, char *myname, char *descrip)
+int sread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
 {
   int status;
 
@@ -344,7 +344,7 @@ int sread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, char *myn
 }
 /*---------------------------------------------------------------------------*/
 int psread_data(int parallel, FILE* fp, void *src, size_t size, 
-		 char *myname, char *descrip)
+		 const char *myname, const char *descrip)
 {
   if(parallel)return pread_data(fp,src,size,myname,descrip);
   else        return sread_data(fp,src,size,myname,descrip);
@@ -352,7 +352,7 @@ int psread_data(int parallel, FILE* fp, void *src, size_t size,
 /*---------------------------------------------------------------------------*/
 int psread_byteorder(int byterevflag, int parallel, FILE* fp, 
 		      void *src, size_t size, 
-		      char *myname, char *descrip)
+		      const char *myname, const char *descrip)
 {
   if(parallel)return pread_byteorder(byterevflag,fp,src,size,myname,descrip);
   else        return sread_byteorder(byterevflag,fp,src,size,myname,descrip);
@@ -417,10 +417,10 @@ void swrite_gauge_hdr(FILE *fp, gauge_header *gh)
 
 /* Write a data item to the gauge info file */
 int write_gauge_info_item( FILE *fpout,    /* ascii file pointer */
-		       char *keyword,   /* keyword */
-		       char *fmt,       /* output format -
+		       const char *keyword,   /* keyword */
+		       const char *fmt,       /* output format -
 					      must use s, d, e, f, lu, or g */
-		       char *src,       /* address of starting data
+		       const char *src,       /* address of starting data
 					   floating point data must be
 					   of type (Real) */
 		       int count,       /* number of data items if > 1 */
@@ -483,17 +483,17 @@ int write_gauge_info_item( FILE *fpout,    /* ascii file pointer */
 
 /* Write a data item to a character string */
 int sprint_gauge_info_item( 
-  char *string,    /* character string */
-  size_t nstring,     /* string length */			    
-  char *keyword,   /* keyword */
-  char *fmt,       /* output format -
-		      must use s, d, e, f, or g */
-  char *src,       /* address of starting data
-		      floating point data must be
-		      of type (Real) */
-  int count,       /* number of data items if > 1 */
-  int stride)      /* byte stride of data if
-		      count > 1 */
+  char *string,        /* character string */
+  size_t nstring,      /* string length */			    
+  const char *keyword, /* keyword */
+  const char *fmt,     /* output format -
+		          must use s, d, e, f, or g */
+  const char *src,     /* address of starting data
+		          floating point data must be
+		          of type (Real) */
+  int count,           /* number of data items if > 1 */
+  int stride)          /* byte stride of data if
+		          count > 1 */
 {
 
   int i,k,n;
@@ -577,14 +577,14 @@ void write_generic_gauge_info(FILE *info_fp, gauge_file *gf)
   char sums[20];
   gauge_header *gh = gf->header;
 
-  write_gauge_info_item(info_fp,"magic_number","%d",(char *)&gh->magic_number,0,0);
+  write_gauge_info_item(info_fp,"magic_number","%d",(const char *)&gh->magic_number,0,0);
   write_gauge_info_item(info_fp,"time_stamp","\"%s\"",gh->time_stamp,0,0);
   sprintf(sums,"%x %x",gf->check.sum29,gf->check.sum31);
   write_gauge_info_item(info_fp,"checksums","\"%s\"",sums,0,0);
-  write_gauge_info_item(info_fp,"nx","%d",(char *)&nx,0,0);
-  write_gauge_info_item(info_fp,"ny","%d",(char *)&ny,0,0);
-  write_gauge_info_item(info_fp,"nz","%d",(char *)&nz,0,0);
-  write_gauge_info_item(info_fp,"nt","%d",(char *)&nt,0,0);
+  write_gauge_info_item(info_fp,"nx","%d",(const char *)&nx,0,0);
+  write_gauge_info_item(info_fp,"ny","%d",(const char *)&ny,0,0);
+  write_gauge_info_item(info_fp,"nz","%d",(const char *)&nz,0,0);
+  write_gauge_info_item(info_fp,"nt","%d",(const char *)&nt,0,0);
 }
 
 /*----------------------------------------------------------------------*/
@@ -622,7 +622,7 @@ void write_gauge_info_file(gauge_file *gf)
 
 /* Set up the input gauge file and gauge header structures */
 
-gauge_file *setup_input_gauge_file(char *filename)
+gauge_file *setup_input_gauge_file(const char *filename)
 {
   char myname[] = "setup_input_gauge_file";
   gauge_file *gf;
@@ -1550,7 +1550,7 @@ void write_site_list(FILE *fp, gauge_header *gh)
 /*---------------------------------------------------------------------------*/
 
 /* Open a file for parallel writing */
-gauge_file *parallel_open(int order, char *filename)
+gauge_file *parallel_open(int order, const char *filename)
 {
   /* All nodes open the same filename */
   /* Returns a file structure describing the opened file */
@@ -1592,7 +1592,7 @@ gauge_file *parallel_open(int order, char *filename)
   /* Assign values to file structure */
 
   gf->fp             = fp;
-  gf->filename        = filename;
+  gf->filename       = filename;
   gf->byterevflag    = 0;            /* Not used for writing */
   gf->parallel       = 1;            /* File opened in parallel */
 
@@ -1659,7 +1659,7 @@ fsu3_matrix *w_parallel_setup(gauge_file *gf, off_t *checksum_offset)
 /*-----------------------------------------------------------------------*/
 
 /* Open a file for parallel writing in natural order */
-gauge_file *w_parallel_i(char *filename)
+gauge_file *w_parallel_i(const char *filename)
 {
   /* All nodes open the same filename */
   /* Returns a file structure describing the opened file */
@@ -1671,7 +1671,7 @@ gauge_file *w_parallel_i(char *filename)
 
 /*---------------------------------------------------------------------------*/
 /* Open a file for parallel writing in node-dump order */
-gauge_file *w_checkpoint_i(char *filename)
+gauge_file *w_checkpoint_i(const char *filename)
 {
   /* All nodes open the same filename */
   /* Returns a file structure describing the opened file */
@@ -1705,7 +1705,7 @@ void w_serial_f(gauge_file *gf)
 
 /*---------------------------------------------------------------------------*/
 
-gauge_file *r_serial_i(char *filename)
+gauge_file *r_serial_i(const char *filename)
 {
   /* Returns file descriptor for opened file */
 
@@ -1847,7 +1847,7 @@ void r_parallel_f(gauge_file *gf)
 /*---------------------------------------------------------------------------*/
 
 /* Read lattice dimensions from a binary file and close the file */
-void read_lat_dim_gf(char *filename, int *ndim, int dims[]){
+void read_lat_dim_gf(const char *filename, int *ndim, int dims[]){
   gauge_file *gf;
   int i;
   
@@ -1867,7 +1867,7 @@ void read_lat_dim_gf(char *filename, int *ndim, int dims[]){
 /*---------------------------------------------------------------------------*/
 #define INFO_DATA_SIZE 4096
 
-char *read_info_file(char base_filename[]){
+char *read_info_file(const char base_filename[]){
   char info_filename[512];
   char *info, *buf;
   FILE *info_fp;

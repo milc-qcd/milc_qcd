@@ -87,7 +87,7 @@ void get_field(char *buf, size_t size, int fromnode);
 
 double dclock_cpu(void);
 double dclock(void);
-void time_stamp(char *msg);
+void time_stamp(const char *msg);
 void get_utc_datetime(char *time_string);
 void make_nn_gathers(void);
 void sort_eight_gathers(int index);
