@@ -412,6 +412,7 @@ WANT_FN_CG_GPU ?= #true
 WANT_FL_GPU ?= #true
 WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
+WANT_EIG_GPU ?= #true
 
 # enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
 WANT_MIXED_PRECISION_GPU ?= 0
@@ -458,6 +459,11 @@ ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${WANT_FF_GPU}),true)
     HAVE_FF_GPU = true
     CGPU += -DUSE_FF_GPU
+  endif
+
+  ifeq ($(strip ${WANT_EIG_GPU}),true)
+    HAVE_EIG_QUDA = true
+    CGPU += -DUSE_EIG_QUDA
   endif
 
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)

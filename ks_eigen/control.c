@@ -7,6 +7,7 @@
 
 #ifdef HAVE_QUDA
 #include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
 #endif
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
@@ -181,7 +182,7 @@ int main( int argc, char **argv ){
      print_densities(eigVec[i], label, ny/2,nz/2,nt/2, EVEN) ;
      }
   **/
-  
+
   /* Clean up eigen storage */
   if(eigVec != NULL){
     for(i = 0; i < param.eigen_param.Nvecs; i++) free(eigVec[i]);
