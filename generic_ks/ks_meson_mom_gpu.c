@@ -77,7 +77,7 @@ typedef struct {
   Real dtime;
 } QudaContractArgs_t;
 
-void qudaContract(int milc_precision,
+void qudaContractFT(int milc_precision,
 		  int quda_precision,
 		  QudaContractArgs_t *cont_args,
 		  su3_vector *antiquark,
@@ -268,10 +268,10 @@ void ks_meson_cont_mom(
 	/* Apply backward sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
 	spin_taste_op_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
-	qudaContract(MILC_PRECISION, quda_precision, &cont_args, q, src2, meson_q);
+	qudaContractFT(MILC_PRECISION, quda_precision, &cont_args, q, src2, meson_q);
 	/* Apply forward sink spin-taste operator to src2 */
 	spin_taste_op_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
-	qudaContract(MILC_PRECISION, quda_precision, &cont_args, src1, q, meson_q);
+	qudaContractFT(MILC_PRECISION, quda_precision, &cont_args, src1, q, meson_q);
 	destroy_v_field(q);
 	for(int j = 0; j < nt*num_corr_mom[g]; ++j){
 	  CMULREAL(meson_q[j], 0.5, meson_q[j]);
@@ -280,19 +280,19 @@ void ks_meson_cont_mom(
 	/* Apply forward sink spin-taste operator to src2 */
 	su3_vector *q = create_v_field();
 	spin_taste_op_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
-	qudaContract(MILC_PRECISION, quda_precision, &cont_args, src1, q, meson_q );
+	qudaContractFT(MILC_PRECISION, quda_precision, &cont_args, src1, q, meson_q );
 	destroy_v_field(q);
       } else if(is_rhosbfn_index(spin_taste) || is_rhosbape_index(spin_taste)){
 	/* Apply backward sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
 	spin_taste_op_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
-	qudaContract(MILC_PRECISION, quda_precision, &cont_args, q, src2, meson_q);
+	qudaContractFT(MILC_PRECISION, quda_precision, &cont_args, q, src2, meson_q);
 	destroy_v_field(q);
       } else {
 	/* Apply sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
 	spin_taste_op_fn(fn_src1, spin_taste, r0, q, src1);
-	qudaContract(MILC_PRECISION, quda_precision, &cont_args, q, src2, meson_q);
+	qudaContractFT(MILC_PRECISION, quda_precision, &cont_args, q, src2, meson_q);
 	destroy_v_field(q);
        }
 

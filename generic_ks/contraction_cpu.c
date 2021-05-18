@@ -202,7 +202,7 @@ typedef struct {
   Real dtime; /* Return value */
 } QudaContractArgs_t;
 
-void qudaContract(int milc_precision,
+void qudaContractFT(int milc_precision,
 		  int quda_precision,
 		  QudaContractArgs_t *cont_args,
 		  su3_vector *antiquark,  /* Color vector field (propagator) */
@@ -212,13 +212,15 @@ void qudaContract(int milc_precision,
 {
 
   Real dtime = -dclock();
-  char myname[] = "qudaContract";
+  char myname[] = "qudaContractFT";
   Real flops = 0;
 
   int num_corr_mom = cont_args->num_corr_mom;
   int **corr_mom = cont_args->corr_mom;
   char **corr_parity = cont_args->corr_parity;
   int *r0 = cont_args->r0;
+
+  node0_printf("CPU contraction code 'qudaContractFT'\n");
 
 #ifdef OMP
   /* max_threads=getenv("OMP_NUM_THREADS"); */
