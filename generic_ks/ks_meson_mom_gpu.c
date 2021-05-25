@@ -248,11 +248,11 @@ map_to_fft_symm(char p)
   switch(p)
     {
     case EVEN:
-      p = QUDA_FFT_SYMM_EVEN; break;
+      s = QUDA_FFT_SYMM_EVEN; break;
     case ODD:
-      p = QUDA_FFT_SYMM_ODD; break;
+      s = QUDA_FFT_SYMM_ODD; break;
     case EVENANDODD:
-      p = QUDA_FFT_SYMM_EO; break;
+      s = QUDA_FFT_SYMM_EO; break;
     }
   return s;
 }
