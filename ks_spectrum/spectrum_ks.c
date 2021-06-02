@@ -1134,10 +1134,10 @@ static void spectrum_ks_print_baryon(int triplet){
 	/* Fix sign for antiperiodic bc */
 	if( (((t+param.r_offset_b[triplet][3])/nt
 	      - param.r_offset_b[triplet][3]/nt) %2 ) == 1 ){
-	  CMULREAL(prop_tmp[t],-1.,prop_tmp[t]);
+	  CMULREAL(prop,-1.,prop);
 	}
-	print_baryon_prop(triplet, t, prop_tmp[t]);
-	print_fnal_baryon_prop(corr_fp, triplet, t, prop_tmp[t]);
+	print_baryon_prop(triplet, t, prop);
+	print_fnal_baryon_prop(corr_fp, triplet, t, prop);
       }
       print_end_baryon_prop(triplet);
     }

@@ -16,13 +16,20 @@
 
 /* Calculate FT weight factor */
 
-#define EVEN 0x02
-#define ODD 0x01
-#define EVENANDODD 0x03
+#include <limits.h>
+#define QUDA_INVALID_ENUM INT_MIN
+
+// enum_quda.h  describes corr_parity
+typedef enum QudaFFTSymmType_t {
+  QUDA_FFT_SYMM_ODD  = 1,  // sin(phase)
+  QUDA_FFT_SYMM_EVEN = 2,  // cos(phase)
+  QUDA_FFT_SYMM_EO   = 3,  // exp(-i phase)
+  QUDA_FFT_SYMM_INVALID = QUDA_INVALID_ENUM
+} QudaFFTSymmType;
 
 /*******************************************/
 typedef struct {
-  complex* meson_q;     /* cache aligned thread local storage. order meson_q[k*nt+t] */
+  double_complex* meson_q;     /* cache aligned thread local storage. order meson_q[k*nt+t] */
   void*    alloc_base;  /* base address of this allocation */
 } meson_storage_t;
 
@@ -34,7 +41,7 @@ create_meson_q_thread(int nt, int max_threads, int num_corr_mom){
     if(threadstore == NULL){
       printf("%s(%d): No room for meson_q_thread array\n",myname,this_node);
     }
-  size_t allocsz = nt*num_corr_mom*sizeof(complex);
+  size_t allocsz = nt*num_corr_mom*sizeof(double_complex);
   size_t align = 128; /* bytes; cache line is 64b on x86_64 and 128b on ppc64 */
   allocsz += align; // padding
   for(int mythread=0; mythread<max_threads; mythread++) {
@@ -44,7 +51,7 @@ create_meson_q_thread(int nt, int max_threads, int num_corr_mom){
       printf("%s(%d): No room for meson_q_thread array\n",myname,this_node);
     }
     off_t offset = align - static_cast(size_t,threadstore[mythread].alloc_base) % align;
-    threadstore[mythread].meson_q = static_cast(complex*,threadstore[mythread].alloc_base + offset);
+    threadstore[mythread].meson_q = static_cast(double_complex*,threadstore[mythread].alloc_base + offset);
     assert(static_cast(size_t,threadstore[mythread].meson_q) % align == 0);
     //printf("threadstore[%d].meson_q = %p\n", mythread, threadstore[mythread].meson_q);
   }
@@ -81,7 +88,7 @@ destroy_meson_q_thread(meson_storage_t* threadstore, int max_threads){
 
 /*******************************************/
 static Real
-sum_meson_q(complex *meson_q, meson_storage_t* threadstore, int nonzero[],
+sum_meson_q(double_complex *meson_q, meson_storage_t* threadstore, int nonzero[],
 	    int max_threads, int nt, int num_corr_mom){
 
   for(int mythread=0; mythread<max_threads; mythread++) {
@@ -103,21 +110,21 @@ sum_meson_q(complex *meson_q, meson_storage_t* threadstore, int nonzero[],
       
 /*******************************************/
 /* Calculate a single Fourier phase factor */
-static complex ff(Real theta, char parity, complex tmp)
+static complex ff(Real theta, QudaFFTSymmType parity, complex tmp)
 {
   complex z; // = {0.,0.};
   
-  if(parity == EVEN){
+  if(parity == QUDA_FFT_SYMM_EVEN){
     Real costh = cos(theta);
     z.real = tmp.real*costh;
     z.imag = tmp.imag*costh;
   }
-  else if(parity == ODD){
+  else if(parity == QUDA_FFT_SYMM_ODD){
     Real sinth = sin(theta);
     z.real = -tmp.imag*sinth;
     z.imag =  tmp.real*sinth;
   }
-  else if(parity == EVENANDODD){
+  else if(parity == QUDA_FFT_SYMM_EO){
     Real costh = cos(theta);
     Real sinth = sin(theta);
     z.real = tmp.real*costh-tmp.imag*sinth;
@@ -130,6 +137,7 @@ static complex ff(Real theta, char parity, complex tmp)
   return z;
 } /* ff */
 
+//UNUSED
 /*******************************************/
 /* Create a table of Fourier phases, one for each momentum for each site */
 
@@ -181,6 +189,7 @@ create_ftfact(int nx, int ny, int nz, int nt, int num_corr_mom,
   *flops += (Real)sites_on_node*18*num_corr_mom;
   return ftfact;
 }
+//UNUSED
   
 /*******************************************/
 
@@ -195,30 +204,31 @@ destroy_ftfact(complex *ftfact ){
 
 typedef struct {
   int num_corr_mom;  /* Number of sink momenta */
-  int **corr_mom;  /* List of momenta as integers */
-  char **corr_parity; /* The "parity" of the FT component */
+  int *corr_mom;  /* List of four component momenta modes corr_mom[mode,dir=0..3]  */
+  QudaFFTSymmType *corr_parity; /* The "parity" of the FT component corr_parity[mode,dir=0..3] */
   int *r0;  /* The coordinate origin for the Fourier phases */
   Real flops; /* Return value */
   Real dtime; /* Return value */
 } QudaContractArgs_t;
 
-void qudaContract(int milc_precision,
-		  int quda_precision,
+void qudaContractFT(int milc_precision,
 		  QudaContractArgs_t *cont_args,
 		  su3_vector *antiquark,  /* Color vector field (propagator) */
 		  su3_vector *quark,   /* Color vector field (propagator) */
-                  complex meson_q[]  /* Resulting hadron correlator indexed by time and momentum: idx=nt*k+t */
+                  double_complex meson_q[]  /* Resulting hadron correlator indexed by time and momentum: idx=nt*k+t */
 		  )
 {
 
   Real dtime = -dclock();
-  char myname[] = "qudaContract";
+  char myname[] = "qudaContractFT";
   Real flops = 0;
 
   int num_corr_mom = cont_args->num_corr_mom;
-  int **corr_mom = cont_args->corr_mom;
-  char **corr_parity = cont_args->corr_parity;
+  int *corr_mom = cont_args->corr_mom;
+  QudaFFTSymmType *corr_parity = cont_args->corr_parity;
   int *r0 = cont_args->r0;
+
+  node0_printf("CPU contraction code 'qudaContractFT'\n");
 
 #ifdef OMP
   /* max_threads=getenv("OMP_NUM_THREADS"); */
@@ -266,7 +276,7 @@ void qudaContract(int milc_precision,
     double imag = meson.imag;
     nonzero[st] = 1;
 
-    complex* meson_q_thread = threadstore[mythread].meson_q;
+    double_complex* meson_q_thread = threadstore[mythread].meson_q;
 
     /* Each thread accumulates its own time-slice values in meson_q_thread
        Each thread works with all of the momenta */
@@ -274,12 +284,12 @@ void qudaContract(int milc_precision,
     for(int k=0; k<num_corr_mom; k++)
       {
 	/* compute Fourier phase */
-	int px = corr_mom[k][0];
-	int py = corr_mom[k][1];
-	int pz = corr_mom[k][2];
-	char ex = corr_parity[k][0];
-	char ey = corr_parity[k][1];
-	char ez = corr_parity[k][2];
+	int px = corr_mom[4*k+0];
+	int py = corr_mom[4*k+1];
+	int pz = corr_mom[4*k+2];
+	char ex = corr_parity[4*k+0];
+	char ey = corr_parity[4*k+1];
+	char ez = corr_parity[4*k+2];
 	complex fourier_fact; fourier_fact.real=1.0; fourier_fact.imag=0.0;
 	fourier_fact = ff(factx*(s->x-r0[0])*px, ex, fourier_fact);
 	fourier_fact = ff(facty*(s->y-r0[1])*py, ey, fourier_fact);
