@@ -60,7 +60,6 @@ create_grid_resid_arg( quark_invert_control *qic )
 {
   GRID_resid_arg_t *res_arg;
   char myname[] = "create_grid_resid_arg";
-  int isrc,imass;
 
   /* Pointers for residual errors */
   res_arg = (GRID_resid_arg_t *)malloc(sizeof(GRID_resid_arg_t ));

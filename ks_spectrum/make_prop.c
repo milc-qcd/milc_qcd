@@ -33,9 +33,43 @@
 // 
 // }
 
+
+/* Logic for the choice of inverter
+set_type  Singles, multimass, multisource
+inv_type  MG or CG or UML
+
+if only one prop
+  if fresh prop
+     if multigrid (and not CGrebuild)
+        do MG solve
+     else
+        do UML or CG according to inv_type
+  else not fresh
+     do UML or CG according to inv_type.
+
+else multiple props
+  if multigrid
+     if multimass
+        do separate MG for each
+     else multisource
+        call block MG (just single MG for now)
+  else not multigrid
+    if not fresh prop or singles
+      do separate solves
+         if multisource (note -- won't have multisource if singles)
+	    do single-source UML or CG according to inv_type
+	 else multimass or singles
+	    do single-mass UML or CG according to inv_type
+    else fresh prop
+       if multimass
+          do multimass inversion with UML or CG polish according to inv_type
+       else if multisource or single
+          do mrhs inversion with UML or CG
+*/
+
 /* Solve for the propagator (if requested) for all members of the set */
 
-int solve_ksprop(int set_type,
+int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 		 int num_prop, int startflag[], char startfile[][MAXFILENAME],
 		 int saveflag[], char savefile[][MAXFILENAME],
 		 ks_prop_field *ksprop[],
@@ -52,7 +86,6 @@ int solve_ksprop(int set_type,
   int color;
   int i,j;
   int status = 0;
-  char *fileinfo;
   int tot_iters = 0;
   su3_vector **dst;
   imp_ferm_links_t **fn = NULL;
@@ -176,20 +209,22 @@ int solve_ksprop(int set_type,
            propagator from a fresh start, we use the preconditioned
            algorithm. */
         
-        mat_invert_field(src[0], dst[0], my_qic+0, my_ksp[0].mass, 
-                         fn_multi[0], startflag[0] == FRESH);
+	enum inv_type it = my_qic[0].inv_type;
+	if(startflag[0] != FRESH)my_qic[0].inv_type = CGTYPE;
+        mat_invert_field(src[0], dst[0], my_qic+0, my_ksp[0].mass,
+			 fn_multi[0]);
+	my_qic[0].inv_type = it;
       } else if(my_qic->inv_type == MGTYPE) {
 
         /* Multi-mass or multi-source inversion with MG, do each with MG separately */
 
         if(set_type == MULTIMASS_SET){
-          /* Do each mass separately. */
+          /* Do each mass separately with MG inverter. */
           for(j = 0; j < num_prop; j++){
-            mat_invert_field(src[0], dst[j], my_qic+j, my_ksp[j].mass,
-                             fn_multi[j],0);
+            mat_invert_field(src[0], dst[j], my_qic+j, my_ksp[j].mass, fn_multi[j]);
           }
         } else {
-          /* Passes through to separate MG solves */
+          /* Passes through to separate MG solves at the moment */
           int num_src = num_prop;
           mat_invert_block(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
         }
@@ -198,31 +233,31 @@ int solve_ksprop(int set_type,
 
         /* Multi-mass or multi-source inversion */
 
-        if(startflag[0] != FRESH){
+        if(startflag[0] != FRESH || set_type == SINGLES_SET){
 
-          /* Use single-mass / single-source inverter if we restored the propagator */
-          
           /* If we have restored any propagator, we use the single-mass inverter */
           /* In most use cases they are either all restored, or all fresh */
 
           for(j = 0; j < num_prop; j++){
-            if(set_type == MULTIMASS_SET)
-              /* Multimass inversion */
-              mat_invert_field(src[0], dst[j], my_qic+j, my_ksp[j].mass, 
-                               fn_multi[j],1);
-            else
-              /* Multisource inversion */
-              mat_invert_field(src[j], dst[j], my_qic+j, my_ksp[0].mass, 
-                               fn_multi[j],1);
+            if(set_type == MULTISOURCE_SET){
+              /* Multisource inversion -- we don't support singles for multisource */
+              mat_invert_field(src[j], dst[j], my_qic+j, my_ksp[0].mass, fn_multi[j]);
+            } else {
+              /* Multimass or singles inversion -- iterate over masses */
+	      enum inv_type it = my_qic[0].inv_type;
+	      if(startflag[j] != FRESH)my_qic[0].inv_type = CGTYPE;
+              mat_invert_field(src[0], dst[j], my_qic+j, my_ksp[j].mass, fn_multi[j]);
+	      my_qic[0].inv_type = it;
+	    }
           }
         } else {
 
           /* If we are starting fresh, use multimass or multisource inverter */
 
-          if(set_type == MULTIMASS_SET)
+          if(set_type == MULTIMASS_SET){
             /* Multimass inversion */
             mat_invert_multi(src[0], dst, my_ksp, num_prop, my_qic, fn_multi);
-          else {
+	  } else {
             /* Multisource inversion */
             int num_src = num_prop;  /* Should change to num_prop * ncolors */
             mat_invert_block(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);

@@ -1043,7 +1043,7 @@ static void spectrum_ks_print_diag(int pair){
       param.saveflag_m[pair] = FORGET;
     
     for(m=0;m<num_report;m++) {
-      norm_fac = num_corr_occur[m];
+      norm_fac = 1./(Real)num_corr_occur[m];
 
       print_start_meson_prop(pair, m);
       print_start_fnal_meson_prop(corr_fp, pair, m);
@@ -1057,7 +1057,6 @@ static void spectrum_ks_print_diag(int pair){
       }
       print_end_meson_prop(pair);
       print_end_fnal_meson_prop(corr_fp, pair);
-
     } /* mesons and momenta */
     close_fnal_meson_file(corr_fp, pair);
   }
@@ -1085,7 +1084,7 @@ static void spectrum_ks_print_offdiag(int pair){
 
     /* print meson propagators */
     for(m=0;m<num_report;m++) {
-      norm_fac = num_corr_occur[m];
+      norm_fac = 1./(Real)num_corr_occur[m];
       
       print_start_meson_prop(pair, m);
       print_start_fnal_meson_prop(corr_fp, pair, m);
@@ -1135,10 +1134,10 @@ static void spectrum_ks_print_baryon(int triplet){
 	/* Fix sign for antiperiodic bc */
 	if( (((t+param.r_offset_b[triplet][3])/nt
 	      - param.r_offset_b[triplet][3]/nt) %2 ) == 1 ){
-	  CMULREAL(prop,-1.,prop);
+	  CMULREAL(prop_tmp[t],-1.,prop_tmp[t]);
 	}
-	print_baryon_prop(triplet, t, prop);
-	print_fnal_baryon_prop(corr_fp, triplet, t, prop);
+	print_baryon_prop(triplet, t, prop_tmp[t]);
+	print_fnal_baryon_prop(corr_fp, triplet, t, prop_tmp[t]);
       }
       print_end_baryon_prop(triplet);
     }

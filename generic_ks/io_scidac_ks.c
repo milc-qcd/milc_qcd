@@ -22,7 +22,7 @@ REQUIRES QIO
 /* Write color vectors in SciDAC format, taking data from the site
    structure */
 
-int save_ks_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
+int save_ks_vector_scidac(QIO_Writer *outfile, const char *filename, char *recinfo,
 			  int volfmt, su3_vector *src, int count, int prec)
 {
   QIO_String *recxml;
@@ -64,7 +64,7 @@ int save_ks_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
 /* Write color vectors in SciDAC format, taking data from the site
    structure */
 
-void save_ks_vector_scidac_from_field(char *filename, char *fileinfo,
+void save_ks_vector_scidac_from_field(const char *filename, char *fileinfo,
 				      char *recinfo, 
 				      int volfmt, int serpar, 
 				      su3_vector *src, int count, int prec)
@@ -89,7 +89,7 @@ void save_ks_vector_scidac_from_field(char *filename, char *fileinfo,
 /* Write color vectors in SciDAC format, taking data from the site
    structure */
 
-void save_ks_vector_scidac_from_site(char *filename, char *fileinfo,
+void save_ks_vector_scidac_from_site(const char *filename, char *fileinfo,
 				     char *recinfo, 
 				     int volfmt, int serpar, 
 				     field_offset src, int count, int prec)
@@ -163,7 +163,7 @@ int read_ks_vector_scidac(QIO_Reader *infile, su3_vector *dest, int count)
 /* Read color vectors in SciDAC format (non-USQCD)                  */
 /* reads "count" vectors per site                                   */
 
-void restore_ks_vector_scidac_to_field(char *filename, int serpar, 
+void restore_ks_vector_scidac_to_field(const char *filename, int serpar, 
 				       su3_vector *dest, int count){
   QIO_Reader *infile;
   int status;
@@ -183,7 +183,7 @@ void restore_ks_vector_scidac_to_field(char *filename, int serpar,
 /********************************************************************/
 /* Read color vectors in SciDAC format (not USQCD) */
 
-void restore_ks_vector_scidac_to_site(char *filename, int serpar,
+void restore_ks_vector_scidac_to_site(const char *filename, int serpar,
 				      field_offset dest, int count){
   su3_vector *tmp;
   int i,j;
@@ -212,9 +212,9 @@ void restore_ks_vector_scidac_to_site(char *filename, int serpar,
 
 /* Write the file header for the propagator */
 
-QIO_Writer *open_usqcd_ksprop_write(char *filename, int volfmt, 
+QIO_Writer *open_usqcd_ksprop_write(const char *filename, int volfmt, 
 				    int serpar, int ildgstyle, 
-				    char *stringLFN, int milc_type,
+				    const char *stringLFN, int milc_type,
 				    char *fileinfo){
   
   QIO_Layout layout;
@@ -246,7 +246,7 @@ int read_kspropsource_C_usqcd(QIO_Reader *infile, char *srcinfo, int n,
 {
   QIO_USQCDKSPropSourceInfo propsource_info;
   QIO_String *recxml;
-  char *info;
+  const char *info;
   int status, typesize;
   QIO_RecordInfo recinfo;
 
@@ -283,7 +283,7 @@ int read_kspropsource_V_usqcd(QIO_Reader *infile, char *srcinfo, int n,
 {
   QIO_USQCDKSPropSourceInfo propsource_info;
   QIO_String *recxml;
-  char *info;
+  const char *info;
   int status, typesize;
   QIO_RecordInfo recinfo;
 
@@ -418,7 +418,7 @@ void close_usqcd_ksprop_write(QIO_Writer *outfile){
 /********************************************************************/
 /* Read the file header for the propagator */
 
-QIO_Reader *open_usqcd_ksprop_read(char *filename, int serpar, char **fileinfo){
+QIO_Reader *open_usqcd_ksprop_read(const char *filename, int serpar, char **fileinfo){
 
   QIO_Layout layout;
   QIO_Filesystem fs;

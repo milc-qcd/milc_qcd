@@ -271,7 +271,7 @@ void mult_w_by_gamma_mat(wilson_vector * src,
 }
 
 void mult_w_by_gamma(wilson_vector * src,
-		     wilson_vector * dest, int dir)
+		     wilson_vector * dest, gammatype dir)
 {
   gamma_matrix_t gm;
 
@@ -340,7 +340,7 @@ void mult_sw_by_gamma_mat_l(spin_wilson_vector * src,
 }
 
 void mult_sw_by_gamma_l(spin_wilson_vector * src,
-			spin_wilson_vector * dest, int dir)
+			spin_wilson_vector * dest, gammatype dir)
 {
   gamma_matrix_t gm;
 
@@ -403,7 +403,7 @@ void mult_sw_by_gamma_mat_r(spin_wilson_vector * src,
 }
 
 void mult_sw_by_gamma_r(spin_wilson_vector * src,
-			spin_wilson_vector * dest, int dir)
+			spin_wilson_vector * dest, gammatype dir)
 {
   gamma_matrix_t gm;
 

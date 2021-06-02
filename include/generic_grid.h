@@ -15,7 +15,7 @@
 GRID_evenodd_t milc2grid_parity(int milc_parity);
 int grid2milc_parity(GRID_evenodd_t grid_parity);
 GRID_status_t initialize_grid(void);
-void finalize_grid(void);
+void finalize_grid();
 int grid_initialized(void);
 void setup_grid_communicator(int peGrid[]);
 int *query_grid_node_mapping(void);
