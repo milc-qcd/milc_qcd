@@ -60,7 +60,7 @@ typedef struct {
   GRID_status_t status;     /* (out) error status */
   int count1, count2;      /* (out) generic counters */
 } GRID_info_t;
-#define GRID_INFO_ZERO ((GRID_info_t){0,0,GRID_SUCCESS,0,0})
+#define GRID_INFO_ZERO ((GRID_info_t){0,0,0,GRID_SUCCESS,0,0})
 
   /* these are quantities that apply to all masses in the multi inverter */
 typedef struct {

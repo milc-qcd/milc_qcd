@@ -8,7 +8,7 @@
 #include <string.h>
 #include "params.h"
 #include <unistd.h>
-extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
+//extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
 #endif
@@ -513,7 +513,7 @@ int readin(int prompt) {
     nprop = 0;
     IF_OK for(k = 0; k < param.num_set; k++){
       int max_cg_iterations, max_cg_restarts;
-      int check = CHECK_NO;
+      enum check_type check = CHECK_NO;
       char mgparamfile[MAXFILENAME] = "";
 
       IF_OK status += get_s(stdin, prompt, "set_type", savebuf);
@@ -783,7 +783,7 @@ int readin(int prompt) {
     }
 
     IF_OK for(i = 0; i < param.num_qk; i++){
-      char *check_tag;
+      const char *check_tag;
       /* Get the propagator that we act on with the sink operator to
 	 form the "quark" field used in the correlator.  It might be a
 	 raw "propagator" or it might be a previously constructed
@@ -1387,7 +1387,7 @@ int readin(int prompt) {
 /* Broadcast operator parameter values.  They are on the heap on node 0. */
 
 static void broadcast_heap_params(void){
-  int i, k;
+  int i;
 
   for(i = 0; i < param.num_base_source + param.num_modified_source; i++){
     broadcast_quark_source_sink_op_recursive(&param.src_qs[i].op);

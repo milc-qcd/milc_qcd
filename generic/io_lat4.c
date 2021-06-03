@@ -90,7 +90,7 @@ typedef float OUTPUT_TYPE;
 
 /* Open a binary file for serial writing by node 0 */
 
-static gauge_file *w_serial_i(char *filename)
+static gauge_file *w_serial_i(const char *filename)
 {
   /* Only node 0 opens the file filename */
   /* Returns a file structure describing the opened file */
@@ -209,8 +209,12 @@ static void w_serial_old(gauge_file *gf)
   gf->check.sum29 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here only node 0 uses these values */
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 31;
+  u_int32type r29 = sites_on_node % 29;
+  r29 = r29 * this_node % 29;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+  u_int32type r31 = sites_on_node % 31;
+  r31 = r31 * this_node % 31;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
 
   g_sync();
   currentnode=0;
@@ -451,8 +455,12 @@ static void w_serial(gauge_file *gf)
   gf->check.sum29 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here only node 0 uses these values -- both start at 0 */ 
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 31;
+  u_int32type r29 = sites_on_node % 29;
+  r29 = r29 * this_node % 29;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+  u_int32type r31 = sites_on_node % 31;
+  r31 = r31 * this_node % 31;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
 
   g_sync();
   currentnode=0;  /* The node delivering data */
@@ -544,7 +552,7 @@ static void r_serial(gauge_file *gf)
 
   FILE *fp;
   gauge_header *gh;
-  char *filename;
+  const char *filename;
   int byterevflag;
 
   off_t offset = 0 ;        /* File stream pointer */
@@ -759,7 +767,7 @@ static void r_serial_arch(gauge_file *gf)
   /* gf  = gauge configuration file structure */
 
   FILE *fp;
-  char *filename;
+  const char *filename;
 
   size_t rcv_rank, rcv_coords;
   int destnode;
@@ -1080,8 +1088,10 @@ static void w_parallel(gauge_file *gf)
 		i = node_index(x,y,z,t);
 		where_in_buf = buf_length;
 		d2f_4mat(&lattice[i].link[0],&lbuf[4*where_in_buf]);
-		rank29 = rank31 = 
-		  4*sizeof(fsu3_matrix)/sizeof(int32type)*rcv_rank;
+		u_int32type r29 = rcv_rank % 29;
+		rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+		u_int32type r31 = rcv_rank % 31;
+		rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
 	      }
 	      else {
 		/* Receive a message */
@@ -1097,7 +1107,10 @@ static void w_parallel(gauge_file *gf)
 		/* Move data to buffer */
 		memcpy((void *)&lbuf[4*where_in_buf],
 		       (void *)msg.link,4*sizeof(fsu3_matrix));
-		rank29 = rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*tmp_rank;
+		u_int32type r29 = tmp_rank % 29;
+		rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+		u_int32type r31 = tmp_rank % 31;
+		rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
 	      }
 
 	      /* Receiving node accumulates checksums as the values
@@ -1199,8 +1212,12 @@ static void w_checkpoint(gauge_file *gf)
   gf->check.sum29 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here all nodes use these values */
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 31;
+  u_int32type r29 = sites_on_node % 29;
+  r29 = r29 * this_node % 29;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+  u_int32type r31 = sites_on_node % 31;
+  r31 = r31 * this_node % 31;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
 
   buf_length = 0;
 
@@ -1272,7 +1289,7 @@ static void w_checkpoint(gauge_file *gf)
 
 /*---------------------------------------------------------------------------*/
 
-static gauge_file *r_parallel_i(char *filename)
+static gauge_file *r_parallel_i(const char *filename)
 {
   /* Returns file descriptor for opened file */
 
@@ -1331,7 +1348,7 @@ static void r_parallel(gauge_file *gf)
 
   FILE *fp;
   gauge_header *gh;
-  char *filename;
+  const char *filename;
   fsu3_matrix *lbuf;
   struct {
     short x,y,z,t;
@@ -1407,8 +1424,12 @@ static void r_parallel(gauge_file *gf)
   test_gc.sum31 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here all nodes use these values */
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 31;
+  u_int32type r29 = sites_on_node % 29;
+  r29 = r29 * this_node % 29;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+  u_int32type r31 = sites_on_node % 31;
+  r31 = r31 * this_node % 31;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
 
   /* Read and deal */
 
@@ -1587,7 +1608,7 @@ static void r_parallel(gauge_file *gf)
 
     A separate ASCII info file is also written.
 */
-gauge_file *restore_ascii(char *filename) {
+gauge_file *restore_ascii(const char *filename) {
   gauge_header *gh;
   gauge_file *gf;
   FILE *fp = NULL;
@@ -1724,7 +1745,7 @@ gauge_file *restore_ascii(char *filename) {
 
 /* Save a lattice in ASCII format serially (node 0 only) */
 
-gauge_file *save_ascii(char *filename) {
+gauge_file *save_ascii(const char *filename) {
   FILE *fp = NULL;
   int currentnode,newnode;
   int i,j,x,y,z,t,dir;
@@ -1819,7 +1840,7 @@ gauge_file *save_ascii(char *filename) {
 /* Restore lattice file by reading serially (node 0 only) */
 /* Handles most lattice formats */
   
-gauge_file *restore_serial(char *filename)
+gauge_file *restore_serial(const char *filename)
 {
   gauge_file *gf;
 
@@ -1855,7 +1876,7 @@ gauge_file *restore_serial(char *filename)
 /* Restore lattice file by reading to all nodes simultaneously */
 /* Handles most lattice formats */
   
-gauge_file *restore_parallel(char *filename)
+gauge_file *restore_parallel(const char *filename)
 {
   gauge_file *gf;
 
@@ -1887,7 +1908,7 @@ gauge_file *restore_parallel(char *filename)
 
 /* Save lattice in natural order by writing serially (node 0 only) */
 
-gauge_file *save_serial(char *filename)
+gauge_file *save_serial(const char *filename)
 {
   gauge_file *gf;
 
@@ -1903,7 +1924,7 @@ gauge_file *save_serial(char *filename)
 
 /* Save lattice in natural order by writing from all nodes at once */
 
-gauge_file *save_parallel(char *filename)
+gauge_file *save_parallel(const char *filename)
 {
   gauge_file *gf;
 
@@ -1924,7 +1945,7 @@ gauge_file *save_parallel(char *filename)
    layout. However, we probably wouldn't share lattices written in this
    order with our friends. */
 
-gauge_file *save_checkpoint(char *filename)
+gauge_file *save_checkpoint(const char *filename)
 {
   gauge_file *gf;
 
@@ -1937,7 +1958,7 @@ gauge_file *save_checkpoint(char *filename)
 } /* save_checkpoint */
 
 /*---------------------------------------------------------------------------*/
-gauge_file *save_serial_archive(char *filename) {
+gauge_file *save_serial_archive(const char *filename) {
   /* Single node writes in archive file format */
 
   int currentnode,newnode;
@@ -2003,10 +2024,10 @@ gauge_file *save_serial_archive(char *filename) {
     write_gauge_info_item(outfile,"time_stamp","\"%s\"",gh->time_stamp,0,0);
     sprintf(sums,"%x %x",gf->check.sum29,gf->check.sum31);
     write_gauge_info_item(outfile,"checksums","\"%s\"",sums,0,0);
-    write_gauge_info_item(outfile,"nx","%d",(char *)&nx,0,0);
-    write_gauge_info_item(outfile,"ny","%d",(char *)&ny,0,0);
-    write_gauge_info_item(outfile,"nz","%d",(char *)&nz,0,0);
-    write_gauge_info_item(outfile,"nt","%d",(char *)&nt,0,0);
+    write_gauge_info_item(outfile,"nx","%d",(const char *)&nx,0,0);
+    write_gauge_info_item(outfile,"ny","%d",(const char *)&ny,0,0);
+    write_gauge_info_item(outfile,"nz","%d",(const char *)&nz,0,0);
+    write_gauge_info_item(outfile,"nt","%d",(const char *)&nt,0,0);
     write_appl_gauge_info(outfile, gf);
     fprintf(outfile,"MILC_INFO = --------END--------\n");
     fprintf(outfile,"END_HEADER\n");

@@ -103,7 +103,7 @@ typedef struct {
 /* List of admissible keywords for version 5 ASCII lattice info file */
 
 #ifdef CONTROL
-char *w_prop_info_keyword[] = {
+const char *w_prop_info_keyword[] = {
       "magic_number",
       "time_stamp",
       "nx",
