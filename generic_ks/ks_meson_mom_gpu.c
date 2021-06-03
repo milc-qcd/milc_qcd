@@ -333,7 +333,7 @@ void ks_meson_cont_mom(
       cont_args.source_position = r0;
       cont_args.flops = 0;
       cont_args.dtime = 0;
-      int quda_precision = 2;  /* Is this the QUDA convention? */
+      //int quda_precision = 2;  /* Is this the QUDA convention? No. */
 
       /* Apply spin tastes and call the GPU contraction routine */
 
