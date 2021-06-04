@@ -25,7 +25,7 @@ COMPILER ?= gnu # intel, ibm, portland, cray-intel
 # 3. MPP vs Scalar
 
 # Compiling for a parallel machine?  blank for a scalar machine
-MPP ?=  true
+MPP ?= # true
 
 #----------------------------------------------------------------------
 # 4. Precision 
