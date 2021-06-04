@@ -67,7 +67,7 @@ propagators together to form a meson correlator.
 
 
 /*******************************************/
-// Uncomment following include, then definitions below can be made into comments or removed
+// Uncomment the following include, then definitions below can be made into comments or removed
 //#include <quda_milc_interface.h>
 
 #include <limits.h>
@@ -111,26 +111,25 @@ void qudaContractFT(int external_precision, // milc_precision
 		    double *corr // double_complex meson_q[]
 		    );
 
-/* OLD
-typedef struct {
-  int num_corr_mom;
-  int **corr_mom;
-  char **corr_parity;
-  int *r0;
-  Real flops;
-  Real dtime;
-} QudaContractArgs_t;
-
-void qudaContractFT(int milc_precision,
-		  int quda_precision,
-		  QudaContractArgs_t *cont_args,
-		  su3_vector *antiquark,
-		  su3_vector *quark,
-		  complex meson_q[]
-		  );
-** OLD */
 
 /*******************************************/
+
+void dump_QudaContractArgs(const QudaContractArgs_t const* args)
+{
+  printf("QudaContractArgs:\n");
+  printf("source_position: %3d %3d %3d %3d\n",
+	 args->source_position[0],args->source_position[1],
+	 args->source_position[2],args->source_position[3]);
+  printf("n_mom: %d\n",args->n_mom);
+  for(int k=0; k<args->n_mom; ++k) {
+    printf("mom[%2d]: %2d %2d %2d %2d\n",k,
+	   args->mom_modes[4*k+0],args->mom_modes[4*k+1],
+	   args->mom_modes[4*k+2],args->mom_modes[4*k+3]);
+    printf("sym[%2d]: %2d %2d %2d %2d\n",k,
+	   args->fft_type[4*k+0],args->fft_type[4*k+1],
+	   args->fft_type[4*k+2],args->fft_type[4*k+3]);
+  }
+}
 
 /* Normalize the correlator contributions */
 
@@ -318,7 +317,7 @@ void ks_meson_cont_mom(
       double_complex *meson_q = create_meson_q(nt, num_corr_mom[g]);
       double *dmeson_q = static_cast(double*,meson_q);
 
-      /* Transfer momenta and parity from q_momstore to corr_mom table */
+      /* Transfer momenta and parity from q_momstore to corr_mom array */
       int corr_mom[num_corr_mom[g]*4]; // all four components of the momentum
       QudaFFTSymmType corr_parity[num_corr_mom[g]*4];
       map_corr_mom_parity(corr_mom, corr_parity, num_corr_mom[g],
@@ -333,7 +332,7 @@ void ks_meson_cont_mom(
       cont_args.source_position = r0;
       cont_args.flops = 0;
       cont_args.dtime = 0;
-      //int quda_precision = 2;  /* Is this the QUDA convention? No. */
+      //dump_QudaContractArgs(&cont_args);
 
       /* Apply spin tastes and call the GPU contraction routine */
 

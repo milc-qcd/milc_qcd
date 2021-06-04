@@ -137,7 +137,7 @@ static complex ff(Real theta, QudaFFTSymmType parity, complex tmp)
   return z;
 } /* ff */
 
-//UNUSED
+#if 0 //UNUSED
 /*******************************************/
 /* Create a table of Fourier phases, one for each momentum for each site */
 
@@ -189,7 +189,7 @@ create_ftfact(int nx, int ny, int nz, int nt, int num_corr_mom,
   *flops += (Real)sites_on_node*18*num_corr_mom;
   return ftfact;
 }
-//UNUSED
+#endif //UNUSED
   
 /*******************************************/
 
