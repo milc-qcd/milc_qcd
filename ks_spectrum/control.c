@@ -41,6 +41,7 @@
 #include <string.h>
 #ifdef HAVE_QUDA
 #include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
 #endif
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
@@ -124,7 +125,7 @@ int main(int argc, char *argv[])
 
       /* Move KS phases and apply time boundary condition, based on the
 	 coordinate origin and time_bc */
-      Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+      Real bdry_phase[4] = {0.,0.,0.,(double)param.time_bc};
       /* Set values in the structure fn */
       set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
       /* Apply the operation */
@@ -286,6 +287,7 @@ int main(int argc, char *argv[])
 
 	/* Write the source, if requested */
 	if(qs->saveflag != FORGET){
+	  qs->color = color;
 	  if(w_source_ks( source[k]->v[color], qs ) != 0)
 	    node0_printf("Error writing source\n");
 	}
@@ -314,10 +316,11 @@ int main(int argc, char *argv[])
       for(int color = 0; color < qs->ncolor; color++){
 
 	/* Apply operator*/
-	v_field_op(source[is]->v[color], qs->op, qs->subset, qs->t0);
+        v_field_op(source[is]->v[color], &(param.src_qs_op[is]), qs->subset, qs->t0);
 
 	/* Write the source, if requested */
 	if(qs->saveflag != FORGET){
+	  qs->color = color;
 	  if(w_source_ks( source[is]->v[color], qs ) != 0)
 	    node0_printf("Error writing source\n");
 	}
@@ -342,8 +345,8 @@ int main(int argc, char *argv[])
     
     for(k=0; k<param.num_set; k++){
       int num_prop = param.end_prop[k] - param.begin_prop[k] + 1;
+      if(num_prop <= 0)continue;  /* Ignore set if zero */
       int i0 = param.begin_prop[k];
-
 
       for(i=param.begin_prop[k]; i <= param.end_prop[k]; i++){
 
@@ -371,12 +374,13 @@ int main(int argc, char *argv[])
 	node0_printf("residue= %g rel= %g\n",
 		     (double)param.qic[i].resid,
 		     (double)param.qic[i].relresid);
-	
+	fflush(stdout);
       }
       
       /* We pass the beginning addresses of the set data */
       
       total_iters += solve_ksprop(param.set_type[k],
+				  param.inv_type[k],
 				  num_prop,
 				  param.startflag_ks + i0,
 				  param.startfile_ks + i0,
@@ -753,9 +757,9 @@ int main(int argc, char *argv[])
 
     node0_printf("RUNNING COMPLETED\n");
     endtime=dclock();
-    starttime = endtime; /* In case we continue looping over readin */
     
     node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
+    starttime = endtime; /* In case we continue looping over readin */
     node0_printf("total_iters = %d\n",total_iters);
 #ifdef HISQ_SVD_COUNTER
     printf("hisq_svd_counter = %d\n",hisq_svd_counter);
@@ -772,6 +776,12 @@ int main(int argc, char *argv[])
     
     destroy_ape_links_3D(ape_links);
     
+
+    for(is=0; is<param.num_base_source+param.num_modified_source; is++){
+      if(source[is] != NULL)node0_printf("destroy source[%d]\n",is);
+      destroy_ksp_field(source[is]); source[is] = NULL;
+    }
+    
     /* Destroy fermion links (created in readin() */
     
 #if FERM_ACTION == HISQ
@@ -787,7 +797,7 @@ int main(int argc, char *argv[])
   
 
 #ifdef HAVE_QUDA
-  qudaFinalize();
+  finalize_quda();
 #endif
   
 #ifdef HAVE_QPHIX

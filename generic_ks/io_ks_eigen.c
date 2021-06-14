@@ -129,7 +129,7 @@ int read_ks_eigen_hdr(ks_eigen_file *kseigf, int parallel){
       ny = kseigh->dims[1];
       nz = kseigh->dims[2];
       nt = kseigh->dims[3];
-      volume = nx*ny*nz*nt;
+      volume = (size_t) nx*ny*nz*nt;
     }
   }
   
@@ -776,7 +776,7 @@ int r_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, double *eigVal, su3_vect
 	 and idest points to the destination site structure. */
       if(this_node == destnode){
 	if(byterevflag == 1)
-	  byterevn((int32type *)(&msg.ksv), sizeof(su3_vector)/sizeof(int32type));
+	  byterevn((u_int32type *)(&msg.ksv), sizeof(su3_vector)/sizeof(int32type));
 
 	/* Accumulate checksums */
 	for(k = 0, val = (u_int32type *)(&msg.ksv); 
@@ -1116,7 +1116,7 @@ ks_eigen_file *r_ascii_ks_eigen_i(char *filename){
 	ny = kseigh->dims[1];
 	nz = kseigh->dims[2];
 	nt = kseigh->dims[3];
-	volume = nx*ny*nz*nt;
+	volume = (size_t) nx*ny*nz*nt;
       }
     }
     kseigh->header_bytes = 0; /* Unused for ASCII */

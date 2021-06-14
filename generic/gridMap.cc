@@ -1,5 +1,9 @@
 // Mapping between MILC and Grid types
 
+#if defined(_OPENMP) || defined(OMP)
+#include "../include/openmp_defs.h"
+#endif
+
 #include <Grid/Grid.h>
 
 #include "../include/mGrid/mGrid_internal.h"
@@ -7,30 +11,33 @@
 #include "../include/mGrid/mGrid_assert.h"
 
 extern "C" {
-  void get_coords(int coords[], int node, int index);
+  void get_coords(int coords[], int node, size_t index);
 }
 
 #include "../include/milc_datatypes.h"
-#include "../include/openmp_defs.h"
+#include "../include/macros.h"
+
 extern	int sites_on_node;		/* number of sites on this node */
 extern	int even_sites_on_node;	/* number of even sites on this node */
 extern  int this_node;
 
 using namespace Grid;
-using namespace Grid::QCD;
+//using namespace Grid::QCD;
 using namespace std;
 
-extern std::vector<int> squaresize;
+extern Coordinate squaresize;
 
 static void
-indexToCoords(uint64_t idx, std::vector<int> &x){
+indexToCoords(uint64_t idx, Coordinate &x){
+
+  int r[4];
 
   // Gets the lattice coordinates from the MILC index
-  get_coords(x.data(), this_node, idx);
+  get_coords(r, this_node, idx);
   // For Grid, we need the coordinates within the sublattice hypercube for the current MPI rank
   // NOTE: Would be better to provide a get_subl_coords() in MILC layout_*.c
   for(int i = 0; i < 4; i++)
-    x[i] %= squaresize[i];
+    x[i] = r[i] % squaresize[i];
 
   //printf("Converted %d to %d %d %d %d\n", idx, x[0], x[1], x[2], x[3]); fflush(stdout);
 }
@@ -41,7 +48,6 @@ indexToCoords(uint64_t idx, std::vector<int> &x){
 template<typename ImprovedStaggeredFermion>
 static struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *
 create_V(int milc_parity, GridCartesian *CGrid, GridRedBlackCartesian *RBGrid){
-
   struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *out;
 
   out = (struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *) 
@@ -142,10 +148,10 @@ create_V_from_vec( su3_vector *src, int milc_parity,
   int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
 
   auto start = std::chrono::system_clock::now();
-#pragma omp parallel for private(idx)
+  #pragma omp parallel for 
     for( uint64_t idx = loopstart; idx < loopend; idx++){
 
-      std::vector<int> x(4);
+      Coordinate x(4);
       indexToCoords(idx,x);
       Coordinate lx(4);
       for (int i = 0; i < 4; i++)lx[i] = x[i];
@@ -156,7 +162,8 @@ create_V_from_vec( su3_vector *src, int milc_parity,
 	  Complex(src[idx].c[col].real, src[idx].c[col].imag);
       }
       
-      pokeLocalSite(cVec, *(out->cv), lx);
+      autoView(Dst_cv, (*(out->cv)), CpuWrite);
+      pokeLocalSite(cVec, Dst_cv, x);
       
     }
   auto end = std::chrono::system_clock::now();
@@ -186,18 +193,18 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
 
 
   std::cout << "create_nv_from_vecs: ColourVector size  = " << sizeof(ColourVector)  
-	    << " ColourVectorField size =" << sizeof(*(out->cv)) << "\n" << std::flush;
+	    << " ColourVectorField size = " << sizeof(*(out->cv)) << "\n" << std::flush;
   auto start = std::chrono::system_clock::now();
-#pragma omp parallel for private(idx)
+#pragma omp parallel for
     for( uint64_t idx = loopstart; idx < loopend; idx++){
-
-      std::vector<int> x(4);
+      Coordinate x(4);
       indexToCoords(idx,x);
-      std::vector<int> x5(1,0);
+//      Coordinate x5(1,0);
+//      for( int d = 0; d < 4; d++ )
+//	x5.push_back(x[d]);
+      Coordinate x5(5);
       for( int d = 0; d < 4; d++ )
-	x5.push_back(x[d]);
-      Coordinate lx5(5);
-      for (int i = 0; i < 4; i++)lx5[i] = x[i];
+	x5[d+1] = x[d];
 
       for( int j = 0; j < n; j++ ){
 	lx5[0] = j;
@@ -206,7 +213,8 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
 	  cVec._internal._internal._internal[col] = 
 	    Complex(src[j][idx].c[col].real, src[j][idx].c[col].imag);
 	}
-	pokeLocalSite(cVec, *(out->cv), lx5);
+        autoView(Dst_cv, (*(out->cv)), CpuWrite);
+        pokeLocalSite(cVec, Dst_cv, x5);
       }
     }
   auto end = std::chrono::system_clock::now();
@@ -226,13 +234,14 @@ static void extract_V_to_vec( su3_vector *dest,
 
   FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
     {
-      std::vector<int> x(4);
+      Coordinate x(4);
       indexToCoords(idx, x);
       ColourVector cVec;
       Coordinate lx(4);
       for (int i = 0; i < 4; i++)lx[i] = x[i];
 
-      peekLocalSite(cVec, *(src->cv), lx);
+      autoView(Src_cv, (*(src->cv)), CpuRead);
+      peekLocalSite(cVec, Src_cv, x);
 
       for(int col = 0; col < Nc; col++)
 	{
@@ -253,9 +262,9 @@ static void extract_nV_to_vecs( su3_vector *dest[], int n,
 
   FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
     {
-      std::vector<int> x(4);
+      Coordinate x(4);
       indexToCoords(idx, x);
-      std::vector<int> x5(1,0);
+      Coordinate x5(1,0);
       for( int d = 0; d < 4; d++ )
 	x5.push_back(x[d]);
       Coordinate lx5(5);
@@ -265,7 +274,8 @@ static void extract_nV_to_vecs( su3_vector *dest[], int n,
 	lx5[0] = j;
 
 	ColourVector cVec;
-	peekLocalSite(cVec, *(src->cv), lx5);
+        autoView(Src_cv, (*(src->cv)), CpuRead);
+        peekLocalSite(cVec, Src_cv, x5);
 	
 	for(int col = 0; col < Nc; col++)
 	  {
@@ -297,14 +307,13 @@ static void milcGaugeFieldToGrid(su3_matrix *in, LatticeGaugeField &out){
   typedef typename LatticeGaugeField::vector_object vobj;
   typedef typename vobj::scalar_object sobj;
 
-  GridBase *grid = NULL;
-  out.Conformable(grid);
+  GridBase *grid = out.Grid();
   int lsites = grid->lSites();
   std::vector<sobj> scalardata(lsites);
 
-#pragma omp parallel for private(milc_idx)
-    for (uint64_t milc_idx = 0; milc_idx < sites_on_node; milc_idx++){
-      std::vector<int> x(4);
+  #pragma omp parallel for
+    for (size_t milc_idx = 0; milc_idx < sites_on_node; milc_idx++){
+      Coordinate x(4);
       indexToCoords(milc_idx, x);
       int grid_idx;
       Coordinate lx(4);
@@ -490,7 +499,7 @@ GRID_destroy_5DRBgrid(GRID_5DRBgrid *grid){
 // create color vector
 GRID_F3_ColorVector *
 GRID_F3_create_V( int milc_parity, GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
-  create_V<ImprovedStaggeredFermionF>( milc_parity, grid_full->gridF, grid_rb->gridF );
+  return create_V<ImprovedStaggeredFermionF>( milc_parity, grid_full->gridF, grid_rb->gridF );
 }
 
 // create block color vector
@@ -498,14 +507,15 @@ GRID_F3_ColorVectorBlock *
 GRID_F3_create_nV( int n, int milc_parity, 
 		   GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb,
 		   GRID_4Dgrid *grid_full,GRID_4DRBgrid *grid_rb ){
-  create_nV<ImprovedStaggeredFermion5DF>( n, milc_parity, grid_5D->gridF, grid_5Drb->gridF,
-					  grid_full->gridF, grid_rb->gridF );
+  return create_nV<ImprovedStaggeredFermion5DF>( n, milc_parity, grid_5D->gridF,
+						 grid_5Drb->gridF,
+						 grid_full->gridF, grid_rb->gridF );
 }
 
 // create color vector
 GRID_D3_ColorVector *
 GRID_D3_create_V( int milc_parity, GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
-  create_V<ImprovedStaggeredFermionD>( milc_parity, grid_full->gridD, grid_rb->gridD );
+  return create_V<ImprovedStaggeredFermionD>( milc_parity, grid_full->gridD, grid_rb->gridD );
 }
 
 // ceate block color vector
@@ -513,8 +523,9 @@ GRID_D3_ColorVectorBlock *
 GRID_D3_create_nV( int n, int milc_parity,
                    GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
                    GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
-  create_nV<ImprovedStaggeredFermion5DD>( n, milc_parity, grid_5D->gridD, grid_5Drb->gridD,
-					  grid_full->gridD, grid_rb->gridD );
+  return create_nV<ImprovedStaggeredFermion5DD>( n, milc_parity, grid_5D->gridD,
+						 grid_5Drb->gridD,
+						 grid_full->gridD, grid_rb->gridD );
 }
 
 // free color vector
@@ -628,6 +639,219 @@ GRID_F3_asqtad_destroy_L( GRID_F3_FermionLinksAsqtad *gl ){
 void  
 GRID_D3_asqtad_destroy_L( GRID_D3_FermionLinksAsqtad *gl ){
   asqtad_destroy_L<LatticeGaugeFieldD>( gl );
+}
+
+
+// Create the color vector array interface object
+template< typename ImprovedStaggeredFermion >
+static struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > *
+create_V_array( int n, int milc_parity, GridCartesian * CGrid, GridRedBlackCartesian * RBGrid )
+{
+  int i; // loop index
+  struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * out;
+
+  out = ( struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * )
+    malloc( sizeof( struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > ) );
+  GRID_ASSERT( out != NULL, GRID_MEM_ERROR );
+
+  switch( milc_parity )
+  {
+  case EVEN:
+    out->N = n;
+    out->cv = new std::vector< typename ImprovedStaggeredFermion::FermionField >( n, RBGrid );
+    GRID_ASSERT( out->cv != NULL, GRID_MEM_ERROR );
+    
+    for( i=0; i<n; i++ )
+    {
+      ( ( *(out->cv) )[i] ).Checkerboard() = Even;
+    }
+    break;
+
+  case ODD:
+    out->N = n;
+    out->cv = new std::vector< typename ImprovedStaggeredFermion::FermionField >( n, RBGrid );
+    GRID_ASSERT( out->cv != NULL, GRID_MEM_ERROR );
+    
+    for( i=0; i<n; i++ )
+    {
+      ( ( *(out->cv) )[i] ).Checkerboard() = Odd;
+    }
+    break;
+
+  case EVENANDODD:
+    out->N = n;
+    out->cv = new std::vector< typename ImprovedStaggeredFermion::FermionField >( n, CGrid );
+    GRID_ASSERT( out->cv != NULL, GRID_MEM_ERROR );
+    break;
+
+  default:
+    break;
+  }
+
+  return out;
+}
+
+// Free color vector array
+template< typename ImprovedStaggeredFermion >
+static void destroy_V_array( struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * V )
+{
+  if( V->cv != NULL ) delete V->cv;
+  if( V != NULL ) free(V);
+}
+
+// Create the color vector array interface object
+// and map a MILC color vector field array from MILC to Grid layout
+// Precision conversion takes place in the copies if need be
+template< typename ImprovedStaggeredFermion, typename ColourVector, typename Complex >
+static struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > *
+create_V_array_from_vec_array( su3_vector ** src, int n, int milc_parity, GridCartesian * CGrid,
+                               GridRedBlackCartesian * RBGrid )
+{
+  size_t i; // loop index
+  
+  struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * out;
+
+  out = create_V_array< ImprovedStaggeredFermion >( n, milc_parity, CGrid, RBGrid );
+
+  int loopend = (milc_parity)==EVEN ? even_sites_on_node : sites_on_node;
+  int loopstart = (milc_parity)==ODD ? even_sites_on_node : 0;
+
+#pragma omp parallel for collapse(1)
+  for( i=0; i<n; i++ )
+  {
+    for( size_t idx=loopstart; idx<loopend; idx++ )
+    {
+      Coordinate x(4);
+      indexToCoords( idx, x );
+
+      ColourVector cVec;
+
+      for( int col=0; col<Nc; col++ )
+      {
+        cVec._internal._internal._internal[col] =
+          Complex( (*(src+i))[idx].c[col].real, (*(src+i))[idx].c[col].imag );
+      }
+
+      autoView( Dst_cv, ( *(out->cv) )[i], CpuWrite );
+      pokeLocalSite( cVec, Dst_cv, x );      
+    }
+  }
+  
+  return out;
+}
+
+// Map a color vector field array from Grid layout to MILC layout
+template< typename ImprovedStaggeredFermion, typename ColourVector >
+static void extract_V_array_to_vec_array(
+  su3_vector ** dest, int n,
+  struct GRID_ColorVectorArray_struct< ImprovedStaggeredFermion > * src,
+  int milc_parity )
+{
+  size_t i; // loop index
+  
+  int loopend = (milc_parity)==EVEN ? even_sites_on_node : sites_on_node;
+  int loopstart = (milc_parity)==ODD ? even_sites_on_node : 0;
+
+#pragma omp parallel for collapse(1)
+  for( i=0; i<n; i++ )
+  {
+    for( size_t idx=loopstart; idx<loopend; idx++ )
+    {
+      Coordinate x(4);
+      indexToCoords( idx, x );
+
+      ColourVector cVec;
+      autoView( Src_cv, ( *(src->cv) )[i], CpuRead );
+      peekLocalSite( cVec, Src_cv, x );
+
+      for( int col=0; col<Nc; col++ )
+      {
+        (*(dest+i))[idx].c[col].real = cVec._internal._internal._internal[col].real();
+        (*(dest+i))[idx].c[col].imag = cVec._internal._internal._internal[col].imag();
+      }
+      
+    }
+  }
+
+  return ;
+}
+
+// Create color vector array
+GRID_F3_ColorVectorArray * GRID_F3_create_V_array(
+  int n,
+  int milc_parity,
+  GRID_4Dgrid * grid_full,
+  GRID_4DRBgrid * grid_rb )
+{
+  return create_V_array< ImprovedStaggeredFermionF >( n, milc_parity, grid_full->gridF, grid_rb->gridF );
+}
+
+// Create color vector array
+GRID_D3_ColorVectorArray * GRID_D3_create_V_array(
+  int n,
+  int milc_parity,
+  GRID_4Dgrid * grid_full,
+  GRID_4DRBgrid * grid_rb )
+{
+  return create_V_array< ImprovedStaggeredFermionD >( n, milc_parity, grid_full->gridD, grid_rb->gridD );
+}
+
+// Free color vector array
+void GRID_F3_destroy_V_array( GRID_F3_ColorVectorArray * V )
+{
+  destroy_V_array< ImprovedStaggeredFermionF >( V );
+}
+
+// Free color vector array
+void GRID_D3_destroy_V_array( GRID_D3_ColorVectorArray * V )
+{
+  destroy_V_array< ImprovedStaggeredFermionD >( V );
+}
+
+// Create color vector array from MILC type
+GRID_F3_ColorVectorArray * GRID_F3_create_V_array_from_vec_array(
+  su3_vector ** src,
+  int n,
+  int milc_parity,
+  GRID_4Dgrid * grid_full,
+  GRID_4DRBgrid * grid_rb )
+{
+  return create_V_array_from_vec_array< ImprovedStaggeredFermionF, ColourVectorF, ComplexF >(
+    src, n, milc_parity, grid_full->gridF, grid_rb->gridF );
+}
+
+// Create color vector array from MILC type
+GRID_D3_ColorVectorArray * GRID_D3_create_V_array_from_vec_array(
+  su3_vector ** src,
+  int n,
+  int milc_parity,
+  GRID_4Dgrid * grid_full,
+  GRID_4DRBgrid * grid_rb )
+{
+  return create_V_array_from_vec_array< ImprovedStaggeredFermionD, ColourVectorD, ComplexD >(
+    src, n, milc_parity, grid_full->gridD, grid_rb->gridD );
+}
+
+// Copy color vector array from Grid structure to MILC type
+void GRID_F3_extract_V_array_to_vec_array(
+  su3_vector ** dest,
+  int n,
+  GRID_F3_ColorVectorArray * src,
+  int milc_parity )
+{
+  extract_V_array_to_vec_array< ImprovedStaggeredFermionF, ColourVectorF >( dest, n, src, milc_parity );
+  return ;
+}
+
+// Copy color vector array from Grid structure to MILC type
+void GRID_D3_extract_V_array_to_vec_array(
+  su3_vector ** dest,
+  int n,
+  GRID_D3_ColorVectorArray * src,
+  int milc_parity )
+{
+  extract_V_array_to_vec_array< ImprovedStaggeredFermionD, ColourVectorD >( dest, n, src, milc_parity );
+  return ;
 }
 
 

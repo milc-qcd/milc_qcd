@@ -136,7 +136,8 @@ static int ks_multicg_fake_field(	/* Return value is number of iterations taken 
     quark_invert_control qic[],
     imp_ferm_links_t *fn_multi[]    /* Storage for fermion links */
     )
-{int i,iters=0;
+{
+  int i,iters=0;
 
   for(i=0;i<num_offsets;i++){
     ks_congrad_field( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset),
@@ -776,8 +777,9 @@ int mat_invert_multi(
   /* Fewer than three masses are not worth doing with multimass */
   if(param.eigen_param.Nvecs > 0 || num_masses <= 2){
     
-    for(i = 0; i < num_masses; i++)
-      tot_iters += mat_invert_uml_field(src, dst[i], &qic[i], ksp[i].mass, fn_multi[i] );
+    for(i = 0; i < num_masses; i++){
+      tot_iters += mat_invert_field(src, dst[i], &qic[i], ksp[i].mass, fn_multi[i] );
+    }
 
   } else {
 

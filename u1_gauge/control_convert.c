@@ -44,18 +44,20 @@ int main(int argc,char *argv[])
 	save_u1_lattice(save_u1flag,save_u1file);
 
 	/* check a few things */
-	u1plaq(&splq,&tplq);
-	plp=u1ploop();
-	node0_printf("\nu1-ploop = ( %e, %e )  u1-(s,t)plaq = ( %e, %e )\n",
-		plp.real,plp.imag,splq,tplq);
+	u1plaq(&splq,&tplq,echarge);
+	plp=u1ploop(echarge);
+	node0_printf("\nu1-ploop = ( %e, %e )  u1-(s,t)plaq = ( %e, %e ) with charge %f\n",
+		     plp.real,plp.imag,splq,tplq,echarge);
 
 	/* Mark time */
 	dtime += dclock();
 	node0_printf("U(1) conversion completed!\n");
-	node0_printf("Time = %e seconds\n",dtime);
 	fflush(stdout);
 
   } /* while-ends */
+
+  node0_printf("RUNNING COMPLETED\n");
+  node0_printf("Time = %e seconds\n",dtime);
 
   return(0);
 

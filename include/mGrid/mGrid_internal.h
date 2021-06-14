@@ -4,7 +4,7 @@
 #include <Grid/Grid.h>
 
 using namespace Grid;
-using namespace Grid::QCD;
+//using namespace Grid::QCD;
 
 // Containers for grid definitions
 
@@ -39,6 +39,16 @@ typedef struct GRID_FermionLinksAsqtad_struct<LatticeGaugeFieldF> GRID_F3_Fermio
 typedef struct GRID_ColorVector_struct<ImprovedStaggeredFermionD> GRID_D3_ColorVector_struct;
 typedef struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5DD> GRID_D3_ColorVectorBlock_struct;
 typedef struct GRID_FermionLinksAsqtad_struct<LatticeGaugeFieldD> GRID_D3_FermionLinksAsqtad_struct;
+
+template< typename ISF >
+struct GRID_ColorVectorArray_struct
+{
+  std::vector< typename ISF::FermionField > * cv;
+  int N;
+};
+typedef struct GRID_ColorVectorArray_struct<ImprovedStaggeredFermionF> GRID_F3_ColorVectorArray_struct;
+typedef struct GRID_ColorVectorArray_struct<ImprovedStaggeredFermionD> GRID_D3_ColorVectorArray_struct;
+
 
 #endif /* _MGRID_INTERNAL_H */
 

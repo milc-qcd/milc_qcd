@@ -27,6 +27,7 @@ number_of_base_sources 2
 # base_source 0
 
 vector_propagator_file
+field_type KS
 subset full
 ncolor 3
 source_label d

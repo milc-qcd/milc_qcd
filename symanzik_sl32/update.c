@@ -55,7 +55,7 @@ Real xrandom;
 	else             update_u(0.5*epsilon);
 
 	/* reunitarize the gauge field */
-	reunitarize();
+	reunitarize_cpu();
 
     }	/* end loop over microcanonical steps */
 

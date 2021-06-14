@@ -95,7 +95,7 @@ int qcdhdr_get_str(char *s, QCDheader *hdr, char **q) {
   /* find a token and return the value */
   int i;
   for (i=0; i<(char)(*hdr).ntoken; i++) {
-    if (strcmp(s,(char *)(*hdr).token[i])==0) {
+    if (strcmp(s,(const char *)(*hdr).token[i])==0) {
       *q = (*hdr).value[i];
       return(SUCCESS);
     }
@@ -268,7 +268,7 @@ void d2f_4mat(su3_matrix *a, fsu3_matrix *b){
 }
 
 /*---------------------------------------------------------------------------*/
-void swrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
+void swrite_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
 {
   if(g_write(src,size,1,fp) != 1)
     {
@@ -279,7 +279,7 @@ void swrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
     }
 }
 /*---------------------------------------------------------------------------*/
-void pwrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
+void pwrite_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
 {
   if(g_write(src,size,1,fp) != 1)
     {
@@ -291,13 +291,13 @@ void pwrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
 }
 /*---------------------------------------------------------------------------*/
 void pswrite_data(int parallel, FILE* fp, void *src, size_t size, 
-		 char *myname, char *descrip)
+		 const char *myname, const char *descrip)
 {
   if(parallel)pwrite_data(fp,src,size,myname,descrip);
   else        swrite_data(fp,src,size,myname,descrip);
 }
 /*---------------------------------------------------------------------------*/
-int sread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
+int sread_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
 {
   if(g_read(src,size,1,fp) != 1)
     {
@@ -310,7 +310,7 @@ int sread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
   return 0;
 }
 /*---------------------------------------------------------------------------*/
-int pread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
+int pread_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
 {
   if(g_read(src,size,1,fp) != 1)
     {
@@ -323,28 +323,28 @@ int pread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
   return 0;
 }
 /*---------------------------------------------------------------------------*/
-int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, char *myname, char *descrip)
+int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
 {
   int status;
 
   status = pread_data(fp,src,size,myname,descrip);
   if(byterevflag==1)
-    byterevn((int32type *)src,size/sizeof(int32type));
+    byterevn((u_int32type *)src,size/sizeof(int32type));
   return status;
 }
 /*---------------------------------------------------------------------------*/
-int sread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, char *myname, char *descrip)
+int sread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
 {
   int status;
 
   status = sread_data(fp,src,size,myname,descrip);
   if(byterevflag==1)
-    byterevn((int32type *)src,size/sizeof(int32type));
+    byterevn((u_int32type *)src,size/sizeof(int32type));
   return status;
 }
 /*---------------------------------------------------------------------------*/
 int psread_data(int parallel, FILE* fp, void *src, size_t size, 
-		 char *myname, char *descrip)
+		 const char *myname, const char *descrip)
 {
   if(parallel)return pread_data(fp,src,size,myname,descrip);
   else        return sread_data(fp,src,size,myname,descrip);
@@ -352,7 +352,7 @@ int psread_data(int parallel, FILE* fp, void *src, size_t size,
 /*---------------------------------------------------------------------------*/
 int psread_byteorder(int byterevflag, int parallel, FILE* fp, 
 		      void *src, size_t size, 
-		      char *myname, char *descrip)
+		      const char *myname, const char *descrip)
 {
   if(parallel)return pread_byteorder(byterevflag,fp,src,size,myname,descrip);
   else        return sread_byteorder(byterevflag,fp,src,size,myname,descrip);
@@ -417,10 +417,10 @@ void swrite_gauge_hdr(FILE *fp, gauge_header *gh)
 
 /* Write a data item to the gauge info file */
 int write_gauge_info_item( FILE *fpout,    /* ascii file pointer */
-		       char *keyword,   /* keyword */
-		       char *fmt,       /* output format -
+		       const char *keyword,   /* keyword */
+		       const char *fmt,       /* output format -
 					      must use s, d, e, f, lu, or g */
-		       char *src,       /* address of starting data
+		       const char *src,       /* address of starting data
 					   floating point data must be
 					   of type (Real) */
 		       int count,       /* number of data items if > 1 */
@@ -483,17 +483,17 @@ int write_gauge_info_item( FILE *fpout,    /* ascii file pointer */
 
 /* Write a data item to a character string */
 int sprint_gauge_info_item( 
-  char *string,    /* character string */
-  size_t nstring,     /* string length */			    
-  char *keyword,   /* keyword */
-  char *fmt,       /* output format -
-		      must use s, d, e, f, or g */
-  char *src,       /* address of starting data
-		      floating point data must be
-		      of type (Real) */
-  int count,       /* number of data items if > 1 */
-  int stride)      /* byte stride of data if
-		      count > 1 */
+  char *string,        /* character string */
+  size_t nstring,      /* string length */			    
+  const char *keyword, /* keyword */
+  const char *fmt,     /* output format -
+		          must use s, d, e, f, or g */
+  const char *src,     /* address of starting data
+		          floating point data must be
+		          of type (Real) */
+  int count,           /* number of data items if > 1 */
+  int stride)          /* byte stride of data if
+		          count > 1 */
 {
 
   int i,k,n;
@@ -577,14 +577,14 @@ void write_generic_gauge_info(FILE *info_fp, gauge_file *gf)
   char sums[20];
   gauge_header *gh = gf->header;
 
-  write_gauge_info_item(info_fp,"magic_number","%d",(char *)&gh->magic_number,0,0);
+  write_gauge_info_item(info_fp,"magic_number","%d",(const char *)&gh->magic_number,0,0);
   write_gauge_info_item(info_fp,"time_stamp","\"%s\"",gh->time_stamp,0,0);
   sprintf(sums,"%x %x",gf->check.sum29,gf->check.sum31);
   write_gauge_info_item(info_fp,"checksums","\"%s\"",sums,0,0);
-  write_gauge_info_item(info_fp,"nx","%d",(char *)&nx,0,0);
-  write_gauge_info_item(info_fp,"ny","%d",(char *)&ny,0,0);
-  write_gauge_info_item(info_fp,"nz","%d",(char *)&nz,0,0);
-  write_gauge_info_item(info_fp,"nt","%d",(char *)&nt,0,0);
+  write_gauge_info_item(info_fp,"nx","%d",(const char *)&nx,0,0);
+  write_gauge_info_item(info_fp,"ny","%d",(const char *)&ny,0,0);
+  write_gauge_info_item(info_fp,"nz","%d",(const char *)&nz,0,0);
+  write_gauge_info_item(info_fp,"nt","%d",(const char *)&nt,0,0);
 }
 
 /*----------------------------------------------------------------------*/
@@ -622,7 +622,7 @@ void write_gauge_info_file(gauge_file *gf)
 
 /* Set up the input gauge file and gauge header structures */
 
-gauge_file *setup_input_gauge_file(char *filename)
+gauge_file *setup_input_gauge_file(const char *filename)
 {
   char myname[] = "setup_input_gauge_file";
   gauge_file *gf;
@@ -820,7 +820,7 @@ void read_site_list(int parallel,gauge_file *gf)
 
   if(gf->header->order != NATURAL_ORDER)
     {
-      gf->rank2rcv = (int32type *)malloc(volume*sizeof(int32type));
+      gf->rank2rcv = (u_int32type *)malloc(volume*sizeof(u_int32type));
       if(gf->rank2rcv == NULL)
 	{
 	  printf("read_site_list: Can't malloc rank2rcv table\n");
@@ -835,7 +835,7 @@ void read_site_list(int parallel,gauge_file *gf)
 	  /* Reads receiving site coordinate if file is not in natural order */
 	  if(parallel)
 	    {
-	      if((int)g_read(gf->rank2rcv,sizeof(int32type),volume,gf->fp) != volume )
+	      if((size_t)g_read(gf->rank2rcv,sizeof(u_int32type),volume,gf->fp) != volume )
 		{
 		  int errsv = errno;
 		  printf("read_site_list: Node %d site list read error %d %s\n",
@@ -845,7 +845,7 @@ void read_site_list(int parallel,gauge_file *gf)
 	    }
 	  else
 	    {
-	      if((int)g_read(gf->rank2rcv,sizeof(int32type),volume,gf->fp) != volume )
+	      if((size_t)g_read(gf->rank2rcv,sizeof(u_int32type),volume,gf->fp) != volume )
 		{
 		  int errsv = errno;
 		  printf("read_site_list: Node %d site list read error %d %s\n",
@@ -859,7 +859,7 @@ void read_site_list(int parallel,gauge_file *gf)
 
       /* Broadcast result to all nodes */
 
-      broadcast_bytes((char *)gf->rank2rcv,volume*sizeof(int32type));
+      broadcast_bytes((char *)gf->rank2rcv,volume*sizeof(u_int32type));
     }
       
   else gf->rank2rcv = NULL;  /* If no site list */
@@ -878,7 +878,7 @@ int read_v3_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 
   FILE *fp;
   gauge_header *gh;
-  int32type tmp;
+  u_int32type tmp;
   int j;
   int sixtyfourbits;
   float fc1,fc2;
@@ -913,7 +913,7 @@ int read_v3_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
     }
   else 
     {
-      byterevn((int32type *)&gh->magic_number,1);
+      byterevn((u_int32type *)&gh->magic_number,1);
       if(gh->magic_number == GAUGE_VERSION_NUMBER_V1) 
 	{
 	  *byterevflag=1;
@@ -973,7 +973,7 @@ int read_v3_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
   /* Header byte length for this file */
@@ -1010,7 +1010,7 @@ int read_1996_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 
   FILE *fp;
   gauge_header *gh;
-  int32type tmp;
+  u_int32type tmp;
   int j;
   /* We keep this part of the old gauge header, but
      we ignore all but the two parameters */
@@ -1037,7 +1037,7 @@ int read_1996_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
     }
   else 
     {
-      byterevn((int32type *)&gh->magic_number,1);
+      byterevn((u_int32type *)&gh->magic_number,1);
       if(gh->magic_number == GAUGE_VERSION_NUMBER_1996) 
 	{
 	  *byterevflag=1;
@@ -1088,7 +1088,7 @@ int read_1996_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
   
@@ -1175,10 +1175,10 @@ int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 
   FILE *fp;
   gauge_header *gh;
-  int32type tmp;
+  u_int32type tmp;
   int j;
   char myname[] = "read_fnal_gauge_hdr";
-  int32type size_of_element, elements_per_site, gmtime_stamp;
+  u_int32type size_of_element, elements_per_site, gmtime_stamp;
 
 
   fp = gf->fp;
@@ -1195,7 +1195,7 @@ int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
     }
   else 
     {
-      byterevn((int32type *)&gh->magic_number,1);
+      byterevn((u_int32type *)&gh->magic_number,1);
       if(gh->magic_number == IO_UNI_MAGIC) 
 	{
 	  *byterevflag=1;
@@ -1221,13 +1221,13 @@ int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
      if necessary, and check consistency */
 
   if(psread_byteorder(*byterevflag,parallel,fp,&gmtime_stamp,
-	sizeof(int32type), myname,"gmtime_stamp")!=0)terminate(1);
+	sizeof(u_int32type), myname,"gmtime_stamp")!=0)terminate(1);
 
   if(psread_byteorder(*byterevflag,parallel,fp,&size_of_element,
-	sizeof(int32type), myname,"size_of_element")!=0)terminate(1);
+	sizeof(u_int32type), myname,"size_of_element")!=0)terminate(1);
   
   if(psread_byteorder(*byterevflag,parallel,fp,&elements_per_site,
-	sizeof(int32type), myname,"elements_per_site")!=0)terminate(1);
+	sizeof(u_int32type), myname,"elements_per_site")!=0)terminate(1);
   
   if( (size_of_element != 4 )|| (elements_per_site != 72) ) 
 	node0_printf("This does not look like a single precision gauge field\nsize-of-element= %d\t elements-per-site= %d\n",size_of_element,elements_per_site);
@@ -1258,7 +1258,7 @@ int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
   
@@ -1284,7 +1284,7 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
 
   FILE *fp;
   gauge_header *gh;
-  int32type tmp, btmp;
+  u_int32type tmp, btmp;
   int j;
   int byterevflag;
   char myname[] = "read_gauge_hdr";
@@ -1309,7 +1309,7 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
 
   tmp = gh->magic_number;
   btmp = gh->magic_number;
-  byterevn((int32type *)&btmp,1);
+  byterevn((u_int32type *)&btmp,1);
 
   /** See if header chunk is BEGI = 1111836489 for big endian
       or the byte reverse 1229407554 for little endian **/
@@ -1456,7 +1456,7 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
 	  ny = gh->dims[1];
 	  nz = gh->dims[2];
 	  nt = gh->dims[3];
-	  volume = nx*ny*nz*nt;
+	  volume = (size_t) nx*ny*nz*nt;
 	}
     }
 
@@ -1498,9 +1498,9 @@ void write_site_list(FILE *fp, gauge_header *gh)
 {
   off_t offset;
   int i;
-  int buf_length;
+  size_t buf_length;
   register site *s;
-  int32type coords, *cbuf;
+  u_int32type coords, *cbuf;
 
   /* All nodes write their site coordinate list in sequential
      blocks after the header.  The list is in the order of appearance
@@ -1514,7 +1514,7 @@ void write_site_list(FILE *fp, gauge_header *gh)
   offset = gh->header_bytes + 
     sizeof(int32type)*sites_on_node*this_node;
 
-  cbuf = (int32type *)malloc(sites_on_node*sizeof(int32type));
+  cbuf = (u_int32type *)malloc(sites_on_node*sizeof(u_int32type));
   if(cbuf == NULL)
     {
       printf("write_site_list: node %d can't malloc cbuf\n",this_node);
@@ -1550,7 +1550,7 @@ void write_site_list(FILE *fp, gauge_header *gh)
 /*---------------------------------------------------------------------------*/
 
 /* Open a file for parallel writing */
-gauge_file *parallel_open(int order, char *filename)
+gauge_file *parallel_open(int order, const char *filename)
 {
   /* All nodes open the same filename */
   /* Returns a file structure describing the opened file */
@@ -1592,7 +1592,7 @@ gauge_file *parallel_open(int order, char *filename)
   /* Assign values to file structure */
 
   gf->fp             = fp;
-  gf->filename        = filename;
+  gf->filename       = filename;
   gf->byterevflag    = 0;            /* Not used for writing */
   gf->parallel       = 1;            /* File opened in parallel */
 
@@ -1635,7 +1635,7 @@ fsu3_matrix *w_parallel_setup(gauge_file *gf, off_t *checksum_offset)
   gauge_node_size = sites_on_node*4*sizeof(fsu3_matrix) ;
 
   if(gf->header->order == NATURAL_ORDER)coord_list_size = 0;
-  else coord_list_size = sizeof(int32type)*volume;
+  else coord_list_size = sizeof(u_int32type)*volume;
   head_size = gf->header->header_bytes + coord_list_size;
   *checksum_offset = head_size;
   gauge_check_size = sizeof(gf->check.sum29) + sizeof(gf->check.sum31);
@@ -1659,7 +1659,7 @@ fsu3_matrix *w_parallel_setup(gauge_file *gf, off_t *checksum_offset)
 /*-----------------------------------------------------------------------*/
 
 /* Open a file for parallel writing in natural order */
-gauge_file *w_parallel_i(char *filename)
+gauge_file *w_parallel_i(const char *filename)
 {
   /* All nodes open the same filename */
   /* Returns a file structure describing the opened file */
@@ -1671,7 +1671,7 @@ gauge_file *w_parallel_i(char *filename)
 
 /*---------------------------------------------------------------------------*/
 /* Open a file for parallel writing in node-dump order */
-gauge_file *w_checkpoint_i(char *filename)
+gauge_file *w_checkpoint_i(const char *filename)
 {
   /* All nodes open the same filename */
   /* Returns a file structure describing the opened file */
@@ -1705,7 +1705,7 @@ void w_serial_f(gauge_file *gf)
 
 /*---------------------------------------------------------------------------*/
 
-gauge_file *r_serial_i(char *filename)
+gauge_file *r_serial_i(const char *filename)
 {
   /* Returns file descriptor for opened file */
 
@@ -1847,7 +1847,7 @@ void r_parallel_f(gauge_file *gf)
 /*---------------------------------------------------------------------------*/
 
 /* Read lattice dimensions from a binary file and close the file */
-void read_lat_dim_gf(char *filename, int *ndim, int dims[]){
+void read_lat_dim_gf(const char *filename, int *ndim, int dims[]){
   gauge_file *gf;
   int i;
   
@@ -1867,7 +1867,7 @@ void read_lat_dim_gf(char *filename, int *ndim, int dims[]){
 /*---------------------------------------------------------------------------*/
 #define INFO_DATA_SIZE 4096
 
-char *read_info_file(char base_filename[]){
+char *read_info_file(const char base_filename[]){
   char info_filename[512];
   char *info, *buf;
   FILE *info_fp;

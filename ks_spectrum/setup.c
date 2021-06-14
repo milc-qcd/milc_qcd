@@ -1,40 +1,14 @@
 /******** setup.c *********/
 /* MIMD version 7 */
+
 #define IF_OK if(status==0)
-
-/* Modifications ... */
-
-//  $Log: setup.c,v $
-//  Revision 1.7  2013/12/24 05:32:40  detar
-//  Add combo type.  Support embedded inverse.
-//
-//  Revision 1.6  2012/11/24 05:14:20  detar
-//  Add support for U(1) fields and for future HYPISQ action
-//
-//  Revision 1.5  2012/04/25 03:21:29  detar
-//  Initialize boundary phase
-//
-//  Revision 1.4  2012/03/06 03:23:26  detar
-//  Set GPU inverter precision through input parameter
-//
-//  Revision 1.3  2012/01/21 21:35:08  detar
-//  Support general spin_taste interpolating operators for mesons.
-//
-//  Revision 1.2  2011/12/03 03:44:36  detar
-//  Fix support for mu_eos
-//
-//  Revision 1.1  2011/11/30 22:11:40  detar
-//  Add
-//
-//
-
 
 #include "ks_spectrum_includes.h"
 #include "lattice_qdp.h"
 #include <string.h>
 #include "params.h"
 #include <unistd.h>
-extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
+//extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
 #endif
@@ -116,9 +90,6 @@ static int initial_set(void){
 #if FERM_ACTION == HISQ
     show_su3_mat_opts();
     show_hisq_links_opts();
-#elif FERM_ACTION == HYPISQ
-    show_su3_mat_opts();
-    show_hypisq_links_opts();
 #endif
 
     status = get_prompt(stdin,  &prompt );
@@ -169,7 +140,7 @@ static int initial_set(void){
 #endif
 
   number_of_nodes = numnodes();
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
 
   return(prompt);
 }
@@ -367,7 +338,7 @@ int readin(int prompt) {
       IF_OK status += get_i(stdin, prompt, "prec_pbp", &param.qic_pbp[0].prec);
       IF_OK for(i = 0; i < param.num_pbp_masses; i++){
 	IF_OK status += get_f(stdin, prompt, "mass", &param.ksp_pbp[i].mass);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
 	IF_OK status += get_f(stdin, prompt, "naik_term_epsilon", 
 			      &param.ksp_pbp[i].naik_term_epsilon);
 #else
@@ -396,6 +367,7 @@ int readin(int prompt) {
 #ifdef HALF_MIXED
 	IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic_pbp[i].mixed_rsq );
 #endif
+	IF_OK param.qic_pbp[i].inv_type = UMLTYPE;
       }
     }
 
@@ -541,32 +513,55 @@ int readin(int prompt) {
     nprop = 0;
     IF_OK for(k = 0; k < param.num_set; k++){
       int max_cg_iterations, max_cg_restarts;
-      int check = CHECK_NO;
+      enum check_type check = CHECK_NO;
+      char mgparamfile[MAXFILENAME] = "";
 
-#ifdef MULTISOURCE
       IF_OK status += get_s(stdin, prompt, "set_type", savebuf);
       IF_OK {
 	if(strcmp(savebuf,"multimass") == 0)
 	  param.set_type[k] = MULTIMASS_SET;
 	else if(strcmp(savebuf,"multisource") == 0)
 	  param.set_type[k] = MULTISOURCE_SET;
+	else if(strcmp(savebuf,"single") == 0)
+	  param.set_type[k] = SINGLES_SET;
 	else {
 	  printf("Unrecognized set type %s\n",savebuf);
-	  printf("Choices are 'multimass', 'multisource'\n");
+	  printf("Choices are 'multimass', 'multisource', 'single'\n");
 	  status++;
 	}
       }
-#else
-	  param.set_type[k] = MULTIMASS_SET;
-#endif
-      /* maximum no. of conjugate gradient iterations */
-      IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
-			    &max_cg_iterations );
-      
-      /* maximum no. of conjugate gradient restarts */
-      IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
-			    &max_cg_restarts );
 
+      IF_OK status += get_s(stdin, prompt, "inv_type", savebuf);
+      IF_OK {
+	if(strcmp(savebuf,"MG") == 0)
+	  param.inv_type[k] = MGTYPE;
+	else if(strcmp(savebuf,"CG") == 0)
+	  param.inv_type[k] = CGTYPE;
+	else if(strcmp(savebuf,"CGZ") == 0)
+	  param.inv_type[k] = CGZTYPE;
+	else if(strcmp(savebuf,"UML") == 0)
+	  param.inv_type[k] = UMLTYPE;
+	else {
+	  printf("Unrecognized inverter type %s\n",savebuf);
+	  printf("Choices are 'CG', 'CGZ', 'MG', 'UML'\n");
+	  status++;
+	}
+      }
+      
+      IF_OK {
+        if (param.inv_type[k] == MGTYPE) {
+          IF_OK status += get_s(stdin, prompt, "MGparams", mgparamfile);
+        }
+
+	/* maximum no. of conjugate gradient iterations */
+        IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
+			      &max_cg_iterations );
+	
+	/* maximum no. of conjugate gradient restarts */
+        IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
+			      &max_cg_restarts );
+      }
+	  
       /* Should we be checking (computing) the propagator by running
 	 the solver? */
 
@@ -619,22 +614,20 @@ int readin(int prompt) {
       
       IF_OK {
 
-	if(param.set_type[k] == MULTIMASS_SET){
-	  
-	  /* Get source index common to this set */
-	  IF_OK status += get_i(stdin,prompt,"source", &tmp_src);
-	} else {
-	  
+	if(param.set_type[k] == MULTISOURCE_SET){
 	  /* Get mass label common to this set */
 	  IF_OK status += get_s(stdin,prompt,"mass", savebuf);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
 	  IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 				&tmp_naik);
 #else
 	  tmp_naik = 0.0;
 #endif
+	} else {
+	  /* MULTIMASS_SET or SINGLES_SET */
+	  /* Get source index common to this set */
+	  IF_OK status += get_i(stdin,prompt,"source", &tmp_src);
 	}
-	
       }
 
       /* Number of propagators in this set */
@@ -643,6 +636,11 @@ int readin(int prompt) {
       if( param.num_prop[k]>MAX_PROP ){
 	printf("num_prop = %d must be <= %d!\n", param.num_prop[k], MAX_PROP);
 	status++;
+      }
+
+      if( param.inv_type[k] == MGTYPE && param.set_type[k] == MULTIMASS_SET
+	  && param.num_prop[k] > 1){
+	node0_printf("WARNING: Multigrid support for multimass is currently emulated via separate inversions\n");
       }
 
       /* Indexing range for set */
@@ -659,25 +657,26 @@ int readin(int prompt) {
 
 	IF_OK {
 	  
-	  if(param.set_type[k]  == MULTIMASS_SET){
+	  if(param.set_type[k]  == MULTISOURCE_SET){
+
+	    /* Get source index common to this set */
+	    IF_OK status += get_i(stdin,prompt,"source", &param.source[nprop]);
+	    strcpy(param.mass_label[nprop], savebuf);
+	    param.ksp[nprop].naik_term_epsilon = tmp_naik;
 	    
+	  } else {
+
+	    /* MULTIMASS_SET or SINGLES_SET */
 	    /* Get mass label common to this set */
 	    IF_OK status += get_s(stdin,prompt,"mass", param.mass_label[nprop]);
 	    
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if ( FERM_ACTION == HISQ )
 	    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 				  &param.ksp[nprop].naik_term_epsilon);
 #else
 	    param.ksp[nprop].naik_term_epsilon = 0.0;
 #endif
 	    param.source[nprop] = tmp_src;
-	    
-	  } else {
-	    
-	    /* Get source index common to this set */
-	    IF_OK status += get_i(stdin,prompt,"source", &param.source[nprop]);
-	    strcpy(param.mass_label[nprop], savebuf);
-	    param.ksp[nprop].naik_term_epsilon = tmp_naik;
 	  }
 	}
 
@@ -694,11 +693,17 @@ int readin(int prompt) {
 	/* Propagator inversion control                               */
 	/*------------------------------------------------------------*/
 	
+        /* inversion type */
+        param.qic[nprop].inv_type = param.inv_type[k];
+
 	/* maximum no. of conjugate gradient iterations */
 	param.qic[nprop].max = max_cg_iterations;
       
 	/* maximum no. of conjugate gradient restarts */
 	param.qic[nprop].nrestart = max_cg_restarts;
+
+	/* multigrid parameter file name */
+	strncpy(param.qic[nprop].mgparamfile, mgparamfile, MAXFILENAME);
       
 	/* Should we be deflating? */
 	param.qic[nprop].deflate = 0;
@@ -720,6 +725,32 @@ int readin(int prompt) {
 	/* Parameter used by QOPQDP inverter for mixed-precision solves */
 	IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic[nprop].mixed_rsq );
 #endif
+
+#ifdef MULTIGRID
+  /* parameter within MG solve to specify how to refresh the coarse op */
+
+	IF_OK {
+	  if (param.inv_type[k] == MGTYPE) {
+	    IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
+	    IF_OK {
+	      if(strcmp(savebuf,"FULL") == 0)
+		param.qic[nprop].mg_rebuild_type = FULLREBUILD;
+	      else if(strcmp(savebuf,"THIN") == 0)
+		param.qic[nprop].mg_rebuild_type = THINREBUILD;
+	      else if(strcmp(savebuf,"CG") == 0)
+		param.qic[nprop].mg_rebuild_type = CGREBUILD;
+	      else {
+		printf("Unrecognized rebuild type %s\n",savebuf);
+		printf("Choices are 'FULL', 'THIN', 'CG'\n");
+		status++;
+	      }
+	    }
+	  }
+	}
+#else
+  param.qic[nprop].mg_rebuild_type = CGREBUILD;
+#endif
+
 	/* Precision for all members of the set must be the same */
 	param.qic[nprop].prec = param.qic[0].prec;
 	
@@ -752,7 +783,7 @@ int readin(int prompt) {
     }
 
     IF_OK for(i = 0; i < param.num_qk; i++){
-      char *check_tag;
+      const char *check_tag;
       /* Get the propagator that we act on with the sink operator to
 	 form the "quark" field used in the correlator.  It might be a
 	 raw "propagator" or it might be a previously constructed
@@ -1262,7 +1293,7 @@ int readin(int prompt) {
   /* Don't need to save HISQ auxiliary links */
   fermion_links_want_aux(0);
   
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if FERM_ACTION == HISQ
 
 #ifdef DM_DEPS
   fermion_links_want_deps(1);
@@ -1303,8 +1334,9 @@ int readin(int prompt) {
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
   /* Do whatever is needed to get eigenpairs */
+  imp_ferm_links_t **fn = get_fm_links(fn_links);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &Nvecs_tot, eigVal, eigVec, 1);
+			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
 
   if(param.fixflag != NO_GAUGE_FIX){
     node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
@@ -1338,10 +1370,9 @@ int readin(int prompt) {
     }
     
     /* Do whatever is needed to get eigenpairs */
-    node0_printf("Calling reload_ks_eigen\n"); fflush(stdout);
+    imp_ferm_links_t **fn = get_fm_links(fn_links);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			     &param.eigen_param.Nvecs, eigVal, eigVec, 1);
-    node0_printf("Return from reload_ks_eigen\n"); fflush(stdout);
+			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
     if(param.fixflag != NO_GAUGE_FIX){
       node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
     }
@@ -1356,7 +1387,7 @@ int readin(int prompt) {
 /* Broadcast operator parameter values.  They are on the heap on node 0. */
 
 static void broadcast_heap_params(void){
-  int i, k;
+  int i;
 
   for(i = 0; i < param.num_base_source + param.num_modified_source; i++){
     broadcast_quark_source_sink_op_recursive(&param.src_qs[i].op);

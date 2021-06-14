@@ -10,6 +10,7 @@
 #endif
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
+#include "../include/generic_u1.h"
 #endif
 
 int main( int argc, char **argv ){
@@ -195,7 +196,7 @@ int main( int argc, char **argv ){
   fn_links = NULL;
   
 #ifdef HAVE_QUDA
-  qudaFinalize();
+  finalize_quda();
 #endif
   
   normal_exit(0);

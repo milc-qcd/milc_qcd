@@ -122,7 +122,7 @@ Real xrandom;
 
 	/* reunitarize the gauge field */
 	rephase_sf( OFF );
-	reunitarize();
+	reunitarize_cpu();
 	rephase_sf( ON );
 
 	/* do conjugate gradient to get (Madj M)inverse * phi */

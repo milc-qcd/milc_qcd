@@ -121,7 +121,7 @@ initial_set()
   iseed=param.iseed;
   
   number_of_nodes = numnodes();
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
   beta = param.beta;
   
   n_dyn_masses = param.n_dyn_masses;

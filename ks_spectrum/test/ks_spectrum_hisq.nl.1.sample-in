@@ -72,6 +72,7 @@ number_of_sets 3
 # Parameters for set 0
 
 set_type multimass
+inv_type UML
 max_cg_iterations 300
 max_cg_restarts 5
 check yes
@@ -96,6 +97,7 @@ forget_ksprop
 # Parameters for set 1
 
 set_type multimass
+inv_type UML
 max_cg_iterations 300
 max_cg_restarts 5
 check yes
@@ -118,6 +120,7 @@ forget_ksprop
 
 
 set_type multimass
+inv_type UML
 max_cg_iterations 300
 max_cg_restarts 5
 check yes

@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
   /* Finish setup - broadcast dimensions */
   setup_refresh();
   
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
   
   /* Allocate space for ksprops */
   ksprop1 = (su3_vector *)malloc(sites_on_node*3*sizeof(su3_vector));

@@ -114,7 +114,7 @@ typedef struct {
    u0 is tadpole improvement factor, perhaps (plaq/3)^(1/4)
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 #ifdef FIX_NODE_GEOM
 EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
@@ -144,9 +144,9 @@ EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
-EXTERN	int sites_on_node;		/* number of sites on this node */
-EXTERN	int even_sites_on_node;	/* number of even sites on this node */
-EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
+EXTERN	size_t sites_on_node;		/* number of sites on this node */
+EXTERN	size_t even_sites_on_node;	/* number of even sites on this node */
+EXTERN	size_t odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
@@ -155,6 +155,7 @@ EXTERN  int this_node;		/* node number of this node */
 EXTERN double_prn node_prn ;
 
 EXTERN  gauge_file *savelat_p;
+EXTERN  gauge_file *start_u1lat_p;
 EXTERN  char utc_date_time[64];
 EXTERN  char hostname[128];
 
@@ -175,6 +176,9 @@ EXTERN fermion_links_t    *fn_links;
 
 EXTERN int n_naiks;	/* Only one (dummy) Naik correction (for HISQ) */
 EXTERN double eps_naik[1];	/* Naik correction */
+
+EXTERN Real *u1_A;
+EXTERN Real g_splaq,g_tplaq;	/* global U(1) plaquette measures */
 
 /* For eigenpair calculation */
 EXTERN int Nvecs_tot;

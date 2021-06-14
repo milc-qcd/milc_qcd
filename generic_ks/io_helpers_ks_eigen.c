@@ -160,13 +160,13 @@ void w_close_ks_eigen(int flag, ks_eigen_file *kseigf){
    >1 for seek, read error, or missing data error 
 */
 int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
-		    su3_vector **eigVec, int timing){
+		    su3_vector **eigVec, imp_ferm_links_t *fn, int timing){
   
   register int i, j;
   int status = 0;
   int serpar;
   int qio_status;
-  int packed;
+  int packed = 0, file_type = 0;
   QIO_Reader *infile;
   double dtime = (double)0.0;
   char myname[] = "reload_ks_eigen";
@@ -186,26 +186,46 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
     if(flag == RELOAD_SERIAL)serpar = QIO_SERIAL;
     else serpar = QIO_PARALLEL;
     
-    infile = open_ks_eigen_infile(eigfile, Nvecs, &packed, serpar);
+    infile = open_ks_eigen_infile(eigfile, Nvecs, &packed, &file_type, serpar);
     if(infile == NULL){
       node0_printf("ERROR: Can't open %s for reading\n", eigfile);
       status = 1;
       break;
     }
-    for(int i = 0; i < *Nvecs; i++){
-      qio_status = read_ks_eigenvector(infile, packed, eigVec[i], &eigVal[i]);
+    /* Read using MILC format */
+    if(file_type == 0){
+      for(int i = 0; i < *Nvecs; i++){
+	qio_status = read_ks_eigenvector(infile, packed, eigVec[i], &eigVal[i]);
+	if(qio_status != QIO_SUCCESS){
+	  if(qio_status == QIO_EOF){
+	    node0_printf("WARNING: Premature EOF at %d eigenvectors\n", i);
+	    *Nvecs = i;
+	  } else {
+	    node0_printf("ERROR: Can't read an eigenvector. Error %d\n", qio_status);
+	    status = 1;
+	  }
+	  break;
+	}
+      }
+    } else {
+      /* Read using QUDA format */
+      qio_status = read_quda_ks_eigenvectors(infile, eigVec, eigVal, Nvecs, EVEN);
       if(qio_status != QIO_SUCCESS){
 	if(qio_status == QIO_EOF){
-	  node0_printf("WARNING: Premature EOF at %d eigenvectors\n", i);
-	  *Nvecs = i;
+	  node0_printf("WARNING: Premature EOF at eigenvectors\n");
+	  terminate(1);
 	} else {
-	  node0_printf("ERROR: Can't read an eigenvector. Error %d\n", qio_status);
+	  node0_printf("ERROR: Can't read eigenvectors. Error %d\n", qio_status);
 	  status = 1;
 	}
 	break;
       }
     }
     close_ks_eigen_infile(infile);
+
+    /* Reconstruct eigenvalues */
+    reset_eigenvalues( eigVec, eigVal, *Nvecs, EVEN, fn);
+
     break;
   default:
     node0_printf("%s: Unrecognized reload flag.\n", myname);
@@ -231,7 +251,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
    >1 for seek, read error, or missing data error 
 */
 int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
-		    su3_vector **eigVec, int timing){
+		    su3_vector **eigVec, imp_ferm_links_t *fn, int timing){
 
   register int i, j;
   int status = 0;
@@ -294,6 +314,7 @@ int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
   QIO_Writer *outfile;
   int status = 0;
   int serpar;
+  int packed;
   double dtime = (double)0.0;
   char myname[] = "save_ks_eigen";
   
@@ -304,11 +325,16 @@ int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
     break;
   case SAVE_SERIAL:
   case SAVE_PARALLEL:
+  case SAVE_SERIAL_PACKED:
+  case SAVE_PARALLEL_PACKED:
 
-    if(flag == SAVE_SERIAL)serpar = QIO_SERIAL;
+    if(flag == SAVE_SERIAL || flag == SAVE_SERIAL_PACKED)serpar = QIO_SERIAL;
     else serpar = QIO_PARALLEL;
 
-    outfile = open_ks_eigen_outfile(savefile, Nvecs, QIO_SINGLEFILE, serpar);
+    if(flag == SAVE_SERIAL_PACKED || flag == SAVE_PARALLEL_PACKED)packed = 1;
+    else packed = 0;
+
+    outfile = open_ks_eigen_outfile(savefile, Nvecs, QIO_SINGLEFILE, serpar, packed);
     if(outfile == NULL){
       node0_printf("ERROR: Can't open %s for writing\n", savefile);
       status = 1;
@@ -316,7 +342,7 @@ int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
     }
 
     for(int i = 0; i < Nvecs; i++){
-      int status = write_ks_eigenvector(outfile, eigVec[i], eigVal[i], resid[i]);
+      int status = write_ks_eigenvector(outfile, packed, eigVec[i], eigVal[i], resid[i]);
       if(status != QIO_SUCCESS){
 	node0_printf("ERROR: Can't write eigenvector.\n");
 	status = 1;
@@ -326,6 +352,26 @@ int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
 
     close_ks_eigen_outfile(outfile);
     break;
+
+  case SAVE_PARTFILE_SCIDAC:
+    outfile = open_ks_eigen_outfile(savefile, Nvecs, QIO_PARTFILE, QIO_SERIAL, 0);
+    if(outfile == NULL){
+      node0_printf("ERROR: Can't open %s for writing\n", savefile);
+      status = 1;
+      break;
+    }
+    for(int i = 0; i < Nvecs; i++){
+      int status = write_ks_eigenvector(outfile, 0, eigVec[i], eigVal[i], resid[i]);
+      if(status != QIO_SUCCESS){
+	node0_printf("ERROR: Can't write eigenvector.\n");
+	status = 1;
+	break;
+      }
+    }
+
+    close_ks_eigen_outfile(outfile);
+    break;
+    
   default:
     node0_printf("%s: Unrecognized save flag.\n", myname);
     terminate(1);
@@ -633,7 +679,7 @@ static void print_read_options(void){
 */
 int ask_starting_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
 
-  char *savebuf;
+  const char *savebuf;
   int status;
   char myname[] = "ask_starting_ks_eigen";
   
@@ -680,7 +726,7 @@ int ask_starting_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
 
 static void print_save_options(void){
 
-  printf("'forget_ks_eigen', 'save_ascii_ks_eigen', 'save_serial_ks_eigen', or 'save_parallel_ks_eigen'");
+  printf("'forget_ks_eigen', 'save_ascii_ks_eigen', 'save_serial_ks_eigen', 'save_parallel_ks_eigen', or 'save_partfile_ks_eigen'");
 }
 
 /*--------------------------------------------------------------------*/
@@ -690,7 +736,7 @@ static void print_save_options(void){
 */
 int ask_ending_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
 
-  char *savebuf;
+  const char *savebuf;
   int status;
   char myname[] = "ask_ending_ks_eigen";
 
@@ -714,8 +760,14 @@ int ask_ending_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
     *flag = SAVE_SERIAL;
   else if(strcmp("save_parallel_ks_eigen",savebuf) == 0)
     *flag = SAVE_PARALLEL;
+  else if(strcmp("save_serial_packed_ks_eigen",savebuf) == 0)
+    *flag = SAVE_SERIAL_PACKED;
+  else if(strcmp("save_parallel_packed_ks_eigen",savebuf) == 0)
+    *flag = SAVE_PARALLEL_PACKED;
+  else if(strcmp("save_partfile_ks_eigen",savebuf) == 0)
+    *flag = SAVE_PARTFILE_SCIDAC;
   else{
-    printf("ERROR IN INPUT: ks_eigen outpu command %s is invalid.\n", savebuf);
+    printf("ERROR IN INPUT: ks_eigen output command %s is invalid.\n", savebuf);
     printf("Choices are ");
     print_save_options();
     printf("\n");

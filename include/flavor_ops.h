@@ -21,7 +21,7 @@ void general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index
 void spin_taste_op(int index, int r0[], su3_vector *dest, su3_vector *src);
 
 int spin_taste_index(char *label);
-char *spin_taste_label(int index);
+const char *spin_taste_label(int index);
 int is_rhosfn_index(int index);
 int is_rhosffn_index(int index);
 int is_rhosbfn_index(int index);

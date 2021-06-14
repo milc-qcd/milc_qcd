@@ -106,6 +106,7 @@ class PointSource:
     _Template = """
     #== source ${id}: ${_classType} ==
     point
+    field_type ${field_type}
     subset ${subset}
     origin #echo ' '.join(map(str,$origin))#
     #if $scaleFactor is not None:
@@ -113,10 +114,11 @@ class PointSource:
     #end if
     source_label ${label}
     #echo ' '.join($save)#"""
-    def __init__(self,origin,subset,scaleFactor,label,save):
+    def __init__(self,origin,field_type,subset,scaleFactor,label,save):
         self._classType = self.__class__.__name__
         self._objectID = self._classType+'_'+base36(id(self))
         self.origin = origin
+        self.field_type = field_type
         self.subset = subset
         self.scaleFactor = scaleFactor
         self.label = label
@@ -140,6 +142,7 @@ class RandomColorWallSource:
     _Template = """
     #== source ${id}: ${_classType} ==
     random_color_wall
+    field_type ${field_type}
     subset ${subset}
     t0 ${tsrc}
     ncolor ${ncolor}
@@ -149,11 +152,12 @@ class RandomColorWallSource:
     #end if
     source_label ${label}
     #echo ' '.join($save)#"""
-    def __init__(self,tsrc,ncolor,subset,momentum,scaleFactor,label,save):
+    def __init__(self,tsrc,ncolor,field_type,subset,momentum,scaleFactor,label,save):
         self._classType = self.__class__.__name__
         self._objectID = self._classType+'_'+base36(id(self))
         self.tsrc = tsrc
         self.ncolor = ncolor
+        self.field_type = field_type
         self.subset = subset
         self.momentum = momentum
         self.scaleFactor = scaleFactor
@@ -181,6 +185,7 @@ class VectorFieldSource:
     _Template = """
     #== source ${id}: ${_classType} ==
     vector_field
+    field_type ${field_type}
     subset ${subset}
     origin #echo ' '.join(map(str,$origin))#
     #echo ' '.join($load)#
@@ -191,12 +196,13 @@ class VectorFieldSource:
     #end if
     source_label ${label}
     #echo ' '.join($save)#"""
-    def __init__(self,load,origin,ncolor,subset,momentum,scaleFactor,label,save):
+    def __init__(self,load,origin,ncolor,field_type,subset,momentum,scaleFactor,label,save):
         self._classType = self.__class__.__name__
         self._objectID = self._classType+'_'+base36(id(self))
         self.load = load
         self.origin = origin
         self.ncolor = ncolor
+        self.field_type = field_type
         self.subset = subset
         self.momentum = momentum
         self.scaleFactor = scaleFactor
@@ -227,6 +233,7 @@ class DiracFieldSource:
     _Template = """
     #== source ${id}: ${_classType} ==
     dirac_field
+    field_type clover
     subset ${subset}
     origin #echo ' '.join(map(str,$origin))#
     #echo ' '.join($load)#
@@ -1056,6 +1063,7 @@ class KSsolveSet:
     """A set of KS solves that have a common source specification, momentum twist, and precision."""
     _Template = """
     #== ${_classType} ==
+    set_type multimass
     max_cg_iterations ${maxCG.iters}
     max_cg_restarts ${maxCG.restarts}
     check ${check}

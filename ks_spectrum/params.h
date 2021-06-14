@@ -11,11 +11,11 @@
 
 #define MAX_MASS_PBP 8
 #define MAX_SOURCE 32
-#define MAX_SET 64
+#define MAX_SET 256
 #define MAX_PROP 64
 #define MAX_QK 256
 #define MAX_COMBO 8
-#define MAX_PAIR 3000
+#define MAX_PAIR 5000
 #define MAX_TRIPLET 64
 #define MAX_QKPAIR_LABEL 64
 #define MAX_MESON 32
@@ -32,7 +32,9 @@
 #define COMBO_TYPE 2
 #define BASE_SOURCE_PARENT -1
 
-enum checktype { CHECK_NO,  CHECK_YES, CHECK_SOURCE_ONLY };
+enum check_type { CHECK_NO,  CHECK_YES, CHECK_SOURCE_ONLY };
+
+enum set_type { MULTIMASS_SET, MULTISOURCE_SET, SINGLES_SET };
 
 /* structure for passing simulation parameters to each node */
 typedef struct {
@@ -96,7 +98,8 @@ typedef struct {
   int parent_source[MAX_SOURCE];      /* base_source or source index */
   /* Multimass or multisource sets */
   int num_set;  /* number of sets */
-  int set_type[MAX_SET];    /* multimass or multisource */
+  enum set_type set_type[MAX_SET];    /* multimass or multisource */
+  enum inv_type inv_type[MAX_SET];    /* inverter type MG or CG */
   Real charge[MAX_SET];     /* charge for propagators in the set */
   char charge_label[MAX_SET][32];  /* for correlator label */
   int num_prop[MAX_SET]; /* number of propagators in a set */
@@ -111,7 +114,7 @@ typedef struct {
   char mass_label[MAX_PROP][32]; /* mass label for this prop */
   ks_param ksp[MAX_PROP];         /* propagator parameters for this prop */
   quark_invert_control qic[MAX_PROP];
-  int check[MAX_PROP];         /* True -> run the inverter */
+  enum check_type check[MAX_PROP];         /* True -> run the inverter */
   Real bdry_phase[MAX_PROP][4];      /* For twisted boundary conditions */
   char startfile_ks[MAX_PROP][MAXFILENAME];
   char savefile_ks[MAX_PROP][MAXFILENAME];

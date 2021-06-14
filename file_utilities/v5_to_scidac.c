@@ -495,7 +495,7 @@ void r_serial_site_links(char *buf, size_t index, int count, void *arg)
   /* Do the input byte reversal and then checksum, if needed. */
   
   if(gf->byterevflag==1)
-    byterevn((int32type *)buf,
+    byterevn((u_int32type *)buf,
 	     4*sizeof(fsu3_matrix)/sizeof(int32type));
   /* Accumulate MILC v5 checksums */
   for(k = 0, val = (u_int32type *)buf; 
@@ -513,7 +513,7 @@ void r_serial_site_links(char *buf, size_t index, int count, void *arg)
   /* For the crc checksum we have to get the output byte ordering right */
   memcpy(cbuf,buf,4*sizeof(fsu3_matrix));
   if(! big_endian())
-    byterevn((int32type *)cbuf,4*sizeof(fsu3_matrix)/sizeof(int32type));
+    byterevn((u_int32type *)cbuf,4*sizeof(fsu3_matrix)/sizeof(int32type));
   state->crc = 
     crc32(state->crc, cbuf, 4*(int)sizeof(fsu3_matrix));
 
@@ -641,7 +641,7 @@ int main(int argc, char *argv[])
   }
 
   nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
-  volume = nx*ny*nz*nt;
+  volume = (size_t) nx*ny*nz*nt;
 
   /* Finish setting up, now we know the dimensions */
   setup();
@@ -696,9 +696,9 @@ int main(int argc, char *argv[])
   /* Take care of endianness before computing crc32 on length */
   if(big_endian()){
     if(sizeof(off_t) == 4)
-      byterevn((int32type *)&payload_bytes, 1);
+      byterevn((u_int32type *)&payload_bytes, 1);
     else if(sizeof(off_t) == 8)
-      byterevn64((int32type *)&payload_bytes, 1);
+      byterevn64((u_int32type *)&payload_bytes, 1);
     else{
       printf("UNEXPECTED sizeof(off_t) = %d. Don't trust cksum!\n", 
 	     sizeof(off_t));

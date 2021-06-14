@@ -158,7 +158,7 @@ dumpmat_hp( &lsum );
   //    THIS BASICALLY REUNITARIZES THE HYP-SMEARED LINKS,
   //    WHICH WERE ALREADY PROJECTED TO SU(3)
   //    MAY NOT WORK RIGHT IF U(3) PROJECTION IS USED
-  reunitarize();
+  reunitarize_cpu();
 
 }
 
@@ -228,7 +228,7 @@ void smooth()
   }
   
   /* reunitarize the gauge field */
-  reunitarize();
+  reunitarize_cpu();
   
 } /* smooth */
 

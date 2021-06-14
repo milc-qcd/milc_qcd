@@ -51,7 +51,7 @@
     /* Include file specifies the basic paths */
 
 static int 
-make_component_path_table( char *action_desc, int npaths, int max_paths,
+make_component_path_table( const char *action_desc, int npaths, int max_paths,
 		      int *path_length, Real *coeff,
 		      int paths[][MAX_LENGTH], Real *act_coeff, 
 		      Q_path *this_q_paths, Real mass, int index_onelink,
@@ -95,7 +95,7 @@ add_basic_path( Q_path *q_paths, int start_path, int *vec, int length,
 		Real coeff, int max_paths );
 
 static void 
-build_act_path_coeff(char action_desc[], Real act_coeff[], Real coeff[], 
+build_act_path_coeff(const char action_desc[], Real act_coeff[], Real coeff[], 
 		     int npaths, int path_length[]){
   int j;
 
@@ -163,9 +163,9 @@ void load_act_path_coeff_hisq(ks_action_paths_hisq *ap, int n_naiks,
 #endif
   
 #if ( UNITARIZATION_GROUP==UNITARIZE_SU3 )
-  if(mynode()==0)printf("Unitarizaton group = SU(3)\n");
+  if(mynode()==0)printf("Unitarization group = SU(3)\n");
 #elif ( UNITARIZATION_GROUP==UNITARIZE_U3 )
-  if(mynode()==0)printf("Unitarizaton group = U(3)\n");
+  if(mynode()==0)printf("Unitarization group = U(3)\n");
 #else
   if(mynode()==0)printf("Unknown unitarization group. Set U(3) or SU(3)\n");
   terminate(0);
@@ -252,7 +252,7 @@ int make_path_table_hisq(ks_action_paths_hisq *ap,
 }
 
 static int 
-make_component_path_table( char *action_desc, int npaths, int max_paths,
+make_component_path_table( const char *action_desc, int npaths, int max_paths,
 		      int *path_length, Real *coeff,
 		      int paths[][MAX_LENGTH], Real *act_coeff, 
 		      Q_path *this_q_paths, Real naik_term_epsilon, 

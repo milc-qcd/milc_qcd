@@ -4,12 +4,12 @@
 *  MIMD version 7 	 				            *
 */
 
-#include <quda_milc_interface.h>
-#include "../include/openmp_defs.h"
-
 #ifdef HAVE_QUDA
+
+#include "../include/openmp_defs.h"
+#include <quda_milc_interface.h>
+
 int initialize_quda(void);
-#endif
 
 static QudaMILCSiteArg_t newQudaMILCSiteArg() {
   QudaMILCSiteArg_t arg;
@@ -26,11 +26,19 @@ static QudaMILCSiteArg_t newQudaMILCSiteArg() {
   return arg;
 }
 
+void finalize_quda(void);
+
 #include <string.h>
 
 static inline void fast_copy(void *dest, const void *src, size_t n) {
   memcpy(dest, src, n);
 }
+
+// only use managed memory if enabled by QUDA
+#ifndef USE_QUDA_MANAGED
+#define qudaAllocateManaged qudaAllocatePinned
+#define qudaFreeManaged qudaFreePinned
+#endif
 
 /*
   Allocate a pinned gauge-field array suitable for DMA transfer to the GPU
@@ -116,16 +124,6 @@ static void destroy_M_quda(anti_hermitmat *momentum) {
   qudaFreePinned(momentum);
 }
 
-/*
-  Return the most recent fermion link field passed to QUDA
-  (defined in generic_ks/ks_multicg_offset_gpu.c)
-*/
-imp_ferm_links_t* get_fn_last();
-
-/*
-  Update the fermion link field passed to QUDA
-  (defined in generic_ks/ks_multicg_offset_gpu.c)
-*/
-void set_fn_last(imp_ferm_links_t *fn_last_new);
+#endif // HAVE_QUDA
 
 #endif /* GENERIC_QUDA_H */

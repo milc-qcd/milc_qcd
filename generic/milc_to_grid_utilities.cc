@@ -2,15 +2,15 @@
 /* For the Grid interface */
 /* MIMD version 7 */
 
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+
 #include <Grid/Grid.h>
 #include <Grid/communicator/Communicator.h>
 #include <vector>
 #include <iostream>
 //#include <qmp.h>
-
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 #undef GRID_EXTERN
 
@@ -23,12 +23,12 @@ extern "C" {
 }
 using namespace std;
 using namespace Grid;
-using namespace Grid::QCD;
+//using namespace Grid::QCD;
 
 GRID_4Dgrid *grid_full;
 GRID_4DRBgrid *grid_rb;
 
-std::vector<int> squaresize;
+Coordinate squaresize;
 
 static int grid_is_initialized = 0;
 
@@ -56,7 +56,7 @@ int grid2milc_parity(GRID_evenodd_t grid_parity){
   return -999;
 }
 
-void finalize_grid(void)
+void finalize_grid()
 {
   /* We omit MPI_Finalize() because most likely it will break a lot of things */
   Grid_unquiesce_nodes();
@@ -149,7 +149,7 @@ void setup_grid_communicator(int peGrid[]){
     terminate(1);
   }
 
-  std::vector<int> processors;
+  Coordinate processors;
   for(int i=0;i<4;i++) processors.push_back(peGrid[i]);
   grid_cart = new Grid::CartesianCommunicator(processors);
 }

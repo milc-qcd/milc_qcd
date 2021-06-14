@@ -174,7 +174,7 @@ static int initial_set(){
 #endif
 
   number_of_nodes = numnodes();
-  volume=nx*ny*nz*nt;
+  volume=(size_t)nx*ny*nz*nt;
   return(prompt);
 }
 
@@ -510,6 +510,7 @@ int readin(int prompt) {
       param.qic[i].parity = EVENANDODD;
       param.qic[i].min = 0;
       param.qic[i].nsrc = 1;
+      param.qic[i].inv_type = UMLTYPE;
       
       /* Momentum twist and time boundary condition */
 

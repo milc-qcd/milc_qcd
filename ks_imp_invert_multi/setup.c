@@ -131,7 +131,7 @@ int initial_set(){
     dyn_flavors[1] = nflavors2;
     
     number_of_nodes = numnodes();
-    volume=nx*ny*nz*nt;
+    volume=(size_t)nx*ny*nz*nt;
     total_iters=0;
     return(prompt);
 }

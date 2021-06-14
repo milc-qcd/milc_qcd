@@ -327,6 +327,9 @@ include ../Make_template_scidac
 ifeq ($(strip ${COMPILER}),intel)
   INCFFTW = -mkl
   LIBFFTW = -mkl
+else ifeq ($(strip ${COMPILER}),cray-intel)
+  INCFFTW = -mkl
+  LIBFFTW = -mkl
 endif
 
 #----------------------------------------------------------------------
@@ -404,11 +407,16 @@ endif
 # 15. GPU/QUDA Options
 
 WANTQUDA    ?= #true
+
+ifeq ($(strip ${WANTQUDA}),true)
+
 WANT_CL_BCG_GPU ?= #true
 WANT_FN_CG_GPU ?= #true
 WANT_FL_GPU ?= #true
 WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
+
+endif
 
 # enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
 WANT_MIXED_PRECISION_GPU ?= 0
@@ -419,13 +427,13 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   INCQUDA = -I${QUDA_HOME}/include -I${QUDA_HOME}/tests
   PACKAGE_HEADERS += ${QUDA_HOME}/include
-  LIBQUDA = -L${QUDA_HOME}/lib -lquda
+  LIBQUDA = -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda -ldl
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
 
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
+  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcublas -lcufft -lcublas
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
@@ -701,7 +709,7 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 
 # REMAP  report remapping time for QDP, QOP in conjunction with above
 
-CTIME = # -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
+CTIME ?= # -DNERSC_TIME -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
 
 #------------------------------
 # Profiling
@@ -854,8 +862,10 @@ CPREFETCH = #
 # POLY_EIGEN
 # MATVEC_PRECOND
 # CHEBYSHEV_EIGEN
+# MULTISOURCE
+# MULTIGRID
 
-KSCGMULTI = -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
+KSCGMULTI ?= -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
 
 #------------------------------
 # Multifermion force routines

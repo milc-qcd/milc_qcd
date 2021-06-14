@@ -85,7 +85,7 @@ typedef struct {
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int niter,nrestart,wallflag;
 EXTERN	int source_time;       /* timeslice of the initial source */
 EXTERN	Real kappa,kappa_heavy,kappa_light;
@@ -126,9 +126,9 @@ extern int spins[4];
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
-EXTERN	int sites_on_node;		/* number of sites on this node */
-EXTERN	int even_sites_on_node;	/* number of even sites on this node */
-EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
+EXTERN	size_t sites_on_node;		/* number of sites on this node */
+EXTERN	size_t even_sites_on_node;	/* number of even sites on this node */
+EXTERN	size_t odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 

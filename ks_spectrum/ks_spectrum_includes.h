@@ -22,12 +22,10 @@
 #include "../include/dirs.h"
 #include "../include/io_u1lat.h"
 #include "../include/generic_u1.h"
-#define MULTIMASS_SET 0
-#define MULTISOURCE_SET 1
 
 #ifdef PRTIME
 #define STARTTIME dtime = -dclock();
-#define ENDTIME(string) dtime += dclock(); node0_printf("Aggregate time to %s %e\n",(string),dtime);
+#define ENDTIME(string) dtime += dclock(); node0_printf("Aggregate time to %s %e\n",(string),dtime);  fflush(stdout);
 #else
 #define STARTTIME
 #define ENDTIME(string)
@@ -48,7 +46,7 @@ char *create_kss_XML(char *filename, quark_source *ksqs);
 void read_ksprop_to_ksp_field(int startflag, char startfile[], 
 			      quark_source *my_ksqs, ks_prop_field *ksp);
 
-int solve_ksprop(int set_type,
+int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 		 int num_prop, int startflag[], char startfile[][MAXFILENAME],
 		 int saveflag[], char savefile[][MAXFILENAME],
 		 ks_prop_field *ksprop[],
@@ -74,14 +72,5 @@ int readin(int prompt);
 int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename);
 void spectrum_ks(ks_prop_field *qp0, int naik_index0, ks_prop_field *qp1, int naik_index1, int pair);
 void spectrum_ks_baryon(ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *qp2, int triplet);
-
-/* u1link.c */
-complex *map_a2_u1link(Real chrg, Real *a);
-void u1phase_on(Real charge, Real *u1_A);
-void u1phase_off(void);
-Real *create_u1_A_field(void);
-
-/* u1plaq.c */
-void u1plaq(Real *splaq,Real *tplaq);
 
 /*  ks_spectrum_includes.h */

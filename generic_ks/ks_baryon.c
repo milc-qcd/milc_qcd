@@ -33,7 +33,7 @@ enum baryon_type_type {
   MAX_BARYON_TYPE
 };
 
-static char *baryon_type_string[MAX_BARYON_TYPE]  = { 
+static const char *baryon_type_string[MAX_BARYON_TYPE]  = { 
     "nucleon",
     "delta",
 };
@@ -51,7 +51,7 @@ int baryon_type_index(char *label){
 
 /* Map an index to the label */
 
-char *baryon_type_label(int index){
+const char *baryon_type_label(int index){
   return baryon_type_string[index];
 }
 

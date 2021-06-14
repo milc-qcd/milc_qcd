@@ -15,12 +15,15 @@
 #include "../include/io_scidac_ks.h"
 #include "../include/io_ks_eigen.h"
 #include <string.h>
+#define LOOPEND
+#include "../include/loopend.h"
+#include "../include/openmp_defs.h"
 
 #define FILEINFOSTRING_MAX 512
 #define RECINFOSTRING_MAX  256
 
 static char *
-create_file_xml(int Nvecs){
+create_file_xml(int Nvecs, int packed){
   char begin_xml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info><title>KS eigenvalues and vectors</title>";
   char end_xml[] = "</info>";
   char *xml = (char *)malloc(FILEINFOSTRING_MAX);
@@ -34,10 +37,10 @@ create_file_xml(int Nvecs){
   snprintf(xml+bytes, max-bytes, "<Nvecs>%d</Nvecs>", Nvecs);
   bytes = strlen(xml);
   
-  #ifdef PACK_EIGEN
-  snprintf(xml+bytes, max-bytes, "<format>Packed</format>");
-  bytes = strlen(xml);
-  #endif
+  if(packed){
+    snprintf(xml+bytes, max-bytes, "<format>Packed</format>");
+    bytes = strlen(xml);
+  }
 
   snprintf(xml+bytes, max-bytes, "%s", end_xml);
   bytes = strlen(xml);
@@ -191,7 +194,7 @@ parse_record_xml(double *eigVal, char *xml){
 /* Open a file for writing eigenvectors */
 
 QIO_Writer *
-open_ks_eigen_outfile(char *filename, int Nvecs, int volfmt, int serpar){
+open_ks_eigen_outfile(const char *filename, int Nvecs, int volfmt, int serpar, int packed){
   char *xml;
 
   QIO_String *filexml = QIO_string_create();
@@ -206,7 +209,7 @@ open_ks_eigen_outfile(char *filename, int Nvecs, int volfmt, int serpar){
   build_qio_filesystem(&fs);
 
   /* Create the file XML */
-  xml = create_file_xml(Nvecs);
+  xml = create_file_xml(Nvecs, packed);
   QIO_string_set(filexml, xml);
 
   /* Open the file for output */
@@ -221,7 +224,7 @@ open_ks_eigen_outfile(char *filename, int Nvecs, int volfmt, int serpar){
 /* Write an eigenvector and its eigenvalue */
 
 int
-write_ks_eigenvector(QIO_Writer *outfile, su3_vector *eigVec, double eigVal, 
+write_ks_eigenvector(QIO_Writer *outfile, int packed, su3_vector *eigVec, double eigVal, 
 		     double resid){
   int status;
   char *xml;
@@ -230,18 +233,18 @@ write_ks_eigenvector(QIO_Writer *outfile, su3_vector *eigVec, double eigVal,
   xml = create_record_xml(eigVal, resid);
   QIO_string_set(recxml, xml);
 
-#ifdef PACK_EIGEN
-  pack_field(eigVec, sizeof(su3_vector));
-  if(MILC_PRECISION == 1)
-    status = write_F3_V_from_half_field(outfile, recxml, eigVec, 1);
-  else
-    status = write_D3_V_from_half_field(outfile, recxml, eigVec, 1);
-#else
-  if(MILC_PRECISION == 1)
-    status = write_F3_V_from_field(outfile, recxml, eigVec, 1);
-  else
-    status = write_D3_V_from_field(outfile, recxml, eigVec, 1);
-#endif
+  if(packed){
+    pack_field(eigVec, sizeof(su3_vector));
+    if(MILC_PRECISION == 1)
+      status = write_F3_V_from_half_field(outfile, recxml, eigVec, 1);
+    else
+      status = write_D3_V_from_half_field(outfile, recxml, eigVec, 1);
+  } else {
+    if(MILC_PRECISION == 1)
+      status = write_F3_V_from_field(outfile, recxml, eigVec, 1);
+    else
+      status = write_D3_V_from_field(outfile, recxml, eigVec, 1);
+  }
 
   QIO_string_destroy(recxml);
   free(xml);
@@ -259,7 +262,8 @@ close_ks_eigen_outfile(QIO_Writer *outfile){
 /* Open the eigenvector file for reading */
 
 QIO_Reader *
-open_ks_eigen_infile(char *filename, int *Nvecs, int *packed, int serpar){
+open_ks_eigen_infile(const char *filename, int *Nvecs, int *packed, int *file_type, int serpar){
+  char myname[] = "open_ks_eigen_infile";
   char *xml;
 
   QIO_String *filexml = QIO_string_create();
@@ -275,6 +279,7 @@ open_ks_eigen_infile(char *filename, int *Nvecs, int *packed, int serpar){
   build_qio_filesystem(&fs);
 
   /* Open the file for input */
+  node0_printf("%s: Opening %s for reading\n", myname, filename);
   infile = open_scidac_input_xml(filename, &layout, &fs, serpar, filexml);
   if(infile == NULL) return infile;
 
@@ -283,16 +288,24 @@ open_ks_eigen_infile(char *filename, int *Nvecs, int *packed, int serpar){
   xml = QIO_string_ptr(filexml);
   parse_file_xml_Nvec(&Nvecs_test, xml);
   parse_file_xml_packed(packed, xml);
-  /* Warn if the number of eigenvectors doesn't match expectations,
-     and if the number of eigenvectors is less than expected, reduce
-     the expected number */
-  if(Nvecs_test != *Nvecs){
-    node0_printf("WARNING: Called for %d vectors, but found %d\n", 
-		 *Nvecs, Nvecs_test);
-    if(*Nvecs > Nvecs_test){
-      node0_printf("WARNING: Resetting Nvecs = %d\n", Nvecs_test);
-      *Nvecs = Nvecs_test;
+
+  if(Nvecs_test > 0){
+    /* Warn if the number of eigenvectors doesn't match expectations,
+       and if the number of eigenvectors is less than expected, reduce
+       the expected number */
+    *file_type = 0;
+    if(Nvecs_test != *Nvecs){
+      node0_printf("WARNING: Called for %d vectors, but found %d\n", 
+		   *Nvecs, Nvecs_test);
+      if(*Nvecs > Nvecs_test){
+	node0_printf("WARNING: Resetting Nvecs = %d\n", Nvecs_test);
+	*Nvecs = Nvecs_test;
+      }
     }
+  } else {
+    node0_printf("%s: WARNING: Nvecs tag is either missing or 0\n", myname);
+    node0_printf("%s: WARNING: Treating it as a QUDA file\n", myname);
+    *file_type = 1;
   }
 
   QIO_string_destroy(filexml);
@@ -326,8 +339,12 @@ read_ks_eigenvector(QIO_Reader *infile, int packed, su3_vector *eigVec, double *
       terminate(1);
     }
 
-  if(packed)
+  if(packed){
+    double dt = -dclock();
     unpack_field(eigVec, sizeof(su3_vector));
+    dt += dclock();
+    node0_printf("%s unpack time %0.2f\n",__func__,dt);
+  }
 
   if(status != QIO_EOF){
     xml = QIO_string_ptr(recxml);
@@ -336,6 +353,77 @@ read_ks_eigenvector(QIO_Reader *infile, int packed, su3_vector *eigVec, double *
 
   QIO_string_destroy(recxml);
 
+  return status;
+}
+
+/* Read a set of eigenvectors from a QUDA-formated color-spin-field file */
+
+int
+read_quda_ks_eigenvectors(QIO_Reader *infile, su3_vector *eigVec[], double *eigVal, int *Nvecs,
+			  int parity){
+  char myname[] = "read_quda_ks_eigenvectors";
+  int status;
+  char *xml;
+  QIO_String *recxml = QIO_string_create();
+  QIO_RecordInfo recinfo;
+
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status != QIO_SUCCESS){
+    QIO_string_destroy(recxml);
+    return status;
+  }
+
+  const char *datatype = QIO_get_datatype(&recinfo);
+  if(strcmp("QUDA_DNs1Nc3_ColorSpinorField", datatype) != 0){
+    node0_printf("%s: WARNING: Unexpected datatype.  Found %s\n",
+		 myname, datatype);
+  }
+  
+  int typesize = QIO_get_typesize(&recinfo);
+  int datacount = QIO_get_datacount(&recinfo);
+
+  if(datacount < *Nvecs){
+    node0_printf("%s WARNING: Requested %d eigenvectors but the file has %d.\n",
+		 myname, *Nvecs, datacount);
+    node0_printf("%s WARNING: Reducing the request.\n", myname);
+    *Nvecs = datacount;
+  }
+
+  su3_vector *eigVecs = (su3_vector *)malloc((*Nvecs)*sizeof(su3_vector)*sites_on_node);
+  if(eigVecs == NULL){
+    node0_printf("%s FATAL: No room for a temporary array for %d eigenvectors\n",
+		 myname, datacount);
+    terminate(1);
+  }
+  
+  if(typesize == 24)
+    status = read_F3_V_to_field(infile, recxml, eigVecs, datacount);
+  else if (typesize == 48 )
+    status = read_D3_V_to_field(infile, recxml, eigVecs, datacount);
+  else
+    {
+      node0_printf("read_ks_eigenvector: Bad typesize %d\n",typesize);
+      terminate(1);
+    }
+
+  if(status != QIO_EOF){
+    xml = QIO_string_ptr(recxml);
+    parse_record_xml(eigVal, xml);
+  }
+
+  QIO_string_destroy(recxml);
+
+  /* Map eigenvectors to our dynamic array */
+
+  int i;
+  FORALLFIELDSITES_OMP(i,){
+    for(int j = 0; j < *Nvecs; j++){
+      eigVec[j][i] = eigVecs[*Nvecs*i+j];
+    }
+  } END_LOOP_OMP;
+
+  free(eigVecs);
+  
   return status;
 }
 
