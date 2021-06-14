@@ -120,8 +120,8 @@ initialize_grid(void){
   grid_full = GRID_create_grid();
   grid_rb = GRID_create_RBgrid(grid_full);
 
-  std::vector<int> latt_size   = GridDefaultLatt();
-  std::vector<int> mpi_layout  = GridDefaultMpi();
+  Coordinate latt_size   = GridDefaultLatt();
+  Coordinate mpi_layout  = GridDefaultMpi();
 
   if(mynode()==0){
     printf("milc_to_grid_utilities: Initialized Grid with args\n%s %s\n%s %s\n%s %s\n",
@@ -205,7 +205,8 @@ int grid_rank_from_processor_coor(int x, int y, int z, int t){
     terminate(1);
   }
 
-  std::vector<int> coor = {x, y, z, t};
+  Coordinate coor(4);
+  coor[0] = x; coor[1] = y; coor[2] = z; coor[3] = t;
   int worldrank = grid_cart->RankFromProcessorCoor(coor);
   return worldrank;
 }
@@ -221,7 +222,7 @@ void grid_coor_from_processor_rank(int coords[], int worldrank){
     terminate(1);
   }
 
-  std::vector<int> coor;
+  Coordinate coor(4);
   grid_cart->ProcessorCoorFromRank(worldrank, coor);
 
   for(int i = 0; i < 4; i++)
