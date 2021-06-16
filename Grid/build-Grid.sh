@@ -13,7 +13,7 @@ then
 fi
 
 case ${ARCH} in
-    scalar|avx512-knl|avx512-skx|avx2|gpu-cuda|gpu-sysl)
+    scalar|avx2|avx512-knl|avx512-skx|gpu-cuda|gpu-hip|gpu-sycl)
       ;;
     *)
       echo "Unsupported ARCH"
@@ -139,7 +139,11 @@ then
         status=$?
         echo "Configure exit status $status"
 	;;
+
     gpu-hip)
+
+	#  Example: ./build-Grid.sh gpu-sycl mpicc mpicxx
+	
 	export PATH=/opt/rocm/bin:${PATH}
 	${SRCDIR}/configure \
              --prefix ${INSTALLDIR}      \
@@ -148,8 +152,7 @@ then
 	     --enable-comms=mpi3-auto \
 	     --enable-simd=GPU \
 	     --enable-gen-simd-width=64 \
-	     --with-mpfr=${HOME}/mpfr \
-	     --with-lime=${HOME}/scidac/install/qio \
+	     --with-lime=${HOME}/scidac/install/qio-gcc \
              --host=x86_64-unknown-linux-gnu \
 	     CXX=hipcc \
 	     MPICXX=mpicxx \
@@ -157,19 +160,36 @@ then
 	     LDFLAGS="-L/opt/rocm/rocthrust/lib"
 
 #	     --enable-unified=yes         \
-    gpu-sycl)
-	# Cori: salloc -C gpu -t 60 -N 1 -c 10 --gres=gpu:1 -A m1759
-	${SRCDIR}/configure \
-             --prefix ${INSTALLDIR}      \
-             --enable-simd=KNL \
-	     --enable-comms=mpi          \
-             --host=x86_64-unknown-linux-gnu \
-	     --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc \
-             --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
-             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++11 -xMIC-AVX512" \
+	;;
 
-            status=$?
+    gpu-sycl)
+
+	# ./build-Grid.sh gpu-sycl dpcpp dpcpp
+
+
+	${SRCDIR}/configure \
+	 --prefix ${INSTALLDIR}      \
+	 --enable-simd=GPU \
+	 --enable-comms=mpi \
+	 --enable-gen-simd-width=64  \
+         --disable-gparity \
+         --disable-zmobius \
+         --disable-fermion-reps \
+         --enable-accelerator=sycl   \
+	 --enable-unified=yes \
+	 CXXCPP="/soft/packaging/spack-builds/linux-opensuse_leap15-x86_64/gcc-10.2.0/gcc-10.2.0-yudlyezca7twgd5o3wkkraur7wdbngdn/bin/cpp" \
+         CXX="${PK_CXX}" CC="${PK_CC}" \
+	 CXXFLAGS="-cxx=dpcpp -fsycl-unnamed-lambda -fsycl -no-fma -std=c++17 -O0 -g" \
+	 LDFLAGS="-fsycl-device-code-split=per_kernel -fsycl-device-lib=all" \
+
+	 
+#	 CXXFLAGS="-cxx=dpcpp -fsycl-unnamed-lambda -fsycl -no-fma -std=c++17" \
+
+	 #	     --enable-comms=mpi          \
+#	     --with-lime=${HOME}/scidac/install/qio-gcc \
+
+        status=$?
+
         echo "Configure exit status $status"
 	;;
     *)
@@ -191,22 +211,3 @@ then
 fi     
 popd
 
-# Might need to do these by hand...
-
-# CayleyFermion5DInstantiationZWilsonImplF.cc
-# g++-8 -DHAVE_CONFIG_H -I. -I/u/inscc/detar/milc_qcd/Grid/Grid/Grid    -I/home/falco/detar/milc/milc_qcd/Grid/Grid  -I/global/common/cori/software/openssl/1.1.0a/hsw/include -I/u/inscc/detar/scidac/install/qio-single/include -I/u/inscc/detar/fftw/build-gcc/include -fopenmp  -O3 -std=gnu++17 -Wno-psabi  -fno-strict-aliasing -c -o qcd/action/fermion/instantiation/ZWilsonImplF/CayleyFermion5DInstantiationZWilsonImplF.o /u/inscc/detar/milc_qcd/Grid/Grid/Grid/qcd/action/fermion/instantiation/ZWilsonImplF/CayleyFermion5DInstantiationZWilsonImplF.cc
-
-# WilsonKernelsInstantiationWilsonImplDF.cc
-# g++-8 -DHAVE_CONFIG_H -I. -I/u/inscc/detar/milc_qcd/Grid/Grid/Grid    -I/home/falco/detar/milc/milc_qcd/Grid/Grid  -I/global/common/cori/software/openssl/1.1.0a/hsw/include -I/u/inscc/detar/scidac/install/qio-single/include -I/u/inscc/detar/fftw/build-gcc/include -fopenmp  -O3 -std=gnu++17 -Wno-psabi  -fno-strict-aliasing -c -o qcd/action/fermion/instantiation/WilsonImplDF/WilsonKernelsInstantiationWilsonImplDF.o /u/inscc/detar/milc_qcd/Grid/Grid/Grid/qcd/action/fermion/instantiation/WilsonImplDF/WilsonKernelsInstantiationWilsonImplDF.cc
-
-# CayleyFermion5DInstantiationGparityWilsonImplD.cc 
-# g++-8 -DHAVE_CONFIG_H -I. -I/u/inscc/detar/milc_qcd/Grid/Grid/Grid    -I/home/falco/detar/milc/milc_qcd/Grid/Grid  -I/global/common/cori/software/openssl/1.1.0a/hsw/include -I/u/inscc/detar/scidac/install/qio-single/include -I/u/inscc/detar/fftw/build-gcc/include -fopenmp  -O3 -std=gnu++17 -Wno-psabi  -fno-strict-aliasing -c -o qcd/action/fermion/instantiation/GparityWilsonImplD/CayleyFermion5DInstantiationGparityWilsonImplD.o /u/inscc/detar/milc_qcd/Grid/Grid/Grid/qcd/action/fermion/instantiation/GparityWilsonImplD/CayleyFermion5DInstantiationGparityWilsonImplD.cc 
-
-# CayleyFermion5DInstantiationZWilsonImplFH.cc
-# g++-8 -DHAVE_CONFIG_H -I. -I/u/inscc/detar/milc_qcd/Grid/Grid/Grid    -I/home/falco/detar/milc/milc_qcd/Grid/Grid  -I/global/common/cori/software/openssl/1.1.0a/hsw/include -I/u/inscc/detar/scidac/install/qio-single/include -I/u/inscc/detar/fftw/build-gcc/include -fopenmp  -O3 -std=gnu++17 -Wno-psabi  -fno-strict-aliasing -c -o qcd/action/fermion/instantiation/ZWilsonImplFH/CayleyFermion5DInstantiationZWilsonImplFH.o /u/inscc/detar/milc_qcd/Grid/Grid/Grid/qcd/action/fermion/instantiation/ZWilsonImplFH/CayleyFermion5DInstantiationZWilsonImplFH.cc
-
-# g++-8 -DHAVE_CONFIG_H -I. -I/u/inscc/detar/milc_qcd/Grid/Grid/Grid    -I/home/falco/detar/milc/milc_qcd/Grid/Grid  -I/global/common/cori/software/openssl/1.1.0a/hsw/include -I/u/inscc/detar/scidac/install/qio-single/include -I/u/inscc/detar/fftw/build-gcc/include -fopenmp  -O3 -std=gnu++17 -Wno-psabi  -fno-strict-aliasing  -c -o qcd/action/fermion/instantiation/WilsonImplF/CayleyFermion5DInstantiationWilsonImplF.o /u/inscc/detar/milc_qcd/Grid/Grid/Grid/qcd/action/fermion/instantiation/WilsonImplF/CayleyFermion5DInstantiationWilsonImplF.cc 
-
-# g++-8 -DHAVE_CONFIG_H -I. -I/u/inscc/detar/milc_qcd/Grid/Grid/Grid    -I/home/falco/detar/milc/milc_qcd/Grid/Grid  -I/global/common/cori/software/openssl/1.1.0a/hsw/include -I/u/inscc/detar/scidac/install/qio-single/include -I/u/inscc/detar/fftw/build-gcc/include -fopenmp  -O3 -std=gnu++17 -Wno-psabi  -fno-strict-aliasing -c -o qcd/action/fermion/instantiation/GparityWilsonImplFH/CayleyFermion5DInstantiationGparityWilsonImplFH.o /u/inscc/detar/milc_qcd/Grid/Grid/Grid/qcd/action/fermion/instantiation/GparityWilsonImplFH/CayleyFermion5DInstantiationGparityWilsonImplFH.cc 
-
-# g++-8 -DHAVE_CONFIG_H -I. -I/u/inscc/detar/milc_qcd/Grid/Grid/Grid    -I/home/falco/detar/milc/milc_qcd/Grid/Grid  -I/global/common/cori/software/openssl/1.1.0a/hsw/include -I/u/inscc/detar/scidac/install/qio-single/include -I/u/inscc/detar/fftw/build-gcc/include -fopenmp  -O3 -std=gnu++17 -Wno-psabi  -fno-strict-aliasing -c -o qcd/action/fermion/instantiation/GparityWilsonImplF/CayleyFermion5DInstantiationGparityWilsonImplF.o /u/inscc/detar/milc_qcd/Grid/Grid/Grid/qcd/action/fermion/instantiation/GparityWilsonImplF/CayleyFermion5DInstantiationGparityWilsonImplF.cc
