@@ -207,7 +207,7 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
 	x5[d+1] = x[d];
 
       for( int j = 0; j < n; j++ ){
-	lx5[0] = j;
+	x5[0] = j;
 	ColourVector cVec;
 	for(int col=0; col<Nc; col++){
 	  cVec._internal._internal._internal[col] = 
