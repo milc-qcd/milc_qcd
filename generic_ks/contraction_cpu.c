@@ -310,7 +310,10 @@ void qudaContractFT(int milc_precision,
 		       max_threads, nt, num_corr_mom);
   
   destroy_meson_q_thread(threadstore, max_threads);
-  
+
+  //TODO: do global reduction sum on meson_q. NOTE: must remove global reductions from e.g. ks_spectrum/spectrum_ks.c
+  g_veccomplexsum(meson_q, nt*num_corr_mom);
+
   dtime += dclock();
   cont_args->dtime = dtime;
   cont_args->flops = flops;
