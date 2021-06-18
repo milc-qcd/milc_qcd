@@ -208,7 +208,7 @@ update_props(complex **prop, double_complex *meson_q, int nt, int num_corr_mom,
 
   Real flops = 0.;
 
-  //DEBUG
+  /*DEBUG
   printf("called update_props, meson_q:\n");
   for(int k=0; k<num_corr_mom; k++)
     for(int t=0; t<nt; ++t)
@@ -216,7 +216,7 @@ update_props(complex **prop, double_complex *meson_q, int nt, int num_corr_mom,
 	int idx = k*nt + t;
 	printf("meson_q[%2d,%3d] %10.3e, %10.3e\n",k,t,meson_q[idx].real,meson_q[idx].imag);
       }
-  //DEBUG
+  /*DEBUG*/
 
   double_complex tr[num_corr_mom*nt];
   /* Normalize for all sink momenta q */
@@ -268,7 +268,7 @@ map_corr_mom_parity(int corr_mom[], QudaFFTSymmType corr_parity[], int num_corr_
     corr_mom[4*k+3] = 0; // t-component: always zero
     //corr_parity[k] = q_parity[p];
     for(int j=0; j<3; ++j) { corr_parity[4*k+j] = map_to_fft_symm(q_parity[p][j]); }
-    corr_parity[4*k+3] = QUDA_INVALID_ENUM; // t-component: don't care
+    corr_parity[4*k+3] = QUDA_FFT_SYMM_EO; // t-component: pt = 0, but quda contractions allows pt
   }
 }
 
