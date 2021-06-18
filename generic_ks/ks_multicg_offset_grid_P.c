@@ -237,7 +237,7 @@ KS_MULTICG_OFFSET_FIELD(
   tot_cg_time += dclock();
 
 #ifdef CGTIME
-  char *prec_label[2] = {"F", "D"};
+  const char *prec_label[2] = {"F", "D"};
   if(this_node==0){
     printf("CONGRAD5: time = %e "
            "(multicg_offset_Grid %s) "

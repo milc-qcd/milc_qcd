@@ -97,9 +97,9 @@ int qio_status(int status){
   return 1;
 }
 
-QIO_Writer *open_scidac_output(char *filename, int volfmt, 
+QIO_Writer *open_scidac_output(const char *filename, int volfmt, 
 			       int serpar, int ildgstyle, 
-			       char *stringLFN, QIO_Layout *layout,
+			       const char *stringLFN, QIO_Layout *layout,
 			       QIO_Filesystem *fs,
 			       QIO_String *xml_write_file){
   QIO_Writer *outfile;
@@ -133,7 +133,7 @@ QIO_Writer *open_scidac_output(char *filename, int volfmt,
 
 /* Open file silently and return file XML */
 
-QIO_Reader *open_scidac_input_xml(char *filename, QIO_Layout *layout,
+QIO_Reader *open_scidac_input_xml(const char *filename, QIO_Layout *layout,
 				  QIO_Filesystem *fs, int serpar,
 				  QIO_String *xml_file_in){
   QIO_Reader *infile;
@@ -158,7 +158,7 @@ QIO_Reader *open_scidac_input_xml(char *filename, QIO_Layout *layout,
 
 /* Open file with announcement and discard file XML */
 
-QIO_Reader *open_scidac_input(char *filename, QIO_Layout *layout, 
+QIO_Reader *open_scidac_input(const char *filename, QIO_Layout *layout, 
 			      QIO_Filesystem *fs, int serpar){
   QIO_String *xml_file_in;
   QIO_Reader *infile;
@@ -193,8 +193,8 @@ void close_scidac_input(QIO_Reader *infile)
 /********************************************************************/
 
 #ifdef NO_GAUGE_FIELD
-gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
-			char *stringLFN){
+gauge_file *save_scidac(const char *filename, int volfmt, int serpar, int ildgstyle,
+			const char *stringLFN){
   printf("Can't save a lattice if we compile with -DNO_GAUGE_FIELD\n");
   terminate(1);
   return NULL;
@@ -202,8 +202,8 @@ gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
 #else
 /* Save the single precision lattice in SciDAC format */
 /* The QIO file is closed after writing the lattice */
-gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
-			char *stringLFN){
+gauge_file *save_scidac(const char *filename, int volfmt, int serpar, int ildgstyle,
+			const char *stringLFN){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Writer *outfile;
@@ -283,7 +283,7 @@ gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
 
 /* The functions below constitute the API */
 
-int read_lat_dim_scidac(char *filename, int *ndim, int dims[])
+int read_lat_dim_scidac(const char *filename, int *ndim, int dims[])
 {
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -317,54 +317,54 @@ int read_lat_dim_scidac(char *filename, int *ndim, int dims[])
   return 0;
 }
 
-gauge_file *save_serial_scidac(char *filename){
+gauge_file *save_serial_scidac(const char *filename){
   return save_scidac(filename, QIO_SINGLEFILE, QIO_SERIAL, QIO_ILDGNO, NULL);
 }
 
-gauge_file *save_parallel_scidac(char *filename){
+gauge_file *save_parallel_scidac(const char *filename){
   return save_scidac(filename, QIO_SINGLEFILE, QIO_PARALLEL, QIO_ILDGNO, NULL);
 }
 
-gauge_file *save_multifile_scidac(char *filename){
+gauge_file *save_multifile_scidac(const char *filename){
   return save_scidac(filename, QIO_MULTIFILE, QIO_SERIAL, QIO_ILDGNO, NULL);
 }
 
-gauge_file *save_partfile_scidac(char *filename){
+gauge_file *save_partfile_scidac(const char *filename){
   return save_scidac(filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGNO, NULL);
 }
 
-gauge_file *save_partfile_dir_scidac(char *filename){
+gauge_file *save_partfile_dir_scidac(const char *filename){
   return save_scidac(filename, QIO_PARTFILE_DIR, QIO_SERIAL, QIO_ILDGNO, NULL);
 }
 
-gauge_file *save_serial_ildg(char *filename, char *stringLFN){
+gauge_file *save_serial_ildg(const char *filename, const char *stringLFN){
   return save_scidac(filename, QIO_SINGLEFILE, QIO_SERIAL, QIO_ILDGLAT, 
 		     stringLFN);
 }
 
-gauge_file *save_parallel_ildg(char *filename, char *stringLFN){
+gauge_file *save_parallel_ildg(const char *filename, const char *stringLFN){
   return save_scidac(filename, QIO_SINGLEFILE, QIO_PARALLEL, QIO_ILDGLAT,
 		     stringLFN);
 }
 
-gauge_file *save_multifile_ildg(char *filename, char *stringLFN){
+gauge_file *save_multifile_ildg(const char *filename, const char *stringLFN){
   return save_scidac(filename, QIO_MULTIFILE, QIO_SERIAL, QIO_ILDGLAT,
 		     stringLFN);
 }
 
-gauge_file *save_partfile_ildg(char *filename, char *stringLFN){
+gauge_file *save_partfile_ildg(const char *filename, const char *stringLFN){
   return save_scidac(filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGLAT,
 		     stringLFN);
 }
 
-gauge_file *save_partfile_dir_ildg(char *filename, char *stringLFN){
+gauge_file *save_partfile_dir_ildg(const char *filename, const char *stringLFN){
   return save_scidac(filename, QIO_PARTFILE_DIR, QIO_SERIAL, QIO_ILDGLAT,
 		     stringLFN);
 }
 
 /* The QIO file is closed after reading the lattice */
 #if 0
-static gauge_file *restore_scidac(char *filename, int serpar){
+static gauge_file *restore_scidac(const char *filename, int serpar){
   printf("Can't restore a lattice if we compile with -DNO_GAUGE_FIELD\n");
   terminate(1);
   return NULL;
@@ -374,7 +374,7 @@ static gauge_file *restore_scidac(char *filename, int serpar){
 
 #ifndef NO_GAUGE_FIELD
 
-static gauge_file *restore_scidac(char *filename, int serpar){
+static gauge_file *restore_scidac(const char *filename, int serpar){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
@@ -435,7 +435,7 @@ static gauge_file *restore_scidac(char *filename, int serpar){
 /* Read gauge field, but don't store the values.  Used
    for verifying checksums */
 
-static gauge_file *file_scan_scidac(char *filename, int serpar){
+static gauge_file *file_scan_scidac(const char *filename, int serpar){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
@@ -513,29 +513,29 @@ static gauge_file *file_scan_scidac(char *filename, int serpar){
 }
 
 /* The QIO file is closed after reading the lattice */
-gauge_file *restore_serial_scidac(char *filename){
+gauge_file *restore_serial_scidac(const char *filename){
   return restore_scidac(filename, QIO_SERIAL);
 }
 
 /* The QIO file is closed after reading the lattice */
-gauge_file *restore_parallel_scidac(char *filename){
+gauge_file *restore_parallel_scidac(const char *filename){
   return restore_scidac(filename, QIO_PARALLEL);
 }
 
 /* The QIO file is closed after reading the lattice */
-gauge_file *file_scan_serial_scidac(char *filename){
+gauge_file *file_scan_serial_scidac(const char *filename){
   return file_scan_scidac(filename, QIO_SERIAL);
 }
 
 /* The QIO file is closed after reading the lattice */
-gauge_file *file_scan_parallel_scidac(char *filename){
+gauge_file *file_scan_parallel_scidac(const char *filename){
   return file_scan_scidac(filename, QIO_PARALLEL);
 }
 
 #endif
 
 /* Read color matrices in SciDAC format */
-void restore_color_matrix_scidac_to_site(char *filename, 
+void restore_color_matrix_scidac_to_site(const char *filename, 
 		 field_offset dest, int count){
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -581,7 +581,7 @@ void restore_color_matrix_scidac_to_site(char *filename,
 }
 
 /* Read color matrices in SciDAC format to a field */
-void restore_color_matrix_scidac_to_field(char *filename, 
+void restore_color_matrix_scidac_to_field(const char *filename, 
 		  su3_matrix *dest, int count, int prec){
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -628,9 +628,9 @@ void restore_color_matrix_scidac_to_field(char *filename,
 
 /* Write a set of color matrices in SciDAC format, taking data from the site
    structure */
-void save_color_matrix_scidac_from_site(char *filename, char *fileinfo, 
-		char *recinfo, int volfmt,  field_offset src, int count, int prec,
-		char *stringLFN)
+void save_color_matrix_scidac_from_site(const char *filename, const char *fileinfo, 
+		const char *recinfo, int volfmt,  field_offset src, int count, int prec,
+		const char *stringLFN)
 {
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -700,9 +700,9 @@ void save_color_matrix_scidac_from_site(char *filename, char *fileinfo,
 
 /* Save a set of color matrices. */
 
-void save_color_matrix_scidac_from_field(char *filename,
-        char *fileinfo, char *recinfo, int volfmt, su3_matrix *src, int count, int prec,
-	char *stringLFN)
+void save_color_matrix_scidac_from_field(const char *filename,
+        const char *fileinfo, const char *recinfo, int volfmt, su3_matrix *src, 
+	int count, int prec, const char *stringLFN)
 {
   QIO_Layout layout;
   QIO_Writer *outfile;
@@ -770,7 +770,7 @@ void save_color_matrix_scidac_from_field(char *filename,
 }
 
 /* Read random number state in SciDAC format (SITERAND case only) */
-void restore_random_state_scidac_to_site(char *filename, field_offset dest){
+void restore_random_state_scidac_to_site(const char *filename, field_offset dest){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
@@ -806,8 +806,8 @@ void restore_random_state_scidac_to_site(char *filename, field_offset dest){
 }
 
 /* Save random number state. (SITERAND case only) */
-void save_random_state_scidac_from_site(char *filename, 
-        char *fileinfo, char *recinfo, int volfmt, field_offset src)
+void save_random_state_scidac_from_site(const char *filename, 
+        const char *fileinfo, const char *recinfo, int volfmt, field_offset src)
 {
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -872,7 +872,7 @@ void save_random_state_scidac_from_site(char *filename,
 #if 0
 /* Restore a real field */
 
-void restore_real_scidac_to_field(char *filename, Real *dest, int count){
+void restore_real_scidac_to_field(const char *filename, Real *dest, int count){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
@@ -906,7 +906,7 @@ void restore_real_scidac_to_field(char *filename, Real *dest, int count){
 
 /* Write a complex field */
 
-QIO_Writer *w_open_scidac_file(char *filename, char *fileinfo, 
+QIO_Writer *w_open_scidac_file(const char *filename, const char *fileinfo, 
 			       int volfmt, int serpar)
 {
   QIO_Layout layout;
@@ -929,7 +929,7 @@ QIO_Writer *w_open_scidac_file(char *filename, char *fileinfo,
   return outfile;
 }
 
-int save_complex_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
+int save_complex_scidac(QIO_Writer *outfile, const char *filename, char *recinfo,
 			int volfmt, complex *src, int count)
 {
   QIO_String *recxml;
@@ -973,7 +973,7 @@ void w_close_scidac_file(QIO_Writer *outfile)
 
 /* Save a complex field */
 
-void save_complex_scidac_from_field(char *filename, char *fileinfo,
+void save_complex_scidac_from_field(const char *filename, char *fileinfo,
 				    char *recinfo, int volfmt, int serpar, 
 				    complex *src, int count){
     QIO_Writer *outfile;
@@ -994,7 +994,7 @@ void save_complex_scidac_from_field(char *filename, char *fileinfo,
 
 /* Restore a complex field */
 
-QIO_Reader *r_open_scidac_file_xml(char *filename, int serpar,
+QIO_Reader *r_open_scidac_file_xml(const char *filename, int serpar,
 				   QIO_String *xml_file)
 {
   QIO_Layout layout;
@@ -1020,7 +1020,7 @@ QIO_Reader *r_open_scidac_file_xml(char *filename, int serpar,
   return infile;
 }
 
-QIO_Reader *r_open_scidac_file(char *filename, int serpar)
+QIO_Reader *r_open_scidac_file(const char *filename, int serpar)
 {
   QIO_Reader *infile;
   QIO_String *xml_file;
@@ -1084,7 +1084,7 @@ void r_close_scidac_file(QIO_Reader *infile)
 
 /* Restore a complex field */
 
-void restore_complex_scidac_to_field(char *filename, int serpar,
+void restore_complex_scidac_to_field(const char *filename, int serpar,
 				     complex *dest, int count){
   QIO_Reader *infile;
   int status;
@@ -1149,7 +1149,7 @@ int read_real_scidac(QIO_Reader *infile, Real *dest, int count){
 
 /* Restore a real field */
 
-void restore_real_scidac_to_field(char *filename, int serpar,
+void restore_real_scidac_to_field(const char *filename, int serpar,
 				  Real *dest, int count){
   QIO_Reader *infile;
   int status;
@@ -1169,7 +1169,7 @@ void restore_real_scidac_to_field(char *filename, int serpar,
 
 /* Restore a real field */
 
-void restore_real_scidac_to_site(char *filename, field_offset dest, int count)
+void restore_real_scidac_to_site(const char *filename, field_offset dest, int count)
 {
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -1203,8 +1203,8 @@ void restore_real_scidac_to_site(char *filename, field_offset dest, int count)
 
 /* Save a real field */
 
-void save_real_scidac_from_field(char *filename, 
-        char *fileinfo, char *recinfo, int volfmt, Real *src, int count)
+void save_real_scidac_from_field(const char *filename, 
+        const char *fileinfo, const char *recinfo, int volfmt, Real *src, int count)
 {
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -1264,8 +1264,8 @@ void save_real_scidac_from_field(char *filename,
 
 /* Save a real field from the MILC site structure*/
 
-void save_real_scidac_from_site(char *filename, 
-  char *fileinfo, char *recinfo, int volfmt, field_offset src, int count)
+void save_real_scidac_from_site(const char *filename, 
+  const char *fileinfo, const char *recinfo, int volfmt, field_offset src, int count)
 {
   QIO_Layout layout;
   QIO_Filesystem fs;

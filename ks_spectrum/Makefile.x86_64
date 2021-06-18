@@ -6,7 +6,7 @@
 #
 
 # This file
-MAKEFILE = Makefile
+MAKEFILE = Makefile.x86_64
 
 #----------------------------------------------------------------------
 #  User choices - edit to suit 
@@ -25,13 +25,13 @@ COMPILER ?= gnu # intel, ibm, portland, cray-intel
 # 3. MPP vs Scalar
 
 # Compiling for a parallel machine?  blank for a scalar machine
-MPP ?= false
+MPP ?= # true
 
 #----------------------------------------------------------------------
 # 4. Precision 
 
 # 1 = single precision; 2 = double
-PRECISION ?= 1
+PRECISION ?= 2
 
 #----------------------------------------------------------------------
 # 5. Compiler
@@ -100,11 +100,17 @@ CXX = ${MY_CXX}
 # Choices include -g -O, etc
 # Power9 recommendations are -Ofast
 
-OPT              ?= -O3
+OPT  ?= -O3 -g
+LDFLAGS += -g
 
 # OpenMP?
 
-OMP ?= #true
+OMP ?= true
+
+# Option WANT_KS_CONT_CPU enables OMP threaded contractions on CPUs it does NOT use or need QUDA.
+# Setting it to false enables old CPU contraction routines.
+# option WANT_KS_CONT_GPU overrides WANT_KS_CONT_CPU to use GPU contraction code
+WANT_KS_CONT_CPU  ?=  true
 
 #----------------------------------------------------------------------
 # 7. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -288,7 +294,7 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 
 WANTQOP ?= # true # or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
 
-WANTQIO ?= # true # or blank.  Implies HAVEQMP.
+WANTQIO ?= true # or blank.  Implies HAVEQMP.
 
 WANTQMP ?= # true or blank.
 
@@ -298,17 +304,17 @@ QMP_BACKEND = QMP_MPI
 # Edit these locations for the installed SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
-SCIDAC = ${HOME}/scidac/install
-TAG=
+SCIDAC = /work1/simone/contract/scidac_x86_64/install
+TAG= -openmpi
 # Parallel versions
 QMPPAR ?= ${SCIDAC}/qmp${TAG}
 QIOPAR ?= $(SCIDAC)/qio${TAG}
 # Single processor versions
-QMPSNG ?= ${SCIDAC}/qmp-single${TAG}
-QIOSNG ?= $(SCIDAC)/qio-single${TAG}
-QLA ?= ${SCIDAC}/qla${TAG}
+QMPSNG ?= ${SCIDAC}/qmp-single
+QIOSNG ?= $(SCIDAC)/qio-single
+QLA ?= ${SCIDAC}/qla
 # Either version
-QDP ?= ${SCIDAC}/qdp${TAG}
+QDP ?= ${SCIDAC}/qdp
 QOPQDP ?= ${SCIDAC}/qopqdp${TAG}
 
 QOP = ${QOPQDP}
@@ -417,14 +423,10 @@ WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 WANT_KS_CONT_GPU ?= #true
 
-/* Temporary for testing */
-WANTQUDACPU  ?= #false
-
-ifeq ($(strip ${WANTQUDACPU}),true)
-  ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
-    HAVE_KS_CONT_GPU = true
-    CGPU += -DUSE_KS_CONT_GPU
-  endif
+ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
+  HAVE_KS_CONT_GPU = true
+  CGPU += -DUSE_KS_CONT_GPU
+  WANT_KS_CONT_CPU = false
 endif
 
 endif
@@ -444,7 +446,8 @@ ifeq ($(strip ${WANTQUDA}),true)
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcublas -lcufft -lcublas
+  CUBLAS_LIBDIR ?= ${CUDA_HOME}/lib64
+  LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_HOME}/lib64/stubs -L${CUBLAS_LIBDIR} -Wl,-rpath ${CUBLAS_LIBDIR} -lcudart -lcuda -lcublas -lcublasLt -lcufft -lcublas
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
@@ -699,7 +702,7 @@ endif
 
 # Choose nothing or
 #  [ C_INLINE | C_GLOBAL_INLINE ] [ SSE_INLINE | SSE_GLOBAL_INLINE ]
-INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
+INLINEOPT =  # -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 
 # There are special single-precision macros for the AMD Opteron
 # To get them, uncomment the next line
@@ -725,7 +728,7 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 
 # REMAP  report remapping time for QDP, QOP in conjunction with above
 
-CTIME ?= # -DNERSC_TIME -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
+CTIME ?= -DPRTIME # -DNERSC_TIME -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
 
 #------------------------------
 # Profiling
@@ -1066,7 +1069,33 @@ CXXFLAGS = ${OPT} ${OCXXFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
 
 ILIB = ${LIBSCIDAC} ${LMPI} ${LIBADD}
 
-.PHONY: time check test_clean
+.PHONY: time check test_clean mk_opts
+
+mk_opts:
+	@echo Makefile: $(MAKEFILE)
+	@echo ARCH: $(if $(ARCH),$(ARCH),generic)
+	@echo COMPILER: $(COMPILER)
+	@echo OPT: $(if $(OPT),$(OPT),empty)
+	@echo PRECISION: $(PRECISION)
+	@echo MPP: $(if $(MPP),$(MPP),false)
+	@echo OMP: $(if $(OMP),$(OMP),false)
+	@echo INLINEOPT: $(if $(INLINEOPT),$(INLINEOPT),none)
+ifeq ($(OMP),true)
+ifdef INLINEOPT
+	@echo "  ** WARNING is C_GLOBAL_INLINE defined while OMP = true?"
+endif
+endif
+	@echo WANTQMP: $(if $(WANTQMP),$(WANTQMP),false)
+	@echo WANTQIO: $(if $(WANTQIO),$(WANTQIO),false)
+	@echo WANTQOP: $(if $(WANTQOP),$(WANTQOP),false)
+	@echo WANTQUDA: $(if $(WANTQUDA),$(WANTQUDA),false)
+	@echo WANT_MIXED_PRECISION_GPU: $(if $(WANT_MIXED_PRECISION_GPU),$(WANT_MIXED_PRECISION_GPU),false)
+	@echo WANT_KS_CONT_GPU: $(if $(WANT_KS_CONT_GPU),$(WANT_KS_CONT_GPU),false)
+	@echo WANT_KS_CONT_CPU: $(if $(WANT_KS_CONT_CPU),$(WANT_KS_CONT_CPU),false)
+	@echo WANTQPHIX: $(if $(WANTQPHIX),$(WANTQPHIX),false)
+	@echo WANTQPHIXJ: $(if $(WANTQPHIXJ),$(WANTQPHIXJ),false)
+	@echo WANTGRID: $(if $(WANTGRID),$(WANTGRID),false)
+	@echo CODETYPE: $(CODETYPE)
 time:
 	make -f Make_time time
 

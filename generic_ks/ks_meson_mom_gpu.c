@@ -65,34 +65,79 @@ propagators together to form a meson correlator.
 #endif
 #include "../include/static_cast.h"
 
-/*******************************************/
-/* Take this from an appropriate header */
 
+/*******************************************/
+// Uncomment the following include, then definitions below can be made into comments or removed
+//#include <quda_milc_interface.h>
+
+#include <limits.h>
+#define QUDA_INVALID_ENUM INT_MIN
+
+// enum_quda.h  describes corr_parity
+typedef enum QudaFFTSymmType_t {
+  QUDA_FFT_SYMM_ODD  = 1,  // sin(phase)
+  QUDA_FFT_SYMM_EVEN = 2,  // cos(phase)
+  QUDA_FFT_SYMM_EO   = 3,  // exp(-i phase)
+  QUDA_FFT_SYMM_INVALID = QUDA_INVALID_ENUM
+} QudaFFTSymmType;
+
+// quda_milc_interface.h  parameters for propagator contractions with FT
 typedef struct {
-  int num_corr_mom;
-  int **corr_mom;
-  char **corr_parity;
-  int *r0;
-  Real flops;
-  Real dtime;
+  int n_mom;  /* Number of sink momenta */
+  int *mom_modes;  /* List of 4-component momenta as integers. Dimension 4*n_mom */
+  QudaFFTSymmType *fft_type; /* The "parity" of the FT component */
+  int *source_position;  /* The coordinate origin for the Fourier phases */
+  double flops; /* Return value */
+  double dtime; /* Return value */
 } QudaContractArgs_t;
 
-void qudaContract(int milc_precision,
-		  int quda_precision,
-		  QudaContractArgs_t *cont_args,
-		  su3_vector *antiquark,
-		  su3_vector *quark,
-		  complex meson_q[]
-		  );
+/** quda_milc_interface.h
+ * @brief Tie together two staggered propagators including spatial Fourier phases.
+ * The result is summed separately over each time slice and across all MPI ranks.
+ * The FT is defined by a list of momentum indices (three-component integer vectors)
+ * Included with the FT is a parity (symmetry) parameter for each momentum
+ * component that selects an exp, cos, or sin factor for each direction
+ *
+ * @param[in] external_precision Precision of host fields passed to QUDA (2 - double, 1 - single)
+ * @param[in,out] parameters for the contraction, including FT specification
+ * @param[in] local storage of color spinor field.  three complex values * number of sites on node
+ * @param[in] local storage of color spinor field.  three complex values * number of sites on node
+ * @param[out] hadron correlator  Flattened double array as though [n_mom][nt][2] for 2 = re,im. 
+ */
+void qudaContractFT(int external_precision, // milc_precision
+		    QudaContractArgs_t *cont_args,
+		    void *const quark1, // su3_vector* antiquark
+		    void *const quark2, // su3_vector* quark
+		    double *corr // double_complex meson_q[]
+		    );
+
 
 /*******************************************/
+
+void dump_QudaContractArgs(const QudaContractArgs_t const* args)
+{
+  printf("QudaContractArgs:\n");
+  printf("source_position: %3d %3d %3d %3d\n",
+	 args->source_position[0],args->source_position[1],
+	 args->source_position[2],args->source_position[3]);
+  printf("n_mom: %d\n",args->n_mom);
+  for(int k=0; k<args->n_mom; ++k) {
+    printf("mom[%2d]: %2d %2d %2d %2d\n",k,
+	   args->mom_modes[4*k+0],args->mom_modes[4*k+1],
+	   args->mom_modes[4*k+2],args->mom_modes[4*k+3]);
+    printf("sym[%2d]: %2d %2d %2d %2d\n",k,
+	   args->fft_type[4*k+0],args->fft_type[4*k+1],
+	   args->fft_type[4*k+2],args->fft_type[4*k+3]);
+  }
+}
+
 /* Normalize the correlator contributions */
 
-static double norm_v(complex tr[], complex meson_q[], 
+static double norm_v(double_complex tr[], double_complex meson_q[], 
 		     int phase[], Real factor[],
 		     int ct[], int nk, int nt)
 {
-  complex z = {0.,0.};
+  double_complex z = {0.,0.};
   double flops = 0;
   
   /* For each momentum in list, normalize, and phase */
@@ -129,13 +174,13 @@ static double norm_v(complex tr[], complex meson_q[],
 } /* norm_v */
 
 /*******************************************/
-static complex *
+static double_complex *
 create_meson_q(int nt, int num_corr_mom){
   char myname[] = "create_meson_q";
 
   /* Unlike the CPU version, meson_q here is indexed by the 
      actual momenta, rather than the hashed momentum. */
-  complex* meson_q = static_cast(complex*,malloc(num_corr_mom*nt*sizeof(complex))); // index as meson_q[k*nt+t]
+  double_complex* meson_q = static_cast(double_complex*,malloc(num_corr_mom*nt*sizeof(double_complex))); // index as meson_q[k*nt+t]
   if(meson_q == NULL){
     printf("%s(%d): No room for meson_q\n",myname,this_node);
     terminate(1);
@@ -151,19 +196,29 @@ create_meson_q(int nt, int num_corr_mom){
 
 /*******************************************/
 static void
-destroy_meson_q(complex *meson_q){
+destroy_meson_q(double_complex *meson_q){
   if(meson_q == NULL)return;
   free(meson_q);
 }
 /*******************************************/
 static Real
-update_props(complex **prop, complex *meson_q, int nt, int num_corr_mom,
+update_props(complex **prop, double_complex *meson_q, int nt, int num_corr_mom,
 	     int meson_phase[], Real meson_factor[],
 	     int *corr_table, int corr_index[]){
 
   Real flops = 0.;
 
-  complex tr[num_corr_mom*nt];
+  /*DEBUG
+  printf("called update_props, meson_q:\n");
+  for(int k=0; k<num_corr_mom; k++)
+    for(int t=0; t<nt; ++t)
+      {
+	int idx = k*nt + t;
+	printf("meson_q[%2d,%3d] %10.3e, %10.3e\n",k,t,meson_q[idx].real,meson_q[idx].imag);
+      }
+  /*DEBUG*/
+
+  double_complex tr[num_corr_mom*nt];
   /* Normalize for all sink momenta q */
   flops += norm_v(tr, meson_q, meson_phase, meson_factor,
 		  corr_table, num_corr_mom, nt);
@@ -185,15 +240,35 @@ update_props(complex **prop, complex *meson_q, int nt, int num_corr_mom,
 
 /*******************************************/
 
+static QudaFFTSymmType
+map_to_fft_symm(char p)
+{
+  QudaFFTSymmType s = QUDA_INVALID_ENUM;
+  switch(p)
+    {
+    case EVEN:
+      s = QUDA_FFT_SYMM_EVEN; break;
+    case ODD:
+      s = QUDA_FFT_SYMM_ODD; break;
+    case EVENANDODD:
+      s = QUDA_FFT_SYMM_EO; break;
+    }
+  return s;
+}
+
 static void
-map_corr_mom_parity(int *corr_mom[], char *corr_parity[], int num_corr_mom, int corr_table[],
+map_corr_mom_parity(int corr_mom[], QudaFFTSymmType corr_parity[], int num_corr_mom, int corr_table[],
 		    int p_index[], int **q_momstore, char **q_parity){
 
   for(int k=0; k<num_corr_mom; k++) {
     int c = corr_table[k];
     int p = p_index[c];
-    corr_mom[k] = q_momstore[p];
-    corr_parity[k] = q_parity[p];
+    //corr_mom[k] = q_momstore[p];
+    for(int j=0; j<3; ++j) { corr_mom[4*k+j] = q_momstore[p][j]; }
+    corr_mom[4*k+3] = 0; // t-component: always zero
+    //corr_parity[k] = q_parity[p];
+    for(int j=0; j<3; ++j) { corr_parity[4*k+j] = map_to_fft_symm(q_parity[p][j]); }
+    corr_parity[4*k+3] = QUDA_FFT_SYMM_EO; // t-component: pt = 0, but quda contractions allows pt
   }
 }
 
@@ -239,22 +314,25 @@ void ks_meson_cont_mom(
   /* Run through the sink spin-taste combinations */
   for(g = 0; g < no_spin_taste_corr; g++)
     {
-      complex *meson_q = create_meson_q(nt, num_corr_mom[g]);
+      double_complex *meson_q = create_meson_q(nt, num_corr_mom[g]);
+      double *dmeson_q = static_cast(double*,meson_q);
 
-      /* Transfer momenta and parity from q_momstore to corr_mom table */
-      int *corr_mom[num_corr_mom[g]];
-      char *corr_parity[num_corr_mom[g]];
+      /* Transfer momenta and parity from q_momstore to corr_mom array */
+      int corr_mom[num_corr_mom[g]*4]; // all four components of the momentum
+      QudaFFTSymmType corr_parity[num_corr_mom[g]*4];
       map_corr_mom_parity(corr_mom, corr_parity, num_corr_mom[g],
 			  corr_table[g], p_index, q_momstore, q_parity);
 
       /* Load the contraction args */
       QudaContractArgs_t cont_args;
       
-      cont_args.num_corr_mom = num_corr_mom[g];
-      cont_args.corr_mom = corr_mom;
-      cont_args.corr_parity = corr_parity;
-      cont_args.r0 = r0;
-      int quda_precision = 2;  /* Is this the QUDA convention? */
+      cont_args.n_mom = num_corr_mom[g];
+      cont_args.mom_modes = corr_mom;
+      cont_args.fft_type = corr_parity;
+      cont_args.source_position = r0;
+      cont_args.flops = 0;
+      cont_args.dtime = 0;
+      //dump_QudaContractArgs(&cont_args);
 
       /* Apply spin tastes and call the GPU contraction routine */
 
@@ -268,10 +346,10 @@ void ks_meson_cont_mom(
 	/* Apply backward sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
 	spin_taste_op_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
-	qudaContract(MILC_PRECISION, quda_precision, &cont_args, q, src2, meson_q);
+	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
 	/* Apply forward sink spin-taste operator to src2 */
 	spin_taste_op_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
-	qudaContract(MILC_PRECISION, quda_precision, &cont_args, src1, q, meson_q);
+	qudaContractFT(MILC_PRECISION, &cont_args, src1, q, dmeson_q);
 	destroy_v_field(q);
 	for(int j = 0; j < nt*num_corr_mom[g]; ++j){
 	  CMULREAL(meson_q[j], 0.5, meson_q[j]);
@@ -280,19 +358,19 @@ void ks_meson_cont_mom(
 	/* Apply forward sink spin-taste operator to src2 */
 	su3_vector *q = create_v_field();
 	spin_taste_op_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
-	qudaContract(MILC_PRECISION, quda_precision, &cont_args, src1, q, meson_q );
+	qudaContractFT(MILC_PRECISION, &cont_args, src1, q, dmeson_q );
 	destroy_v_field(q);
       } else if(is_rhosbfn_index(spin_taste) || is_rhosbape_index(spin_taste)){
 	/* Apply backward sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
 	spin_taste_op_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
-	qudaContract(MILC_PRECISION, quda_precision, &cont_args, q, src2, meson_q);
+	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
 	destroy_v_field(q);
       } else {
 	/* Apply sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
 	spin_taste_op_fn(fn_src1, spin_taste, r0, q, src1);
-	qudaContract(MILC_PRECISION, quda_precision, &cont_args, q, src2, meson_q);
+	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
 	destroy_v_field(q);
        }
 
