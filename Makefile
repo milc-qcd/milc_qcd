@@ -407,11 +407,16 @@ endif
 # 15. GPU/QUDA Options
 
 WANTQUDA    ?= #true
+
+ifeq ($(strip ${WANTQUDA}),true)
+
 WANT_CL_BCG_GPU ?= #true
 WANT_FN_CG_GPU ?= #true
 WANT_FL_GPU ?= #true
 WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
+
+endif
 
 # enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
 WANT_MIXED_PRECISION_GPU ?= 0

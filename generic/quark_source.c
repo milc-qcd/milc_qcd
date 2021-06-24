@@ -1305,7 +1305,7 @@ const char *decode_mask(int mask){
     return "??";
 }
 
-int ask_starting_source( FILE *fp, int prompt, int *flag, const char *filename ){
+int ask_starting_source( FILE *fp, int prompt, int *flag, char *filename ){
   const char *savebuf;
   int status;
   char myname[] = "ask_starting_source";

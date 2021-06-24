@@ -969,11 +969,13 @@ int parse_output_quark_source_choices(int *flag, int *save_type,
 
 int ask_output_quark_source_file( FILE *fp, int prompt, 
 				  int *flag, int *save_type,
-				  int *t0, char *descrp, const char *filename)
+				  int *t0, char *descrp, char *filename)
 {
   const char *savebuf;
   int status = 0;
   char myname[] = "ask_output_quark_source_file";
+
+  strcpy(filename,"");  /* Set NULL default */
 
   if (prompt==1){
     print_output_quark_source_choices();

@@ -28,7 +28,7 @@ using namespace std;
 extern Coordinate squaresize;
 
 static void
-indexToCoords(size_t idx, Coordinate &x){
+indexToCoords(uint64_t idx, Coordinate &x){
 
   int r[4];
 
@@ -149,10 +149,12 @@ create_V_from_vec( su3_vector *src, int milc_parity,
 
   auto start = std::chrono::system_clock::now();
   #pragma omp parallel for 
-    for( size_t idx = loopstart; idx < loopend; idx++){
+    for( uint64_t idx = loopstart; idx < loopend; idx++){
 
       Coordinate x(4);
       indexToCoords(idx,x);
+      Coordinate lx(4);
+      for (int i = 0; i < 4; i++)lx[i] = x[i];
 
       ColourVector cVec;
       for(int col=0; col<Nc; col++){
@@ -193,9 +195,8 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
   std::cout << "create_nv_from_vecs: ColourVector size  = " << sizeof(ColourVector)  
 	    << " ColourVectorField size = " << sizeof(*(out->cv)) << "\n" << std::flush;
   auto start = std::chrono::system_clock::now();
-  #pragma omp parallel for
-    for( size_t idx = loopstart; idx < loopend; idx++){
-
+#pragma omp parallel for
+    for( uint64_t idx = loopstart; idx < loopend; idx++){
       Coordinate x(4);
       indexToCoords(idx,x);
 //      Coordinate x5(1,0);
@@ -204,7 +205,7 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
       Coordinate x5(5);
       for( int d = 0; d < 4; d++ )
 	x5[d+1] = x[d];
-      
+
       for( int j = 0; j < n; j++ ){
 	x5[0] = j;
 	ColourVector cVec;
@@ -229,13 +230,15 @@ template<typename ImprovedStaggeredFermion, typename ColourVector>
 static void extract_V_to_vec( su3_vector *dest, 
 			      struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *src, 
 			      int milc_parity ){
-  size_t idx;
+  uint64_t idx;
 
   FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
     {
       Coordinate x(4);
       indexToCoords(idx, x);
       ColourVector cVec;
+      Coordinate lx(4);
+      for (int i = 0; i < 4; i++)lx[i] = x[i];
 
       autoView(Src_cv, (*(src->cv)), CpuRead);
       peekLocalSite(cVec, Src_cv, x);
@@ -255,7 +258,7 @@ template<typename ImprovedStaggeredFermion5D, typename ColourVector>
 static void extract_nV_to_vecs( su3_vector *dest[], int n,
 				struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *src, 
 				int milc_parity ){
-  size_t idx;
+  uint64_t idx;
 
   FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
     {
@@ -264,9 +267,11 @@ static void extract_nV_to_vecs( su3_vector *dest[], int n,
       Coordinate x5(1,0);
       for( int d = 0; d < 4; d++ )
 	x5.push_back(x[d]);
+      Coordinate lx5(5);
+      for (int i = 0; i < 4; i++)lx5[i] = x[i];
 
       for( int j = 0; j < n; j++ ){
-	x5[0] = j;
+	lx5[0] = j;
 
 	ColourVector cVec;
         autoView(Src_cv, (*(src->cv)), CpuRead);
@@ -311,7 +316,9 @@ static void milcGaugeFieldToGrid(su3_matrix *in, LatticeGaugeField &out){
       Coordinate x(4);
       indexToCoords(milc_idx, x);
       int grid_idx;
-      Lexicographic::IndexFromCoor(x, grid_idx, grid->LocalDimensions());
+      Coordinate lx(4);
+      for (int i = 0; i < 4; i++)lx[i] = x[i];
+      Lexicographic::IndexFromCoor(lx, grid_idx, grid->_ldimensions);
       milcSU3MatrixToGrid<sobj, Complex>(in + 4*milc_idx, scalardata[grid_idx]);
     }
   
@@ -385,10 +392,10 @@ asqtad_destroy_L( struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *Link
 // Create a 4D, full-grid wrapper
 GRID_4Dgrid *
 GRID_create_grid(void){
-  Coordinate latt_size    = GridDefaultLatt();
-  Coordinate simd_layoutF = GridDefaultSimd(Nd,vComplexF::Nsimd());
-  Coordinate simd_layoutD = GridDefaultSimd(Nd,vComplexD::Nsimd());
-  Coordinate mpi_layout   = GridDefaultMpi();
+  const Coordinate latt_size    = GridDefaultLatt();
+  const Coordinate simd_layoutF = GridDefaultSimd(Nd,vComplexF::Nsimd());
+  const Coordinate simd_layoutD = GridDefaultSimd(Nd,vComplexD::Nsimd());
+  const Coordinate mpi_layout   = GridDefaultMpi();
 
   GridCartesian *CGridF  = new GridCartesian(latt_size,simd_layoutF,mpi_layout);
   GRID_ASSERT(CGridF != NULL, GRID_MEM_ERROR);
