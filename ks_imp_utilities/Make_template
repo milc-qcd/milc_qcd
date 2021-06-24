@@ -138,7 +138,7 @@ check_ks_invert::
 
 check_ks_invert_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHAVE_KS -DCHECK_INVERT \
+	"DEFINES= -DFN -DHAVE_KS -DCHECK_INVERT" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} \
@@ -146,7 +146,7 @@ check_ks_invert_hisq::
 
 make_links_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHAVE_KS \
+	"DEFINES= -DFN -DHAVE_KS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE}"
