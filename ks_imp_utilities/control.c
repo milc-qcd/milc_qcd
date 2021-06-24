@@ -19,6 +19,10 @@ EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
 int main( int argc, char **argv ){
   int prompt;
   char *filexml;
+
+#ifdef PRTIME
+  double dtime;
+#endif
   
   initialize_machine(&argc,&argv);
 
@@ -26,8 +30,13 @@ int main( int argc, char **argv ){
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
   g_sync();
+
+  double starttime=dclock();
+    
   /* set up */
+  STARTTIME;
   prompt = setup();
+  ENDTIME("setup");
 
   /* loop over input sets */
   while( readin(prompt) == 0){
@@ -87,6 +96,7 @@ int main( int argc, char **argv ){
 	   "Long links", QIO_SINGLEFILE, lng, 4, MILC_PRECISION,
 	   stringLFNlong);
       free_QCDML(filexml);
+      rephase_field_offset( lng, ON, NULL, param.coord_origin);
 #else
       printf("ERROR: Can't save the longlinks.  Recompile with QIO\n");
 #endif
@@ -105,6 +115,7 @@ int main( int argc, char **argv ){
 	   "Fat links", QIO_SINGLEFILE, fat, 4, MILC_PRECISION,
 	   stringLFNfat);
       free_QCDML(filexml);
+      rephase_field_offset( fat, ON, NULL, param.coord_origin);
 #else
       printf("ERROR: Can't save the fatlinks.  Recompile with QIO\n");
 #endif
@@ -113,7 +124,11 @@ int main( int argc, char **argv ){
     boundary_twist_fn(fn, OFF);
   }
   node0_printf("RUNNING COMPLETED\n");
-
+  double endtime=dclock();
+  
+  node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
+  starttime = endtime; /* In case we continue looping over readin */
+  
 #ifndef CHECK_INVERT
 
 #ifdef HISQ_SVD_COUNTER
@@ -126,6 +141,19 @@ int main( int argc, char **argv ){
 
 #endif
 
+#ifdef HAVE_QUDA
+  finalize_quda();
+#endif
+  
+#ifdef HAVE_QPHIX
+  finalize_qphix();
+#endif
+
+#ifdef HAVE_GRID
+  finalize_grid();
+#endif
+
+  normal_exit(0);
   return 0;
 }
 
