@@ -116,6 +116,7 @@ static int initial_set(void){
     if(status>0) param.stopflag=1; else param.stopflag=0;
   } /* end if(mynode()==0) */
 
+  fflush(stdout);
   /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));
 
@@ -402,7 +403,7 @@ int readin(int prompt) {
       IF_OK {
 	int source_type, saveflag_s;
 	char descrp[MAXDESCRP];
-	char savefile_s[MAXFILENAME];
+	char savefile_s[MAXFILENAME] = "";
 	status += 
 	  ask_output_quark_source_file( stdin, prompt, &saveflag_s,
 					&source_type, NULL, descrp,
@@ -1205,6 +1206,7 @@ int readin(int prompt) {
   } /* end if(this_node==0) */
   
   
+  fflush(stdout);
   broadcast_bytes((char *)&param,sizeof(param));
   u0 = param.u0;
   if( param.stopflag != 0 )return param.stopflag;
@@ -1213,6 +1215,7 @@ int readin(int prompt) {
 
   /* Broadcast parameter values kept on the heap */
   broadcast_heap_params();
+  fflush(stdout);
 
   /* Construct the eps_naik table of unique Naik epsilon coefficients.
      Also build the hash table for mapping a mass term to its Naik
