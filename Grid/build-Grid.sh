@@ -54,6 +54,9 @@ then
             --prefix=${INSTALLDIR} \
             --enable-simd=GEN \
             --enable-comms=none \
+            --disable-gparity \
+	    --disable-zmobius \
+	    --disable-fermion-reps \
 	    --with-lime=${HOME}/scidac/install/qio-single \
 	    --with-fftw=${HOME}/fftw/build-gcc \
             --with-mpfr=${HOME}/mpfr \
@@ -142,8 +145,6 @@ then
 
     gpu-hip)
 
-	#  Example: ./build-Grid.sh gpu-sycl mpicc mpicxx
-	
 	export PATH=/opt/rocm/bin:${PATH}
 	${SRCDIR}/configure \
              --prefix ${INSTALLDIR}      \
@@ -152,6 +153,7 @@ then
 	     --enable-comms=mpi3-auto \
 	     --enable-simd=GPU \
 	     --enable-gen-simd-width=64 \
+	     --with-mpfr=${HOME}/mpfr \
 	     --with-lime=${HOME}/scidac/install/qio-gcc \
              --host=x86_64-unknown-linux-gnu \
 	     CXX=hipcc \
