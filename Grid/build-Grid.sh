@@ -26,7 +26,7 @@ SRCDIR=${TOPDIR}/Grid
 BUILDDIR=${TOPDIR}/build-grid-${ARCH}
 INSTALLDIR=${TOPDIR}/install-grid-${ARCH}
 
-MAKE="make V=1"
+MAKE=make
 
 if [ ! -d ${SRCDIR} ]
 then
@@ -56,10 +56,11 @@ then
             --enable-comms=none \
 	    --with-lime=${HOME}/scidac/install/qio-single \
 	    --with-fftw=${HOME}/fftw/build-gcc \
-            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
+            --with-mpfr=${HOME}/mpfr \
             CXX="${PK_CXX}" \
-            CXXFLAGS="-std=gnu++17 -Wno-psabi" \
+            CXXFLAGS="-std=gnu++17 -O0 -g -Wno-psabi" \
 
+#            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
 # 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
 
        status=$?
@@ -134,10 +135,9 @@ then
              --host=x86_64-unknown-linux-gnu \
 	     --with-mpfr=${HOME}/mpfr \
 	     --with-lime=${HOME}/scidac/install/qio \
-             CXX=nvcc                    \
-             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -std=c++11" \
-        status=$?
-        echo "Configure exit status $status"
+	     --with-hdf5=${OLCF_HDF5_ROOT} \
+             CXX="nvcc"                \
+             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -std=c++14" \
 	;;
     gpu-hip)
 	export PATH=/opt/rocm/bin:${PATH}
@@ -157,6 +157,7 @@ then
 	     LDFLAGS="-L/opt/rocm/rocthrust/lib"
 
 #	     --enable-unified=yes         \
+	;;
     *)
     echo "Unsupported ARCH ${ARCH}"
           exit 1;
