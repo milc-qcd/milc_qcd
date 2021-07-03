@@ -49,7 +49,6 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   int Nvecs_in = eigen_param->Nvecs_in;
   double tol = eigen_param->tol;
   int maxIter = eigen_param->MaxIter;
-  int Nev = eigen_param->Nev;
   int Nkr = eigen_param->Nkr;
   double aMin = eigen_param->poly.minE;
   double aMax = eigen_param->poly.maxE;
@@ -61,7 +60,8 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   /* QUDA inverter setup *************************/  
   QudaInvertParam qip = newQudaInvertParam();
 
-  qip.verbosity = QUDA_VERBOSE; /* SILENT, SUMMARIZE, VERBOSE, DEBUG_VERBOSE */
+  /* qip.verbosity = QUDA_VERBOSE; /\* SILENT, SUMMARIZE, VERBOSE, DEBUG_VERBOSE *\/ */
+  qip.verbosity = QUDA_DEBUG_VERBOSE; /* SILENT, SUMMARIZE, VERBOSE, DEBUG_VERBOSE */
 
   qip.dslash_type = QUDA_ASQTAD_DSLASH;
 
@@ -208,7 +208,7 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   qep.spectrum = QUDA_SPECTRUM_SR_EIG; /* Smallest Real. Other options: LM, SM, LR, SR, LI, SI */
   qep.n_conv = Nvecs;
   qep.n_ev_deflate = qep.n_conv;
-  qep.n_ev = Nev;
+  qep.n_ev = qep.n_conv;
   qep.n_kr = Nkr;
   qep.block_size = blockSize;
 
@@ -244,7 +244,6 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   node0_printf( "========= parameters for eigensolver =========\n" );
   node0_printf( "Number of wanted eigenvalues: %d\n", qep.n_conv );
   node0_printf( "Krylov subspace size: %d\n", qep.n_kr );
-  node0_printf( "Eigenvalue search space size: %d\n", qep.n_ev );
   node0_printf( "Eigenvalue equation tolerance: %e\n", qep.tol );
   node0_printf( "Maximum iterations of Lanczos restarts: %d\n", qep.max_restarts );
   node0_printf( "Chebyshev polynomial - alpha (lower bound for exclusion): %g\n", qep.a_min );

@@ -351,7 +351,6 @@ typedef struct {
   int Nvecs_in; /* number of input starting eigenvectors */
   Real tol; /* Tolerance for the eigenvalue computation */
   int MaxIter; /* max restarting iterations */
-  int Nev; /* size of eigenvector search space */
   int Nkr; /* size of the Krylov subspace */
   ks_eigen_poly poly; /* Preconditioning polynomial */
   int blockSize; /* block size for block variant eigensolvers */
