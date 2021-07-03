@@ -1,4 +1,4 @@
-/************ eigen_stuff_Grid.c **************/
+/************ eigen_stuff_QUDA.c **************/
 /* Eigenvalue and Eigevector computation routines.
  * This version uses QUDA (https://github.com/lattice/quda)
  * MIMD version 7 */
@@ -274,7 +274,14 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
 #endif
 #ifdef EIGTIME
   dtimec += dclock();
-  node0_printf( "[EIGTIME] Grid IRL: time = %g s\n", dtimec );
+  if( blockSize > 1 )
+  {
+    node0_printf( "[EIGTIME] QUDA BLKTRL: time = %g s\n", dtimec );
+  }
+  else
+  {
+    node0_printf( "[EIGTIME] QUDA TRL: time = %g s\n", dtimec );
+  }    
 #endif
 
   /* copy QUDA eigenvalues to MILC */
