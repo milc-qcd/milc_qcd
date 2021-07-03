@@ -60,8 +60,7 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   /* QUDA inverter setup *************************/  
   QudaInvertParam qip = newQudaInvertParam();
 
-  /* qip.verbosity = QUDA_VERBOSE; /\* SILENT, SUMMARIZE, VERBOSE, DEBUG_VERBOSE *\/ */
-  qip.verbosity = QUDA_DEBUG_VERBOSE; /* SILENT, SUMMARIZE, VERBOSE, DEBUG_VERBOSE */
+  qip.verbosity = QUDA_VERBOSE; /* SILENT, SUMMARIZE, VERBOSE, DEBUG_VERBOSE */
 
   qip.dslash_type = QUDA_ASQTAD_DSLASH;
 
