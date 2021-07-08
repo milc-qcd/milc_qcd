@@ -249,6 +249,7 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   node0_printf( "Chebyshev polynomial - beta (upper bound for exclusion): %g\n", qep.a_max );
   node0_printf( "Chebyshev polynomial order: %d\n", qep.poly_deg );
   node0_printf( "Block size: %d\n", qep.block_size );
+  node0_printf( "Even-odd parity: %d\n", parity );
   node0_printf( "==============================================\n" );
   /* End of ********* print input parameters for eigensolver */
   
