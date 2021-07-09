@@ -34,7 +34,7 @@ Max_Lanczos_restart_iters 100
 eigenval_tolerance 5.0e-13
 
 # Restart Lanczos iteration at Lanczos_max (number of eigenvalues)
-# Lanczos_max > max_number_of_eigenpairs + 4
+# Lanczos_max >= max_number_of_eigenpairs + 6
 Lanczos_max 60
 
 # Chebyshev polynomial (makes region (alpha,beta) smooth and outside diverge. even order gives even function.)
