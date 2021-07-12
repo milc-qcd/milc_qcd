@@ -174,6 +174,7 @@ void rephase_field_offset( su3_matrix *internal_links, int flag,
 } /* rephase_field_offset */
 
 /* conventional antiperiodic boundary conditions in Euclidean time */
+/* Do not use for long links! */
 void apply_apbc( su3_matrix *links, int r0t ){
 
   int i;

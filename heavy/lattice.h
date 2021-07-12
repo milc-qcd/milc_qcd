@@ -80,7 +80,7 @@ extern int spins[4];
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int iseed;
-EXTERN  isize_t volume;	/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;	/* volume of lattice = nx*ny*nz*nt */
 EXTERN  int nkap;  /****** number of kappa values ******/
 #define MAX_NKAP 20 /* maximum number of kappa values */
 EXTERN  Real cappa[MAX_NKAP];  /******kappa******/

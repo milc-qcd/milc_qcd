@@ -11,6 +11,7 @@
 #endif
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
+#include "../include/generic_u1.h"
 #endif
 
 #ifdef HAVE_GRID

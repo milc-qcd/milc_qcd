@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 
       /* Move KS phases and apply time boundary condition, based on the
 	 coordinate origin and time_bc */
-      Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+      Real bdry_phase[4] = {0.,0.,0.,(double)param.time_bc};
       /* Set values in the structure fn */
       set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
       /* Apply the operation */
@@ -287,6 +287,7 @@ int main(int argc, char *argv[])
 
 	/* Write the source, if requested */
 	if(qs->saveflag != FORGET){
+	  qs->color = color;
 	  if(w_source_ks( source[k]->v[color], qs ) != 0)
 	    node0_printf("Error writing source\n");
 	}
@@ -319,6 +320,7 @@ int main(int argc, char *argv[])
 
 	/* Write the source, if requested */
 	if(qs->saveflag != FORGET){
+	  qs->color = color;
 	  if(w_source_ks( source[is]->v[color], qs ) != 0)
 	    node0_printf("Error writing source\n");
 	}
@@ -378,6 +380,7 @@ int main(int argc, char *argv[])
       /* We pass the beginning addresses of the set data */
       
       total_iters += solve_ksprop(param.set_type[k],
+				  param.inv_type[k],
 				  num_prop,
 				  param.startflag_ks + i0,
 				  param.startfile_ks + i0,

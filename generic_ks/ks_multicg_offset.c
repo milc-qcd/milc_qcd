@@ -61,9 +61,9 @@ my_relative_residue(su3_vector *p, su3_vector *q, int parity)
 /* Interface for call with offsets = 4 * mass * mass */
 
 int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken */
-    su3_vector * restrict src,	/* source vector (type su3_vector) */
-    su3_vector ** restrict psim,	/* solution vectors */
-    ks_param * restrict ksp,	/* the offsets */
+    su3_vector * __restrict__ src,	/* source vector (type su3_vector) */
+    su3_vector ** __restrict__ psim,	/* solution vectors */
+    ks_param * __restrict__ ksp,	/* the offsets */
     int num_offsets,	/* number of offsets */
     quark_invert_control *qic, /* inversion parameters */
     imp_ferm_links_t *fn      /* Storage for fat and Naik links */
@@ -85,11 +85,11 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
 #endif
   int special_started;	/* 1 if dslash_special has been called */
   int j, j_low;
-  Real * restrict shifts, offset_low, shift0;
-  double * restrict zeta_i, * restrict zeta_im1, * restrict zeta_ip1;
-  double * restrict beta_i, * restrict beta_im1, * restrict alpha;
-  su3_vector ** restrict pm;	/* vectors not involved in gathers */
-  int * restrict finished;      /* if converged */
+  Real * __restrict__ shifts, offset_low, shift0;
+  double * __restrict__ zeta_i, * __restrict__ zeta_im1, * __restrict__ zeta_ip1;
+  double * __restrict__ beta_i, * __restrict__ beta_im1, * __restrict__ alpha;
+  su3_vector ** __restrict__ pm;	/* vectors not involved in gathers */
+  int * __restrict__ finished;      /* if converged */
 
   /* Unpack qic structure.  The first qic sets the convergence criterion */
   /* We don't restart this algorithm, so we adopt the convention of
@@ -165,15 +165,15 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   case(EVENANDODD):  l_parity=EVEN; l_otherparity=ODD; break;
   }
     
-  shifts = (Real * restrict )malloc(num_offsets*sizeof(Real));
-  zeta_i = (double * restrict )malloc(num_offsets*sizeof(double));
-  zeta_im1 = (double * restrict )malloc(num_offsets*sizeof(double));
-  zeta_ip1 = (double * restrict )malloc(num_offsets*sizeof(double));
-  beta_i = (double * restrict )malloc(num_offsets*sizeof(double));
-  beta_im1 = (double * restrict )malloc(num_offsets*sizeof(double));
-  alpha = (double * restrict )malloc(num_offsets*sizeof(double));
+  shifts = (Real * __restrict__ )malloc(num_offsets*sizeof(Real));
+  zeta_i = (double * __restrict__ )malloc(num_offsets*sizeof(double));
+  zeta_im1 = (double * __restrict__ )malloc(num_offsets*sizeof(double));
+  zeta_ip1 = (double * __restrict__ )malloc(num_offsets*sizeof(double));
+  beta_i = (double * __restrict__ )malloc(num_offsets*sizeof(double));
+  beta_im1 = (double * __restrict__ )malloc(num_offsets*sizeof(double));
+  alpha = (double * __restrict__ )malloc(num_offsets*sizeof(double));
   
-  pm = (su3_vector ** restrict )malloc(num_offsets*sizeof(su3_vector *));
+  pm = (su3_vector ** __restrict__ )malloc(num_offsets*sizeof(su3_vector *));
 
   if(MILC_PRECISION == 2) num_offsets_padded = (num_offsets-1)/4+4; // 4 doubles * real/imag
   else               num_offsets_padded = (num_offsets-1)/8+8; // 8 floats * real/imag
@@ -188,7 +188,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
     }
   }
   for(j=0;j<num_offsets;j++){ 
-      pm[j] = (su3_vector * restrict )malloc(sites_on_node*sizeof(su3_vector));
+      pm[j] = (su3_vector * __restrict__ )malloc(sites_on_node*sizeof(su3_vector));
       if( j!=j_low )shifts[j] -= shifts[j_low];
     }
   shift0 = -shifts[j_low];
@@ -200,9 +200,9 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   /* now we can allocate temporary variables and copy then */
   /* PAD may be used to avoid cache thrashing */
   if(first_multicongrad) {
-    ttt = (su3_vector * restrict ) malloc((sites_on_node+PAD)*sizeof(su3_vector));
-    cg_p = (su3_vector * restrict ) malloc((sites_on_node+PAD)*sizeof(su3_vector));
-    resid = (su3_vector * restrict ) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+    ttt = (su3_vector * __restrict__ ) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+    cg_p = (su3_vector * __restrict__ ) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+    resid = (su3_vector * __restrict__ ) malloc((sites_on_node+PAD)*sizeof(su3_vector));
     first_multicongrad = 0;
   }
   

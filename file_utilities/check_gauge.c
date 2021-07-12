@@ -100,7 +100,7 @@ float ck_unitarity(su3_matrix *work,int x, int y, int z, int t)
 
 /* Here only node 0 reads the gauge configuration from a binary file */
 
-void byterevn(int32type w[], int n);
+void byterevn(u_int32type w[], int n);
 void read_checksum(int parallel, gauge_file *gf, gauge_check *test_gc);
 
 void r_check(gauge_file *gf, float *max_deviation)
@@ -112,12 +112,12 @@ void r_check(gauge_file *gf, float *max_deviation)
   char *filename;
   int byterevflag;
 
-  off_t offset ;            /* File stream pointer */
-  off_t gauge_check_size;   /* Size of gauge configuration checksum record */
-  off_t coord_list_size;    /* Size of coordinate list in bytes */
-  off_t head_size;          /* Size of header plus coordinate list */
-  off_t checksum_offset;    /* Where we put the checksum */
-  int rcv_rank, rcv_coords;
+  off_t offset = 0 ;         /* File stream pointer */
+  off_t gauge_check_size;    /* Size of gauge configuration checksum record */
+  off_t coord_list_size;     /* Size of coordinate list in bytes */
+  off_t head_size;           /* Size of header plus coordinate list */
+  off_t checksum_offset = 0; /* Where we put the checksum */
+  size_t rcv_rank, rcv_coords;
   int destnode;
   int k;
   int x,y,z,t;
@@ -125,7 +125,7 @@ void r_check(gauge_file *gf, float *max_deviation)
   gauge_check test_gc;
   u_int32type *val;
   int rank29,rank31;
-  su3_matrix *lbuf;
+  su3_matrix *lbuf = NULL;
   su3_matrix work[4];
   float deviation;
 
@@ -259,7 +259,7 @@ void r_check(gauge_file *gf, float *max_deviation)
       if(this_node==destnode)
 	{
 	  if(byterevflag==1)
-	    byterevn((int32type *)&work[0],
+	    byterevn((u_int32type *)&work[0],
 		     4*sizeof(su3_matrix)/sizeof(int32type));
 	  /* Accumulate checksums */
 	  for(k = 0, val = (u_int32type *)&work[0]; 
@@ -415,7 +415,7 @@ void r_check_arch(gauge_file *gf, float *max_deviation)
 		     myname,this_node,errno,filename); 
 	      fflush(stdout); terminate(1);
 	    }
-	  if (!big_end) byterevn((int32type *)uin,48);
+	  if (!big_end) byterevn((u_int32type *)uin,48);
 	  q = uin;
 	  for (mu=0;mu<4;mu++) {
 	    for (p=0;p<realspersite/4;p++) {
@@ -444,7 +444,7 @@ void r_check_arch(gauge_file *gf, float *max_deviation)
 		     myname,this_node,errno,filename); 
 	      fflush(stdout); terminate(1);
 	    }
-	  if (!big_end) byterevn64((int32type *)uind,realspersite);
+	  if (!big_end) byterevn64((u_int32type *)uind,realspersite);
 	  qd = uind;
 	  for (mu=0;mu<4;mu++) {
 	    for (p=0;p<realspersite/4;p++) {

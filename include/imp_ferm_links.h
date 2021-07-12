@@ -461,7 +461,7 @@ int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
 
 /* ks_baryon.c */
 int baryon_type_index(char *label);
-char *baryon_type_label(int index);
+const char *baryon_type_label(int index);
 void ks_baryon_nd(complex *prop[],
 		  ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *qp2,
 		  int num_corr_b, int baryon_type_snk[], int phase[], Real fact[]);
@@ -498,7 +498,7 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec, imp_ferm_links_t *fn );
 int mat_invert_field(su3_vector *src, su3_vector *dst, 
 		     quark_invert_control *qic,
-		     Real mass, imp_ferm_links_t *fn, int use_precond );
+		     Real mass, imp_ferm_links_t *fn );
 int mat_invert_cg_field(su3_vector *src, su3_vector *dst, 
 			quark_invert_control *qic,
 			Real mass, imp_ferm_links_t *fn );
