@@ -344,6 +344,18 @@ typedef struct {
   char diagAlg[10];
   int parity; 
 } ks_eigen_param;
+#elif defined(USE_EIG_QUDA)
+#define ks_eigensolve ks_eigensolve_QUDA
+typedef struct {
+  int Nvecs ; /* number of eigenvectors */
+  int Nvecs_in; /* number of input starting eigenvectors */
+  Real tol; /* Tolerance for the eigenvalue computation */
+  int MaxIter; /* max restarting iterations */
+  int Nkr; /* size of the Krylov subspace */
+  ks_eigen_poly poly; /* Preconditioning polynomial */
+  int blockSize; /* block size for block variant eigensolvers */
+  int parity; 
+} ks_eigen_param;
 #else
 #define ks_eigensolve ks_eigensolve_Kalkreuter_Ritz
 typedef struct {
@@ -370,6 +382,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal, 
 				  ks_eigen_param *eigen_param, int init );
 int ks_eigensolve_Grid( su3_vector ** eigVec, double * eigVal, ks_eigen_param * eigen_param, int init );
+int ks_eigensolve_QUDA( su3_vector ** eigVec, double * eigVal, ks_eigen_param * eigen_param, int init );
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *eigen_param, 
 		     imp_ferm_links_t *fn );
 void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *eigen_param, 

@@ -7,10 +7,15 @@
 
 #ifdef HAVE_QUDA
 #include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
 #endif
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
 #include "../include/generic_u1.h"
+#endif
+
+#ifdef HAVE_GRID
+#include "../include/generic_grid.h"
 #endif
 
 int main( int argc, char **argv ){
@@ -178,7 +183,7 @@ int main( int argc, char **argv ){
      print_densities(eigVec[i], label, ny/2,nz/2,nt/2, EVEN) ;
      }
   **/
-  
+
   /* Clean up eigen storage */
   if(eigVec != NULL){
     for(i = 0; i < param.eigen_param.Nvecs; i++) free(eigVec[i]);
@@ -194,9 +199,15 @@ int main( int argc, char **argv ){
   destroy_fermion_links(fn_links);
 #endif
   fn_links = NULL;
+
+  free_lattice();
   
 #ifdef HAVE_QUDA
   finalize_quda();
+#endif
+
+#ifdef HAVE_GRID
+  finalize_grid();
 #endif
   
   normal_exit(0);
