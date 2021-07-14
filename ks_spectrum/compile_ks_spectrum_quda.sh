@@ -1,14 +1,17 @@
 
-PATH_TO_CUDA=...
-QUDA_HOME=...
-USQCD_BUILD=...
+PATH_TO_CUDA=/sw/summit/cuda/10.1.243
+QUDA_BUILD=/gpfs/alpine/proj-shared/lgt104/detar/kpp_spectrum/l192384f211b728m000415m01129m1329-mg/new_runs/build-optimized
+USQCD_BUILD=${QUDA_BUILD}/usqcd
 
 # Uncomment ARCH, COMPILER, OPT for power9
 # Remove CTIME to remove overly verbose timing output. Useful for debugging.
 
-#ARCH="pow9" \
-#COMPILER="gnu" \
-#OPT="-O3 -Ofast" \
+# Update verbosity
+sed -i 's/CGPU += -DSET_QUDA_SUMMARIZE/CGPU += -DSET_QUDA_VERBOSE/g' Makefile
+
+ARCH="pow9" \
+COMPILER="gnu" \
+OPT="-O3 -Ofast" \
 MY_CC=mpicc \
 MY_CXX=mpicxx \
 CUDA_HOME=${PATH_TO_CUDA} \
