@@ -1,8 +1,4 @@
 
-PATH_TO_CUDA=/sw/summit/cuda/10.1.243
-QUDA_BUILD=/gpfs/alpine/proj-shared/lgt104/detar/kpp_spectrum/l192384f211b728m000415m01129m1329-mg/new_runs/build-optimized
-USQCD_BUILD=${QUDA_BUILD}/usqcd
-
 # Uncomment ARCH, COMPILER, OPT for power9
 # Remove CTIME to remove overly verbose timing output. Useful for debugging.
 
