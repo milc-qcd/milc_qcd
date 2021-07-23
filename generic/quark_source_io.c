@@ -975,7 +975,7 @@ int ask_output_quark_source_file( FILE *fp, int prompt,
   int status = 0;
   char myname[] = "ask_output_quark_source_file";
 
-  filename = "";  /* Set NULL default */
+  filename[0] = 0;  /* Set NULL default */
 
   if (prompt==1){
     print_output_quark_source_choices();
