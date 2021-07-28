@@ -1,3 +1,7 @@
+export PATH_TO_CUDA=/usr/local/cuda
+export QUDA_BUILD=/home/eweinberg/Data/quda_custom/2021-04-06HisqMg/build
+export USQCD_BUILD=${QUDA_BUILD}/usqcd
+
 
 # Uncomment ARCH, COMPILER, OPT for power9
 # Remove CTIME to remove overly verbose timing output. Useful for debugging.
@@ -5,9 +9,9 @@
 # Update verbosity
 sed -i 's/CGPU += -DSET_QUDA_SUMMARIZE/CGPU += -DSET_QUDA_VERBOSE/g' Makefile
 
-ARCH="pow9" \
-COMPILER="gnu" \
-OPT="-O3 -Ofast" \
+#ARCH="pow9" \
+#COMPILER="gnu" \
+#OPT="-O3 -Ofast" \
 MY_CC=mpicc \
 MY_CXX=mpicxx \
 CUDA_HOME=${PATH_TO_CUDA} \
