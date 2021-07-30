@@ -16,6 +16,7 @@
 #define FRESH                            11
 #define RELOAD_ASCII                     12
 #define RELOAD_SERIAL                    13
+#define RELOAD_SERIAL_GRID               14
 #define RELOAD_MULTIDUMP                 18
 #define RELOAD_PARALLEL                  19
 #define WARM                             20

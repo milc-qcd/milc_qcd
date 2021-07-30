@@ -151,11 +151,13 @@ int main(int argc, char *argv[])
 
       /* Calculate and print the residues and norms of the eigenvectors */
       resid = (double *)malloc(Nvecs_curr*sizeof(double));
-      node0_printf("Even site residuals\n");
+      node0_printf("Even site residuals\n"); fflush(stdout);
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
+      node0_printf("Constructing odd-site eigenvectors\n"); fflush(stdout);
       construct_eigen_odd(eigVec, eigVal, &param.eigen_param, fn);
-      node0_printf("Odd site residuals\n");
+      node0_printf("Odd site residuals\n"); fflush(stdout);
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
+      node0_printf("Done with odd site residuals\n"); fflush(stdout);
       
       /* Unapply twisted boundary conditions on the fermion links and
 	 restore conventional KS phases and antiperiodic BC, if

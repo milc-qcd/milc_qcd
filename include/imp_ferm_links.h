@@ -401,6 +401,8 @@ void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
 		  int Nvecs, int parity, imp_ferm_links_t *fn);
 void construct_eigen_odd(su3_vector **eigVec, double *eigVal, ks_eigen_param* eigen_param, imp_ferm_links_t *fn);
 
+void construct_eigen(su3_vector **eigVec, double *eigVal, ks_eigen_param* eigen_param, imp_ferm_links_t *fn, int parity);
+
 
 /* fn_links_qop.c  and fn_links_milc.c */
 
@@ -458,6 +460,11 @@ int ks_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal, su3_vect
 int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
 			 su3_vector **eigVec, eigcg_params *eigcgp, quark_invert_control *qic,
 			 Real mass, imp_ferm_links_t *fn);
+
+/* io_grid_ks_eigen.c */
+void
+read_grid_ks_eigenvectors(char *infile, su3_vector **eigVec, double *eigVal,
+			  int *Nvecs, int parity);
 
 /* ks_baryon.c */
 int baryon_type_index(char *label);

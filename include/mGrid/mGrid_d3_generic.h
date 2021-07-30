@@ -25,5 +25,6 @@
 #define GRID_destroy_V_array GRID_D3_destroy_V_array
 #define GRID_create_V_array_from_vec_array GRID_D3_create_V_array_from_vec_array
 #define GRID_extract_V_array_to_vec_array GRID_D3_extract_V_array_to_vec_array
+#define HADRONS_eigen_read HADRONS_D3_eigen_read
 
 #endif /* _MGRID_D3_GENERIC_H */

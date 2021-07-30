@@ -227,6 +227,12 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
     reset_eigenvalues( eigVec, eigVal, *Nvecs, EVEN, fn);
 
     break;
+
+  case RELOAD_SERIAL_GRID:
+    read_grid_ks_eigenvectors(eigfile, eigVec, eigVal, Nvecs, EVEN);
+    node0_printf("Returning reload_ks_eigen\n");
+    break;
+
   default:
     node0_printf("%s: Unrecognized reload flag.\n", myname);
     terminate(1);
@@ -669,7 +675,7 @@ int convert_outflag_to_inflag_ks_eigen(int outflag){
 
 static void print_read_options(void){
 
-  printf("'fresh_ks_eigen', 'reload_ascii_ks_eigen' or 'reload_serial_ks_eigen' or 'reload_parallel_ks_eigen'");
+  printf("'fresh_ks_eigen', 'reload_ascii_ks_eigen' or 'reload_serial_ks_eigen' or 'reload_parallel_ks_eigen' or 'reload_serial_grid_ks_eigen'");
 }
 
 /*---------------------------------------------------------------*/
@@ -703,6 +709,8 @@ int ask_starting_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
     *flag = RELOAD_SERIAL;
   else if(strcmp("reload_parallel_ks_eigen", savebuf) == 0)
     *flag = RELOAD_PARALLEL;
+  else if(strcmp("reload_serial_grid_ks_eigen", savebuf) == 0)
+    *flag = RELOAD_SERIAL_GRID;
   else{
     printf("ERROR IN INPUT: ks_eigen input command %s is invalid\n", savebuf);
     return(1);

@@ -552,4 +552,54 @@ void construct_eigen_odd(su3_vector *eigVec[], double eigVal[],
   free(magsq);
 }
 
+/*****************************************************************************/
+/* Construct eigenvectors for other_parity, from vectors of given "parity"  */
+/* (Simply multiply by dslash and normalize                                 */
+
+/* UNTESTED */
+
+void construct_eigen(su3_vector *eigVec[], double eigVal[], 
+		     ks_eigen_param *eigen_param, imp_ferm_links_t *fn, int parity){
+  
+  char myname[] = "construct_eigen_odd";
+  int i,j;
+  double *magsq;
+  int Nvecs = eigen_param->Nvecs;
+
+  int otherparity = opposite_parity(parity);
+
+  for(j = 0; j < Nvecs; j++){
+    FORSOMEFIELDPARITY_OMP(i,otherparity){
+      clearvec(eigVec[j]+i);
+    } END_LOOP_OMP;
+    dslash_field(eigVec[j], eigVec[j], otherparity, fn);
+  }
+
+  
+
+  /* If we calculate the 2-norms all at once we do only one large
+     reduction sum */
+  magsq = (double *)malloc(sizeof(double)*Nvecs);
+  if(magsq == NULL){
+    node0_printf("magsq: no room\n");
+    terminate(1);
+  }
+
+  dvecmagsq(magsq, eigVec, otherparity, Nvecs);
+
+  /* Normalize the odd-site vectors */
+  for(j = 0; j < Nvecs; j++){
+    double fact;
+    if(magsq[j] != 0.){
+      fact = 1./sqrt(magsq[j]);
+    } else {
+      node0_printf("%s: ERROR. zero norm for eigenvector %d.", myname, j);
+      fact = 0.;
+    }
+    double_vec_mult(&fact, eigVec[j], eigVec[j], otherparity);
+  }
+  
+  free(magsq);
+}
+
 

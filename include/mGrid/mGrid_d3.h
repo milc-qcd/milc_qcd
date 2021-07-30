@@ -113,6 +113,13 @@ void GRID_D3_implicitly_restarted_lanczos(
   double mass,
   GRID_4Dgrid * grid_full,
   GRID_4DRBgrid * grid_rb );
+
+/* Hadrons/Grid eigenvector I/O in gridStaggEigenIO.cc */
+void HADRONS_D3_eigen_read(int parity,
+			   char const *filename, int *Nvecs,
+			   su3_vector ** const eigVec,
+			   double *const eigVal,
+			   GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
   
 /* create color vector array */
 GRID_D3_ColorVectorArray * GRID_D3_create_V_array(
