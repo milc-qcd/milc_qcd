@@ -1,8 +1,8 @@
 // Mapping between MILC and Grid types
 
-#if defined(_OPENMP) || defined(OMP)
+//#if defined(_OPENMP) || defined(OMP)
 #include "../include/openmp_defs.h"
-#endif
+//#endif
 
 #include <Grid/Grid.h>
 
