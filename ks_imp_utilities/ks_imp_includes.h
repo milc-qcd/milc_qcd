@@ -18,6 +18,9 @@
 #include "../include/io_lat.h"
 #include "../include/generic_ks.h"
 #include "../include/generic.h"
+#ifdef HAVE_QUDA
+#include "../include/generic_quda.h"
+#endif
 #include "../include/dirs.h"
 #include "../include/dirs.h"
 #ifdef HAVE_QIO
