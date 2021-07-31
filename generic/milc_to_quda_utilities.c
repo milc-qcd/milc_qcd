@@ -44,10 +44,10 @@ int initialize_quda(void){
 
 void finalize_quda(void){
 #ifdef USE_CG_GPU
-#endif
 
 #ifdef MULTIGRID
   mat_invert_mg_cleanup();
+#endif
 #endif
   qudaFinalize();
 }
