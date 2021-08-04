@@ -1,0 +1,406 @@
+com_qmp: set thread-safety level to 0
+SU3 with improved KS action
+Eigenvalues and eigenvectors
+MIMD version 7.8.1
+Machine = QMP (portable), with 1 nodes(ranks)
+Host(0) = cheoling0
+Username = cheoling
+start: Sat Jul  3 17:59:35 2021
+
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+FEWSUMS
+KS_MULTICG=HYBRID
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+# Lattice dimensions
+nx 4
+ny 4
+nz 4
+nt 4
+# random number seed
+iseed 5682304
+job_id 1412331
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE (RANK) 4 x 4 x 4 x 4
+Mallocing 0.5 MBytes per node for lattice
+QUDA 1.0.0 (git v0.9.0-3756-gb689670b1-dirty-sm_37)
+CUDA Driver version = 11030
+CUDA Runtime version = 11020
+Found device 0: NVIDIA Tesla K80
+Found device 1: NVIDIA Tesla K80
+Using device 0: NVIDIA Tesla K80
+WARNING: Data reordering done on GPU (set with QUDA_REORDER_LOCATION=GPU/CPU)
+cublasCreated successfully
+WARNING: Using device memory pool allocator
+WARNING: Using pinned memory pool allocator
+Loaded 110 sets of cached parameters from /home/cheoling/Play/Milc_qcd/milc_qcd.git/ks_eigen/test/tunecache.tsv
+WARNING!!: Resetting random seed
+
+
+# Input lattice
+reload_serial ../../binary_samples/lat.sample.inst
+u0 1
+no_gauge_fix
+forget 
+coordinate_origin 0 0 0 0 
+time_bc antiperiodic
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+max_number_of_eigenpairs 32
+# Eigenvector file
+fresh_ks_eigen 
+forget_ks_eigen 
+# Parameters for QUDA's Thick Restarted (Block) Lanczos --------------------------
+# Maximum number of restarting iterations
+Max_Lanczos_restart_iters 100
+# Eigenvalue tolerance
+eigenval_tolerance 5e-13
+# Restart Lanczos iteration at Lanczos_max (number of eigenvalues)
+# Lanczos_max > max_number_of_eigenpairs + 4
+Lanczos_max 60
+# Chebyshev polynomial (makes region (alpha,beta) smooth and outside diverge. even order gives even function.)
+Chebyshev_alpha 10
+Chebyshev_beta 100
+Chebyshev_order 20
+# block_size = 1: Thick Restarted Lanczos
+# block_size > 1: Thick Restarted Block Lanczos
+block_size 1
+Reading as old-style gauge field configuration.
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.inst
+Checksums ed5b7449 68d34f64
+Checksums not verified in this format
+Time to reload gauge configuration = 2.080917e-03
+CHECK PLAQ: 2.9730278122732794e+00 2.9730278122732781e+00
+CHECK NERSC LINKTR: 9.9162775115109980e-01 CKSUM: a0e19040
+Reunitarized for double precision. Max deviation 1.46e-07 changed to 4.44e-16
+Time to check unitarity = 1.757860e-03
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarization group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+Combined fattening and long-link calculation time: 0.006264
+Even site residuals
+Checking eigensolutions
+End of eigensolutions
+COULOMB GAUGE FIXING SKIPPED.
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+========= parameters for eigensolver =========
+Number of wanted eigenvalues: 32
+Krylov subspace size: 60
+Eigenvalue equation tolerance: 5.000000e-13
+Maximum iterations of Lanczos restarts: 100
+Chebyshev polynomial - alpha (lower bound for exclusion): 10
+Chebyshev polynomial - beta (upper bound for exclusion): 100
+Chebyshev polynomial order: 20
+Block size: 1
+==============================================
+Creating TR Lanczos eigensolver
+Running eigensolver in double precision
+Using curandStateMRG32k3a
+Orthonormalising initial guess
+********************************
+**** START QUDA EIGENSOLVER ****
+********************************
+spectrum LR
+tol 5.0000e-13
+n_conv 32
+n_ev 32
+n_kr 60
+polyDeg 20
+a-min 10.000000
+a-max 100.000000
+Resizing kSpace to 106 vectors
+0015 converged eigenvalues at restart iter 0001
+0013 converged eigenvalues at restart iter 0002
+0013 converged eigenvalues at restart iter 0003
+0038 converged eigenvalues at restart iter 0004
+TRLM computed the requested 32 vectors in 4 restart steps and 124 OP*x operations.
+RitzValue[0000]: (+9.7262690917586792e-01, +0.0000000000000000e+00) residual 0.0000000000000000e+00
+RitzValue[0001]: (+9.7262690917586747e-01, +0.0000000000000000e+00) residual 0.0000000000000000e+00
+RitzValue[0002]: (+2.8238873667337250e-01, +0.0000000000000000e+00) residual 3.7568332404901133e-25
+RitzValue[0003]: (+2.8238873667337228e-01, +0.0000000000000000e+00) residual 8.6335837004966070e-40
+RitzValue[0004]: (+2.7306258216840473e-01, +0.0000000000000000e+00) residual 4.0559121770415087e-24
+RitzValue[0005]: (+2.7306258216840307e-01, +0.0000000000000000e+00) residual 3.0670501984777599e-22
+RitzValue[0006]: (+2.6567288684157597e-01, +0.0000000000000000e+00) residual 3.5010788263751798e-19
+RitzValue[0007]: (+2.6567288684157553e-01, +0.0000000000000000e+00) residual 5.3909598331044683e-21
+RitzValue[0008]: (+2.6236085862853664e-01, +0.0000000000000000e+00) residual 3.5834648185146989e-19
+RitzValue[0009]: (+2.6236085862853659e-01, +0.0000000000000000e+00) residual 2.5582384468387069e-20
+RitzValue[0010]: (+2.5480039914899388e-01, +0.0000000000000000e+00) residual 2.6563723074897092e-20
+RitzValue[0011]: (+2.5480039914899283e-01, +0.0000000000000000e+00) residual 1.9096904053926284e-18
+RitzValue[0012]: (+2.4789397674562513e-01, +0.0000000000000000e+00) residual 4.4894274684828519e-18
+RitzValue[0013]: (+2.4789397674562480e-01, +0.0000000000000000e+00) residual 0.0000000000000000e+00
+RitzValue[0014]: (+2.2011614304160484e-01, +0.0000000000000000e+00) residual 2.5740256539109833e-18
+RitzValue[0015]: (+2.2011614304160415e-01, +0.0000000000000000e+00) residual 1.9879380974512171e-16
+RitzValue[0016]: (+2.2011614304160379e-01, +0.0000000000000000e+00) residual 1.0318823175655057e-16
+RitzValue[0017]: (+2.2011614304160376e-01, +0.0000000000000000e+00) residual 3.1749886030697027e-16
+RitzValue[0018]: (+2.2011614304160360e-01, +0.0000000000000000e+00) residual 3.2746074118891447e-16
+RitzValue[0019]: (+2.2011614304160357e-01, +0.0000000000000000e+00) residual 3.6003144729263104e-17
+RitzValue[0020]: (+2.2011614304160351e-01, +0.0000000000000000e+00) residual 5.5332477784363936e-16
+RitzValue[0021]: (+2.2011614304160351e-01, +0.0000000000000000e+00) residual 4.3736472268378138e-16
+RitzValue[0022]: (+2.2011614304160332e-01, +0.0000000000000000e+00) residual 2.8507784151417589e-17
+RitzValue[0023]: (+2.2011614304160329e-01, +0.0000000000000000e+00) residual 5.5393413518294656e-16
+RitzValue[0024]: (+2.0558080218809441e-01, +0.0000000000000000e+00) residual 4.6449514137698910e-22
+RitzValue[0025]: (+2.0558080218809416e-01, +0.0000000000000000e+00) residual 1.6491427231297386e-19
+RitzValue[0026]: (+2.0184170170653490e-01, +0.0000000000000000e+00) residual 8.5316794278360716e-20
+RitzValue[0027]: (+2.0184170170653412e-01, +0.0000000000000000e+00) residual 1.1270413132464309e-19
+RitzValue[0028]: (+1.9948979935726227e-01, +0.0000000000000000e+00) residual 3.1278102008563015e-20
+RitzValue[0029]: (+1.9948979935726152e-01, +0.0000000000000000e+00) residual 1.8763437552978105e-22
+RitzValue[0030]: (+1.9909382705132198e-01, +0.0000000000000000e+00) residual 5.0916598290562014e-21
+RitzValue[0031]: (+1.9909382705132084e-01, +0.0000000000000000e+00) residual 2.9049608083730398e-20
+Eval[0000] = (+4.6135078625941968e-02,+1.0180864193122735e-17) residual = +3.1738021156048382e-15
+Eval[0001] = (+4.6135078625941982e-02,-4.6293179917541230e-19) residual = +3.5827061403444657e-15
+Eval[0002] = (+1.9842402612472516e+00,-2.5599378113575686e-17) residual = +3.7775793887463630e-15
+Eval[0003] = (+1.9842402612472518e+00,-2.6254919664711340e-17) residual = +6.5148690741007919e-15
+Eval[0004] = (+2.0337018172019987e+00,-2.2265227419322334e-17) residual = +5.8296828230617932e-15
+Eval[0005] = (+2.0337018172019969e+00,+4.8255063775562761e-18) residual = +3.2233104471455650e-15
+Eval[0006] = (+2.0739852510417958e+00,-3.0308386674953478e-17) residual = +4.5961385609688435e-15
+Eval[0007] = (+2.0739852510417958e+00,-8.8298026029890377e-18) residual = +5.1628939082256553e-15
+Eval[0008] = (+2.0923683401744060e+00,+8.5019688675775516e-17) residual = +4.0044443973798782e-15
+Eval[0009] = (+2.0923683401744069e+00,+3.3939577609363223e-18) residual = +5.7346651228270541e-15
+Eval[0010] = (+2.1351271200673692e+00,-4.3410777672756321e-18) residual = +5.1324126249290732e-15
+Eval[0011] = (+2.1351271200673683e+00,-1.1023836041625068e-17) residual = +4.7952236526989227e-15
+Eval[0012] = (+2.1751965728006502e+00,-1.7871184840844047e-18) residual = +5.6782930022787688e-15
+Eval[0013] = (+2.1751965728006484e+00,-4.8996973225041396e-17) residual = +5.1255104663098166e-15
+Eval[0014] = (+2.3472222222222281e+00,-6.6068747062596229e-18) residual = +7.2546755899947823e-15
+Eval[0015] = (+2.3472222222222259e+00,-1.9533830915332997e-17) residual = +9.2415742562376912e-15
+Eval[0016] = (+2.3472222222222254e+00,-3.6097660298236225e-18) residual = +6.8307733577612228e-15
+Eval[0017] = (+2.3472222222222237e+00,+8.0391570963369546e-17) residual = +1.1439468949367929e-14
+Eval[0018] = (+2.3472222222222272e+00,-3.6366079040581823e-18) residual = +1.2119982135922898e-14
+Eval[0019] = (+2.3472222222222263e+00,+1.9503912875824016e-17) residual = +5.0850343666284271e-15
+Eval[0020] = (+2.3472222222222263e+00,-2.6175489651764995e-17) residual = +1.9082271963821987e-14
+Eval[0021] = (+2.3472222222222268e+00,+2.6357759051663197e-17) residual = +1.4459363439385105e-14
+Eval[0022] = (+2.3472222222222276e+00,+1.2296531554450181e-17) residual = +4.1748824288711725e-15
+Eval[0023] = (+2.3472222222222263e+00,+9.5234535095372784e-17) residual = +1.6062482971947138e-14
+Eval[0024] = (+2.4451748995362821e+00,+1.7082817858107053e-17) residual = +1.0857123532636638e-14
+Eval[0025] = (+2.4451748995362754e+00,+4.3910159895899895e-18) residual = +9.1229813692885227e-15
+Eval[0026] = (+2.4713772991479006e+00,-1.7918991121889944e-17) residual = +7.5903565222542864e-15
+Eval[0027] = (+2.4713772991478993e+00,-2.5245784233815661e-17) residual = +7.1851175743213697e-15
+Eval[0028] = (+2.4880828766604686e+00,-1.1500405839694757e-17) residual = +7.5516565499407029e-15
+Eval[0029] = (+2.4880828766604637e+00,+4.7664290813422182e-18) residual = +7.4400318172340091e-15
+Eval[0030] = (+2.4909128482649341e+00,+1.0554070845600192e-17) residual = +9.3722456154856756e-15
+Eval[0031] = (+2.4909128482649296e+00,+2.2353760075295558e-18) residual = +6.5671057517731143e-15
+********************************
+***** END QUDA EIGENSOLVER *****
+********************************
+BEGIN RESULTS
+Eigenvalue(0) = 0.0461351 
+Eigenvalue(1) = 0.0461351 
+Eigenvalue(2) = 1.98424 
+Eigenvalue(3) = 1.98424 
+Eigenvalue(4) = 2.0337 
+Eigenvalue(5) = 2.0337 
+Eigenvalue(6) = 2.07399 
+Eigenvalue(7) = 2.07399 
+Eigenvalue(8) = 2.09237 
+Eigenvalue(9) = 2.09237 
+Eigenvalue(10) = 2.13513 
+Eigenvalue(11) = 2.13513 
+Eigenvalue(12) = 2.1752 
+Eigenvalue(13) = 2.1752 
+Eigenvalue(14) = 2.34722 
+Eigenvalue(15) = 2.34722 
+Eigenvalue(16) = 2.34722 
+Eigenvalue(17) = 2.34722 
+Eigenvalue(18) = 2.34722 
+Eigenvalue(19) = 2.34722 
+Eigenvalue(20) = 2.34722 
+Eigenvalue(21) = 2.34722 
+Eigenvalue(22) = 2.34722 
+Eigenvalue(23) = 2.34722 
+Eigenvalue(24) = 2.44517 
+Eigenvalue(25) = 2.44517 
+Eigenvalue(26) = 2.47138 
+Eigenvalue(27) = 2.47138 
+Eigenvalue(28) = 2.48808 
+Eigenvalue(29) = 2.48808 
+Eigenvalue(30) = 2.49091 
+Eigenvalue(31) = 2.49091 
+dslash_fn_field: fn, notify: Signal QUDA to refresh links
+Even site residuals
+Checking eigensolutions
+eigVal[0] = 4.613508e-02 ( resid = 3.173208e-15 , |eigVec[0]|-1 = 0.000000e+00 )
+eigVal[1] = 4.613508e-02 ( resid = 3.582635e-15 , |eigVec[1]|-1 = -5.551115e-16 )
+eigVal[2] = 1.984240e+00 ( resid = 3.779641e-15 , |eigVec[2]|-1 = 2.220446e-16 )
+eigVal[3] = 1.984240e+00 ( resid = 6.517364e-15 , |eigVec[3]|-1 = 4.440892e-16 )
+eigVal[4] = 2.033702e+00 ( resid = 5.829721e-15 , |eigVec[4]|-1 = 2.220446e-16 )
+eigVal[5] = 2.033702e+00 ( resid = 3.222847e-15 , |eigVec[5]|-1 = -3.330669e-16 )
+eigVal[6] = 2.073985e+00 ( resid = 4.596793e-15 , |eigVec[6]|-1 = 0.000000e+00 )
+eigVal[7] = 2.073985e+00 ( resid = 5.159723e-15 , |eigVec[7]|-1 = 2.220446e-16 )
+eigVal[8] = 2.092368e+00 ( resid = 3.999186e-15 , |eigVec[8]|-1 = -3.330669e-16 )
+eigVal[9] = 2.092368e+00 ( resid = 5.735847e-15 , |eigVec[9]|-1 = 2.220446e-16 )
+eigVal[10] = 2.135127e+00 ( resid = 5.132956e-15 , |eigVec[10]|-1 = -5.551115e-16 )
+eigVal[11] = 2.135127e+00 ( resid = 4.793582e-15 , |eigVec[11]|-1 = -8.881784e-16 )
+eigVal[12] = 2.175197e+00 ( resid = 5.678319e-15 , |eigVec[12]|-1 = 1.554312e-15 )
+eigVal[13] = 2.175197e+00 ( resid = 5.123975e-15 , |eigVec[13]|-1 = 4.440892e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 7.254678e-15 , |eigVec[14]|-1 = 2.220446e-15 )
+eigVal[15] = 2.347222e+00 ( resid = 9.240921e-15 , |eigVec[15]|-1 = 1.332268e-15 )
+eigVal[16] = 2.347222e+00 ( resid = 6.830738e-15 , |eigVec[16]|-1 = 6.661338e-16 )
+eigVal[17] = 2.347222e+00 ( resid = 1.144358e-14 , |eigVec[17]|-1 = -1.110223e-16 )
+eigVal[18] = 2.347222e+00 ( resid = 1.211989e-14 , |eigVec[18]|-1 = 6.661338e-16 )
+eigVal[19] = 2.347222e+00 ( resid = 5.092430e-15 , |eigVec[19]|-1 = 4.440892e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 1.907978e-14 , |eigVec[20]|-1 = 2.220446e-16 )
+eigVal[21] = 2.347222e+00 ( resid = 1.446259e-14 , |eigVec[21]|-1 = 0.000000e+00 )
+eigVal[22] = 2.347222e+00 ( resid = 4.178331e-15 , |eigVec[22]|-1 = 6.661338e-16 )
+eigVal[23] = 2.347222e+00 ( resid = 1.606200e-14 , |eigVec[23]|-1 = 2.220446e-16 )
+eigVal[24] = 2.445175e+00 ( resid = 1.085823e-14 , |eigVec[24]|-1 = 1.998401e-15 )
+eigVal[25] = 2.445175e+00 ( resid = 9.126042e-15 , |eigVec[25]|-1 = -3.330669e-16 )
+eigVal[26] = 2.471377e+00 ( resid = 7.588955e-15 , |eigVec[26]|-1 = 1.332268e-15 )
+eigVal[27] = 2.471377e+00 ( resid = 7.185425e-15 , |eigVec[27]|-1 = 6.661338e-16 )
+eigVal[28] = 2.488083e+00 ( resid = 7.552434e-15 , |eigVec[28]|-1 = 1.332268e-15 )
+eigVal[29] = 2.488083e+00 ( resid = 7.440890e-15 , |eigVec[29]|-1 = -3.330669e-16 )
+eigVal[30] = 2.490913e+00 ( resid = 9.370232e-15 , |eigVec[30]|-1 = 2.664535e-15 )
+eigVal[31] = 2.490913e+00 ( resid = 6.566351e-15 , |eigVec[31]|-1 = 2.220446e-16 )
+End of eigensolutions
+Odd site residuals
+Checking eigensolutions
+eigVal[0] = 4.613508e-02 ( resid = 5.525139e-14 , |eigVec[0]|-1 = 0.000000e+00 )
+eigVal[1] = 4.613508e-02 ( resid = 5.908796e-14 , |eigVec[1]|-1 = 2.220446e-16 )
+eigVal[2] = 1.984240e+00 ( resid = 7.819195e-15 , |eigVec[2]|-1 = -1.110223e-16 )
+eigVal[3] = 1.984240e+00 ( resid = 1.635622e-14 , |eigVec[3]|-1 = -1.110223e-16 )
+eigVal[4] = 2.033702e+00 ( resid = 1.421010e-14 , |eigVec[4]|-1 = -1.110223e-16 )
+eigVal[5] = 2.033702e+00 ( resid = 7.521344e-15 , |eigVec[5]|-1 = 0.000000e+00 )
+eigVal[6] = 2.073985e+00 ( resid = 8.236794e-15 , |eigVec[6]|-1 = 0.000000e+00 )
+eigVal[7] = 2.073985e+00 ( resid = 1.169994e-14 , |eigVec[7]|-1 = 2.220446e-16 )
+eigVal[8] = 2.092368e+00 ( resid = 7.797150e-15 , |eigVec[8]|-1 = 0.000000e+00 )
+eigVal[9] = 2.092368e+00 ( resid = 1.397415e-14 , |eigVec[9]|-1 = 0.000000e+00 )
+eigVal[10] = 2.135127e+00 ( resid = 1.137499e-14 , |eigVec[10]|-1 = 0.000000e+00 )
+eigVal[11] = 2.135127e+00 ( resid = 9.069542e-15 , |eigVec[11]|-1 = 0.000000e+00 )
+eigVal[12] = 2.175197e+00 ( resid = 9.327897e-15 , |eigVec[12]|-1 = -2.220446e-16 )
+eigVal[13] = 2.175197e+00 ( resid = 1.130268e-14 , |eigVec[13]|-1 = -1.110223e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 1.230045e-14 , |eigVec[14]|-1 = -1.110223e-16 )
+eigVal[15] = 2.347222e+00 ( resid = 1.936169e-14 , |eigVec[15]|-1 = -1.110223e-16 )
+eigVal[16] = 2.347222e+00 ( resid = 1.539229e-14 , |eigVec[16]|-1 = 2.220446e-16 )
+eigVal[17] = 2.347222e+00 ( resid = 2.623832e-14 , |eigVec[17]|-1 = 0.000000e+00 )
+eigVal[18] = 2.347222e+00 ( resid = 2.712314e-14 , |eigVec[18]|-1 = 0.000000e+00 )
+eigVal[19] = 2.347222e+00 ( resid = 1.116107e-14 , |eigVec[19]|-1 = -1.110223e-16 )
+eigVal[20] = 2.347222e+00 ( resid = 4.264010e-14 , |eigVec[20]|-1 = 0.000000e+00 )
+eigVal[21] = 2.347222e+00 ( resid = 3.164817e-14 , |eigVec[21]|-1 = 0.000000e+00 )
+eigVal[22] = 2.347222e+00 ( resid = 8.830704e-15 , |eigVec[22]|-1 = -1.110223e-16 )
+eigVal[23] = 2.347222e+00 ( resid = 3.365546e-14 , |eigVec[23]|-1 = 0.000000e+00 )
+eigVal[24] = 2.445175e+00 ( resid = 2.221877e-14 , |eigVec[24]|-1 = -1.110223e-16 )
+eigVal[25] = 2.445175e+00 ( resid = 2.005040e-14 , |eigVec[25]|-1 = -2.220446e-16 )
+eigVal[26] = 2.471377e+00 ( resid = 1.410775e-14 , |eigVec[26]|-1 = -1.110223e-16 )
+eigVal[27] = 2.471377e+00 ( resid = 1.336909e-14 , |eigVec[27]|-1 = 0.000000e+00 )
+eigVal[28] = 2.488083e+00 ( resid = 1.260588e-14 , |eigVec[28]|-1 = 2.220446e-16 )
+eigVal[29] = 2.488083e+00 ( resid = 1.567690e-14 , |eigVec[29]|-1 = -1.110223e-16 )
+eigVal[30] = 2.490913e+00 ( resid = 1.364708e-14 , |eigVec[30]|-1 = -1.110223e-16 )
+eigVal[31] = 2.490913e+00 ( resid = 1.283997e-14 , |eigVec[31]|-1 = -1.110223e-16 )
+End of eigensolutions
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+The above were eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0):   0.107395
+eigenval(1):   0.107395
+eigenval(2):   0.704315
+eigenval(3):   0.704315
+eigenval(4):    0.71304
+eigenval(5):    0.71304
+eigenval(6):   0.720067
+eigenval(7):   0.720067
+eigenval(8):   0.723251
+eigenval(9):   0.723251
+eigenval(10):   0.730604
+eigenval(11):   0.730604
+eigenval(12):   0.737427
+eigenval(13):   0.737427
+eigenval(14):   0.766032
+eigenval(15):   0.766032
+eigenval(16):   0.766032
+eigenval(17):   0.766032
+eigenval(18):   0.766032
+eigenval(19):   0.766032
+eigenval(20):   0.766032
+eigenval(21):   0.766032
+eigenval(22):   0.766032
+eigenval(23):   0.766032
+eigenval(24):   0.781853
+eigenval(25):   0.781853
+eigenval(26):   0.786031
+eigenval(27):   0.786031
+eigenval(28):   0.788683
+eigenval(29):   0.788683
+eigenval(30):   0.789131
+eigenval(31):   0.789131
+RUNNING COMPLETED
+Time = 3.907468e-01 seconds
+total Rayleigh iters = 0
+
+
+# --------------------------------------------------------------------------------
+ask_starting_lattice(0): EOF on input.
+WARNING: Environment variable QUDA_PROFILE_OUTPUT_BASE not set; writing to profile.tsv and profile_async.tsv
+Saving 84 sets of cached parameters to /home/cheoling/Play/Milc_qcd/milc_qcd.git/ks_eigen/test/profile_0.tsv
+Saving 0 sets of cached profiles to /home/cheoling/Play/Milc_qcd/milc_qcd.git/ks_eigen/test/profile_async_0.tsv
+
+               initQuda Total time =     5.893 secs
+                     init     =     5.893 secs (100.000%),	 with        2 calls at 2.946e+06 us per call
+        total accounted       =     5.893 secs (100.000%)
+        total missing         =     0.000 secs (  0.000%)
+
+          loadGaugeQuda Total time =     0.066 secs
+                 download     =     0.054 secs ( 82.135%),	 with      322 calls at 1.682e+02 us per call
+                     init     =     0.010 secs ( 15.779%),	 with      322 calls at 3.231e+01 us per call
+                  compute     =     0.000 secs (  0.096%),	 with      322 calls at 1.957e-01 us per call
+                     free     =     0.001 secs (  1.312%),	 with      322 calls at 2.686e+00 us per call
+        total accounted       =     0.065 secs ( 99.322%)
+        total missing         =     0.000 secs (  0.678%)
+
+             dslashQuda Total time =     0.029 secs
+                 download     =     0.007 secs ( 23.482%),	 with      160 calls at 4.256e+01 us per call
+                   upload     =     0.010 secs ( 34.193%),	 with      160 calls at 6.197e+01 us per call
+                     init     =     0.006 secs ( 20.223%),	 with      160 calls at 3.665e+01 us per call
+                  compute     =     0.006 secs ( 19.812%),	 with      160 calls at 3.591e+01 us per call
+                     free     =     0.000 secs (  1.197%),	 with      160 calls at 2.169e+00 us per call
+        total accounted       =     0.029 secs ( 98.907%)
+        total missing         =     0.000 secs (  1.093%)
+
+         eigensolveQuda Total time =     0.266 secs
+                   upload     =     0.001 secs (  0.418%),	 with        1 calls at 1.114e+03 us per call
+                     init     =     0.001 secs (  0.247%),	 with        3 calls at 2.193e+02 us per call
+                  compute     =     0.254 secs ( 95.370%),	 with       13 calls at 1.954e+04 us per call
+                     free     =     0.000 secs (  0.031%),	 with        1 calls at 8.300e+01 us per call
+                    eigen     =     0.001 secs (  0.455%),	 with        4 calls at 3.030e+02 us per call
+        total accounted       =     0.257 secs ( 96.522%)
+        total missing         =     0.009 secs (  3.478%)
+
+                endQuda Total time =     0.004 secs
+
+       initQuda-endQuda Total time =     6.338 secs
+
+                   QUDA Total time =     6.258 secs
+                 download     =     0.061 secs (  0.975%),	 with      482 calls at 1.266e+02 us per call
+                   upload     =     0.011 secs (  0.177%),	 with      161 calls at 6.871e+01 us per call
+                     init     =     5.910 secs ( 94.436%),	 with      487 calls at 1.213e+04 us per call
+                  compute     =     0.260 secs (  4.151%),	 with      495 calls at 5.248e+02 us per call
+                     free     =     0.001 secs (  0.021%),	 with      483 calls at 2.671e+00 us per call
+                    eigen     =     0.001 secs (  0.019%),	 with        4 calls at 3.027e+02 us per call
+        total accounted       =     6.244 secs ( 99.779%)
+        total missing         =     0.014 secs (  0.221%)
+
+Device memory used = 2.5 MB
+Pinned device memory used = 0.0 MB
+Managed memory used = 0.0 MB
+Page-locked host memory used = 1.8 MB
+Total host memory used >= 2.4 MB
+
+exit: Sat Jul  3 17:59:41 2021
+

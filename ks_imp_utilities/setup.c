@@ -188,12 +188,12 @@ readin(int prompt)
 				       param.savelongfile );
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.savelongflag,
 				  param.stringLFNlong );
-
     /* find out what to do with fatlinks at end */
     IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.savefatflag),
 				       param.savefatfile );
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.savefatflag,
 				  param.stringLFNfat );
+    IF_OK status += get_i(stdin, prompt,"withKSphases", &param.withKSphases );
 
     /* Eigenpairs not supported */
     param.eigen_param.Nvecs = 0;

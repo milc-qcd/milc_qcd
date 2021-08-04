@@ -50,6 +50,7 @@ G_KS_ALL = \
   eigen_stuff_Ritz.o \
   eigen_stuff_PRIMME.o \
   eigen_stuff_Grid.o \
+  eigen_stuff_QUDA.o \
   f_meas.o \
   f_meas_current.o \
   fermion_force_asqtad.o \
@@ -263,6 +264,8 @@ eigen_stuff_Ritz.o: ../generic_ks/eigen_stuff_Ritz.c
 eigen_stuff_PRIMME.o: ../generic_ks/eigen_stuff_PRIMME.c
 	${CC} -c ${CFLAGS} $<
 eigen_stuff_Grid.o: ../generic_ks/eigen_stuff_Grid.c
+	${CC} -c ${CFLAGS} $<
+eigen_stuff_QUDA.o: ../generic_ks/eigen_stuff_QUDA.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad.o: ../generic_ks/fermion_force_asqtad.c
 	${CC} -c ${CFLAGS} $<

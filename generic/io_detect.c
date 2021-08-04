@@ -18,7 +18,7 @@
 #endif
 #include <string.h>
 
-int io_detect(char *filename, file_table ft[], int ntypes){
+int io_detect(const char *filename, file_table ft[], int ntypes){
   FILE *fp;
   int i, status, words;
   int32type magic_no;
@@ -74,7 +74,7 @@ int io_detect(char *filename, file_table ft[], int ntypes){
 /* Open a staggered propagator file and discover its format */
 
 #ifdef HAVE_QIO
-int io_detect_ks_usqcd(char *filename){
+int io_detect_ks_usqcd(const char *filename){
 
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -119,7 +119,7 @@ int io_detect_ks_usqcd(char *filename){
 /********************************************************************/
 /* Open a Wilson propagator file and discover its format */
 
-int io_detect_w_usqcd(char *filename){
+int io_detect_w_usqcd(const char *filename){
 
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -168,7 +168,7 @@ int io_detect_w_usqcd(char *filename){
 #if 0
 /********************************************************************/
 /* For FNAL we base the detection on the number of elements per site */
-int io_detect_fm(char *filename){
+int io_detect_fm(const char *filename){
   FILE *fp;
   int status, words;
   u_int32type magic_no, revmagic_no, gmtime_stamp, size_of_element,
@@ -240,7 +240,7 @@ static file_table broad_file_types[N_BROAD_FILE_TYPES] =
   };
 
 int 
-get_file_type(char *filename)
+get_file_type(const char *filename)
 {
   int file_type = FILE_TYPE_UNKNOWN;
   char myname[] = "get_file_type";

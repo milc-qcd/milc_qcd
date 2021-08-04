@@ -202,6 +202,7 @@ load_Y_from_V(info_t *info, hisq_auxiliary_t *aux, int umethod){
 
   info->final_flop = 0.;
 
+  int status = 0;
   switch(umethod){
 
   case UNITARIZE_NONE:
@@ -215,7 +216,6 @@ load_Y_from_V(info_t *info, hisq_auxiliary_t *aux, int umethod){
     node0_printf("UNITARIZE_APE: derivative is not ready for this method\n"); 
     terminate(0);
     
-    int status = 0;
     FORALLFIELDSITES_OMP(i,private(dir,tmat))for(dir=XUP;dir<=TUP;dir++){
       /* Use partially reunitarized link for guess */
       tmat = V_link[4*i+dir];
