@@ -417,7 +417,7 @@ WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 WANT_KS_CONT_GPU ?= #true
 
-/* Temporary for testing */
+# Temporary for testing
 WANTQUDACPU  ?= #false
 
 ifeq ($(strip ${WANTQUDACPU}),true)
