@@ -586,6 +586,18 @@ int spectrum_singlets( Real mass, Real tol, field_offset temp_offset,
 		       imp_ferm_links_t *fn );
 #endif
 
+/* shift_field.c */
+
+enum shift_dir {
+  SHIFT_FORWARD,
+  SHIFT_BACKWARD,
+  SHIFT_SYMMETRIC
+};
+
+void 
+shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
+	    su3_matrix *links);
+
 /* spin_taste_ops.c */
 #include "../include/flavor_ops.h"
 #ifdef NO_GAUGE_FIELD

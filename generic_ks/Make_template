@@ -141,6 +141,7 @@ G_KS_ALL = \
   path_transport.o \
   nl_spectrum.o \
   reunitarize_ks.o \
+  shift_field.o \
   show_generic_ks_md_opts.o \
   show_generic_ks_opts.o \
   show_hisq_force_opts.o \
@@ -470,6 +471,8 @@ path_transport.o: ../generic_ks/path_transport.c
 rephase.o: ../generic_ks/rephase.c
 	${CC} -c ${CFLAGS} $<
 reunitarize_ks.o: ../generic_ks/reunitarize_ks.c
+	${CC} -c ${CFLAGS} $<
+shift_field.o: ../generic_ks/shift_field.c
 	${CC} -c ${CFLAGS} $<
 show_generic_ks_md_opts.o: ../generic_ks/show_generic_ks_md_opts.c
 	${CC} -c ${CFLAGS} $<
