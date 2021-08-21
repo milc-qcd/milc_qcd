@@ -208,16 +208,6 @@ update_props(complex **prop, double_complex *meson_q, int nt, int num_corr_mom,
 
   Real flops = 0.;
 
-  /*DEBUG
-  printf("called update_props, meson_q:\n");
-  for(int k=0; k<num_corr_mom; k++)
-    for(int t=0; t<nt; ++t)
-      {
-	int idx = k*nt + t;
-	printf("meson_q[%2d,%3d] %10.3e, %10.3e\n",k,t,meson_q[idx].real,meson_q[idx].imag);
-      }
-  /*DEBUG*/
-
   double_complex tr[num_corr_mom*nt];
   /* Normalize for all sink momenta q */
   flops += norm_v(tr, meson_q, meson_phase, meson_factor,
