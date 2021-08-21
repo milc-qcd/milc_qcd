@@ -130,24 +130,25 @@ int main( int argc, char **argv ){
     }
 #endif
     boundary_twist_fn(fn, OFF);
-  }
-  node0_printf("RUNNING COMPLETED\n");
-  double endtime=dclock();
+
+    node0_printf("RUNNING COMPLETED\n");
+    double endtime=dclock();
   
-  node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
-  starttime = endtime; /* In case we continue looping over readin */
+    node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
+    starttime = endtime; /* In case we continue looping over readin */
   
 #ifndef CHECK_INVERT
 
 #ifdef HISQ_SVD_COUNTER
-  printf("hisq_svd_counter = %d\n", hisq_svd_counter);
+    printf("hisq_svd_counter = %d\n", hisq_svd_counter);
 #endif
   
 #ifdef HISQ_FORCE_FILTER_COUNTER
-  printf("hisq_force_filter_counter = %d\n", hisq_force_filter_counter);
+    printf("hisq_force_filter_counter = %d\n", hisq_force_filter_counter);
 #endif
 
 #endif
+  } /* readin(prompt) */
 
 #ifdef HAVE_QUDA
   finalize_quda();
