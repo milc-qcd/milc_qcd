@@ -121,7 +121,7 @@ static int initial_set(void){
   broadcast_bytes((char *)&param,sizeof(param));
 
   if( param.stopflag != 0 )
-    normal_exit(0);
+    return param.stopflag;
 
   if(prompt==2)return prompt;
 
@@ -403,7 +403,7 @@ int readin(int prompt) {
       IF_OK {
 	int source_type, saveflag_s;
 	char descrp[MAXDESCRP];
-	char savefile_s[MAXFILENAME] = "";
+	char savefile_s[MAXFILENAME];
 	status += 
 	  ask_output_quark_source_file( stdin, prompt, &saveflag_s,
 					&source_type, NULL, descrp,
@@ -873,6 +873,7 @@ int readin(int prompt) {
 	
     }
     
+
     /*------------------------------------------------------------*/
     /* Meson correlators                                          */
     /*------------------------------------------------------------*/
@@ -1064,6 +1065,7 @@ int readin(int prompt) {
       } /* correlators for this pair */
     } /* pairs */
     
+
     /*------------------------------------------------------------*/
     /* Baryon correlators                                          */
     /*------------------------------------------------------------*/
