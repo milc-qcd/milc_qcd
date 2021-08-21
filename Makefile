@@ -564,7 +564,7 @@ endif
 #----------------------------------------------------------------------
 # 16. Hadrons Options
 
-WANTHADRONS = true # true implies WANTGRID = true
+WANTHADRONS ?= false # true implies WANTGRID = true
 
 
 ifeq ($(strip ${WANTHADRONS}), true)
