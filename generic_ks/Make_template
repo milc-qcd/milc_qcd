@@ -50,6 +50,7 @@ G_KS_ALL = \
   eigen_stuff_Ritz.o \
   eigen_stuff_PRIMME.o \
   eigen_stuff_Grid.o \
+  eigen_stuff_QUDA.o \
   f_meas.o \
   f_meas_current.o \
   fermion_force_asqtad.o \
@@ -140,6 +141,7 @@ G_KS_ALL = \
   path_transport.o \
   nl_spectrum.o \
   reunitarize_ks.o \
+  shift_field.o \
   show_generic_ks_md_opts.o \
   show_generic_ks_opts.o \
   show_hisq_force_opts.o \
@@ -263,6 +265,8 @@ eigen_stuff_Ritz.o: ../generic_ks/eigen_stuff_Ritz.c
 eigen_stuff_PRIMME.o: ../generic_ks/eigen_stuff_PRIMME.c
 	${CC} -c ${CFLAGS} $<
 eigen_stuff_Grid.o: ../generic_ks/eigen_stuff_Grid.c
+	${CC} -c ${CFLAGS} $<
+eigen_stuff_QUDA.o: ../generic_ks/eigen_stuff_QUDA.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad.o: ../generic_ks/fermion_force_asqtad.c
 	${CC} -c ${CFLAGS} $<
@@ -467,6 +471,8 @@ path_transport.o: ../generic_ks/path_transport.c
 rephase.o: ../generic_ks/rephase.c
 	${CC} -c ${CFLAGS} $<
 reunitarize_ks.o: ../generic_ks/reunitarize_ks.c
+	${CC} -c ${CFLAGS} $<
+shift_field.o: ../generic_ks/shift_field.c
 	${CC} -c ${CFLAGS} $<
 show_generic_ks_md_opts.o: ../generic_ks/show_generic_ks_md_opts.c
 	${CC} -c ${CFLAGS} $<

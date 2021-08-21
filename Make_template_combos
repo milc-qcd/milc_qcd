@@ -84,7 +84,8 @@ FERMION_OBJECTS = \
   quark_source.o     \
   quark_source_io.o  \
   quark_source_sink_op.o \
-  spin_taste_ops.o
+  spin_taste_ops.o \
+  shift_field.o
 
 # These are used to build propagators
 
