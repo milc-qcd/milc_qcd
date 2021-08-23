@@ -11,12 +11,12 @@ export CUDA_HOME=/srv/software/cuda-toolkits/10.2
 export CUBLAS_LIBDIR=/srv/software/cuda-toolkits/nvidia-hpc/Linux_x86_64/20.7/math_libs/10.2/lib64
 echo QUDA_HOME=${QUDA_HOME}
 
-MPP=false
-OMP=false
+MPP=true
+OMP=true #false
 
 if [ ${MPP} == true ] ; then
     module load openmpi3
-    export QUDA_HOME=/work1/simone/contract/quda_c7340d4_x86_64
+    export QUDA_HOME=/work1/simone/contract/quda_x86_64
     MY_CC=mpicc
     MY_CXX=mpicxx
     WANTQMP=true
@@ -25,7 +25,7 @@ if [ ${MPP} == true ] ; then
     QMPSNG=unused
     QIOSNG=unused
 else
-    export QUDA_HOME=/work1/simone/contract/quda_c7340d4_serial_x86_64
+    export QUDA_HOME=/work1/simone/contract/quda_serial_x86_64
     MY_CC=gcc
     MY_CXX=g++
     WANTQMP=false

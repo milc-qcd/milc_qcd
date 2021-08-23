@@ -25,7 +25,7 @@ COMPILER ?= gnu # intel, ibm, portland, cray-intel
 # 3. MPP vs Scalar
 
 # Compiling for a parallel machine?  blank for a scalar machine
-MPP ?= # true
+MPP ?= true
 
 #----------------------------------------------------------------------
 # 4. Precision 
@@ -304,14 +304,15 @@ QMP_BACKEND = QMP_MPI
 # Edit these locations for the installed SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
-SCIDAC = /work1/simone/contract/scidac_x86_64/install
+PSCIDAC = /work1/simone/contract/quda_x86_64/usqcd
+SSCIDAC = /work1/simone/contract/scidac_x86_64/install
 TAG= -openmpi
 # Parallel versions
-QMPPAR ?= ${SCIDAC}/qmp${TAG}
-QIOPAR ?= $(SCIDAC)/qio${TAG}
+QMPPAR ?= ${PSCIDAC}
+QIOPAR ?= $(PSCIDAC)
 # Single processor versions
-QMPSNG ?= ${SCIDAC}/qmp-single
-QIOSNG ?= $(SCIDAC)/qio-single
+QMPSNG ?= ${SSCIDAC}/qmp-single
+QIOSNG ?= $(SSCIDAC)/qio-single
 QLA ?= ${SCIDAC}/qla
 # Either version
 QDP ?= ${SCIDAC}/qdp

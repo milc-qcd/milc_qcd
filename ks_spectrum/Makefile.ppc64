@@ -105,7 +105,12 @@ LDFLAGS += -g
 
 # OpenMP?
 
-OMP ?=  true
+OMP ?= true
+
+# Option WANT_KS_CONT_CPU enables OMP threaded contractions on CPUs it does NOT use or need QUDA.
+# Setting it to false enables old CPU contraction routines.
+# option WANT_KS_CONT_GPU overrides WANT_KS_CONT_CPU to use GPU contraction code
+WANT_KS_CONT_CPU  ?=  true
 
 #----------------------------------------------------------------------
 # 7. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -416,16 +421,12 @@ WANT_FN_CG_GPU ?= #true
 WANT_FL_GPU ?= #true
 WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
-WANT_KS_CONT_GPU ?=  true
+WANT_KS_CONT_GPU ?= #true
 
-# Temporary for testing
-WANTQUDACPU  ?=  true
-
-ifeq ($(strip ${WANTQUDACPU}),true)
-  ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
-    HAVE_KS_CONT_GPU = true
-    CGPU += -DUSE_KS_CONT_GPU
-  endif
+ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
+  HAVE_KS_CONT_GPU = true
+  CGPU += -DUSE_KS_CONT_GPU
+  WANT_KS_CONT_CPU = false
 endif
 
 endif
@@ -445,7 +446,8 @@ ifeq ($(strip ${WANTQUDA}),true)
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcublas -lcufft -lcublas
+  CUBLAS_LIBDIR ?= ${CUDA_HOME}/lib64
+  LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_HOME}/lib64/stubs -L${CUBLAS_LIBDIR} -Wl,-rpath ${CUBLAS_LIBDIR} -lcudart -lcuda -lcublas -lcublasLt -lcufft -lcublas
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
@@ -1089,7 +1091,7 @@ endif
 	@echo WANTQUDA: $(if $(WANTQUDA),$(WANTQUDA),false)
 	@echo WANT_MIXED_PRECISION_GPU: $(if $(WANT_MIXED_PRECISION_GPU),$(WANT_MIXED_PRECISION_GPU),false)
 	@echo WANT_KS_CONT_GPU: $(if $(WANT_KS_CONT_GPU),$(WANT_KS_CONT_GPU),false)
-	@echo WANTQUDACPU: $(if $(WANTQUDACPU),$(WANTQUDACPU),false)
+	@echo WANT_KS_CONT_CPU: $(if $(WANT_KS_CONT_CPU),$(WANT_KS_CONT_CPU),false)
 	@echo WANTQPHIX: $(if $(WANTQPHIX),$(WANTQPHIX),false)
 	@echo WANTQPHIXJ: $(if $(WANTQPHIXJ),$(WANTQPHIXJ),false)
 	@echo WANTGRID: $(if $(WANTGRID),$(WANTGRID),false)

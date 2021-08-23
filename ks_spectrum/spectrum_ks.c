@@ -1051,7 +1051,7 @@ static void spectrum_ks_print_diag(int pair){
       for(t=0; t<nt; t++){
 	tp = (t + param.r_offset_m[pair][3]) % nt;
 	prop = pmes_prop[m][tp];
-	CDIVREAL(prop, norm_fac, prop);
+	CMULREAL(prop, norm_fac, prop);
 	print_meson_prop(pair, t, prop);
 	print_fnal_meson_prop(corr_fp, pair, t, prop);
       }
@@ -1092,7 +1092,7 @@ static void spectrum_ks_print_offdiag(int pair){
       for(t=0; t<nt; t++){
 	tp = (t + param.r_offset_m[pair][3]) % nt;
 	prop = pmes_prop[m][tp];
-	CDIVREAL(prop, norm_fac, prop);
+	CMULREAL(prop, norm_fac, prop);
 	print_meson_prop(pair, t, prop);
 	print_fnal_meson_prop(corr_fp, pair, t, prop);
       }
