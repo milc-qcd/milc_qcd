@@ -1,8 +1,8 @@
 /******************* milc_to_quda_utilities.c ************************/
 /* For the QUDA/GPU interface */
 
-#include <cuda.h>  // DEBUG-JNS
-#include <cuda_runtime.h> // DEBUG-JNS
+//#include <cuda.h>  // DEBUG-JNS
+//#include <cuda_runtime.h> // DEBUG-JNS
 #include "generic_includes.h"
 #include "../include/generic_quda.h"
 #include <string.h>
@@ -37,7 +37,7 @@ int initialize_quda(void){
   qudaSetMPICommHandle(mycomm());
   qudaInit(init_args);
 
-  cudaDeviceSetLimit(cudaLimitPrintfFifoSize,128*1024*1024); // DEBUG-JNS
+  //cudaDeviceSetLimit(cudaLimitPrintfFifoSize,128*1024*1024); // DEBUG-JNS
 
 
   if(status == 0)
