@@ -506,6 +506,7 @@ static void accum_gen_meson(complex **mp, su3_vector *qp0, int naik_index0,
 		    mom_parity_index, fn[naik_index0], fn[naik_index1], 
 		    param.spin_taste_snk[pair], 
 		    param.meson_phase[pair], param.meson_factor[pair],
+		    param.num_corr_report[pair],
 		    param.corr_index[pair], &param.r_offset_m[pair][0]);
 }
 

@@ -173,6 +173,7 @@ void ks_meson_cont_mom(
   int spin_taste_snk[],     /* spin_taste_snk[c] gives the s/t assignment */
   int meson_phase[],        /* meson_phase[c] is the correlator phase */
   Real meson_factor[],      /* meson_factor[c] scales the correlator */
+  int num_corr,             /* number of corrs - first index of prop */
   int corr_index[],         /* m = corr_index[c] is the correlator index */
   int r0[]                  /* origin for defining FT and KS phases */
 		    )
@@ -412,9 +413,15 @@ void ks_meson_cont_mom(
 	      prop[m][t].imag += tr[k].imag;
 	    }
 	}
+
       free(p_ind);
     }  /**** end of the loop over the spin-taste table ******/
   
+  /* Do global sum before returning */
+  for(m = 0; m < num_corr; m++){
+    g_veccomplexsum(prop[m], nt);
+  }
+      
   free(meson);  free(meson_q);  free(nonzero);  free(ftfact);
   
   destroy_v_field(quark);

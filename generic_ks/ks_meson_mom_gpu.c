@@ -279,6 +279,7 @@ void ks_meson_cont_mom(
   int spin_taste_snk[],     /* spin_taste_snk[c] gives the s/t assignment */
   int meson_phase[],        /* meson_phase[c] is the correlator phase */
   Real meson_factor[],      /* meson_factor[c] scales the correlator */
+  int num_corr,             /* number of corrs - first index of prop */
   int corr_index[],         /* m = corr_index[c] is the correlator index */
   int r0[]                  /* origin for defining FT and KS phases */
 		    )
