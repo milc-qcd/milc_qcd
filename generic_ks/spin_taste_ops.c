@@ -985,6 +985,15 @@ forward_index(int index){
   case rhotsfn:
     return rhotsffn;
 
+  case rhoxsffn:
+    return rhoxsffn;
+  case rhoysffn:
+    return rhoysffn;
+  case rhozsffn:
+    return rhozsffn;
+  case rhotsffn:
+    return rhotsffn;
+
   case rhoxsape:
     return rhoxsfape;
   case rhoysape:
@@ -992,6 +1001,15 @@ forward_index(int index){
   case rhozsape:
     return rhozsfape;
   case rhotsape:
+    return rhotsfape;
+
+  case rhoxsfape:
+    return rhoxsfape;
+  case rhoysfape:
+    return rhoysfape;
+  case rhozsfape:
+    return rhozsfape;
+  case rhotsfape:
     return rhotsfape;
 
   default:
@@ -1011,6 +1029,15 @@ backward_index(int index){
   case rhotsfn:
     return rhotsbfn;
 
+  case rhoxsbfn:
+    return rhoxsbfn;
+  case rhoysbfn:
+    return rhoysbfn;
+  case rhozsbfn:
+    return rhozsbfn;
+  case rhotsbfn:
+    return rhotsbfn;
+
   case rhoxsape:
     return rhoxsbape;
   case rhoysape:
@@ -1018,6 +1045,15 @@ backward_index(int index){
   case rhozsape:
     return rhozsbape;
   case rhotsape:
+    return rhotsbape;
+
+  case rhoxsbape:
+    return rhoxsbape;
+  case rhoysbape:
+    return rhoysbape;
+  case rhozsbape:
+    return rhozsbape;
+  case rhotsbape:
     return rhotsbape;
 
   default:
