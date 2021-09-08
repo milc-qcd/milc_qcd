@@ -961,7 +961,7 @@ int readin(int prompt) {
       IF_OK for(i = 0; i < param.num_corr_m[ipair]; i++){
 	int ok,m;
 	char meson_label_in[MAX_MESON_LABEL], mom_label_in[MAX_MOM_LABEL],
-	  spin_taste_string[8], phase_lab[4], 
+	  spin_taste_string[16], phase_lab[4], 
 	  factor_op[2], parity_x_in[3], parity_y_in[3], parity_z_in[3];
 	double factor;
 	
