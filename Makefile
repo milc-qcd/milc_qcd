@@ -417,7 +417,8 @@ WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 WANT_EIG_GPU ?= #true
 WANT_KS_CONT_GPU ?= #true
-WANT_SHIFT_GPU ?= #true
+WANT_SHIFT_GPU ?= #true DO NOT USE YET
+WANT_KS_CONT_GPU ?= #true
 
 endif
 
