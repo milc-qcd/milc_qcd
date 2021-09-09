@@ -87,7 +87,7 @@ shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src,
     break;
   }
 
-  qudaSpinTaste(MILC_PRECISION, quda_precision, links, src, dest, dir, sym);
+  qudaShift(MILC_PRECISION, quda_precision, links, src, dest, dir, sym);
 }
 
 #else
