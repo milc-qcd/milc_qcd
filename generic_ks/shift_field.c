@@ -11,6 +11,7 @@
 
 #include "generic_ks_includes.h"
 #include "../include/imp_ferm_links.h"
+#include <quda_milc_interface.h>
 
 void 
 shift_field_cpu(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
@@ -20,6 +21,8 @@ shift_field_cpu(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src,
   register site *s ;
   msg_tag *tag[2] = {NULL, NULL};
   su3_vector *tvec = create_v_field();
+
+  node0_printf("Using CPU shift\n");
 
   if(fb == SHIFT_FORWARD || fb == SHIFT_SYMMETRIC)
     tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
@@ -73,7 +76,9 @@ shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src,
 	    su3_matrix *links)
 {
   int quda_precision = MILC_PRECISION;
-  int sym;
+  int sym = 0;
+
+  node0_printf("Using GPU shift\n");
 
   switch(fb){
   case SHIFT_FORWARD:
