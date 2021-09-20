@@ -399,6 +399,12 @@ void ks_meson_cont_mom(
       /* Complete the propagator by tying in the sink gamma.
 	 Then store it */
       
+      complex *dprop = (complex*)malloc(sizeof(complex)*nt*num_corr);
+      for(int k = 0; k < nt*num_corr; k++){
+	dprop[k].real = 0.;
+	dprop[k].imag = 0.;
+      }
+	
       for(t=0; t < nt; t++)if(nonzero[t]) {
 	  /* Normalize for all sink momenta q */
 	  flops += norm_v(tr, &meson_q[t], 
@@ -409,19 +415,22 @@ void ks_meson_cont_mom(
 	    {
 	      c = corr_table[g][k];
 	      m = corr_index[c];
-	      prop[m][t].real += tr[k].real;
-	      prop[m][t].imag += tr[k].imag;
+	      dprop[m*nt+t].real += tr[k].real;
+	      dprop[m*nt+t].imag += tr[k].imag;
 	    }
+	}
+
+      g_veccomplexsum(dprop, nt*num_corr);
+
+      for(m = 0; m < num_corr; m++)
+	for(t = 0; t < nt; t++){
+	  prop[m][t].real += dprop[m*nt+t].real;
+	  prop[m][t].imag += dprop[m*nt+t].imag;
 	}
 
       free(p_ind);
     }  /**** end of the loop over the spin-taste table ******/
   
-  /* Do global sum before returning */
-  for(m = 0; m < num_corr; m++){
-    g_veccomplexsum(prop[m], nt);
-  }
-      
   free(meson);  free(meson_q);  free(nonzero);  free(ftfact);
   
   destroy_v_field(quark);
