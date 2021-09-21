@@ -11,7 +11,6 @@
 
 #include "generic_ks_includes.h"
 #include "../include/imp_ferm_links.h"
-#include <quda_milc_interface.h>
 
 void 
 shift_field_cpu(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
@@ -71,6 +70,7 @@ shift_field_cpu(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src,
 }
 
 #if defined(HAVE_QUDA) && defined(USE_SHIFT_GPU)
+#include <quda_milc_interface.h>
 void 
 shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
 	    su3_matrix *links)
