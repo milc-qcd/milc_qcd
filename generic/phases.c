@@ -11,7 +11,7 @@
 static const char *phaselabel[4] = { "1", "i", "-1", "-i" };
 static int phase[4] = { 0, 1, 2, 3 };  
 
-int decode_phase(char *label){
+int decode_phase(char const *label){
   int i;
   for(i = 0; i < 4; i++){
     if(strcmp(label,phaselabel[i]) == 0)return phase[i];

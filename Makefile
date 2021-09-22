@@ -415,6 +415,10 @@ WANT_FN_CG_GPU ?= #true
 WANT_FL_GPU ?= #true
 WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
+WANT_EIG_GPU ?= #true
+WANT_KS_CONT_GPU ?= #true
+WANT_SHIFT_GPU ?= #true DO NOT USE YET
+WANT_KS_CONT_GPU ?= #true
 
 endif
 
@@ -463,6 +467,21 @@ ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${WANT_FF_GPU}),true)
     HAVE_FF_GPU = true
     CGPU += -DUSE_FF_GPU
+  endif
+
+  ifeq ($(strip ${WANT_EIG_GPU}),true)
+    HAVE_EIG_QUDA = true
+    CGPU += -DUSE_EIG_QUDA
+  endif
+
+  ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
+    HAVE_KS_CONT_GPU = true
+    CGPU += -DUSE_KS_CONT_GPU
+  endif
+
+  ifeq ($(strip ${WANT_SHIFT_GPU}),true)
+    HAVE_SHIFT_QUDA = true
+    CGPU += -DUSE_SHIFT_QUDA
   endif
 
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
@@ -544,9 +563,52 @@ ifeq ($(strip ${WANTQPHIX}), true)
 endif
 
 #----------------------------------------------------------------------
+# 16. Hadrons Options
+
+WANTHADRONS ?= false # true implies WANTGRID = true
+
+
+ifeq ($(strip ${WANTHADRONS}), true)
+
+  HAVE_HADRONS = true
+  CPHI += -DHAVE_HADRONS
+
+  ifeq ($(strip ${MPP}),true)
+    ifeq ($(strip ${ARCH}),knl)
+      HADRONS_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),skx)
+      HADRONS_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),hsw)
+      HADRONS_ARCH = avx2
+    endif
+  else
+    # Scalar version                                                                
+
+    HADRONS_ARCH = scalar
+
+  endif
+
+  HADRONS_HOME = ../Grid/install-hadrons-${HADRONS_ARCH}
+  HADRONS_LIBRARIES = ${HADRONS_HOME}/lib
+  LIBHADRONS = -L${HADRONS_LIBRARIES} -lHadrons -ldl
+  HADRONS_HEADERS = ${HADRONS_HOME}/include
+  INCHADRONS = -I${HADRONS_HEADERS}
+
+  PACKAGE_HEADERS += ${HADRONS_HEADERS}/Hadrons
+  PACKAGE_DEPS += Hadrons
+
+  LDFLAGS += -fopenmp
+
+endif
+
+#----------------------------------------------------------------------
 # 16. Grid Options
 
 WANTGRID = #true
+
+ifeq ($(strip ${WANTHADRONS}), true)
+  WANTGRID = true
+endif
 
 ifeq ($(strip ${WANTGRID}), true)
 
@@ -571,9 +633,9 @@ ifeq ($(strip ${WANTGRID}), true)
 
   endif
 
-  GRID_HOME = ../Grid/install-${GRID_ARCH}
+  GRID_HOME = ../Grid/install-grid-${GRID_ARCH}
   GRID_LIBRARIES = ${GRID_HOME}/lib
-  LIBGRID = -L${GRID_LIBRARIES} -lGrid
+  LIBGRID = -L${GRID_LIBRARIES} -lGrid -lcrypto -lz
   GRID_HEADERS = ${GRID_HOME}/include
   INCGRID = -I${GRID_HEADERS}
 
@@ -694,6 +756,12 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 # 20. Miscellaneous macros for performance control and metric
 
 #     Define them with a -D prefix.
+
+#------------------------------
+# git code version
+
+GIT_VERSION := "$(shell git describe --abbrev=4 --dirty --always --tags)"
+CGITVER = -DMILC_CODE_VERSION=\"$(GIT_VERSION)\"
 
 #------------------------------
 # Print timing statistics.
@@ -947,19 +1015,20 @@ CLMEM = #-DCLOV_LEAN
 #----------------------------------------------------------------------
 # Extra include paths
 
-INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCQPHIXJ} ${INCGRID} ${INCVTUNE}
+INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCQPHIXJ} ${INCHADRONS} ${INCGRID} ${INCVTUNE}
 
 #----------------------------------------------------------------------
 #  Extra libraries
 
-LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBARPACK} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBQPHIXJ} ${LIBGRID} ${LIBVTUNE}
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBARPACK} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} \
+  ${LIBQPHIXJ} ${LIBHADRONS} ${LIBGRID} ${LIBVTUNE}
 
 #------------------------------
 # Summary
 
 CODETYPE = ${CTIME} ${CPROF} ${CDEBUG} ${CGEOM} ${KSCGSTORE} ${CPREFETCH} \
  ${KSCGMULTI} ${KSFFMULTI} ${KSRHMCINT} ${KSSHIFT} ${CLCG} ${CLMEM} ${CQOP} \
- ${CCOMPAT}
+ ${CCOMPAT} ${CGITVER}
 
 #----------------------------------------------------------------------
 # MILC library make file in libraries directory.  

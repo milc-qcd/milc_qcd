@@ -268,6 +268,15 @@ int readin(int prompt) {
     IF_OK status += get_f(stdin, prompt, "Chebyshev_beta", &param.eigen_param.poly.maxE );
     IF_OK status += get_i(stdin, prompt, "Chebyshev_order", &param.eigen_param.poly.norder );
     IF_OK status += get_s(stdin, prompt, "diag_algorithm", param.eigen_param.diagAlg );
+#elif defined(USE_EIG_QUDA)
+    /* QUDA */
+    IF_OK status += get_i(stdin, prompt, "Max_Lanczos_restart_iters", &param.eigen_param.MaxIter );    
+    IF_OK status += get_f(stdin, prompt, "eigenval_tolerance", &param.eigen_param.tol );
+    IF_OK status += get_i(stdin, prompt, "Lanczos_max", &param.eigen_param.Nkr );
+    IF_OK status += get_f(stdin, prompt, "Chebyshev_alpha", &param.eigen_param.poly.minE );
+    IF_OK status += get_f(stdin, prompt, "Chebyshev_beta", &param.eigen_param.poly.maxE );
+    IF_OK status += get_i(stdin, prompt, "Chebyshev_order", &param.eigen_param.poly.norder );
+    IF_OK status += get_i(stdin, prompt, "block_size", &param.eigen_param.blockSize );
 #else
     /* Kalkreuter_Ritz */
     IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );

@@ -116,11 +116,12 @@ static int initial_set(void){
     if(status>0) param.stopflag=1; else param.stopflag=0;
   } /* end if(mynode()==0) */
 
+  fflush(stdout);
   /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));
 
   if( param.stopflag != 0 )
-    normal_exit(0);
+    return param.stopflag;
 
   if(prompt==2)return prompt;
 
@@ -872,6 +873,7 @@ int readin(int prompt) {
 	
     }
     
+
     /*------------------------------------------------------------*/
     /* Meson correlators                                          */
     /*------------------------------------------------------------*/
@@ -959,7 +961,7 @@ int readin(int prompt) {
       IF_OK for(i = 0; i < param.num_corr_m[ipair]; i++){
 	int ok,m;
 	char meson_label_in[MAX_MESON_LABEL], mom_label_in[MAX_MOM_LABEL],
-	  spin_taste_string[8], phase_lab[4], 
+	  spin_taste_string[16], phase_lab[4], 
 	  factor_op[2], parity_x_in[3], parity_y_in[3], parity_z_in[3];
 	double factor;
 	
@@ -1063,6 +1065,7 @@ int readin(int prompt) {
       } /* correlators for this pair */
     } /* pairs */
     
+
     /*------------------------------------------------------------*/
     /* Baryon correlators                                          */
     /*------------------------------------------------------------*/
@@ -1205,6 +1208,7 @@ int readin(int prompt) {
   } /* end if(this_node==0) */
   
   
+  fflush(stdout);
   broadcast_bytes((char *)&param,sizeof(param));
   u0 = param.u0;
   if( param.stopflag != 0 )return param.stopflag;
@@ -1213,6 +1217,7 @@ int readin(int prompt) {
 
   /* Broadcast parameter values kept on the heap */
   broadcast_heap_params();
+  fflush(stdout);
 
   /* Construct the eps_naik table of unique Naik epsilon coefficients.
      Also build the hash table for mapping a mass term to its Naik

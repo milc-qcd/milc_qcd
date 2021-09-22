@@ -893,7 +893,7 @@ int mat_invert_field(su3_vector *src, su3_vector *dst,
 int mat_invert_block(su3_vector **src, su3_vector **dst, 
 		     Real mass, int nsrc, quark_invert_control *qic,
 		     imp_ferm_links_t *fn){
-  int cgn;
+  int cgn = 0;
   if(qic->inv_type == CGTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD)){
     cgn = mat_invert_block_uml(src, dst, mass, nsrc, qic, fn);
 

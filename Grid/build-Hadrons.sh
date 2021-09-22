@@ -55,7 +55,7 @@ then
             --prefix=${INSTALLDIR} \
             --with-grid=${GRIDINSTALLDIR} \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=gnu++17 -fpermissive -Wno-psabi" \
+            CXXFLAGS="-std=gnu++17 -O0 -g -fpermissive -Wno-psabi" \
 
        status=$?
              ;;
