@@ -99,6 +99,7 @@ Real myrand(double_prn *prn_pt) {
 
     t = ( ((prn_pt->r5 >> 7) | (prn_pt->r6 << 17)) ^
 	  ((prn_pt->r4 >> 1) | (prn_pt->r5 << 23)) ) & 0xffffff;
+    printf("myrand %lu %x\n",t, t);
     prn_pt->r6 = prn_pt->r5;
     prn_pt->r5 = prn_pt->r4;
     prn_pt->r4 = prn_pt->r3;
