@@ -25,7 +25,7 @@ typedef struct {
   char parity;
   /* my index in the array */
 
-  int index;
+  uint32_t index;
   
   /* Now come the physical fields, program dependent */
   /* gauge field */
@@ -182,7 +182,7 @@ EXTERN su3_matrix *ape_links;
 #define N_POINTERS 8	/* Number of generic pointers */
 /* NEED 8 WHEN GAUGEFIXING */
 EXTERN char ** gen_pt[N_POINTERS];
-EXTERN	int iseed;
+EXTERN	uint32_t iseed;
 
 EXTERN  int log_correlators;
 EXTERN	double rsqmin,rsqprop,beta,mass;

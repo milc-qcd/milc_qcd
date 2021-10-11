@@ -21,7 +21,7 @@ typedef struct {
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-	int iseed;	/* for random numbers */
+	uint32_t iseed;	/* for random numbers */
 	int nflavors1;  /* the number of flavors of first type */
 	int nflavors2;  /* the number of flavors of second type */
 

@@ -24,7 +24,7 @@
 
 #ifdef OLD_GAUSSRAND
 
-void initialize_prn(double_prn *prn_pt, int seed, int index) {
+void initialize_prn(double_prn *prn_pt, uint32_t seed, uint32_t index) {
     /* "index" selects which random number generator - which multiplier */
     seed = (69607+8*index)*seed+12345;
     prn_pt->r0 = (seed>>8) & 0xffffff;
@@ -66,7 +66,7 @@ Real myrand(double_prn *prn_pt) {
 
 #else
 
-void initialize_prn(double_prn *prn_pt, int seed, int index) {
+void initialize_prn(double_prn *prn_pt, uint32_t seed, uint32_t index) {
     /* "index" selects which random number generator - which multiplier */
     if(sizeof(unsigned long long)<8) {
       node0_printf("Type long long less than 8 bytes on this machine. Rand problems?\n");
@@ -115,8 +115,8 @@ Real myrand(double_prn *prn_pt) {
 
 #ifdef SITERAND
 void
-initialize_site_prn_from_seed(int iseed){
-  int x, y, z, t, i;
+initialize_site_prn_from_seed(uint32_t iseed){
+  uint32_t x, y, z, t, i;
 
   node0_printf("WARNING!!: Resetting random seed\n");
 

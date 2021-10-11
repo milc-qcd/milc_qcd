@@ -16,7 +16,7 @@ typedef struct {
 	int stopflag;		/* if anything goes wrong */
 
 	int nx,ny,nz,nt;	/* lattice dimensions */
-	int iseed;		/* for random numbers */
+	uint32_t iseed;		/* for random numbers */
 
 	Real echarge;		/* electron charge */
 
