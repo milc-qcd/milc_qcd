@@ -95,7 +95,7 @@ void initialize_prn(double_prn *prn_pt, uint32_t seed, uint32_t index) {
 
 Real myrand(double_prn *prn_pt) {
   unsigned long long int s;
-  int t;
+  uint32_t t;
 
     t = ( ((prn_pt->r5 >> 7) | (prn_pt->r6 << 17)) ^
 	  ((prn_pt->r4 >> 1) | (prn_pt->r5 << 23)) ) & 0xffffff;
@@ -108,6 +108,7 @@ Real myrand(double_prn *prn_pt) {
     prn_pt->r0 = t;
     s = prn_pt->ic_state * prn_pt->multiplier + prn_pt->addend;
     prn_pt->ic_state = s;
+    printf("myrand %f\n",prn_pt->scale*(t ^ ((s>>40)&0xffffff)));
     return( prn_pt->scale*(t ^ ((s>>40)&0xffffff)) );
 }
 
