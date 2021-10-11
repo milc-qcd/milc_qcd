@@ -46,6 +46,7 @@ int setup()   {
   FORALLUPDIR(dir){
     boundary_phase[dir] = 0.;
   }
+  double_complex ctest;
   /* Initialize fermion links as unallocated */
   //  init_ferm_links(&fn_links, &ks_act_paths);
   //  init_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
@@ -110,7 +111,11 @@ static int initial_set(void){
 			   param.ionode_geometry, 4);
 #endif
 #endif
-    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
+    IF_OK {
+      int iseed_in;
+      status += get_i(stdin, prompt,"iseed", &iseed_in);
+      param.iseed = iseed_in;
+    }
     IF_OK status += get_s(stdin, prompt,"job_id",param.job_id);
     
     if(status>0) param.stopflag=1; else param.stopflag=0;
