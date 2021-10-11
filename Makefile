@@ -810,6 +810,10 @@ CPROF =#
 
 CDEBUG = -DCG_OK -DREMAP_STDIO_APPEND # -DCHECK_MALLOC 
 
+# For code checking
+#CDEBUG += -fsanitize=address,undefined
+#LDFLAGS += -fsanitize=address,undefined
+
 #------------------------------
 # Backward compatibility
 
