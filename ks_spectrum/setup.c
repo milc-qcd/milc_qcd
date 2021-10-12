@@ -1239,11 +1239,13 @@ int readin(int prompt) {
   }
 
   /* Contribution from the propagator epsilons */
-  nprop = param.end_prop[param.num_set-1] + 1;
-  for(i = 0; i < nprop; i++)
-    param.ksp[i].naik_term_epsilon_index = 
-      fill_eps_naik(eps_naik, 
-		    &n_naiks, param.ksp[i].naik_term_epsilon);
+  if(param.num_set > 0){
+    nprop = param.end_prop[param.num_set-1] + 1;
+    for(i = 0; i < nprop; i++)
+      param.ksp[i].naik_term_epsilon_index = 
+	fill_eps_naik(eps_naik, 
+		      &n_naiks, param.ksp[i].naik_term_epsilon);
+  }
 
   /* Requests from any embedded inverse and hopping operators in the
      modified ops */
