@@ -119,7 +119,7 @@ Real myrand(double_prn *prn_pt) {
 #ifdef SITERAND
 void
 initialize_site_prn_from_seed(uint32_t iseed){
-  uint32_t x, y, z, t, i;
+  int x, y, z, t, i;
 
   node0_printf("WARNING!!: Resetting random seed\n");
 
