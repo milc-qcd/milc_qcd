@@ -1340,9 +1340,10 @@ int readin(int prompt) {
   else
     Nvecs_tot = Nvecs_max;
 
-  eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
-  eigVec = (su3_vector **)malloc(Nvecs_tot*sizeof(su3_vector *));
-  for(i = 0; i < Nvecs_tot; i++)
+  Nvecs_alloc = Nvecs_tot;
+  eigVal = (double *)malloc(Nvecs_alloc*sizeof(double));
+  eigVec = (su3_vector **)malloc(Nvecs_alloc*sizeof(su3_vector *));
+  for(i = 0; i < Nvecs_alloc; i++)
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
   /* Do whatever is needed to get eigenpairs */
