@@ -88,6 +88,9 @@ void initialize_prn(double_prn *prn_pt, uint32_t seed, uint32_t index) {
     prn_pt->r6 = (seed>>8) & 0xffffff;
     seed = (69607+8*index)*seed+12345;
     prn_pt->ic_state = seed;
+    /* Emulate long long unsigned = int for compatibility */
+    if(seed & 0x80000000)
+      prn_pt->ic_state ^= 0xffffffff00000000;
     prn_pt->multiplier = 100000005 + 8*index;
     prn_pt->addend = 12345;
     prn_pt->scale = 1.0/((Real)0x1000000);
@@ -108,7 +111,6 @@ Real myrand(double_prn *prn_pt) {
     prn_pt->r0 = t;
     s = prn_pt->ic_state * prn_pt->multiplier + prn_pt->addend;
     prn_pt->ic_state = s;
-    printf("myrand %f\n",prn_pt->scale*(t ^ ((s>>40)&0xffffff)));
     return( prn_pt->scale*(t ^ ((s>>40)&0xffffff)) );
 }
 
