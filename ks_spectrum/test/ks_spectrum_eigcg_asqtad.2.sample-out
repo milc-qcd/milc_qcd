@@ -352,8 +352,600 @@ Time = 1.405444e+01 seconds
 total_iters = 1228
 destroy quark[0]
 destroy quark[1]
+destroy source[0]
+destroy source[1]
+destroy source[2]
+
+
+######################################################################
+continue 
+u0 1
+no_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0 
+time_bc antiperiodic
+max_number_of_eigenpairs 100
+# EigCG
+# eigenvector I/O
+reload_serial_ks_eigen ks_eigen_eigcg.test-out
+forget_ks_eigen 
+# Chiral condensate and related measurements
+number_of_pbp_masses 0
+number_of_base_sources 2
+# base source 0
+vector_field
+field_type KS
+subset full
+origin 0 0 0 0 
+load_source_serial test_src
+ncolor 3
+momentum 0 0 0 
+source_label r
+forget_source 
+# base source 1
+point
+field_type KS
+subset full
+origin 0 0 0 0 
+source_label d
+forget_source 
+# Description of completed sources
+number_of_modified_sources 1
+# source 2
+source 1
+spin_taste
+spin_taste rhox
+op_label p
+forget_source 
+# Description of propagators
+number_of_sets 3
+# Set 0
+# Parameters common to all members of this set
+set_type multimass
+inv_type UML
+max_cg_iterations 1000
+max_cg_restarts 2
+check sourceonly
+momentum_twist 0 0 0 
+precision 2
+source 0
+number_of_propagators 1
+# Propagators for mass 0
+# propagator 0
+mass 1
+#naik_term_epsilon 0
+deflate yes
+error_for_propagator 0
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+# Set 1
+# Parameters common to all members of this set
+set_type multimass
+inv_type UML
+max_cg_iterations 1000
+max_cg_restarts 2
+check yes
+momentum_twist 0 0 0 
+precision 2
+source 1
+number_of_propagators 1
+# Propagators for mass 0
+# propagator 1
+mass 0.01
+#naik_term_epsilon 0
+deflate yes
+error_for_propagator 1e-09
+rel_error_for_propagator 0
+fresh_ksprop 
+save_serial_scidac_ksprop test_prop
+# Set 2
+# Parameters common to all members of this set
+set_type multimass
+inv_type UML
+max_cg_iterations 1000
+max_cg_restarts 2
+check yes
+momentum_twist 0 0 0 
+precision 2
+source 2
+number_of_propagators 1
+# Propagators for mass 0
+# propagator 1
+mass 0.01
+#naik_term_epsilon 0
+deflate yes
+error_for_propagator 1e-09
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+# Definition of quarks
+number_of_quarks 2
+# quark 0
+propagator 1
+identity
+op_label d
+forget_ksprop 
+# quark 1
+propagator 2
+identity
+op_label d
+forget_ksprop 
+# Description of mesons
+number_of_mesons 2
+pair 0 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_eigcg_asqtad.2.corrfile.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator POINT_PION p000   1 * 1  pion5  0  0  0  E  E  E
+pair 0 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_eigcg_asqtad.2.corrfile.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator RHOX p000   1 * 1   rhox  0  0  0  E  E  E
+# Description of baryons
+number_of_baryons 0
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -6.250000e-02     48
+FLTIME: time = 7.424140e-01 (asqtad D) mflops = 3.495658e+02
+Time to APE smear 2.013922e-03 sec
+open_ks_eigen_infile: Opening ks_eigen_eigcg.test-out for reading
+WARNING: Called for 100 vectors, but found 60
+WARNING: Resetting Nvecs = 60
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.620596362411943048e-02</eigVal><resid>2.018243e-07</resid></info>"
+Checksums 622fd491 b41938c2
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>4.162738422574067954e-02</eigVal><resid>2.358743e-07</resid></info>"
+Checksums 3eeaa31e b9743a5e
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>5.182204342653942697e-02</eigVal><resid>1.339764e-06</resid></info>"
+Checksums 954ab003 580ac76a
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>5.560782123506355368e-02</eigVal><resid>3.347897e-06</resid></info>"
+Checksums e778cf95 8f7df117
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>5.729598158174534217e-02</eigVal><resid>5.798793e-06</resid></info>"
+Checksums 3c135e2 e0364640
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>6.375524245135648360e-02</eigVal><resid>5.682046e-06</resid></info>"
+Checksums fd2de8f2 68885fba
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>6.854891915612319753e-02</eigVal><resid>4.195020e-06</resid></info>"
+Checksums 93450d3 c9e49e8a
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>7.770418347172396156e-02</eigVal><resid>5.404771e-06</resid></info>"
+Checksums 62fe70da e0936499
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>8.072770454641270410e-02</eigVal><resid>1.005190e-05</resid></info>"
+Checksums ecb5996d 36e3cffc
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>8.521618737572891900e-02</eigVal><resid>3.384695e-05</resid></info>"
+Checksums 92ea56e6 bff98962
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>9.236183581415714772e-02</eigVal><resid>4.808030e-05</resid></info>"
+Checksums 38406183 2b44fc00
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>9.776717851455510311e-02</eigVal><resid>4.235716e-05</resid></info>"
+Checksums 2e5db85d 5cfb9be2
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.010149171636647719e-01</eigVal><resid>4.253024e-05</resid></info>"
+Checksums 4b5fe5bb 8123c88c
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.087083537156786489e-01</eigVal><resid>5.508107e-05</resid></info>"
+Checksums e0ee2c05 25a51cf9
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.179503151521706927e-01</eigVal><resid>7.955114e-05</resid></info>"
+Checksums 7a8f8784 2360ac25
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.232668593845299143e-01</eigVal><resid>1.193928e-04</resid></info>"
+Checksums 819bedaa 8e12aacb
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.284995568019436096e-01</eigVal><resid>1.566032e-04</resid></info>"
+Checksums 2c2f15df 1bda3031
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.321872901642535403e-01</eigVal><resid>2.281847e-04</resid></info>"
+Checksums c0daf921 9abef4d8
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.524148503846865510e-01</eigVal><resid>2.015850e-04</resid></info>"
+Checksums 35ac4d4e c43371ec
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.633236552452985157e-01</eigVal><resid>9.821931e-04</resid></info>"
+Checksums 6761a3d6 981b0207
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.664440367763106721e-01</eigVal><resid>9.404335e-04</resid></info>"
+Checksums 5887d1a1 c53fdb30
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.751312378947380011e-01</eigVal><resid>2.370419e-03</resid></info>"
+Checksums 9e010665 65ababa3
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.808545401333198077e-01</eigVal><resid>1.265543e-03</resid></info>"
+Checksums 7280bd47 d6ff3ca6
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.853642618795110775e-01</eigVal><resid>6.020107e-03</resid></info>"
+Checksums 101e6d8e 80c9b761
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.903917813477952470e-01</eigVal><resid>6.190669e-03</resid></info>"
+Checksums ffbf02f8 80676a02
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.995161764502904056e-01</eigVal><resid>1.013488e-02</resid></info>"
+Checksums a31476a5 24121f39
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.019772591532757178e-01</eigVal><resid>1.231499e-02</resid></info>"
+Checksums e0f0ffd3 7636a85f
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.098222125547637706e-01</eigVal><resid>6.821975e-03</resid></info>"
+Checksums fd2e63b9 3b0fd7f4
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.191771879624201391e-01</eigVal><resid>1.478516e-02</resid></info>"
+Checksums 1228fa76 2b60b599
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.292235443578042875e-01</eigVal><resid>4.203446e-02</resid></info>"
+Checksums 405632ea 18471a7e
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.361755256859914553e-01</eigVal><resid>3.545515e-02</resid></info>"
+Checksums 2020f525 f61a6518
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.392959545468953675e-01</eigVal><resid>2.043259e-02</resid></info>"
+Checksums d8b3c0e7 cd2381f7
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.431944735263277535e-01</eigVal><resid>5.132560e-02</resid></info>"
+Checksums 80982c69 48a409c6
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.517114662415198545e-01</eigVal><resid>5.928248e-02</resid></info>"
+Checksums 473a337f 2ed95723
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.574253002837244009e-01</eigVal><resid>7.084814e-02</resid></info>"
+Checksums d0e7593 4a4ad445
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.646139132846050956e-01</eigVal><resid>4.506435e-02</resid></info>"
+Checksums 50b2e9ba c7cdad70
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.706847455204309805e-01</eigVal><resid>5.411071e-02</resid></info>"
+Checksums 620f2fc4 76eb3077
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.770389423766288495e-01</eigVal><resid>4.191264e-02</resid></info>"
+Checksums 3894be2 ab5efb81
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.839952365208102125e-01</eigVal><resid>3.887469e-02</resid></info>"
+Checksums da6da90 972e909e
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.945261581629070036e-01</eigVal><resid>8.963676e-02</resid></info>"
+Checksums ae0a4a2 421bb27
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.105466496004391508e-01</eigVal><resid>8.802318e-02</resid></info>"
+Checksums 3f120447 54b1f312
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.175595350629397129e-01</eigVal><resid>6.626540e-02</resid></info>"
+Checksums f5cefb08 7d6c7b5b
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.240512260539550327e-01</eigVal><resid>9.328313e-02</resid></info>"
+Checksums 8e774b99 fd449c67
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.385328308729516622e-01</eigVal><resid>1.562002e-01</resid></info>"
+Checksums f9ed9fde 93f696ee
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.468625958654849017e-01</eigVal><resid>8.881938e-02</resid></info>"
+Checksums a84eef00 98d56c2b
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.610597197217804144e-01</eigVal><resid>1.245707e-01</resid></info>"
+Checksums 1df0bb8c 63346132
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.858500228738045434e-01</eigVal><resid>7.998789e-02</resid></info>"
+Checksums 2fca7216 aafbc11e
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>4.024636333825951651e-01</eigVal><resid>2.187704e-01</resid></info>"
+Checksums 44e8df71 efadd80d
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>4.202396528213563909e-01</eigVal><resid>2.311774e-01</resid></info>"
+Checksums 91aba877 f116c3e5
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>4.490980646200227744e-01</eigVal><resid>2.236037e-01</resid></info>"
+Checksums 8ab4e365 b250f72
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>4.711565700511880506e-01</eigVal><resid>2.630538e-01</resid></info>"
+Checksums d5163f9e 48f1c95
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>4.932122358514025584e-01</eigVal><resid>2.507564e-01</resid></info>"
+Checksums 3e97ec73 83c371b5
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>5.462323733682222793e-01</eigVal><resid>4.225532e-01</resid></info>"
+Checksums f5931d5a d6b0c82a
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>6.178909126596470180e-01</eigVal><resid>4.656854e-01</resid></info>"
+Checksums 70955d54 28ddc2ee
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.593444830765790465e+00</eigVal><resid>2.106742e+00</resid></info>"
+Checksums 16bebbfa 2368a253
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.951825963117926221e+00</eigVal><resid>2.352640e+00</resid></info>"
+Checksums 98278a65 b9039013
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.489734630767906243e+00</eigVal><resid>2.813112e+00</resid></info>"
+Checksums c82edf28 e7345b1b
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.805445777416698316e+00</eigVal><resid>2.961642e+00</resid></info>"
+Checksums 486ce1d5 33b4fa1
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.911030931901194663e+00</eigVal><resid>3.081912e+00</resid></info>"
+Checksums 33aa42e2 6aaa3678
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.511698933254356447e+00</eigVal><resid>3.369147e+00</resid></info>"
+Checksums a42635ea 96219e0
+Resetting eigenvalues
+eigVal[0] = 3.620596e-02 --> 3.620596e-02
+eigVal[1] = 4.162738e-02 --> 4.162738e-02
+eigVal[2] = 5.182204e-02 --> 5.182204e-02
+eigVal[3] = 5.560782e-02 --> 5.560782e-02
+eigVal[4] = 5.729598e-02 --> 5.729598e-02
+eigVal[5] = 6.375524e-02 --> 6.375524e-02
+eigVal[6] = 6.854892e-02 --> 6.854892e-02
+eigVal[7] = 7.770418e-02 --> 7.770418e-02
+eigVal[8] = 8.072770e-02 --> 8.072770e-02
+eigVal[9] = 8.521619e-02 --> 8.521619e-02
+eigVal[10] = 9.236184e-02 --> 9.236184e-02
+eigVal[11] = 9.776718e-02 --> 9.776718e-02
+eigVal[12] = 1.010149e-01 --> 1.010149e-01
+eigVal[13] = 1.087084e-01 --> 1.087084e-01
+eigVal[14] = 1.179503e-01 --> 1.179503e-01
+eigVal[15] = 1.232669e-01 --> 1.232669e-01
+eigVal[16] = 1.284996e-01 --> 1.284996e-01
+eigVal[17] = 1.321873e-01 --> 1.321873e-01
+eigVal[18] = 1.524149e-01 --> 1.524149e-01
+eigVal[19] = 1.633237e-01 --> 1.633237e-01
+eigVal[20] = 1.664440e-01 --> 1.664440e-01
+eigVal[21] = 1.751312e-01 --> 1.751312e-01
+eigVal[22] = 1.808545e-01 --> 1.808545e-01
+eigVal[23] = 1.853643e-01 --> 1.853643e-01
+eigVal[24] = 1.903918e-01 --> 1.903918e-01
+eigVal[25] = 1.995162e-01 --> 1.995162e-01
+eigVal[26] = 2.019773e-01 --> 2.019773e-01
+eigVal[27] = 2.098222e-01 --> 2.098222e-01
+eigVal[28] = 2.191772e-01 --> 2.191772e-01
+eigVal[29] = 2.292235e-01 --> 2.292235e-01
+eigVal[30] = 2.361755e-01 --> 2.361755e-01
+eigVal[31] = 2.392960e-01 --> 2.392960e-01
+eigVal[32] = 2.431945e-01 --> 2.431945e-01
+eigVal[33] = 2.517115e-01 --> 2.517115e-01
+eigVal[34] = 2.574253e-01 --> 2.574253e-01
+eigVal[35] = 2.646139e-01 --> 2.646139e-01
+eigVal[36] = 2.706847e-01 --> 2.706847e-01
+eigVal[37] = 2.770389e-01 --> 2.770389e-01
+eigVal[38] = 2.839952e-01 --> 2.839952e-01
+eigVal[39] = 2.945262e-01 --> 2.945262e-01
+eigVal[40] = 3.105466e-01 --> 3.105466e-01
+eigVal[41] = 3.175595e-01 --> 3.175595e-01
+eigVal[42] = 3.240512e-01 --> 3.240512e-01
+eigVal[43] = 3.385328e-01 --> 3.385328e-01
+eigVal[44] = 3.468626e-01 --> 3.468626e-01
+eigVal[45] = 3.610597e-01 --> 3.610597e-01
+eigVal[46] = 3.858500e-01 --> 3.858500e-01
+eigVal[47] = 4.024636e-01 --> 4.024636e-01
+eigVal[48] = 4.202397e-01 --> 4.202397e-01
+eigVal[49] = 4.490981e-01 --> 4.490981e-01
+eigVal[50] = 4.711566e-01 --> 4.711566e-01
+eigVal[51] = 4.932122e-01 --> 4.932122e-01
+eigVal[52] = 5.462324e-01 --> 5.462324e-01
+eigVal[53] = 6.178909e-01 --> 6.178909e-01
+eigVal[54] = 1.593445e+00 --> 1.593445e+00
+eigVal[55] = 1.951826e+00 --> 1.951826e+00
+eigVal[56] = 2.489735e+00 --> 2.489735e+00
+eigVal[57] = 2.805446e+00 --> 2.805446e+00
+eigVal[58] = 2.911031e+00 --> 2.911031e+00
+eigVal[59] = 3.511699e+00 --> 3.511699e+00
+Time to reload 60 eigenvectors = 5.327432e-01
+Aggregate time to readin 1.306835e+00
+Aggregate time to calculate pbp, etc 0.000000e+00
+COULOMB GAUGE FIXING SKIPPED.
+END OF HEADER
+Restoring binary SciDAC file test_src
+File info 
+"
+Derived MILC KS field
+gauge.filename ../../binary_samples/lat.sample.l8888
+propagator.boundary_conditions space: periodic time: antiperiodic
+asqtad.u0 1.00000
+action.asqtad.one_link 6.250000e-01
+action.asqtad.three_staple -6.250000e-02
+action.asqtad.five_staple 1.562500e-02
+action.asqtad.seven_staple -2.604167e-03
+action.asqtad.lepage -6.250000e-02
+action.asqtad.naik -4.166667e-02
+
+inv_arg.rsqprop 0.000000e+00
+"
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><color>0</color><info></info></usqcdSourceInfo>"
+Checksums 5806ee9c 9110647e
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><color>1</color><info></info></usqcdSourceInfo>"
+Checksums 1e9b9a56 547f82e
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><color>2</color><info></info></usqcdSourceInfo>"
+Checksums 7a00af5e bc8e131d
+Aggregate time to create sources 3.672504e-02
+Mass= 1 source vector_field residue= 0 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+solve_ksprop: color = 1
+solve_ksprop: color = 2
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Mass= 0.01 source point residue= 1e-09 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+UML inversion with mass 0.010000
+CONGRAD5_EIGCG: time = 5.461330e-01 time_eig = 0.000000e+00 (fn_eigcg D) masses = 1 iters = 104
+INC_EIGCG: time for init-CG           9.649038e-03
+INC_EIGCG: time for eigCG             5.461462e-01
+INC_EIGCG: time for orthogonalization 0.000000e+00
+INC_EIGCG: time for extending H       0.000000e+00
+INC_EIGCG: total time                 5.557961e-01
+ OK converged final_rsq= 9.5e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 104
+CONGRAD5: time = 1.934695e-02 (fn D) masses = 1 iters = 3 mflops = 7.539097e+02
+ OK converged final_rsq= 1.2e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 3
+solve_ksprop: color = 1
+UML inversion with mass 0.010000
+CONGRAD5_EIGCG: time = 5.334330e-01 time_eig = 0.000000e+00 (fn_eigcg D) masses = 1 iters = 100
+INC_EIGCG: time for init-CG           9.613991e-03
+INC_EIGCG: time for eigCG             5.334461e-01
+INC_EIGCG: time for orthogonalization 0.000000e+00
+INC_EIGCG: time for extending H       0.000000e+00
+INC_EIGCG: total time                 5.430610e-01
+ OK converged final_rsq= 9.5e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 100
+CONGRAD5: time = 6.573915e-03 (fn D) masses = 1 iters = 1 mflops = 7.395824e+02
+ OK converged final_rsq= 1e-18 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 1
+solve_ksprop: color = 2
+UML inversion with mass 0.010000
+CONGRAD5_EIGCG: time = 5.105460e-01 time_eig = 0.000000e+00 (fn_eigcg D) masses = 1 iters = 97
+INC_EIGCG: time for init-CG           9.653091e-03
+INC_EIGCG: time for eigCG             5.105579e-01
+INC_EIGCG: time for orthogonalization 0.000000e+00
+INC_EIGCG: time for extending H       0.000000e+00
+INC_EIGCG: total time                 5.202119e-01
+ OK converged final_rsq= 8.7e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 97
+CONGRAD5: time = 6.512880e-03 (fn D) masses = 1 iters = 1 mflops = 7.465133e+02
+ OK converged final_rsq= 8.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 1
+Time to save prop color 0 = 4.192114e-03
+Time to save prop color 1 = 4.247189e-03
+Time to save prop color 2 = 4.265070e-03
+Saved propagator to test_prop
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Mass= 0.01 source point/spin_taste residue= 1e-09 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+UML inversion with mass 0.010000
+CONGRAD5_EIGCG: time = 5.457211e-01 time_eig = 0.000000e+00 (fn_eigcg D) masses = 1 iters = 104
+INC_EIGCG: time for init-CG           9.642839e-03
+INC_EIGCG: time for eigCG             5.457339e-01
+INC_EIGCG: time for orthogonalization 0.000000e+00
+INC_EIGCG: time for extending H       0.000000e+00
+INC_EIGCG: total time                 5.553768e-01
+ OK converged final_rsq= 9.5e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 104
+CONGRAD5: time = 1.933599e-02 (fn D) masses = 1 iters = 3 mflops = 7.543374e+02
+ OK converged final_rsq= 1.2e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 3
+solve_ksprop: color = 1
+UML inversion with mass 0.010000
+CONGRAD5_EIGCG: time = 5.256310e-01 time_eig = 0.000000e+00 (fn_eigcg D) masses = 1 iters = 100
+INC_EIGCG: time for init-CG           9.618044e-03
+INC_EIGCG: time for eigCG             5.256429e-01
+INC_EIGCG: time for orthogonalization 0.000000e+00
+INC_EIGCG: time for extending H       0.000000e+00
+INC_EIGCG: total time                 5.352609e-01
+ OK converged final_rsq= 9.5e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 100
+CONGRAD5: time = 6.510973e-03 (fn D) masses = 1 iters = 1 mflops = 7.467320e+02
+ OK converged final_rsq= 1e-18 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 1
+solve_ksprop: color = 2
+UML inversion with mass 0.010000
+CONGRAD5_EIGCG: time = 5.096772e-01 time_eig = 0.000000e+00 (fn_eigcg D) masses = 1 iters = 97
+INC_EIGCG: time for init-CG           9.615898e-03
+INC_EIGCG: time for eigCG             5.096900e-01
+INC_EIGCG: time for orthogonalization 0.000000e+00
+INC_EIGCG: time for extending H       0.000000e+00
+INC_EIGCG: total time                 5.193069e-01
+ OK converged final_rsq= 8.7e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 97
+CONGRAD5: time = 6.512165e-03 (fn D) masses = 1 iters = 1 mflops = 7.465953e+02
+ OK converged final_rsq= 8.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 1
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Aggregate time to compute propagators 3.364225e+00
+destroy prop[0]
+destroy prop[1]
+Aggregate time to generate sink operator 6.630421e-04
+destroy prop[2]
+Aggregate time to generate sink operator 6.408691e-04
+Mesons for quarks 0 and 0
+Time for diagonal mesons 3.013802e-02
+Time for printing correlator 8.487701e-05
+Mesons for quarks 0 and 1
+Time for offdiag mesons 3.295684e-02
+Time for printing correlator 7.796288e-05
+Aggregate time to tie meson correlators 6.334305e-02
+Aggregate time to tie baryon correlators 9.536743e-07
+Checking eigensolutions
+eigVal[0] = 3.620596e-02 ( resid = 2.018243e-07 , |eigVec[0]|-1 = 1.554312e-15 )
+eigVal[1] = 4.162738e-02 ( resid = 2.358743e-07 , |eigVec[1]|-1 = 0.000000e+00 )
+eigVal[2] = 5.182204e-02 ( resid = 1.339764e-06 , |eigVec[2]|-1 = 1.554312e-15 )
+eigVal[3] = 5.560782e-02 ( resid = 3.347897e-06 , |eigVec[3]|-1 = -1.221245e-15 )
+eigVal[4] = 5.729598e-02 ( resid = 5.798793e-06 , |eigVec[4]|-1 = 4.440892e-16 )
+eigVal[5] = 6.375524e-02 ( resid = 5.682046e-06 , |eigVec[5]|-1 = -7.771561e-16 )
+eigVal[6] = 6.854892e-02 ( resid = 4.195020e-06 , |eigVec[6]|-1 = -1.554312e-15 )
+eigVal[7] = 7.770418e-02 ( resid = 5.404771e-06 , |eigVec[7]|-1 = 6.661338e-16 )
+eigVal[8] = 8.072770e-02 ( resid = 1.005190e-05 , |eigVec[8]|-1 = -1.110223e-16 )
+eigVal[9] = 8.521619e-02 ( resid = 3.384695e-05 , |eigVec[9]|-1 = 6.661338e-16 )
+eigVal[10] = 9.236184e-02 ( resid = 4.808030e-05 , |eigVec[10]|-1 = -3.330669e-16 )
+eigVal[11] = 9.776718e-02 ( resid = 4.235716e-05 , |eigVec[11]|-1 = -3.330669e-16 )
+eigVal[12] = 1.010149e-01 ( resid = 4.253024e-05 , |eigVec[12]|-1 = -4.440892e-16 )
+eigVal[13] = 1.087084e-01 ( resid = 5.508107e-05 , |eigVec[13]|-1 = 4.440892e-16 )
+eigVal[14] = 1.179503e-01 ( resid = 7.955114e-05 , |eigVec[14]|-1 = -3.330669e-16 )
+eigVal[15] = 1.232669e-01 ( resid = 1.193928e-04 , |eigVec[15]|-1 = -1.110223e-16 )
+eigVal[16] = 1.284996e-01 ( resid = 1.566032e-04 , |eigVec[16]|-1 = 1.110223e-15 )
+eigVal[17] = 1.321873e-01 ( resid = 2.281847e-04 , |eigVec[17]|-1 = 2.220446e-16 )
+eigVal[18] = 1.524149e-01 ( resid = 2.015850e-04 , |eigVec[18]|-1 = -6.661338e-16 )
+eigVal[19] = 1.633237e-01 ( resid = 9.821931e-04 , |eigVec[19]|-1 = -4.440892e-16 )
+eigVal[20] = 1.664440e-01 ( resid = 9.404335e-04 , |eigVec[20]|-1 = 3.774758e-15 )
+eigVal[21] = 1.751312e-01 ( resid = 2.370419e-03 , |eigVec[21]|-1 = 0.000000e+00 )
+eigVal[22] = 1.808545e-01 ( resid = 1.265543e-03 , |eigVec[22]|-1 = -2.553513e-15 )
+eigVal[23] = 1.853643e-01 ( resid = 6.020107e-03 , |eigVec[23]|-1 = -4.551914e-15 )
+eigVal[24] = 1.903918e-01 ( resid = 6.190669e-03 , |eigVec[24]|-1 = -2.120526e-14 )
+eigVal[25] = 1.995162e-01 ( resid = 1.013488e-02 , |eigVec[25]|-1 = -4.707346e-14 )
+eigVal[26] = 2.019773e-01 ( resid = 1.231499e-02 , |eigVec[26]|-1 = 1.665335e-14 )
+eigVal[27] = 2.098222e-01 ( resid = 6.821975e-03 , |eigVec[27]|-1 = -2.065015e-14 )
+eigVal[28] = 2.191772e-01 ( resid = 1.478516e-02 , |eigVec[28]|-1 = 7.105427e-15 )
+eigVal[29] = 2.292235e-01 ( resid = 4.203446e-02 , |eigVec[29]|-1 = 5.906386e-14 )
+eigVal[30] = 2.361755e-01 ( resid = 3.545515e-02 , |eigVec[30]|-1 = 1.598721e-14 )
+eigVal[31] = 2.392960e-01 ( resid = 2.043259e-02 , |eigVec[31]|-1 = -5.773160e-15 )
+eigVal[32] = 2.431945e-01 ( resid = 5.132560e-02 , |eigVec[32]|-1 = 6.572520e-14 )
+eigVal[33] = 2.517115e-01 ( resid = 5.928248e-02 , |eigVec[33]|-1 = 6.927792e-14 )
+eigVal[34] = 2.574253e-01 ( resid = 7.084814e-02 , |eigVec[34]|-1 = 1.951772e-13 )
+eigVal[35] = 2.646139e-01 ( resid = 4.506435e-02 , |eigVec[35]|-1 = -7.294165e-14 )
+eigVal[36] = 2.706847e-01 ( resid = 5.411071e-02 , |eigVec[36]|-1 = 3.463896e-14 )
+eigVal[37] = 2.770389e-01 ( resid = 4.191264e-02 , |eigVec[37]|-1 = 6.261658e-14 )
+eigVal[38] = 2.839952e-01 ( resid = 3.887469e-02 , |eigVec[38]|-1 = -1.897371e-13 )
+eigVal[39] = 2.945262e-01 ( resid = 8.963676e-02 , |eigVec[39]|-1 = -1.831868e-14 )
+eigVal[40] = 3.105466e-01 ( resid = 8.802318e-02 , |eigVec[40]|-1 = -8.371082e-14 )
+eigVal[41] = 3.175595e-01 ( resid = 6.626540e-02 , |eigVec[41]|-1 = -6.561418e-14 )
+eigVal[42] = 3.240512e-01 ( resid = 9.328313e-02 , |eigVec[42]|-1 = 5.706546e-14 )
+eigVal[43] = 3.385328e-01 ( resid = 1.562002e-01 , |eigVec[43]|-1 = 5.262457e-14 )
+eigVal[44] = 3.468626e-01 ( resid = 8.881938e-02 , |eigVec[44]|-1 = -6.328271e-14 )
+eigVal[45] = 3.610597e-01 ( resid = 1.245707e-01 , |eigVec[45]|-1 = -3.053113e-14 )
+eigVal[46] = 3.858500e-01 ( resid = 7.998789e-02 , |eigVec[46]|-1 = 6.861178e-14 )
+eigVal[47] = 4.024636e-01 ( resid = 2.187704e-01 , |eigVec[47]|-1 = 1.654232e-13 )
+eigVal[48] = 4.202397e-01 ( resid = 2.311774e-01 , |eigVec[48]|-1 = -3.186340e-14 )
+eigVal[49] = 4.490981e-01 ( resid = 2.236037e-01 , |eigVec[49]|-1 = -6.572520e-14 )
+eigVal[50] = 4.711566e-01 ( resid = 2.630538e-01 , |eigVec[50]|-1 = 2.442491e-13 )
+eigVal[51] = 4.932122e-01 ( resid = 2.507564e-01 , |eigVec[51]|-1 = 4.063416e-14 )
+eigVal[52] = 5.462324e-01 ( resid = 4.225532e-01 , |eigVec[52]|-1 = -3.589351e-13 )
+eigVal[53] = 6.178909e-01 ( resid = 4.656854e-01 , |eigVec[53]|-1 = -7.279732e-13 )
+eigVal[54] = 1.593445e+00 ( resid = 2.106742e+00 , |eigVec[54]|-1 = -3.219647e-14 )
+eigVal[55] = 1.951826e+00 ( resid = 2.352640e+00 , |eigVec[55]|-1 = -8.582024e-14 )
+eigVal[56] = 2.489735e+00 ( resid = 2.813112e+00 , |eigVec[56]|-1 = -8.171241e-14 )
+eigVal[57] = 2.805446e+00 ( resid = 2.961642e+00 , |eigVec[57]|-1 = -5.329071e-15 )
+eigVal[58] = 2.911031e+00 ( resid = 3.081912e+00 , |eigVec[58]|-1 = 4.138911e-13 )
+eigVal[59] = 3.511699e+00 ( resid = 3.369147e+00 , |eigVec[59]|-1 = 4.214407e-13 )
+End of eigensolutions
+Aggregate time to compute eigenvectors 3.758998e-01
+Aggregate time to save eigenvectors (if requested) 2.541542e-04
+RUNNING COMPLETED
+Time = 5.151303e+00 seconds
+total_iters = 618
+destroy quark[0]
+destroy quark[1]
+destroy source[0]
+destroy source[1]
+destroy source[2]
 
 
 ask_starting_lattice(0): EOF on input.
-exit: Sat Feb 27 17:16:08 2016
+exit: Tue Oct 12 15:35:16 2021
+
+
 
