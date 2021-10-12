@@ -168,9 +168,9 @@ static void accum_cksums(gauge_file *gf, int *rank29, int *rank31,
 
   for(k = 0, val = buf; k < n; k++, val++)
     {
-      gf->check.sum29  ^= (*val)<<(*rank29) | ( *rank29 == 0 ) ? 0 : (*val)>>(32-(*rank29));
+      gf->check.sum29 ^= (*val)<<(*rank29) | ( *rank29 == 0 ? 0 : (*val)>>(32-(*rank29)));
       // gf->check.sum29 ^= (*val)<<(*rank29) | (*val)>>(32-(*rank29));
-      gf->check.sum31  ^= (*val)<<(*rank31) | ( *rank31 == 0 ) ? 0 : (*val)>>(32-(*rank31));
+      gf->check.sum31 ^= (*val)<<(*rank31) | ( *rank31 == 0 ? 0 : (*val)>>(32-(*rank31)));
       // gf->check.sum31 ^= (*val)<<(*rank31) | (*val)>>(32-(*rank31));
       (*rank29)++; if(*rank29 >= 29)*rank29 = 0;
       (*rank31)++; if(*rank31 >= 31)*rank31 = 0;
@@ -536,9 +536,9 @@ static void r_serial(gauge_file *gf)
 	      k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(int32type); 
 	      k++, val++)
 	    {
-	      test_gc.sum29  ^= (*val)<<rank29 | ( rank29 == 0 ) ? 0 : (*val)>>(32-rank29);
+	      test_gc.sum29 ^= (*val)<<rank29 | ( rank29 == 0  ? 0 : (*val)>>(32-rank29));
 	      // test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
-	      test_gc.sum31  ^= (*val)<<rank31 | ( rank31 == 0 ) ? 0 : (*val)>>(32-rank31);
+	      test_gc.sum31 ^= (*val)<<rank31 | ( rank31 == 0  ? 0 : (*val)>>(32-rank31));
 	      // test_gc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
 	      rank29++; if(rank29 >= 29)rank29 = 0;
 	      rank31++; if(rank31 >= 31)rank31 = 0;
@@ -770,9 +770,9 @@ static void r_serial_arch(gauge_file *gf)
 	  for(k = 0, val = (u_int32type *)tmpsu3;
 	      k < 4*(int)sizeof(su3_matrix)/(int)sizeof(int32type); k++, val++)
    	    {
-	      test_gc.sum29  ^= (*val)<<rank29 | ( rank29 == 0 ) ? 0 : (*val)>>(32-rank29);
+	      test_gc.sum29 ^= (*val)<<rank29 | ( rank29 == 0 ? 0 : (*val)>>(32-rank29));
 	      // test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
-	      test_gc.sum31  ^= (*val)<<rank31 | ( rank31 == 0 ) ? 0 : (*val)>>(32-rank31);
+	      test_gc.sum31 ^= (*val)<<rank31 | ( rank31 == 0 ? 0 : (*val)>>(32-rank31));
 	      //  test_gc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
 	      rank29++; if(rank29 >= 29)rank29 = 0;
 	      rank31++; if(rank31 >= 31)rank31 = 0;
@@ -950,9 +950,9 @@ static void w_parallel(gauge_file *gf)
 	      for(k = 0, val = (u_int32type *)&lbuf[4*where_in_buf]; 
 		  k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(int32type); k++, val++)
 		{
-		  gf->check.sum29  ^= (*val)<<rank29 | ( rank29 == 0 ) ? 0 : (*val)>>(32-rank29);
+		  gf->check.sum29 ^= (*val)<<rank29 | ( rank29 == 0 ? 0 : (*val)>>(32-rank29));
 		  //  gf->check.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
-		  gf->check.sum31  ^= (*val)<<rank31 | ( rank31 == 0 ) ? 0 : (*val)>>(32-rank31);
+		  gf->check.sum31 ^= (*val)<<rank31 | ( rank31 == 0 ? 0 : (*val)>>(32-rank31));
 		  //  gf->check.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
 		  rank29++; if(rank29 >= 29)rank29 = 0;
 		  rank31++; if(rank31 >= 31)rank31 = 0;
@@ -1065,9 +1065,9 @@ static void w_checkpoint(gauge_file *gf)
     for(k = 0, val = (u_int32type *)&lbuf[4*buf_length]; 
 	k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(int32type); k++, val++)
       {
-	gf->check.sum29  ^= (*val)<<rank29 | ( rank29 == 0 ) ? 0 : (*val)>>(32-rank29);
+	gf->check.sum29 ^= (*val)<<rank29 | ( rank29 == 0 ? 0 : (*val)>>(32-rank29));
 	// gf->check.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
-	gf->check.sum31  ^= (*val)<<rank31 | ( rank31 == 0 ) ? 0 : (*val)>>(32-rank31);
+	gf->check.sum31 ^= (*val)<<rank31 | ( rank31 == 0 ? 0 : (*val)>>(32-rank31));
 	// gf->check.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
 	rank29++; if(rank29 >= 29)rank29 = 0;
 	rank31++; if(rank31 >= 31)rank31 = 0;
@@ -1349,9 +1349,9 @@ static void r_parallel(gauge_file *gf)
 	    for(k = 0, val = (u_int32type *)&lbuf[4*where_in_buf]; 
 		k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(int32type); k++, val++)
 	      {
-		test_gc.sum29  ^= (*val)<<rank29 | ( rank29 == 0 ) ? 0 : (*val)>>(32-rank29);
+		test_gc.sum29 ^= (*val)<<rank29 | ( rank29 == 0 ? 0 : (*val)>>(32-rank29));
 		// test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
-		test_gc.sum31  ^= (*val)<<rank31 | ( rank31 == 0 ) ? 0 : (*val)>>(32-rank31);
+		test_gc.sum31 ^= (*val)<<rank31 | ( rank31 == 0 ? 0 : (*val)>>(32-rank31));
 		// test_gc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
 		rank29++; if(rank29 >= 29)rank29 = 0;
 		rank31++; if(rank31 >= 31)rank31 = 0;
