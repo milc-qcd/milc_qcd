@@ -1,8 +1,8 @@
 // Mapping between MILC and Grid types
 
-#if defined(_OPENMP) || defined(OMP)
+//#if defined(_OPENMP) || defined(OMP)
 #include "../include/openmp_defs.h"
-#endif
+//#endif
 
 #include <Grid/Grid.h>
 
@@ -381,7 +381,7 @@ asqtad_destroy_L( struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *Link
   if (Link->fatlinks != NULL) delete Link->fatlinks;
   if (Link->lnglinks != NULL) delete Link->lnglinks;
   
-  delete Link;
+  free(Link);
   
   Link = NULL;
 }
