@@ -28,7 +28,7 @@ typedef struct {
 	/* is it even or odd? */
 	char parity;
 	/* my index in the array */
-	int index;
+	uint32_t index;
 #ifdef SITERAND
         /* The state information for a random number generator */
         double_prn site_prn;
@@ -91,7 +91,7 @@ complex hvc[4],hvct[4];
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 #ifdef RANDOM
-EXTERN  int iseed;              /* random number seed */
+EXTERN  uint32_t iseed;              /* random number seed */
 #endif
 EXTERN	int niter,nrestart,wallflag;
 #define MAX_MASSES 6

@@ -66,7 +66,7 @@ hyp_parity_bit(site *s, int r0[]){
  * stored in the array d. Each shift is multiplied by \zeta_k           *
  * n is the number of shifts                                            *
  * This is the E_\mu(x,y)=\Xi_\mu operator defined by Golterman.        *
- * Nucl. Phys. B245  eq.3.5 and eq. 4.2b                                */
+ * Nucl. Phys. B245, 61 (1984)  eq.3.5 and eq. 4.2b                                */
 
 static void 
 zeta_shift_field(int n, int *d, int r0[], su3_vector *dest, 

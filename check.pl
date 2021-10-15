@@ -46,7 +46,7 @@ while(<>){
 	next;
     }
 
-    $add_macro =~ s/,/ /;
+    $add_macro =~ s/,/ /g;
     
     if(defined($choose_exec) && $exec ne $choose_exec){next;}
 

@@ -23,7 +23,7 @@ typedef struct {
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-	int iseed;	/* for random numbers */
+	uint32_t iseed;	/* for random numbers */
 #ifdef ONEMASS
 	int nflavors;	/* the number of flavors */
 #else

@@ -10,7 +10,7 @@ typedef struct {
   int stopflag;   /* 1 if it is time to stop */
   /* INITIALIZATION PARAMETERS */
   int nx,ny,nz,nt;	/* lattice dimensions */
-  int iseed;
+  uint32_t iseed;
 #ifdef FIX_NODE_GEOM
   int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
 			    hypercubes) for the compute nodes in each
