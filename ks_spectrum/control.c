@@ -753,6 +753,10 @@ int main(int argc, char *argv[])
       /* Clean up eigen storage */
       for(i = 0; i < Nvecs_alloc; i++) free(eigVec[i]);
       free(eigVal); free(eigVec); free(resid);
+
+      /* Clean up quark sources, both base and modified */
+      for(i = 0; i < param.num_base_source + param.num_modified_source; i++)
+	clear_qs(&param.src_qs[i]);
       
       ENDTIME("save eigenvectors (if requested)");
     }
