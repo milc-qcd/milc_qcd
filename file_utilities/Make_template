@@ -165,6 +165,7 @@ diff_ksprop::
 	quark_source_sink_op.o \
 	ranstuff.o \
 	restrict_fourier.o \
+	shift_field.o \
         spin_taste_ops.o"
 
 
