@@ -46,7 +46,6 @@ int setup()   {
   FORALLUPDIR(dir){
     boundary_phase[dir] = 0.;
   }
-  double_complex ctest;
   /* Initialize fermion links as unallocated */
   //  init_ferm_links(&fn_links, &ks_act_paths);
   //  init_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
@@ -600,7 +599,7 @@ int readin(int prompt) {
 
       IF_OK {
 	IF_OK status += get_i(stdin, prompt,"precision", &param.qic[0].prec );
-#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU) && !defined(HAVE_QPHIX)
+#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU) && !defined(HAVE_QPHIX) && ! defined(HAVE_GRID)
 	IF_OK if(param.qic[0].prec != MILC_PRECISION){
 	  node0_printf("WARNING: Compiled precision %d overrides request\n",MILC_PRECISION);
 	  node0_printf("QOP or CG_GPU or QPHIX compilation is required for mixed precision\n");
