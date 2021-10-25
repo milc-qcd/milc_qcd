@@ -11,40 +11,42 @@ MAKEFILE = Makefile
 #----------------------------------------------------------------------
 #  User choices - edit to suit 
 #----------------------------------------------------------------------
-# 1. Machine architecture.  Controls optimization flags here and in libraries.
+# 1. Host and accelerator architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH ?= # skx knl knc hsw pow8 pow9
+CPU_ARCH ?= # skx knl hsw pow8 pow9
+GPU_ARCH ?= # nvidia amd intel
 
 #----------------------------------------------------------------------
 # 2. Compiler family
 
-COMPILER ?= gnu # intel, ibm, portland, cray-intel
+COMPILER ?= gnu # intel, ibm, cray-intel, rocm
+OFFLOAD ?= # CUDA HIP SyCL OpenMP
 
 #----------------------------------------------------------------------
 # 3. MPP vs Scalar
 
-# Compiling for a parallel machine?  blank for a scalar machine
+# Compiling with MPI?  false for a scalar machine
 MPP ?= false
 
 #----------------------------------------------------------------------
-# 4. Precision 
+# 4. Generic Precision 
 
 # 1 = single precision; 2 = double
 PRECISION ?= 1
 
 #----------------------------------------------------------------------
-# 5. Compiler
+# 5. Set compiler.
 # Choices include mpicc cc gcc pgcc g++
 
 ifeq ($(strip ${COMPILER}),intel)
 
   ifeq ($(strip ${MPP}),true)
-    MY_CC ?= mpiicc
-    MY_CXX ?= mpiicpc
+    MY_CC ?= mpicc
+    MY_CXX ?= mpicxx
   else
-    MY_CC  ?= icc
-    MY_CXX ?= icpc
+    MY_CC  ?= icx
+    MY_CXX ?= dpcpp
   endif
 
 else ifeq ($(strip ${COMPILER}),cray-intel)
@@ -79,21 +81,33 @@ else ifeq ($(strip ${COMPILER}),ibm)
 
 endif
 
-CC = ${MY_CC}
-CXX = ${MY_CXX}
+# Accelerator
 
-# Override the above definitions
+ifeq ($(strip ${GPU_ARCH}),intel)
 
-# ifeq ($(strip ${MPP}),true)
-#   CC = mpiicc
-#   CXX = mpiicpc
-# else
-#   CC  = icc
-#   CXX = icpc
-# endif
+  ifeq ($(strip ${MPP}),true)
+    MY_CC += -cc=icx
+    MY_CXX += -cxx=dpcpp
+  endif
 
-#CC = /usr/local/mvapich/bin/mpicc  # FNAL
-#CXX =  /usr/local/mvapich/bin/mpiCC  # FNAL
+endif
+
+# Offload type
+
+ifeq ($(strip ${OFFLOAD}),SyCL)
+
+    MY_CC += -fsycl
+    MY_CXX += -fsycl
+
+endif
+
+CC ?= ${MY_CC}
+CXX ?= ${MY_CXX}
+
+# If the above construction doesn't work, override the definitions here
+
+# CC = 
+# CXX =
 
 #----------------------------------------------------------------------
 # 6. Compiler optimization level
@@ -116,11 +130,11 @@ ifeq ($(strip ${COMPILER}),gnu)
   OCFLAGS += -std=c99
   OCXXFLAGS += -std=c++11
 
-  ifeq ($(strip ${ARCH}),pow8)
+  ifeq ($(strip ${CPU_ARCH}),pow8)
     ARCH_FLAG = -mcpu=power8
   endif
 
-  ifeq ($(strip ${ARCH}),pow9)
+  ifeq ($(strip ${CPU_ARCH}),pow9)
     ARCH_FLAG = -mcpu=power9 -mtune=power9
   endif
 
@@ -160,16 +174,16 @@ ifeq ($(strip ${COMPILER}),intel)
   OCFLAGS += -std=c99
   OCXXFLAGS += -std=c++11
 
-  ifeq ($(strip ${ARCH}),knl)
+  ifeq ($(strip ${CPU_ARCH}),knl)
   ARCH_FLAG = -xMIC-AVX512
   BINEXT=.knl
-  else ifeq ($(strip ${ARCH}),knc)
+  else ifeq ($(strip ${CPU_ARCH}),knc)
   ARCH_FLAG = -mmic
   BINEXT=.knc
-  else ifeq ($(strip ${ARCH}),skx)
+  else ifeq ($(strip ${CPU_ARCH}),skx)
   ARCH_FLAG = -xCORE-AVX512 -qopt-zmm-usage=high
   BINEXT=.skx
-  else ifeq ($(strip ${ARCH}),hsw)
+  else ifeq ($(strip ${CPU_ARCH}),hsw)
   ARCH_FLAG = -xCORE-AVX2
   BINEXT=.hsw
   else
@@ -520,13 +534,13 @@ ifeq ($(strip ${WANTQPHIX}), true)
 
   # MPI versions of QPHIX
 
-  ifeq ($(strip ${ARCH}),knl)
+  ifeq ($(strip ${CPU_ARCH}),knl)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx512 -lrt
-  else ifeq ($(strip ${ARCH}),knc)
+  else ifeq ($(strip ${CPU_ARCH}),knc)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_mic -lrt
-  else ifeq ($(strip ${ARCH}),hsw)
+  else ifeq ($(strip ${CPU_ARCH}),hsw)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx2 -lrt
-  else ifeq ($(strip ${ARCH}),skx)
+  else ifeq ($(strip ${CPU_ARCH}),skx)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_skx -lrt
   endif
 
@@ -534,13 +548,13 @@ ifeq ($(strip ${WANTQPHIX}), true)
 
   # Non-MPI versions
 
-  ifeq ($(strip ${ARCH}),knl)
+  ifeq ($(strip ${CPU_ARCH}),knl)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx512_single -lrt
-  else ifeq ($(strip ${ARCH}),knc)
+  else ifeq ($(strip ${CPU_ARCH}),knc)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_mic_single -lrt
-  else ifeq ($(strip ${ARCH}),hsw)
+  else ifeq ($(strip ${CPU_ARCH}),hsw)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx2_single -lrt
-  else ifeq ($(strip ${ARCH}),skx)
+  else ifeq ($(strip ${CPU_ARCH}),skx)
     LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_skx_single -lrt
   endif
 
@@ -574,11 +588,11 @@ ifeq ($(strip ${WANTHADRONS}), true)
   CPHI += -DHAVE_HADRONS
 
   ifeq ($(strip ${MPP}),true)
-    ifeq ($(strip ${ARCH}),knl)
+    ifeq ($(strip ${CPU_ARCH}),knl)
       HADRONS_ARCH = avx512
-    else ifeq ($(strip ${ARCH}),skx)
+    else ifeq ($(strip ${CPU_ARCH}),skx)
       HADRONS_ARCH = avx512
-    else ifeq ($(strip ${ARCH}),hsw)
+    else ifeq ($(strip ${CPU_ARCH}),hsw)
       HADRONS_ARCH = avx2
     endif
   else
@@ -619,11 +633,11 @@ ifeq ($(strip ${WANTGRID}), true)
   CPHI += -DGRID_SHMEM_MAX=2048
 
   ifeq ($(strip ${MPP}),true)
-    ifeq ($(strip ${ARCH}),knl)
+    ifeq ($(strip ${CPU_ARCH}),knl)
       GRID_ARCH = avx512
-    else ifeq ($(strip ${ARCH}),skx)
+    else ifeq ($(strip ${CPU_ARCH}),skx)
       GRID_ARCH = avx512
-    else ifeq ($(strip ${ARCH}),hsw)
+    else ifeq ($(strip ${CPU_ARCH}),hsw)
       GRID_ARCH = avx2
     endif
   else
@@ -664,9 +678,9 @@ ifeq ($(strip ${WANTQPHIXJ}), true)
 
     QPHIXJ_HOME = ../QPhiX_JLab/install
 
-    ifeq ($(strip ${ARCH}),knl)
+    ifeq ($(strip ${CPU_ARCH}),knl)
       QPHIXJ_ARCH = avx512
-    else ifeq ($(strip ${ARCH}),hsw)
+    else ifeq ($(strip ${CPU_ARCH}),hsw)
       QPHIXJ_ARCH = avx2
     endif
   else
