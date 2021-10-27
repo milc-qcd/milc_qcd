@@ -1,7 +1,7 @@
 #!/bin/bash
 
-MY_CC=mpicc \
-MY_CXX=mpicxx \
+CC=mpicc \
+CXX=mpicxx \
 CUDA_HOME=${PATH_TO_CUDA} \
 QUDA_HOME=${PATH_TO_QUDA} \
 WANTQUDA=true \
