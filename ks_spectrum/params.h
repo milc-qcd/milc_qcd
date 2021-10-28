@@ -24,7 +24,7 @@
 #define MAX_BARYON_LABEL 64
 #define MAX_MESON_MOMENTUM 100
 #define MAX_MOM_LABEL 32
-#define MAX_CORR 200
+#define MAX_CORR 256
 #define STATIC_TYPE 0
 #define KS_TYPE 1
 #define PROP_TYPE 0
