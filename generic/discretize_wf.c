@@ -272,7 +272,7 @@ void copy_cached(complex *wf){
    If there is no cache or at least one parameter differs, return nonzero */
 
 static int copy_from_cache(complex *wf, int x0, int y0, int z0, int t0, 
-			   int stride, Real a, char wf_file[]){
+			   int stride, Real a, const char wf_file[]){
   int status;
 
   if ( wf_file_cache == NULL )
@@ -292,7 +292,7 @@ static int copy_from_cache(complex *wf, int x0, int y0, int z0, int t0,
 
 
 static void save_to_cache(complex *wf, int x0, int y0, int z0, int t0,
-			  int stride, Real a, char wf_file[]){
+			  int stride, Real a, const char wf_file[]){
 
   if ( wf_cache == NULL ) wf_cache = create_c_field();
   copy_c_field(wf_cache, wf);
@@ -319,7 +319,7 @@ static void save_to_cache(complex *wf, int x0, int y0, int z0, int t0,
 */
 
 void fnal_wavefunction(complex *wf, int x0, int y0, int z0, int t0, 
-		       int stride, Real a, char wf_file[]){
+		       int stride, Real a, const char wf_file[]){
   point_vector *radial;
 
   int status = copy_from_cache(wf, x0, y0, z0, t0, stride, a, wf_file);

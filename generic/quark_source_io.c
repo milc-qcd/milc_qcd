@@ -259,7 +259,7 @@ static int check_color(QIO_String *recxml, int color){
 
 #ifdef HAVE_QIO
 
-QIO_Reader *r_source_cmplx_scidac_open(char source_file[]){
+QIO_Reader *r_source_cmplx_scidac_open(const char source_file[]){
   QIO_String *xml_file;
   QIO_Reader *infile;
 
@@ -272,7 +272,7 @@ QIO_Reader *r_source_cmplx_scidac_open(char source_file[]){
 
 void r_source_open(quark_source *qs){
 
-  char *source_file         = qs->source_file;
+  const char *source_file         = qs->source_file;
   int source_type           = qs->type;
 #ifdef HAVE_QIO
   QIO_String *xml_file;
@@ -529,13 +529,13 @@ int r_source_dirac(quark_source *qs){
 /* Open a color vector source file for writing */
 /*--------------------------------------------------------------------*/
 
-int w_source_open_ks(quark_source *qs, char *fileinfo){
+int w_source_open_ks(quark_source *qs, const char *fileinfo){
 
   char myname[] = "w_source_open_ks";
 
 #ifdef HAVE_QIO
   int volfmt, serpar;
-  char *source_file = qs->save_file;
+  const char *source_file = qs->save_file;
 
   interpret_usqcd_ks_save_flag(&volfmt, &serpar, qs->saveflag);
 
@@ -569,13 +569,13 @@ int w_source_open_ks(quark_source *qs, char *fileinfo){
 /* Open a Dirac vector source file for writing */
 /*--------------------------------------------------------------------*/
 
-int w_source_open_dirac(quark_source *qs, char *fileinfo){
+int w_source_open_dirac(quark_source *qs, const char *fileinfo){
 
   char myname[] = "w_source_open_dirac";
 
 #ifdef HAVE_QIO
   int volfmt, serpar;
-  char *source_file = qs->save_file;
+  const char *source_file = qs->save_file;
 
   interpret_usqcd_w_save_flag(&volfmt, &serpar, qs->saveflag);
 
@@ -873,7 +873,7 @@ void print_output_quark_source_choices(void){
 }
 
 int parse_output_quark_source_choices(int *flag, int *save_type, 
-				      char *descrp, char* savebuf){
+				      char *descrp, const char* savebuf){
 
   if(strcmp("forget_source",savebuf) == 0 ) {
     *flag=FORGET;
@@ -971,11 +971,11 @@ int ask_output_quark_source_file( FILE *fp, int prompt,
 				  int *flag, int *save_type,
 				  int *t0, char *descrp, char *filename)
 {
-  char *savebuf;
+  const char *savebuf;
   int status = 0;
   char myname[] = "ask_output_quark_source_file";
 
-  filename[0] = '\0';  /* Set NULL default */
+  strcpy(filename,"");  /* Set NULL default */
 
   if (prompt==1){
     print_output_quark_source_choices();

@@ -19,6 +19,10 @@ EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
 int main( int argc, char **argv ){
   int prompt;
   char *filexml;
+
+#ifdef PRTIME
+  double dtime;
+#endif
   
   initialize_machine(&argc,&argv);
 
@@ -26,8 +30,13 @@ int main( int argc, char **argv ){
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
   g_sync();
+
+  double starttime=dclock();
+    
   /* set up */
+  STARTTIME;
   prompt = setup();
+  ENDTIME("setup");
 
   /* loop over input sets */
   while( readin(prompt) == 0){
@@ -78,15 +87,20 @@ int main( int argc, char **argv ){
     if (savelongflag != FORGET ){
 #ifdef HAVE_QIO
       su3_matrix *lng = get_lnglinks(fn);
-      /* The long links are saved without the KS phases, BUT with
-	 the time boundary condition requested in param.coord_origin */
-      rephase_field_offset( lng, OFF, NULL, param.coord_origin);
+      if(!param.withKSphases){
+	rephase_field_offset( lng, OFF, NULL, param.coord_origin);
+	node0_printf("Saving the long links with KS phases OUT buttime BC IN\n");
+      } else {
+	node0_printf("Saving the long links with KS phases IN and time BC IN\n");
+      }
       filexml = create_QCDML();
       node0_printf("Saving the long links with LFN\n '%s'\n", stringLFNlong);
       save_color_matrix_scidac_from_field( savelongfile, filexml, 
 	   "Long links", QIO_SINGLEFILE, lng, 4, MILC_PRECISION,
 	   stringLFNlong);
       free_QCDML(filexml);
+      if(!param.withKSphases)
+	rephase_field_offset( lng, ON, NULL, param.coord_origin);
 #else
       printf("ERROR: Can't save the longlinks.  Recompile with QIO\n");
 #endif
@@ -97,35 +111,58 @@ int main( int argc, char **argv ){
 #ifdef HAVE_QIO
       filexml = create_QCDML();
       su3_matrix *fat = get_fatlinks(fn);
-      /* The fat links are saved without the KS phases, BUT with
-	 the time boundary condition requested in param.coord_origin */
-      rephase_field_offset( fat, OFF, NULL, param.coord_origin);
+      if(!param.withKSphases){
+	rephase_field_offset( fat, OFF, NULL, param.coord_origin);
+	node0_printf("Saving the fat links with KS phases OUT but time BC IN\n");
+      } else {
+	node0_printf("Saving the fat links with KS phases IN and time BC IN\n");
+      }
       node0_printf("Saving the fat links with LFN\n '%s'\n", stringLFNfat);
       save_color_matrix_scidac_from_field( savefatfile, filexml, 
 	   "Fat links", QIO_SINGLEFILE, fat, 4, MILC_PRECISION,
 	   stringLFNfat);
       free_QCDML(filexml);
+      if(!param.withKSphases)
+	rephase_field_offset( fat, ON, NULL, param.coord_origin);
 #else
       printf("ERROR: Can't save the fatlinks.  Recompile with QIO\n");
 #endif
     }
 #endif
     boundary_twist_fn(fn, OFF);
-  }
-  node0_printf("RUNNING COMPLETED\n");
 
+    node0_printf("RUNNING COMPLETED\n");
+    double endtime=dclock();
+  
+    node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
+    starttime = endtime; /* In case we continue looping over readin */
+  
 #ifndef CHECK_INVERT
 
 #ifdef HISQ_SVD_COUNTER
-  printf("hisq_svd_counter = %d\n", hisq_svd_counter);
+    printf("hisq_svd_counter = %d\n", hisq_svd_counter);
 #endif
   
 #ifdef HISQ_FORCE_FILTER_COUNTER
-  printf("hisq_force_filter_counter = %d\n", hisq_force_filter_counter);
+    printf("hisq_force_filter_counter = %d\n", hisq_force_filter_counter);
 #endif
 
 #endif
+  } /* readin(prompt) */
 
+#ifdef HAVE_QUDA
+  finalize_quda();
+#endif
+  
+#ifdef HAVE_QPHIX
+  finalize_qphix();
+#endif
+
+#ifdef HAVE_GRID
+  finalize_grid();
+#endif
+
+  normal_exit(0);
   return 0;
 }
 

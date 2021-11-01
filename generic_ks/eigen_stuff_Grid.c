@@ -89,8 +89,19 @@ int ks_eigensolve_Grid( su3_vector ** eigVec,
     node0_printf( "%s: Unsupported diagonalization algorithm - %s\n", myname, eigen_param->diagAlg );
     terminate(1);
   }
-  /* End of ****** input parameters for Grid eigensolver */
 
+  /* even-odd site parity */
+  if( eigen_param->parity == ODD )
+  {
+    eig_arg.parity = GRID_ODD;
+  }
+  else /* default is even */
+  {
+    eig_arg.parity = GRID_EVEN;
+  }
+
+  /* End of ****** input parameters for Grid eigensolver */
+  
   /* print input parameters for eigensolver ******************/
   node0_printf( "========= parameters for eigensolver =========\n" );
   node0_printf( "Number of wanted eigenvalues: %d\n", eig_arg.Nstop );
@@ -103,11 +114,9 @@ int ks_eigensolve_Grid( su3_vector ** eigVec,
   node0_printf( "Chebyshev polynomial - beta (upper bound for exclusion): %g\n", eig_arg.chebyParams.beta );
   node0_printf( "Chebyshev polynomial order: %d\n", eig_arg.chebyParams.Npoly );
   node0_printf( "Diagonalization algorihm: %s\n", eigen_param->diagAlg );
+  node0_printf( "Even-odd parity: %d\n", eigen_param->parity );
   node0_printf( "==============================================\n" );
   /* End of ********* print input parameters for eigensolver */
-
-  /* We run the eigsolver only on even sites */
-  eig_arg.parity = GRID_EVEN;
 
   double mass = 0;
 

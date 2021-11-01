@@ -26,7 +26,7 @@ typedef struct {
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-  int iseed;	/* for random numbers */
+  uint32_t iseed;	/* for random numbers */
   /*  REPEATING BLOCK */
   Real u0; /* tadpole parameter */
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
@@ -39,6 +39,7 @@ typedef struct {
   int startflag;  /* what to do for beginning lattice */
   int saveflag;   /* what to do with lattice at end */
   int savelongflag, savefatflag;  /* same for longlinks and fatlinks */
+  int withKSphases;  /* T/F include KS phases in output fat/long links */
   int srcflag[MAX_MASS]; /* what to do for source lattice */
   int ansflag[MAX_MASS]; /* what to do for answer lattice */
   

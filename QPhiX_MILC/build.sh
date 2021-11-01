@@ -12,7 +12,7 @@
 ARCH=$1     # Choices: scalar, knl, hsw
 PK_CC=$2
 PK_CXX=$3
-GIT_BRANCH=extend
+GIT_BRANCH=master
 
 if [ -z "${ARCH}" ]
 then

@@ -10,6 +10,7 @@
 
 G_KS_ALL = \
   charge_utilities.o \
+  contraction_cpu.o \
   d_congrad5.cppacs.o \
   d_congrad5.o \
   d_congrad5_eo.o \
@@ -50,6 +51,7 @@ G_KS_ALL = \
   eigen_stuff_Ritz.o \
   eigen_stuff_PRIMME.o \
   eigen_stuff_Grid.o \
+  eigen_stuff_QUDA.o \
   f_meas.o \
   f_meas_current.o \
   fermion_force_asqtad.o \
@@ -117,6 +119,7 @@ G_KS_ALL = \
   ks_baryon.o \
   ks_invert.o \
   ks_meson_mom.o \
+  ks_meson_mom_gpu.o \
   ks_multicg.o \
   ks_multicg_offset.o \
   ks_multicg_offset_gpu.o \
@@ -140,6 +143,7 @@ G_KS_ALL = \
   path_transport.o \
   nl_spectrum.o \
   reunitarize_ks.o \
+  shift_field.o \
   show_generic_ks_md_opts.o \
   show_generic_ks_opts.o \
   show_hisq_force_opts.o \
@@ -183,6 +187,8 @@ G_KS_ALL_DEPEND = \
 ${G_KS_ALL} : ${G_KS_ALL_DEPEND}
 
 charge_utilities.o: ../generic_ks/charge_utilities.c
+	${CC} -c ${CFLAGS} $<
+contraction_cpu.o: ../generic_ks/contraction_cpu.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5.cppacs.o: ../generic_ks/d_congrad5.cppacs.c
 	${CC} -c ${CFLAGS} $<
@@ -263,6 +269,8 @@ eigen_stuff_Ritz.o: ../generic_ks/eigen_stuff_Ritz.c
 eigen_stuff_PRIMME.o: ../generic_ks/eigen_stuff_PRIMME.c
 	${CC} -c ${CFLAGS} $<
 eigen_stuff_Grid.o: ../generic_ks/eigen_stuff_Grid.c
+	${CC} -c ${CFLAGS} $<
+eigen_stuff_QUDA.o: ../generic_ks/eigen_stuff_QUDA.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad.o: ../generic_ks/fermion_force_asqtad.c
 	${CC} -c ${CFLAGS} $<
@@ -412,6 +420,8 @@ ks_invert.o: ../generic_ks/ks_invert.c
 	${CC} -c ${CFLAGS} $<
 ks_meson_mom.o: ../generic_ks/ks_meson_mom.c
 	${CC} -c ${CFLAGS} $<
+ks_meson_mom_gpu.o: ../generic_ks/ks_meson_mom_gpu.c
+	${CC} -c ${CFLAGS} $<
 ks_multicg.o: ../generic_ks/ks_multicg.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_offset.o: ../generic_ks/ks_multicg_offset.c
@@ -467,6 +477,8 @@ path_transport.o: ../generic_ks/path_transport.c
 rephase.o: ../generic_ks/rephase.c
 	${CC} -c ${CFLAGS} $<
 reunitarize_ks.o: ../generic_ks/reunitarize_ks.c
+	${CC} -c ${CFLAGS} $<
+shift_field.o: ../generic_ks/shift_field.c
 	${CC} -c ${CFLAGS} $<
 show_generic_ks_md_opts.o: ../generic_ks/show_generic_ks_md_opts.c
 	${CC} -c ${CFLAGS} $<

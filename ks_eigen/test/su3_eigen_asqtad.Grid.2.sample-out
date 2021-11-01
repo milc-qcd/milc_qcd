@@ -1,0 +1,985 @@
+com_qmp: set thread-safety level to 3
+SU3 with improved KS action
+Eigenvalues and eigenvectors
+MIMD version 7.8.1
+Machine = QMP (portable), with 1 nodes(ranks)
+Host(0) = cheoling0
+Username = cheoling
+start: Wed Jan 20 01:01:00 2021
+
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+# Lattice dimensions
+nx 4
+ny 4
+nz 4
+nt 4
+# random number seed
+iseed 5682304
+job_id 1412331
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+Calling Grid_init with --grid 4.4.4.4 --mpi 1.1.1.1  
+SharedMemoryMpi:  World communicator of size 1
+SharedMemoryMpi:  Node  communicator of size 1
+SharedMemoryMpi: SharedMemoryAllocate 1073741824 SHMOPEN implementation 
+
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+__|_ |  |  |  |  |  |  |  |  |  |  |  | _|__
+__|_                                    _|__
+__|_   GGGG    RRRR    III    DDDD      _|__
+__|_  G        R   R    I     D   D     _|__
+__|_  G        R   R    I     D    D    _|__
+__|_  G  GG    RRRR     I     D    D    _|__
+__|_  G   G    R  R     I     D   D     _|__
+__|_   GGGG    R   R   III    DDDD      _|__
+__|_                                    _|__
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+  |  |  |  |  |  |  |  |  |  |  |  |  |  |  
+
+
+Copyright (C) 2015 Peter Boyle, Azusa Yamaguchi, Guido Cossu, Antonin Portelli and other authors
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+Current Grid git commit hash=c48909590bff534fc20d6957678515f70f411d90: (HEAD -> develop, origin/develop, origin/HEAD) uncommited changes
+
+Grid : Message : ================================================ 
+Grid : Message : MPI is initialised and logging filters activated 
+Grid : Message : ================================================ 
+Grid : Message : Requested 1073741824 byte stencil comms buffers 
+Grid : Message : MemoryManager::Init() setting up
+Grid : Message : MemoryManager::Init() cache pool for recent allocations: SMALL 32 LARGE 8
+Grid : Message : MemoryManager::Init() Unified memory space
+milc_to_grid_utilities: Initialized Grid with args
+--grid 4.4.4.4
+--mpi 1.1.1.1
+ 
+latt_size: 4 4 4 4
+mpi_layout: 1 1 1 1
+Grid threads 32
+ON EACH NODE (RANK) 4 x 4 x 4 x 4
+Mallocing 0.5 MBytes per node for lattice
+WARNING!!: Resetting random seed
+
+
+# Input lattice
+reload_serial ../../binary_samples/lat.sample.inst
+u0 1
+no_gauge_fix
+forget 
+coordinate_origin 0 0 0 0 
+time_bc antiperiodic
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+max_number_of_eigenpairs 32
+# Eigenvector file
+fresh_ks_eigen 
+forget_ks_eigen 
+# Parameters for the implicitly restarted Lanczos ------------------------
+# You can set any parameters to zero if you want to let them be determined automatically
+# Maximum number of restarting iterations
+Max_Lanczos_restart_iters 100
+# Eigenvalue tolerance
+eigenval_tolerance 5e-13
+# Stop Lanczos at Lanczos_max (number of eigenvalues) and restart from Lanczos_restart (number of eigenvalues)
+# Lanczos_max > lanczos_restart >= max_number_of_eigenpairs
+Lanczos_max 60
+Lanczos_restart 40
+# Reorthogonalization period
+Lanczos_reorth_period 1
+# Chebyshev polynomial (makes region (alpha,beta) smooth and outside diverge. order should be odd.)
+Chebyshev_alpha 10
+Chebyshev_beta 100
+Chebyshev_order 21
+# Diagonalization method (LAPACK, QR, or Eigen)
+diag_algorithm Eigen
+Reading as old-style gauge field configuration.
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.inst
+Checksums ed5b7449 68d34f64
+Checksums not verified in this format
+Time to reload gauge configuration = 3.688335e-04
+CHECK PLAQ: 2.9730278122732794e+00 2.9730278122732776e+00
+CHECK NERSC LINKTR: 9.9162775115109980e-01 CKSUM: a0e19040
+Reunitarized for double precision. Max deviation 1.46e-07 changed to 4.44e-16
+Time to check unitarity = 2.458096e-04
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -6.250000e-02     48
+Even site residuals
+Checking eigensolutions
+End of eigensolutions
+COULOMB GAUGE FIXING SKIPPED.
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+========= parameters for eigensolver =========
+Number of wanted eigenvalues: 32
+Maximum number of eigenvalues: 60
+Restarting number of eigenvalues: 40
+Eigenvalue equation tolerance: 5.000000e-13
+Maximum iterations of Lanczos restarts: 100
+Reorthogonalization period: 1
+Chebyshev polynomial - alpha (lower bound for exclusion): 10
+Chebyshev polynomial - beta (upper bound for exclusion): 100
+Chebyshev polynomial order: 21
+Diagonalization algorihm: Eigen
+==============================================
+Mapped gauge fields in 0.000 s
+Grid : IRL : 1.213840 s : **************************************************************************
+Grid : IRL : 1.214220 s :  ImplicitlyRestartedLanczos::calc() starting iteration 0 /  100
+Grid : IRL : 1.214410 s : **************************************************************************
+Grid : IRL : 1.214590 s :  -- seek   Nk    = 40 vectors
+Grid : IRL : 1.214770 s :  -- accept Nstop = 32 vectors
+Grid : IRL : 1.214940 s :  -- total  Nm    = 60 vectors
+Grid : IRL : 1.215110 s :  -- size of eval = 60
+Grid : IRL : 1.215280 s :  -- size of evec = 60
+Grid : IRL : 1.215460 s : Diagonalisation is Eigen 
+Grid : IRL : 1.215630 s : **************************************************************************
+Grid : IRL : 1.216780 s :  IRL source norm 384
+Grid : IRL : 1.219070 s :  Approximation of largest eigenvalue: 2.50121
+Grid : IRL : 1.220840 s :  Approximation of largest eigenvalue: 4.07391
+Grid : IRL : 1.222580 s :  Approximation of largest eigenvalue: 11.0381
+Grid : IRL : 1.224340 s :  Approximation of largest eigenvalue: 15.0289
+Grid : IRL : 1.226090 s :  Approximation of largest eigenvalue: 16.5368
+Grid : IRL : 1.227830 s :  Approximation of largest eigenvalue: 17.3225
+Grid : IRL : 1.229550 s :  Approximation of largest eigenvalue: 17.7444
+Grid : IRL : 1.231320 s :  Approximation of largest eigenvalue: 17.971
+Grid : IRL : 1.233270 s :  Approximation of largest eigenvalue: 18.0943
+Grid : IRL : 1.235130 s :  Approximation of largest eigenvalue: 18.1636
+Grid : IRL : 1.236910 s :  Approximation of largest eigenvalue: 18.2045
+Grid : IRL : 1.238670 s :  Approximation of largest eigenvalue: 18.2306
+Grid : IRL : 1.240440 s :  Approximation of largest eigenvalue: 18.249
+Grid : IRL : 1.242210 s :  Approximation of largest eigenvalue: 18.2633
+Grid : IRL : 1.243940 s :  Approximation of largest eigenvalue: 18.2756
+Grid : IRL : 1.245700 s :  Approximation of largest eigenvalue: 18.287
+Grid : IRL : 1.247440 s :  Approximation of largest eigenvalue: 18.298
+Grid : IRL : 1.249190 s :  Approximation of largest eigenvalue: 18.3091
+Grid : IRL : 1.250960 s :  Approximation of largest eigenvalue: 18.3204
+Grid : IRL : 1.252770 s :  Approximation of largest eigenvalue: 18.332
+Grid : IRL : 1.254520 s :  Approximation of largest eigenvalue: 18.3439
+Grid : IRL : 1.256280 s :  Approximation of largest eigenvalue: 18.3563
+Grid : IRL : 1.258020 s :  Approximation of largest eigenvalue: 18.3691
+Grid : IRL : 1.259770 s :  Approximation of largest eigenvalue: 18.3822
+Grid : IRL : 1.261530 s :  Approximation of largest eigenvalue: 18.3959
+Grid : IRL : 1.263280 s :  Approximation of largest eigenvalue: 18.4099
+Grid : IRL : 1.265060 s :  Approximation of largest eigenvalue: 18.4242
+Grid : IRL : 1.266890 s :  Approximation of largest eigenvalue: 18.439
+Grid : IRL : 1.268660 s :  Approximation of largest eigenvalue: 18.454
+Grid : IRL : 1.270450 s :  Approximation of largest eigenvalue: 18.4694
+Grid : IRL : 1.272220 s :  Approximation of largest eigenvalue: 18.485
+Grid : IRL : 1.273950 s :  Approximation of largest eigenvalue: 18.5009
+Grid : IRL : 1.275720 s :  Approximation of largest eigenvalue: 18.5169
+Grid : IRL : 1.277460 s :  Approximation of largest eigenvalue: 18.5331
+Grid : IRL : 1.279210 s :  Approximation of largest eigenvalue: 18.5493
+Grid : IRL : 1.280950 s :  Approximation of largest eigenvalue: 18.5657
+Grid : IRL : 1.282730 s :  Approximation of largest eigenvalue: 18.582
+Grid : IRL : 1.284470 s :  Approximation of largest eigenvalue: 18.5982
+Grid : IRL : 1.286230 s :  Approximation of largest eigenvalue: 18.6144
+Grid : IRL : 1.288030 s :  Approximation of largest eigenvalue: 18.6305
+Grid : IRL : 1.289800 s :  Approximation of largest eigenvalue: 18.6463
+Grid : IRL : 1.291550 s :  Approximation of largest eigenvalue: 18.662
+Grid : IRL : 1.296470 s :  Approximation of largest eigenvalue: 18.6774
+Grid : IRL : 1.298230 s :  Approximation of largest eigenvalue: 18.6925
+Grid : IRL : 1.300290 s :  Approximation of largest eigenvalue: 18.7072
+Grid : IRL : 1.302100 s :  Approximation of largest eigenvalue: 18.7216
+Grid : IRL : 1.303840 s :  Approximation of largest eigenvalue: 18.7356
+Grid : IRL : 1.305580 s :  Approximation of largest eigenvalue: 18.7492
+Grid : IRL : 1.307340 s :  Approximation of largest eigenvalue: 18.7624
+Grid : IRL : 1.309080 s :  Approximation of largest eigenvalue: 18.7752
+Grid : IRL : 1.310200 s : Lanczos step 0
+Grid : IRL : 1.323420 s : PolyOp
+Grid : IRL : 1.324700 s : alpha[0] = (49780.4,2.55795e-13) beta[0] = 24305.6
+Grid : IRL : 1.325140 s : Lanczos step complete 0
+Grid : IRL : 1.325330 s : Lanczos step 1
+Grid : IRL : 1.337980 s : PolyOp
+Grid : IRL : 1.339280 s : Orthogonalising 1
+Grid : IRL : 1.340340 s : Orthogonalised 1
+Grid : IRL : 1.340910 s : alpha[1] = (182563,1.37703e-11) beta[1] = 91073.7
+Grid : IRL : 1.341240 s : Lanczos step complete 1
+Grid : IRL : 1.341430 s : Lanczos step 2
+Grid : IRL : 1.354370 s : PolyOp
+Grid : IRL : 1.355640 s : Orthogonalising 2
+Grid : IRL : 1.357050 s : Orthogonalised 2
+Grid : IRL : 1.357630 s : alpha[2] = (79499.6,2.10605e-11) beta[2] = 26092.5
+Grid : IRL : 1.357950 s : Lanczos step complete 2
+Grid : IRL : 1.358130 s : Lanczos step 3
+Grid : IRL : 1.462390 s : PolyOp
+Grid : IRL : 1.463770 s : Orthogonalising 3
+Grid : IRL : 1.465380 s : Orthogonalised 3
+Grid : IRL : 1.465860 s : alpha[3] = (38498.5,2.00657e-11) beta[3] = 17138.6
+Grid : IRL : 1.466390 s : Lanczos step complete 3
+Grid : IRL : 1.466640 s : Lanczos step 4
+Grid : IRL : 1.481690 s : PolyOp
+Grid : IRL : 1.482940 s : Orthogonalising 4
+Grid : IRL : 1.484810 s : Orthogonalised 4
+Grid : IRL : 1.485270 s : alpha[4] = (26507.6,1.90354e-11) beta[4] = 14146.3
+Grid : IRL : 1.485690 s : Lanczos step complete 4
+Grid : IRL : 1.485930 s : Lanczos step 5
+Grid : IRL : 1.498890 s : PolyOp
+Grid : IRL : 1.500130 s : Orthogonalising 5
+Grid : IRL : 1.502300 s : Orthogonalised 5
+Grid : IRL : 1.502760 s : alpha[5] = (32168.5,1.8936e-11) beta[5] = 12764.4
+Grid : IRL : 1.503180 s : Lanczos step complete 5
+Grid : IRL : 1.503420 s : Lanczos step 6
+Grid : IRL : 1.516090 s : PolyOp
+Grid : IRL : 1.517200 s : Orthogonalising 6
+Grid : IRL : 1.519630 s : Orthogonalised 6
+Grid : IRL : 1.520110 s : alpha[6] = (42818.4,1.7252e-11) beta[6] = 15102.6
+Grid : IRL : 1.520510 s : Lanczos step complete 6
+Grid : IRL : 1.520750 s : Lanczos step 7
+Grid : IRL : 1.533580 s : PolyOp
+Grid : IRL : 1.534740 s : Orthogonalising 7
+Grid : IRL : 1.537540 s : Orthogonalised 7
+Grid : IRL : 1.538010 s : alpha[7] = (33493.8,1.64491e-11) beta[7] = 16698.8
+Grid : IRL : 1.538430 s : Lanczos step complete 7
+Grid : IRL : 1.538670 s : Lanczos step 8
+Grid : IRL : 1.551450 s : PolyOp
+Grid : IRL : 1.552600 s : Orthogonalising 8
+Grid : IRL : 1.555640 s : Orthogonalised 8
+Grid : IRL : 1.556110 s : alpha[8] = (33402.6,1.60725e-11) beta[8] = 20619.6
+Grid : IRL : 1.556600 s : Lanczos step complete 8
+Grid : IRL : 1.556880 s : Lanczos step 9
+Grid : IRL : 1.569750 s : PolyOp
+Grid : IRL : 1.570900 s : Orthogonalising 9
+Grid : IRL : 1.574250 s : Orthogonalised 9
+Grid : IRL : 1.574720 s : alpha[9] = (25156.2,1.59943e-11) beta[9] = 15516
+Grid : IRL : 1.575130 s : Lanczos step complete 9
+Grid : IRL : 1.575370 s : Lanczos step 10
+Grid : IRL : 1.588300 s : PolyOp
+Grid : IRL : 1.589430 s : Orthogonalising 10
+Grid : IRL : 1.593020 s : Orthogonalised 10
+Grid : IRL : 1.593500 s : alpha[10] = (46635.9,1.58309e-11) beta[10] = 7562.16
+Grid : IRL : 1.593900 s : Lanczos step complete 10
+Grid : IRL : 1.594150 s : Lanczos step 11
+Grid : IRL : 1.607120 s : PolyOp
+Grid : IRL : 1.608260 s : Orthogonalising 11
+Grid : IRL : 1.612220 s : Orthogonalised 11
+Grid : IRL : 1.612720 s : alpha[11] = (39002,1.56035e-11) beta[11] = 8877.49
+Grid : IRL : 1.613130 s : Lanczos step complete 11
+Grid : IRL : 1.613370 s : Lanczos step 12
+Grid : IRL : 1.629300 s : PolyOp
+Grid : IRL : 1.630480 s : Orthogonalising 12
+Grid : IRL : 1.634900 s : Orthogonalised 12
+Grid : IRL : 1.635430 s : alpha[12] = (32111.1,1.37561e-11) beta[12] = 29012
+Grid : IRL : 1.635850 s : Lanczos step complete 12
+Grid : IRL : 1.636090 s : Lanczos step 13
+Grid : IRL : 1.648820 s : PolyOp
+Grid : IRL : 1.650090 s : Orthogonalising 13
+Grid : IRL : 1.654600 s : Orthogonalised 13
+Grid : IRL : 1.655080 s : alpha[13] = (30424.6,1.41682e-11) beta[13] = 6916.18
+Grid : IRL : 1.655490 s : Lanczos step complete 13
+Grid : IRL : 1.655730 s : Lanczos step 14
+Grid : IRL : 1.668600 s : PolyOp
+Grid : IRL : 1.669730 s : Orthogonalising 14
+Grid : IRL : 1.674570 s : Orthogonalised 14
+Grid : IRL : 1.675050 s : alpha[14] = (50734.1,1.24771e-11) beta[14] = 7833.95
+Grid : IRL : 1.675460 s : Lanczos step complete 14
+Grid : IRL : 1.675700 s : Lanczos step 15
+Grid : IRL : 1.688600 s : PolyOp
+Grid : IRL : 1.689730 s : Orthogonalising 15
+Grid : IRL : 1.694880 s : Orthogonalised 15
+Grid : IRL : 1.695370 s : alpha[15] = (64468.8,1.69962e-11) beta[15] = 61171.8
+Grid : IRL : 1.695770 s : Lanczos step complete 15
+Grid : IRL : 1.696010 s : Lanczos step 16
+Grid : IRL : 1.797120 s : PolyOp
+Grid : IRL : 1.799110 s : Orthogonalising 16
+Grid : IRL : 1.805280 s : Orthogonalised 16
+Grid : IRL : 1.806380 s : alpha[16] = (188715,2.41016e-11) beta[16] = 74543.2
+Grid : IRL : 1.807500 s : Lanczos step complete 16
+Grid : IRL : 1.808440 s : Lanczos step 17
+Grid : IRL : 1.824120 s : PolyOp
+Grid : IRL : 1.825830 s : Orthogonalising 17
+Grid : IRL : 1.832220 s : Orthogonalised 17
+Grid : IRL : 1.833380 s : alpha[17] = (44705.8,2.48406e-11) beta[17] = 7296.93
+Grid : IRL : 1.834470 s : Lanczos step complete 17
+Grid : IRL : 1.835390 s : Lanczos step 18
+Grid : IRL : 1.848890 s : PolyOp
+Grid : IRL : 1.850620 s : Orthogonalising 18
+Grid : IRL : 1.857300 s : Orthogonalised 18
+Grid : IRL : 1.858380 s : alpha[18] = (60294,2.40163e-11) beta[18] = 4773.07
+Grid : IRL : 1.859480 s : Lanczos step complete 18
+Grid : IRL : 1.860410 s : Lanczos step 19
+Grid : IRL : 1.874020 s : PolyOp
+Grid : IRL : 1.875780 s : Orthogonalising 19
+Grid : IRL : 1.882780 s : Orthogonalised 19
+Grid : IRL : 1.883850 s : alpha[19] = (24512.3,2.50111e-11) beta[19] = 22945.2
+Grid : IRL : 1.884950 s : Lanczos step complete 19
+Grid : IRL : 1.885880 s : Lanczos step 20
+Grid : IRL : 1.899310 s : PolyOp
+Grid : IRL : 1.901050 s : Orthogonalising 20
+Grid : IRL : 1.908320 s : Orthogonalised 20
+Grid : IRL : 1.909380 s : alpha[20] = (23029,2.57359e-11) beta[20] = 1042.62
+Grid : IRL : 1.910480 s : Lanczos step complete 20
+Grid : IRL : 1.911410 s : Lanczos step 21
+Grid : IRL : 1.925050 s : PolyOp
+Grid : IRL : 1.926770 s : Orthogonalising 21
+Grid : IRL : 1.934430 s : Orthogonalised 21
+Grid : IRL : 1.935530 s : alpha[21] = (38852.4,2.305e-11) beta[21] = 16403.6
+Grid : IRL : 1.936630 s : Lanczos step complete 21
+Grid : IRL : 1.937560 s : Lanczos step 22
+Grid : IRL : 1.951160 s : PolyOp
+Grid : IRL : 1.952860 s : Orthogonalising 22
+Grid : IRL : 1.963940 s : Orthogonalised 22
+Grid : IRL : 1.965000 s : alpha[22] = (7728.86,2.24443e-11) beta[22] = 1351.35
+Grid : IRL : 1.966280 s : Lanczos step complete 22
+Grid : IRL : 1.967250 s : Lanczos step 23
+Grid : IRL : 1.980940 s : PolyOp
+Grid : IRL : 1.982680 s : Orthogonalising 23
+Grid : IRL : 1.990900 s : Orthogonalised 23
+Grid : IRL : 1.991960 s : alpha[23] = (42108.1,2.26663e-11) beta[23] = 12402.6
+Grid : IRL : 1.993060 s : Lanczos step complete 23
+Grid : IRL : 1.993990 s : Lanczos step 24
+Grid : IRL : 1.100758 s : PolyOp
+Grid : IRL : 1.100932 s : Orthogonalising 24
+Grid : IRL : 1.101780 s : Orthogonalised 24
+Grid : IRL : 1.101965 s : alpha[24] = (4478.86,2.25668e-11) beta[24] = 1419.09
+Grid : IRL : 1.102074 s : Lanczos step complete 24
+Grid : IRL : 1.102167 s : Lanczos step 25
+Grid : IRL : 1.103521 s : PolyOp
+Grid : IRL : 1.103700 s : Orthogonalising 25
+Grid : IRL : 1.110889 s : Orthogonalised 25
+Grid : IRL : 1.110960 s : alpha[25] = (43974.1,2.40554e-11) beta[25] = 7868.65
+Grid : IRL : 1.111007 s : Lanczos step complete 25
+Grid : IRL : 1.111031 s : Lanczos step 26
+Grid : IRL : 1.112536 s : PolyOp
+Grid : IRL : 1.112659 s : Orthogonalising 26
+Grid : IRL : 1.113869 s : Orthogonalised 26
+Grid : IRL : 1.113921 s : alpha[26] = (1918.32,2.43495e-11) beta[26] = 272.859
+Grid : IRL : 1.113963 s : Lanczos step complete 26
+Grid : IRL : 1.113987 s : Lanczos step 27
+Grid : IRL : 1.115276 s : PolyOp
+Grid : IRL : 1.115391 s : Orthogonalising 27
+Grid : IRL : 1.116264 s : Orthogonalised 27
+Grid : IRL : 1.116315 s : alpha[27] = (533.541,2.4341e-11) beta[27] = 252.503
+Grid : IRL : 1.116356 s : Lanczos step complete 27
+Grid : IRL : 1.116380 s : Lanczos step 28
+Grid : IRL : 1.117685 s : PolyOp
+Grid : IRL : 1.117802 s : Orthogonalising 28
+Grid : IRL : 1.118713 s : Orthogonalised 28
+Grid : IRL : 1.118762 s : alpha[28] = (524.575,2.43454e-11) beta[28] = 335.191
+Grid : IRL : 1.118803 s : Lanczos step complete 28
+Grid : IRL : 1.118827 s : Lanczos step 29
+Grid : IRL : 1.120128 s : PolyOp
+Grid : IRL : 1.120243 s : Orthogonalising 29
+Grid : IRL : 1.121180 s : Orthogonalised 29
+Grid : IRL : 1.121229 s : alpha[29] = (965.642,2.42686e-11) beta[29] = 3099.95
+Grid : IRL : 1.121271 s : Lanczos step complete 29
+Grid : IRL : 1.121295 s : Lanczos step 30
+Grid : IRL : 1.122586 s : PolyOp
+Grid : IRL : 1.122698 s : Orthogonalising 30
+Grid : IRL : 1.123728 s : Orthogonalised 30
+Grid : IRL : 1.123778 s : alpha[30] = (64199.5,2.71445e-11) beta[30] = 9255.8
+Grid : IRL : 1.123819 s : Lanczos step complete 30
+Grid : IRL : 1.123842 s : Lanczos step 31
+Grid : IRL : 1.125142 s : PolyOp
+Grid : IRL : 1.125256 s : Orthogonalising 31
+Grid : IRL : 1.126277 s : Orthogonalised 31
+Grid : IRL : 1.126328 s : alpha[31] = (11434.2,2.75122e-11) beta[31] = 10587.1
+Grid : IRL : 1.126369 s : Lanczos step complete 31
+Grid : IRL : 1.126393 s : Lanczos step 32
+Grid : IRL : 1.127693 s : PolyOp
+Grid : IRL : 1.127810 s : Orthogonalising 32
+Grid : IRL : 1.128844 s : Orthogonalised 32
+Grid : IRL : 1.128893 s : alpha[32] = (17922.6,2.82796e-11) beta[32] = 17096
+Grid : IRL : 1.128933 s : Lanczos step complete 32
+Grid : IRL : 1.128957 s : Lanczos step 33
+Grid : IRL : 1.130577 s : PolyOp
+Grid : IRL : 1.130693 s : Orthogonalising 33
+Grid : IRL : 1.131753 s : Orthogonalised 33
+Grid : IRL : 1.131801 s : alpha[33] = (55039,2.84643e-11) beta[33] = 10507.4
+Grid : IRL : 1.131843 s : Lanczos step complete 33
+Grid : IRL : 1.131867 s : Lanczos step 34
+Grid : IRL : 1.133181 s : PolyOp
+Grid : IRL : 1.133298 s : Orthogonalising 34
+Grid : IRL : 1.134382 s : Orthogonalised 34
+Grid : IRL : 1.134431 s : alpha[34] = (22545.7,2.86633e-11) beta[34] = 10388.8
+Grid : IRL : 1.134473 s : Lanczos step complete 34
+Grid : IRL : 1.134497 s : Lanczos step 35
+Grid : IRL : 1.135807 s : PolyOp
+Grid : IRL : 1.141942 s : Orthogonalising 35
+Grid : IRL : 1.143358 s : Orthogonalised 35
+Grid : IRL : 1.143470 s : alpha[35] = (37601.7,2.86562e-11) beta[35] = 13221.3
+Grid : IRL : 1.143581 s : Lanczos step complete 35
+Grid : IRL : 1.143675 s : Lanczos step 36
+Grid : IRL : 1.145401 s : PolyOp
+Grid : IRL : 1.145575 s : Orthogonalising 36
+Grid : IRL : 1.146808 s : Orthogonalised 36
+Grid : IRL : 1.146928 s : alpha[36] = (46640.9,2.7228e-11) beta[36] = 15141.1
+Grid : IRL : 1.147041 s : Lanczos step complete 36
+Grid : IRL : 1.147134 s : Lanczos step 37
+Grid : IRL : 1.148486 s : PolyOp
+Grid : IRL : 1.148657 s : Orthogonalising 37
+Grid : IRL : 1.149905 s : Orthogonalised 37
+Grid : IRL : 1.150016 s : alpha[37] = (10093.5,2.6489e-11) beta[37] = 14141.5
+Grid : IRL : 1.150126 s : Lanczos step complete 37
+Grid : IRL : 1.150220 s : Lanczos step 38
+Grid : IRL : 1.151577 s : PolyOp
+Grid : IRL : 1.151750 s : Orthogonalising 38
+Grid : IRL : 1.153007 s : Orthogonalised 38
+Grid : IRL : 1.153115 s : alpha[38] = (50496.5,2.76401e-11) beta[38] = 11778.2
+Grid : IRL : 1.153234 s : Lanczos step complete 38
+Grid : IRL : 1.153328 s : Lanczos step 39
+Grid : IRL : 1.154697 s : PolyOp
+Grid : IRL : 1.154868 s : Orthogonalising 39
+Grid : IRL : 1.156163 s : Orthogonalised 39
+Grid : IRL : 1.156269 s : alpha[39] = (42182.1,2.93277e-11) beta[39] = 5362.72
+Grid : IRL : 1.156379 s : Lanczos step complete 39
+Grid : IRL : 1.156472 s : Initial 40steps done 
+Grid : IRL : 1.156573 s : Initial steps:OrthoTime 0.0301816seconds
+Grid : Message : 1.156674 s :  **********************
+Grid : Message : 1.156766 s :  Restart iteration = 0
+Grid : Message : 1.156858 s :  **********************
+Grid : IRL : 1.156950 s :  running 20 steps: 
+Grid : IRL : 1.157042 s : Lanczos step 40
+Grid : IRL : 1.158396 s : PolyOp
+Grid : IRL : 1.158567 s : Orthogonalising 40
+Grid : IRL : 1.159901 s : Orthogonalised 40
+Grid : IRL : 1.160012 s : alpha[40] = (47036.2,2.95586e-11) beta[40] = 19019.8
+Grid : IRL : 1.160121 s : Lanczos step complete 40
+Grid : IRL : 1.160213 s : Lanczos step 41
+Grid : IRL : 1.161576 s : PolyOp
+Grid : IRL : 1.161749 s : Orthogonalising 41
+Grid : IRL : 1.163436 s : Orthogonalised 41
+Grid : IRL : 1.163547 s : alpha[41] = (14720.5,2.92601e-11) beta[41] = 18359.8
+Grid : IRL : 1.163657 s : Lanczos step complete 41
+Grid : IRL : 1.163751 s : Lanczos step 42
+Grid : IRL : 1.165108 s : PolyOp
+Grid : IRL : 1.165279 s : Orthogonalising 42
+Grid : IRL : 1.166665 s : Orthogonalised 42
+Grid : IRL : 1.166776 s : alpha[42] = (52550,3.01839e-11) beta[42] = 3030.63
+Grid : IRL : 1.166887 s : Lanczos step complete 42
+Grid : IRL : 1.166981 s : Lanczos step 43
+Grid : IRL : 1.175662 s : PolyOp
+Grid : IRL : 1.175797 s : Orthogonalising 43
+Grid : IRL : 1.177523 s : Orthogonalised 43
+Grid : IRL : 1.177644 s : alpha[43] = (54531.3,2.99565e-11) beta[43] = 14550.2
+Grid : IRL : 1.177758 s : Lanczos step complete 43
+Grid : IRL : 1.177851 s : Lanczos step 44
+Grid : IRL : 1.179164 s : PolyOp
+Grid : IRL : 1.179332 s : Orthogonalising 44
+Grid : IRL : 1.180709 s : Orthogonalised 44
+Grid : IRL : 1.180819 s : alpha[44] = (4524.76,2.93969e-11) beta[44] = 201.584
+Grid : IRL : 1.180928 s : Lanczos step complete 44
+Grid : IRL : 1.181020 s : Lanczos step 45
+Grid : IRL : 1.182320 s : PolyOp
+Grid : IRL : 1.182487 s : Orthogonalising 45
+Grid : IRL : 1.183900 s : Orthogonalised 45
+Grid : IRL : 1.184009 s : alpha[45] = (547.645,2.94875e-11) beta[45] = 3585.09
+Grid : IRL : 1.184118 s : Lanczos step complete 45
+Grid : IRL : 1.184210 s : Lanczos step 46
+Grid : IRL : 1.185505 s : PolyOp
+Grid : IRL : 1.185673 s : Orthogonalising 46
+Grid : IRL : 1.187105 s : Orthogonalised 46
+Grid : IRL : 1.187213 s : alpha[46] = (46389.5,2.99707e-11) beta[46] = 1770.16
+Grid : IRL : 1.187322 s : Lanczos step complete 46
+Grid : IRL : 1.187414 s : Lanczos step 47
+Grid : IRL : 1.188770 s : PolyOp
+Grid : IRL : 1.188935 s : Orthogonalising 47
+Grid : IRL : 1.190401 s : Orthogonalised 47
+Grid : IRL : 1.190511 s : alpha[47] = (5605.78,2.99991e-11) beta[47] = 14384.9
+Grid : IRL : 1.190620 s : Lanczos step complete 47
+Grid : IRL : 1.190711 s : Lanczos step 48
+Grid : IRL : 1.192013 s : PolyOp
+Grid : IRL : 1.192180 s : Orthogonalising 48
+Grid : IRL : 1.193664 s : Orthogonalised 48
+Grid : IRL : 1.193773 s : alpha[48] = (40041.9,3.04698e-11) beta[48] = 550.38
+Grid : IRL : 1.193882 s : Lanczos step complete 48
+Grid : IRL : 1.193974 s : Lanczos step 49
+Grid : IRL : 1.195279 s : PolyOp
+Grid : IRL : 1.195448 s : Orthogonalising 49
+Grid : IRL : 1.197304 s : Orthogonalised 49
+Grid : IRL : 1.197414 s : alpha[49] = (22353.9,3.01839e-11) beta[49] = 22929.3
+Grid : IRL : 1.197524 s : Lanczos step complete 49
+Grid : IRL : 1.197616 s : Lanczos step 50
+Grid : IRL : 1.198927 s : PolyOp
+Grid : IRL : 1.199093 s : Orthogonalising 50
+Grid : IRL : 1.206649 s : Orthogonalised 50
+Grid : IRL : 1.206720 s : alpha[50] = (24094.4,3.08304e-11) beta[50] = 720.565
+Grid : IRL : 1.206767 s : Lanczos step complete 50
+Grid : IRL : 1.206791 s : Lanczos step 51
+Grid : IRL : 1.208244 s : PolyOp
+Grid : IRL : 1.208361 s : Orthogonalising 51
+Grid : IRL : 1.210237 s : Orthogonalised 51
+Grid : IRL : 1.210299 s : alpha[51] = (41793.6,3.10649e-11) beta[51] = 12494.7
+Grid : IRL : 1.210341 s : Lanczos step complete 51
+Grid : IRL : 1.210365 s : Lanczos step 52
+Grid : IRL : 1.211599 s : PolyOp
+Grid : IRL : 1.211708 s : Orthogonalising 52
+Grid : IRL : 1.213578 s : Orthogonalised 52
+Grid : IRL : 1.213639 s : alpha[52] = (4058.36,3.15235e-11) beta[52] = 1112.56
+Grid : IRL : 1.213680 s : Lanczos step complete 52
+Grid : IRL : 1.213704 s : Lanczos step 53
+Grid : IRL : 1.214938 s : PolyOp
+Grid : IRL : 1.215048 s : Orthogonalising 53
+Grid : IRL : 1.216621 s : Orthogonalised 53
+Grid : IRL : 1.216673 s : alpha[53] = (45194.1,3.33582e-11) beta[53] = 4936.45
+Grid : IRL : 1.216714 s : Lanczos step complete 53
+Grid : IRL : 1.216738 s : Lanczos step 54
+Grid : IRL : 1.217972 s : PolyOp
+Grid : IRL : 1.218084 s : Orthogonalising 54
+Grid : IRL : 1.219681 s : Orthogonalised 54
+Grid : IRL : 1.219730 s : alpha[54] = (929.817,3.29834e-11) beta[54] = 2620.12
+Grid : IRL : 1.219776 s : Lanczos step complete 54
+Grid : IRL : 1.219810 s : Lanczos step 55
+Grid : IRL : 1.221052 s : PolyOp
+Grid : IRL : 1.221162 s : Orthogonalising 55
+Grid : IRL : 1.222788 s : Orthogonalised 55
+Grid : IRL : 1.222838 s : alpha[55] = (45203.9,3.22906e-11) beta[55] = 1907.07
+Grid : IRL : 1.222879 s : Lanczos step complete 55
+Grid : IRL : 1.222903 s : Lanczos step 56
+Grid : IRL : 1.224135 s : PolyOp
+Grid : IRL : 1.224251 s : Orthogonalising 56
+Grid : IRL : 1.225905 s : Orthogonalised 56
+Grid : IRL : 1.225955 s : alpha[56] = (272.68,3.22089e-11) beta[56] = 138.867
+Grid : IRL : 1.225997 s : Lanczos step complete 56
+Grid : IRL : 1.226021 s : Lanczos step 57
+Grid : IRL : 1.227259 s : PolyOp
+Grid : IRL : 1.227374 s : Orthogonalising 57
+Grid : IRL : 1.229052 s : Orthogonalised 57
+Grid : IRL : 1.229101 s : alpha[57] = (226.833,3.22249e-11) beta[57] = 113.855
+Grid : IRL : 1.229141 s : Lanczos step complete 57
+Grid : IRL : 1.229165 s : Lanczos step 58
+Grid : IRL : 1.230406 s : PolyOp
+Grid : IRL : 1.230520 s : Orthogonalising 58
+Grid : IRL : 1.232235 s : Orthogonalised 58
+Grid : IRL : 1.234122 s : alpha[58] = (16948.2,3.22407e-11) beta[58] = 23382.7
+Grid : IRL : 1.234164 s : Lanczos step complete 58
+Grid : IRL : 1.234187 s : Lanczos step 59
+Grid : IRL : 1.239914 s : PolyOp
+Grid : IRL : 1.240094 s : Orthogonalising 59
+Grid : IRL : 1.242246 s : Orthogonalised 59
+Grid : IRL : 1.242344 s : alpha[59] = (32843.2,3.21398e-11) beta[59] = 163.473
+Grid : IRL : 1.242452 s : Lanczos step complete 59
+Grid : IRL : 1.242554 s :  20 steps done 
+Grid : IRL : 1.242647 s : Initial steps:OrthoTime 0.0371127seconds
+Grid : IRL : 1.243409 s :  diagonalized 
+Grid : IRL : 1.243519 s :  evals sorted 
+Grid : IRL : 1.243613 s : eval 0   238873       238873       66221.9      66221.9      65775        65775        64609.9      64609.9     
+Grid : IRL : 1.243725 s : eval 8   63138.1      63138.1      58582.4      58582.4      57378.2      57378.2      49592.5      49592.5     
+Grid : IRL : 1.243835 s : eval 16  49592.2      46967.4      46967.4      46519.4      46519.4      45991.1      45991.1      45398.3     
+Grid : IRL : 1.243944 s : eval 24  45398.3      45145.5      45145.5      44898.3      44898.3      36606.8      36606.8      33071.1     
+Grid : IRL : 1.244053 s : eval 32  33071.1      21265.6      21265.6      13848.1      13848.1      1242.72      1172.56      1147.81     
+Grid : IRL : 1.244396 s : QR decomposed 
+Grid : IRL : 1.244813 s : basisRotated  by Qt *0,41)
+Grid : IRL : 1.244963 s :  beta(k) = 132.897
+Grid : IRL : 1.245341 s :  Diagonalized 
+Grid : IRL : 1.245441 s : Test convergence: rotate subset of vectors to test convergence 
+Grid : IRL : 1.245693 s : [31 ] eval = 2.890276339511            (33071.11899121) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.930191536774e-31       
+Grid : IRL : 1.246167 s : [30 ] eval = 2.756157243705            (36606.78605111) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.221278882681e-31       
+Grid : IRL : 1.246434 s : [29 ] eval = 2.756157243705            (36606.78605111) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.329305585739e-31       
+Grid : IRL : 1.246695 s : [28 ] eval = 2.482493296113            (44898.27504517) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 4.24212292186e-21        
+Grid : IRL : 1.246953 s : [27 ] eval = 2.482493296113            (44898.27504517) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.147658365273e-20       
+Grid : IRL : 1.247212 s : [26 ] eval = 2.475056859635            (45145.51787947) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 8.838877619468e-19       
+Grid : IRL : 1.247477 s : [25 ] eval = 2.475056859635            (45145.51787947) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.257385290857e-20       
+Grid : IRL : 1.247736 s : [24 ] eval = 2.467490742436            (45398.33348962) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.134795034928e-18       
+Grid : IRL : 1.247996 s : [23 ] eval = 2.467490742436            (45398.33348962) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.532892023169e-21       
+Grid : IRL : 1.248255 s : [22 ] eval = 2.449899675824            (45991.0738433) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 8.051812551427e-19       
+Grid : IRL : 1.248515 s : [21 ] eval = 2.449899675824            (45991.0738433) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 4.587044145051e-21       
+Grid : IRL : 1.248773 s : [20 ] eval = 2.434391820954            (46519.40670901) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.359679813282e-24       
+Grid : IRL : 1.249036 s : [19 ] eval = 2.434391820954            (46519.40670901) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.983879549134e-20       
+Grid : IRL : 1.249296 s : [18 ] eval = 2.421365367229            (46967.4311751) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 7.672823558783e-26       
+Grid : IRL : 1.249555 s : [17 ] eval = 2.421365367229            (46967.4311751) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.052303322313e-22       
+Grid : IRL : 1.249820 s : [16 ] eval = 2.347263067511            (49592.18334175) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 6.669171348048e-07       
+Grid : IRL : 1.250081 s : [15 ] eval = 2.347222222222            (49592.54130467) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.621880004983e-29       
+Grid : IRL : 1.250341 s : [14 ] eval = 2.347222222222            (49592.54130467) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.64399745043e-27        
+Grid : IRL : 1.250602 s : [13 ] eval = 2.146501593279            (57378.17177183) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 4.052653119362e-31       
+Grid : IRL : 1.250858 s : [12 ] eval = 2.146501593279            (57378.17177183) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.627051006304e-31       
+Grid : IRL : 1.251119 s : [11 ] eval = 2.117684611019            (58582.3576048) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 5.5279708156e-31         
+Grid : IRL : 1.251377 s : [10 ] eval = 2.117684611019            (58582.3576048) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.157475451595e-31       
+Grid : IRL : 1.251634 s : [9  ] eval = 2.013302110867            (63138.14194772) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.936836166411e-31       
+Grid : IRL : 1.251893 s : [8  ] eval = 2.013302110867            (63138.14194772) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.669520960472e-31       
+Grid : IRL : 1.252153 s : [7  ] eval = 1.981036180531            (64609.90655679) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.435579425001e-31       
+Grid : IRL : 1.252419 s : [6  ] eval = 1.981036180531            (64609.90655679) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 7.253311026816e-31       
+Grid : IRL : 1.252683 s : [5  ] eval = 1.955962215114            (65774.99184143) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.391808078016e-31       
+Grid : IRL : 1.252944 s : [4  ] eval = 1.955962215114            (65774.99184143) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.185615825014e-31       
+Grid : IRL : 1.253209 s : [3  ] eval = 1.946451057276            (66221.89035177) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.213569035511e-31       
+Grid : IRL : 1.253474 s : [2  ] eval = 1.946451057276            (66221.89035177) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.991795127373e-30       
+Grid : IRL : 1.253734 s : [1  ] eval = 0.03344212592023          (238873.32945) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.404579461051e-32       
+Grid : IRL : 1.253997 s : [0  ] eval = 0.03344212592023          (238873.32945) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 4.917090694235e-32       
+Grid : IRL : 1.254107 s :  #modes converged: >= 20/32
+Grid : Message : 1.254202 s :  **********************
+Grid : Message : 1.254294 s :  Restart iteration = 1
+Grid : Message : 1.254385 s :  **********************
+Grid : IRL : 1.254476 s :  running 20 steps: 
+Grid : IRL : 1.254567 s : Lanczos step 40
+Grid : IRL : 1.255861 s : PolyOp
+Grid : IRL : 1.256029 s : Orthogonalising 40
+Grid : IRL : 1.257290 s : Orthogonalised 40
+Grid : IRL : 1.257399 s : alpha[40] = (253.2738479982,2.124322939778e-11) beta[40] = 132.7228218068
+Grid : IRL : 1.257512 s : Lanczos step complete 40
+Grid : IRL : 1.257605 s : Lanczos step 41
+Grid : IRL : 1.258909 s : PolyOp
+Grid : IRL : 1.259077 s : Orthogonalising 41
+Grid : IRL : 1.260369 s : Orthogonalised 41
+Grid : IRL : 1.260479 s : alpha[41] = (215.4007208066,2.122269027183e-11) beta[41] = 92.71600429393
+Grid : IRL : 1.260590 s : Lanczos step complete 41
+Grid : IRL : 1.260684 s : Lanczos step 42
+Grid : IRL : 1.261971 s : PolyOp
+Grid : IRL : 1.262138 s : Orthogonalising 42
+Grid : IRL : 1.263458 s : Orthogonalised 42
+Grid : IRL : 1.263570 s : alpha[42] = (218.5795554644,2.120204012357e-11) beta[42] = 122.6966562306
+Grid : IRL : 1.263681 s : Lanczos step complete 42
+Grid : IRL : 1.263774 s : Lanczos step 43
+Grid : IRL : 1.278177 s : PolyOp
+Grid : IRL : 1.278309 s : Orthogonalising 43
+Grid : IRL : 1.279576 s : Orthogonalised 43
+Grid : IRL : 1.279626 s : alpha[43] = (249.6340877744,2.117328534723e-11) beta[43] = 197.6774672999
+Grid : IRL : 1.279670 s : Lanczos step complete 43
+Grid : IRL : 1.279694 s : Lanczos step 44
+Grid : IRL : 1.280916 s : PolyOp
+Grid : IRL : 1.281028 s : Orthogonalising 44
+Grid : IRL : 1.282332 s : Orthogonalised 44
+Grid : IRL : 1.282382 s : alpha[44] = (809.5911977675,2.119837638759e-11) beta[44] = 517.3541433687
+Grid : IRL : 1.282424 s : Lanczos step complete 44
+Grid : IRL : 1.282447 s : Lanczos step 45
+Grid : IRL : 1.283657 s : PolyOp
+Grid : IRL : 1.283768 s : Orthogonalising 45
+Grid : IRL : 1.285104 s : Orthogonalised 45
+Grid : IRL : 1.285154 s : alpha[45] = (2274.391323514,2.11359818536e-11) beta[45] = 8989.429468576
+Grid : IRL : 1.285195 s : Lanczos step complete 45
+Grid : IRL : 1.285219 s : Lanczos step 46
+Grid : IRL : 1.286438 s : PolyOp
+Grid : IRL : 1.286549 s : Orthogonalising 46
+Grid : IRL : 1.287909 s : Orthogonalised 46
+Grid : IRL : 1.287959 s : alpha[46] = (47873.71551984,2.118838438037e-11) beta[46] = 730.8512465354
+Grid : IRL : 1.288001 s : Lanczos step complete 46
+Grid : IRL : 1.288025 s : Lanczos step 47
+Grid : IRL : 1.289243 s : PolyOp
+Grid : IRL : 1.289350 s : Orthogonalising 47
+Grid : IRL : 1.290734 s : Orthogonalised 47
+Grid : IRL : 1.290785 s : alpha[47] = (270.2499728434,2.119193709404e-11) beta[47] = 126.7967972076
+Grid : IRL : 1.290826 s : Lanczos step complete 47
+Grid : IRL : 1.290849 s : Lanczos step 48
+Grid : IRL : 1.292077 s : PolyOp
+Grid : IRL : 1.292188 s : Orthogonalising 48
+Grid : IRL : 1.293604 s : Orthogonalised 48
+Grid : IRL : 1.293657 s : alpha[48] = (285.3930829102,2.114897146299e-11) beta[48] = 133.4968109767
+Grid : IRL : 1.293698 s : Lanczos step complete 48
+Grid : IRL : 1.293722 s : Lanczos step 49
+Grid : IRL : 1.294950 s : PolyOp
+Grid : IRL : 1.295061 s : Orthogonalising 49
+Grid : IRL : 1.296827 s : Orthogonalised 49
+Grid : IRL : 1.296888 s : alpha[49] = (458.8176544974,2.117794828393e-11) beta[49] = 335.0011911864
+Grid : IRL : 1.296930 s : Lanczos step complete 49
+Grid : IRL : 1.296954 s : Lanczos step 50
+Grid : IRL : 1.298169 s : PolyOp
+Grid : IRL : 1.298280 s : Orthogonalising 50
+Grid : IRL : 1.306309 s : Orthogonalised 50
+Grid : IRL : 1.306381 s : alpha[50] = (804.8452284907,2.118283326524e-11) beta[50] = 340.780689263
+Grid : IRL : 1.306426 s : Lanczos step complete 50
+Grid : IRL : 1.306450 s : Lanczos step 51
+Grid : IRL : 1.307886 s : PolyOp
+Grid : IRL : 1.308006 s : Orthogonalising 51
+Grid : IRL : 1.309886 s : Orthogonalised 51
+Grid : IRL : 1.309947 s : alpha[51] = (435.7091683952,2.11899386926e-11) beta[51] = 180.2349503561
+Grid : IRL : 1.309989 s : Lanczos step complete 51
+Grid : IRL : 1.310012 s : Lanczos step 52
+Grid : IRL : 1.311233 s : PolyOp
+Grid : IRL : 1.311344 s : Orthogonalising 52
+Grid : IRL : 1.313193 s : Orthogonalised 52
+Grid : IRL : 1.313252 s : alpha[52] = (653.713537725,2.121469666605e-11) beta[52] = 994.5940169765
+Grid : IRL : 1.313294 s : Lanczos step complete 52
+Grid : IRL : 1.313317 s : Lanczos step 53
+Grid : IRL : 1.314554 s : PolyOp
+Grid : IRL : 1.314666 s : Orthogonalising 53
+Grid : IRL : 1.316213 s : Orthogonalised 53
+Grid : IRL : 1.316262 s : alpha[53] = (43344.45868274,2.117928055156e-11) beta[53] = 16334.72143356
+Grid : IRL : 1.316303 s : Lanczos step complete 53
+Grid : IRL : 1.316326 s : Lanczos step 54
+Grid : IRL : 1.317541 s : PolyOp
+Grid : IRL : 1.317653 s : Orthogonalising 54
+Grid : IRL : 1.319240 s : Orthogonalised 54
+Grid : IRL : 1.319290 s : alpha[54] = (6748.446492955,2.123845543878e-11) beta[54] = 183.7936160173
+Grid : IRL : 1.319331 s : Lanczos step complete 54
+Grid : IRL : 1.319354 s : Lanczos step 55
+Grid : IRL : 1.320573 s : PolyOp
+Grid : IRL : 1.320685 s : Orthogonalising 55
+Grid : IRL : 1.322285 s : Orthogonalised 55
+Grid : IRL : 1.322335 s : alpha[55] = (502.7819477028,2.122457765097e-11) beta[55] = 425.0622351398
+Grid : IRL : 1.322376 s : Lanczos step complete 55
+Grid : IRL : 1.322399 s : Lanczos step 56
+Grid : IRL : 1.323701 s : PolyOp
+Grid : IRL : 1.323820 s : Orthogonalising 56
+Grid : IRL : 1.325459 s : Orthogonalised 56
+Grid : IRL : 1.325509 s : alpha[56] = (766.2749278839,2.118194508682e-11) beta[56] = 244.1124786571
+Grid : IRL : 1.325551 s : Lanczos step complete 56
+Grid : IRL : 1.325574 s : Lanczos step 57
+Grid : IRL : 1.326795 s : PolyOp
+Grid : IRL : 1.326909 s : Orthogonalising 57
+Grid : IRL : 1.328574 s : Orthogonalised 57
+Grid : IRL : 1.328623 s : alpha[57] = (389.0075987658,2.116040676015e-11) beta[57] = 238.8976081084
+Grid : IRL : 1.328664 s : Lanczos step complete 57
+Grid : IRL : 1.328687 s : Lanczos step 58
+Grid : IRL : 1.329899 s : PolyOp
+Grid : IRL : 1.330009 s : Orthogonalising 58
+Grid : IRL : 1.331698 s : Orthogonalised 58
+Grid : IRL : 1.332117 s : alpha[58] = (573.7244307429,2.116440356303e-11) beta[58] = 238.5629418278
+Grid : IRL : 1.332156 s : Lanczos step complete 58
+Grid : IRL : 1.332180 s : Lanczos step 59
+Grid : IRL : 1.339452 s : PolyOp
+Grid : IRL : 1.339631 s : Orthogonalising 59
+Grid : IRL : 1.341859 s : Orthogonalised 59
+Grid : IRL : 1.341959 s : alpha[59] = (339.8118180974,2.118816233576e-11) beta[59] = 144.5683456649
+Grid : IRL : 1.342070 s : Lanczos step complete 59
+Grid : IRL : 1.342173 s :  20 steps done 
+Grid : IRL : 1.342267 s : Initial steps:OrthoTime 0.03655099868774seconds
+Grid : IRL : 1.342933 s :  diagonalized 
+Grid : IRL : 1.343046 s :  evals sorted 
+Grid : IRL : 1.343141 s : eval 0   238873.32945 238873.32945 66221.89035177 66221.89035177 65774.99184143 65774.99184143 64609.90655679 64609.90655679
+Grid : IRL : 1.343257 s : eval 8   63138.14194773 63138.14194772 58582.3576048 58582.3576048 57378.17177183 57378.17177183 49592.54130467 49592.54130467
+Grid : IRL : 1.343370 s : eval 16  49592.54130467 49592.54130467 49592.54130467 46967.4311751 46967.4311751 46519.40670901 46519.40670901 45991.0738433
+Grid : IRL : 1.343483 s : eval 24  45991.0738433 45398.33348962 45398.33348962 45145.51787947 45145.51787947 44898.27504517 44898.27504517 36606.78605111
+Grid : IRL : 1.343604 s : eval 32  36606.78605111 33071.11899121 33071.11899121 21265.58081518 21265.58081518 13848.12537669 13848.12537669 1242.716007885
+Grid : IRL : 1.344012 s : QR decomposed 
+Grid : IRL : 1.344350 s : basisRotated  by Qt *0,41)
+Grid : IRL : 1.344487 s :  beta(k) = 3.737690908088e-07
+Grid : IRL : 1.344797 s :  Diagonalized 
+Grid : IRL : 1.344896 s : Test convergence: rotate subset of vectors to test convergence 
+Grid : IRL : 1.345136 s : [31 ] eval = 2.756157243705            (36606.78605111) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.412144156476e-31       
+Grid : IRL : 1.345401 s : [30 ] eval = 2.482493296113            (44898.27504517) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 9.118925614339e-30       
+Grid : IRL : 1.345979 s : [29 ] eval = 2.482493296113            (44898.27504517) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.227084755724e-29       
+Grid : IRL : 1.346239 s : [28 ] eval = 2.475056859635            (45145.51787947) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.178990061089e-29       
+Grid : IRL : 1.346507 s : [27 ] eval = 2.475056859635            (45145.51787947) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 7.318188068163e-30       
+Grid : IRL : 1.346771 s : [26 ] eval = 2.467490742436            (45398.33348962) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.983798836464e-29       
+Grid : IRL : 1.347029 s : [25 ] eval = 2.467490742436            (45398.33348962) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 9.390911108656e-30       
+Grid : IRL : 1.347289 s : [24 ] eval = 2.449899675824            (45991.0738433) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 7.021295083991e-29       
+Grid : IRL : 1.347552 s : [23 ] eval = 2.449899675824            (45991.0738433) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.067158425559e-29       
+Grid : IRL : 1.347814 s : [22 ] eval = 2.434391820954            (46519.40670901) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 4.370123317588e-29       
+Grid : IRL : 1.348077 s : [21 ] eval = 2.434391820954            (46519.40670901) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.645400571198e-29       
+Grid : IRL : 1.348337 s : [20 ] eval = 2.421365367229            (46967.4311751) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.025168472656e-29       
+Grid : IRL : 1.348599 s : [19 ] eval = 2.421365367229            (46967.4311751) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 8.726328069117e-30       
+Grid : IRL : 1.348859 s : [18 ] eval = 2.347222222222            (49592.54130467) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 5.881741677091e-32       
+Grid : IRL : 1.349119 s : [17 ] eval = 2.347222222222            (49592.54130467) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.087165131555e-29       
+Grid : IRL : 1.349382 s : [16 ] eval = 2.347222222222            (49592.54130467) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.77010093115e-27        
+Grid : IRL : 1.349643 s : [15 ] eval = 2.347222222222            (49592.54130467) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 4.472284913148e-30       
+Grid : IRL : 1.349908 s : [14 ] eval = 2.347222222222            (49592.54130467) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 6.471674808249e-31       
+Grid : IRL : 1.350169 s : [13 ] eval = 2.146501593279            (57378.17177183) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.722956569308e-31       
+Grid : IRL : 1.350432 s : [12 ] eval = 2.146501593279            (57378.17177183) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 4.097817191356e-31       
+Grid : IRL : 1.350693 s : [11 ] eval = 2.117684611019            (58582.3576048) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 5.51381689135e-31        
+Grid : IRL : 1.350957 s : [10 ] eval = 2.117684611019            (58582.3576048) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.184691600998e-31       
+Grid : IRL : 1.351217 s : [9  ] eval = 2.013302110867            (63138.14194772) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.058047477896e-31       
+Grid : IRL : 1.351474 s : [8  ] eval = 2.013302110867            (63138.14194772) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.712666563451e-31       
+Grid : IRL : 1.351745 s : [7  ] eval = 1.981036180531            (64609.90655679) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 7.456729196284e-31       
+Grid : IRL : 1.352008 s : [6  ] eval = 1.981036180531            (64609.90655679) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.5179119117e-31         
+Grid : IRL : 1.352269 s : [5  ] eval = 1.955962215114            (65774.99184143) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.382752775352e-31       
+Grid : IRL : 1.352530 s : [4  ] eval = 1.955962215114            (65774.99184143) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.589248434854e-31       
+Grid : IRL : 1.352791 s : [3  ] eval = 1.946451057276            (66221.89035177) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.410974613239e-31       
+Grid : IRL : 1.353062 s : [2  ] eval = 1.946451057276            (66221.89035177) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 4.012950168696e-30       
+Grid : IRL : 1.353326 s : [1  ] eval = 0.03344212592023          (238873.32945) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.426772175448e-32       
+Grid : IRL : 1.353588 s : [0  ] eval = 0.03344212592023          (238873.32945) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 5.514550553158e-32       
+Grid : IRL : 1.353698 s :  #modes converged: >= 32/32
+Grid : IRL : 1.353942 s :  Rotated basis
+Grid : IRL : 1.354184 s : [0  ] eval = 0.03344212592023          (238873.32945) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 5.514550553158e-32       
+Grid : IRL : 1.354442 s : [1  ] eval = 0.03344212592023          (238873.32945) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.426772175448e-32       
+Grid : IRL : 1.354698 s : [2  ] eval = 1.946451057276            (66221.89035177) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 4.012950168696e-30       
+Grid : IRL : 1.354956 s : [3  ] eval = 1.946451057276            (66221.89035177) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.410974613239e-31       
+Grid : IRL : 1.355211 s : [4  ] eval = 1.955962215114            (65774.99184143) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.589248434854e-31       
+Grid : IRL : 1.355469 s : [5  ] eval = 1.955962215114            (65774.99184143) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.382752775352e-31       
+Grid : IRL : 1.355728 s : [6  ] eval = 1.981036180531            (64609.90655679) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.5179119117e-31         
+Grid : IRL : 1.355987 s : [7  ] eval = 1.981036180531            (64609.90655679) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 7.456729196284e-31       
+Grid : IRL : 1.356248 s : [8  ] eval = 2.013302110867            (63138.14194772) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.712666563451e-31       
+Grid : IRL : 1.356510 s : [9  ] eval = 2.013302110867            (63138.14194772) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.058047477896e-31       
+Grid : IRL : 1.356765 s : [10 ] eval = 2.117684611019            (58582.3576048) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.184691600998e-31       
+Grid : IRL : 1.357019 s : [11 ] eval = 2.117684611019            (58582.3576048) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 5.51381689135e-31        
+Grid : IRL : 1.357275 s : [12 ] eval = 2.146501593279            (57378.17177183) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 4.097817191356e-31       
+Grid : IRL : 1.357537 s : [13 ] eval = 2.146501593279            (57378.17177183) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.722956569308e-31       
+Grid : IRL : 1.357797 s : [14 ] eval = 2.347222222222            (49592.54130467) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 6.471674808249e-31       
+Grid : IRL : 1.358054 s : [15 ] eval = 2.347222222222            (49592.54130467) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 4.472284913148e-30       
+Grid : IRL : 1.358317 s : [16 ] eval = 2.347222222222            (49592.54130467) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.77010093115e-27        
+Grid : IRL : 1.358571 s : [17 ] eval = 2.347222222222            (49592.54130467) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.087165131555e-29       
+Grid : IRL : 1.358826 s : [18 ] eval = 2.347222222222            (49592.54130467) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 5.881741677091e-32       
+Grid : IRL : 1.359092 s : [19 ] eval = 2.421365367229            (46967.4311751) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 8.726328069117e-30       
+Grid : IRL : 1.359353 s : [20 ] eval = 2.421365367229            (46967.4311751) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.025168472656e-29       
+Grid : IRL : 1.359611 s : [21 ] eval = 2.434391820954            (46519.40670901) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.645400571198e-29       
+Grid : IRL : 1.359873 s : [22 ] eval = 2.434391820954            (46519.40670901) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 4.370123317588e-29       
+Grid : IRL : 1.360128 s : [23 ] eval = 2.449899675824            (45991.0738433) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.067158425559e-29       
+Grid : IRL : 1.360386 s : [24 ] eval = 2.449899675824            (45991.0738433) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 7.021295083991e-29       
+Grid : IRL : 1.360640 s : [25 ] eval = 2.467490742436            (45398.33348962) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 9.390911108656e-30       
+Grid : IRL : 1.360894 s : [26 ] eval = 2.467490742436            (45398.33348962) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.983798836464e-29       
+Grid : IRL : 1.361148 s : [27 ] eval = 2.475056859635            (45145.51787947) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 7.318188068163e-30       
+Grid : IRL : 1.361405 s : [28 ] eval = 2.475056859635            (45145.51787947) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 3.178990061089e-29       
+Grid : IRL : 1.361664 s : [29 ] eval = 2.482493296113            (44898.27504517) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.227084755724e-29       
+Grid : IRL : 1.361919 s : [30 ] eval = 2.482493296113            (44898.27504517) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 9.118925614339e-30       
+Grid : IRL : 1.362180 s : [31 ] eval = 2.756157243705            (36606.78605111) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.412144156476e-31       
+Grid : IRL : 1.362438 s : [32 ] eval = 2.756157243705            (36606.78605111) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.256300807551e-31       
+Grid : IRL : 1.362693 s : [33 ] eval = 2.890276339511            (33071.11899121) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.263141434862e-31       
+Grid : IRL : 1.362955 s : [34 ] eval = 2.890276339511            (33071.11899121) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.984345820403e-31       
+Grid : IRL : 1.363217 s : [35 ] eval = 3.45775552319             (21265.58081518) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.385451702814e-31       
+Grid : IRL : 1.363475 s : [36 ] eval = 3.45775552319             (21265.58081518) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 1.10547683022e-31        
+Grid : IRL : 1.363739 s : [37 ] eval = 3.984942149024            (13848.12537669) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.633487201865e-31       
+Grid : IRL : 1.375308 s : [38 ] eval = 3.984942149024            (13848.12537669) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 2.388581389248e-31       
+Grid : IRL : 1.375533 s : [39 ] eval = 6.517752496372            (1242.716007885) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 9.101010129241e-22       
+Grid : IRL : 1.375731 s : [40 ] eval = 7.594278193028            (1153.255394022) |H B[i] - eval[i]B[i]|^2 / evalMaxApprox^2 0.004477847315742        
+Grid : IRL : 1.376052 s : **************************************************************************
+Grid : IRL : 1.376088 s : ImplicitlyRestartedLanczos CONVERGED ; Summary :
+Grid : IRL : 1.376089 s : **************************************************************************
+Grid : IRL : 1.376132 s :  -- Iterations  = 1
+Grid : IRL : 1.376134 s :  -- beta(k)     = 3.737690908088e-07
+Grid : IRL : 1.376140 s :  -- Nconv       = 39
+Grid : IRL : 1.376141 s : **************************************************************************
+BEGIN RESULTS
+Eigenvalue(0) = 0.0334421 
+Eigenvalue(1) = 0.0334421 
+Eigenvalue(2) = 1.94645 
+Eigenvalue(3) = 1.94645 
+Eigenvalue(4) = 1.95596 
+Eigenvalue(5) = 1.95596 
+Eigenvalue(6) = 1.98104 
+Eigenvalue(7) = 1.98104 
+Eigenvalue(8) = 2.0133 
+Eigenvalue(9) = 2.0133 
+Eigenvalue(10) = 2.11768 
+Eigenvalue(11) = 2.11768 
+Eigenvalue(12) = 2.1465 
+Eigenvalue(13) = 2.1465 
+Eigenvalue(14) = 2.34722 
+Eigenvalue(15) = 2.34722 
+Eigenvalue(16) = 2.34722 
+Eigenvalue(17) = 2.34722 
+Eigenvalue(18) = 2.34722 
+Eigenvalue(19) = 2.42137 
+Eigenvalue(20) = 2.42137 
+Eigenvalue(21) = 2.43439 
+Eigenvalue(22) = 2.43439 
+Eigenvalue(23) = 2.4499 
+Eigenvalue(24) = 2.4499 
+Eigenvalue(25) = 2.46749 
+Eigenvalue(26) = 2.46749 
+Eigenvalue(27) = 2.47506 
+Eigenvalue(28) = 2.47506 
+Eigenvalue(29) = 2.48249 
+Eigenvalue(30) = 2.48249 
+Eigenvalue(31) = 2.75616 
+Even site residuals
+Checking eigensolutions
+eigVal[0] = 3.344213e-02 ( resid = 3.549218e-15 , |eigVec[0]|-1 = -2.220446e-16 )
+eigVal[1] = 3.344213e-02 ( resid = 4.421409e-15 , |eigVec[1]|-1 = 4.440892e-16 )
+eigVal[2] = 1.946451e+00 ( resid = 3.750820e-14 , |eigVec[2]|-1 = -4.440892e-16 )
+eigVal[3] = 1.946451e+00 ( resid = 6.971106e-15 , |eigVec[3]|-1 = 2.220446e-16 )
+eigVal[4] = 1.955962e+00 ( resid = 9.547747e-15 , |eigVec[4]|-1 = -1.110223e-15 )
+eigVal[5] = 1.955962e+00 ( resid = 9.145079e-15 , |eigVec[5]|-1 = -1.110223e-15 )
+eigVal[6] = 1.981036e+00 ( resid = 1.621271e-14 , |eigVec[6]|-1 = -9.992007e-16 )
+eigVal[7] = 1.981036e+00 ( resid = 7.164837e-15 , |eigVec[7]|-1 = 8.881784e-16 )
+eigVal[8] = 2.013302e+00 ( resid = 1.157433e-14 , |eigVec[8]|-1 = 0.000000e+00 )
+eigVal[9] = 2.013302e+00 ( resid = 8.513361e-15 , |eigVec[9]|-1 = -5.551115e-16 )
+eigVal[10] = 2.117685e+00 ( resid = 1.070174e-14 , |eigVec[10]|-1 = -6.661338e-16 )
+eigVal[11] = 2.117685e+00 ( resid = 1.385585e-14 , |eigVec[11]|-1 = 0.000000e+00 )
+eigVal[12] = 2.146502e+00 ( resid = 1.211634e-14 , |eigVec[12]|-1 = 0.000000e+00 )
+eigVal[13] = 2.146502e+00 ( resid = 7.908486e-15 , |eigVec[13]|-1 = -7.771561e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 3.970140e-14 , |eigVec[14]|-1 = -6.661338e-16 )
+eigVal[15] = 2.347222e+00 ( resid = 4.639221e-15 , |eigVec[15]|-1 = -5.551115e-16 )
+eigVal[16] = 2.347222e+00 ( resid = 1.509936e-14 , |eigVec[16]|-1 = -1.110223e-16 )
+eigVal[17] = 2.347222e+00 ( resid = 1.152815e-12 , |eigVec[17]|-1 = -5.551115e-16 )
+eigVal[18] = 2.347222e+00 ( resid = 1.043205e-13 , |eigVec[18]|-1 = -1.110223e-16 )
+eigVal[19] = 2.421365e+00 ( resid = 6.009937e-14 , |eigVec[19]|-1 = -2.220446e-15 )
+eigVal[20] = 2.421365e+00 ( resid = 5.550460e-14 , |eigVec[20]|-1 = -1.554312e-15 )
+eigVal[21] = 2.434392e+00 ( resid = 1.240826e-13 , |eigVec[21]|-1 = -9.992007e-16 )
+eigVal[22] = 2.434392e+00 ( resid = 7.608607e-14 , |eigVec[22]|-1 = -1.110223e-16 )
+eigVal[23] = 2.449900e+00 ( resid = 6.115287e-14 , |eigVec[23]|-1 = -8.881784e-16 )
+eigVal[24] = 2.449900e+00 ( resid = 1.573855e-13 , |eigVec[24]|-1 = -4.440892e-16 )
+eigVal[25] = 2.467491e+00 ( resid = 1.026822e-13 , |eigVec[25]|-1 = -1.110223e-16 )
+eigVal[26] = 2.467491e+00 ( resid = 5.750306e-14 , |eigVec[26]|-1 = 1.776357e-15 )
+eigVal[27] = 2.475057e+00 ( resid = 5.076739e-14 , |eigVec[27]|-1 = 2.220446e-16 )
+eigVal[28] = 2.475057e+00 ( resid = 1.059274e-13 , |eigVec[28]|-1 = -3.330669e-16 )
+eigVal[29] = 2.482493e+00 ( resid = 6.579268e-14 , |eigVec[29]|-1 = 6.661338e-16 )
+eigVal[30] = 2.482493e+00 ( resid = 5.666612e-14 , |eigVec[30]|-1 = 1.776357e-15 )
+eigVal[31] = 2.756157e+00 ( resid = 6.640903e-15 , |eigVec[31]|-1 = -2.220446e-16 )
+End of eigensolutions
+Odd site residuals
+Checking eigensolutions
+eigVal[0] = 3.344213e-02 ( resid = 6.775750e-14 , |eigVec[0]|-1 = 0.000000e+00 )
+eigVal[1] = 3.344213e-02 ( resid = 7.188375e-14 , |eigVec[1]|-1 = -2.220446e-16 )
+eigVal[2] = 1.946451e+00 ( resid = 7.155322e-14 , |eigVec[2]|-1 = -1.110223e-16 )
+eigVal[3] = 1.946451e+00 ( resid = 1.505152e-14 , |eigVec[3]|-1 = -1.110223e-16 )
+eigVal[4] = 1.955962e+00 ( resid = 1.833606e-14 , |eigVec[4]|-1 = 0.000000e+00 )
+eigVal[5] = 1.955962e+00 ( resid = 1.930710e-14 , |eigVec[5]|-1 = 0.000000e+00 )
+eigVal[6] = 1.981036e+00 ( resid = 3.114850e-14 , |eigVec[6]|-1 = 0.000000e+00 )
+eigVal[7] = 1.981036e+00 ( resid = 1.656496e-14 , |eigVec[7]|-1 = -1.110223e-16 )
+eigVal[8] = 2.013302e+00 ( resid = 2.527263e-14 , |eigVec[8]|-1 = -1.110223e-16 )
+eigVal[9] = 2.013302e+00 ( resid = 1.809595e-14 , |eigVec[9]|-1 = 0.000000e+00 )
+eigVal[10] = 2.117685e+00 ( resid = 2.337904e-14 , |eigVec[10]|-1 = 0.000000e+00 )
+eigVal[11] = 2.117685e+00 ( resid = 2.816447e-14 , |eigVec[11]|-1 = 0.000000e+00 )
+eigVal[12] = 2.146502e+00 ( resid = 2.386362e-14 , |eigVec[12]|-1 = 0.000000e+00 )
+eigVal[13] = 2.146502e+00 ( resid = 1.704400e-14 , |eigVec[13]|-1 = -2.220446e-16 )
+eigVal[14] = 2.347222e+00 ( resid = 7.712700e-14 , |eigVec[14]|-1 = 0.000000e+00 )
+eigVal[15] = 2.347222e+00 ( resid = 9.887593e-15 , |eigVec[15]|-1 = 0.000000e+00 )
+eigVal[16] = 2.347222e+00 ( resid = 3.146108e-14 , |eigVec[16]|-1 = 0.000000e+00 )
+eigVal[17] = 2.347222e+00 ( resid = 2.507700e-12 , |eigVec[17]|-1 = 0.000000e+00 )
+eigVal[18] = 2.347222e+00 ( resid = 1.903002e-13 , |eigVec[18]|-1 = 0.000000e+00 )
+eigVal[19] = 2.421365e+00 ( resid = 1.048251e-13 , |eigVec[19]|-1 = 2.220446e-16 )
+eigVal[20] = 2.421365e+00 ( resid = 1.139035e-13 , |eigVec[20]|-1 = -1.110223e-16 )
+eigVal[21] = 2.434392e+00 ( resid = 2.534331e-13 , |eigVec[21]|-1 = 0.000000e+00 )
+eigVal[22] = 2.434392e+00 ( resid = 1.565710e-13 , |eigVec[22]|-1 = 0.000000e+00 )
+eigVal[23] = 2.449900e+00 ( resid = 1.129456e-13 , |eigVec[23]|-1 = -1.110223e-16 )
+eigVal[24] = 2.449900e+00 ( resid = 3.262351e-13 , |eigVec[24]|-1 = 0.000000e+00 )
+eigVal[25] = 2.467491e+00 ( resid = 1.846162e-13 , |eigVec[25]|-1 = -1.110223e-16 )
+eigVal[26] = 2.467491e+00 ( resid = 1.001131e-13 , |eigVec[26]|-1 = 0.000000e+00 )
+eigVal[27] = 2.475057e+00 ( resid = 8.698382e-14 , |eigVec[27]|-1 = 2.220446e-16 )
+eigVal[28] = 2.475057e+00 ( resid = 1.855882e-13 , |eigVec[28]|-1 = -1.110223e-16 )
+eigVal[29] = 2.482493e+00 ( resid = 1.143322e-13 , |eigVec[29]|-1 = 0.000000e+00 )
+eigVal[30] = 2.482493e+00 ( resid = 9.969578e-14 , |eigVec[30]|-1 = 2.220446e-16 )
+eigVal[31] = 2.756157e+00 ( resid = 1.207212e-14 , |eigVec[31]|-1 = 0.000000e+00 )
+End of eigensolutions
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+The above were eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0):  0.0914359
+eigenval(1):  0.0914359
+eigenval(2):   0.697576
+eigenval(3):   0.697576
+eigenval(4):   0.699279
+eigenval(5):   0.699279
+eigenval(6):   0.703746
+eigenval(7):   0.703746
+eigenval(8):   0.709454
+eigenval(9):   0.709454
+eigenval(10):   0.727613
+eigenval(11):   0.727613
+eigenval(12):   0.732547
+eigenval(13):   0.732547
+eigenval(14):   0.766032
+eigenval(15):   0.766032
+eigenval(16):   0.766032
+eigenval(17):   0.766032
+eigenval(18):   0.766032
+eigenval(19):   0.778037
+eigenval(20):   0.778037
+eigenval(21):   0.780127
+eigenval(22):   0.780127
+eigenval(23):   0.782608
+eigenval(24):   0.782608
+eigenval(25):   0.785412
+eigenval(26):   0.785412
+eigenval(27):   0.786616
+eigenval(28):   0.786616
+eigenval(29):   0.787796
+eigenval(30):   0.787796
+eigenval(31):   0.830084
+RUNNING COMPLETED
+Time = 4.230180e-01 seconds
+total Rayleigh iters = 0
+
+
+# ------------------------------------------------------------------------
+ask_starting_lattice(0): EOF on input.
+exit: Wed Jan 20 01:01:02 2021
+

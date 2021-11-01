@@ -22,7 +22,7 @@ typedef struct {
   /* is it even or odd? */
   char parity;
   /* my index in the array */
-  int index;
+  uint32_t index;
 #ifdef SITERAND
   /* The state information for a random number generator */
 /*
@@ -73,7 +73,7 @@ EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-EXTERN  int iseed;              /* random number seed */
+EXTERN  uint32_t iseed;              /* random number seed */
 EXTERN  Real ape_weight;       /* weight parameter in APE blocking */
 EXTERN  int sweeps,hits,measinterval;
 EXTERN  int total_sweeps;

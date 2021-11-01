@@ -86,7 +86,6 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
   int color;
   int i,j;
   int status = 0;
-  char *fileinfo;
   int tot_iters = 0;
   su3_vector **dst;
   imp_ferm_links_t **fn = NULL;

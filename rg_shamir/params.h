@@ -9,7 +9,7 @@ typedef struct {
 	int stopflag;   /* 1 if it is time to stop */
     /* INITIALIZATION PARAMETERS */
 	int nx,ny,nz,nt;  /* lattice dimensions */
-	int iseed;	/* for random numbers */
+	uint32_t iseed;	/* for random numbers */
 	int nflavors;	/* the number of flavors */
     /*  REPEATING BLOCK */
 	Real mass;      /*  quark mass */

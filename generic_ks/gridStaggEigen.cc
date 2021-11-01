@@ -67,13 +67,6 @@ static void impResLanczos( GRID_ColorVectorArray_struct<ImprovedStaggeredFermion
   ImprovedStaggeredFermion Ds( *FGrid, *RBGrid, 2.*mass, 2.*c1, 2.*c2, u0 ); 
   Ds.ImportGaugeSimple( *(link->lnglinks), *(link->fatlinks) );
 
-  // Grid provides checkerboard calculations only for even sites (need to check!)
-  if( eig_arg->parity != GRID_EVEN )
-  {
-    cout << myname << ": Only even parity is available for the moment." << endl;
-    exit(1);
-  }
-
   // Even-odd preconditioned D^dagger D operator
   SchurStaggeredOperator< ImprovedStaggeredFermion, FermionField > HermOp(Ds);
 
