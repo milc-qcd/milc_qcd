@@ -543,7 +543,7 @@ static void u1_Lorenz(complex *u1gfsite, Real *lk, Real lksq){
   
    where eps^i_mu is a normalized polarization vector orthogonal to k_mu.
 
-   We drop the k = 0 mode as well as the lognitudinal mode A_mu ~ k_mu.
+   We drop the k = 0 mode as well as the longitudinal mode A_mu ~ k_mu.
 
    Then we generate A_mu by projecting out the gauge mode from a Gaussian random
    complex four-vector \eta_nu
@@ -552,7 +552,7 @@ static void u1_Lorenz(complex *u1gfsite, Real *lk, Real lksq){
 
    where 
  
-      <\eta_nu \eta^(_mu> = delta_mu,nu ,
+      <\eta_nu \eta^_mu> = delta_mu,nu ,
 
    Without the projection, the vector potential is in "Feynman gauge".
       

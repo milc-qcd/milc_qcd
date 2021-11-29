@@ -84,7 +84,8 @@ FERMION_OBJECTS = \
   quark_source.o     \
   quark_source_io.o  \
   quark_source_sink_op.o \
-  spin_taste_ops.o
+  spin_taste_ops.o \
+  shift_field.o
 
 # These are used to build propagators
 
@@ -110,7 +111,7 @@ KS_IO_OBJECTS =  \
 # These are used to compute the spectrum
 
 ifeq ($(strip ${WANT_KS_CONT_CPU}),true)
-# use new CPU contranction code
+# use new CPU contraction code
 KS_SPECTRUM_OBJECTS = \
   ks_baryon.o \
   ks_meson_mom_gpu.o \
@@ -120,7 +121,6 @@ else ifeq ($(strip ${HAVE_KS_CONT_GPU}),true)
 KS_SPECTRUM_OBJECTS = \
   ks_baryon.o \
   ks_meson_mom_gpu.o
-  #contraction_cpu.o # 
 else
 # otherwise use old CPU contraction code
 KS_SPECTRUM_OBJECTS = \

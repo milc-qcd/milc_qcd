@@ -28,15 +28,10 @@
 
 #include "generic_ks_includes.h"
 #include <string.h>
+#include "../include/imp_ferm_links.h"
 
 #include "../include/gammatypes.h"
 #include "../include/openmp_defs.h"
-
-enum shift_dir {
-  SHIFT_FORWARD,
-  SHIFT_BACKWARD,
-  SHIFT_SYMMETRIC
-};
 
 /*------------------------------------------------------------------*/
 /* Compute the hypercube coordinate relative to an offset.  We assume
@@ -66,93 +61,12 @@ hyp_parity_bit(site *s, int r0[]){
 
 #ifndef NO_GAUGE_FIELD
 
-/*-------------------------------------------------------------*/
-/* Apply the shift operator in direction "dir" with sign fb    *
- * This is the explicit version                                *
- * The KS phases MUST BE in the links                          */
-
-static void 
-shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
-	    su3_matrix *links)
-{
-  register int i ;
-  register site *s ;
-  msg_tag *tag[2] = {NULL, NULL};
-  su3_vector *tvec = create_v_field();
-
-  if(fb == SHIFT_FORWARD || fb == SHIFT_SYMMETRIC)
-    tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
-  
-  if(fb == SHIFT_BACKWARD || fb == SHIFT_SYMMETRIC){
-    FORALLFIELDSITES_OMP(i,)
-    {
-      mult_adj_su3_mat_vec( links+4*i+dir, src+i, tvec+i ) ;
-    } END_LOOP_OMP;
-    tag[1] = start_gather_field(tvec, sizeof(su3_vector), OPP_DIR(dir), 
-				EVENANDODD, gen_pt[1] );
-  }
-  
-  if(fb == SHIFT_FORWARD || fb == SHIFT_SYMMETRIC){
-    wait_gather(tag[0]);
-    FORALLFIELDSITES_OMP(i,)
-      {
-	mult_su3_mat_vec( links+4*i+dir, (su3_vector *)gen_pt[0][i], dest+i );
-      } END_LOOP_OMP;
-    cleanup_gather(tag[0]);
-
-  } else {
-
-    clear_v_field(dest);
-
-  }
-
-#if 0
-  if(fb == SHIFT_BACKWARD || fb == SHIFT_SYMMETRIC){
-    wait_gather(tag[1]);
-    FORALLFIELDSITES_OMP(i,)
-      {
-	add_su3_vector( dest+i, (su3_vector *)gen_pt[1][i], dest+i ) ;    
-      } END_LOOP_OMP;
-    cleanup_gather(tag[1]);
-  }
-
-  if(fb == SHIFT_SYMMETRIC){
-    /* Now divide by 2 eq. (4.2b) of Golterman's Meson paper*/
-    FORALLFIELDSITES_OMP(i,)
-      {
-	scalar_mult_su3_vector( dest+i, 0.5, dest+i );
-      } END_LOOP_OMP;
-  }
-#else
-  if(fb == SHIFT_SYMMETRIC){
-    wait_gather(tag[1]);
-    FORALLFIELDSITES_OMP(i,)
-      {
-	add_su3_vector( dest+i, (su3_vector *)gen_pt[1][i], dest+i ) ;    
-	/* Now divide by 2 eq. (4.2b) of Golterman's Meson paper*/
-	scalar_mult_su3_vector( dest+i, 0.5, dest+i );
-      } END_LOOP_OMP;
-    cleanup_gather(tag[1]);
-
-  } else if(fb == SHIFT_BACKWARD){
-    wait_gather(tag[1]);
-    FORALLFIELDSITES_OMP(i,)
-      {
-        add_su3_vector( dest+i, (su3_vector *)gen_pt[1][i], dest+i ) ;
-      } END_LOOP_OMP;
-    cleanup_gather(tag[1]);
-  }
-#endif    
-
-  destroy_v_field(tvec);
-}
-
 /*------------------------------------------------------------------*/
 /* Apply the symmetric shift with directions                            *
  * stored in the array d. Each shift is multiplied by \zeta_k           *
  * n is the number of shifts                                            *
  * This is the E_\mu(x,y)=\Xi_\mu operator defined by Golterman.        *
- * Nucl. Phys. B245  eq.3.5 and eq. 4.2b                                */
+ * Nucl. Phys. B245, 61 (1984)  eq.3.5 and eq. 4.2b                                */
 
 static void 
 zeta_shift_field(int n, int *d, int r0[], su3_vector *dest, 
@@ -1070,6 +984,15 @@ forward_index(int index){
   case rhotsfn:
     return rhotsffn;
 
+  case rhoxsffn:
+    return rhoxsffn;
+  case rhoysffn:
+    return rhoysffn;
+  case rhozsffn:
+    return rhozsffn;
+  case rhotsffn:
+    return rhotsffn;
+
   case rhoxsape:
     return rhoxsfape;
   case rhoysape:
@@ -1077,6 +1000,15 @@ forward_index(int index){
   case rhozsape:
     return rhozsfape;
   case rhotsape:
+    return rhotsfape;
+
+  case rhoxsfape:
+    return rhoxsfape;
+  case rhoysfape:
+    return rhoysfape;
+  case rhozsfape:
+    return rhozsfape;
+  case rhotsfape:
     return rhotsfape;
 
   default:
@@ -1096,6 +1028,15 @@ backward_index(int index){
   case rhotsfn:
     return rhotsbfn;
 
+  case rhoxsbfn:
+    return rhoxsbfn;
+  case rhoysbfn:
+    return rhoysbfn;
+  case rhozsbfn:
+    return rhozsbfn;
+  case rhotsbfn:
+    return rhotsbfn;
+
   case rhoxsape:
     return rhoxsbape;
   case rhoysape:
@@ -1103,6 +1044,15 @@ backward_index(int index){
   case rhozsape:
     return rhozsbape;
   case rhotsape:
+    return rhotsbape;
+
+  case rhoxsbape:
+    return rhoxsbape;
+  case rhoysbape:
+    return rhoysbape;
+  case rhozsbape:
+    return rhozsbape;
+  case rhotsbape:
     return rhotsbape;
 
   default:

@@ -38,7 +38,7 @@ typedef struct {
 	/* is it even or odd? */
 	char parity;
 	/* my index in the array */
-	int index;
+	uint32_t index;
 #ifdef SITERAND
 	/* The state information for a random number generator */
 	double_prn site_prn;
@@ -116,7 +116,7 @@ EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 #endif
 #endif
 EXTERN  params param;           /* user input parameters */
-EXTERN	int iseed;		/* random number seed */
+EXTERN	uint32_t iseed;		/* random number seed */
 EXTERN  int nmass;
 EXTERN  Real beta;
 EXTERN  Real mass,u0;

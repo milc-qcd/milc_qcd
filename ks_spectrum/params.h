@@ -23,7 +23,7 @@
 #define MAX_MESON_LABEL 64
 #define MAX_BARYON_LABEL 64
 #define MAX_MESON_MOMENTUM 100
-#define MAX_MOM_LABEL 16
+#define MAX_MOM_LABEL 32
 #define MAX_CORR 256
 #define STATIC_TYPE 0
 #define KS_TYPE 1
@@ -61,7 +61,7 @@ typedef struct {
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-  int iseed;
+  uint32_t iseed;
   char job_id[MAXFILENAME]; /* Usually encoded by scripts */
 
   /*  REPEATING BLOCK */

@@ -63,7 +63,7 @@ setup()
   phaseset();
 
   node0_printf("Finished setup\n"); fflush(stdout);
-  return( prompt );
+  return  prompt;
 }
 
 static int n_naiks = 1;
@@ -81,7 +81,15 @@ initial_set()
   if(mynode()==0){
     /* print banner */
     printf("SU3 with improved KS action\n");
+#ifdef CHECK_INVERT
     printf("Inversion checking\n");
+#else
+#ifdef FERMION_FORCE
+    printf("Fermion-force checking\n");
+#else
+    printf("Creating FN link files\n");
+#endif
+#endif
     printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 
@@ -107,7 +115,7 @@ initial_set()
   broadcast_bytes((char *)&param,sizeof(param));
 
   if( param.stopflag != 0 )
-    normal_exit(0);
+    return param.stopflag;
 
   if(prompt==2)return prompt;
 
@@ -136,7 +144,7 @@ initial_set()
   hisq_force_filter_counter = 0;
 #endif
 
-  return(prompt);
+  return prompt;
 }
 
 /* read in parameters and coupling constants	*/
@@ -188,12 +196,12 @@ readin(int prompt)
 				       param.savelongfile );
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.savelongflag,
 				  param.stringLFNlong );
-
     /* find out what to do with fatlinks at end */
     IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.savefatflag),
 				       param.savefatfile );
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.savefatflag,
 				  param.stringLFNfat );
+    IF_OK status += get_i(stdin, prompt,"withKSphases", &param.withKSphases );
 
     /* Eigenpairs not supported */
     param.eigen_param.Nvecs = 0;
@@ -298,7 +306,7 @@ readin(int prompt)
   broadcast_bytes((char *)&param,sizeof(param));
 
   if( param.stopflag != 0 )
-    normal_exit(0);
+    return param.stopflag;
 
   if(prompt==2)return 0;
 
@@ -366,7 +374,7 @@ readin(int prompt)
   fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 #endif
 
-  return(0);
+  return 0;
 }
 
 /* Set up comlink structures for 3rd nearest gather pattern;

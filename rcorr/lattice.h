@@ -12,7 +12,7 @@ typedef struct {
 	/* is it even or odd? */
 	char parity;
 	/* my index in the array */
-	int index;
+	uint32_t index;
 	/* The state information for a random number generator */
   	double_prn site_prn;
 	/* align to double word boundary (kludge for Intel compiler) */
@@ -26,7 +26,7 @@ typedef struct {
 #endif
 
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int iseed;              /* Not used in this application */
+EXTERN  uint32_t iseed;              /* Not used in this application */
 EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 
 #ifdef FIX_NODE_GEOM
