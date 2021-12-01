@@ -69,7 +69,7 @@ shift_field_cpu(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src,
   destroy_v_field(tvec);
 }
 
-#if defined(HAVE_QUDA) && defined(USE_SHIFT_GPU)
+#if defined(HAVE_QUDA) && defined(USE_SHIFT_QUDA)
 #include <quda_milc_interface.h>
 void 
 shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
