@@ -431,8 +431,8 @@ WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 WANT_EIG_GPU ?= #true
 WANT_KS_CONT_GPU ?= #true
-WANT_SHIFT_GPU ?= #true DO NOT USE YET
-WANT_KS_CONT_GPU ?= #true
+WANT_SHIFT_GPU ?= #true
+WANT_SPIN_TASTE_GPU ?= #true
 
 endif
 
@@ -494,8 +494,13 @@ ifeq ($(strip ${WANTQUDA}),true)
   endif
 
   ifeq ($(strip ${WANT_SHIFT_GPU}),true)
-    HAVE_SHIFT_QUDA = true
+    HAVE_SHIFT_GPU = true
     CGPU += -DUSE_SHIFT_QUDA
+  endif
+
+  ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
+    HAVE_SPIN_TASTE_GPU = true
+    CGPU += -DUSE_SPIN_TASTE_QUDA
   endif
 
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
