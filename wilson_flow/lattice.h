@@ -10,6 +10,7 @@
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
 #include "../include/su3.h"
+#include <stdint.h>
 
 /* Begin definition of site structure */
 
