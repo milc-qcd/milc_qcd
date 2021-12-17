@@ -13,6 +13,7 @@
 #include "../include/su3.h"
 #include "../include/comdefs.h"
 #include "../include/info.h"
+#include <stdint.h>
 
 void copy_latvec(field_offset src, field_offset dest, int parity);
 void dslash_site( field_offset src, field_offset dest, int parity );

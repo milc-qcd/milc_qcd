@@ -1,6 +1,7 @@
 #ifndef _PARAMS_H
 #define _PARAMS_H
 
+#include <stdint.h>
 #include "../include/macros.h"  /* For MAXFILENAME */
 
 /* structure for passing simulation parameters to each node */
