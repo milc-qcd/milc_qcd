@@ -8,10 +8,7 @@
 
 #include "generic_ks_includes.h"
 #include <string.h>
-#ifndef _OMP_HEADER
-  #define _OMP_HEADER
-  #include <omp.h>
-#endif
+#include "../include/openmp_defs.h"
 
 static su3_vector *wtmp[8] ;
 
@@ -69,25 +66,18 @@ forward2(int dir, su3_vector *dest, su3_vector *src,
 			    dir, EVENANDODD, gen_pt[dir] );
   wait_gather(tag);
 
-  #ifdef OMP
-    #pragma omp parallel for \
-      shared(sites_on_node, lattice, t0, t_links, dir, gen_pt, tmp) \
-      private(i,s) \
-      schedule(static)
-  #endif
-  /* tmp <- U(up,dir) shift(up,dir)(src) */
-  for(i=0;i<sites_on_node;i++) {
-    s = lattice + i;
+  FORALLSITES_OMP(i,s,){
+    /* tmp <- U(up,dir) shift(up,dir)(src) */
     if(t0 == ALL_T_SLICES || s->t == t0){
       #ifndef NO_GAUSS_SMEAR_LINKS
         mult_su3_mat_vec( t_links + 4*i + dir,  
-        (su3_vector * )(gen_pt[dir][i]), 
-        tmp + i ); 
+			  (su3_vector * )(gen_pt[dir][i]), 
+			  tmp + i ); 
       #else
         su3vec_copy((su3_vector *)gen_pt[dir][i], tmp + i);
       #endif
     }
-  }
+  } END_LOOP_OMP
   
   cleanup_gather(tag);
 
@@ -98,14 +88,7 @@ forward2(int dir, su3_vector *dest, su3_vector *src,
 
   /* dest <- U(up,dir) shift(up,2dir)(src) */
 
-  #ifdef OMP
-    #pragma omp parallel for \
-      shared(sites_on_node, lattice, t0, t_links, dir, gen_pt, dest) \
-      private(i,s) \
-      schedule(static)
-  #endif
-  for(i=0;i<sites_on_node;i++) {
-    s = lattice + i;
+  FORALLSITES_OMP(i,s,){
     if(t0 == ALL_T_SLICES || s->t == t0){
       #ifndef NO_GAUSS_SMEAR_LINKS
         mult_su3_mat_vec( t_links + 4*i + dir,  
@@ -115,7 +98,7 @@ forward2(int dir, su3_vector *dest, su3_vector *src,
         su3vec_copy((su3_vector *)gen_pt[dir][i], dest + i); 
       #endif
     }
-  }
+  } END_LOOP_OMP
 
   cleanup_gather(tag);
   destroy_v_field(tmp);
@@ -138,14 +121,7 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
 
   /* dest <- U^dagger(down,dir) src */
 
-  #ifdef OMP
-    #pragma omp parallel for \
-      shared(sites_on_node, lattice, t0, t_links, dir, src, dest) \
-      private(i,s) \
-      schedule(static)
-  #endif
-  for(i=0;i<sites_on_node;i++) {
-    s = lattice + i;
+  FORALLSITES_OMP(i,s,){
     /* Work only on the specified time slice(s) */
     if(t0 == ALL_T_SLICES || s->t == t0){
       #ifndef NO_GAUSS_SMEAR_LINKS
@@ -155,7 +131,7 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
         su3vec_copy(src + i, dest + i);
       #endif
     }
-  }
+  } END_LOOP_OMP
   
   /* gen_pt_array <- shift(down,dir)(dest) */
   tag = start_gather_field(dest, 
@@ -164,14 +140,7 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
   wait_gather(tag);
   
   /* tmp <- U^dagger(down,dir) gen_pt_array */
-  #ifdef OMP
-    #pragma omp parallel for \
-      shared(sites_on_node, lattice, t0, t_links, dir, gen_pt, tmp) \
-      private(i,s) \
-      schedule(static)
-  #endif
-  for(i=0;i<sites_on_node;i++) {
-    s = lattice + i;
+  FORALLSITES_OMP(i,s,){
     if(t0 == ALL_T_SLICES || s->t == t0){
       #ifndef NO_GAUSS_SMEAR_LINKS
         mult_adj_su3_mat_vec( t_links + 4*i + dir,  
@@ -181,7 +150,7 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
         su3vec_copy((su3_vector *)gen_pt[OPP_DIR(dir)][i], tmp + i);
       #endif
     }
-  }
+  } END_LOOP_OMP
   
   cleanup_gather(tag);
 
@@ -193,18 +162,11 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
   wait_gather(tag);
 
   /* dest <- gen_pt_array */
-  #ifdef OMP
-    #pragma omp parallel for \
-      shared(sites_on_node, lattice, t0, t_links, dir, gen_pt, dest) \
-      private(i,s) \
-      schedule(static)
-  #endif
-  for(i=0;i<sites_on_node;i++) {
-    s = lattice + i;
+  FORALLSITES_OMP(i,s,){
     if(t0 == ALL_T_SLICES || s->t == t0){
       su3vec_copy( (su3_vector *)gen_pt[OPP_DIR(dir)][i], dest + i);
     }
-  }
+  } END_LOOP_OMP
 
   cleanup_gather(tag);
   
@@ -228,17 +190,10 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
   malloc_kg_temps();
 
   /* chi = psi * ftmp; */
-  #ifdef OMP
-    #pragma omp parallel for \
-      shared(sites_on_node, lattice, t0, psi, ftmp, chi) \
-      private(i,s) \
-      schedule(static)
-  #endif
-  for(i=0;i<sites_on_node;i++) {
-    s = lattice + i;
+  FORALLSITES_OMP(i,s,){
     if(t0 == ALL_T_SLICES || s->t == t0)
       scalar_mult_su3_vector(psi + i, ftmp, chi + i);
-  }
+  } END_LOOP_OMP
 
   /* do 2-link parallel transport of psi in all dirs */
   FORALLUPDIRBUT(TUP,dir){
@@ -248,14 +203,7 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
   
   /* chi <- chi - sum_dir U(up,dir) shift(up,dir)(psi) -
      sum_dir shift(down,dir) U^\dagger(down,dir)(psi) */
-  #ifdef OMP
-    #pragma omp parallel for \
-      shared(sites_on_node, lattice, t0, wtmp, chi) \
-      private(i,s) \
-      schedule(static)
-  #endif
-  for(i=0;i<sites_on_node;i++) {
-    s = lattice + i;
+  FORALLSITES_OMP(i,s,){
     if(t0 == ALL_T_SLICES || s->t == t0){
       sub_su3_vector( chi + i, wtmp[XUP] + i, chi + i);
       sub_su3_vector( chi + i, wtmp[YUP] + i, chi + i);
@@ -264,7 +212,7 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
       sub_su3_vector( chi + i, wtmp[YDOWN] + i, chi + i);
       sub_su3_vector( chi + i, wtmp[ZDOWN] + i, chi + i);
     }
-  }
+  } END_LOOP_OMP
 
   cleanup_kg_temps();
 }
@@ -299,18 +247,11 @@ gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
 
   for(j = 0; j < iters; j++) {
 
-    #ifdef OMP
-      #pragma omp parallel for \
-        shared(sites_on_node, lattice, t0, src, ftmp, tmp) \
-        private(i,s) \
-        schedule(static)
-    #endif
-    for(i=0;i<sites_on_node;i++) {
-    s = lattice + i;
+    FORALLSITES_OMP(i,s,){
       /* tmp = src * ftmp; */
       if(t0 == ALL_T_SLICES || s->t == t0)
         scalar_mult_su3_vector(src+i, ftmp, tmp+i);
-    }
+    } END_LOOP_OMP
 
     klein_gord_field(tmp, src, t_links, ftmpinv, t0);
   }
