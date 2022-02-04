@@ -40,7 +40,7 @@ extern int spins[4];
 struct site {
 	short x,y,z,t;
 	char parity;
-	int index;
+	uint32_t index;
 	double_prn site_prn;
 #ifndef NO_GAUGE_FIELD
 	su3_matrix link[4] ALIGNMENT;

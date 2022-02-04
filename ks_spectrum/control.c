@@ -554,11 +554,13 @@ int main(int argc, char *argv[])
     
     /* Now destroy all remaining propagator fields */
     
-    for(i = 0; i <= param.end_prop[param.num_set-1]; i++){
-      if(prop[i] != NULL){
-	node0_printf("destroy prop[%d]\n",i);
-	destroy_ksp_field(prop[i]);
-	prop[i] = NULL;
+    if(param.num_set > 0){
+      for(i = 0; i <= param.end_prop[param.num_set-1]; i++){
+	if(prop[i] != NULL){
+	  node0_printf("destroy prop[%d]\n",i);
+	  destroy_ksp_field(prop[i]);
+	  prop[i] = NULL;
+	}
       }
     }
     
@@ -749,8 +751,12 @@ int main(int argc, char *argv[])
       }
       
       /* Clean up eigen storage */
-      for(i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
+      for(i = 0; i < Nvecs_alloc; i++) free(eigVec[i]);
       free(eigVal); free(eigVec); free(resid);
+
+      /* Clean up quark sources, both base and modified */
+      for(i = 0; i < param.num_base_source + param.num_modified_source; i++)
+	clear_qs(&param.src_qs[i]);
       
       ENDTIME("save eigenvectors (if requested)");
     }

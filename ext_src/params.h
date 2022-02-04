@@ -29,7 +29,7 @@ typedef struct {
   char job_id[MAXFILENAME]; /* Usually encoded by scripts */
 
   /*  REPEATING BLOCK */
-  int iseed;
+  uint32_t iseed;
   int num_qk;	/* number of quarks */
   int qk_type[MAX_QK];          /* 0 clover 1 KS */
   int startflag_w[MAX_QK];	/* what to do for beginning wilson vector */

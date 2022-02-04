@@ -11,40 +11,42 @@ MAKEFILE = Makefile
 #----------------------------------------------------------------------
 #  User choices - edit to suit 
 #----------------------------------------------------------------------
-# 1. Machine architecture.  Controls optimization flags here and in libraries.
+# 1. Host and accelerator architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH ?= # skx knl knc hsw pow8 pow9
+ARCH ?= # skx knl hsw pow8 pow9
+GPU_ARCH ?= # nvidia amd intel
 
 #----------------------------------------------------------------------
 # 2. Compiler family
 
-COMPILER ?= gnu # intel, ibm, portland, cray-intel
+COMPILER ?= gnu # intel, ibm, cray-intel, rocm
+OFFLOAD ?= # CUDA HIP SyCL OpenMP
 
 #----------------------------------------------------------------------
 # 3. MPP vs Scalar
 
-# Compiling for a parallel machine?  blank for a scalar machine
+# Compiling with MPI?  false for a scalar machine
 MPP ?= false
 
 #----------------------------------------------------------------------
-# 4. Precision 
+# 4. Generic Precision 
 
 # 1 = single precision; 2 = double
 PRECISION ?= 1
 
 #----------------------------------------------------------------------
-# 5. Compiler
+# 5. Set compiler.
 # Choices include mpicc cc gcc pgcc g++
 
 ifeq ($(strip ${COMPILER}),intel)
 
   ifeq ($(strip ${MPP}),true)
-    MY_CC ?= mpiicc
-    MY_CXX ?= mpiicpc
+    MY_CC ?= mpicc
+    MY_CXX ?= mpicxx
   else
-    MY_CC  ?= icc
-    MY_CXX ?= icpc
+    MY_CC  ?= icx
+    MY_CXX ?= dpcpp
   endif
 
 else ifeq ($(strip ${COMPILER}),cray-intel)
@@ -79,21 +81,33 @@ else ifeq ($(strip ${COMPILER}),ibm)
 
 endif
 
-CC = ${MY_CC}
-CXX = ${MY_CXX}
+# Accelerator
 
-# Override the above definitions
+ifeq ($(strip ${GPU_ARCH}),intel)
 
-# ifeq ($(strip ${MPP}),true)
-#   CC = mpiicc
-#   CXX = mpiicpc
-# else
-#   CC  = icc
-#   CXX = icpc
-# endif
+  ifeq ($(strip ${MPP}),true)
+    MY_CC += -cc=icx
+    MY_CXX += -cxx=dpcpp
+  endif
 
-#CC = /usr/local/mvapich/bin/mpicc  # FNAL
-#CXX =  /usr/local/mvapich/bin/mpiCC  # FNAL
+endif
+
+# Offload type
+
+ifeq ($(strip ${OFFLOAD}),SyCL)
+
+    MY_CC += -fsycl
+    MY_CXX += -fsycl
+
+endif
+
+CC ?= ${MY_CC}
+CXX ?= ${MY_CXX}
+
+# If the above construction doesn't work, override the definitions here
+
+# CC = 
+# CXX =
 
 #----------------------------------------------------------------------
 # 6. Compiler optimization level
@@ -809,6 +823,10 @@ CPROF =#
 # HISQ_FORCE_FILTER_COUNTER Print summary count of force filter applications.
 
 CDEBUG = -DCG_OK -DREMAP_STDIO_APPEND # -DCHECK_MALLOC 
+
+# For code checking
+#CDEBUG += -fsanitize=address,undefined
+#LDFLAGS += -fsanitize=address,undefined
 
 #------------------------------
 # Backward compatibility

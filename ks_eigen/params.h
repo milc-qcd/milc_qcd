@@ -21,7 +21,7 @@ typedef struct {
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-  int iseed;	/* for random numbers */
+  uint32_t iseed;	/* for random numbers */
   char job_id[MAXFILENAME]; /* Usually encoded by scripts */
 
   /*  REPEATING BLOCK */

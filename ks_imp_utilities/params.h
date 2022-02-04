@@ -26,7 +26,7 @@ typedef struct {
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-  int iseed;	/* for random numbers */
+  uint32_t iseed;	/* for random numbers */
   /*  REPEATING BLOCK */
   Real u0; /* tadpole parameter */
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */

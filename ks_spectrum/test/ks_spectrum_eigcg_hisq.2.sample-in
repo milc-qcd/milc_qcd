@@ -274,6 +274,8 @@ number_of_sets 3
 # Set 0
 # Parameters common to all members of this set
 
+set_type multimass
+inv_type UML
 max_cg_iterations 1000
 max_cg_restarts 2
 check sourceonly
@@ -300,6 +302,8 @@ forget_ksprop
 # Set 1
 # Parameters common to all members of this set
 
+set_type multimass
+inv_type UML
 max_cg_iterations 1000
 max_cg_restarts 2
 check yes
@@ -326,6 +330,8 @@ forget_ksprop
 # Set 2
 # Parameters common to all members of this set
 
+set_type multimass
+inv_type UML
 max_cg_iterations 1000
 max_cg_restarts 2
 check yes

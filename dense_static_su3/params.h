@@ -8,7 +8,7 @@ typedef struct {
 	int stopflag;   /* 1 if it is time to stop */
     /* INITIALIZATION PARAMETERS */
 	int nx,ny,nz,nt;  /* lattice dimensions */
-	int iseed;	/* for random numbers */
+	uint32_t iseed;	/* for random numbers */
     /*  REPEATING BLOCK */
 	int warms;	/* the number of warmup trajectories */
 	int trajecs;	/* the number of real trajectories */
