@@ -167,125 +167,142 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
       dst = (su3_vector **)malloc(num_prop*sizeof(su3_vector *));
       for(j = 0; j < num_prop; j++) dst[j] = ksprop[j]->v[color];
 	
-      if(check != CHECK_SOURCE_ONLY){
+      if(check == CHECK_SOURCE_ONLY){
 
-      /* Apply the momentum twist to the source.  This U(1) gauge
-         transformation converts the boundary twist on the gauge field
-         above into the desired volume twist. We do it this way to
-         make our coding compatible with QOP, which does only a
-         surface twist. */
-	
-      /* The time phase is special.  It is applied only on the
-         boundary, so we don't gauge-transform it to the volume here.
-         It is used only for switching between periodic and
-         antiperiodic bc's */
-	
-      mybdry_phase[3] = 0;
-      for(j = 0; j < num_prop; j++)
-        rephase_v_field(src[j], mybdry_phase, r0, 1);
-      mybdry_phase[3] = bdry_phase[3]; 
-	
-      if(startflag[0] != FRESH){
-
-        /* Apply the momentum twist to the initial guess */
-        mybdry_phase[3] = 0; 
-        for(j = 0; j < num_prop; j++){
-          rephase_v_field(dst[j], mybdry_phase, r0, 1);
-        }
-        mybdry_phase[3] = bdry_phase[3]; 
-      } /* startflag[0] != FRESH */
-
-      if(num_prop == 1){
-        
-        /* Single-mass / single-source inversion */
-        
-        /* When we start from a preloaded solution we use the less
-           optimized mat_invert_cg_field algorithm, instead of the
-           preconditioned mat_invert_uml_field here to avoid
-           "reconstructing", and so overwriting the odd-site
-           solution.  This would be a degradation if the propagator
-           were precomputed in double precision, and we were doing
-           single precision here. When we are computing the
-           propagator from a fresh start, we use the preconditioned
-           algorithm. */
-        
-	enum inv_type it = my_qic[0].inv_type;
-	if(startflag[0] != FRESH)my_qic[0].inv_type = CGTYPE;
-        mat_invert_field(src[0], dst[0], my_qic+0, my_ksp[0].mass,
-			 fn_multi[0]);
-	my_qic[0].inv_type = it;
-      } else if(my_qic->inv_type == MGTYPE) {
-
-        /* Multi-mass or multi-source inversion with MG, do each with MG separately */
-
-        if(set_type == MULTIMASS_SET){
-          /* Do each mass separately with MG inverter. */
-          for(j = 0; j < num_prop; j++){
-            mat_invert_field(src[0], dst[j], my_qic+j, my_ksp[j].mass, fn_multi[j]);
-          }
-        } else {
-          /* Passes through to separate MG solves at the moment */
-          int num_src = num_prop;
-          mat_invert_block(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
-        }
-
-      } else {
-
-        /* Multi-mass or multi-source inversion */
-
-        if(startflag[0] != FRESH || set_type == SINGLES_SET){
-
-          /* If we have restored any propagator, we use the single-mass inverter */
-          /* In most use cases they are either all restored, or all fresh */
-
-          for(j = 0; j < num_prop; j++){
-            if(set_type == MULTISOURCE_SET){
-              /* Multisource inversion -- we don't support singles for multisource */
-              mat_invert_field(src[j], dst[j], my_qic+j, my_ksp[0].mass, fn_multi[j]);
-            } else {
-              /* Multimass or singles inversion -- iterate over masses */
-	      enum inv_type it = my_qic[0].inv_type;
-	      if(startflag[j] != FRESH)my_qic[0].inv_type = CGTYPE;
-              mat_invert_field(src[0], dst[j], my_qic+j, my_ksp[j].mass, fn_multi[j]);
-	      my_qic[0].inv_type = it;
-	    }
-          }
-        } else {
-
-          /* If we are starting fresh, use multimass or multisource inverter */
-
-          if(set_type == MULTIMASS_SET){
-            /* Multimass inversion */
-            mat_invert_multi(src[0], dst, my_ksp, num_prop, my_qic, fn_multi);
-	  } else {
-            /* Multisource inversion */
-            int num_src = num_prop;  /* Should change to num_prop * ncolors */
-            mat_invert_block(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
-        }
-      }
-    }	
-	/* Transform solutions, completing the U(1) gauge transformation */
-	mybdry_phase[3] = 0; 
-	for(j = 0; j < num_prop; j++){
-	  rephase_v_field(dst[j], mybdry_phase, r0, -1);
-	}
-	mybdry_phase[3] = bdry_phase[3]; 
-	
-      } else {
-	
 	/* Copy source to solution(s) so we can use it there */
 	for(j = 0; j < num_prop; j++)
 	  copy_v_field(dst[j], src[j]);
-      }  /* if(check != CHECK_SOURCE_ONLY) */
+
+      } else { /* CHECK_SOURCE_ONLY */
+	
+	/* Apply the momentum twist to the source.  This U(1) gauge
+	   transformation converts the boundary twist on the gauge field
+	   above into the desired volume twist. We do it this way to
+	   make our coding compatible with QOP, which does only a
+	   surface twist. */
+	
+	/* The time phase is special.  It is applied only on the
+	   boundary, so we don't gauge-transform it to the volume here.
+	   It is used only for switching between periodic and
+	   antiperiodic bc's */
+	
+	mybdry_phase[3] = 0;
+	for(j = 0; j < num_prop; j++)
+	  rephase_v_field(src[j], mybdry_phase, r0, 1);
+	mybdry_phase[3] = bdry_phase[3]; 
+	
+	if(startflag[0] != FRESH){
+	  
+	  /* Apply the momentum twist to the initial guess */
+	  mybdry_phase[3] = 0; 
+	  for(j = 0; j < num_prop; j++)
+	    rephase_v_field(dst[j], mybdry_phase, r0, 1);
+	  mybdry_phase[3] = bdry_phase[3]; 
+
+	} /* startflag[0] != FRESH */
+	
+	if(num_prop == 1){
+	  
+	  /* Single-mass / single-source inversion */
+	  
+	  if(my_qic->inv_type == MGTYPE) { /* MGTYPE */
+	    mat_invert_field(src[0], dst[0], my_qic+0, my_ksp[0].mass,
+			     fn_multi[0]);
+	  } else { /* CGTYPE, CGZTYPE, UMLTYPE */
+	    
+	  /* When we start from a preloaded solution we use the less
+	     optimized mat_invert_cg_field algorithm, instead of the
+	     preconditioned mat_invert_uml_field here to avoid
+	     "reconstructing", and so overwriting the odd-site
+	     solution.  This would be a degradation if the propagator
+	     were precomputed in double precision, and we were doing
+	     single precision here. When we are computing the
+	     propagator from a fresh start, we use the preconditioned
+	     algorithm. So we always use CGTYPE if we are startin from
+	     an initial guess
+	  */
+	  
+	    enum inv_type it = my_qic[0].inv_type;
+	    if(startflag[0] != FRESH)my_qic[0].inv_type = CGTYPE;
+	    mat_invert_field(src[0], dst[0], my_qic+0, my_ksp[0].mass,
+			     fn_multi[0]);
+	    my_qic[0].inv_type = it;
+	  }
+
+	} else { /* num_prop > 1 */
+	  
+	  /* Multi-mass or multi-source inversion */
+	  
+	  if(my_qic->inv_type == MGTYPE) { /* MGTYPE */
+	    
+	    /* Multi-mass or multi-source inversion with MG, do each with MG separately */
+	    
+	    if(set_type == MULTIMASS_SET){
+	      /* Do each mass separately with MG inverter. */
+	      for(j = 0; j < num_prop; j++){
+		mat_invert_field(src[0], dst[j], my_qic+j, my_ksp[j].mass, fn_multi[j]);
+	      }
+	    } else {
+	      /* Passes through to separate MG solves at the moment */
+	      int num_src = num_prop;
+	      mat_invert_block(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
+	    }
+	    
+	  } else { /* CGTYPE, CGZTYPE, UMLTYPE */
+	    
+	    if(startflag[0] != FRESH || set_type == SINGLES_SET){
+	      
+	      /* If we have restored any propagator, we use the single-mass inverter */
+	      /* In most use cases they are either all restored, or all fresh */
+	      
+	      for(j = 0; j < num_prop; j++){
+		if(set_type == MULTISOURCE_SET){
+		  /* Multisource inversion -- we don't support singles for multisource */
+		  mat_invert_field(src[j], dst[j], my_qic+j, my_ksp[0].mass, fn_multi[j]);
+		} else { /* MULTIMASS_SET */
+		  /* Multimass or singles inversion -- iterate over masses */
+		  enum inv_type it = my_qic[0].inv_type;
+		  if(startflag[j] != FRESH)my_qic[0].inv_type = CGTYPE;
+		  mat_invert_field(src[0], dst[j], my_qic+j, my_ksp[j].mass, fn_multi[j]);
+		  my_qic[0].inv_type = it;
+		}
+	      }
+	    } else { /* MUTIMASS_SET of MULTISOURCE_SET */
+	    
+	      /* If we are starting fresh, use multimass or multisource inverter */
+	      
+	      if(set_type == MULTIMASS_SET){
+		/* Multimass inversion */
+		mat_invert_multi(src[0], dst, my_ksp, num_prop, my_qic, fn_multi);
+	      } else {
+		/* Multisource inversion */
+		int num_src = num_prop;  /* Should change to num_prop * ncolors */
+		mat_invert_block(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
+	      }
+	    }
+	  }
+	} /* num_prop */
+
+	/* Transform solution and restore source */
+	mybdry_phase[3] = 0; 
+	for(j = 0; j < num_prop; j++){
+	  rephase_v_field(dst[j], mybdry_phase, r0, -1);
+	  rephase_v_field(src[j], mybdry_phase, r0, -1);
+	}
+	mybdry_phase[3] = bdry_phase[3]; 
+	
+      }  /* if(check == CHECK_SOURCE_ONLY) */
       
       /* Clean up */
       free(dst);
-      free(src);
       
     } /* if(check != CHECK_NO || startflag[0] == FRESH)} */
 
-  } /* color */
+    /* Clean up */
+    free(src);
 
+  } /* color */
+  
   /* save solutions if requested */
   for(j = 0; j < num_prop; j++){
     status = save_ksprop_from_ksp_field( saveflag[j], savefile[j], "",
