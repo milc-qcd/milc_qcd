@@ -186,10 +186,10 @@ path coefficients: npath  path_coeff
                     0      1.250000e-01
                     1      -4.166667e-02
 Time to APE smear 3.149986e-03 sec
-PBP: mass 3.000000e-02     2.449311e-02  3.028505e-02  -5.751583e-03  -5.751606e-03 ( 1 of 1 )
-FACTION: mass = 3.000000e-02,  1.517907e+00 ( 1 of 1 )
-PBP: mass 5.000000e-02     3.837426e-02  5.139182e-02  -4.210568e-03  -4.210593e-03 ( 1 of 1 )
-FACTION: mass = 5.000000e-02,  1.493262e+00 ( 1 of 1 )
+PBP: mass 3.000000e-02     2.745315e-02  2.581980e-02  3.717041e-03  3.717133e-03 ( 1 of 1 )
+FACTION: mass = 3.000000e-02,  1.479414e+00 ( 1 of 1 )
+PBP: mass 5.000000e-02     3.578433e-02  5.238889e-02  -9.484877e-04  -9.484337e-04 ( 1 of 1 )
+FACTION: mass = 5.000000e-02,  1.481455e+00 ( 1 of 1 )
 Fixing to Coulomb gauge
 GFIX: Ended at step 85. Av gf action 8.77263803e-01, delta 1.980e-06
 Time to APE smear 3.175020e-03 sec

@@ -350,6 +350,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
   /* Then change pointers from first neighbor to point into third
       neighbor results, so we don't have to restart those gathers,
       provided third neighbors are done */
+    int dim[4] = {nx, ny, nz, nt};
   for( dir=XUP; dir<=TUP; dir++ ){
     if(start==1) 
       {
@@ -366,6 +367,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 	    || gen_pt[dir][i] >= (char *)(src+sites_on_node) ){
 	      coords[XUP]=s->x; coords[YUP]=s->y; coords[ZUP]=s->z;
 	      coords[TUP]=s->t; coords[dir]-=2;
+	      coords[dir] = (coords[dir] + dim[dir]) % dim[dir];
 	      gen_pt[dir][i]=gen_pt[DIR3(dir)][node_index(coords[XUP],
 		coords[YUP],coords[ZUP], coords[TUP])];
 	      if(d_fn_g13_checked == 0)

@@ -38,7 +38,7 @@ typedef struct {
 	/* is it even or odd? */
 	char parity;
 	/* my index in the array */
-	int index;
+	uint32_t index;
 #ifdef SITERAND
 	/* The state information for a random number generator */
 	double_prn site_prn;
@@ -101,7 +101,7 @@ typedef struct {
    u0 is tadpole improvement factor, perhaps (plaq/3)^(1/4)
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 #ifdef FIX_NODE_GEOM
 EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
 			    hypercubes) for the compute nodes in each
@@ -115,7 +115,8 @@ EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-EXTERN	int iseed;		/* random number seed */
+EXTERN  params param;           /* user input parameters */
+EXTERN	uint32_t iseed;		/* random number seed */
 EXTERN  int nmass;
 EXTERN  Real beta;
 EXTERN  Real mass,u0;
@@ -131,9 +132,9 @@ EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  char savelongfile[MAXFILENAME],savefatfile[MAXFILENAME];
+EXTERN  char stringLFNlong[MAXFILENAME], stringLFNfat[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  char srcfile[MAXFILENAME],ansfile[MAXFILENAME];
 EXTERN  int inverttype;
-EXTERN  params par_buf;
 EXTERN  int niter;
 EXTERN  int nrestart;
 EXTERN  Real rsqprop;
@@ -175,5 +176,10 @@ EXTERN fermion_links_t        *fn_links;
 /* Naik terms */
 EXTERN int n_order_naik_total;
 EXTERN int n_orders_naik[MAX_MASS];
+
+/* For eigenpair calculation */
+EXTERN int Nvecs_tot;
+EXTERN double *eigVal; /* eigenvalues of D^dag D */
+EXTERN su3_vector **eigVec; /* eigenvectors */
 
 #endif /* _LATTICE_H */

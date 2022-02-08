@@ -16,9 +16,9 @@ void get_smearings_bi_serial(char *filename)
   double_complex dw_smear;
   fcomplex fw_smear;
   complex w_smear;
-  int32type tmp, magic_number,elements_per_site; 
-  int32type  size_of_element, order, dim[4]; 
-  int32type  t_stamp;
+  u_int32type tmp, magic_number,elements_per_site; 
+  u_int32type  size_of_element, order, dim[4]; 
+  u_int32type  t_stamp;
   int precision = 0;
   size_t nread;
 
@@ -43,7 +43,7 @@ void get_smearings_bi_serial(char *filename)
     }
     else 
       {
-	byterevn((int32type *)&magic_number,1);
+	byterevn((u_int32type *)&magic_number,1);
       if(magic_number == IO_UNI_MAGIC) 
 	{
 	  byterevflag=1; 
@@ -131,9 +131,9 @@ void get_smearings_bi_serial(char *filename)
 
 	if(precision == 1){
 	  if(byterevflag){
-	    byterevn((int32type *)&fw_smear.real, 
+	    byterevn((u_int32type *)&fw_smear.real, 
 		     sizeof(fw_smear.real)/sizeof(int32type));
-	    byterevn((int32type *)&fw_smear.imag, 
+	    byterevn((u_int32type *)&fw_smear.imag, 
 		     sizeof(fw_smear.imag)/sizeof(int32type));
 	  }
 	  w_smear.real = fw_smear.real;
@@ -141,7 +141,7 @@ void get_smearings_bi_serial(char *filename)
 	}
 	else{
 	  if(byterevflag)
-	    byterevn64((int32type *)&dw_smear, 
+	    byterevn64((u_int32type *)&dw_smear, 
 		       sizeof(double_complex)/(2*sizeof(int32type)));
 	  w_smear.real = dw_smear.real;
 	  w_smear.imag = dw_smear.imag;

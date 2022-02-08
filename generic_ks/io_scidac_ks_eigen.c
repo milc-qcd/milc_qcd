@@ -194,7 +194,7 @@ parse_record_xml(double *eigVal, char *xml){
 /* Open a file for writing eigenvectors */
 
 QIO_Writer *
-open_ks_eigen_outfile(char *filename, int Nvecs, int volfmt, int serpar, int packed){
+open_ks_eigen_outfile(const char *filename, int Nvecs, int volfmt, int serpar, int packed){
   char *xml;
 
   QIO_String *filexml = QIO_string_create();
@@ -262,7 +262,7 @@ close_ks_eigen_outfile(QIO_Writer *outfile){
 /* Open the eigenvector file for reading */
 
 QIO_Reader *
-open_ks_eigen_infile(char *filename, int *Nvecs, int *packed, int *file_type, int serpar){
+open_ks_eigen_infile(const char *filename, int *Nvecs, int *packed, int *file_type, int serpar){
   char myname[] = "open_ks_eigen_infile";
   char *xml;
 
@@ -373,7 +373,7 @@ read_quda_ks_eigenvectors(QIO_Reader *infile, su3_vector *eigVec[], double *eigV
     return status;
   }
 
-  char *datatype = QIO_get_datatype(&recinfo);
+  const char *datatype = QIO_get_datatype(&recinfo);
   if(strcmp("QUDA_DNs1Nc3_ColorSpinorField", datatype) != 0){
     node0_printf("%s: WARNING: Unexpected datatype.  Found %s\n",
 		 myname, datatype);

@@ -25,7 +25,7 @@ typedef struct {
   char parity;
   /* my index in the array */
 
-  int index;
+  uint32_t index;
   
   /* Now come the physical fields, program dependent */
   /* gauge field */
@@ -103,7 +103,7 @@ typedef struct {
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  char job_id[MAXFILENAME];
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int nrestart,wallflag;
 #define MAX_KAP 6
 EXTERN	double kappa,source_r0,kap[MAX_KAP],resid[MAX_KAP];
@@ -182,7 +182,7 @@ EXTERN su3_matrix *ape_links;
 #define N_POINTERS 8	/* Number of generic pointers */
 /* NEED 8 WHEN GAUGEFIXING */
 EXTERN char ** gen_pt[N_POINTERS];
-EXTERN	int iseed;
+EXTERN	uint32_t iseed;
 
 EXTERN  int log_correlators;
 EXTERN	double rsqmin,rsqprop,beta,mass;

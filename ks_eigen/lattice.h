@@ -39,7 +39,7 @@ typedef struct {
 	/* is it even or odd? */
 	char parity;
 	/* my index in the array */
-	int index;
+	uint32_t index;
 #ifdef SITERAND
 	/* The state information for a random number generator */
 	double_prn site_prn;
@@ -115,7 +115,7 @@ typedef struct {
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
-EXTERN	int iseed;		/* random number seed */
+EXTERN	uint32_t iseed;		/* random number seed */
 #ifdef FIX_NODE_GEOM
 EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
 			    hypercubes) for the compute nodes in each
@@ -155,6 +155,7 @@ EXTERN  int this_node;		/* node number of this node */
 EXTERN double_prn node_prn ;
 
 EXTERN  gauge_file *savelat_p;
+EXTERN  gauge_file *start_u1lat_p;
 EXTERN  char utc_date_time[64];
 EXTERN  char hostname[128];
 
@@ -175,6 +176,9 @@ EXTERN fermion_links_t    *fn_links;
 
 EXTERN int n_naiks;	/* Only one (dummy) Naik correction (for HISQ) */
 EXTERN double eps_naik[1];	/* Naik correction */
+
+EXTERN Real *u1_A;
+EXTERN Real g_splaq,g_tplaq;	/* global U(1) plaquette measures */
 
 /* For eigenpair calculation */
 EXTERN int Nvecs_tot;

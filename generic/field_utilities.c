@@ -20,7 +20,7 @@ double start_timing(void){
 }
 
 /*--------------------------------------------------------------------*/
-void print_timing(double dtime, char *str){
+void print_timing(double dtime, const char *str){
 
 #ifdef PRTIME
   dtime += dclock();

@@ -776,7 +776,7 @@ int r_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, double *eigVal, su3_vect
 	 and idest points to the destination site structure. */
       if(this_node == destnode){
 	if(byterevflag == 1)
-	  byterevn((int32type *)(&msg.ksv), sizeof(su3_vector)/sizeof(int32type));
+	  byterevn((u_int32type *)(&msg.ksv), sizeof(su3_vector)/sizeof(int32type));
 
 	/* Accumulate checksums */
 	for(k = 0, val = (u_int32type *)(&msg.ksv); 

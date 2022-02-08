@@ -10,6 +10,7 @@
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
 #include "../include/su3.h"
+#include <stdint.h>
 
 /* Begin definition of site structure */
 
@@ -21,7 +22,7 @@ typedef struct {
   /* is it even or odd? */
   char parity;
   /* my index in the array */
-  int index;
+  uint32_t index;
   /* The state information for a random number generator */
   double_prn site_prn;
 

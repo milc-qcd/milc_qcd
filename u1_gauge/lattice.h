@@ -30,7 +30,7 @@ typedef struct{
 
 	int x,y,z,t;		/* coordinates of this site */
 	char parity;		/* site is even or odd */
-	int index;		/* index of the site */
+	uint32_t index;		/* index of the site */
 
         double_prn site_prn;	/* site random number info */
         int space1;
@@ -60,7 +60,7 @@ EXTERN int this_node;		/* node number of this node */
 EXTERN size_t sites_on_node;	/* = volume */
 EXTERN size_t number_of_nodes;	/* number of nodes in use */
 EXTERN size_t even_sites_on_node;	/* = volume / 2 */
-EXTERN int odd_sites_on_node;	/* = volume / 2 */
+EXTERN size_t odd_sites_on_node;	/* = volume / 2 */
 
 EXTERN int start_u1flag;	/* begin u(1) lattice: FRESH or RELOAD */
 EXTERN char start_u1file[MAXFILENAME];
@@ -69,7 +69,7 @@ EXTERN int save_u1flag;		/* end u(1) lattice: SAVE or FORGET */
 EXTERN char save_u1file[MAXFILENAME];
 EXTERN gauge_file *save_u1lat_p;
 
-EXTERN int iseed;		/* random number seed */
+EXTERN uint32_t iseed;		/* random number seed */
 EXTERN double_prn node_prn;	/* nodes' random number structure */
 EXTERN int junk_id;		/* junk number, for checking */
 

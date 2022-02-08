@@ -37,7 +37,7 @@ typedef struct {
 	/* is it even or odd? */
 	char parity;
 	/* my index in the array */
-	int index;
+	uint32_t index;
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
@@ -85,7 +85,7 @@ typedef struct {
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int niter,nrestart,wallflag;
 EXTERN	int source_time;       /* timeslice of the initial source */
 EXTERN	Real kappa,kappa_heavy,kappa_light;

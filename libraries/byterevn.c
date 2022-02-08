@@ -8,7 +8,7 @@
 
 /* For doing byte reversal on 32-bit words */
 
-void byterevn(int32type w[], int n)
+void byterevn(u_int32type w[], int n)
 {
   register int32type old,newv;
   int j;
@@ -27,7 +27,7 @@ void byterevn(int32type w[], int n)
 } /* byterevn */
 
 /* Do byte reversal on n contiguous 64-bit words */
-void byterevn64(int32type w[], int n)
+void byterevn64(u_int32type w[], int n)
 {
   int32type tmp;
   int j;

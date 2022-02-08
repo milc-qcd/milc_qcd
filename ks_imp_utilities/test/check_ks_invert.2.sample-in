@@ -8,6 +8,8 @@ iseed 6823045
 reload_serial ../../binary_samples/lat.sample.l8
 u0   0.502
 forget
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
 forget
 forget
 number_of_masses 1
@@ -25,6 +27,8 @@ invert MdaggerM
 continue
 u0   0.502
 forget
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
 forget
 forget
 number_of_masses 1

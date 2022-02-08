@@ -8,7 +8,7 @@
 /* structure for passing simulation parameters to each node */
 typedef struct {
   int nx,ny,nz,nt;  /* lattice dimensions */
-  int iseed;
+  uint32_t iseed;
 	int nkap;   /******no. of kappa values******/
 	int start_kap,start_spin,start_color;	/****** starting values of
                                                  kappa, spin, color in their

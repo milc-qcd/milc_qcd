@@ -22,7 +22,7 @@ typedef struct {
   /* is it even or odd? */
   char parity;
   /* my index in the array */
-  int index;
+  uint32_t index;
 #ifdef SITERAND
   /* The state information for a random number generator */
 /*
@@ -59,7 +59,7 @@ typedef struct {
 
 /* The following are global scalars */
 EXTERN  int nx,ny,nz,nt;        /* lattice dimensions */
-EXTERN  int volume;                     /* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;                     /* volume of lattice = nx*ny*nz*nt */
 #ifdef FIX_NODE_GEOM
 EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
 			    hypercubes) for the compute nodes in each
@@ -73,7 +73,7 @@ EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-EXTERN  int iseed;              /* random number seed */
+EXTERN  uint32_t iseed;              /* random number seed */
 EXTERN  Real ape_weight;       /* weight parameter in APE blocking */
 EXTERN  int sweeps,hits,measinterval;
 EXTERN  int total_sweeps;

@@ -11,40 +11,42 @@ MAKEFILE = Makefile
 #----------------------------------------------------------------------
 #  User choices - edit to suit 
 #----------------------------------------------------------------------
-# 1. Machine architecture.  Controls optimization flags here and in libraries.
+# 1. Host and accelerator architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH ?= # skx knl knc hsw pow8 pow9
+ARCH ?= # skx knl hsw pow8 pow9
+GPU_ARCH ?= # nvidia amd intel
 
 #----------------------------------------------------------------------
 # 2. Compiler family
 
-COMPILER ?= gnu # intel, ibm, portland, cray-intel
+COMPILER ?= gnu # intel, ibm, cray-intel, rocm
+OFFLOAD ?= # CUDA HIP SyCL OpenMP
 
 #----------------------------------------------------------------------
 # 3. MPP vs Scalar
 
-# Compiling for a parallel machine?  blank for a scalar machine
+# Compiling with MPI?  false for a scalar machine
 MPP ?= false
 
 #----------------------------------------------------------------------
-# 4. Precision 
+# 4. Generic Precision 
 
 # 1 = single precision; 2 = double
 PRECISION ?= 1
 
 #----------------------------------------------------------------------
-# 5. Compiler
+# 5. Set compiler.
 # Choices include mpicc cc gcc pgcc g++
 
 ifeq ($(strip ${COMPILER}),intel)
 
   ifeq ($(strip ${MPP}),true)
-    MY_CC ?= mpiicc
-    MY_CXX ?= mpiicpc
+    MY_CC ?= mpicc
+    MY_CXX ?= mpicxx
   else
-    MY_CC  ?= icc
-    MY_CXX ?= icpc
+    MY_CC  ?= icx
+    MY_CXX ?= dpcpp
   endif
 
 else ifeq ($(strip ${COMPILER}),cray-intel)
@@ -79,21 +81,33 @@ else ifeq ($(strip ${COMPILER}),ibm)
 
 endif
 
+# Accelerator
+
+ifeq ($(strip ${GPU_ARCH}),intel)
+
+  ifeq ($(strip ${MPP}),true)
+    MY_CC += -cc=icx
+    MY_CXX += -cxx=dpcpp
+  endif
+
+endif
+
+# Offload type
+
+ifeq ($(strip ${OFFLOAD}),SyCL)
+
+    MY_CC += -fsycl
+    MY_CXX += -fsycl
+
+endif
+
 CC = ${MY_CC}
 CXX = ${MY_CXX}
 
-# Override the above definitions
+# If the above construction doesn't work, override the definitions here
 
-# ifeq ($(strip ${MPP}),true)
-#   CC = mpiicc
-#   CXX = mpiicpc
-# else
-#   CC  = icc
-#   CXX = icpc
-# endif
-
-#CC = /usr/local/mvapich/bin/mpicc  # FNAL
-#CXX =  /usr/local/mvapich/bin/mpiCC  # FNAL
+# CC = 
+# CXX =
 
 #----------------------------------------------------------------------
 # 6. Compiler optimization level
@@ -407,11 +421,20 @@ endif
 # 15. GPU/QUDA Options
 
 WANTQUDA    ?= #true
+
+ifeq ($(strip ${WANTQUDA}),true)
+
 WANT_CL_BCG_GPU ?= #true
 WANT_FN_CG_GPU ?= #true
 WANT_FL_GPU ?= #true
 WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
+WANT_EIG_GPU ?= #true
+WANT_KS_CONT_GPU ?= #true
+WANT_SHIFT_GPU ?= #true DO NOT USE YET
+WANT_KS_CONT_GPU ?= #true
+
+endif
 
 # enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
 WANT_MIXED_PRECISION_GPU ?= 0
@@ -422,13 +445,12 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   INCQUDA = -I${QUDA_HOME}/include -I${QUDA_HOME}/tests
   PACKAGE_HEADERS += ${QUDA_HOME}/include
-  LIBQUDA = -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda -ldl
+  LIBQUDA ?= -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcublas -lcufft
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
 
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcublas -lcufft -lcublas
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
@@ -458,6 +480,21 @@ ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${WANT_FF_GPU}),true)
     HAVE_FF_GPU = true
     CGPU += -DUSE_FF_GPU
+  endif
+
+  ifeq ($(strip ${WANT_EIG_GPU}),true)
+    HAVE_EIG_QUDA = true
+    CGPU += -DUSE_EIG_QUDA
+  endif
+
+  ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
+    HAVE_KS_CONT_GPU = true
+    CGPU += -DUSE_KS_CONT_GPU
+  endif
+
+  ifeq ($(strip ${WANT_SHIFT_GPU}),true)
+    HAVE_SHIFT_QUDA = true
+    CGPU += -DUSE_SHIFT_QUDA
   endif
 
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
@@ -539,9 +576,52 @@ ifeq ($(strip ${WANTQPHIX}), true)
 endif
 
 #----------------------------------------------------------------------
+# 16. Hadrons Options
+
+WANTHADRONS ?= false # true implies WANTGRID = true
+
+
+ifeq ($(strip ${WANTHADRONS}), true)
+
+  HAVE_HADRONS = true
+  CPHI += -DHAVE_HADRONS
+
+  ifeq ($(strip ${MPP}),true)
+    ifeq ($(strip ${ARCH}),knl)
+      HADRONS_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),skx)
+      HADRONS_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),hsw)
+      HADRONS_ARCH = avx2
+    endif
+  else
+    # Scalar version                                                                
+
+    HADRONS_ARCH = scalar
+
+  endif
+
+  HADRONS_HOME = ../Grid/install-hadrons-${HADRONS_ARCH}
+  HADRONS_LIBRARIES = ${HADRONS_HOME}/lib
+  LIBHADRONS = -L${HADRONS_LIBRARIES} -lHadrons -ldl
+  HADRONS_HEADERS = ${HADRONS_HOME}/include
+  INCHADRONS = -I${HADRONS_HEADERS}
+
+  PACKAGE_HEADERS += ${HADRONS_HEADERS}/Hadrons
+  PACKAGE_DEPS += Hadrons
+
+  LDFLAGS += -fopenmp
+
+endif
+
+#----------------------------------------------------------------------
 # 16. Grid Options
 
 WANTGRID = #true
+
+ifeq ($(strip ${WANTHADRONS}), true)
+  WANTGRID = true
+endif
 
 ifeq ($(strip ${WANTGRID}), true)
 
@@ -566,9 +646,9 @@ ifeq ($(strip ${WANTGRID}), true)
 
   endif
 
-  GRID_HOME = ../Grid/install-${GRID_ARCH}
+  GRID_HOME = ../Grid/install-grid-${GRID_ARCH}
   GRID_LIBRARIES = ${GRID_HOME}/lib
-  LIBGRID = -L${GRID_LIBRARIES} -lGrid
+  LIBGRID = -L${GRID_LIBRARIES} -lGrid -lcrypto -lz
   GRID_HEADERS = ${GRID_HOME}/include
   INCGRID = -I${GRID_HEADERS}
 
@@ -691,6 +771,12 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 #     Define them with a -D prefix.
 
 #------------------------------
+# git code version
+
+GIT_VERSION := "$(shell git describe --abbrev=4 --dirty --always --tags)"
+CGITVER = -DMILC_CODE_VERSION=\"$(GIT_VERSION)\"
+
+#------------------------------
 # Print timing statistics.
 # Applications: many
 
@@ -736,6 +822,10 @@ CPROF =#
 # HISQ_FORCE_FILTER_COUNTER Print summary count of force filter applications.
 
 CDEBUG = -DCG_OK -DREMAP_STDIO_APPEND # -DCHECK_MALLOC 
+
+# For code checking
+#CDEBUG += -fsanitize=address,undefined
+#LDFLAGS += -fsanitize=address,undefined
 
 #------------------------------
 # Backward compatibility
@@ -942,19 +1032,20 @@ CLMEM = #-DCLOV_LEAN
 #----------------------------------------------------------------------
 # Extra include paths
 
-INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCQPHIXJ} ${INCGRID} ${INCVTUNE}
+INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCQPHIXJ} ${INCHADRONS} ${INCGRID} ${INCVTUNE}
 
 #----------------------------------------------------------------------
 #  Extra libraries
 
-LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBARPACK} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBQPHIXJ} ${LIBGRID} ${LIBVTUNE}
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBARPACK} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} \
+  ${LIBQPHIXJ} ${LIBHADRONS} ${LIBGRID} ${LIBVTUNE}
 
 #------------------------------
 # Summary
 
 CODETYPE = ${CTIME} ${CPROF} ${CDEBUG} ${CGEOM} ${KSCGSTORE} ${CPREFETCH} \
  ${KSCGMULTI} ${KSFFMULTI} ${KSRHMCINT} ${KSSHIFT} ${CLCG} ${CLMEM} ${CQOP} \
- ${CCOMPAT}
+ ${CCOMPAT} ${CGITVER}
 
 #----------------------------------------------------------------------
 # MILC library make file in libraries directory.  

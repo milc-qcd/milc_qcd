@@ -1,3 +1,9 @@
+// Wrappers for Grid Staggered Inverters
+
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+
 #include <Grid/Grid.h>
 
 #include "../include/mGrid/mGrid_internal.h"
@@ -275,8 +281,6 @@ asqtadInvertBlock (GRID_info_t *info,
       {
 
 	SchurStaggeredOperator<ImprovedStaggeredFermion5D,FermionField> HermOp(Ds);
-
-	int blockDim = 0;
 
 #if GRID_MULTI_CG == GRID_5DCG
 

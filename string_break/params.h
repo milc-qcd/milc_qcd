@@ -9,7 +9,7 @@ typedef struct {
 	int stopflag;	/* 1 if it is time to stop */
    /* INITIALIZATION PARAMETERS */
 	int nx,ny,nz,nt;  /* lattice dimensions */
-	int iseed;	/* for random numbers */
+	uint32_t iseed;	/* for random numbers */
    /*  REPEATING BLOCK */
 	int no_smear_level;	/* number of smearing levels (<=MAX_LEVEL) */
 	int smear_num[MAX_LEVEL];	/* the number of smearing iterations */

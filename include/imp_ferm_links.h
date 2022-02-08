@@ -330,6 +330,32 @@ typedef struct {
   int parity; 
   ks_eigen_poly poly; /* Preconditioning polynomial */
 } ks_eigen_param;
+#elif defined(Grid_EIG)
+#define ks_eigensolve ks_eigensolve_Grid
+typedef struct {
+  int Nvecs; /* number of eigenvectors */
+  int Nvecs_in; /* number of input starting eigenvectors */
+  Real tol; /* Tolerance for the eigenvalue computation */
+  int MaxIter; /* max implicit restarting iterations */
+  int Nrestart; /* Lanczos restarts from this number of eigenvalues */
+  int Nmax; /* Lanczos iteration stops here and restart from Nrestart */
+  int reorth_period; /* Reorthogonalization period */
+  ks_eigen_poly poly; /* Preconditioning polynomial */
+  char diagAlg[10];
+  int parity; 
+} ks_eigen_param;
+#elif defined(USE_EIG_QUDA)
+#define ks_eigensolve ks_eigensolve_QUDA
+typedef struct {
+  int Nvecs ; /* number of eigenvectors */
+  int Nvecs_in; /* number of input starting eigenvectors */
+  Real tol; /* Tolerance for the eigenvalue computation */
+  int MaxIter; /* max restarting iterations */
+  int Nkr; /* size of the Krylov subspace */
+  ks_eigen_poly poly; /* Preconditioning polynomial */
+  int blockSize; /* block size for block variant eigensolvers */
+  int parity; 
+} ks_eigen_param;
 #else
 #define ks_eigensolve ks_eigensolve_Kalkreuter_Ritz
 typedef struct {
@@ -355,6 +381,8 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 				  ks_eigen_param *eigen_param, int init );
 int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal, 
 				  ks_eigen_param *eigen_param, int init );
+int ks_eigensolve_Grid( su3_vector ** eigVec, double * eigVal, ks_eigen_param * eigen_param, int init );
+int ks_eigensolve_QUDA( su3_vector ** eigVec, double * eigVal, ks_eigen_param * eigen_param, int init );
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *eigen_param, 
 		     imp_ferm_links_t *fn );
 void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *eigen_param, 
@@ -433,7 +461,7 @@ int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
 
 /* ks_baryon.c */
 int baryon_type_index(char *label);
-char *baryon_type_label(int index);
+const char *baryon_type_label(int index);
 void ks_baryon_nd(complex *prop[],
 		  ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *qp2,
 		  int num_corr_b, int baryon_type_snk[], int phase[], Real fact[]);
@@ -455,6 +483,7 @@ void ks_meson_cont_mom(
   int spin_taste_snk[],     /* spin_taste_snk[c] gives the s/t assignment */
   int meson_phase[],        /* meson_phase[c] is the correlator phase */
   Real meson_factor[],      /* meson_factor[c] scales the correlator */
+  int num_corr,             /* number of corrs - first index of prop */
   int corr_index[],         /* m = corr_index[c] is the correlator index */
   int r0[]                  /* spatial origin for defining FT phases */
 		       );
@@ -470,7 +499,7 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec, imp_ferm_links_t *fn );
 int mat_invert_field(su3_vector *src, su3_vector *dst, 
 		     quark_invert_control *qic,
-		     Real mass, imp_ferm_links_t *fn, int use_precond );
+		     Real mass, imp_ferm_links_t *fn );
 int mat_invert_cg_field(su3_vector *src, su3_vector *dst, 
 			quark_invert_control *qic,
 			Real mass, imp_ferm_links_t *fn );
@@ -557,6 +586,18 @@ void mult_rhos( int fdir,  field_offset src, field_offset dest ) ;
 int spectrum_singlets( Real mass, Real tol, field_offset temp_offset,
 		       imp_ferm_links_t *fn );
 #endif
+
+/* shift_field.c */
+
+enum shift_dir {
+  SHIFT_FORWARD,
+  SHIFT_BACKWARD,
+  SHIFT_SYMMETRIC
+};
+
+void 
+shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
+	    su3_matrix *links);
 
 /* spin_taste_ops.c */
 #include "../include/flavor_ops.h"

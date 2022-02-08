@@ -139,7 +139,7 @@ void check_ks_invert( char *srcfile, int srcflag,
     node0_printf("Checking inversion %d\n",i);
     if(inverttype == INVERT_M)
       /* Is M xxx = phi ? */
-      check_invert_field( ans[i], src, ksp[i].mass, tol_M, fn[i] );
+      check_invert_field( ans[i], src, ksp[i].mass, tol_M, fn[i], EVENANDODD );
     else
       /* Is MdaggerM xxx = phi ? */
       check_invert2( ans[i], src, ksp[i].mass, tol_MdagM, EVENANDODD, fn[i] );

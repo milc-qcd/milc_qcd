@@ -172,7 +172,7 @@ typedef struct primme_params {
    int maxOuterIterations;
    int intWorkSize;
    long int realWorkSize;
-   int iseed[4];
+   uint32_t iseed[4];
    int *intWork;
    void *realWork;
    double aNorm;

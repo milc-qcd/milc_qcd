@@ -1,6 +1,7 @@
 #ifndef _PARAMS_H
 #define _PARAMS_H
 
+#include <stdint.h>
 #include "../include/macros.h"  /* For MAXFILENAME */
 
 /* structure for passing simulation parameters to each node */
@@ -8,7 +9,7 @@ typedef struct {
 	int stopflag;   /* 1 if it is time to stop */
     /* INITIALIZATION PARAMETERS */
 	int nx,ny,nz,nt;  /* lattice dimensions */
-	int iseed;	/* for random numbers */
+	uint32_t iseed;	/* for random numbers */
 	int nflavors;	/* the number of flavors */
     /*  REPEATING BLOCK */
 	int warms;	/* the number of warmup trajectories */

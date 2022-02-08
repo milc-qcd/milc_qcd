@@ -63,7 +63,7 @@ read_cmplx_fm_source_hdr(cmplx_source_file *csf)
   if(csh->magic_number == IO_UNI_MAGIC) byterevflag = 0;
   else 
     {
-      byterevn((int32type *)&csh->magic_number,1);
+      byterevn((u_int32type *)&csh->magic_number,1);
       if(csh->magic_number == IO_UNI_MAGIC) 
 	{
 	  byterevflag = 1; 
@@ -119,7 +119,7 @@ read_cmplx_fm_source_hdr(cmplx_source_file *csf)
 }
  
 static cmplx_source_file *
-setup_input_cmplx_source_file(char *filename)
+setup_input_cmplx_source_file(const char *filename)
 {
   cmplx_source_file *csf;
   cmplx_source_header *cph;
@@ -154,7 +154,7 @@ setup_input_cmplx_source_file(char *filename)
 } /* setup_input_cmplx_source_file */
 
 static cmplx_source_file *
-r_source_cmplx_fm_i(char *filename)
+r_source_cmplx_fm_i(const char *filename)
 {
   /* Returns file descriptor for opened file */
 
@@ -297,7 +297,7 @@ r_source_cmplx_fm(cmplx_source_file *csf, field_offset dest_site,
 	    /* Byte reverse a copy, since we may need to reuse cmsg.q */
 	    cfix = cmsg.q;
 	    if(byterevflag==1){
-		byterevn((int32type *)&cfix, 
+		byterevn((u_int32type *)&cfix, 
 			 sizeof(fcomplex)/sizeof(int32type));
 	    }
 	    
@@ -345,7 +345,7 @@ r_source_cmplx_fm_f(cmplx_source_file *csf)
 
 /*--------------------------------------------------------------------*/
 static void 
-r_source_cmplx_fm_generic(char *filename, 
+r_source_cmplx_fm_generic(const char *filename, 
 			  field_offset dest_site,
 			  complex *dest_field, int stride,
 			  int x0, int y0, int z0, int t0)
@@ -358,14 +358,14 @@ r_source_cmplx_fm_generic(char *filename,
 }
 
 /*--------------------------------------------------------------------*/
-void r_source_cmplx_fm_to_site(char *filename, field_offset dest_site,
+void r_source_cmplx_fm_to_site(const char *filename, field_offset dest_site,
 			       int x0, int y0, int z0, int t0)
 {
   r_source_cmplx_fm_generic(filename, dest_site, (complex *)NULL, 0, x0, y0, z0, t0);
 }
 
 /*--------------------------------------------------------------------*/
-void r_source_cmplx_fm_to_field(char *filename, complex *dest_field, int stride,
+void r_source_cmplx_fm_to_field(const char *filename, complex *dest_field, int stride,
 				int x0, int y0, int z0, int t0)
 {
   r_source_cmplx_fm_generic(filename, (field_offset)(-1), dest_field, stride,

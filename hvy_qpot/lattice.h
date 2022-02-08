@@ -22,7 +22,7 @@ struct site {
 	/* is it even or odd? */
 	char parity;
 	/* my index in the array */
-	int index;
+	uint32_t index;
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */

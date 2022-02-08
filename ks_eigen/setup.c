@@ -26,6 +26,7 @@
 extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
+#include "../include/generic_u1.h"
 #endif
 
 //#ifdef HAVE_QOP
@@ -116,7 +117,11 @@ static int initial_set(){
 			   param.ionode_geometry, 4);
 #endif
 #endif
-    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
+    IF_OK {
+      int iseed_in;
+      status += get_i(stdin, prompt,"iseed", &iseed_in);
+      param.iseed = iseed_in;
+    }
     IF_OK status += get_s(stdin, prompt,"job_id",param.job_id);
 
     if(status>0) param.stopflag=1; else param.stopflag=0;
@@ -256,6 +261,26 @@ int readin(int prompt) {
     IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
     IF_OK status += get_i(stdin, prompt,"nArnoldi", &param.eigen_param.nArnoldi );
     IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
+#elif defined(Grid_EIG)
+    /* Grid */
+    IF_OK status += get_i(stdin, prompt, "Max_Lanczos_restart_iters", &param.eigen_param.MaxIter );
+    IF_OK status += get_f(stdin, prompt, "eigenval_tolerance", &param.eigen_param.tol );
+    IF_OK status += get_i(stdin, prompt, "Lanczos_max", &param.eigen_param.Nmax );
+    IF_OK status += get_i(stdin, prompt, "Lanczos_restart", &param.eigen_param.Nrestart );
+    IF_OK status += get_i(stdin, prompt, "Lanczos_reorth_period", &param.eigen_param.reorth_period );
+    IF_OK status += get_f(stdin, prompt, "Chebyshev_alpha", &param.eigen_param.poly.minE );
+    IF_OK status += get_f(stdin, prompt, "Chebyshev_beta", &param.eigen_param.poly.maxE );
+    IF_OK status += get_i(stdin, prompt, "Chebyshev_order", &param.eigen_param.poly.norder );
+    IF_OK status += get_s(stdin, prompt, "diag_algorithm", param.eigen_param.diagAlg );
+#elif defined(USE_EIG_QUDA)
+    /* QUDA */
+    IF_OK status += get_i(stdin, prompt, "Max_Lanczos_restart_iters", &param.eigen_param.MaxIter );    
+    IF_OK status += get_f(stdin, prompt, "eigenval_tolerance", &param.eigen_param.tol );
+    IF_OK status += get_i(stdin, prompt, "Lanczos_max", &param.eigen_param.Nkr );
+    IF_OK status += get_f(stdin, prompt, "Chebyshev_alpha", &param.eigen_param.poly.minE );
+    IF_OK status += get_f(stdin, prompt, "Chebyshev_beta", &param.eigen_param.poly.maxE );
+    IF_OK status += get_i(stdin, prompt, "Chebyshev_order", &param.eigen_param.poly.norder );
+    IF_OK status += get_i(stdin, prompt, "block_size", &param.eigen_param.blockSize );
 #else
     /* Kalkreuter_Ritz */
     IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );

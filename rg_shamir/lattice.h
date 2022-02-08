@@ -37,7 +37,7 @@ typedef struct {
 	/* is it even or odd? */
 	char parity;
 	/* my index in the array */
-	int index;
+	uint32_t index;
 #ifdef SITERAND
 	/* The state information for a random number generator */
 	double_prn site_prn;
@@ -97,8 +97,8 @@ typedef struct {
    u0 is tadpole improvement factor, perhaps (plaq/3)^(1/4)
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
-EXTERN	int iseed;		/* random number seed */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN	uint32_t iseed;		/* random number seed */
 EXTERN  Real beta;
 EXTERN	int niter;
 EXTERN  int nflavors;

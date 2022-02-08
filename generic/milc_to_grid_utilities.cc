@@ -2,15 +2,15 @@
 /* For the Grid interface */
 /* MIMD version 7 */
 
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+
 #include <Grid/Grid.h>
 #include <Grid/communicator/Communicator.h>
 #include <vector>
 #include <iostream>
 //#include <qmp.h>
-
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 #undef GRID_EXTERN
 
@@ -56,7 +56,7 @@ int grid2milc_parity(GRID_evenodd_t grid_parity){
   return -999;
 }
 
-void finalize_grid(void)
+void finalize_grid()
 {
   /* We omit MPI_Finalize() because most likely it will break a lot of things */
   Grid_unquiesce_nodes();
@@ -222,7 +222,7 @@ void grid_coor_from_processor_rank(int coords[], int worldrank){
     terminate(1);
   }
 
-  Coordinate coor;
+  Coordinate coor(4);
   grid_cart->ProcessorCoorFromRank(worldrank, coor);
 
   for(int i = 0; i < 4; i++)
