@@ -171,11 +171,22 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   return num_iters;
 }
 
+/********************************************************************/
+/* Solution of the normal equations for a single site parity with   */
+/* multiple right sides                                             */
+/********************************************************************/
+
 int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_dest, 
 				quark_invert_control *qic, Real mass,
 				imp_ferm_links_t *fn)
 {
-
+#if 1
+  /* Until QUDA's MRHS solver is fixed we fake it */
+  int num_iters = 0;
+  for(int i = 0; i < nsrc; i++){
+    num_iters += ks_congrad_parity_gpu(t_src[i], t_dest[i], qic, mass, fn);
+  }
+#else
   char myname[] = "ks_congrad_block_parity_gpu";
   QudaInvertArgs_t inv_args;
   int i;
@@ -302,6 +313,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
     fflush(stdout);}
 #endif
 
+#endif /* if 1 */
   return num_iters;
 }
 

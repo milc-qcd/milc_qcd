@@ -16,6 +16,7 @@
 */
 
 #include <stdio.h>
+#include <stdint.h>
 #include "../include/int32type.h"
 #include "../include/complex.h"
 #include "../include/su3.h"
