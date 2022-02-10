@@ -228,7 +228,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
 
     break;
   default:
-    node0_printf("%s: Unrecognized reload flag.\n", myname);
+    node0_printf("%s: Unrecognized reload flag. %d\n", myname, flag);
     terminate(1);
   }
   
