@@ -340,7 +340,7 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 void dump_ksprop_from_ksp_field(int saveflag, char savefile[], 
 				ks_prop_field *ksprop){
   quark_source dummy_ksqs;
-  
+
   /* When we dump a propagator, we don't keep the source information.
      Normally we want the source information for checking consistency
      with the Dirac operator we are using, since if we know the
@@ -349,17 +349,17 @@ void dump_ksprop_from_ksp_field(int saveflag, char savefile[],
      already had sink operators applied to it, so it won't satisfy the
      Dirac equation, anyway.
      
-     So we take a default source type "UNKOWN".  A minimal source
-     record is still written to the file, since we don't have any
-     propagator file formats without sources records.  The minimal
-     source record is a null complex field on time slice zero. */
+     So we save with all zero source fields */
 
-  /* For clover_info.c */
+  /* Set up an empty source */
+  ks_prop_field *dummy_src = create_ksp_field(ksprop->nc);
 
   init_qs(&dummy_ksqs);
   ksqstmp = dummy_ksqs;   /* For ksprop_info.c */
-  save_ksprop_from_ksp_field(saveflag, savefile, "", &dummy_ksqs, NULL, ksprop, 1);
+  save_ksprop_from_ksp_field(saveflag, savefile, "", &dummy_ksqs, dummy_src, ksprop, 1);
   clear_qs(&dummy_ksqs); /* Free any allocations */
+
+  destroy_ksp_field(dummy_src);
 }
 
 /* Create a ks_prop_field and restore it from a dump file */
