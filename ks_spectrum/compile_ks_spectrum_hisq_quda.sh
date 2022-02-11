@@ -24,7 +24,7 @@ then
   exit
 fi
 
-if [ ! -z "$MULTIGRID" ]
+if [ "$MULTIGRID" = "1" ]
 then
   MG="-DMULTIGRID"
 fi
