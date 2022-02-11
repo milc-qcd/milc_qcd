@@ -33,7 +33,7 @@ MPP ?= false
 # 4. Generic Precision 
 
 # 1 = single precision; 2 = double
-PRECISION ?= 1
+PRECISION ?= 2
 
 #----------------------------------------------------------------------
 # 5. Set compiler.
