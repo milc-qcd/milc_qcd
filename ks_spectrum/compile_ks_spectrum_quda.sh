@@ -2,21 +2,30 @@
 if [ -z "$PATH_TO_CUDA" ]
 then
   echo "Environment variable PATH_TO_CUDA unset, exiting..."
+  exit
 fi
 
 if [ -z "$PATH_TO_QUDA" ]
 then
   echo "Environment variable PATH_TO_QUDA unset, exiting..."
+  exit
 fi
 
 if [ -z "$PATH_TO_QIO" ]
 then
   echo "Environment variable PATH_TO_QIO unset, exiting..."
+  exit
 fi
 
 if [ -z "$PATH_TO_QMP" ]
 then
   echo "Environment variable PATH_TO_QMP unset, exiting..."
+  exit
+fi
+
+if [ ! -z "$MULTIGRID" ]
+then
+  MG="-DMULTIGRID"
 fi
 
 if [ ! -f "./Makefile" ]
@@ -29,22 +38,12 @@ then
   rm ./ks_spectrum_hisq
 fi
 
-# Remove CTIME to remove overly verbose timing output. Useful for debugging.
-# Update verbosity
-sed -i 's/CGPU += -DSET_QUDA_SUMMARIZE/CGPU += -DSET_QUDA_VERBOSE/g' Makefile
-
-if [[ ! -z "$POWER9" ]] && [[ "$POWER9" -eq "1" ]]
-then
-  export ARCH="pow9"
-  export COMPILER="gnu"
-  export OPT="-O3 -Ofast"
-fi
-
 #ARCH="pow9" \
 #COMPILER="gnu" \
 #OPT="-O3 -Ofast" \
-CC=mpicc \
-CXX=mpicxx \
+#CTIME="-DNERSC_TIME -DCGTIME -DFFTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME" \
+MY_CC=mpicc \
+MY_CXX=mpicxx \
 CUDA_HOME=${PATH_TO_CUDA} \
 QUDA_HOME=${PATH_TO_QUDA} \
 WANTQUDA=true \
@@ -61,7 +60,6 @@ WANTQMP=true \
 QIOPAR=${PATH_TO_QIO} \
 QMPPAR=${PATH_TO_QMP} \
 CGEOM="-DFIX_NODE_GEOM -DFIX_IONODE_GEOM" \
-KSCGMULTI="-DKS_MULTICG=HYBRID -DMULTISOURCE -DMULTIGRID" \
-CTIME="-DNERSC_TIME -DCGTIME -DFFTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME" \
+KSCGMULTI="-DKS_MULTICG=HYBRID -DMULTISOURCE $MG" \
 make -j 1 ks_spectrum_hisq
 
