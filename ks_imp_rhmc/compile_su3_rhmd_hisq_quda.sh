@@ -1,5 +1,43 @@
 #!/bin/bash
 
+if [ -z "$PATH_TO_CUDA" ]
+then
+  echo "Environment variable PATH_TO_CUDA unset, exiting..."
+  exit
+fi
+
+if [ -z "$PATH_TO_QUDA" ]
+then
+  echo "Environment variable PATH_TO_QUDA unset, exiting..."
+  exit
+fi
+
+if [ -z "$PATH_TO_QIO" ]
+then
+  echo "Environment variable PATH_TO_QIO unset, exiting..."
+  exit
+fi
+
+if [ -z "$PATH_TO_QMP" ]
+then
+  echo "Environment variable PATH_TO_QMP unset, exiting..."
+  exit
+fi
+
+if [ ! -f "./Makefile" ]
+then
+  cp ../Makefile .
+fi
+
+if [ -f "./su3_rhmd_hisq" ]
+then
+  rm ./su3_rhmd_hisq
+fi
+
+#ARCH="pow9" \
+#COMPILER="gnu" \
+#OPT="-O3 -Ofast" \
+#CTIME="-DNERSC_TIME -DCGTIME -DFFTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME" \
 MY_CC=mpicc \
 MY_CXX=mpicxx \
 CUDA_HOME=${PATH_TO_CUDA} \
