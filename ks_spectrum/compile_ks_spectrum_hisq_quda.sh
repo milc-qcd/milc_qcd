@@ -24,14 +24,19 @@ then
   exit
 fi
 
+if [ "$MULTIGRID" = "1" ]
+then
+  MG="-DMULTIGRID"
+fi
+
 if [ ! -f "./Makefile" ]
 then
   cp ../Makefile .
 fi
 
-if [ -f "./su3_rhmd_hisq" ]
+if [ -f "./ks_spectrum_hisq" ]
 then
-  rm ./su3_rhmd_hisq
+  rm ./ks_spectrum_hisq
 fi
 
 #ARCH="pow9" \
@@ -55,4 +60,7 @@ WANTQIO=true \
 WANTQMP=true \
 QIOPAR=${PATH_TO_QIO} \
 QMPPAR=${PATH_TO_QMP} \
-make -j 1 su3_rhmd_hisq
+CGEOM="-DFIX_NODE_GEOM -DFIX_IONODE_GEOM" \
+KSCGMULTI="-DKS_MULTICG=HYBRID -DMULTISOURCE $MG" \
+make -j 1 ks_spectrum_hisq
+

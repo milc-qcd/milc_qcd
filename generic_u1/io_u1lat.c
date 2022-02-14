@@ -407,7 +407,7 @@ int ask_starting_u1_lattice(FILE *fp,
 {
   
   int status;
-  char savebuf[256];
+  char *savebuf;
   char myname[] = "ask_starting_u1_lattice";
   
   if(prompt==1)
@@ -415,20 +415,12 @@ int ask_starting_u1_lattice(FILE *fp,
       printf("enter: 'fresh_u1', 'continue_u1' or 'reload_u1_ascii'\n");
       printf(" or 'reload_u1_serial' or 'reload_u1_parallel\n");
     }
-  status=fscanf(fp,"%s",savebuf);
-  if(status==EOF)
-    {
-      node0_printf("%s: EOF on STDIN!\n", myname);
-      return(1);
-    }
-  if(status!=1)
-    {
-      node0_printf("%s: starting lattice", myname);
-      node0_printf("command \"%s\" is invalid!\n",savebuf);
-      return(1);
-    }
-  printf("%s \n",savebuf);
+
+  savebuf = get_next_tag(fp, "read u1 lattice command", myname);
+  if (savebuf == NULL)return 1;
   
+  printf("%s ",savebuf);
+
   if(strcmp("fresh_u1",savebuf)==0)
     *flag=FRESH;
   else if(strcmp("continue_u1",savebuf)==0)
