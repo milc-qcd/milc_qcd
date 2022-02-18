@@ -278,6 +278,14 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
 
 */
 
+#ifdef USE_GSMEAR_QUDA
+void
+gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
+        Real width, int iters, int t0)
+{
+  gauss_smear_v_field_QUDA( src, t_links, width, iters, t0 );
+}
+#else
 void 
 gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
 		    Real width, int iters, int t0)
@@ -317,6 +325,7 @@ gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
   
   destroy_v_field(tmp);
 }
+#endif
 
 /*------------------------------------------------------------*/
 
