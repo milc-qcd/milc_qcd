@@ -93,6 +93,7 @@ G_KS_ALL = \
   fn_links_qop.o \
   gauge_force_imp_ks.o \
   gauss_smear_ks.o \
+  gauss_smear_ks_QUDA.o \
   gb_baryon_mmap.o \
   gb_baryon_snk.o \
   gb_baryon_3pt.o \
@@ -364,6 +365,8 @@ ff_opt.o: ../generic_ks/ff_opt.c
 gauge_force_imp_ks.o: ../generic_ks/gauge_force_imp_ks.c
 	${CC} -c ${CFLAGS} $<
 gauss_smear_ks.o: ../generic_ks/gauss_smear_ks.c
+	${CC} -c ${CFLAGS} $<
+gauss_smear_ks_QUDA.o: ../generic_ks/gauss_smear_ks_QUDA.c
 	${CC} -c ${CFLAGS} $<
 gb_baryon_mmap.o: ../generic_ks/gb_baryon_mmap.c
 	${CC} -c ${CFLAGS} $<

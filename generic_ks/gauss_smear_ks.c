@@ -11,6 +11,7 @@
 #include "../include/openmp_defs.h"
 
 static su3_vector *wtmp[8] ;
+static const char *prec_label[2] = {"F", "D"};
 
 /*------------------------------------------------------------*/
 static void 
@@ -263,6 +264,15 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
 
 */
 
+
+#ifdef USE_GSMEAR_QUDA
+void
+gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
+        Real width, int iters, int t0)
+{
+  gauss_smear_v_field_QUDA( src, t_links, width, iters, t0 );
+}
+#else
 void 
 gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
 		    Real width, int iters, int t0)
@@ -277,6 +287,8 @@ gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
     printf("gauss_smear_v_field(%d): NULL t_links\n",this_node);
     terminate(1);
   }
+
+  double dtime = -dclock();
 
   tmp = create_v_field();
   
@@ -298,9 +310,18 @@ gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
       }
       klein_gord_field(tmp, src, t_links, ftmpinv, t0);
     }
+
+  dtime += dclock();
+
+  if(this_node==0){
+    printf("GSMEAR: time = %e (fn %s) iters = %d\n",
+	   dtime, prec_label[MILC_PRECISION-1], iters);
+    fflush(stdout);
+  }
   
   destroy_v_field(tmp);
 }
+#endif
 
 /*------------------------------------------------------------*/
 

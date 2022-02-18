@@ -72,6 +72,9 @@ void gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
 void gauss_smear_ks_prop_field(ks_prop_field *src, su3_matrix *t_links,
 			       Real width, int iters, int t0);
 void laplacian_v_field(su3_vector *src, su3_matrix *t_links, int t0);
+/* gauss_smear_ks_QUDA.c */
+void gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
+                              Real width, int iters, int t0);
 
 /* naik_epsilon_utilities.c */
 int fill_eps_naik(double eps_naik_table[], int *n, double next_eps_naik);
