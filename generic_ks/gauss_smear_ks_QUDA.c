@@ -53,14 +53,12 @@ gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
   
 #ifdef GS_DEBUG
   setVerbosityQuda( QUDA_DEBUG_VERBOSE, "", stdout );
-#else
-  setVerbosityQuda( QUDA_VERBOSE, "", stdout );
 #endif
   
   /* QUDA inverter setup ************************/
   QudaInvertParam qip = newQudaInvertParam();
 
-  qip.verbosity = QUDA_VERBOSE; /* SILENT, SUMMARIZE, VERBOSE, DEBUG_VERBOSE */
+  qip.verbosity = QUDA_SUMMARIZE;
 
   qip.dslash_type = QUDA_ASQTAD_DSLASH;
   qip.laplace3D = laplaceDim;
