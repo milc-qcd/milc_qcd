@@ -1,0 +1,5 @@
+SRCDIR/configure \
+ --prefix=INSDIR \
+ CC=gcc \
+ CFLAGS="-fPIC -std=c99 -O" \
+ TEST_CFLAGS="-std=c99"

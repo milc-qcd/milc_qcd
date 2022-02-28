@@ -36,6 +36,8 @@
 #define SAVE_PARALLEL                    54
 #define SAVE_MULTIDUMP                   55
 #define SAVE_SERIAL_ARCHIVE              56
+#define SAVE_SERIAL_PACKED               57
+#define SAVE_PARALLEL_PACKED             58
 
 /* Format for NERSC archive files */
 #define ARCHIVE_3x2   0
@@ -290,7 +292,7 @@ typedef struct {
   gauge_header*  header;        /* Pointer to header for file */
   char *         filename;       /* Pointer to file name string */
   int            byterevflag;   /* Byte reverse flag - used only for reading */
-  int32type *       rank2rcv;      /* File site list - used only for 
+  u_int32type *  rank2rcv;      /* File site list - used only for 
 				   serial reading */ 
   int            parallel;      /* 1 if file was opened in parallel
 				   0 if serial */
@@ -451,7 +453,7 @@ void w_parallel_f(gauge_file *gf);
 void r_parallel_f(gauge_file *gf);
 char *read_info_file(char base_filename[]);
 
-void byterevn(int32type w[], int n);
+void byterevn(u_int32type w[], int n);
 
 
 #endif /* _IO_LAT_H */

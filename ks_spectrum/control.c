@@ -41,6 +41,7 @@
 #include <string.h>
 #ifdef HAVE_QUDA
 #include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
 #endif
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
@@ -286,6 +287,7 @@ int main(int argc, char *argv[])
 
 	/* Write the source, if requested */
 	if(qs->saveflag != FORGET){
+	  qs->color = color;
 	  if(w_source_ks( source[k]->v[color], qs ) != 0)
 	    node0_printf("Error writing source\n");
 	}
@@ -314,10 +316,11 @@ int main(int argc, char *argv[])
       for(int color = 0; color < qs->ncolor; color++){
 
 	/* Apply operator*/
-	v_field_op(source[is]->v[color], qs->op, qs->subset, qs->t0);
+        v_field_op(source[is]->v[color], &(param.src_qs_op[is]), qs->subset, qs->t0);
 
 	/* Write the source, if requested */
 	if(qs->saveflag != FORGET){
+	  qs->color = color;
 	  if(w_source_ks( source[is]->v[color], qs ) != 0)
 	    node0_printf("Error writing source\n");
 	}
@@ -959,7 +962,7 @@ int main(int argc, char *argv[])
   
 
 #ifdef HAVE_QUDA
-  qudaFinalize();
+  finalize_quda();
 #endif
   
 #ifdef HAVE_QPHIX

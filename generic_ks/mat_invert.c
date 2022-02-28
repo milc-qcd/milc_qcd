@@ -11,6 +11,14 @@
 #include "generic_ks_includes.h"
 #include "../include/dslash_ks_redefine.h"
 #include "../include/openmp_defs.h"
+#ifdef HAVE_QUDA
+#include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
+#endif
+
+#ifdef CGTIME
+static const char *prec_label[2] = {"F", "D"};
+#endif
 
 /*****************************************************************************/
 /* dst = M src. With parity selection */
@@ -184,8 +192,8 @@ static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int pa
 /* This algorithm solves even and odd sites separately */
 
 int mat_invert_cg_field(su3_vector *src, su3_vector *dst, 
-			 quark_invert_control *qic,
-			 Real mass, imp_ferm_links_t *fn ){
+			quark_invert_control *qic,
+			Real mass, imp_ferm_links_t *fn ){
     int cgn;
     su3_vector *tmp;
     double dtime;
@@ -247,8 +255,10 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
 
     free(tmp);
 
-    //    check_invert_field2( dst, tmp, mass, 1e-6, fn, EVENANDODD);
+    //    node0_printf("Entering check_invert_field in mat_invert_cg_field\n");
+    //    fflush(stdout);
     //    check_invert_field( dst, src, mass, 1e-6, fn, EVENANDODD);
+    
     return cgn;
 }
 
@@ -393,12 +403,213 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     cgn += ks_congrad_field( tmp, dst, qic, mass, fn );
     qic->final_iters += even_iters;
 
+    //    node0_printf("Entering check_invert_field in mat_invert_uml_field\n");
+    //    fflush(stdout);
     //    check_invert_field( dst, src, mass, 1e-6, fn, EVENANDODD);
     destroy_v_field(tmp);
     destroy_v_field(ttt);
 
     return cgn;
 }
+
+#ifdef HAVE_QUDA
+
+/********************************************************************/
+/* Multigrid solution of the full Dirac equation for both parities  */
+/********************************************************************/
+
+static void *mg_preconditioner = NULL;
+
+int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest, 
+			    quark_invert_control *qic,
+			    Real mass, imp_ferm_links_t *fn){
+
+#ifdef MULTIGRID
+  char myname[] = "mat_invert_mg_field_gpu";
+  QudaInvertArgs_t inv_args;
+  int i;
+  double dtimec = -dclock();
+#ifdef CGTIME
+  double nflop = 1187;
+#endif
+  
+  /* Initialize qic */
+  qic->size_r = 0;
+  qic->size_relr = 0;
+  qic->final_iters   = 0;
+  qic->final_restart = 0;
+  qic->converged     = 1;
+  qic->final_rsq = 0.;
+  qic->final_relrsq = 0.;
+  
+  /* Compute source norm */
+  double source_norm = 0.0;
+  FORSOMEFIELDPARITY(i,qic->parity){
+    source_norm += (double)magsq_su3vec( &t_src[i] );
+  } END_LOOP;
+  g_doublesum( &source_norm );
+#ifdef CG_DEBUG
+  node0_printf("mat_invert_mg_field_gpu: source_norm = %e\n", (double)source_norm);
+#endif
+  
+  /* Provide for trivial solution */
+  if(source_norm == 0.0){
+    /* Zero the solution and return zero iterations */
+    FORSOMEFIELDPARITY(i,qic->parity){
+      memset(t_dest + i, 0, sizeof(su3_vector));
+    } END_LOOP;
+    
+    dtimec += dclock();
+#ifdef CGTIME
+    if(this_node==0){
+      printf("CONGRAD5: time = %e (fn_QUDA_MG %s) masses = 1 iters = %d mflops = %e\n",
+	     dtimec, prec_label[qic->prec-1], qic->final_iters, 
+	     (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
+      fflush(stdout);}
+#endif
+    
+    return 0;
+  }
+  
+  /* Initialize QUDA parameters */
+  
+  initialize_quda();
+
+  // need to set a dummy value, ignored (for now),
+  // MG will eventually support Schur solve
+  inv_args.evenodd = QUDA_EVEN_PARITY; 
+  /*if(qic->parity == EVEN){
+          inv_args.evenodd = QUDA_EVEN_PARITY;
+  }else if(qic->parity == ODD){
+          inv_args.evenodd = QUDA_ODD_PARITY;
+  }else{
+    printf("%s: Unrecognised parity\n",myname);
+    terminate(2);
+  }*/
+
+  inv_args.max_iter = qic->max*qic->nrestart;
+#if defined(MAX_MIXED)
+  inv_args.mixed_precision = 2;
+#elif defined(HALF_MIXED)
+  inv_args.mixed_precision = 1;
+#else
+  inv_args.mixed_precision = 0;
+#endif
+  
+  su3_matrix* fatlink = get_fatlinks(fn);
+  su3_matrix* longlink = get_lnglinks(fn);
+  const int quda_precision = qic->prec;
+  
+  double residual, relative_residual;
+  int num_iters = 0;
+  
+  inv_args.naik_epsilon = fn->eps_naik;
+  
+#if (FERM_ACTION==HISQ)
+  inv_args.tadpole = 1.0;
+#else
+  inv_args.tadpole = u0;
+#endif
+  
+  // for newer versions of QUDA we need to invalidate the gauge field if the links are new
+  if ( fn != get_fn_last() || fresh_fn_links(fn) ){
+    
+    node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", myname);
+    cancel_quda_notification(fn);
+    set_fn_last(fn);
+    /* Hack to cause QUDA to copy new links to the GPU */
+    num_iters = -1;
+
+    node0_printf("%s: setting up the MG inverter\n", myname);
+
+    /* Set up the MG inverter when the links change */
+    /* FIXME: what do we do if the mgparamfile changes? */
+    
+    if (mg_preconditioner == NULL ){
+      double mg_regen_time = -dclock();
+      mg_preconditioner = qudaMultigridCreate(MILC_PRECISION,
+                              quda_precision,
+                              mass,
+                              inv_args,
+                              fatlink,
+                              longlink,
+                              qic->mgparamfile);
+
+      mg_regen_time += dclock();
+      node0_printf("%s: MG inverter setup complete. Time = %g\n", myname,
+		   mg_regen_time);
+    } else {
+      node0_printf("%s: MG inverter already set up.  Skipping.\n", myname);
+    }
+  }
+
+  /* Specify the type of rebuild _if_ a rebuild is required */
+  int mg_rebuild_type = 1;
+  if (qic->mg_rebuild_type == THINREBUILD) {
+    mg_rebuild_type = 0;
+  } 
+  
+  // Just BiCGstab for now
+  qudaInvertMG(MILC_PRECISION,
+	       quda_precision, 
+	       mass,
+	       inv_args,
+	       qic->resid,
+	       qic->relresid,
+	       fatlink, 
+	       longlink,
+	       mg_preconditioner,
+	       mg_rebuild_type,
+	       t_src, 
+	       t_dest,
+	       &residual,
+	       &relative_residual, 
+	       &num_iters);
+  
+  qic->final_rsq = residual*residual;
+  qic->final_relrsq = relative_residual*relative_residual;
+  qic->final_iters = num_iters;
+
+  // check for convergence 
+  qic->converged = (residual < qic->resid) ? 1 : 0;
+
+  // Cumulative residual. Not used in practice 
+  qic->size_r = 0.0;
+  qic->size_relr = 0.0; 
+
+  dtimec += dclock();
+
+#ifdef CGTIME
+  if(this_node==0){
+    printf("CONGRAD5: time = %e (fn_QUDA_MG %s) masses = 1 iters = %d mflops = %e\n",
+	   dtimec, prec_label[quda_precision-1], qic->final_iters, 
+	   (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
+    fflush(stdout);}
+#endif
+
+  //    node0_printf("Entering check_invert_field in mat_invert_mg_field_gpu\n");
+  //    fflush(stdout);
+  //    check_invert_field( t_dest, t_src, mass, 1e-6, fn, EVENANDODD);
+
+
+  return num_iters;
+
+#else
+  node0_printf("mat_invert_mg_field_gpu: ERROR. Multigrid is available only with GPU compilation\n");
+  terminate(1);
+  return 0;  
+#endif
+}
+
+void mat_invert_mg_cleanup(void){
+
+#ifdef MULTIGRID
+  if(mg_preconditioner != NULL)
+    qudaMultigridDestroy(mg_preconditioner);
+#endif
+}
+
+#endif /* HAVE_QUDA */
 
 /*****************************************************************************/
 /* This algorithm solves even sites, reconstructs odd and then polishes
@@ -480,15 +691,25 @@ int mat_invert_block_uml(su3_vector **src, su3_vector **dst,
   return cgn;
 }
 
+#ifdef HAVE_QUDA
 /*****************************************************************************/
-/* Creates an array of vectors for the block-cg solver */
-int mat_invert_mrhs_uml(su3_vector **src, su3_vector **dst, 
+/* This algorithm solves the Dirac equation for both parities using
+   staggered multigrid */
+
+int mat_invert_block_mg(su3_vector **src, su3_vector **dst, 
 			Real mass, int nsrc, quark_invert_control *qic,
 			imp_ferm_links_t *fn){
-  node0_printf("mat_invert_mrhs_uml is not implemented, yet\n");
-  terminate(1);
-  return 0;  /* Humor the compiler */
+  
+  int cgn = 0;
+  register int is;
+  
+  /* Temporary until there is multi-rhs support for multigrid */
+  for(is = 0; is < nsrc; is++) {
+    cgn += mat_invert_mg_field_gpu(src[is], dst[is], qic, mass, fn );
+  }
+  return cgn;
 }
+#endif
 
 /*****************************************************************************/
 int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
@@ -521,6 +742,74 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
     return cgn;
 }
 
+/*****************************************************************************/
+/* Generic inverter entry point for a single mass and source */
+
+int mat_invert_field(su3_vector *src, su3_vector *dst, 
+		     quark_invert_control *qic,
+		     Real mass, imp_ferm_links_t *fn, int use_precond){
+
+  int cgn = 0;
+
+  /* Use a CG solve for a CGTYPE inversion or an MGTYPE inversion with a CG override */
+  if(qic->inv_type == CGTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD)) {
+    if(use_precond)
+      /* Preconditioned inversion */
+      cgn = mat_invert_uml_field(src, dst, qic, mass, fn );
+    else
+      /* Unpreconditioned inversion */
+      cgn = mat_invert_cg_field(src, dst, qic, mass, fn );
+    if (qic->inv_type == MGTYPE) {
+      node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
+#ifdef HAVE_QUDA
+      /* Force a reload b/c of sloppy link precision changes */
+      refresh_fn_links(fn);
+#endif
+    }
+  } else {
+    /* inv_type == MGTYPE */
+#ifdef USE_CG_GPU
+    /* Currently only available through QUDA on GPUs */
+    cgn = mat_invert_mg_field_gpu(src, dst, qic, mass, fn );
+#else
+    node0_printf("mat_invert_field: ERROR. Multigrid is available only with GPU compilation\n");
+    terminate(1);
+#endif
+  }
+  return cgn;
+}
+
+/*****************************************************************************/
+/* Generic multi-rhs inversion                                               */
+/*****************************************************************************/
+
+int mat_invert_block(su3_vector **src, su3_vector **dst, 
+		     Real mass, int nsrc, quark_invert_control *qic,
+		     imp_ferm_links_t *fn){
+  int cgn;
+  if(qic->inv_type == CGTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD)){
+    cgn = mat_invert_block_uml(src, dst, mass, nsrc, qic, fn);
+
+    if (qic->inv_type == MGTYPE) {
+      node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
+#ifdef HAVE_QUDA
+      /* Force a reload b/c of sloppy link precision changes */
+      refresh_fn_links(fn);
+#endif
+    }
+  } else {
+    /* inv_type == MGTYPE */
+#ifdef USE_CG_GPU
+    /* Currently only available through QUDA on GPUs */
+    cgn = mat_invert_block_mg(src, dst, mass, nsrc, qic, fn);
+#else
+    node0_printf("mat_invert_block: ERROR. Multigrid is available only with GPU compilation\n");
+    terminate(1);
+#endif
+  }
+  return cgn;
+}
+  
 /*****************************************************************************/
 /* FOR TESTING: multiply src by matrix and check against dest */
 void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,

@@ -27,6 +27,11 @@ void checkmul(void);
 void prefetch_vector( su3_vector * );
 void prefetch_matrix( su3_matrix * );
 
+/* charge_utilities.c */
+int fill_charge(double charge_table[], int *n, double next_charge);
+int index_charge(double charge_table[], int n, double find_charge);
+void start_charge(double charge_table[], int *n);
+
 /* d_congrad_opt.c */
 
 void clear_latvec(field_offset v,int parity);

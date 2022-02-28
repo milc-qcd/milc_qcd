@@ -72,6 +72,7 @@ enum source_type {
   RANDOM_COMPLEX_WALL,
   RANDOM_COLOR_WALL,
   ROTATE_3D,
+  SAVE_VECTOR_SRC,
   SPIN_TASTE,
   SPIN_TASTE_EXTEND,
   WAVEFUNCTION_FILE,
@@ -133,14 +134,18 @@ typedef struct {
   Real Kappa;        /* hopping */
 } dirac_wilson_param;
 
+/* Size of a bookkeeping table holding unique charges */
+#define MAX_CHARGE 16
+
 /* Same for plain KS case */
 typedef struct {
   Real mass;
+  Real charge;
   Real offset;    /* For RHMC, the pole position */
   Real residue;   /* For RHMC, the pole residue */
   int naik_term_epsilon_index;
+  int charge_index;
   Real naik_term_epsilon;
-
 } ks_param;
 
 /* This is the IFLA case */
@@ -164,6 +169,18 @@ typedef struct {
 
 /* Structure defining quark inversion parameters for most inverters */
 
+enum inv_type {
+  MGTYPE,
+  CGTYPE
+};
+
+enum mg_rebuild_type {
+  FULLREBUILD,               /* do a full rebuild, expensive but best solve */
+  THINREBUILD,               /* do a thin rebuild, skips overhead of rebuild but
+                         leads to less effective preconditioner */
+  CGREBUILD                  /* override and perform CG instead */
+};
+
 typedef struct {
   int prec;           /* precision of the inversion 1 = single; 2 = double */
   int min;            /* minimum number of iterations (being phased out) */
@@ -184,42 +201,18 @@ typedef struct {
   int converged;      /* returned 0 if not converged; 1 if converged */
   int  final_iters;
   int  final_restart;
+  enum inv_type inv_type;  /* requested inverter type */
+  char mgparamfile[MAXFILENAME];        /* Name of file with the staggered multigrid parameters */
+  enum mg_rebuild_type mg_rebuild_type;    /* how to refresh MG solve if mass/gauge links change */
                       /* Add further parameters as needed...  */
 } quark_invert_control;
 
 void report_status(quark_invert_control *qic);
 
-/* Structure defining a quark source operator */
-struct qss_op_struct {
-  int type;           /* operator type */
-  char descrp[MAXDESCRP]; /* alpha description for most */
-  char label[MAXSRCLABEL]; /* Abbreviation of description */
-  Real a;             /* Lattice spacing for converting wave function file */
-  Real d1;            /* Fermilab 3D rotation parameter */
-  int dir1, dir2;     /* Directions for derivatives and hopping */
-  int disp;           /* Stride for derivatives */
-  Real weights[MAXWEIGHTS];  /* Weights for derivatives */
-  int dhop;           /* 0 for hop, 1 for 1st deriv of hop, 2 for 2nd */
-  int fb;             /* For hop: +1 = forward only, -1 = backward only, 0 = both */
-  int iters;          /* iterations for covariant gaussian source */
-  Real r0;            /* source size for gaussian, width for gauge invt  */
-  int stride;         /* Subset flag for gaussian source */
-  int r_offset[4];    /* Coordinate offset for phases for some operators */
-  int spin_taste;     /* For staggered fermions for some operators */
-  int gamma;          /* For Dirac fermions for some operators */
-  int mom[3];         /* insertion momentum for some operators */
-  char source_file[MAXFILENAME]; /* file name for some sources */
-  dirac_clover_param dcp; /* For Dirac solver */
-  char kappa_label[32]; /* For Dirac solver */
-  ks_param ksp;        /* For KS solver */
-  char mass_label[32]; /* For KS solver */
-  Real eps_naik;      /* Naik epsilon for KS hopping operator and KS inverse */
-  quark_invert_control qic; /* For Dirac and KS solver */
-  Real bp[4];         /* Boundary phase for Dirac and KS solvers */
-  int t0;             /* For time slice projection */
-  struct qss_op_struct *op;   /* Next operation in the chain */
-};
-
+/* Forward declaration of qss_op_struct as it will be used in 
+   quark_source definition. The actual definition of qss_op_struct
+   is at the end of the file */
+struct qss_op_struct;
 typedef struct qss_op_struct quark_source_sink_op;
 
 /* Structure defining a staggered or Wilson (or clover) quark source */
@@ -267,6 +260,38 @@ typedef struct {
 
 } quark_source;
 
+
+/* Structure defining a quark source operator */
+struct qss_op_struct {
+  int type;           /* operator type */
+  char descrp[MAXDESCRP]; /* alpha description for most */
+  char label[MAXSRCLABEL]; /* Abbreviation of description */
+  Real a;             /* Lattice spacing for converting wave function file */
+  Real d1;            /* Fermilab 3D rotation parameter */
+  int dir1, dir2;     /* Directions for derivatives and hopping */
+  int disp;           /* Stride for derivatives */
+  Real weights[MAXWEIGHTS];  /* Weights for derivatives */
+  int dhop;           /* 0 for hop, 1 for 1st deriv of hop, 2 for 2nd */
+  int fb;             /* For hop: +1 = forward only, -1 = backward only, 0 = both */
+  int iters;          /* iterations for covariant gaussian source */
+  Real r0;            /* source size for gaussian, width for gauge invt  */
+  int stride;         /* Subset flag for gaussian source */
+  int r_offset[4];    /* Coordinate offset for phases for some operators */
+  int spin_taste;     /* For staggered fermions for some operators */
+  int gamma;          /* For Dirac fermions for some operators */
+  int mom[3];         /* insertion momentum for some operators */
+  char source_file[MAXFILENAME]; /* file name for some sources */
+  dirac_clover_param dcp; /* For Dirac solver */
+  char kappa_label[32]; /* For Dirac solver */
+  ks_param ksp;        /* For KS solver */
+  char mass_label[32]; /* For KS solver */
+  Real eps_naik;      /* Naik epsilon for KS hopping operator and KS inverse */
+  quark_invert_control qic; /* For Dirac and KS solver */
+  Real bp[4];         /* Boundary phase for Dirac and KS solvers */
+  int t0;             /* For time slice projection */
+  quark_source qs_save; /* for SAVE_QUARK_SRC */
+  struct qss_op_struct *op;   /* Next operation in the chain */
+};
 
 #endif /* _GENERIC_QUARK_TYPES_H */
 

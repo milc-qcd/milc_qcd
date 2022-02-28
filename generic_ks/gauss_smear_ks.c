@@ -165,6 +165,12 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
   FORALLSITES_OMP(i,s,){
     if(t0 == ALL_T_SLICES || s->t == t0){
       su3vec_copy( (su3_vector *)gen_pt[OPP_DIR(dir)][i], dest + i);
+    } END_LOOP_OMP;
+  } else {
+    FORALLSITES(i,s){
+      if(s->t == t0){
+	su3vec_copy( (su3_vector *)gen_pt[OPP_DIR(dir)][i], dest + i);
+      }
     }
   } END_LOOP_OMP
 
@@ -211,6 +217,17 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
       sub_su3_vector( chi + i, wtmp[XDOWN] + i, chi + i);
       sub_su3_vector( chi + i, wtmp[YDOWN] + i, chi + i);
       sub_su3_vector( chi + i, wtmp[ZDOWN] + i, chi + i);
+    } END_LOOP_OMP;
+  } else {
+    FORALLSITES(i,s){
+      if(t0 == ALL_T_SLICES || s->t == t0){
+	sub_su3_vector( chi + i, wtmp[XUP] + i, chi + i);
+	sub_su3_vector( chi + i, wtmp[YUP] + i, chi + i);
+	sub_su3_vector( chi + i, wtmp[ZUP] + i, chi + i);
+	sub_su3_vector( chi + i, wtmp[XDOWN] + i, chi + i);
+	sub_su3_vector( chi + i, wtmp[YDOWN] + i, chi + i);
+	sub_su3_vector( chi + i, wtmp[ZDOWN] + i, chi + i);
+      }
     }
   } END_LOOP_OMP
 

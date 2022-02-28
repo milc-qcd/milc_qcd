@@ -1,5 +1,9 @@
 // Mapping between MILC and Grid types
 
+#if defined(_OPENMP)
+#include "../include/openmp_defs.h"
+#endif
+
 #include <Grid/Grid.h>
 
 #include "../include/mGrid/mGrid_internal.h"
@@ -11,7 +15,8 @@ extern "C" {
 }
 
 #include "../include/milc_datatypes.h"
-#include "../include/openmp_defs.h"
+#include "../include/macros.h"
+
 extern	int sites_on_node;		/* number of sites on this node */
 extern	int even_sites_on_node;	/* number of even sites on this node */
 extern  int this_node;
@@ -487,7 +492,7 @@ GRID_destroy_5DRBgrid(GRID_5DRBgrid *grid){
 // create color vector
 GRID_F3_ColorVector *
 GRID_F3_create_V( int milc_parity, GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
-  create_V<ImprovedStaggeredFermionF>( milc_parity, grid_full->gridF, grid_rb->gridF );
+  return create_V<ImprovedStaggeredFermionF>( milc_parity, grid_full->gridF, grid_rb->gridF );
 }
 
 // create block color vector
@@ -495,14 +500,15 @@ GRID_F3_ColorVectorBlock *
 GRID_F3_create_nV( int n, int milc_parity, 
 		   GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb,
 		   GRID_4Dgrid *grid_full,GRID_4DRBgrid *grid_rb ){
-  create_nV<ImprovedStaggeredFermion5DF>( n, milc_parity, grid_5D->gridF, grid_5Drb->gridF,
-					  grid_full->gridF, grid_rb->gridF );
+  return create_nV<ImprovedStaggeredFermion5DF>( n, milc_parity, grid_5D->gridF,
+						 grid_5Drb->gridF,
+						 grid_full->gridF, grid_rb->gridF );
 }
 
 // create color vector
 GRID_D3_ColorVector *
 GRID_D3_create_V( int milc_parity, GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
-  create_V<ImprovedStaggeredFermionD>( milc_parity, grid_full->gridD, grid_rb->gridD );
+  return create_V<ImprovedStaggeredFermionD>( milc_parity, grid_full->gridD, grid_rb->gridD );
 }
 
 // ceate block color vector
@@ -510,8 +516,9 @@ GRID_D3_ColorVectorBlock *
 GRID_D3_create_nV( int n, int milc_parity,
                    GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
                    GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb ){
-  create_nV<ImprovedStaggeredFermion5DD>( n, milc_parity, grid_5D->gridD, grid_5Drb->gridD,
-					  grid_full->gridD, grid_rb->gridD );
+  return create_nV<ImprovedStaggeredFermion5DD>( n, milc_parity, grid_5D->gridD,
+						 grid_5Drb->gridD,
+						 grid_full->gridD, grid_rb->gridD );
 }
 
 // free color vector

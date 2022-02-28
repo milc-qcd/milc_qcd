@@ -179,6 +179,7 @@ int main(int argc, char *argv[])
 	  
 	  /* Write the source, if requested */
 	  if(qs->saveflag != FORGET){
+	    qs->color = color;
 	    if(w_source_ks( v_source[k]->v[color], qs ) != 0)
 	      node0_printf("Error writing source\n");
 	  }
@@ -255,6 +256,7 @@ int main(int argc, char *argv[])
 	  
 	  /* Write the source, if requested */
 	  if(qs->saveflag != FORGET){
+	    qs->color = color;
 	    if(w_source_ks( v_source[is]->v[color], qs ) != 0)
 	      node0_printf("Error writing source\n");
 	  }
@@ -691,7 +693,7 @@ int main(int argc, char *argv[])
   free_lattice();
 
 #ifdef HAVE_QUDA
-  qudaFinalize();
+  finalize_quda();
 #endif
   normal_exit(0);
 

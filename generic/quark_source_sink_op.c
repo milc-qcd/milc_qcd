@@ -31,6 +31,9 @@
    funnywall1                 pion5 + pioni5 + pioni + pions + rhoi + rhos
    funnywall2                 pion05 + pionij + pioni0 + pion0 + rhoi0 + rho0
    ks_inverse                 Multiply by a staggered propagator
+   save_vector_src            Save a vector field as a source for loading with vector_field.
+                              The vector will not be modified, but the saved vector may
+                              be restricted to the specified timeslice.                         
    spin_taste
    spin_taste_extend
 
@@ -1129,7 +1132,7 @@ get_spin_taste(void){
   
   /* Decode spin-taste label */
   for(mu = 0; mu < NMU; mu++){
-    char dummy[6];
+    char dummy[7];
     strncpy(dummy, spin_taste_label[mu], 6);
     spin_taste[mu] = spin_taste_index(dummy);
   }
@@ -1208,6 +1211,14 @@ static void apply_par_xport_v(su3_vector *src, quark_source_sink_op *qss_op){
   //destroy_G(g_links);
 }
 
+static void apply_save_vector_src_v(su3_vector *src, 
+			    quark_source_sink_op *qss_op){
+
+  if(qss_op->qs_save.saveflag != FORGET){
+	  if(w_source_ks(src, &qss_op->qs_save) != 0)
+	    node0_printf("Error writing source\n");
+	}
+}
 
 static void apply_ext_src_v(su3_vector *src, 
 			    quark_source_sink_op *qss_op){
@@ -1911,6 +1922,9 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
   else if(op_type == PAR_XPORT_SRC_KS)
     apply_par_xport_v(src, qss_op);
 
+  else if (op_type == SAVE_VECTOR_SRC)
+    apply_save_vector_src_v(src, qss_op);
+
   else if(op_type == EXT_SRC_KS)
     apply_ext_src_v(src, qss_op);
 
@@ -2050,12 +2064,29 @@ void ksp_sink_op(quark_source_sink_op *qss_op, ks_prop_field *ksp )
   int color;
   su3_vector *v = create_v_field();
 
+  /* Initilize source files if saving as source */
+  if (qss_op->type  == SAVE_VECTOR_SRC) {
+    if(qss_op->qs_save.saveflag != FORGET){
+      char *fileinfo = create_ks_XML();
+      w_source_open_ks(&qss_op->qs_save, fileinfo);
+      free(fileinfo);
+    }
+  }
+
+  /* Actual work here */
   for(color = 0; color < ksp->nc; color++){
+    if (qss_op->type == SAVE_VECTOR_SRC) {
+      /* Important to keep track of internal color counter */
+      qss_op->qs_save.color = color; 
+    }
       copy_v_from_ksp(v, ksp, color);
-      v_field_op( v, qss_op, FULL, ALL_T_SLICES);
+      v_field_op(v, qss_op, FULL, ALL_T_SLICES);
       insert_ksp_from_v(ksp, v, color);
   }
   
+  if (qss_op->type  == SAVE_VECTOR_SRC) {
+    if(qss_op->qs_save.saveflag != FORGET) w_source_close(&qss_op->qs_save);
+  }
   destroy_v_field(v);
 } /* ksp_sink_op */
 
@@ -2128,6 +2159,7 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     printf("'modulation', ");
     printf("'project_t_slice', ");
     printf("'par_xport_src_ks', ");
+    printf("'save_vector_src', ");
     printf("'ext_src_ks', ");
     printf("'ext_src_dirac', ");
     printf("\n     ");
@@ -2182,6 +2214,10 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
   else if(strcmp("par_xport_src_ks",savebuf) == 0 ){ 
     *source_type = PAR_XPORT_SRC_KS;
     strcpy(descrp,"par_xport_src_ks");
+  }
+  else if(strcmp("save_vector_src",savebuf) == 0 ){
+    *source_type = SAVE_VECTOR_SRC;
+    strcpy(descrp,"save_vector_src");
   }
   else if(strcmp("ext_src_ks",savebuf) == 0 ){
     *source_type = EXT_SRC_KS;
@@ -2417,6 +2453,33 @@ static int get_field_op(int *status_p, FILE *fp,
       printf("\n%i is not a valid displacement\n",qss_op->disp);
       status++;
     }    
+  }
+  else if ( op_type == SAVE_VECTOR_SRC ){
+    IF_OK {
+      int source_type, saveflag_s;
+      char descrp[MAXDESCRP];
+      char savefile_s[MAXFILENAME];
+
+      IF_OK init_qs(&qss_op->qs_save);
+    
+      status +=
+        ask_output_quark_source_file(fp, prompt, &saveflag_s,
+              &source_type, NULL, descrp,
+              savefile_s );
+      IF_OK {
+        qss_op->qs_save.savetype = source_type;
+        qss_op->qs_save.saveflag = saveflag_s;
+        strcpy(qss_op->qs_save.save_file, savefile_s);
+        if(saveflag_s != FORGET && source_type != VECTOR_FIELD_FILE){
+          printf("Unsupported output source type\n");
+          status++;
+        }
+      } /* OK */
+    } /* OK */
+
+    /* Get t0 */
+    IF_OK status += get_i(fp, prompt, "t0", &qss_op->t0);
+    qss_op->qs_save.t0 = qss_op->t0;
   }
   else if ( op_type == EXT_SRC_KS ){
     char gam_op_lab[MAXGAMMA];

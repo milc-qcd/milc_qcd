@@ -46,7 +46,7 @@ read_ks_fm_source_hdr(ks_fm_source_file *kssf)
   if(kssh->magic_number == IO_UNI_MAGIC) byterevflag = 0;
   else 
     {
-      byterevn((int32type *)&kssh->magic_number,1);
+      byterevn((u_int32type *)&kssh->magic_number,1);
       if(kssh->magic_number == IO_UNI_MAGIC) 
 	{
 	  byterevflag = 1; 
@@ -287,7 +287,7 @@ r_source_ks_fm(ks_fm_source_file *kssf,
 	  {
 	    vfix = ksmsg.q;
 	    if(byterevflag==1)
-	      byterevn((int32type *)&vfix, 
+	      byterevn((u_int32type *)&vfix, 
 		       sizeof(fsu3_vector)/sizeof(int32type));
 	    
 	    /* Now copy the site data into the destination converting

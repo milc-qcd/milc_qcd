@@ -54,7 +54,7 @@ typedef struct {
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int niter,nrestart,wallflag;
 EXTERN	Real kappa;
 EXTERN	Real clov_c,u0;

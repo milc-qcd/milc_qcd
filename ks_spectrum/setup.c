@@ -519,6 +519,7 @@ int readin(int prompt) {
     IF_OK for(k = 0; k < param.num_set; k++){
       int max_cg_iterations, max_cg_restarts;
       int check = CHECK_NO;
+      char mgparamfile[MAXFILENAME] = "";
 
 #ifdef MULTISOURCE
       IF_OK status += get_s(stdin, prompt, "set_type", savebuf);
@@ -536,16 +537,40 @@ int readin(int prompt) {
 	}
       }
 #else
-	  param.set_type[k] = MULTIMASS_SET;
+      param.set_type[k] = MULTIMASS_SET;
 #endif
-      /* maximum no. of conjugate gradient iterations */
-      IF_OK status += get_i(stdin,prompt,"max_cg_iterations",
-			    &max_cg_iterations );
 
-      /* maximum no. of conjugate gradient restarts */
-      IF_OK status += get_i(stdin,prompt,"max_cg_restarts",
-			    &max_cg_restarts );
+#ifdef MULTIGRID
+      IF_OK status += get_s(stdin, prompt, "inv_type", savebuf);
+      IF_OK {
+	if(strcmp(savebuf,"MG") == 0)
+	  param.inv_type[k] = MGTYPE;
+	else if(strcmp(savebuf,"CG") == 0)
+	  param.inv_type[k] = CGTYPE;
+	else {
+	  printf("Unrecognized inverter type %s\n",savebuf);
+	  printf("Choices are 'CG', 'MG'\n");
+	  status++;
+	}
+      }
+#else
+      param.inv_type[k] = CGTYPE;
+#endif
+      
+      IF_OK {
+        if (param.inv_type[k] == MGTYPE) {
+          IF_OK status += get_s(stdin, prompt, "MGparams", mgparamfile);
+        }
 
+	  /* maximum no. of conjugate gradient iterations */
+        IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
+ 				&max_cg_iterations );
+	  
+	  /* maximum no. of conjugate gradient restarts */
+        IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
+				&max_cg_restarts );
+      }
+	  
       /* Should we be checking (computing) the propagator by running
 	 the solver? */
 
@@ -624,6 +649,11 @@ int readin(int prompt) {
 	status++;
       }
 
+      if( param.inv_type[k] == MGTYPE && param.set_type[k] == MULTIMASS_SET
+	  && param.num_prop[k] > 1){
+	node0_printf("WARNING: Multigrid support for multimass is currently emulated via separate inversions\n");
+      }
+
       /* Indexing range for set */
       param.begin_prop[k] = nprop;
       param.end_prop[k] = nprop + param.num_prop[k] - 1;
@@ -672,6 +702,9 @@ int readin(int prompt) {
 	/*------------------------------------------------------------*/
 	/* Propagator inversion control                               */
 	/*------------------------------------------------------------*/
+	
+        /* inversion type */
+        param.qic[nprop].inv_type = param.inv_type[k];
 
 	/* maximum no. of conjugate gradient iterations */
 	param.qic[nprop].max = max_cg_iterations;
@@ -679,6 +712,9 @@ int readin(int prompt) {
 	/* maximum no. of conjugate gradient restarts */
 	param.qic[nprop].nrestart = max_cg_restarts;
 
+	/* multigrid parameter file name */
+	strncpy(param.qic[nprop].mgparamfile, mgparamfile, MAXFILENAME);
+      
 	/* Should we be deflating? */
 	param.qic[nprop].deflate = 0;
 	IF_OK {
@@ -699,6 +735,32 @@ int readin(int prompt) {
 	/* Parameter used by QOPQDP inverter for mixed-precision solves */
 	IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic[nprop].mixed_rsq );
 #endif
+
+#ifdef MULTIGRID
+  /* parameter within MG solve to specify how to refresh the coarse op */
+
+  IF_OK {
+    if (param.inv_type[k] == MGTYPE) {
+      IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
+      IF_OK {
+        if(strcmp(savebuf,"FULL") == 0)
+          param.qic[nprop].mg_rebuild_type = FULLREBUILD;
+        else if(strcmp(savebuf,"THIN") == 0)
+          param.qic[nprop].mg_rebuild_type = THINREBUILD;
+        else if(strcmp(savebuf,"CG") == 0)
+          param.qic[nprop].mg_rebuild_type = CGREBUILD;
+        else {
+          printf("Unrecognized rebuild type %s\n",savebuf);
+          printf("Choices are 'FULL', 'THIN', 'CG'\n");
+          status++;
+        }
+      }
+    }
+  }
+#else
+  param.qic[nprop].mg_rebuild_type = CGREBUILD;
+#endif
+
 	/* Precision for all members of the set must be the same */
 	param.qic[nprop].prec = param.qic[0].prec;
 
@@ -1609,8 +1671,8 @@ int readin(int prompt) {
 
   /* Don't need to save HISQ auxiliary links */
   fermion_links_want_aux(0);
-
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+  
+#if FERM_ACTION == HISQ
 
 #ifdef DM_DEPS
   fermion_links_want_deps(1);

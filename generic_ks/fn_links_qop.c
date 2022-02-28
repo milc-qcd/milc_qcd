@@ -198,6 +198,3 @@ su3_matrix *get_lngbacklinks(fn_links_qop_t *fn){
   return NULL;
 }
 
-
-
-

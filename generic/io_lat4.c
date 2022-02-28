@@ -156,7 +156,7 @@ static void w_serial_old(gauge_file *gf)
   int rank29,rank31;
   fsu3_matrix *lbuf = NULL;
   fsu3_matrix tbuf[4];
-  int buf_length;
+  size_t buf_length;
   register int i,j,k;
   off_t offset;             /* File stream pointer */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
@@ -552,11 +552,11 @@ static void r_serial(gauge_file *gf)
   off_t coord_list_size;    /* Size of coordinate list in bytes */
   off_t head_size;          /* Size of header plus coordinate list */
   off_t checksum_offset = 0; /* Where we put the checksum */
-  int rcv_rank, rcv_coords;
+  size_t rcv_rank, rcv_coords;
   int destnode;
   int k;
   int x,y,z,t;
-  int buf_length = 0, where_in_buf = 0;
+  size_t buf_length = 0, where_in_buf = 0;
   gauge_check test_gc;
   u_int32type *val;
   int rank29,rank31;
@@ -694,7 +694,7 @@ static void r_serial(gauge_file *gf)
       if(this_node==destnode)
 	{
 	  if(byterevflag==1)
-	    byterevn((int32type *)tmpsu3,
+	    byterevn((u_int32type *)tmpsu3,
 		     4*sizeof(fsu3_matrix)/sizeof(int32type));
 	  /* Accumulate checksums */
 	  for(k = 0, val = (u_int32type *)tmpsu3; 
@@ -749,7 +749,7 @@ static void r_serial(gauge_file *gf)
       fflush(stdout);
       free(lbuf);
     }
-  
+
 } /* r_serial */
 
 /*----------------------------------------------------------------------*/
@@ -761,7 +761,7 @@ static void r_serial_arch(gauge_file *gf)
   FILE *fp;
   char *filename;
 
-  int rcv_rank, rcv_coords;
+  size_t rcv_rank, rcv_coords;
   int destnode;
   int i,k;
   int x,y,z,t;
@@ -849,7 +849,7 @@ static void r_serial_arch(gauge_file *gf)
 		     myname,this_node,errno,filename); 
 	      fflush(stdout); terminate(1);
 	    }
-	  if (!big_end) byterevn((int32type *)uin,realspersite);
+	  if (!big_end) byterevn((u_int32type *)uin,realspersite);
 	  q = uin;
 	  for (mu=0;mu<4;mu++) {
 	    for (p=0;p<realspersite/4;p++) {
@@ -878,7 +878,7 @@ static void r_serial_arch(gauge_file *gf)
 		     myname,this_node,errno,filename); 
 	      fflush(stdout); terminate(1);
 	    }
-	  if (!big_end) byterevn64((int32type *)uind,realspersite);
+	  if (!big_end) byterevn64((u_int32type *)uind,realspersite);
 	  qd = uind;
 	  for (mu=0;mu<4;mu++) {
 	    for (p=0;p<realspersite/4;p++) {
@@ -1001,7 +1001,7 @@ static void w_parallel(gauge_file *gf)
     short x,y,z,t;
     fsu3_matrix link[4];
   } msg;
-  int isite,ksite,site_block;
+  size_t isite,ksite,site_block;
   size_t rcv_coords,rcv_rank,tmp_rank;
   int destnode,sendnode;
   char myname[] = "w_parallel";
@@ -1341,16 +1341,17 @@ static void r_parallel(gauge_file *gf)
   int buf_length,where_in_buf;
   gauge_check test_gc;
   u_int32type *val;
-  int rank29,rank31;
-  int destnode,sendnode,isite,ksite,site_block;
+  size_t rank29,rank31;
+  int destnode,sendnode;
+  size_t isite,ksite,site_block;
   int x,y,z,t;
-  int rcv_rank,rcv_coords;
+  size_t rcv_rank,rcv_coords;
   register int i,k;
 
   off_t offset ;            /* File stream pointer */
-  off_t gauge_node_size;   /* Size of a gauge configuration block for
+  off_t gauge_node_size;    /* Size of a gauge configuration block for
                               all sites on one node */
-  off_t gauge_check_size;  /* Size of gauge configuration checksum record */
+  off_t gauge_check_size;   /* Size of gauge configuration checksum record */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
   off_t head_size;          /* Size of header plus coordinate list */
   off_t checksum_offset;    /* Where we put the checksum */
@@ -1485,7 +1486,7 @@ static void r_parallel(gauge_file *gf)
 	    
 	    /* Do byte reversal if needed */
 	    if(gf->byterevflag==1)
-	      byterevn((int32type *)&lbuf[4*where_in_buf],
+	      byterevn((u_int32type *)&lbuf[4*where_in_buf],
 		       4*sizeof(fsu3_matrix)/sizeof(int32type));
 
 	    /* Accumulate checksums - contribution from next site */
@@ -1535,6 +1536,7 @@ static void r_parallel(gauge_file *gf)
 
     g_sync(); /* To prevent incoming message pileups */
   }  /** end over blocks **/
+
 
   free(lbuf);
 
@@ -2071,7 +2073,7 @@ gauge_file *save_serial_archive(char *filename) {
     }
 
     if(this_node==0){
-      if (!big_end_p) byterevn((int32type *)uout,48*vol3);
+      if (!big_end_p) byterevn((u_int32type *)uout,48*vol3);
       if(g_write(uout,48*vol3*sizeof(OUTPUT_TYPE),1,outfile) != 1)
 	printf("g_write bombed...\n");
       fflush(outfile);

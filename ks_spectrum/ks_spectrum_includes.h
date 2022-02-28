@@ -22,8 +22,6 @@
 #include "../include/dirs.h"
 #include "../include/io_u1lat.h"
 #include "../include/generic_u1.h"
-#define MULTIMASS_SET 0
-#define MULTISOURCE_SET 1
 
 #ifdef GB_BARYON
 #include "../include/gb_ops.h"
@@ -34,7 +32,7 @@
 
 #ifdef PRTIME
 #define STARTTIME dtime = -dclock();
-#define ENDTIME(string) dtime += dclock(); node0_printf("Aggregate time to %s %e\n",(string),dtime);
+#define ENDTIME(string) dtime += dclock(); node0_printf("Aggregate time to %s %e\n",(string),dtime);  fflush(stdout);
 #else
 #define STARTTIME
 #define ENDTIME(string)
