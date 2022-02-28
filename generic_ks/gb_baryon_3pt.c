@@ -1,8 +1,5 @@
 #include "generic_ks_includes.h"
-#ifndef _OMP_HEADER
-  #define _OMP_HEADER
-  #include <omp.h>
-#endif
+#include "../include/openmp_defs.h"
 /*
  Unit test -
   Source should be point-split point source
@@ -99,15 +96,9 @@ sym_shift_3pt(int dir, short doBW, su3_vector *dest, su3_vector *src, su3_matrix
   #ifdef NO_SINK_LINKS
     copy_v_field(cvec1,src);
   #else
-    #ifdef OMP
-      #pragma omp parallel for \
-        shared(links, dir, src, cvec1) \
-        private(i) \
-        schedule(static)
-    #endif // OMP
-    FORALLFIELDSITES(i) { 
+    FORALLFIELDSITES_OMP(i,) { 
       mult_adj_su3_mat_vec( links+4*i+dir, src+i, cvec1+i ); 
-    }
+    } END_LOOP_OMP
   #endif // NO_SINK_LINKS
 
   #ifndef ONE_SIDED_SHIFT_GB
@@ -116,34 +107,22 @@ sym_shift_3pt(int dir, short doBW, su3_vector *dest, su3_vector *src, su3_matrix
   #endif
   wait_gather(tag[0]);
 
-  #ifdef OMP
-  #pragma omp parallel for \
-    shared(gen_pt, dest, links, dir) \
-    private(i) \
-    schedule(static)
-  #endif // OMP
-  FORALLFIELDSITES(i) {
+  FORALLFIELDSITES_OMP(i,) {
     #ifdef NO_SINK_LINKS 
       su3vec_copy( (su3_vector *)gen_pt[0][i], dest+i); 
     #else
       mult_su3_mat_vec( links+4*i+dir, (su3_vector*)gen_pt[0][i], dest+i );
     #endif // NO_SINK_LINKS
-  } 
+  } END_LOOP_OMP
   cleanup_gather(tag[0]);
 
   #ifndef ONE_SIDED_SHIFT_GB
     wait_gather(tag[1]);
 
-    #ifdef OMP
-      #pragma omp parallel for \
-        shared(dest, gen_pt) \
-        private(i) \
-        schedule(static)
-    #endif // OMP
-    FORALLFIELDSITES(i) {
+    FORALLFIELDSITES_OMP(i,) {
       add_su3_vector(dest+i, (su3_vector*)gen_pt[1][i], dest+i ); 
       scalar_mult_su3_vector( dest+i, .5, dest+i ); 
-    }
+    } END_LOOP_OMP
 
     cleanup_gather(tag[1]);
   #endif // ONE_SIDED_SHIFT_GB
@@ -214,54 +193,40 @@ apply_par_xport_3pt(ks_prop_field *dest, ks_prop_field *src,
     apply_sym_shift_3pt(n,d[0],r0,doBW,tvec0,tsrc,links);
     apply_sym_shift_3pt(n,d[1],r0,doBW,tvec1,tsrc,links);
 
+    #pragma omp parallel for private(c,i) collapse(2)
     for(c=0;c<3;c++){
-      #ifdef OMP
-        #pragma omp parallel for \
-          shared(tvec0, tvec1, dest, c, lattice, sites_on_node) \
-          private(i,s) \
-          schedule(static)
-      #endif // OMP
       for(i=0;i<sites_on_node;i++) {
-        s = lattice + i; // FORALLSITES doesnt work with openmp
         add_su3_vector( &tvec0->v[c][i], &tvec1->v[c][i], &dest->v[c][i] );
         scalar_mult_su3_vector( &dest->v[c][i], 0.5, &dest->v[c][i] );
       }
-   }
+    } // END OMP LOOPS
   }
   else if (n == 3){
     /* three link */
     /* use the d given */  
   for(j=0;j<6;j++){
     apply_sym_shift_3pt(n,d[j],r0,doBW,tvec0,tsrc,links);
-    if(j==0) copy_ksp_field(tvec1,tvec0);
-    else for(c=0;c<3;c++){
-      #ifdef OMP
-        #pragma omp parallel for \
-          shared(tvec0, tvec1, c) \
-          private(i) \
-          schedule(static)
-      #endif // OMP
-      FORALLFIELDSITES(i){
-        add_su3_vector(&tvec1->v[c][i],&tvec0->v[c][i],&tvec1->v[c][i]);
-      }
+    if(j==0) {
+      copy_ksp_field(tvec1,tvec0);
+    } else {
+      #pragma omp parallel for private(c,i) collapse(2)
+      for(c=0;c<3;c++){
+	for(i=0;i<sites_on_node;i++) {
+	  add_su3_vector(&tvec1->v[c][i],&tvec0->v[c][i],&tvec1->v[c][i]);
+	}
+      } // END OMP LOOPS
     }
   }
+  #pragma omp parallel for private(c,i) collapse(2)
   for(c=0;c<3;c++){
-    #ifdef OMP
-      #pragma omp parallel for \
-        shared(dest, tvec1, c, lattice, sites_on_node) \
-        private(i,s) \
-        schedule(static)
-    #endif // OMP
     for(i=0;i<sites_on_node;i++) {
-      s = lattice + i; // FORALLSITES doesnt work with openmp
       scalar_mult_su3_vector( &tvec1->v[c][i], 1./6., &dest->v[c][i] );
     }
-  }
-  }
+  } // END OMP LOOPS
+  } // END c==3
   destroy_ksp_field(tvec1);
   destroy_ksp_field(tvec0);
   destroy_ksp_field(tsrc);
-}
+  }
 
 #endif // GB_BARYON

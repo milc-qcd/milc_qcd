@@ -6,7 +6,7 @@
 #
 
 # This file
-MAKEFILE = Makefile
+MAKEFILE = Makefile_QPHIX_cori_knl
 
 #----------------------------------------------------------------------
 #  User choices - edit to suit 
@@ -14,24 +14,24 @@ MAKEFILE = Makefile
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH ?= # skx knl knc hsw pow8 pow9
+ARCH ?= knl # skx knl knc hsw pow8 pow9
 
 #----------------------------------------------------------------------
 # 2. Compiler family
 
-COMPILER ?= gnu # intel, ibm, portland, cray-intel
+COMPILER ?= cray-intel # intel, ibm, portland, cray-intel
 
 #----------------------------------------------------------------------
 # 3. MPP vs Scalar
 
 # Compiling for a parallel machine?  blank for a scalar machine
-MPP ?= false
+MPP ?= true
 
 #----------------------------------------------------------------------
 # 4. Precision 
 
 # 1 = single precision; 2 = double
-PRECISION ?= 1
+PRECISION ?= 2
 
 #----------------------------------------------------------------------
 # 5. Compiler
@@ -104,7 +104,7 @@ OPT              ?= -O3
 
 # OpenMP?
 
-OMP ?= #true
+OMP ?= true
 
 #----------------------------------------------------------------------
 # 7. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -288,9 +288,9 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 
 WANTQOP ?= # true # or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
 
-WANTQIO ?= # true # or blank.  Implies HAVEQMP.
+WANTQIO ?= true # or blank.  Implies HAVEQMP.
 
-WANTQMP ?= # true or blank.
+WANTQMP ?= true or blank.
 
 # QMP_MPI or QMP_SPI
 QMP_BACKEND = QMP_MPI
@@ -298,8 +298,8 @@ QMP_BACKEND = QMP_MPI
 # Edit these locations for the installed SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
-SCIDAC = ${HOME}/scidac/install
-TAG=
+SCIDAC = ${HOME}/software/scidac/install
+TAG=-2.5.0-cc
 # Parallel versions
 QMPPAR ?= ${SCIDAC}/qmp${TAG}
 QIOPAR ?= $(SCIDAC)/qio${TAG}
@@ -412,7 +412,6 @@ WANT_FN_CG_GPU ?= #true
 WANT_FL_GPU ?= #true
 WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
-WANT_GSMEAR_GPU ?= #true
 
 # enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
 WANT_MIXED_PRECISION_GPU ?= 0
@@ -423,13 +422,13 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   INCQUDA = -I${QUDA_HOME}/include -I${QUDA_HOME}/tests
   PACKAGE_HEADERS += ${QUDA_HOME}/include
-  LIBQUDA = -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda -ldl
+  LIBQUDA = -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
 
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcublas -lcufft -lcublas
+  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
@@ -461,10 +460,6 @@ ifeq ($(strip ${WANTQUDA}),true)
     CGPU += -DUSE_FF_GPU
   endif
 
-  ifeq ($(strip ${WANT_GSMEAR_GPU}),true)
-    HAVE_GSMEAR_QUDA = true
-    CGPU += -DUSE_GSMEAR_QUDA
-
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
     CGPU += -DHALF_MIXED # use single precision where appropriate
   else ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),2)
@@ -483,7 +478,7 @@ endif
 #----------------------------------------------------------------------
 # 16. QPhiX Options
 
-WANTQPHIX = #true
+WANTQPHIX = true
 WANT_FN_CG_QPHIX = true
 WANT_GF_QPHIX = true
 
@@ -709,7 +704,7 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 
 # REMAP  report remapping time for QDP, QOP in conjunction with above
 
-CTIME ?= # -DNERSC_TIME -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
+CTIME = -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
 
 #------------------------------
 # Profiling
@@ -862,10 +857,8 @@ CPREFETCH = #
 # POLY_EIGEN
 # MATVEC_PRECOND
 # CHEBYSHEV_EIGEN
-# MULTISOURCE
-# MULTIGRID
 
-KSCGMULTI ?= -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
+KSCGMULTI = -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
 
 #------------------------------
 # Multifermion force routines

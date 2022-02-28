@@ -95,6 +95,7 @@ KS_LINKS_OBJECTS = \
   fermion_links_from_site.o \
   f_meas.o \
   gauss_smear_ks.o \
+  gauss_smear_ks_QUDA.o \
   grsource_imp.o    \
   naik_eps_utilities.o \
   path_transport.o \
