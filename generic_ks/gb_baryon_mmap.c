@@ -2,7 +2,7 @@
 #include "generic_ks_includes.h"
 #include "../include/generic_ks.h"
 
-#define GB_DIRECTORY "/scratch"
+#define GB_DIRECTORY "/tmp"
 //#define NO_SINK_LINKS
 
 //#define DO_MSYNC

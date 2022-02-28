@@ -802,6 +802,7 @@ int main(int argc, char *argv[])
 
 #ifdef GB_BARYON_MMAP
           node0_printf("Creating gb baryon cache\n");
+	  double gbcachestart = dclock();
           if (i == 0) {
             // all new, create or copy
             create_qk_oct_cache(qko0,0,param.r_offset_gb[i],ape_links);
@@ -890,8 +891,8 @@ int main(int argc, char *argv[])
           jqo2 = iqo2;
           endtime=dclock();
           node0_printf("Done creating gb baryon cache\n");
-          node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
-          //node0_printf("Time = %e seconds\n",(double)(endtime-gbcachestart));
+          //node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
+          node0_printf("Time to create gb baryon cache %e sec\n",endtime-gbcachestart);
     #endif
 
           /* Tie together to generate hadron spectrum */
@@ -913,7 +914,7 @@ int main(int argc, char *argv[])
     endtime=dclock();
 
     node0_printf("GB BARYON COMPLETED\n");
-    node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
+    //node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
 #endif 
 
     node0_printf("RUNNING COMPLETED\n");
