@@ -1,10 +1,10 @@
 # Library versions and git branch tags
 
-QMPV= 2.5.0
-QMPT= qmp2-5-0
+QMPV= quda-1.1.0-consistent
+QMPT= 3010fef  
 
-QIOV= 2.5.0
-QIOT= qio2-5-0
+QIOV= quda-1.1.0-consistent
+QIOT= a5c3ae580b846130c06dc060ab822f17d6fe2171
 
 QLAV= 1.9.0
 QLAT= qla1-9-0
@@ -34,8 +34,10 @@ install_qopqdp: ../install/qopqdp-$(QOPV)
 
 ../src/qmp-$(QMPV):
 	@echo Checkout $(QMPT)
-	git clone https://github.com/usqcd-software/qmp.git --branch $(QMPT) --single-branch ../src/qmp-$(QMPV)
-	( cd ../src/qmp-$(QMPV) && autoreconf -fi )
+	( git clone https://github.com/usqcd-software/qmp.git ../src/qmp-$(QMPV) && \
+	  cd ../src/qmp-$(QMPV) && \
+          git checkout $(QMPT) && \
+          autoreconf -fi )
 
 ../install/qmp-$(QMPV)-single: ../src/qmp-$(QMPV)
 	@echo Install qmp-$(QMPV)-single
@@ -49,8 +51,9 @@ install_qopqdp: ../install/qopqdp-$(QOPV)
 
 ../src/qio-$(QIOV):
 	@echo Checkout $(QIOT)
-	( git clone https://github.com/usqcd-software/qio.git --branch extended --single-branch ../src/qio-$(QIOV) && \
+	( git clone https://github.com/usqcd-software/qio.git ../src/qio-$(QIOV) && \
 	  cd ../src/qio-$(QIOV) && \
+	  git checkout $(QIOT) && \
 	  git clone https://github.com/usqcd-software/c-lime.git other_libs/c-lime && \
 	  ( cd other_libs/c-lime && autoreconf -fi ) && autoreconf -fi )
 

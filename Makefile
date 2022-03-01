@@ -464,6 +464,7 @@ ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${WANT_GSMEAR_GPU}),true)
     HAVE_GSMEAR_QUDA = true
     CGPU += -DUSE_GSMEAR_QUDA
+  endif
 
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
     CGPU += -DHALF_MIXED # use single precision where appropriate
