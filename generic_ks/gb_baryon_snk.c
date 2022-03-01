@@ -1,8 +1,24 @@
 #include "generic_ks_includes.h"
-#ifndef _OMP_HEADER
-  #define _OMP_HEADER
-  #include <omp.h>
-#endif
+#include "../include/openmp_defs.h"
+
+inline void _scalar_mult_su3_vector(su3_vector *a, Real s, su3_vector *c)
+{
+	c->c[0].real = s * a->c[0].real;
+	c->c[0].imag = s * a->c[0].imag;
+	c->c[1].real = s * a->c[1].real;
+	c->c[1].imag = s * a->c[1].imag;
+	c->c[2].real = s * a->c[2].real;
+	c->c[2].imag = s * a->c[2].imag;
+}
+
+inline void _su3vec_copy( su3_vector *a, su3_vector *b ){
+    b->c[0].real = a->c[0].real;
+    b->c[0].imag = a->c[0].imag;
+    b->c[1].real = a->c[1].real;
+    b->c[1].imag = a->c[1].imag;
+    b->c[2].real = a->c[2].real;
+    b->c[2].imag = a->c[2].imag;
+}
 
 //#define NO_SINK_LINKS
 
@@ -114,7 +130,7 @@ norm_corr(int phase, Real fact, complex prop[])
 //  //node0_printf("Entering sign_flip_field\n");
 //  for(c=0;c<3;c++){
 //    FORALLSITES(i,s){
-//      scalar_mult_su3_vector(&src->v[c][i], -1.0, &dest->v[c][i] );
+//      _scalar_mult_su3_vector(&src->v[c][i], -1.0, &dest->v[c][i] );
 //    }
 //  }
 //  //node0_printf("Leaving sign_flip_field\n");
@@ -161,7 +177,7 @@ norm_corr(int phase, Real fact, complex prop[])
 //      if(eta_sign(fdir, r0, s) > 0)
 //        dest->v[c][i] = src->v[c][i];
 //      else
-//        scalar_mult_su3_vector( &src->v[c][i], -1.0, &dest->v[c][i] );
+//        _scalar_mult_su3_vector( &src->v[c][i], -1.0, &dest->v[c][i] );
 //    }
 //  }
 //}
@@ -324,7 +340,7 @@ spin_taste_sign(int signbit,int corner){
 static void
 sym_shift_sink(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
 {
-  register int i;
+  int i;
   msg_tag *tag[2];
   su3_vector *tvec = create_v_field();
   node0_printf("Entering sym_shift_sink\n");
@@ -336,52 +352,48 @@ sym_shift_sink(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
   /* With ONE_SIDED_SHIFT_GB defined, the shift is asymmetric */
 #ifndef ONE_SIDED_SHIFT_GB
 #ifdef NO_SINK_LINKS
-  FORALLFIELDSITES(i) { su3vec_copy(src+i, tvec+i); }
+  FORALLFIELDSITES_OMP(i,) { _su3vec_copy(src+i, tvec+i); } END_LOOP_OMP
 
   //node0_printf("tvec: %.5e + i %.5e\n", tvec[100].c[0].real, tvec[100].c[0].imag);
 
 #else
-  FORALLFIELDSITES(i)
+  FORALLFIELDSITES_OMP(i,)
     {
       /* Link conjugacy should be flipped so quark (creation op) *
        * has backward link in forward dir                        */
       mult_adj_su3_mat_vec( links+4*i+dir, src+i, tvec+i );
-    }
+    } END_LOOP_OMP
 #endif // NO_SINK_LINKS
   tag[1] = start_gather_field( tvec, sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1] );
 #endif // ONE_SIDED_SHIFT_GB
   wait_gather(tag[0]);
 #ifdef NO_SINK_LINKS
-  FORALLFIELDSITES(i) { su3vec_copy((su3_vector *)gen_pt[0][i],dest+i); }
+  FORALLFIELDSITES_OMP(i,) { _su3vec_copy((su3_vector *)gen_pt[0][i],dest+i); } END_LOOP_OMP
 
   //node0_printf("gen_pt[0]: %.5e + i %.5e\n", ((su3_vector *) gen_pt[0][100])->c[0].real, 
   //                                            ((su3_vector *) gen_pt[0][100])->c[0].imag);
   //node0_printf("dest: %.5e + i %.5e\n", dest[100].c[0].real, dest[100].c[0].imag);
   
 #else
-  FORALLFIELDSITES(i)
+  FORALLFIELDSITES_OMP(i,)
     {
       mult_su3_mat_vec( links+4*i+dir, (su3_vector *)gen_pt[0][i], dest+i );
-    }
+    } END_LOOP_OMP
 #endif // NO_SINK_LINKS
   //node0_printf("gen_pt multiply done\n");
 #ifndef ONE_SIDED_SHIFT_GB
   wait_gather(tag[1]);
-  FORALLFIELDSITES(i)
+  FORALLFIELDSITES_OMP(i,)
     {
       add_su3_vector(dest+i, (su3_vector*)gen_pt[1][i], dest+i );
-    }
    
-  //node0_printf("gen_pt[1]: %.5e + i %.5e\n", ((su3_vector *) gen_pt[1][100])->c[0].real,
-  //                                           ((su3_vector *) gen_pt[0][100])->c[0].imag);
-  //node0_printf("dest: %.5e + i %.5e\n", dest[100].c[0].real, dest[100].c[0].imag);
+      //node0_printf("gen_pt[1]: %.5e + i %.5e\n", ((su3_vector *) gen_pt[1][100])->c[0].real,
+      //                                           ((su3_vector *) gen_pt[0][100])->c[0].imag);
+      //node0_printf("dest: %.5e + i %.5e\n", dest[100].c[0].real, dest[100].c[0].imag);
 
-
-  /* Now divide by 2 eq. (4.2b) of Golterman's Meson paper*/
-  FORALLFIELDSITES(i)
-    {
-      scalar_mult_su3_vector( dest+i, .5, dest+i ) ;
-    }
+      /* Now divide by 2 eq. (4.2b) of Golterman's Meson paper*/
+      _scalar_mult_su3_vector( dest+i, .5, dest+i ) ;
+    } END_LOOP_OMP
  // node0_printf("dest: %.5e + i %.5e\n\n\n", dest[100].c[0].real, dest[100].c[0].imag);
   cleanup_gather(tag[1]);
 #endif
@@ -443,8 +455,6 @@ apply_sym_shift_snk_v(int n, int *d, int *r0, ks_prop_field *dest,
 void
 apply_par_xport_snk_v(ks_prop_field *dest, ks_prop_field *src,
                       int n, int dir[], int r0[], su3_matrix *links){
-  site *s;
-  int i,j,c;
   ks_prop_field *tvec0 = create_ksp_field(3);
   ks_prop_field *tvec1 = create_ksp_field(3);
   ks_prop_field *tsrc  = create_ksp_field(3);
@@ -478,29 +488,37 @@ apply_par_xport_snk_v(ks_prop_field *dest, ks_prop_field *src,
     apply_sym_shift_snk_v(n,d[0],r0,tvec0,tsrc,links);
     apply_sym_shift_snk_v(n,d[1],r0,tvec1,tsrc,links);
 
-    for(c=0;c<3;c++){
-      FORALLSITES(i,s){
+    #pragma omp parallel for collapse(2)
+    for(int c=0;c<3;c++){
+      for(int i=0; i<sites_on_node; i++){
         add_su3_vector( &tvec0->v[c][i], &tvec1->v[c][i], &dest->v[c][i] );
-        scalar_mult_su3_vector( &dest->v[c][i], 0.5, &dest->v[c][i] );
+        _scalar_mult_su3_vector( &dest->v[c][i], 0.5, &dest->v[c][i] );
       }
-    }
+    } // END OMP LOOPS
   }
   else if (n == 3){
     /* three link */
     /* use the d given */
     //node0_printf("Entering n==3");
-    for(j=0;j<6;j++){
+    for(int j=0;j<6;j++){
       apply_sym_shift_snk_v(n,d[j],r0,tvec0,tsrc,links);
-      if(j==0) copy_ksp_field(tvec1,tvec0);
-      else for(c=0;c<3;c++){
-        FORALLFIELDSITES(i){
-          add_su3_vector(&tvec1->v[c][i],&tvec0->v[c][i],&tvec1->v[c][i]);
-        }
+      if(j==0) {
+	copy_ksp_field(tvec1,tvec0);
+      } else {
+        #pragma omp parallel for collapse(2)
+	for(int c=0;c<3;c++){
+	  for(int i=0; i<sites_on_node; i++){
+	    add_su3_vector(&tvec1->v[c][i],&tvec0->v[c][i],&tvec1->v[c][i]);
+	  }
+	} // END OMP LOOPS
       }
     }
-    for(c=0;c<3;c++){FORALLSITES(i,s){
-      scalar_mult_su3_vector( &tvec1->v[c][i], 1./6., &dest->v[c][i] );
-    }}
+    #pragma omp parallel for collapse(2)
+    for(int c=0;c<3;c++){
+      for(int i=0; i<sites_on_node; i++){
+	_scalar_mult_su3_vector( &tvec1->v[c][i], 1./6., &dest->v[c][i] );
+      }
+    } // END OMP LOOPS
   }
   destroy_ksp_field(tvec1);
   destroy_ksp_field(tvec0);
@@ -519,13 +537,12 @@ map_ksp_field(ks_prop_field **dest, ks_prop_field **src, int qknum,
   /* get object from mmap index qknum */
   fetch_ksp_from_cache(dest,qknum,siSrc,siSnk);
 #else
-  int n;
-  int dir[3] = {0};
+  int dir[3] = {0,0,0};
   if(!remap) {
   *dest = create_ksp_field(3);
   }
 
-  n = singlet_index_to_disp(siSnk);
+  int n = singlet_index_to_disp(siSnk);
   singlet_index_to_dir(siSnk,dir);
   apply_par_xport_snk_v(*dest,src[siSrc],n,dir,r0,links);
 #endif
@@ -549,15 +566,44 @@ unmap_ksp_field(ks_prop_field **ksp){
    This subroutine specifically handles the baryon sink antisymmetry.
    Result is saved to dt, overwriting previous
 */
-void
+inline void
 baryon_color_asym_v(su3_vector *qk0, su3_vector *qk1, su3_vector *qk2, complex *dt){
-  register int c;
   su3_matrix tempmat;
   /* TODO: make this faster? */
-  for(c=0;c<3;c++) tempmat.e[0][c] = qk0->c[c];
-  for(c=0;c<3;c++) tempmat.e[1][c] = qk1->c[c];
-  for(c=0;c<3;c++) tempmat.e[2][c] = qk2->c[c];
-  *dt = det_su3( &tempmat );
+  //for(c=0;c<3;c++) tempmat.e[0][c] = qk0->c[c];
+  tempmat.e[0][0] = qk0->c[0];
+  tempmat.e[0][1] = qk0->c[1];
+  tempmat.e[0][2] = qk0->c[2];
+  //for(c=0;c<3;c++) tempmat.e[1][c] = qk1->c[c];
+  tempmat.e[1][0] = qk1->c[0];
+  tempmat.e[1][1] = qk1->c[1];
+  tempmat.e[1][2] = qk1->c[2];
+  //for(c=0;c<3;c++) tempmat.e[2][c] = qk2->c[c];
+  tempmat.e[2][0] = qk2->c[0];
+  tempmat.e[2][1] = qk2->c[1];
+  tempmat.e[2][2] = qk2->c[2];
+  // inlined *dt = det_su3( &tempmat );
+  {
+    complex cc,dd,sum;
+    CMUL(tempmat.e[0][0],tempmat.e[1][1],cc);
+    CMUL(cc,tempmat.e[2][2],sum);
+    CMUL(tempmat.e[0][0],tempmat.e[1][2],cc);
+    CMUL(cc,tempmat.e[2][1],dd);
+    CSUB(sum,dd,sum);
+    CMUL(tempmat.e[0][1],tempmat.e[1][2],cc);
+    CMUL(cc,tempmat.e[2][0],dd);
+    CADD(sum,dd,sum);
+    CMUL(tempmat.e[0][1],tempmat.e[1][0],cc);
+    CMUL(cc,tempmat.e[2][2],dd);
+    CSUB(sum,dd,sum);
+    CMUL(tempmat.e[0][2],tempmat.e[1][0],cc);
+    CMUL(cc,tempmat.e[2][1],dd);
+    CADD(sum,dd,sum);
+    CMUL(tempmat.e[0][2],tempmat.e[1][1],cc);
+    CMUL(cc,tempmat.e[2][0],dd);
+    CSUB(sum,dd,sum);
+    *dt = sum;
+  } // end inlined det_su3
 }
 
 /*------------------------------------------------------------------*/
@@ -645,14 +691,11 @@ static void
 accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *qk2,
                         short domom, complex *mom, int flip_snk, int orig, 
                         Real pfi, short dowall, complex *dt){
-  complex cc,csum;
-  complex csum_new[nt];
-  site* s1;
   //complex testsum;
-  int i,t,x,y,z;
-  int disp[3];
   Real pf = pfi/36.;
-  for(t=0;t<nt;t++){
+  complex csum_new[nt] __attribute__((aligned (64))); // 64-byte
+  #pragma omp simd aligned(csum_new:64)
+  for(int t=0;t<nt;t++){
     (csum_new[t]).real = 0.;
     (csum_new[t]).imag = 0.;
   }
@@ -666,46 +709,36 @@ accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *q
     } else {
       su3_vector *vqk0, *vqk1, *vqk2;
       int nc = 3;
-      int icolor, icolor_snk;
 
       //  Initilize zero vectors
-      vqk0 = (su3_vector *) malloc(nt*nc*sizeof(su3_vector)); 
-      vqk1 = (su3_vector *) malloc(nt*nc*sizeof(su3_vector));
-      vqk2 = (su3_vector *) malloc(nt*nc*sizeof(su3_vector));
-      for (t=0; t<nt; t++){
-        for (icolor=0; icolor<nc; icolor++){ // looping over source colors
-          for (icolor_snk=0; icolor_snk<nc; icolor_snk++){ // looping over source colors
-            vqk0[t*nc+icolor].c[icolor_snk].real = 0.0;
-            vqk0[t*nc+icolor].c[icolor_snk].imag = 0.0;
-            vqk1[t*nc+icolor].c[icolor_snk].real = 0.0;
-            vqk1[t*nc+icolor].c[icolor_snk].imag = 0.0;
-            vqk2[t*nc+icolor].c[icolor_snk].real = 0.0;
-            vqk2[t*nc+icolor].c[icolor_snk].imag = 0.0;
-          }
-        }
-      }
+      vqk0 = (su3_vector *) calloc(nt*nc,sizeof(su3_vector)); // TODO: posix_memalign(vqk0,64,nt*nc,sizeof(su3_vector)) & zero
+      vqk1 = (su3_vector *) calloc(nt*nc,sizeof(su3_vector));
+      vqk2 = (su3_vector *) calloc(nt*nc,sizeof(su3_vector));
 
       // Now do the global thing sum for wall source
-      disp[0] = ((int) orig % 2     ) ^ flip_snk;
-      disp[1] = ((int)(orig / 2) % 2) ^ flip_snk;
-      disp[2] = ((int) orig / 4     ) ^ flip_snk;
-      FORALLSITES(i,s1){
-        if (((s1->x+disp[0])%2==0) & ((s1->y+disp[1])%2==0) & ((s1->z+disp[2])%2==0)){
-          for (icolor=0; icolor<nc; icolor++){ 
+      int disp_x = ((int) orig % 2     ) ^ flip_snk;
+      int disp_y = ((int)(orig / 2) % 2) ^ flip_snk;
+      int disp_z = ((int) orig / 4     ) ^ flip_snk;
+      int i;
+      site *s1;
+      FORALLSITES_OMP(i,s1,){
+        if (((s1->x+disp_x)%2==0) & ((s1->y+disp_y)%2==0) & ((s1->z+disp_z)%2==0)){
+          for (int icolor=0; icolor<nc; icolor++){ 
             add_su3_vector(vqk0+(s1->t*nc)+icolor, &qk0->v[icolor][i], vqk0+s1->t*nc+icolor);
             add_su3_vector(vqk1+(s1->t*nc)+icolor, &qk1->v[icolor][i], vqk1+s1->t*nc+icolor);
             add_su3_vector(vqk2+(s1->t*nc)+icolor, &qk2->v[icolor][i], vqk2+s1->t*nc+icolor);
           }
         }
-      }
+      } END_LOOP_OMP
 
       // Aggregate results on node0
-      for (t=0; t<nt; t++){
-        for (icolor=0; icolor<nc; icolor++){
+      for (int t=0; t<nt; t++){
+        for (int icolor=0; icolor<nc; icolor++){
           g_veccomplexsum((vqk0+t*nc+icolor)->c, nc);
           g_veccomplexsum((vqk1+t*nc+icolor)->c, nc);
           g_veccomplexsum((vqk2+t*nc+icolor)->c, nc);
         }
+	complex cc;
         baryon_color_asym_mat_wall(vqk0+t*nc, 
                                    vqk1+t*nc, 
                                    vqk2+t*nc, &cc);
@@ -714,7 +747,8 @@ accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *q
         CSUM(dt[t], csum_new[t]);
       }
       if (this_node != 0){
-        for (t=0; t<nt; t++){
+	#pragma omp simd
+        for (int t=0; t<nt; t++){
           // Safety feature, because dt will be reduced again 
           // later and we really want to make sure it is zero for all other nodes
           // All the results are aggregated on dt of node0
@@ -735,59 +769,62 @@ accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *q
       int node_index;
     } node_index_t_tuple;
 
+    // static variable initialization is done exactly once by first procedure call
     static bool initialized = false; // Don't initilize it everytime! Make it global variable
-    static node_index_t_tuple corner_sites[8][(100*100*100)/8+1];
-    static int corner_indx[8] = {0}; // Keep track of index for each corner_sites
+    static int corner_indx[8] = {0,0,0,0,0,0,0,0}; // Keep track of index for each corner_sites
+    static node_index_t_tuple corner_sites[8][(100*100*100)/8+1]; // use a fixed size, hopefully big enough
     if (nx*ny*nz/8 > 100*100*100/8){
       node0_printf("Lattice size too large. It might cause troubles to tieups. Check accum_baryon_color_asym to change allocation size!");
       terminate(1);
     }
-    int temp_corner;
-    node_index_t_tuple temp_tuple;
 
     if (initialized==false) {
-      for(i=0;i<sites_on_node;i++) {
-        s1 = lattice + i; // FORALLSITES doesnt work with openmp
-        for(temp_corner=0; temp_corner<8; temp_corner++){
-          disp[0] = ((int) temp_corner % 2     ) ^ flip_snk;
-          disp[1] = ((int)(temp_corner / 2) % 2) ^ flip_snk;
-          disp[2] = ((int) temp_corner / 4     ) ^ flip_snk;
-          if (((s1->x+disp[0])%2==0) & ((s1->y+disp[1])%2==0) & ((s1->z+disp[2])%2==0)){
-            corner_sites[temp_corner][corner_indx[temp_corner]] = (node_index_t_tuple){.t=s1->t, .node_index=i};
-            corner_indx[temp_corner]++;
-          }
-        }
-      } // end for parallel region
+      // parallelize over cube corners
+      #pragma omp parallel for
+      for(int temp_corner=0; temp_corner<8; temp_corner++){
+          int disp_x = ((int) temp_corner % 2     ) ^ flip_snk;
+          int disp_y = ((int)(temp_corner / 2) % 2) ^ flip_snk;
+          int disp_z = ((int) temp_corner / 4     ) ^ flip_snk;
+          int i;
+	  site *s1;
+	  FORALLSITES(i,s1) {
+            if (((s1->x+disp_x)%2==0) & ((s1->y+disp_y)%2==0) & ((s1->z+disp_z)%2==0)){
+               corner_sites[temp_corner][corner_indx[temp_corner]] = (node_index_t_tuple){.t=s1->t, .node_index=i};
+               corner_indx[temp_corner]++;
+            }
+          } // sites
+      } // END OMP for
       initialized = true;
     } // end initilization
   
-    #ifdef OMP
-    #pragma omp parallel for \
-      default(none) \
-      shared(corner_indx, corner_sites, qk0, qk1, qk2, mom, orig, domom, csum_new) \
-      private(i,temp_tuple,cc) \
-      schedule(static) 
-    #endif
-    for(i=0; i<corner_indx[orig]; i++){
-    temp_tuple = corner_sites[orig][i];
-      if (domom){
-        baryon_color_asym_mat_mom(qk0, qk1, qk2, mom, temp_tuple.node_index, &cc);
-      } else{
-        baryon_color_asym_mat(qk0, qk1, qk2, temp_tuple.node_index, &cc);
-      }
+    #pragma omp parallel
+      {
+	complex th_csum_new[nt] __attribute__((aligned (64))); // thread private space
+        #pragma omp simd aligned(th_csum_new:64)
+	for(int t=0; t<nt; t++){ // zero
+	  th_csum_new[t].real = 0.;
+	  th_csum_new[t].imag = 0.;
+	}
+        #pragma omp for
+	for(int i=0; i<corner_indx[orig]; i++){
+	  complex cc;
+	  node_index_t_tuple temp_tuple = corner_sites[orig][i];
+	  if (domom){
+	    baryon_color_asym_mat_mom(qk0, qk1, qk2, mom, temp_tuple.node_index, &cc);
+	  } else {
+	    baryon_color_asym_mat(qk0, qk1, qk2, temp_tuple.node_index, &cc);
+	  }
+	  CSUM(th_csum_new[temp_tuple.t],cc); // accumulate in thread private
+	} // END OMP FOR
+	#pragma omp critical
+	{
+          #pragma omp simd aligned(csum_new,th_csum_new:64)
+	  for(int t=0; t<nt; t++) CSUM(csum_new[t],th_csum_new[t]); // accumulate
+	}
+      } // END OMP PARALLEL
 
-      // Avoid race condition
-      #ifdef OMP
-      #pragma omp atomic
-      csum_new[temp_tuple.t].real += cc.real;
-      #pragma omp atomic
-      csum_new[temp_tuple.t].imag += cc.imag;
-      #else
-      CSUM(csum_new[temp_tuple.t],cc);
-      #endif
-    }
-
-    for(t=0;t<nt;t++){
+    #pragma omp simd aligned(csum_new:64)
+    for(int t=0;t<nt;t++){
       CMULREAL(csum_new[t],pf,csum_new[t]);
       CSUM(dt[t],csum_new[t]);
     }
@@ -1601,23 +1638,21 @@ gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2[],
   double facty = 2.0*PI/(1.0*ny);
   double factz = 2.0*PI/(1.0*nz);
   site *s;
-  complex tmp;
   short domom = 0x0;
   if (mom[0] != 0 || mom[1] != 0 || mom[2] != 0){
     // if nonzero, compute Fourier phase once and reuse many times
     // negative sign is necessary to get momentum conservation
     px = mom[0]; py = mom[1]; pz = mom[2];
     ex = par[0]; ey = par[1]; ez = par[2];
-    FORALLSITES(i,s) {
-      tmp.real = 1.; tmp.imag = 0.;
+    FORALLSITES_OMP(i,s,) {
+      complex tmp = {1.,0.};
       tmp = ff(factx*(s->x-r0[0])*px, ex, tmp);
       tmp = ff(facty*(s->y-r0[1])*py, ey, tmp);
       tmp = ff(factz*(s->z-r0[2])*pz, ez, tmp);
       set_complex_equal(&tmp,&(momfld[i]));
-    }
+    } END_LOOP_OMP
    domom = 0x1;
-  }
-  else { // just specify that momentum is not needed
+  } else { // just specify that momentum is not needed
    domom = 0x0;
   }
 

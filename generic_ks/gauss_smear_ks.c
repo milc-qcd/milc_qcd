@@ -66,24 +66,20 @@ forward2(int dir, su3_vector *dest, su3_vector *src,
   tag = start_gather_field( src, sizeof(su3_vector),
 			    dir, EVENANDODD, gen_pt[dir] );
   wait_gather(tag);
-  
-  /* tmp <- U(up,dir) shift(up,dir)(src) */
-  if(t0 == ALL_T_SLICES){
-    FORALLFIELDSITES_OMP(i,){
-      mult_su3_mat_vec( t_links + 4*i + dir,  
-			(su3_vector * )(gen_pt[dir][i]), 
-			tmp + i ); 
-    } END_LOOP_OMP;
-  } else {
-    FORALLSITES(i,s){
-      if(s->t == t0){
-	mult_su3_mat_vec( t_links + 4*i + dir,  
+
+  FORALLSITES_OMP(i,s,){
+    /* tmp <- U(up,dir) shift(up,dir)(src) */
+    if(t0 == ALL_T_SLICES || s->t == t0){
+      #ifndef NO_GAUSS_SMEAR_LINKS
+        mult_su3_mat_vec( t_links + 4*i + dir,  
 			  (su3_vector * )(gen_pt[dir][i]), 
 			  tmp + i ); 
-      }
+      #else
+        su3vec_copy((su3_vector *)gen_pt[dir][i], tmp + i);
+      #endif
     }
-  }
-
+  } END_LOOP_OMP
+  
   cleanup_gather(tag);
 
   /* start parallel transport of tmp from up dir */
@@ -92,21 +88,18 @@ forward2(int dir, su3_vector *dest, su3_vector *src,
   wait_gather(tag);
 
   /* dest <- U(up,dir) shift(up,2dir)(src) */
-  if(t0 == ALL_T_SLICES){
-    FORALLFIELDSITES_OMP(i,){
-      mult_su3_mat_vec( t_links + 4*i + dir,  
-			(su3_vector * )(gen_pt[dir][i]), 
-			dest + i ); 
-    } END_LOOP_OMP;
-  } else {
-    FORALLSITES(i,s){
-      if(s->t == t0){
-	mult_su3_mat_vec( t_links + 4*i + dir,  
-			  (su3_vector * )(gen_pt[dir][i]), 
-			  dest + i ); 
-      }
+
+  FORALLSITES_OMP(i,s,){
+    if(t0 == ALL_T_SLICES || s->t == t0){
+      #ifndef NO_GAUSS_SMEAR_LINKS
+        mult_su3_mat_vec( t_links + 4*i + dir,  
+        (su3_vector * )(gen_pt[dir][i]), 
+        dest + i ); 
+      #else
+        su3vec_copy((su3_vector *)gen_pt[dir][i], dest + i); 
+      #endif
     }
-  }
+  } END_LOOP_OMP
 
   cleanup_gather(tag);
   destroy_v_field(tmp);
@@ -128,21 +121,18 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
   /* prepare parallel transport of psi from down dir */
 
   /* dest <- U^dagger(down,dir) src */
-  if(t0 == ALL_T_SLICES){
-    FORALLFIELDSITES_OMP(i,){
-      /* Work only on the specified time slice(s) */
-      mult_adj_su3_mat_vec( t_links +  4*i + dir, src + i, 
-			    dest + i );
-    } END_LOOP_OMP;
-  } else {
-    FORALLSITES(i,s){
-      /* Work only on the specified time slice(s) */
-      if(s->t == t0){
-	mult_adj_su3_mat_vec( t_links +  4*i + dir, src + i, 
-			      dest + i );
-      }
+
+  FORALLSITES_OMP(i,s,){
+    /* Work only on the specified time slice(s) */
+    if(t0 == ALL_T_SLICES || s->t == t0){
+      #ifndef NO_GAUSS_SMEAR_LINKS
+        mult_adj_su3_mat_vec( t_links +  4*i + dir, src + i, 
+            dest + i );
+      #else
+        su3vec_copy(src + i, dest + i);
+      #endif
     }
-  }
+  } END_LOOP_OMP
   
   /* gen_pt_array <- shift(down,dir)(dest) */
   tag = start_gather_field(dest, 
@@ -151,21 +141,17 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
   wait_gather(tag);
   
   /* tmp <- U^dagger(down,dir) gen_pt_array */
-  if(t0 == ALL_T_SLICES){
-    FORALLFIELDSITES_OMP(i,){
-      mult_adj_su3_mat_vec( t_links + 4*i + dir,  
-			    (su3_vector * )(gen_pt[OPP_DIR(dir)][i]), 
-			    tmp + i ); 
-    } END_LOOP_OMP;
-  } else {
-    FORALLSITES(i,s){
-      if(s->t == t0){
-	mult_adj_su3_mat_vec( t_links + 4*i + dir,  
-			      (su3_vector * )(gen_pt[OPP_DIR(dir)][i]), 
-			      tmp + i ); 
-      }
+  FORALLSITES_OMP(i,s,){
+    if(t0 == ALL_T_SLICES || s->t == t0){
+      #ifndef NO_GAUSS_SMEAR_LINKS
+        mult_adj_su3_mat_vec( t_links + 4*i + dir,  
+            (su3_vector * )(gen_pt[OPP_DIR(dir)][i]), 
+            tmp + i ); 
+      #else
+        su3vec_copy((su3_vector *)gen_pt[OPP_DIR(dir)][i], tmp + i);
+      #endif
     }
-  }
+  } END_LOOP_OMP
   
   cleanup_gather(tag);
 
@@ -177,8 +163,8 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
   wait_gather(tag);
 
   /* dest <- gen_pt_array */
-  if(t0 == ALL_T_SLICES){
-    FORALLFIELDSITES_OMP(i,){
+  FORALLSITES_OMP(i,s,){
+    if(t0 == ALL_T_SLICES || s->t == t0){
       su3vec_copy( (su3_vector *)gen_pt[OPP_DIR(dir)][i], dest + i);
     } END_LOOP_OMP;
   } else {
@@ -187,7 +173,7 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
 	su3vec_copy( (su3_vector *)gen_pt[OPP_DIR(dir)][i], dest + i);
       }
     }
-  }
+  } END_LOOP_OMP
 
   cleanup_gather(tag);
   
@@ -211,16 +197,10 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
   malloc_kg_temps();
 
   /* chi = psi * ftmp; */
-  if(t0 == ALL_T_SLICES){
-    FORALLFIELDSITES_OMP(i,){
+  FORALLSITES_OMP(i,s,){
+    if(t0 == ALL_T_SLICES || s->t == t0)
       scalar_mult_su3_vector(psi + i, ftmp, chi + i);
-    } END_LOOP_OMP;
-  } else {
-    FORALLSITES(i,s){
-      if(s->t == t0)
-	scalar_mult_su3_vector(psi + i, ftmp, chi + i);
-    }
-  }
+  } END_LOOP_OMP
 
   /* do 2-link parallel transport of psi in all dirs */
   FORALLUPDIRBUT(TUP,dir){
@@ -230,8 +210,8 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
   
   /* chi <- chi - sum_dir U(up,dir) shift(up,dir)(psi) -
      sum_dir shift(down,dir) U^\dagger(down,dir)(psi) */
-  if(t0 == ALL_T_SLICES){
-    FORALLFIELDSITES_OMP(i,){
+  FORALLSITES_OMP(i,s,){
+    if(t0 == ALL_T_SLICES || s->t == t0){
       sub_su3_vector( chi + i, wtmp[XUP] + i, chi + i);
       sub_su3_vector( chi + i, wtmp[YUP] + i, chi + i);
       sub_su3_vector( chi + i, wtmp[ZUP] + i, chi + i);
@@ -250,7 +230,7 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
 	sub_su3_vector( chi + i, wtmp[ZDOWN] + i, chi + i);
       }
     }
-  }
+  } END_LOOP_OMP
 
   cleanup_kg_temps();
 }
@@ -263,8 +243,6 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
    and Lap_3d is the discrete three dimensional Laplacian
 
 */
-
-
 #ifdef USE_GSMEAR_QUDA
 void
 gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
@@ -293,31 +271,23 @@ gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
   tmp = create_v_field();
   
   /* We want (1 + ftmp * Lapl ) = (Lapl + 1/ftmp)*ftmp */
+  for(j = 0; j < iters; j++) {
 
-  for(j = 0; j < iters; j++)
-    {
-      if(t0 == ALL_T_SLICES){
-	FORALLFIELDSITES_OMP(i,){
-	  /* tmp = src * ftmp; */
-	  scalar_mult_su3_vector(src+i, ftmp, tmp+i);
-	} END_LOOP_OMP;
-      } else {
-	FORALLSITES(i,s){
-	  /* tmp = src * ftmp; */
-	  if(s->t == t0)
-	    scalar_mult_su3_vector(src+i, ftmp, tmp+i);
-	}
-      }
-      klein_gord_field(tmp, src, t_links, ftmpinv, t0);
-    }
+    FORALLSITES_OMP(i,s,){
+      /* tmp = src * ftmp; */
+      if(t0 == ALL_T_SLICES || s->t == t0)
+        scalar_mult_su3_vector(src+i, ftmp, tmp+i);
+    } END_LOOP_OMP
 
+    klein_gord_field(tmp, src, t_links, ftmpinv, t0);
+  }
+ 
   dtime += dclock();
 
   if(this_node==0){
     printf("GSMEAR: time = %e (fn %s) iters = %d\n",
 	   dtime, prec_label[MILC_PRECISION-1], iters);
     fflush(stdout);
-  }
   
   destroy_v_field(tmp);
 }
