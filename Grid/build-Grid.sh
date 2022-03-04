@@ -4,7 +4,7 @@ ARCH=$1
 PK_CC=$2
 PK_CXX=$3
 GIT_REPO=https://github.com/milc-qcd/Grid
-GIT_BRANCH=develop
+GIT_BRANCH=feature/staggered-a2a-ml
 
 if [ -z ${PK_CXX} ]
 then
@@ -128,13 +128,14 @@ then
 	# Cori: salloc -C gpu -t 60 -N 1 -c 10 --gres=gpu:1 -A m1759
 	# Summit: ./build-Grid.sh gpu-cuda mpicc mpiCC
 	${SRCDIR}/configure \
-             --prefix ${INSTALLDIR}      \
-	     --enable-comms=mpi          \
+             --prefix ${INSTALLDIR}       \
+	     --enable-comms=mpi           \
 	     --enable-simd=GPU            \
-	     --enable-shm=no              \
+	     --enable-shm=nvlink          \
 	     --enable-accelerator=cuda    \
-	     --enable-unfied=no           \
-             --enable-gen-simd-width=64   \
+	     --enable-unified=no          \
+	     --enable-setdevice           \
+             --enable-gen-simd-width=32   \
              --host=x86_64-unknown-linux-gnu \
 	     --with-mpfr=${HOME}/mpfr \
 	     --with-lime=${HOME}/scidac/install/qio \
@@ -161,7 +162,9 @@ then
 	     CPPFLAGS="-I/opt/rocm/rocthrust/include" \
 	     LDFLAGS="-L/opt/rocm/rocthrust/lib"
 
-#	     --enable-unified=yes         \
+	#	     --enable-unified=yes         \
+
+	status=$?
 	;;
 
     gpu-sycl)
