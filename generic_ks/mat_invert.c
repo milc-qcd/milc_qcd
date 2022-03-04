@@ -678,10 +678,11 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
     fflush(stdout);}
 #endif
 
-  //    node0_printf("Entering check_invert_field in mat_invert_mg_field_gpu\n");
-  //    fflush(stdout);
-  //    check_invert_field( t_dest, t_src, mass, 1e-6, fn, EVENANDODD);
+    //node0_printf("Entering check_invert_field in mat_invert_mg_field_gpu\n");
+    //  fflush(stdout);
+    //  check_invert_field( t_dest, t_src, mass, 1e-6, fn, EVENANDODD);
 
+  report_status(qic);
 
   return num_iters;
 

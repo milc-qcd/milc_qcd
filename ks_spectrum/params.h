@@ -13,7 +13,7 @@
 #define MAX_SOURCE 32
 #define MAX_SET 256
 #define MAX_PROP 64
-#define MAX_QK 256
+#define MAX_QK 512
 #define MAX_COMBO 8
 #define MAX_PAIR 5000
 #define MAX_TRIPLET 64
