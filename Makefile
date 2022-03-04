@@ -33,7 +33,7 @@ MPP ?= false
 # 4. Generic Precision 
 
 # 1 = single precision; 2 = double
-PRECISION ?= 1
+PRECISION ?= 2
 
 #----------------------------------------------------------------------
 # 5. Set compiler.
@@ -101,8 +101,8 @@ ifeq ($(strip ${OFFLOAD}),SyCL)
 
 endif
 
-CC ?= ${MY_CC}
-CXX ?= ${MY_CXX}
+CC = ${MY_CC}
+CXX = ${MY_CXX}
 
 # If the above construction doesn't work, override the definitions here
 
@@ -431,8 +431,8 @@ WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 WANT_EIG_GPU ?= #true
 WANT_KS_CONT_GPU ?= #true
-WANT_SHIFT_GPU ?= #true DO NOT USE YET
-WANT_KS_CONT_GPU ?= #true
+WANT_SHIFT_GPU ?= #true
+WANT_SPIN_TASTE_GPU ?= #true
 
 endif
 
@@ -445,13 +445,12 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   INCQUDA = -I${QUDA_HOME}/include -I${QUDA_HOME}/tests
   PACKAGE_HEADERS += ${QUDA_HOME}/include
-  LIBQUDA = -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda -ldl
+  LIBQUDA ?= -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcublas -lcufft
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
 
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcublas -lcufft -lcublas
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
@@ -494,8 +493,13 @@ ifeq ($(strip ${WANTQUDA}),true)
   endif
 
   ifeq ($(strip ${WANT_SHIFT_GPU}),true)
-    HAVE_SHIFT_QUDA = true
+    HAVE_SHIFT_GPU = true
     CGPU += -DUSE_SHIFT_QUDA
+  endif
+
+  ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
+    HAVE_SPIN_TASTE_GPU = true
+    CGPU += -DUSE_SPIN_TASTE_QUDA
   endif
 
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
@@ -631,6 +635,7 @@ ifeq ($(strip ${WANTGRID}), true)
 
   CPHI += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
   CPHI += -DGRID_SHMEM_MAX=2048
+  CPHI += -DGRID_ACCELERATOR_THREADS=8
 
   ifeq ($(strip ${MPP}),true)
     ifeq ($(strip ${ARCH}),knl)
