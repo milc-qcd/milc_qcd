@@ -1,9 +1,6 @@
 // Wrappers for Grid Staggered Inverters
 
-#if defined(_OPENMP)
 #include <omp.h>
-#endif
-
 #include <Grid/Grid.h>
 
 #include "../include/mGrid/mGrid_internal.h"
@@ -15,7 +12,6 @@
 #define GRID_BLOCKCG 2
 
 #include "../include/mGrid/mGrid_assert.h"
-#include "../include/mGrid/mGrid_internal.h"
 #include "../include/macros.h"
 
 using namespace Grid;
@@ -243,6 +239,9 @@ asqtadInvertBlock (GRID_info_t *info,
 		   GridCartesian *FCGrid, GridRedBlackCartesian *FRBGrid,
 		   GridCartesian *CGrid, GridRedBlackCartesian *RBGrid)
 {
+#if 1
+  std::cout << "Block inverter currently unavailable" << std::endl;
+#else
   // In and out fields must be on the same lattice
   GRID_ASSERT(in->cv->Grid() == out->cv->Grid(),  GRID_FAIL);
 
@@ -333,7 +332,7 @@ asqtadInvertBlock (GRID_info_t *info,
 	break;
       }
     }
-
+#endif
 }
 	
 //====================================================================//
