@@ -231,9 +231,11 @@ int main(int argc, char *argv[])
 	   No KS phases here! */
 	destroy_ape_links_4D(ape_links);
 	ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+	ape_links_ks_phases = OFF;
+	for(int d = 0; d < 4; d++)ape_links_r0[d] = 0;
 	if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
 
-	rephase( ON );
+	rephase( ON );  /* Put KS phases in the links structure */
 	invalidate_fermion_links(fn_links);
 
       }
@@ -780,7 +782,7 @@ int main(int argc, char *argv[])
       destroy_ksp_field(quark[i]); quark[i] = NULL;
     }
     
-    destroy_ape_links_3D(ape_links);
+    destroy_ape_links_4D(ape_links);
     
 
     for(is=0; is<param.num_base_source+param.num_modified_source; is++){
