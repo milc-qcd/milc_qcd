@@ -125,7 +125,7 @@ static int initial_set(void){
   broadcast_bytes((char *)&param,sizeof(param));
 
   if( param.stopflag != 0 )
-    return param.stopflag;
+    terminate(1);
 
   if(prompt==2)return prompt;
 
@@ -1326,8 +1326,10 @@ int readin(int prompt) {
      conventional antiperiodic bc.  This is the same initial
      setup as the gauge field itself.  Later the phases are
      adjusted according to boundary phases and momentum twists. */
-  rephase( OFF );
+  rephase( OFF ); /* Remove KS phases from link structure */
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+  ape_links_ks_phases = OFF;
+  for(int d = 0; d < 4; d++)ape_links_r0[d] = 0;
   if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
   rephase( ON );
 
