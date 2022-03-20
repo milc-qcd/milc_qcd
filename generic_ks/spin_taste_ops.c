@@ -432,7 +432,7 @@ general_spin_taste_op_cpu(enum gammatype spin_index, enum gammatype taste_index,
 /*------------------------------------------------------------------*/
 /* Apply a general spin-taste operator to a field */
 
-#if defined(HAVE_QUDA) && defined(USE_SPIN_TASTE_QUDA)
+#if defined(HAVE_QUDA) && defined(USE_SPIN_TASTE_GPU)
 #include <quda_milc_interface.h>
 
 /* GPU Version */
