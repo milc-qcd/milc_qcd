@@ -1524,6 +1524,9 @@ static int apply_cov_deriv_v(su3_vector *src, quark_source_sink_op *qss_op){
   int i;
   site *s;
 
+  /* We use APE links for parallel transport, but without any KS phases */
+  rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0);
+
   if(op_type == DERIV1){
     su3_vector *v_dst = create_v_field();
     /* wv_dst <- D_dir1 src */
@@ -1590,6 +1593,9 @@ static int apply_cov_deriv_wv(wilson_vector *src, quark_source_sink_op *qss_op){
   site *s;
 
   int op_type       = qss_op->type;
+
+  /* We use APE links for parallel transport, but without any KS phases */
+  rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0);
 
   if(op_type == DERIV1){
     wilson_vector *wv_dst = create_wv_field();
@@ -1680,10 +1686,14 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
   }
 
   else if(op_type == FAT_COVARIANT_GAUSSIAN ){
+    /* We use APE links for parallel transport. Remove any KS phases */
+    rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0);
     gauss_smear_v_field(src, ape_links, r0, iters, t0);
   }
 
   else if(op_type == FAT_COVARIANT_LAPLACIAN ){
+    /* We use APE links for parallel transport. Remove any KS phases */
+    rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0);
     laplacian_v_field(src, ape_links, t0);
   }
 
@@ -1705,6 +1715,9 @@ static int apply_cov_smear_wv(wilson_vector *src,
   int iters         = qss_op->iters;
   Real r0           = qss_op->r0;
   int stride        = qss_op->stride;
+
+  /* We use APE links for parallel transport, but without any KS phases */
+  rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0);
 
   if(op_type == COVARIANT_GAUSSIAN){
     int iters = qss_op->iters;
@@ -1746,10 +1759,11 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
     su3_vector *tvec1 = create_v_field();
     su3_vector *tvec2 = create_v_field();
 
+    /* Here we want KS phases in the APE links */
+    rephase_field_set( ape_links, ON, &ape_links_ks_phases, qss_op->r_offset,
+		       ape_links_r0 );
     mult_pion5_field( qss_op->r_offset, src, tvec2 );
-    rephase_field_offset( ape_links, ON, NULL, qss_op->r_offset );
     mult_pioni_field( ZUP, qss_op->r_offset, src, tvec1, ape_links );
-    rephase_field_offset( ape_links, OFF, NULL, qss_op->r_offset );
     add_v_fields( tvec2, tvec1, tvec2 );
     mult_rhoi_field( ZUP, qss_op->r_offset, src, tvec1 );
     add_v_fields( src, tvec1, tvec2 );
@@ -1763,6 +1777,9 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
     su3_vector *tvec1 = create_v_field();
     su3_vector *tvec2 = create_v_field();
 
+    /* Here we want KS phases in the APE links */
+    rephase_field_set( ape_links, ON, &ape_links_ks_phases, qss_op->r_offset,
+		       ape_links_r0 );
     mult_pion05_field( qss_op->r_offset, src, tvec2 );
     rephase_field_offset( ape_links, ON, NULL, qss_op->r_offset );
     mult_pioni0_field( ZUP, qss_op->r_offset, src, tvec1, ape_links );
