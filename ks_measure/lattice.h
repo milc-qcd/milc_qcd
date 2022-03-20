@@ -118,6 +118,8 @@ EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;
+EXTERN int ape_links_r0[4]; /* If ON, current origin offset for phases */
+EXTERN su3_matrix *ape_links;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */

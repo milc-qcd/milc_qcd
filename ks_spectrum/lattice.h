@@ -123,6 +123,8 @@ EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
 EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
+EXTERN int ape_links_ks_phases;  /* Phases On or OFF? */
+EXTERN int ape_links_r0[4]; /* If ON, current origin offset for phases */
 EXTERN su3_matrix *ape_links;
 
 /* Vectors for addressing */
