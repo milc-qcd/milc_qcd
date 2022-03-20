@@ -107,6 +107,10 @@ void rephase( int flag );
 void rephase_field_offset( su3_matrix *internal_links, int flag, 
 			   int *status_now, int r0[] );
 void rephase_offset( int flag, int r0[] );
+void rephase_field_set(su3_matrix *links, int flag, int *status_now,
+		       int r0_now[], int r0[]);
+void rephase_field_unset(su3_matrix *links, int *status_now,
+			 int r0_now[]);
 
 /* reunitarize_ks.c */
 void reunitarize_ks(void);
