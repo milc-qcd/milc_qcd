@@ -585,6 +585,8 @@ int readin(int prompt) {
   /* Construct APE smeared links, but without KS phases */
   rephase( OFF );
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+  ape_links_ks_phases = OFF;
+  for(int d = 0; d < 4; d++)ape_links_r0[d] = 0;
   /* We put in antiperiodic bc to the APE links to match what we did to the gauge field */
   apply_apbc( ape_links, 0 );
   rephase( ON );

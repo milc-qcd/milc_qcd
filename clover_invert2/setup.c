@@ -1004,6 +1004,8 @@ int readin(int prompt) {
 
   /* Construct APE smeared links */
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+  ape_links_ks_phases = OFF;
+  for(int d = 0; d < 4; d++)ape_links_r0[d] = 0;
   if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
 
   /* Set options for fermion links in case we use them */
