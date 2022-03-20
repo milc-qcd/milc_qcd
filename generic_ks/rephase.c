@@ -142,7 +142,8 @@ void rephase( int flag ){
 
 /* put Kogut-Sussind and boundary condition phase factors into or
    out of a field consisting of four SU(3) matrices per site.  The
-   phases are defined relative to the offset origin r0. */
+   phases are defined relative to the offset origin r0. 
+*/
 void rephase_field_offset( su3_matrix *internal_links, int flag, 
 			   int* status_now, int r0[] ){
   register int i,j,k,dir;
@@ -172,6 +173,46 @@ void rephase_field_offset( su3_matrix *internal_links, int flag,
     *status_now = flag;
 
 } /* rephase_field_offset */
+
+/* Remove any persistent phase */
+/* Just avoids the error message about botched phases */
+void rephase_field_unset(su3_matrix *links, int *status_now,
+			 int r0_now[]){
+  if(*status_now == OFF)return;
+  node0_printf("Removing phases\n"); fflush(stdout);
+  rephase_field_offset( links, OFF, status_now, r0_now );
+  for(int i = 0; i < 4; i++)r0_now[i] = 0;
+}
+
+/* Support persistent KS phases in a link field 
+   Here we support a protocol that inserts phases and keeps them there
+   unless they need to be changed.
+*/
+
+/* TODO: Need a structure containing the link field and its phase state */
+void rephase_field_set(su3_matrix *links, int flag, int *status_now,
+		       int r0_now[], int r0[]){
+  /* Skip setting if the phases are ON with a compatible offset */
+  if(flag == OFF)rephase_field_unset(links, status_now, r0_now);
+  if(*status_now == ON)
+    {
+      if(r0[0] % 2 != r0_now[0] % 2 ||
+	 r0[1] % 2 != r0_now[1] % 2 ||
+	 r0[2] % 2 != r0_now[2] % 2 ||
+	 r0[3] % 2 != r0_now[3] % 2){
+	/* Incomptible: Redo the phase offset */
+	node0_printf("Replacing phases\n"); fflush(stdout);
+	rephase_field_offset( links, OFF, status_now, r0_now );
+	rephase_field_offset( links, ON, status_now, r0 );
+	for(int i = 0; i < 4; i++)r0_now[i] = r0[i];
+      }
+  } else {
+    /* Insert the phases */
+    node0_printf("Inserting phases\n"); fflush(stdout);
+    rephase_field_offset( links, ON, status_now, r0 );
+    for(int i = 0; i < 4; i++)r0_now[i] = r0[i];
+  }
+}
 
 /* conventional antiperiodic boundary conditions in Euclidean time */
 /* Do not use for long links! */
