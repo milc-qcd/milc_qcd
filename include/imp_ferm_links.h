@@ -135,7 +135,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity,
 			   imp_ferm_links_t *fn, imp_ferm_links_t *fn_dmdu0);
 
-void dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
+void dslash_fn_dir(const su3_vector *src, su3_vector *dest, int parity,
 		   imp_ferm_links_t *fn, int dir, int fb, 
 		   Real wtfat, Real wtlong);
 
@@ -603,10 +603,10 @@ shift_field(int dir, enum shift_dir fb, su3_vector *dest, const su3_vector * con
 #include "../include/flavor_ops.h"
 #ifdef NO_GAUGE_FIELD
 void 
-spin_taste_op_fn( void *fn, int index, int r0[],
+spin_taste_op_fn( void *fn, const int index, const int r0[],
 		  su3_vector *dest, const su3_vector * const src);
 #else
-void spin_taste_op_fn(imp_ferm_links_t *fn, int index, int r0[],
+void spin_taste_op_fn(imp_ferm_links_t *fn, const int index, const int r0[],
 		      su3_vector *dest, const su3_vector * const src);
 #endif
 

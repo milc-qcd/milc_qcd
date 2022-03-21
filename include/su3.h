@@ -362,7 +362,7 @@ void mult_su3_mat_vec_nsum( su3_matrix *a, su3_vector *b, su3_vector *c );
 void mult_adj_su3_mat_vec_sum( su3_matrix *a, su3_vector *b, su3_vector *c );
 void mult_adj_su3_mat_vec_nsum( su3_matrix *a, su3_vector *b, su3_vector *c );
 
-void scalar_mult_su3_vector(  su3_vector *src, Real scalar, 
+void scalar_mult_su3_vector(  const su3_vector *src, Real scalar, 
 	su3_vector *dest);
 void scalar_mult_sum_su3_vector( su3_vector *src1, su3_vector *src2,
 	Real scalar);
@@ -643,19 +643,19 @@ void mult_su3_an ( su3_matrix *a, su3_matrix *b, su3_matrix *c );
 #endif
 
 #ifndef mult_su3_mat_vec
-void mult_su3_mat_vec( su3_matrix *a, su3_vector *b, su3_vector *c );
+void mult_su3_mat_vec( const su3_matrix *a, const su3_vector *b, su3_vector *c );
 #endif
 
 #ifndef mult_adj_su3_mat_vec
-void mult_adj_su3_mat_vec( su3_matrix *a, su3_vector *b, su3_vector *c );
+void mult_adj_su3_mat_vec( const su3_matrix *a, const su3_vector *b, su3_vector *c );
 #endif
 
 #ifndef mult_adj_su3_mat_vec_4dir
-void mult_adj_su3_mat_vec_4dir( su3_matrix *a, su3_vector *b, su3_vector *c );
+void mult_adj_su3_mat_vec_4dir( const su3_matrix *a, const su3_vector *b, su3_vector *c );
 #endif
 
 #ifndef mult_adj_su3_mat_4vec
-void mult_adj_su3_mat_4vec( su3_matrix *mat, su3_vector *src,
+void mult_adj_su3_mat_4vec( const su3_matrix * const mat, const su3_vector * const src,
 			    su3_vector *dest0, su3_vector *dest1, 
 			    su3_vector *dest2, su3_vector *dest3  ) ;
 #endif
@@ -688,8 +688,8 @@ void scalar_mult_add_su3_matrix( su3_matrix *src1, su3_matrix *src2,
 #endif
 
 #ifndef scalar_mult_add_su3_vector
-void scalar_mult_add_su3_vector( su3_vector *src1, su3_vector *src2,
-	Real scalar, su3_vector *dest);
+void scalar_mult_add_su3_vector( const su3_vector *src1, const su3_vector *src2,
+	const Real scalar, su3_vector *dest);
 #endif
 
 #ifndef su3_projector
