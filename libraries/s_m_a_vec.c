@@ -10,7 +10,7 @@
 
 /* c <- a + s*b, vectors */
 
-void scalar_mult_add_su3_vector(su3_vector *a, su3_vector *b, Real s,
+void scalar_mult_add_su3_vector(const su3_vector const *a, const su3_vector const *b, const Real s,
 	su3_vector *c){
 
 #ifndef NATIVEDOUBLE

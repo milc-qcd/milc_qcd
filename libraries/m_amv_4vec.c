@@ -11,7 +11,7 @@
 #include "../include/complex.h"
 #include "../include/su3.h"
 #ifndef FAST
-void mult_adj_su3_mat_4vec( su3_matrix *mat, su3_vector *src,
+void mult_adj_su3_mat_4vec( const su3_matrix * const mat, const su3_vector * const src,
 			    su3_vector *dest0, su3_vector *dest1, 
 			    su3_vector *dest2, su3_vector *dest3 ) {
     mult_adj_su3_mat_vec( mat+0, src, dest0 );
@@ -23,7 +23,7 @@ void mult_adj_su3_mat_4vec( su3_matrix *mat, su3_vector *src,
 #else
 /* Fast code, with subroutines inlined */
 
-void mult_adj_su3_mat_4vec( su3_matrix *mat, su3_vector *src,
+void mult_adj_su3_mat_4vec( const su3_matrix * const mat, const su3_vector * const src,
 			    su3_vector *dest0, su3_vector *dest1, 
 			    su3_vector *dest2, su3_vector *dest3  ){
   register int n;
@@ -34,14 +34,14 @@ void mult_adj_su3_mat_4vec( su3_matrix *mat, su3_vector *src,
   register Real c0r,c0i,c1r,c1i,c2r,c2i;
   register Real br,bi,a0,a1,a2;
 #endif
-  register su3_matrix *a;
-  register su3_vector *b,*c;
+  register const su3_matrix * a = mat;
+  register const su3_vector * b = src;
+  su3_vector *c = dest0;
   su3_vector *cc[4] ;
   
   cc[0] = dest0 ; cc[1] = dest1 ;
   cc[2] = dest2 ; cc[3] = dest3 ;
 
-  a = mat ; c=dest0 ; b = src;
   for(n=0;n<4;n++,a++){
   c=cc[n];
 

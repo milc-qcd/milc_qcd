@@ -11,7 +11,7 @@
 #include "../include/su3.h"
 
 #ifndef FAST
-void mult_adj_su3_mat_vec_4dir( su3_matrix *mat, su3_vector *src,
+void mult_adj_su3_mat_vec_4dir( const su3_matrix * const mat, const su3_vector * const src,
     su3_vector *dest ) {
     mult_adj_su3_mat_vec( mat+0, src, dest+0 );
     mult_adj_su3_mat_vec( mat+1, src, dest+1 );
@@ -22,7 +22,7 @@ void mult_adj_su3_mat_vec_4dir( su3_matrix *mat, su3_vector *src,
 #else
 /* Fast code, with subroutines inlined */
 
-void mult_adj_su3_mat_vec_4dir( su3_matrix *mat, su3_vector *src,
+void mult_adj_su3_mat_vec_4dir( const su3_matrix * const mat, const su3_vector * const src,
     su3_vector *dest ){
   register int n;
 #ifdef NATIVEDOUBLE
@@ -32,10 +32,10 @@ void mult_adj_su3_mat_vec_4dir( su3_matrix *mat, su3_vector *src,
   register Real c0r,c0i,c1r,c1i,c2r,c2i;
   register Real br,bi,a0,a1,a2;
 #endif
-  register su3_matrix *a;
-  register su3_vector *b,*c;
+  register const su3_matrix * a = mat;
+  register const su3_vector * b = src;
+  su3_vector *c = dest;
 
-  a = mat; c = dest ; b = src;
   for(n=0;n<4;n++,a++,c++){
 
   br=b->c[0].real;    bi=b->c[0].imag;
