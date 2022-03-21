@@ -15,7 +15,7 @@
    that all lattice dimensions are even, as they should be for
    staggered fermions! */
 static void
-hyp_coord(short h[], const site *s, int r0[]){
+hyp_coord(short h[], const site *s, const int r0[]){
   h[XUP] = (s->x - r0[XUP]) & 0x1;
   h[YUP] = (s->y - r0[YUP]) & 0x1;
   h[ZUP] = (s->z - r0[ZUP]) & 0x1;
@@ -34,7 +34,7 @@ hyp_coord(short h[], const site *s, int r0[]){
 /*	   to give antiperiodic boundary conditions		*/
 
 static void
-alpha_offset(short h[], short phase[], const site *sit, int r0[]){
+alpha_offset(short h[], short phase[], const site *sit, const int r0[]){
 
   hyp_coord(h, sit, r0);
 
@@ -145,7 +145,7 @@ void rephase( int flag ){
    phases are defined relative to the offset origin r0. 
 */
 void rephase_field_offset( su3_matrix *internal_links, int flag, 
-			   int* status_now, int r0[] ){
+			   int* status_now, const int r0[] ){
   register int i,j,k,dir;
   register site *s;
   short h[4] __attribute__ ((aligned (8)));
@@ -177,11 +177,12 @@ void rephase_field_offset( su3_matrix *internal_links, int flag,
 /* Remove any persistent phase */
 /* Just avoids the error message about botched phases */
 void rephase_field_unset(su3_matrix *links, int *status_now,
-			 int r0_now[]){
+			 int r0_now[], int *changed){
   if(*status_now == OFF)return;
   node0_printf("Removing phases\n"); fflush(stdout);
   rephase_field_offset( links, OFF, status_now, r0_now );
   for(int i = 0; i < 4; i++)r0_now[i] = 0;
+  *changed = 1;
 }
 
 /* Support persistent KS phases in a link field 
@@ -190,27 +191,32 @@ void rephase_field_unset(su3_matrix *links, int *status_now,
 */
 
 /* TODO: Need a structure containing the link field and its phase state */
-void rephase_field_set(su3_matrix *links, int flag, int *status_now,
-		       int r0_now[], int r0[]){
+void rephase_field_set(su3_matrix *links, const int flag, int *status_now,
+		       int r0_now[], int *changed, const int r0[]){
   /* Skip setting if the phases are ON with a compatible offset */
-  if(flag == OFF)rephase_field_unset(links, status_now, r0_now);
-  if(*status_now == ON)
-    {
-      if(r0[0] % 2 != r0_now[0] % 2 ||
-	 r0[1] % 2 != r0_now[1] % 2 ||
-	 r0[2] % 2 != r0_now[2] % 2 ||
-	 r0[3] % 2 != r0_now[3] % 2){
-	/* Incomptible: Redo the phase offset */
-	node0_printf("Replacing phases\n"); fflush(stdout);
-	rephase_field_offset( links, OFF, status_now, r0_now );
-	rephase_field_offset( links, ON, status_now, r0 );
-	for(int i = 0; i < 4; i++)r0_now[i] = r0[i];
-      }
+  if(flag == OFF){
+    rephase_field_unset(links, status_now, r0_now, changed);
   } else {
-    /* Insert the phases */
-    node0_printf("Inserting phases\n"); fflush(stdout);
-    rephase_field_offset( links, ON, status_now, r0 );
-    for(int i = 0; i < 4; i++)r0_now[i] = r0[i];
+    if(*status_now == ON)
+      {
+	if(r0[0] % 2 != r0_now[0] % 2 ||
+	   r0[1] % 2 != r0_now[1] % 2 ||
+	   r0[2] % 2 != r0_now[2] % 2 ||
+	   r0[3] % 2 != r0_now[3] % 2){
+	  /* Incomptible: Redo the phase offset */
+	  node0_printf("Replacing phases\n"); fflush(stdout);
+	  rephase_field_offset( links, OFF, status_now, r0_now );
+	  rephase_field_offset( links, ON, status_now, r0 );
+	  for(int i = 0; i < 4; i++)r0_now[i] = r0[i];
+	  *changed = 1;
+	}
+      } else {
+      /* Insert the phases */
+      node0_printf("Inserting phases\n"); fflush(stdout);
+      rephase_field_offset( links, ON, status_now, r0 );
+      for(int i = 0; i < 4; i++)r0_now[i] = r0[i];
+      *changed = 1;
+    }
   }
 }
 
