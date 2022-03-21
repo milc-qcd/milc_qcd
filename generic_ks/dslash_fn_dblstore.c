@@ -574,7 +574,7 @@ void cleanup_dslash_temps(){
 
 
 void 
-dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
+dslash_fn_dir(const su3_vector *src, su3_vector *dest, int parity,
 	      fn_links_t *fn, int dir, int fb, 
 	      Real wtfat, Real wtlong)
 {
