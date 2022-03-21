@@ -2212,7 +2212,7 @@ declare_gather_field(
 */
 msg_tag *
 start_gather_field(
-  void * field,		/* which field? Pointer returned by malloc() */
+  const void * field,		/* which field? Pointer returned by malloc() */
   size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
