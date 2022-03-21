@@ -114,7 +114,7 @@ void qudaContractFT(int external_precision, // milc_precision
 
 /*******************************************/
 
-void dump_QudaContractArgs(const QudaContractArgs_t const* args)
+void dump_QudaContractArgs(const QudaContractArgs_t * const args)
 {
   printf("QudaContractArgs:\n");
   printf("source_position: %3d %3d %3d %3d\n",
