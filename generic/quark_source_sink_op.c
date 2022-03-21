@@ -1761,7 +1761,7 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
 
     /* Here we want KS phases in the APE links */
     rephase_field_set( ape_links, ON, &ape_links_ks_phases, qss_op->r_offset,
-		       ape_links_r0 );
+		       &ape_links_quda_refresh, ape_links_r0 );
     mult_pion5_field( qss_op->r_offset, src, tvec2 );
     mult_pioni_field( ZUP, qss_op->r_offset, src, tvec1, ape_links );
     add_v_fields( tvec2, tvec1, tvec2 );
@@ -1779,11 +1779,9 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
 
     /* Here we want KS phases in the APE links */
     rephase_field_set( ape_links, ON, &ape_links_ks_phases, qss_op->r_offset,
-		       ape_links_r0 );
+		       &ape_links_quda_refresh, ape_links_r0 );
     mult_pion05_field( qss_op->r_offset, src, tvec2 );
-    rephase_field_offset( ape_links, ON, NULL, qss_op->r_offset );
     mult_pioni0_field( ZUP, qss_op->r_offset, src, tvec1, ape_links );
-    rephase_field_offset( ape_links, OFF, NULL, qss_op->r_offset );
     add_v_fields( tvec2, tvec1, tvec2 );
     mult_rhoi0_field( ZUP, qss_op->r_offset, src, tvec1 );
     add_v_fields( src, tvec1, tvec2 );
