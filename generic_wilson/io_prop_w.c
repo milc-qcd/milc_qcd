@@ -170,7 +170,7 @@ int write_w_prop_info_item( FILE *fpout,    /* ascii file pointer */
 		       char *keyword,   /* keyword */
 		       char *fmt,       /* output format -
 					      must use s, d, e, f, or g */
-		       char *src,       /* address of starting data
+		       const char * src,       /* address of starting data
 					   floating point data must be
 					   of type (float) */
 		       int count,       /* number of data items if > 1 */
@@ -237,7 +237,7 @@ int sprint_w_prop_info_item(
   char *keyword,   /* keyword */
   char *fmt,       /* output format -
 		      must use s, d, e, f, or g */
-  char *src,       /* address of starting data
+  const char *src,       /* address of starting data
 		      floating point data must be
 		      of type (Real) */
   int count,       /* number of data items if > 1 */
