@@ -1358,7 +1358,7 @@ static void apply_gamma(wilson_vector *src,
 			quark_source_sink_op *qss_op){
   int i;
   site *s;
-  gammatype gam = qss_op->gamma;
+  enum gammatype gam = qss_op->gamma;
   wilson_vector tmp;
 
   FORALLSITES(i,s){
@@ -1525,7 +1525,7 @@ static int apply_cov_deriv_v(su3_vector *src, quark_source_sink_op *qss_op){
   site *s;
 
   /* We use APE links for parallel transport, but without any KS phases */
-  rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0);
+ rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0, &ape_links_quda_refresh);
 
   if(op_type == DERIV1){
     su3_vector *v_dst = create_v_field();
@@ -1595,7 +1595,7 @@ static int apply_cov_deriv_wv(wilson_vector *src, quark_source_sink_op *qss_op){
   int op_type       = qss_op->type;
 
   /* We use APE links for parallel transport, but without any KS phases */
-  rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0);
+  rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0, &ape_links_quda_refresh);
 
   if(op_type == DERIV1){
     wilson_vector *wv_dst = create_wv_field();
@@ -1687,13 +1687,13 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
 
   else if(op_type == FAT_COVARIANT_GAUSSIAN ){
     /* We use APE links for parallel transport. Remove any KS phases */
-    rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0);
+    rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0, &ape_links_quda_refresh);
     gauss_smear_v_field(src, ape_links, r0, iters, t0);
   }
 
   else if(op_type == FAT_COVARIANT_LAPLACIAN ){
     /* We use APE links for parallel transport. Remove any KS phases */
-    rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0);
+    rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0, &ape_links_quda_refresh);
     laplacian_v_field(src, ape_links, t0);
   }
 
@@ -1717,7 +1717,7 @@ static int apply_cov_smear_wv(wilson_vector *src,
   int stride        = qss_op->stride;
 
   /* We use APE links for parallel transport, but without any KS phases */
-  rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0);
+  rephase_field_unset(ape_links, &ape_links_ks_phases, ape_links_r0, &ape_links_quda_refresh);
 
   if(op_type == COVARIANT_GAUSSIAN){
     int iters = qss_op->iters;
