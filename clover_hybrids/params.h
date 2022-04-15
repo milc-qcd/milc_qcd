@@ -8,7 +8,7 @@ typedef struct {
 	int stopflag;   /* 1 if it is time to stop */
     /* INITIALIZATION PARAMETERS */
 	int nx,ny,nz,nt;  /* lattice dimensions */
-	int iseed;	/* for random numbers */
+	uint32_t iseed;	/* for random numbers */
     /*  REPEATING BLOCK */
 	int startflag;  /* what to do for beginning lattice */
 	Real beta,kappa; /* gauge coupling, quark hopping parameter */

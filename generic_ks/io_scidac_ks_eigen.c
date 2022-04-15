@@ -389,13 +389,15 @@ read_quda_ks_eigenvectors(QIO_Reader *infile, su3_vector *eigVec[], double *eigV
     *Nvecs = datacount;
   }
 
-  su3_vector *eigVecs = (su3_vector *)malloc((*Nvecs)*sizeof(su3_vector)*sites_on_node);
+  //  su3_vector *eigVecs = (su3_vector *)malloc((*Nvecs)*sizeof(su3_vector)*sites_on_node);
+  su3_vector *eigVecs = (su3_vector *)malloc(datacount*sizeof(su3_vector)*sites_on_node);
   if(eigVecs == NULL){
     node0_printf("%s FATAL: No room for a temporary array for %d eigenvectors\n",
 		 myname, datacount);
     terminate(1);
   }
   
+  node0_printf("Reading %d eigenvectors\n",datacount);
   if(typesize == 24)
     status = read_F3_V_to_field(infile, recxml, eigVecs, datacount);
   else if (typesize == 48 )

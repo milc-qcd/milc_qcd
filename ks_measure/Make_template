@@ -68,7 +68,8 @@ DEFLATE_OBJECTS = \
  io_ks_eigen.o \
  io_scidac_ks_eigen.o \
  jacobi.o \
- spin_taste_ops.o
+ spin_taste_ops.o \
+ shift_field.o
 
 OBJECTS = \
   ${MY_OBJECTS} \

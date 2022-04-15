@@ -21,7 +21,7 @@ shift_field_cpu(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src,
   msg_tag *tag[2] = {NULL, NULL};
   su3_vector *tvec = create_v_field();
 
-  node0_printf("Using CPU shift\n");
+  //node0_printf("Using CPU shift\n");
 
   if(fb == SHIFT_FORWARD || fb == SHIFT_SYMMETRIC)
     tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
@@ -69,7 +69,7 @@ shift_field_cpu(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src,
   destroy_v_field(tvec);
 }
 
-#if defined(HAVE_QUDA) && defined(USE_SHIFT_GPU)
+#if defined(HAVE_QUDA) && defined(USE_SHIFT_QUDA)
 #include <quda_milc_interface.h>
 void 
 shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 

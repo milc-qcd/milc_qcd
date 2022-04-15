@@ -23,7 +23,7 @@ typedef struct {
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-  int iseed;	/* for random numbers */
+  uint32_t iseed;	/* for random numbers */
   Real beta;      /* gauge coupling */
   int n_dyn_masses;       /* number of dynamical masses */
   Real dyn_mass[MAX_DYN_MASSES];  /* List of dynamical masses */

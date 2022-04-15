@@ -429,6 +429,7 @@ void ks_meson_cont_mom(
 	}
 
       free(p_ind);
+      free(dprop);
     }  /**** end of the loop over the spin-taste table ******/
   
   free(meson);  free(meson_q);  free(nonzero);  free(ftfact);
