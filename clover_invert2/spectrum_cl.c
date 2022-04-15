@@ -864,7 +864,7 @@ static FILE* open_open_meson_file(int pair){
   struct {
     char  file_id[60];
     char  program_version[60];
-    char  creation_date[60];
+    char  creation_date[65];
     u_int32type endianess;
     u_int32type ndim;
     u_int32type box[10];
@@ -889,7 +889,7 @@ static FILE* open_open_meson_file(int pair){
     return NULL;
 
   /* Load any additional header values */
-  strncpy(fermiQCD_header.creation_date, utc_date_time, 60);
+  strncpy(fermiQCD_header.creation_date, utc_date_time, 64);
 
   fp = fopen(filename,"wb");
   if(fp == NULL){
