@@ -360,8 +360,9 @@ void coldlat(void);
 void funnylat(void);
 int get_check_tag(FILE *fp, const char *tag, const char *myname);
 int get_f( FILE *fp, int prompt, const char *variable_name_string, Real *value );
+int get_u( FILE *fp, int prompt, const char *variable_name_string, uint32_t *value );
 int get_i( FILE *fp, int prompt, const char *variable_name_string, int *value );
-const char *get_next_tag(FILE *fp, const char *tag, const char *myname);
+char *get_next_tag(FILE *fp, const char *tag, const char *myname);
 int get_vi( FILE *fp, int prompt, const char *variable_name_string, 
 	    int *value, int nvalues );
 int get_vf( FILE *fp, int prompt, const char *variable_name_string, 
