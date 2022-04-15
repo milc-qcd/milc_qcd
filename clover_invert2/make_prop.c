@@ -457,7 +457,7 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
   int avs_iters = 0;
   int tot_iters = 0;
   int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
-  su3_vector *dst;
+  su3_vector *dst = NULL;
   spin_wilson_vector *swv;
   imp_ferm_links_t *fn = NULL;
   Real mybdry_phase[4];
