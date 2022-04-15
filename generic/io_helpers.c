@@ -230,7 +230,7 @@ gauge_file *reload_lattice( int flag, const char *filename){
 
 /* Get next tag, but skip past end of line if we encounter # for comments */
 #define MAX_TAG 512
-const char *get_next_tag(FILE *fp, const char *tag, const char *myname){
+char *get_next_tag(FILE *fp, const char *tag, const char *myname){
   static char line[MAX_TAG];
   int s;
 
@@ -667,6 +667,34 @@ int get_i( FILE *fp, int prompt, const char *tag, int *value ){
       s = fscanf(fp,"%d",value);
       if(check_read(s,myname,tag) == 1)return 1;
       printf("%d\n",*value);
+    }
+    
+    return 0;
+
+}
+
+int get_u( FILE *fp, int prompt, const char *tag, uint32_t *value ){
+    int s;
+    char checkvalue[80];
+    const char myname[] = "get_i";
+
+    if(prompt==1)  {
+      s = 0;
+      while(s != 1){
+    	printf("enter %s ",tag);
+	s=fscanf(fp,"%s",checkvalue);
+    	s=sscanf(checkvalue,"%u",value);
+	if(s==EOF)return 1;
+	if(s==0)printf("Data format error.\n");
+	else printf("%s %u\n",tag,*value);
+      }
+    }
+    else  {
+      if(get_check_tag(fp, tag, myname) == 1)return 1;
+	  
+      s = fscanf(fp,"%u",value);
+      if(check_read(s,myname,tag) == 1)return 1;
+      printf("%u\n",*value);
     }
     
     return 0;
