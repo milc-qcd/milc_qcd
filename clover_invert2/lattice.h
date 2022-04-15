@@ -119,8 +119,9 @@ EXTERN  double_prn node_prn ;
 EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
-EXTERN int ape_links_ks_phases;  /* Phases On or OFF? */
+EXTERN int ape_links_ks_phases;  /* Phases ON or OFF? */
 EXTERN int ape_links_r0[4]; /* If ON, current origin offset for phases */
+EXTERN int ape_links_quda_refresh; /* If 1, signal QUDA to reload links */
 EXTERN su3_matrix *ape_links;
 
 /* Vectors for addressing */
