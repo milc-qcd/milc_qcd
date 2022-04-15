@@ -71,19 +71,6 @@ DEFLATE_OBJECTS = \
  spin_taste_ops.o \
  shift_field.o
 
-OBJECTS = \
-  ${MY_OBJECTS} \
-  ${GAUGE_OBJECTS} \
-  ${LAYOUT} \
-  ${FFT_OBJECTS} \
-  ${STANDARD_OBJECTS} \
-  ${DEFLATE_OBJECTS} \
-  ${ADD_OBJECTS} \
-  ${EXTRA_OBJECTS}
-
-EIGCG_OBJECTS = \
- inc_eigcg.o
-
 # Selection of eigensolver program
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP (not supported, so same as below)
@@ -113,6 +100,19 @@ else
     endif
   endif
 endif
+
+OBJECTS = \
+  ${MY_OBJECTS} \
+  ${GAUGE_OBJECTS} \
+  ${LAYOUT} \
+  ${FFT_OBJECTS} \
+  ${STANDARD_OBJECTS} \
+  ${DEFLATE_OBJECTS} \
+  ${ADD_OBJECTS} \
+  ${EXTRA_OBJECTS}
+
+EIGCG_OBJECTS = \
+ inc_eigcg.o
 
 # Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
