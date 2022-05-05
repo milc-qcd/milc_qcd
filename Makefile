@@ -444,15 +444,15 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   INCQUDA = -I${QUDA_HOME}/include -I${QUDA_HOME}/tests
   PACKAGE_HEADERS += ${QUDA_HOME}/include
-  LIBQUDA ?= -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda -ldl
+  LIBQUDA ?= -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcublas -lcufft -ldl
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
 
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
   # Needed for Perlmutter
-  CUDA_MATH = /opt/nvidia/hpc_sdk/Linux_x86_64/21.9/math_libs/11.4
-  CUDA_COMP = /opt/nvidia/hpc_sdk/Linux_x86_64/21.9/compilers
+  CUDA_MATH = /opt/nvidia/hpc_sdk/Linux_x86_64/21.11/math_libs/11.5
+  CUDA_COMP = /opt/nvidia/hpc_sdk/Linux_x86_64/21.11/compilers
   LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -lcublas -lnvcpumath
   QUDA_HEADERS = ${QUDA_HOME}/include
 
