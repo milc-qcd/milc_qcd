@@ -101,8 +101,8 @@ ifeq ($(strip ${OFFLOAD}),SyCL)
 
 endif
 
-CC ?= ${MY_CC}
-CXX ?= ${MY_CXX}
+CC = ${MY_CC}
+CXX = ${MY_CXX}
 
 # If the above construction doesn't work, override the definitions here
 
@@ -450,7 +450,10 @@ ifeq ($(strip ${WANTQUDA}),true)
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcublas -lcufft -lcublas
+  # Needed for Perlmutter
+  CUDA_MATH = /opt/nvidia/hpc_sdk/Linux_x86_64/21.9/math_libs/11.4
+  CUDA_COMP = /opt/nvidia/hpc_sdk/Linux_x86_64/21.9/compilers
+  LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -lcublas -lnvcpumath
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
