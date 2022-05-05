@@ -103,9 +103,10 @@ then
     gpu-cuda)
 	# Cori: salloc -C gpu -t 60 -N 1 -c 10 --gres=gpu:1 -A m1759
 	${SRCDIR}/configure \
-            --prefix ${INSTALLDIR}      \
-            --with-grid=${GRIDINSTALLDIR} \
-            --host=x86_64-unknown-linux-gnu
+        --prefix ${INSTALLDIR}      \
+        --with-grid=${GRIDINSTALLDIR} \
+        --host=x86_64-unknown-linux-gnu
+
         status=$?
         echo "Configure exit status $status"
 	;;
@@ -120,11 +121,10 @@ then
       echo "Quitting because of configure errors"
   else
     echo "Building in ${BUILDDIR}"
-#    ${MAKE} -k -j4
-    ${MAKE}
+    ${MAKE} -k -j16
 
     echo "Installing in ${INSTALLDIR}"
-#    ${MAKE} install
+    ${MAKE} install
   fi
 
 fi     
