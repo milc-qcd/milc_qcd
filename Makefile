@@ -431,7 +431,7 @@ WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 WANT_EIG_GPU ?= #true
 WANT_KS_CONT_GPU ?= #true
-WANT_SHIFT_GPU ?= #true DO NOT USE YET
+WANT_SHIFT_GPU ?= #true 
 
 endif
 
@@ -451,9 +451,13 @@ ifeq ($(strip ${WANTQUDA}),true)
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
   # Needed for Perlmutter
-  CUDA_MATH = /opt/nvidia/hpc_sdk/Linux_x86_64/21.11/math_libs/11.5
-  CUDA_COMP = /opt/nvidia/hpc_sdk/Linux_x86_64/21.11/compilers
-  LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -lcublas -lnvcpumath
+  PATH_TO_NVHPCSDK = /opt/nvidia/hpc_sdk/Linux_x86_64/21.11
+  CUDA_MATH ?= ${PATH_TO_NVHPCSDK}/math_libs/11.5
+  CUDA_COMP ?= ${PATH_TO_NVHPCSDK}/compilers
+  LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -lcublas
+  ifneq ($(strip ${PATH_TO_NVHPCSDK}),)
+    LIBQUDA +=  -lnvcpumath -lpgc
+  endif
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
