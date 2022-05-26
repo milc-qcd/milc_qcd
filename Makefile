@@ -451,7 +451,7 @@ ifeq ($(strip ${WANTQUDA}),true)
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
   # Needed for Perlmutter
-  PATH_TO_NVHPCSDK = /opt/nvidia/hpc_sdk/Linux_x86_64/21.11
+  PATH_TO_NVHPCSDK ?= /opt/nvidia/hpc_sdk/Linux_x86_64/21.11
   CUDA_MATH ?= ${PATH_TO_NVHPCSDK}/math_libs/11.5
   CUDA_COMP ?= ${PATH_TO_NVHPCSDK}/compilers
   LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -lcublas
