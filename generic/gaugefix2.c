@@ -485,6 +485,7 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
   unsigned int stopWtheta;
   su3_matrix *milc_sitelink;
 
+  /* Copy gauge field in site structure to a temporary field in a layout expected by QUDA */
   milc_site_link = create_G_from_site();
   if(milc_site_link == NULL){
     node0_printf("gaugefix: ERROR: No room for temporary gauge field\n");
@@ -508,6 +509,14 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
   
   qudaGaugeFixingOVR(precision, quda_gauge_dir, Nsteps, verbose_interval, quda_relax_boost,
 		     tolerance, reunit_interval, stopWtheta, (void *)milc_sitelink);
+
+  /* Copy result back to site structure. (Code should be in gauge_utilities.c)  */
+  int i, dir;
+  FORALLUPDIR(dir){
+    FORALLFIELDSITES_OMP(i, ){
+      lattice[i].link[dir] = milc_site_link[4*i+dir];
+    } END_LOOP_OMP;
+  }
 
   destroy_G(milc_site_link);
 }
