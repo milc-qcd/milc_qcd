@@ -431,7 +431,8 @@ WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 WANT_EIG_GPU ?= #true
 WANT_KS_CONT_GPU ?= #true
-WANT_SHIFT_GPU ?= #true 
+WANT_SHIFT_GPU ?= #true
+WANT_GAUGEFIX_OVR_GPU ?= #true
 
 endif
 
@@ -495,6 +496,11 @@ ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${WANT_SHIFT_GPU}),true)
     HAVE_SHIFT_QUDA = true
     CGPU += -DUSE_SHIFT_QUDA
+  endif
+
+  ifeq ($(strip ${WANT_GAUGEFIX_OVR_QUDA}),true)
+    HAVE_GAUGEFIX_OVR_QUDA = true
+    CGPU += -DUSE_GAUGEFIX_OVR_QUDA
   endif
 
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
