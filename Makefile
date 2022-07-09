@@ -451,7 +451,7 @@ ifeq ($(strip ${WANTQUDA}),true)
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -lcublas -lnvcpumath
+  LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -lcublas
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
@@ -498,7 +498,7 @@ ifeq ($(strip ${WANTQUDA}),true)
     CGPU += -DUSE_SHIFT_QUDA
   endif
 
-  ifeq ($(strip ${WANT_GAUGEFIX_OVR_QUDA}),true)
+  ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
     HAVE_GAUGEFIX_OVR_QUDA = true
     CGPU += -DUSE_GAUGEFIX_OVR_QUDA
   endif
