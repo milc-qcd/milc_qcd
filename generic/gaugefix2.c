@@ -476,7 +476,7 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
 	      Real gauge_fix_tol )
 {
   int precision;
-  unsigned int quda_gauge_dir;  /* 4 = Landau; 3 = Coulomb */
+  unsigned int quda_gauge_dir = 0;  /* 4 = Landau; 3 = Coulomb */
   int Nsteps;
   int verbose_interval;
   double quda_relax_boost;
@@ -486,13 +486,13 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
   su3_matrix *milc_sitelink;
 
   /* Copy gauge field in site structure to a temporary field in a layout expected by QUDA */
-  milc_site_link = create_G_from_site();
-  if(milc_site_link == NULL){
+  milc_sitelink = create_G_from_site();
+  if(milc_sitelink == NULL){
     node0_printf("gaugefix: ERROR: No room for temporary gauge field\n");
     terminate(1);
   }
 
-  precision = (PRECISION==1) ? QUDA_SINGLE_PRECISION : QUDA_DOUBLE_PRECISION;
+  precision = (MILC_PRECISION==1) ? QUDA_SINGLE_PRECISION : QUDA_DOUBLE_PRECISION;
   
   if(gauge_dir == TUP)quda_gauge_dir = 3;
   else if(gauge_dir < 0 || gauge_dir > TUP)quda_gauge_dir = 4;
@@ -503,7 +503,7 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
 
   Nsteps = max_gauge_iter;
   verbose_interval = reunit_interval = REUNIT_INTERVAL;
-  relax_boost = quda_relax_boost;
+  quda_relax_boost = relax_boost;
   tolerance = gauge_fix_tol;
   stopWtheta = 0; /* Try this for now */
   
@@ -514,11 +514,11 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
   int i, dir;
   FORALLUPDIR(dir){
     FORALLFIELDSITES_OMP(i, ){
-      lattice[i].link[dir] = milc_site_link[4*i+dir];
+      lattice[i].link[dir] = milc_sitelink[4*i+dir];
     } END_LOOP_OMP;
   }
 
-  destroy_G(milc_site_link);
+  destroy_G(milc_sitelink);
 }
   
 #else
@@ -529,4 +529,4 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
   gaugefix_combo(gauge_dir, relax_boost, max_gauge_iter, gauge_fix_tol,
 		 0,NULL,NULL,0,NULL,NULL);
 }
-#enduf
+#endif
