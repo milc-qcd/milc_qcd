@@ -29,11 +29,6 @@ then
   MG="-DMULTIGRID"
 fi
 
-if [ -z "$PERLMUTTER" ]
-then
-  export PATH_TO_NVHPCSDK=""
-fi
-
 if [ ! -f "./Makefile" ]
 then
   cp ../Makefile .
