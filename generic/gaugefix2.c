@@ -72,6 +72,7 @@
 #define REUNIT_INTERVAL 20
 #ifdef USE_GAUGEFIX_OVR_QUDA
 #include <quda.h>
+#include <quda_milc_interface.h>
 #endif
 
 /*    CDIF(a,b)         a -= b						      */
