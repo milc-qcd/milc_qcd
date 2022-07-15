@@ -71,7 +71,7 @@
 #include "../include/openmp_defs.h"
 #define REUNIT_INTERVAL 20
 #ifdef USE_GAUGEFIX_OVR_QUDA
-#include <quda.h>
+#include "../include/generic_quda.h"
 #endif
 
 /*    CDIF(a,b)         a -= b						      */
@@ -475,7 +475,6 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
 	      Real gauge_fix_tol )
 {
-  int precision;
   unsigned int quda_gauge_dir = 0;  /* 4 = Landau; 3 = Coulomb */
   int Nsteps;
   int verbose_interval;
@@ -483,17 +482,15 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
   double tolerance;
   unsigned int reunit_interval;
   unsigned int stopWtheta;
-  su3_matrix *milc_sitelink;
+  //su3_matrix *milc_sitelink;
 
   /* Copy gauge field in site structure to a temporary field in a layout expected by QUDA */
-  milc_sitelink = create_G_from_site();
-  if(milc_sitelink == NULL){
-    node0_printf("gaugefix: ERROR: No room for temporary gauge field\n");
-    terminate(1);
-  }
+  //milc_sitelink = create_G_from_site();
+  //if(milc_sitelink == NULL){
+  //  node0_printf("gaugefix: ERROR: No room for temporary gauge field\n");
+  //  terminate(1);
+  //}
 
-  precision = (MILC_PRECISION==1) ? QUDA_SINGLE_PRECISION : QUDA_DOUBLE_PRECISION;
-  
   if(gauge_dir == TUP)quda_gauge_dir = 3;
   else if(gauge_dir < 0 || gauge_dir > TUP)quda_gauge_dir = 4;
   else{
@@ -501,24 +498,28 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
     terminate(1);
   }
 
+  initialize_quda();
+
+  QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+
   Nsteps = max_gauge_iter;
   verbose_interval = reunit_interval = REUNIT_INTERVAL;
   quda_relax_boost = relax_boost;
   tolerance = gauge_fix_tol;
   stopWtheta = 0; /* Try this for now */
-  
-  qudaGaugeFixingOVR(precision, quda_gauge_dir, Nsteps, verbose_interval, quda_relax_boost,
-		     tolerance, reunit_interval, stopWtheta, (void *)milc_sitelink);
+
+  qudaGaugeFixingOVR(MILC_PRECISION, quda_gauge_dir, Nsteps, verbose_interval, quda_relax_boost,
+		     tolerance, reunit_interval, stopWtheta, &arg);
 
   /* Copy result back to site structure. (Code should be in gauge_utilities.c)  */
-  int i, dir;
-  FORALLUPDIR(dir){
-    FORALLFIELDSITES_OMP(i, ){
-      lattice[i].link[dir] = milc_sitelink[4*i+dir];
-    } END_LOOP_OMP;
-  }
+  //int i, dir;
+  //FORALLUPDIR(dir){
+  //  FORALLFIELDSITES_OMP(i, ){
+  //    lattice[i].link[dir] = milc_sitelink[4*i+dir];
+  //  } END_LOOP_OMP;
+  //}
 
-  destroy_G(milc_sitelink);
+  //destroy_G(milc_sitelink);
 }
   
 #else
