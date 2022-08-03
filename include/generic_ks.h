@@ -64,6 +64,9 @@ void scalar_mult_add_latveclist_proj(anti_hermitmat *mom,
 void scalar_mult_add_latveclist( veclist *dest,
             veclist *src, Real *s, int listlength );
 
+/* gauge_action_imp_ks.c */
+double imp_gauge_action_ks(void);
+
 /* gauge_force_imp_ks.c */
 void imp_gauge_force_ks( Real eps, field_offset mom_off );
 
@@ -99,6 +102,9 @@ void path_transport_connection_hisq( su3_matrix * src, su3_matrix **links,
     su3_matrix * dest, int parity, int *dir, int length );
 void link_transport_connection_hisq( su3_matrix * src, su3_matrix *links, 
     su3_matrix * dest, su3_matrix * work, int dir );
+
+/* ploop3_ks.c */
+complex ploop_ks(void);
 
 /* rephase.c */
 void apply_apbc( su3_matrix *links, int r0t );

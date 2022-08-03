@@ -468,6 +468,11 @@ ifeq ($(strip ${WANTQUDA}),true)
     CGPU += -DUSE_CG_GPU
   endif
 
+  ifeq ($(strip ${WANT_GA_GPU}),true)
+    HAVE_GA_GPU = true
+    CGPU += -DUSE_GA_GPU
+  endif
+
   ifeq ($(strip ${WANT_GF_GPU}),true)
     HAVE_GF_GPU = true
     CGPU += -DUSE_GF_GPU
@@ -512,7 +517,16 @@ ifeq ($(strip ${WANTQUDA}),true)
 # Verbosity choices: 
 # SET_QUDA_SILENT, SET_QUDA_SUMMARIZE, SET_QUDA_VERBOSE, SET_QUDA_DEBUG_VERBOSE
 
-  CGPU += -DSET_QUDA_SUMMARIZE
+  QUDA_VERBOSITY ?= SUMMARIZE
+  ifeq ($(strip ${QUDA_VERBOSITY}),SILENT)
+    CGPU += -DSET_QUDA_SILENT # use single precision where appropriate
+  else ifeq ($(strip ${QUDA_VERBOSITY}),SUMMARIZE)
+    CGPU += -DSET_QUDA_SUMMARIZE # use half precision where appropriate
+  else ifeq ($(strip ${QUDA_VERBOSITY}),VERBOSE)
+    CGPU += -DSET_QUDA_VERBOSE # use half precision where appropriate
+  else ifeq ($(strip ${QUDA_VERBOSITY}),DEBUG_VERBOSE)
+    CGPU += -DSET_QUDA_DEBUG_VERBOSE # use half precision where appropriate
+  endif
 
 endif
 
