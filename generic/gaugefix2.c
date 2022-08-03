@@ -499,10 +499,9 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
   quda_relax_boost = relax_boost;
   tolerance = gauge_fix_tol;
   stopWtheta = 0; /* Try this for now */
-
+  
   qudaGaugeFixingOVR(MILC_PRECISION, quda_gauge_dir, Nsteps, verbose_interval, quda_relax_boost,
-		     tolerance, reunit_interval, stopWtheta, &arg);
-
+    tolerance, reunit_interval, stopWtheta, &arg);
 }
   
 #else
