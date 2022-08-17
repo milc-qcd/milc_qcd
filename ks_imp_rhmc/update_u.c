@@ -32,7 +32,7 @@ void update_u(Real eps){
   double dtime, dclock();
   dtime = -dclock();
 #endif
-#if defined (USE_GF_GPU) && defined (USE_FF_GPU) && defined (USE_FL_GPU) && defined(USE_CG_GPU) // && defined(USE_GA_GPU)
+#if defined (USE_GF_GPU) && defined (USE_FF_GPU) && defined (USE_FL_GPU) && defined(USE_CG_GPU)
 const int  want_quda_gaugepipe = 1;
 #else
 const int  want_quda_gaugepipe = 0;

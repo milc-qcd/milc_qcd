@@ -40,19 +40,20 @@ double imp_gauge_action_gpu() {
       terminate(1);
     }
 
-    g_action=0.0;
-
-    #ifdef GATIME
-    // not sure how to handle this??
-    int nflop = 153004;  /* For Symanzik1 action */
-    double dtime = -dclock();
-    #endif
-
     // Count total number of loops
     int num_paths = 0;
     for (iloop = 0; iloop < nloop; iloop++)
         for (ln = 0; ln < loop_num[iloop]; ln++)
             num_paths++;
+
+#ifdef GATIME
+    int nlinks = 0;
+    for (iloop = 0; iloop < nloop; iloop++) {
+        nlinks += loop_num[iloop] * loop_length[iloop];
+    }
+    int nflop = 198 * nlinks + 8 * num_paths; /* For any action */
+    double dtime = -dclock();
+#endif
 
     // Storage for traces
     double *traces = (double*)malloc(2 * num_paths * sizeof(double));
@@ -93,6 +94,8 @@ double imp_gauge_action_gpu() {
     qudaGaugeLoopTracePhased(MILC_PRECISION, traces, input_path_buf, path_length, loop_coeff, num_paths,
                              max_length, factor, &arg, phases_in);
 
+    g_action = 0.0;
+
     // traces has been populated so we now accumulate the actions
     num_paths = 0;
     for (iloop = 0; iloop < nloop; iloop++) {
@@ -110,11 +113,11 @@ double imp_gauge_action_gpu() {
     free(input_path_buf);
     free(traces);
 
-  #ifdef GATIME
+#ifdef GATIME
     dtime+=dclock();
     node0_printf("GATIME:   time = %e (GaugeAction_Symanzik1_QUDA) mflops = %e\n",dtime,
                   nflop*(double)volume/(1e6*dtime*numnodes()) );
-    #endif
+#endif
 
     return( g_action );
 } /* imp_gauge_action_gpu */

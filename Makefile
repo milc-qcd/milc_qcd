@@ -519,13 +519,13 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   QUDA_VERBOSITY ?= SUMMARIZE
   ifeq ($(strip ${QUDA_VERBOSITY}),SILENT)
-    CGPU += -DSET_QUDA_SILENT # use single precision where appropriate
+    CGPU += -DSET_QUDA_SILENT # silent output
   else ifeq ($(strip ${QUDA_VERBOSITY}),SUMMARIZE)
-    CGPU += -DSET_QUDA_SUMMARIZE # use half precision where appropriate
+    CGPU += -DSET_QUDA_SUMMARIZE # summary output
   else ifeq ($(strip ${QUDA_VERBOSITY}),VERBOSE)
-    CGPU += -DSET_QUDA_VERBOSE # use half precision where appropriate
+    CGPU += -DSET_QUDA_VERBOSE # verbose output, outputs autotuning information, residual history of solvers
   else ifeq ($(strip ${QUDA_VERBOSITY}),DEBUG_VERBOSE)
-    CGPU += -DSET_QUDA_DEBUG_VERBOSE # use half precision where appropriate
+    CGPU += -DSET_QUDA_DEBUG_VERBOSE # debug-level output
   endif
 
 endif

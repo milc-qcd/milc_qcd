@@ -318,8 +318,6 @@ void g_measure_gpu( ) {
     }
 
     Real **loop_coeff_milc = get_loop_coeff();
-    //int max_length = get_max_length();
-    //int nreps = get_nreps();
 
     site *st;
 
