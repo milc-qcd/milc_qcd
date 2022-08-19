@@ -86,6 +86,11 @@ void plaquette_action(double *ss_plaq, double *st_plaq) {
   d_plaquette(ss_plaq, st_plaq);
 #else
   d_plaquette_gpu(ss_plaq, st_plaq);
+  /* Apply a negative sign to "cancel" the negative sign above
+     The CPU codepath assumes the phases are still on the field,
+     which adds another minus sign to the plaquette */
+  *ss_plaq = -*ss_plaq;
+  *st_plaq = -*st_plaq;
 #endif
 }
 

@@ -255,21 +255,21 @@ static void char_num( int *dig, int *chr, int length){
 */
 
 void g_measure_ks( ) {
-    rephase( OFF );
 #if defined (HAVE_QUDA) && defined(USE_GA_GPU) && !defined(ANISOTROPY) && !defined(BPCORR) && NREPS == 1
     g_measure_gpu();
 #else
+    rephase( OFF );
     g_measure();
-#endif
     rephase( ON );
+#endif
 }
 
 #if defined (HAVE_QUDA) && defined(USE_GA_GPU) && !defined(ANISOTROPY) && !defined(BPCORR) && NREPS == 1
 void g_measure_gpu( ) {
     complex p_loop;
-    double ss_plaquette, st_plaquette;
     register int i;
     register site *s;
+    double ss_plaquette, st_plaquette;
     complex trace;
     double average,action,act2,total_action;
     double this_total_action; /* need for loop over sitest */
@@ -279,38 +279,38 @@ void g_measure_gpu( ) {
     /* these are for loop_table  */
     int ln,iloop,rep;
 
-    // Count total number of loops
+    /* Count total number of loops */
     int num_paths = 0;
     for (iloop = 0; iloop < NLOOP; iloop++)
         for (ln = 0; ln < loop_num[iloop]; ln++)
             num_paths++;
 
-    // Max length
+    /* Max length */
     int max_length = get_max_length();
 
-    // Storage for traces
+    /* Storage for traces */
     double *traces = (double*)malloc(2 * num_paths * sizeof(double));
 
-    // Storage for input paths
+    /* Storage for input paths */
     int **input_path_buf = (int**)malloc(num_paths * sizeof(int*));
     for (i = 0; i < num_paths; i++)
         input_path_buf[i] = (int*)malloc(max_length * sizeof(int));
 
-    // Storage for path lengths
+    /* Storage for path lengths */
     int *path_length = (int*)malloc(num_paths * sizeof(int));
 
-    // Storage for loop coefficients
+    /* Storage for loop coefficients */
     double *loop_coeff = (double*)malloc(num_paths * sizeof(double));
 
-    // Overall scaling factor
+    /* Overall scaling factor */
     double factor = 1. / volume;
 
     num_paths = 0;
     for (iloop = 0; iloop < NLOOP; iloop++) {
         length = loop_length[iloop];
         for (ln = 0; ln < loop_num[iloop]; ln++) {
-            path_length[num_paths] = length; // path length
-            loop_coeff[num_paths] = 1.0; // due to the "3. - [...]" convention below, we'll wait to scale then
+            path_length[num_paths] = length; /* path length */
+            loop_coeff[num_paths] = 1.0; /* due to the "3. - [...]" convention below, we'll wait to scale then */
             for (i = 0; i < length; i++)
                 input_path_buf[num_paths][i] = loop_table[iloop][ln][i];
             num_paths++;
@@ -318,11 +318,20 @@ void g_measure_gpu( ) {
     }
 
     Real **loop_coeff_milc = get_loop_coeff();
+    double plaq_array[3];
+    double ploop_array[2];
 
-    site *st;
+    initialize_quda();
 
-    d_plaquette_gpu(&ss_plaquette, &st_plaquette);
-    
+    QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+
+    /* Fused kernel that computes the plaquette, temporal Polyakov loop, and gauge loop traces */
+    qudaGaugeMeasurementsPhased(MILC_PRECISION, plaq_array, ploop_array, 3, traces, input_path_buf, path_length,
+                                loop_coeff, num_paths, max_length, factor, &arg, phases_in);
+
+
+    ss_plaquette = 3.0 * plaq_array[1];
+    st_plaquette = 3.0 * plaq_array[2];
 
 #if (MILC_PRECISION==1)
     node0_printf("PLAQ:\t%f\t%f\n", ss_plaquette, st_plaquette );
@@ -330,19 +339,9 @@ void g_measure_gpu( ) {
     node0_printf("PLAQ:\t%.16f\t%.16f\n", ss_plaquette, st_plaquette );
 #endif
 
-    p_loop = ploop_gpu();
+    node0_printf("P_LOOP:\t%e\t%e\n", ploop_array[0], ploop_array[1] );
 
-    node0_printf("P_LOOP:\t%e\t%e\n", p_loop.real, p_loop.imag );
-
-    initialize_quda();
-
-    QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
-
-    qudaGaugeLoopTracePhased(MILC_PRECISION, traces, input_path_buf, path_length, loop_coeff, num_paths,
-                             max_length, factor, &arg, phases_in);
-
-    // traces has been populated (including volume rescale) so we now accumulate the actions
-
+    /* Accumulate the actions out of the gauge loop traces */
     num_paths = 0;
     total_action = 0.0;
     for (iloop = 0; iloop < NLOOP; iloop++) {
