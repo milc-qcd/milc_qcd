@@ -1331,6 +1331,7 @@ int readin(int prompt) {
   ape_links_ks_phases = OFF;
   for(int d = 0; d < 4; d++)ape_links_r0[d] = 0;
   if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
+  ape_links_quda_refresh = 1;
   rephase( ON );
 
 #if EIGMODE == EIGCG
