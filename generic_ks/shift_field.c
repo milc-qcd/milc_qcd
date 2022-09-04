@@ -92,7 +92,9 @@ shift_field(int dir, enum shift_dir fb, su3_vector *dest, const su3_vector * con
     break;
   }
 
-  qudaShift(MILC_PRECISION, quda_precision, links, src, dest, dir, sym);
+  qudaShift(MILC_PRECISION, quda_precision, links, src, dest, dir, sym,
+	    ape_links_quda_refresh);
+  ape_links_quda_refresh = 0;
 }
 
 #else
