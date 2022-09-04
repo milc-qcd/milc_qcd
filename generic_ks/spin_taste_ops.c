@@ -445,7 +445,9 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, con
   short spin = gamma_hex(spin_index);
   short taste = gamma_hex(taste_index);
   
-  qudaSpinTaste(MILC_PRECISION, quda_precision, links, src, dest, spin, taste);
+  qudaSpinTaste(MILC_PRECISION, quda_precision, links, src, dest, spin, taste,
+		ape_links_quda_refresh);
+  ape_links_quda_refresh = 0;
 }
 
 #else
