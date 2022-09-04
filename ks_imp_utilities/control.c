@@ -13,6 +13,9 @@
 #endif
 #include "lattice_qdp.h"
 #include "params.h"
+#ifdef HAVE_QPHIX
+#include "../include/generic_qphix.h"
+#endif
 
 EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
 
