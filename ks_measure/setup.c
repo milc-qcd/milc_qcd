@@ -589,6 +589,7 @@ int readin(int prompt) {
   for(int d = 0; d < 4; d++)ape_links_r0[d] = 0;
   /* We put in antiperiodic bc to the APE links to match what we did to the gauge field */
   apply_apbc( ape_links, 0 );
+  ape_links_quda_refresh = 1;
   rephase( ON );
 
 #if EIGMODE == EIGCG
