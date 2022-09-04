@@ -374,6 +374,11 @@ readin(int prompt)
   fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 #endif
 
+  /* We don't use APE links here */
+  ape_links_ks_phases = OFF;
+  for(int d = 0; d < 4; d++)ape_links_r0[d] = 0;
+  ape_links_quda_refresh = 1;
+
   return 0;
 }
 
