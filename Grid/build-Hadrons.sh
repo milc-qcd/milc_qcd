@@ -87,8 +87,10 @@ then
        ;;
     avx512-skx)
 
-       INCMKL="-I/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/include"
-       LIBMKL="-L/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64_lin"
+#       INCMKL="-I/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/include"
+#       LIBMKL="-L/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64_lin"
+
+       module load hdf5
 
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
