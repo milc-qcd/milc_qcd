@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
 	ape_links_ks_phases = OFF;
 	for(int d = 0; d < 4; d++)ape_links_r0[d] = 0;
 	if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
-
+	ape_links_quda_refresh = 1;
 	rephase( ON );  /* Put KS phases in the links structure */
 	invalidate_fermion_links(fn_links);
 

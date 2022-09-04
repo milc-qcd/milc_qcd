@@ -76,7 +76,7 @@ void w_nrbaryon(field_offset src_1,
   int cui,cuj,cdi,cdj,csi,csj;
   int sui,suj,sdi,sdj,ssi,ssj;
   int wti,wtj;
-  complex ctemp;
+  complex ctemp, ctemp2;
   complex *prop_tmp;
   Real norm,nucleon_norm,lambda_norm;
 
@@ -187,8 +187,8 @@ void w_nrbaryon(field_offset src_1,
 		   F_PT(s,src_1))->c[csi].p[ssi].p[ssj].c[csj],
 		   ctemp);
 	      
-	      CMULREAL(ctemp,(Real)wti*wtj,ctemp);
-	      CSUM(prop_tmp[s->t],ctemp);
+	      CMULREAL(ctemp,(Real)wti*wtj,ctemp2);
+	      CSUM(prop_tmp[s->t],ctemp2);
 	    }
 	}
     }
