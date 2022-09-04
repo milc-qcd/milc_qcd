@@ -106,6 +106,8 @@ then
        ;;
     avx512-skx)
 
+       module load hdf5
+
        INCMKL="-I/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/include"
        LIBMKL="-L/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64_lin"
 
@@ -114,7 +116,8 @@ then
             --enable-simd=KNL \
             --enable-comms=mpi \
             --host=x86_64-unknown-linux-gnu \
-	    --with-lime=${HOME}/scidac/install/qio-cori-omp-knl-icc \
+	    --with-lime=${HOME}/scidac/install/qio-skx-impi-icc \
+            --with-hdf5=${TACC_HDF5_DIR} \
             CXX="${PK_CXX}" CC="${PK_CC}" \
             CXXFLAGS="-std=c++17 -xCORE-AVX512 -O2 -g -simd -qopenmp" \
 
