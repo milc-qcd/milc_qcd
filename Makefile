@@ -433,6 +433,7 @@ WANT_EIG_GPU ?= #true
 WANT_KS_CONT_GPU ?= #true
 WANT_SHIFT_GPU ?= #true
 WANT_SPIN_TASTE_GPU ?= #true
+WANT_GAUGEFIX_OVR_GPU ?= #true
 
 endif
 
@@ -445,12 +446,13 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   INCQUDA = -I${QUDA_HOME}/include -I${QUDA_HOME}/tests
   PACKAGE_HEADERS += ${QUDA_HOME}/include
-  LIBQUDA ?= -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcublas -lcufft
+  LIBQUDA ?= -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
 
   CUDA_HOME ?= /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   PACKAGE_HEADERS += ${CUDA_HOME}/include
+  LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -ldl
   QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
@@ -500,6 +502,9 @@ ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
     HAVE_SPIN_TASTE_GPU = true
     CGPU += -DUSE_SPIN_TASTE_QUDA
+  ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
+    HAVE_GAUGEFIX_OVR_QUDA = true
+    CGPU += -DUSE_GAUGEFIX_OVR_QUDA
   endif
 
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
@@ -828,10 +833,6 @@ CPROF =#
 # HISQ_FORCE_FILTER_COUNTER Print summary count of force filter applications.
 
 CDEBUG = -DCG_OK -DREMAP_STDIO_APPEND # -DCHECK_MALLOC 
-
-# For code checking
-#CDEBUG += -fsanitize=address,undefined
-#LDFLAGS += -fsanitize=address,undefined
 
 #------------------------------
 # Backward compatibility

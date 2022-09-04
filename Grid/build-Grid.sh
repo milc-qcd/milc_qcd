@@ -127,22 +127,29 @@ then
     gpu-cuda)
 	# Cori: salloc -C gpu -t 60 -N 1 -c 10 --gres=gpu:1 -A m1759
 	# Summit: ./build-Grid.sh gpu-cuda mpicc mpiCC
+	# Perlmutter ./build-Grid.sh gpu-cuda cc CC
 	${SRCDIR}/configure \
              --prefix ${INSTALLDIR}       \
 	     --enable-comms=mpi           \
 	     --enable-simd=GPU            \
-	     --enable-shm=nvlink          \
+	     --enable-shm=shmnone         \
+             --enable-gen-simd-width=64   \
 	     --enable-accelerator=cuda    \
-	     --enable-unified=no          \
-	     --enable-setdevice           \
-             --enable-gen-simd-width=32   \
+	     --disable-fermion-reps       \
+	     --enable-unified             \
+	     --disable-gparity            \
              --host=x86_64-unknown-linux-gnu \
-	     --with-mpfr=${HOME}/mpfr \
-	     --with-lime=${HOME}/scidac/install/qio \
-	     --with-hdf5=${OLCF_HDF5_ROOT} \
+	     --with-mpfr=${HOME}/perlmutter/mpfr \
+	     --with-hdf5=${HOME}/perlmutter/hdf5 \
+	     --with-lime=${HOME}/perlmutter/build/usqcd \
              CXX="nvcc"                \
-             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -std=c++14" \
+	     LDFLAGS="-cudart shared " \
+             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_80,code=sm_80 -std=c++14 -cudart shared" \
+
+        status=$?
+        echo "Configure exit status $status"
 	;;
+
 
     gpu-hip)
 
@@ -162,9 +169,10 @@ then
 	     CPPFLAGS="-I/opt/rocm/rocthrust/include" \
 	     LDFLAGS="-L/opt/rocm/rocthrust/lib"
 
-	#	     --enable-unified=yes         \
+#	     --enable-unified=yes         \
+        status=$?
+        echo "Configure exit status $status"
 
-	status=$?
 	;;
 
     gpu-sycl)
@@ -194,7 +202,6 @@ then
 #	     --with-lime=${HOME}/scidac/install/qio-gcc \
 
         status=$?
-
         echo "Configure exit status $status"
 	;;
     *)
