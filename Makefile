@@ -502,6 +502,8 @@ ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
     HAVE_SPIN_TASTE_GPU = true
     CGPU += -DUSE_SPIN_TASTE_QUDA
+  endif
+
   ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
     HAVE_GAUGEFIX_OVR_QUDA = true
     CGPU += -DUSE_GAUGEFIX_OVR_QUDA
