@@ -4,7 +4,7 @@ ARCH=$1
 PK_CC=$2
 PK_CXX=$3
 GIT_REPO=https://github.com/milc-qcd/Grid
-GIT_BRANCH=develop
+GIT_BRANCH=feature/staggered-a2a-ml
 
 if [ -z ${PK_CXX} ]
 then
@@ -129,8 +129,8 @@ then
 	# Summit: ./build-Grid.sh gpu-cuda mpicc mpiCC
 	# Perlmutter ./build-Grid.sh gpu-cuda cc CC
 	${SRCDIR}/configure \
-             --prefix ${INSTALLDIR}      \
-	     --enable-comms=mpi          \
+             --prefix ${INSTALLDIR}       \
+	     --enable-comms=mpi           \
 	     --enable-simd=GPU            \
 	     --enable-shm=shmnone         \
              --enable-gen-simd-width=64   \

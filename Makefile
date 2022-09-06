@@ -432,6 +432,7 @@ WANT_GF_GPU ?= #true
 WANT_EIG_GPU ?= #true
 WANT_KS_CONT_GPU ?= #true
 WANT_SHIFT_GPU ?= #true
+WANT_SPIN_TASTE_GPU ?= #true
 WANT_GAUGEFIX_OVR_GPU ?= #true
 
 endif
@@ -499,8 +500,13 @@ ifeq ($(strip ${WANTQUDA}),true)
   endif
 
   ifeq ($(strip ${WANT_SHIFT_GPU}),true)
-    HAVE_SHIFT_QUDA = true
+    HAVE_SHIFT_GPU = true
     CGPU += -DUSE_SHIFT_QUDA
+  endif
+
+  ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
+    HAVE_SPIN_TASTE_GPU = true
+    CGPU += -DUSE_SPIN_TASTE_QUDA
   endif
 
   ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
@@ -650,6 +656,7 @@ ifeq ($(strip ${WANTGRID}), true)
 
   CPHI += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
   CPHI += -DGRID_SHMEM_MAX=2048
+  CPHI += -DGRID_ACCELERATOR_THREADS=8
 
   ifeq ($(strip ${MPP}),true)
     ifeq ($(strip ${ARCH}),knl)
