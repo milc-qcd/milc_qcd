@@ -21,7 +21,7 @@ GPU_ARCH ?= # nvidia amd intel
 # 2. Compiler family
 
 COMPILER ?= gnu # intel, ibm, cray-intel, rocm
-OFFLOAD ?= # CUDA HIP SyCL OpenMP
+OFFLOAD ?= # CUDA HIP SYCL OpenMP
 
 #----------------------------------------------------------------------
 # 3. MPP vs Scalar
@@ -94,10 +94,9 @@ endif
 
 # Offload type
 
-ifeq ($(strip ${OFFLOAD}),SyCL)
+ifeq ($(strip ${OFFLOAD}),SYCL)
 
-    #MY_CC += -fsycl
-    MY_CXX += -fsycl
+  MY_CXX += -fsycl
 
 endif
 
@@ -106,7 +105,7 @@ CXX = ${MY_CXX}
 
 # If the above construction doesn't work, override the definitions here
 
-# CC = 
+# CC =
 # CXX =
 
 #----------------------------------------------------------------------
@@ -194,8 +193,8 @@ ifeq ($(strip ${COMPILER}),intel)
   OCFLAGS += ${ARCH_FLAG}
   OCXXFLAGS += ${ARCH_FLAG}
   LDFLAGS += ${ARCH_FLAG}
-  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
-  OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -fsave-optimization-record
+  OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -fsave-optimization-record
 
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
@@ -441,6 +440,9 @@ endif
 WANT_MIXED_PRECISION_GPU ?= 0
 
 ifeq ($(strip ${WANTQUDA}),true)
+  ifeq ($(strip ${OFFLOAD}),)
+    OFFLOAD = CUDA
+  endif
 
   QUDA_HOME ?= ${HOME}/quda
 
@@ -448,12 +450,14 @@ ifeq ($(strip ${WANTQUDA}),true)
   PACKAGE_HEADERS += ${QUDA_HOME}/include
   LIBQUDA ?= -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
-
-  CUDA_HOME ?= /usr/local/cuda
-  INCQUDA += -I${CUDA_HOME}/include
-  PACKAGE_HEADERS += ${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -ldl
   QUDA_HEADERS = ${QUDA_HOME}/include
+
+  ifeq ($(strip ${OFFLOAD}),CUDA)
+    CUDA_HOME ?= /usr/local/cuda
+    INCQUDA += -I${CUDA_HOME}/include
+    PACKAGE_HEADERS += ${CUDA_HOME}/include
+    LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -ldl
+  endif
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
 
@@ -515,7 +519,7 @@ ifeq ($(strip ${WANTQUDA}),true)
     CGPU += -DMAX_MIXED # use half precision where appropriate
   endif
 
-# Verbosity choices: 
+# Verbosity choices:
 # SET_QUDA_SILENT, SET_QUDA_SUMMARIZE, SET_QUDA_VERBOSE, SET_QUDA_DEBUG_VERBOSE
 
   CGPU += -DSET_QUDA_SUMMARIZE
