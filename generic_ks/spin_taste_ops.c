@@ -16,7 +16,6 @@
 
 /* Entry points
 
-   general_spin_taste_op  Any spin/taste and any gauge links but not FN
    spin_taste_op          Limited spin/taste set and APE links
    spin_taste_op_fn       Any spin/taste and APE links except FN links with FN operators
 
@@ -393,9 +392,10 @@ four_link(int spin, int r0[], su3_vector *dest, su3_vector *src, su3_matrix *lin
 
 /*------------------------------------------------------------------*/
 /* Apply a general spin-taste operator to a field */
-void
-general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int r0[],
-		      su3_vector *dest, su3_vector *src, su3_matrix *links){
+static void
+general_spin_taste_op_cpu(enum gammatype spin_index, enum gammatype taste_index, int r0[],
+			  su3_vector *dest, const su3_vector *const src,
+			  const su3_matrix *const links){
 
   /* Convert gamma label to hexadecimal */
   short spin = gamma_hex(spin_index);
@@ -428,6 +428,37 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
     default: printf("This operator not supported\n");
     }
 }
+
+/*------------------------------------------------------------------*/
+/* Apply a general spin-taste operator to a field */
+
+#if defined(HAVE_QUDA) && defined(USE_SPIN_TASTE_GPU)
+#include <quda_milc_interface.h>
+
+/* GPU Version */
+static void
+general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int r0[],
+		      su3_vector *dest, const su3_vector *const src, const su3_matrix *const links){
+  
+  int quda_precision = MILC_PRECISION;
+  /* Convert gamma label to hexadecimal */
+  short spin = gamma_hex(spin_index);
+  short taste = gamma_hex(taste_index);
+  
+  qudaSpinTaste(MILC_PRECISION, quda_precision, links, src, dest, spin, taste);
+}
+
+#else
+
+/* CPU Version */
+
+static void
+general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int r0[],
+		      su3_vector *dest, const su3_vector *const src, const su3_matrix *const links){
+  general_spin_taste_op_cpu(spin_index, taste_index, r0, dest, src, links);
+}
+
+#endif
 
 /*------------------------------------------------------------------*/
 /* Procedures for backward compatibility with former flavor_ops2.c  */

@@ -15,9 +15,6 @@ void mult_rhoi_field( int pdir,  int r0[], su3_vector *src, su3_vector *dest );
 void mult_rhoi0_field( int pdir,  int r0[], su3_vector *src, su3_vector *dest );
 void mult_rhos_field( int fdir,  int r0[], su3_vector *src, su3_vector *dest, su3_matrix *links );
 void mult_rho0_field( int fdir,  int r0[], su3_vector *src, su3_vector *dest, su3_matrix *links );
-
-void general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int r0[],
-			   su3_vector *dest, su3_vector *src, su3_matrix *links);
 void spin_taste_op(int index, int r0[], su3_vector *dest, su3_vector *src);
 
 int spin_taste_index(char *label);
