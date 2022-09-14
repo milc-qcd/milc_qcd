@@ -619,12 +619,14 @@ int get_f( FILE *fp, int prompt, const char *tag, Real *value ){
 	s = 0;
 	while(s != 1){
 	  printf("enter %s ",tag);
-	  fscanf(fp,"%s",checkvalue);
+	  s = fscanf(fp,"%s",checkvalue);
+	  if(s==1) {
 #if MILC_PRECISION == 1
-	  s=sscanf(checkvalue,"%e",value);
+	    s=sscanf(checkvalue,"%e",value);
 #else
-	  s=sscanf(checkvalue,"%le",value);
+	    s=sscanf(checkvalue,"%le",value);
 #endif
+	  }
 	  if(s==EOF)return 1;
 	  if(s==0)printf("Data format error.\n");
 	  else printf("%s %g\n",tag,*value);

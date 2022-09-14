@@ -206,7 +206,11 @@ initial_set(void)
 			   param.ionode_geometry, 4);
 #endif
 #endif
-    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
+    {
+      int iseed;
+      IF_OK status += get_i(stdin, prompt,"iseed", &iseed );
+      param.iseed = iseed;  /* implicitly convert int to unsigned */
+    }
     /* Number of pseudofermions */
     IF_OK status += get_i(stdin, prompt,"n_pseudo", &param.n_pseudo );
     if(param.n_pseudo > MAX_N_PSEUDO){
