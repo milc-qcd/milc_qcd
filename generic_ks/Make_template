@@ -96,6 +96,7 @@ G_KS_ALL = \
   fn_links_qop.o \
   gauge_action_imp_ks.o \
   gauge_force_imp_ks.o \
+  gauge_measure_ks.o \
   gauss_smear_ks.o \
   gridStaggEigen.o \
   gridStaggInvert.o \
@@ -373,6 +374,8 @@ ff_opt.o: ../generic_ks/ff_opt.c
 gauge_action_imp_ks.o: ../generic_ks/gauge_action_imp_ks.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_imp_ks.o: ../generic_ks/gauge_force_imp_ks.c
+	${CC} -c ${CFLAGS} $<
+gauge_measure_ks.o: ../generic_ks/gauge_measure_ks.c
 	${CC} -c ${CFLAGS} $<
 gauss_smear_ks.o: ../generic_ks/gauss_smear_ks.c
 	${CC} -c ${CFLAGS} $<

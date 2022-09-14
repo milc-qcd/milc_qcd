@@ -251,18 +251,7 @@ static void char_num( int *dig, int *chr, int length){
 /* Measure gauge observables:
     Loops in action (time and space directions treated differently)
     Polyakov loop
-
 */
-
-void g_measure_ks( ) {
-#if defined (HAVE_QUDA) && defined(USE_GA_GPU) && !defined(ANISOTROPY) && !defined(BPCORR) && NREPS == 1
-    g_measure_gpu();
-#else
-    rephase( OFF );
-    g_measure();
-    rephase( ON );
-#endif
-}
 
 #if defined (HAVE_QUDA) && defined(USE_GA_GPU) && !defined(ANISOTROPY) && !defined(BPCORR) && NREPS == 1
 void g_measure_gpu( ) {

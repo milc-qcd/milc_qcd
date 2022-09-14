@@ -70,6 +70,9 @@ double imp_gauge_action_ks(void);
 /* gauge_force_imp_ks.c */
 void imp_gauge_force_ks( Real eps, field_offset mom_off );
 
+/* gauge_measure_ks.c */
+void g_measure_ks(void);
+
 /* gauss_smear_ks.c */
 void gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
 			 Real width, int iters, int t0);

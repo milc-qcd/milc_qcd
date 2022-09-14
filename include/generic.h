@@ -309,7 +309,6 @@ double imp_gauge_action(void);
 void imp_gauge_force_qphix( Real eps, field_offset mom_off );
 
 /* gauge_stuff.c */
-void g_measure_ks(void);
 void g_measure_gpu(void);
 void g_measure(void);
 void make_loop_table(void);

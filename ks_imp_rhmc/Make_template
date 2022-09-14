@@ -43,6 +43,7 @@ MY_OBJECTS = \
   gauge_action_imp_ks.o \
   gauge_info.o \
   gauge_force_imp_ks.o \
+  gauge_measure_ks.o \
   grsource_rhmc.o \
   ks_ratinv.o  \
   load_rhmc_params.o \
