@@ -801,6 +801,7 @@ int main(int argc, char *argv[])
     starttime = endtime;
   } /* readin(prompt) */
   
+  free_lattice();
 
 #ifdef HAVE_QUDA
   finalize_quda();
