@@ -95,7 +95,8 @@ int main(int argc, char *argv[])
 	destroy_ape_links_4D(ape_links);
 	ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
 	if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
-
+	refresh_ape_links = 1;
+	
 	invalidate_this_clov(gen_clov);
       }
     else

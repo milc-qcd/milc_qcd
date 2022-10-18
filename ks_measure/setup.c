@@ -588,6 +588,7 @@ int readin(int prompt) {
   /* We put in antiperiodic bc to the APE links to match what we did to the gauge field */
   apply_apbc( ape_links, 0 );
   rephase( ON );
+  refresh_ape_links = 1;
 
 #if EIGMODE == EIGCG
   int Nvecs_max = param.eigcgp.Nvecs_max;

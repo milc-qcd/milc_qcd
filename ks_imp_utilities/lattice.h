@@ -1,4 +1,5 @@
 #ifndef _LATTICE_H
+EXTERN int refresh_ape_links;
 #define _LATTICE_H
 /****************************** lattice.h ********************************/
 
