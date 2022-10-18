@@ -596,18 +596,18 @@ enum shift_dir {
 };
 
 void 
-shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
-	    su3_matrix *links);
+shift_field(int dir, enum shift_dir fb, su3_vector *dest, const su3_vector *const src,
+	    const su3_matrix *const links, int *refresh_links);
 
 /* spin_taste_ops.c */
 #include "../include/flavor_ops.h"
 #ifdef NO_GAUGE_FIELD
 void 
 spin_taste_op_fn( void *fn, int index, int r0[],
-		  su3_vector *dest, su3_vector *src);
+		  su3_vector *dest, const su3_vector *const src);
 #else
 void spin_taste_op_fn(imp_ferm_links_t *fn, int index, int r0[],
-		      su3_vector *dest, su3_vector *src);
+		      su3_vector *dest, const su3_vector *const src);
 #endif
 
 #endif /* _IMP_FERM_LINKS_H */

@@ -13,8 +13,8 @@
 #include "../include/imp_ferm_links.h"
 
 void 
-shift_field_cpu(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
-		su3_matrix *links)
+shift_field_cpu(int dir, enum shift_dir fb, su3_vector *dest, const su3_vector *const src,
+		const su3_matrix *const links)
 {
   register int i ;
   register site *s ;
@@ -72,8 +72,8 @@ shift_field_cpu(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src,
 #if defined(HAVE_QUDA) && defined(USE_SHIFT_QUDA)
 #include <quda_milc_interface.h>
 void 
-shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
-	    su3_matrix *links)
+shift_field(int dir, enum shift_dir fb, su3_vector *dest, const su3_vector *const src,
+	    const su3_matrix *const links, int *refresh_links)
 {
   int quda_precision = MILC_PRECISION;
   int sym = 0;
@@ -87,20 +87,23 @@ shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src,
   case SHIFT_BACKWARD:
     sym = 2;
     break;
+
+
   case SHIFT_SYMMETRIC:
     sym = 3;
     break;
   }
 
-  qudaShift(MILC_PRECISION, quda_precision, links, src, dest, dir, sym);
+  qudaShift(MILC_PRECISION, quda_precision, links, src, dest, dir, sym, *refresh_links);
+  *refresh_links = 0;
 }
 
 #else
 
 /* CPU version */
 void 
-shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
-		su3_matrix *links)
+shift_field(int dir, enum shift_dir fb, su3_vector *dest, const su3_vector *const src,
+	    const su3_matrix *const links, int *refresh_links)
 {
   shift_field_cpu(dir, fb, dest, src, links);
 }
