@@ -69,6 +69,9 @@ initial_set()
     IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
     IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
     IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+#ifdef ANISOTROPY
+    IF_OK status += get_f(stdin, prompt,"anisotropy", &par_buf.ani );
+#endif
 
     if(status>0)
       par_buf.stopflag=1;
@@ -87,6 +90,9 @@ initial_set()
   ny=par_buf.ny;
   nz=par_buf.nz;
   nt=par_buf.nt;
+#ifdef ANISOTROPY
+  ani=par_buf.ani;
+#endif
 
   number_of_nodes = numnodes();
   volume=(size_t)nx*ny*nz*nt;

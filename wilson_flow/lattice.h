@@ -71,6 +71,9 @@ typedef struct {
 /* Initialization parameters */
 EXTERN	int nx,ny,nz,nt;
 EXTERN  size_t volume;
+#ifdef ANISOTROPY
+EXTERN  Real ani;
+#endif
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;

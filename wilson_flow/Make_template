@@ -111,45 +111,89 @@ wilson_flow::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER" \
 
+wilson_flow_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER -DANISOTROPY" \
+
 wilson_flow_cf3::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CF3" \
+
+wilson_flow_cf3_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CF3 -DANISOTROPY" \
 
 wilson_flow_ck::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CK" \
 
+wilson_flow_ck_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CK -DANISOTROPY" \
+
 wilson_flow_bbb::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_BBB" \
+
+wilson_flow_bbb_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_BBB -DANISOTROPY" \
 
 wilson_flow_rkmk3::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK3" \
 
+wilson_flow_rkmk3_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK3 -DANISOTROPY" \
+
 wilson_flow_rkmk4::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK4" \
+
+wilson_flow_rkmk4_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK4 -DANISOTROPY" \
 
 wilson_flow_rkmk5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK5" \
 
+wilson_flow_rkmk5_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK5 -DANISOTROPY" \
+
 wilson_flow_rkmk8::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK8" \
+
+wilson_flow_rkmk8_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK8 -DANISOTROPY" \
 
 wilson_flow_adpt::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_LUSCHER" \
 
+wilson_flow_adpt_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_LUSCHER -DANISOTROPY" \
+
 wilson_flow_adpt_cf3::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_CF3" \
 
+wilson_flow_adpt_cf3_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_CF3 -DANISOTROPY" \
+
 wilson_flow_adpt_bs::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_BS" \
+
+wilson_flow_adpt_bs_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_BS -DANISOTROPY" \
 
 clean:
 	-/bin/rm -f *.o

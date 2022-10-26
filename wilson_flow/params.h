@@ -11,6 +11,9 @@ typedef struct {
   int nx,ny,nz,nt;  /* lattice dimensions */
 
   /* FLOW PARAMETERS */
+#ifdef ANISOTROPY
+  Real ani;
+#endif
   Real stepsize; /* wilson flow time integration step size */
   Real stoptime; /* maximum flow time, -1 means auto-determined */
   int exp_order; /* where to end series expansion of exponential */
