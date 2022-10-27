@@ -1,7 +1,7 @@
 Wilson/Symanzik Flow application
 MIMD version 7
 Machine = Scalar processor, with 1 nodes
-Host(0) = deviceab
+Host(0) = computer
 Username = bazavov
 start: Wed Oct 26 19:39:12 2022
 
