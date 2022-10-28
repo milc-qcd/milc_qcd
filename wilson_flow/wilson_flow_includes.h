@@ -19,7 +19,9 @@
 /* Prototypes for functions in high level code */
 int setup();
 int readin(int prompt);
+void run_gradient_flow();
 void flow_step();
+
 //void stout_step_rk();
 void staple();
 void fmunu_fmunu(double *time, double *space, double *charge);
