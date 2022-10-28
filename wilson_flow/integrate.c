@@ -21,7 +21,7 @@ run_gradient_flow() {
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
   GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
   GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
-  node0_printf("#ADAPT time stepsize distance local_tol/distance\n");
+  node0_printf("#LABEL2 time stepsize distance local_tol/distance\n");
 #endif
   fflush(stdout);
 
