@@ -1,9 +1,9 @@
 Wilson/Symanzik Flow application
 MIMD version 7
 Machine = Scalar processor, with 1 nodes
-Host(0) = computer
+Host(0) = deviceab
 Username = bazavov
-start: Thu Oct 27 14:31:56 2022
+start: Fri Oct 28 18:41:05 2022
 
 Options selected...
 Generic single precision
@@ -33,11 +33,11 @@ forget
 Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4448
 Time stamp Wed Oct 10 14:27:08 2001
 Checksums 13f3b413 161f7dde OK
-Time to reload gauge configuration = 2.009869e-04
+Time to reload gauge configuration = 2.021790e-04
 CHECK PLAQ: 1.723748e+00 1.690586e+00
 CHECK NERSC LINKTR: 6.921659e-02 CKSUM: b3be9b3b
 Unitarity checked.  Max deviation 2.38e-07
-Time to check unitarity = 6.985664e-05
+Time to check unitarity = 6.914139e-05
 #LABEL time Clover_t Clover_s Plaq_t Plaq_s Rect_t Rect_s charge
 GFLOW: 0 1.05787 1.03094 1.72375 1.69059 1.0736 1.02757 0.0955429
 GFLOW: 0.0625 0.681253 0.690555 2.4957 2.65877 2.01844 2.20497 -0.00363664
@@ -57,11 +57,11 @@ GFLOW: 0.875 0.0229062 0.0244971 2.99466 2.99549 2.98126 2.98338 0.000872919
 GFLOW: 0.9375 0.0203894 0.021362 2.99544 2.99603 2.98384 2.98529 0.000661833
 GFLOW: 1 0.0182649 0.018768 2.99607 2.99647 2.98594 2.98688 0.000497996
 Number of steps = 16
-Time to complete flow = 7.841921e-01 seconds
+Time to complete flow = 7.859840e-01 seconds
 
 
 ask_starting_lattice(0): EOF on input.
 RUNNING COMPLETED
-Time = 7.853050e-01 seconds
-exit: Thu Oct 27 14:31:57 2022
+Time = 7.870929e-01 seconds
+exit: Fri Oct 28 18:41:06 2022
 

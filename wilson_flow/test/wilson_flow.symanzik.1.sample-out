@@ -1,9 +1,9 @@
 Wilson/Symanzik Flow application
 MIMD version 7
-Machine = MPI (portable), with 1 nodes
-Host(0) = computer
+Machine = Scalar processor, with 1 nodes
+Host(0) = deviceab
 Username = bazavov
-start: Tue Jan  5 19:00:09 2021
+start: Fri Oct 28 16:42:17 2022
 
 Options selected...
 Generic single precision
@@ -13,8 +13,7 @@ nx 4
 ny 4
 nz 4
 nt 8
-LAYOUT = Hypercubes, options = hyper_prime,
-automatic hyper_prime layout
+LAYOUT = Hypercubes, options = with fixed input-parameter node_geometry
 ON EACH NODE (RANK) 4 x 4 x 4 x 8
 Mallocing 0.7 MBytes per node for lattice
 Made lattice
@@ -33,11 +32,11 @@ forget
 Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4448
 Time stamp Wed Oct 10 14:27:08 2001
 Checksums 13f3b413 161f7dde OK
-Time to reload gauge configuration = 8.101463e-04
+Time to reload gauge configuration = 2.000332e-04
 CHECK PLAQ: 1.723748e+00 1.690586e+00
 CHECK NERSC LINKTR: 6.921659e-02 CKSUM: b3be9b3b
 Unitarity checked.  Max deviation 2.38e-07
-Time to check unitarity = 2.670288e-04
+Time to check unitarity = 6.914139e-05
 #LABEL time Clover_t Clover_s Plaq_t Plaq_s Rect_t Rect_s charge
 GFLOW: 0 1.05787 1.03094 1.72375 1.69059 1.0736 1.02757 0.0955429
 GFLOW: 0.0625 0.854375 0.829395 2.37618 2.36268 1.8023 1.77541 0.0472255
@@ -57,11 +56,11 @@ GFLOW: 0.875 0.0509329 0.0345465 2.99269 2.9895 2.97398 2.96222 0.000456401
 GFLOW: 0.9375 0.0460398 0.0306385 2.99364 2.99065 2.97716 2.96611 0.000256605
 GFLOW: 1 0.0419356 0.0274253 2.99441 2.9916 2.97974 2.96935 0.000106462
 Number of steps = 16
-Time to complete flow = 3.218560e-01 seconds
+Time to complete flow = 3.713319e-01 seconds
 
 
 ask_starting_lattice(0): EOF on input.
 RUNNING COMPLETED
-Time = 3.265660e-01 seconds
-exit: Tue Jan  5 19:00:10 2021
+Time = 3.722730e-01 seconds
+exit: Fri Oct 28 16:42:17 2022
 

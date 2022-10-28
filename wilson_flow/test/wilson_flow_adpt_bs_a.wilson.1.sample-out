@@ -1,9 +1,9 @@
 Wilson/Symanzik Flow application
 MIMD version 7
 Machine = Scalar processor, with 1 nodes
-Host(0) = computer
+Host(0) = deviceab
 Username = bazavov
-start: Thu Oct 27 16:22:36 2022
+start: Fri Oct 28 19:17:57 2022
 
 Options selected...
 Generic single precision
@@ -40,7 +40,7 @@ CHECK NERSC LINKTR: 6.921659e-02 CKSUM: b3be9b3b
 Unitarity checked.  Max deviation 2.38e-07
 Time to check unitarity = 6.985664e-05
 #LABEL time Clover_t Clover_s Plaq_t Plaq_s Rect_t Rect_s charge
-#ADAPT time stepsize distance local_tol/distance
+#LABEL2 time stepsize distance local_tol/distance
 GFLOW: 0 1.05787 1.03094 1.72375 1.69059 1.0736 1.02757 0.0955429
 ADAPT: 0 0.0625 0 0
 GFLOW: 0.0625 0.771013 0.762609 2.35235 2.51803 1.83004 1.99213 0.00916212
@@ -67,11 +67,11 @@ GFLOW: 1 0.0207483 0.0226218 2.98427 2.9889 2.98128 2.9842 0.000862002
 ADAPT: 1 0.0245933 3.00327e-05 332.97
 Number of steps = 11
 Number of rejected steps = 5
-Time to complete flow = 1.468699e-01 seconds
+Time to complete flow = 1.486459e-01 seconds
 
 
 ask_starting_lattice(0): EOF on input.
 RUNNING COMPLETED
-Time = 1.479390e-01 seconds
-exit: Thu Oct 27 16:22:36 2022
+Time = 1.497309e-01 seconds
+exit: Fri Oct 28 19:17:57 2022
 

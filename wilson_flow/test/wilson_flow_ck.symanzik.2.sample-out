@@ -1,9 +1,9 @@
 Wilson/Symanzik Flow application
 MIMD version 7
-Machine = MPI (portable), with 1 nodes
-Host(0) = computer
+Machine = Scalar processor, with 1 nodes
+Host(0) = deviceab
 Username = bazavov
-start: Tue Jan  5 19:01:10 2021
+start: Fri Oct 28 18:00:17 2022
 
 Options selected...
 Generic double precision
@@ -13,8 +13,7 @@ nx 4
 ny 4
 nz 4
 nt 8
-LAYOUT = Hypercubes, options = hyper_prime,
-automatic hyper_prime layout
+LAYOUT = Hypercubes, options = with fixed input-parameter node_geometry
 ON EACH NODE (RANK) 4 x 4 x 4 x 8
 Mallocing 1.2 MBytes per node for lattice
 Made lattice
@@ -33,11 +32,11 @@ forget
 Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4448
 Time stamp Wed Oct 10 14:27:08 2001
 Checksums 13f3b413 161f7dde OK
-Time to reload gauge configuration = 8.201599e-04
+Time to reload gauge configuration = 2.090931e-04
 CHECK PLAQ: 1.7237482807974562e+00 1.6905860654166089e+00
 CHECK NERSC LINKTR: 6.9216590060585517e-02 CKSUM: b3be9b3b
 Reunitarized for double precision. Max deviation 2.26e-07 changed to 4.44e-16
-Time to check unitarity = 1.054049e-03
+Time to check unitarity = 2.710819e-04
 #LABEL time Clover_t Clover_s Plaq_t Plaq_s Rect_t Rect_s charge
 GFLOW: 0 1.0578659327458 1.030934998403563 1.723748273963273 1.690586048164112 1.073598789709706 1.027570247980367 0.09554287095824406
 GFLOW: 0.0625 0.8538024171258738 0.8287454255568873 2.375733022008848 2.362371644705775 1.802929097356299 1.776043623868389 0.0468073501846351
@@ -57,11 +56,11 @@ GFLOW: 0.875 0.05093418380447465 0.03454751102613438 2.992687938055619 2.9894949
 GFLOW: 0.9375 0.04604087926300007 0.03063912237458566 2.993641259296205 2.99064813445157 2.977158402728709 2.966113535860531 0.0002565843724865501
 GFLOW: 1 0.0419365823466555 0.02742573261684322 2.994408579617042 2.991596896189359 2.979741377472791 2.969345342434051 0.0001064405011650979
 Number of steps = 16
-Time to complete flow = 5.655839e-01 seconds
+Time to complete flow = 6.883149e-01 seconds
 
 
 ask_starting_lattice(0): EOF on input.
 RUNNING COMPLETED
-Time = 5.721772e-01 seconds
-exit: Tue Jan  5 19:01:11 2021
+Time = 6.896830e-01 seconds
+exit: Fri Oct 28 18:00:18 2022
 
