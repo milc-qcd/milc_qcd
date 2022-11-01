@@ -77,10 +77,10 @@ fmunu_fmunu( double *time, double *space, double *charge )
 /* Compute loops: 1x1 -- plaquette, 1x2 + 2x1 -- rectangle
    for Wilson (one-plaquette) and
    Symanzik tree-level (plaquette and rectangle) action,
-   spatial and temporal part separately */
+   temporal and spatial part separately */
 void
-gauge_action_w_s( double *wl1x1s, double *wl1x1t,
-                  double *wl1x2s, double *wl1x2t ) {
+gauge_action_w_s( double *wl1x1t, double *wl1x1s,
+                  double *wl1x2t, double *wl1x2s ) {
 
 #define NTEMP_STORAGE 6
   register int i, dir1, dir2;
