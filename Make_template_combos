@@ -53,7 +53,7 @@ ifeq ($(strip ${HAVEQOP}),true)
 endif
 
 ifeq ($(strip ${WANTQUDA}),true)
-  GAUGE_OBJECTS += milc_to_quda_utilities.o
+  GAUGE_OBJECTS += milc_to_quda_utilities.o d_plaq4_gpu.o ploop3_gpu.o
 endif
 
 ifeq ($(strip ${WANTQPHIX}),true)
@@ -401,11 +401,11 @@ endif
 
 # Standard MILC combinations
 
-  GAUGE_FORCE_MILC_CPU = gauge_force_imp.o gauge_stuff.o ranmom.o
+  GAUGE_FORCE_MILC_CPU = gauge_force_imp.o gauge_stuff.o gauge_action_imp.o ranmom.o
 
 # GPU support
 
-  GAUGE_FORCE_MILC_GPU = gauge_force_imp_gpu.o gauge_stuff.o ranmom.o
+  GAUGE_FORCE_MILC_GPU = gauge_force_imp_gpu.o gauge_action_imp_gpu.o gauge_action_imp.o gauge_stuff.o ranmom.o
   
 # Standard QOP combinations
 

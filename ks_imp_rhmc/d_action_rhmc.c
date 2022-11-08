@@ -18,14 +18,12 @@ double d_action_rhmc( su3_vector **multi_x, su3_vector *sumvec){
   double ssplaq,stplaq,g_action,h_action,f_action;
   double dtimec = -dclock();
   
-  d_plaquette(&ssplaq,&stplaq);
+  plaquette_action(&ssplaq,&stplaq);
   ssplaq *= -1.0; stplaq *= -1.0;
   g_action = -beta*volume*(ssplaq+stplaq);
   node0_printf("PLAQUETTE ACTION: %e\n",g_action);
   
-  rephase(OFF);
-  g_action = (beta/3.0)*imp_gauge_action();
-  rephase(ON);
+  g_action = (beta/3.0)*imp_gauge_action_ks();
   h_action = hmom_action();
   f_action = fermion_action(multi_x,sumvec);
   
@@ -80,6 +78,20 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
   
   g_doublesum( &sum );
   return(sum);
+}
+
+/* plaquette action */
+void plaquette_action(double *ss_plaq, double *st_plaq) {
+#if !defined(HAVE_QUDA) || defined(SCHROED_FUN)
+  d_plaquette(ss_plaq, st_plaq);
+#else
+  d_plaquette_gpu(ss_plaq, st_plaq);
+  /* Apply a negative sign to "cancel" the negative sign above
+     The CPU codepath assumes the phases are still on the field,
+     which adds another minus sign to the plaquette */
+  *ss_plaq = -*ss_plaq;
+  *st_plaq = -*st_plaq;
+#endif
 }
 
 /* gauge momentum contribution to the action */
