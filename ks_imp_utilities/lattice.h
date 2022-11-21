@@ -1,5 +1,4 @@
 #ifndef _LATTICE_H
-EXTERN int refresh_ape_links;
 #define _LATTICE_H
 /****************************** lattice.h ********************************/
 
@@ -165,6 +164,7 @@ EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;
+EXTERN int refresh_ape_links;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */
