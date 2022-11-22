@@ -70,6 +70,9 @@
 #include "generic_includes.h"
 #include "../include/openmp_defs.h"
 #define REUNIT_INTERVAL 20
+#ifdef USE_GAUGEFIX_OVR_QUDA
+#include <quda.h>
+#endif
 
 /*    CDIF(a,b)         a -= b						      */
 								/*  a -= b    */
@@ -467,9 +470,54 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 
 /* Abbreviated form for fixing only gauge field */
 
+#ifdef USE_GAUGEFIX_OVR_QUDA
+
+void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
+	      Real gauge_fix_tol )
+{
+  int precision;
+  unsigned int quda_gauge_dir;  /* 4 = Landau; 3 = Coulomb */
+  int Nsteps;
+  int verbose_interval;
+  double quda_relax_boost;
+  double tolerance;
+  unsigned int reunit_interval;
+  unsigned int stopWtheta;
+  su3_matrix *milc_sitelink;
+
+  milc_site_link = create_G_from_site();
+  if(milc_site_link == NULL){
+    node0_printf("gaugefix: ERROR: No room for temporary gauge field\n");
+    terminate(1);
+  }
+
+  precision = (PRECISION==1) ? QUDA_SINGLE_PRECISION : QUDA_DOUBLE_PRECISION;
+  
+  if(gauge_dir == TUP)quda_gauge_dir = 3;
+  else if(gauge_dir < 0 || gauge_dir > TUP)quda_gauge_dir = 4;
+  else{
+    node0_printf("gaugefix: ERROR: Don't know how to translate gauge_dir = %d to QUDA conventions\n", gauge_dir);
+    terminate(1);
+  }
+
+  Nsteps = max_gauge_iter;
+  verbose_interval = reunit_interval = REUNIT_INTERVAL;
+  relax_boost = quda_relax_boost;
+  tolerance = gauge_fix_tol;
+  stopWtheta = 0; /* Try this for now */
+  
+  qudaGaugeFixingOVR(precision, quda_gauge_dir, Nsteps, verbose_interval, quda_relax_boost,
+		     tolerance, reunit_interval, stopWtheta, (void *)milc_sitelink);
+
+  destroy_G(milc_site_link);
+}
+  
+#else
+
 void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
 	      Real gauge_fix_tol )
 {
   gaugefix_combo(gauge_dir, relax_boost, max_gauge_iter, gauge_fix_tol,
 		 0,NULL,NULL,0,NULL,NULL);
 }
+#enduf
