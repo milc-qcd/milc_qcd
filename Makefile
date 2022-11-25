@@ -470,7 +470,7 @@ ifeq ($(strip ${WANTQUDA}),true)
     CGPU += -DUSE_GSMEAR_QUDA
   endif
 
-  ifeq ($(strip ${WANT_GAUGEFIX_OVR_QUDA}),true)
+  ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
     HAVE_GAUGEFIX_OVR_QUDA = true
     CGPU += -DUSE_GAUGEFIX_OVR_QUDA
   endif
