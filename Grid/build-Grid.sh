@@ -54,7 +54,7 @@ then
             --prefix=${INSTALLDIR} \
             --enable-simd=GEN \
             --enable-comms=none \
-	    --with-lime=${HOME}/scidac/install/qio-single \
+	    --with-lime=${HOME}/crusher/quda/install/qio \
 	    --with-fftw=${HOME}/fftw/build-gcc \
             --with-mpfr=${HOME}/mpfr \
             CXX="${PK_CXX}" \
@@ -131,6 +131,7 @@ then
 	${SRCDIR}/configure \
              --prefix ${INSTALLDIR}       \
 	     --enable-comms=mpi           \
+	     --enable-comms-threads       \
 	     --enable-simd=GPU            \
 	     --enable-shm=shmnone         \
              --enable-gen-simd-width=64   \
@@ -153,25 +154,36 @@ then
 
     gpu-hip)
 
-	export PATH=/opt/rocm/bin:${PATH}
+	source env.sh
+
 	${SRCDIR}/configure \
-             --prefix ${INSTALLDIR}      \
-             --enable-unified=no \
+	     --prefix ${INSTALLDIR}      \
+	     --disable-fermion-reps      \
+             --disable-gparity \
+             --disable-zmobius \
 	     --enable-accelerator=hip \
 	     --enable-comms=mpi3-auto \
-	     --enable-simd=GPU \
 	     --enable-gen-simd-width=64 \
-	     --with-mpfr=${HOME}/mpfr \
-	     --with-lime=${HOME}/scidac/install/qio-gcc \
-             --host=x86_64-unknown-linux-gnu \
-	     CXX=hipcc \
-	     MPICXX=mpicxx \
-	     CPPFLAGS="-I/opt/rocm/rocthrust/include" \
-	     LDFLAGS="-L/opt/rocm/rocthrust/lib"
+	     --enable-shm=nvlink \
+	     --enable-simd=GPU \
+	     --enable-tracing=timer \
+             --enable-unified=no \
+	     --with-fftw=$FFTW_DIR/.. \
+	     --with-gmp=${OLCF_GMP_ROOT} \
+ 	     --with-lime=${HOME}/crusher/quda/install/qio \
+	     --with-mpfr=/opt/cray/pe/gcc/mpfr/3.1.4/ \
+	     CXX=hipcc    CXXLD=hipcc \
+	     MPICXX=${MPICH_DIR}/bin/mpicxx \
+	     CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -std=c++14 -O3 -fPIC -fopenmp" \
+	     LDFLAGS="-L/lib64 -L${ROCM_PATH}/lib ${MPI_LDFLAGS} -lamdhip64"
 
-#	     --enable-unified=yes         \
+# 	     MPICXX=${MPICH_DIR}/bin/mpicxx \
+#	     --enable-shmpath=/var/lib/hugetlbfs/global/pagesize-2MB/ \
+#             --host=x86_64-unknown-linux-gnu \
+	
         status=$?
         echo "Configure exit status $status"
+	cp ${BUILDDIR}/grid-config ${INSTALLDIR}/bin
 
 	;;
 
@@ -211,15 +223,17 @@ then
 
   if [ $status -ne 0 ]
   then
-      echo "Quitting because of configure errors"
-  else
-    echo "Building in ${BUILDDIR}"
-    ${MAKE} -k -j20
-
-    echo "Installing in ${INSTALLDIR}"
-    ${MAKE} install
+    echo "Quitting because of configure errors"
   fi
 
-fi     
+fi
+
+echo "Building in ${BUILDDIR}"
+${MAKE} -k -j20
+
+echo "Installing in ${INSTALLDIR}"
+${MAKE} install
+
 popd
+
 
