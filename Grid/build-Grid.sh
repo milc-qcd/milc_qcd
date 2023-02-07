@@ -154,7 +154,7 @@ then
 
     gpu-hip)
 
-	source env.sh
+	source ${TOPDIR}/env.sh
 
 	${SRCDIR}/configure \
 	     --prefix ${INSTALLDIR}      \
@@ -168,19 +168,16 @@ then
 	     --enable-simd=GPU \
 	     --enable-tracing=timer \
              --enable-unified=no \
-	     --with-fftw=$FFTW_DIR/.. \
+	     --with-fftw=${OLCF_FFTW_ROOT} \
 	     --with-gmp=${OLCF_GMP_ROOT} \
- 	     --with-lime=${HOME}/crusher/quda/install/qio \
+	     --with-hdf5=${OLCF_HDF5_ROOT} \
+ 	     --with-lime=${INSTALLROOT}/qio \
 	     --with-mpfr=/opt/cray/pe/gcc/mpfr/3.1.4/ \
 	     CXX=hipcc    CXXLD=hipcc \
 	     MPICXX=${MPICH_DIR}/bin/mpicxx \
 	     CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -std=c++14 -O3 -fPIC -fopenmp" \
-	     LDFLAGS="-L/lib64 -L${ROCM_PATH}/lib ${MPI_LDFLAGS} -lamdhip64"
+	     LDFLAGS="-L/lib64 -L${ROCM_PATH}/lib -lamdhip64 ${MPI_LDFLAGS}"
 
-# 	     MPICXX=${MPICH_DIR}/bin/mpicxx \
-#	     --enable-shmpath=/var/lib/hugetlbfs/global/pagesize-2MB/ \
-#             --host=x86_64-unknown-linux-gnu \
-	
         status=$?
         echo "Configure exit status $status"
 	cp ${BUILDDIR}/grid-config ${INSTALLDIR}/bin
