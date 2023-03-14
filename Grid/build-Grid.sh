@@ -168,15 +168,15 @@ then
 	     --enable-simd=GPU \
 	     --enable-tracing=timer \
              --enable-unified=no \
-	     --with-fftw=${OLCF_FFTW_ROOT} \
+	     --with-fftw=${FFTW_DIR}/.. \
 	     --with-gmp=${OLCF_GMP_ROOT} \
 	     --with-hdf5=${OLCF_HDF5_ROOT} \
  	     --with-lime=${INSTALLROOT}/qio \
 	     --with-mpfr=/opt/cray/pe/gcc/mpfr/3.1.4/ \
 	     CXX=hipcc    CXXLD=hipcc \
 	     MPICXX=${MPICH_DIR}/bin/mpicxx \
-	     CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -std=c++14 -O3 -fPIC -fopenmp" \
-	     LDFLAGS="-L/lib64 -L${ROCM_PATH}/lib -lamdhip64 ${MPI_LDFLAGS}"
+	     CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -std=c++14 -O3 -fPIC -fopenmp --amdgpu-target=gfx90a" \
+	     LDFLAGS="-L/lib64 -L${ROCM_PATH}/lib -lamdhip64 ${MPI_LDFLAGS}" \
 
         status=$?
         echo "Configure exit status $status"
