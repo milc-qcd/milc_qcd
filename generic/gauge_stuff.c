@@ -59,10 +59,11 @@ static Real **loop_coeff;
     /* for each rotation/reflection, an integer distinct for each starting
 	point, or each cyclic permutation of the links */
 int loop_char[MAX_NUM];
+
 #ifdef ANISOTROPY
     /* for each rotation/reflection, an integer indicating if the path
        is spatial (=0) or temporal (=1) */
-static int **loop_st;
+int **loop_st;
 #endif
 
 static void char_num( int *dig, int *chr, int length);

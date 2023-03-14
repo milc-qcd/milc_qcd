@@ -178,10 +178,6 @@ then
 	     CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -std=c++14 -O3 -fPIC -fopenmp --amdgpu-target=gfx90a" \
 	     LDFLAGS="-L/lib64 -L${ROCM_PATH}/lib -lamdhip64 ${MPI_LDFLAGS}" \
 
-# 	     MPICXX=${MPICH_DIR}/bin/mpicxx \
-#	     --enable-shmpath=/var/lib/hugetlbfs/global/pagesize-2MB/ \
-#             --host=x86_64-unknown-linux-gnu \
-	
         status=$?
         echo "Configure exit status $status"
 	cp ${BUILDDIR}/grid-config ${INSTALLDIR}/bin

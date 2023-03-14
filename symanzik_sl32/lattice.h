@@ -9,6 +9,7 @@
 #include "../include/macros.h"	/* For MAXFILENAME, EVENFIRST */
 #include "../include/random.h"	/* For double_prn */
 #include "../include/io_lat.h"	/* For gauge_file */
+#include <stdint.h>
 
 /* Begin definition of site structure */
 

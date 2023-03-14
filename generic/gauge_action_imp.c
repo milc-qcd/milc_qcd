@@ -19,6 +19,12 @@
 #define special_free free
 #endif
 
+#ifdef ANISOTROPY
+    /* for each rotation/reflection, an integer indicating if the path
+       is spatial (=0) or temporal (=1) */
+extern int **loop_st;
+#endif
+
 double imp_gauge_action_cpu() {
     register int i;
     int rep;

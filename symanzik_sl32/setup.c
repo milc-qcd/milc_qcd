@@ -67,7 +67,11 @@ int prompt,status;
 	IF_OK status += get_i(stdin,  prompt, "ny", &par_buf.ny );
 	IF_OK status += get_i(stdin,  prompt, "nz", &par_buf.nz );
 	IF_OK status += get_i(stdin,  prompt, "nt", &par_buf.nt );
-	IF_OK status += get_i(stdin,  prompt, "iseed", &par_buf.iseed );
+	IF_OK {
+	  int iseed_in;
+	  status += get_i(stdin, prompt,"iseed", &iseed_in);
+	  par_buf.iseed = iseed_in;
+	}
 	if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
 
     } /* end if(mynode()==0) */
