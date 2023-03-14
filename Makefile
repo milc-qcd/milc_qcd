@@ -502,7 +502,7 @@ ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${WANT_GSMEAR_GPU}),true)
     HAVE_GSMEAR_QUDA = true
     CGPU += -DUSE_GSMEAR_QUDA
-	endif
+  endif
 
   ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
     HAVE_KS_CONT_GPU = true
