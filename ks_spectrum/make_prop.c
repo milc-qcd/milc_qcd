@@ -187,8 +187,20 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 	   antiperiodic bc's */
 	
 	mybdry_phase[3] = 0;
-	for(j = 0; j < num_prop; j++)
-	  rephase_v_field(src[j], mybdry_phase, r0, 1);
+	for(j = 0; j < num_prop; j++){
+	  /* Because src[] is a list of pointers that could have
+	     duplicates, we need to make sure the rephasing is done
+	     only once on each source */
+	  int rephase_done = 0;
+	  for(int k = 0; k < j; k++){
+	    if(src[j] == src[k]){
+	      rephase_done = 1;
+	      break;
+	    }
+	  }
+	  if(!rephase_done)
+	    rephase_v_field(src[j], mybdry_phase, r0, 1);
+	}
 	mybdry_phase[3] = bdry_phase[3]; 
 	
 	if(startflag[0] != FRESH){
@@ -287,7 +299,15 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 	mybdry_phase[3] = 0; 
 	for(j = 0; j < num_prop; j++){
 	  rephase_v_field(dst[j], mybdry_phase, r0, -1);
-	  rephase_v_field(src[j], mybdry_phase, r0, -1);
+	  int rephase_done = 0;
+	  for(int k = 0; k < j; k++){
+	    if(src[j] == src[k]){
+	      rephase_done = 1;
+	      break;
+	    }
+	  }
+	  if(!rephase_done)
+	    rephase_v_field(src[j], mybdry_phase, r0, -1);
 	}
 	mybdry_phase[3] = bdry_phase[3]; 
 	
