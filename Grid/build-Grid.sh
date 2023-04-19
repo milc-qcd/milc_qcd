@@ -168,16 +168,15 @@ then
 	     --enable-simd=GPU \
 	     --enable-tracing=timer \
              --enable-unified=no \
-	     --with-fftw=${FFTW_DIR} \
+	     --with-fftw=${FFTW_DIR}/.. \
 	     --with-gmp=${OLCF_GMP_ROOT} \
 	     --with-hdf5=${HDF5_DIR} \
  	     --with-lime=${INSTALLROOT}/qio \
 	     --with-mpfr=/opt/cray/pe/gcc/mpfr/3.1.4/ \
 	     CXX=hipcc    CXXLD=hipcc \
 	     MPICXX=${MPICH_DIR}/bin/mpicxx \
-	     CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -std=c++14 -O3 -fPIC -fopenmp" \
+	     CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -std=c++14 -O3 -fPIC -fopenmp --amdgpu-target=gfx90a" \
 	     LDFLAGS="-L/lib64 -L${ROCM_PATH}/lib -lamdhip64 ${MPI_LDFLAGS}" \
-	     HIPFLAGS="--amdgpu-target=gfx90a"
 
 # HIPFLAGS = --amdgpu-target=gfx90a
 	

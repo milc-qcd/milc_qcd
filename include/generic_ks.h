@@ -74,11 +74,18 @@ void imp_gauge_force_ks( Real eps, field_offset mom_off );
 void g_measure_ks(void);
 
 /* gauss_smear_ks.c */
+void gauss_smear_v_field_cpu(su3_vector *src, su3_matrix *t_links,
+			     Real width, int iters, int t0);
 void gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
 			 Real width, int iters, int t0);
 void gauss_smear_ks_prop_field(ks_prop_field *src, su3_matrix *t_links,
 			       Real width, int iters, int t0);
 void laplacian_v_field(su3_vector *src, su3_matrix *t_links, int t0);
+/* gauss_smear_ks_QUDA.c */
+void gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
+                              Real width, int iters, int t0);
+void gauss_smear_reuse_2link_QUDA( int flag );
+void gauss_smear_delete_2link_QUDA();
 
 /* naik_epsilon_utilities.c */
 int fill_eps_naik(double eps_naik_table[], int *n, double next_eps_naik);

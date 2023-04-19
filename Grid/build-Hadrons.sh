@@ -116,8 +116,7 @@ then
 
     gpu-hip)
 
-	source ${TOPDIR}env.sh
-
+	source ${TOPDIR}/env.sh
 	# export PATH=/opt/rocm/bin:${PATH}
 
 	${SRCDIR}/configure \

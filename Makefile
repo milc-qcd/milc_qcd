@@ -429,6 +429,7 @@ WANT_FL_GPU ?= #true
 WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 WANT_EIG_GPU ?= #true
+WANT_GSMEAR_GPU ?= #true
 WANT_KS_CONT_GPU ?= #true
 WANT_SHIFT_GPU ?= #true
 WANT_SPIN_TASTE_GPU ?= #true
@@ -496,6 +497,11 @@ ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${WANT_EIG_GPU}),true)
     HAVE_EIG_QUDA = true
     CGPU += -DUSE_EIG_GPU
+  endif
+
+  ifeq ($(strip ${WANT_GSMEAR_GPU}),true)
+    HAVE_GSMEAR_QUDA = true
+    CGPU += -DUSE_GSMEAR_QUDA
   endif
 
   ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
