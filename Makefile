@@ -437,7 +437,7 @@ WANT_GAUGEFIX_OVR_GPU ?= #true
 endif
 
 # enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
-WANT_MIXED_PRECISION_GPU ?= 0
+WANT_MIXED_PRECISION_GPU ?= 2
 
 ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${OFFLOAD}),)
@@ -495,7 +495,7 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   ifeq ($(strip ${WANT_EIG_GPU}),true)
     HAVE_EIG_QUDA = true
-    CGPU += -DUSE_EIG_QUDA
+    CGPU += -DUSE_EIG_GPU
   endif
 
   ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
@@ -505,17 +505,17 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   ifeq ($(strip ${WANT_SHIFT_GPU}),true)
     HAVE_SHIFT_GPU = true
-    CGPU += -DUSE_SHIFT_QUDA
+    CGPU += -DUSE_SHIFT_GPU
   endif
 
   ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
     HAVE_SPIN_TASTE_GPU = true
-    CGPU += -DUSE_SPIN_TASTE_QUDA
+    CGPU += -DUSE_SPIN_TASTE_GPU
   endif
 
   ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
     HAVE_GAUGEFIX_OVR_QUDA = true
-    CGPU += -DUSE_GAUGEFIX_OVR_QUDA
+    CGPU += -DUSE_GAUGEFIX_OVR_GPU
   endif
 
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
@@ -864,6 +864,7 @@ CCOMPAT += #-DOLD_QOPQDP_NORM
 
 # Prior to version 7.7.2 the conversion from staggeredd to naive was peculiar.
 CCOMPAT += #-DOLD_STAGGERED2NAIVE
+CCOMPAT += #-DOLD_GAUSSRAND
 
 #------------------------------
 # Layout
