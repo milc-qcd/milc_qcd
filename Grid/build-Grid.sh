@@ -168,16 +168,19 @@ then
 	     --enable-simd=GPU \
 	     --enable-tracing=timer \
              --enable-unified=no \
-	     --with-fftw=${OLCF_FFTW_ROOT} \
+	     --with-fftw=${FFTW_DIR} \
 	     --with-gmp=${OLCF_GMP_ROOT} \
-	     --with-hdf5=${OLCF_HDF5_ROOT} \
+	     --with-hdf5=${HDF5_DIR} \
  	     --with-lime=${INSTALLROOT}/qio \
 	     --with-mpfr=/opt/cray/pe/gcc/mpfr/3.1.4/ \
 	     CXX=hipcc    CXXLD=hipcc \
 	     MPICXX=${MPICH_DIR}/bin/mpicxx \
 	     CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -std=c++14 -O3 -fPIC -fopenmp" \
-	     LDFLAGS="-L/lib64 -L${ROCM_PATH}/lib -lamdhip64 ${MPI_LDFLAGS}"
+	     LDFLAGS="-L/lib64 -L${ROCM_PATH}/lib -lamdhip64 ${MPI_LDFLAGS}" \
+	     HIPFLAGS="--amdgpu-target=gfx90a"
 
+# HIPFLAGS = --amdgpu-target=gfx90a
+	
         status=$?
         echo "Configure exit status $status"
 	cp ${BUILDDIR}/grid-config ${INSTALLDIR}/bin
