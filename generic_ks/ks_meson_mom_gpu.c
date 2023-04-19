@@ -361,6 +361,7 @@ void ks_meson_cont_mom(
 	/* Apply sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
 	spin_taste_op_fn(fn_src1, spin_taste, r0, q, src1);
+	node0_printf("Calling qudaContractFT\n");
 	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
 	destroy_v_field(q);
        }
