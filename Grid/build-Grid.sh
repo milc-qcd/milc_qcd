@@ -223,16 +223,16 @@ then
   if [ $status -ne 0 ]
   then
     echo "Quitting because of configure errors"
+  else
+    echo "Building in ${BUILDDIR}"
+    ${MAKE} -k -j20
+
+    echo "Installing in ${INSTALLDIR}"
+    ${MAKE} install
   fi
 
-fi
-
-echo "Building in ${BUILDDIR}"
-${MAKE} -k -j20
-
-echo "Installing in ${INSTALLDIR}"
-${MAKE} install
-
+fi     
 popd
+
 
 
