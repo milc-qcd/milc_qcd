@@ -229,6 +229,8 @@ then
 
     echo "Installing in ${INSTALLDIR}"
     ${MAKE} install
+    # Because Grid might not have completed the installation
+    cp ${BUILDDIR}/grid-config ${INSTALLDIR}/bin
   fi
 
 fi     
