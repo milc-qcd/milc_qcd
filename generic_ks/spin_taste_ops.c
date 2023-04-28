@@ -446,9 +446,9 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
   short spin = gamma_hex(spin_index);
   short taste = gamma_hex(taste_index);
   
-  node0_printf("Calling qudaSpinTaste\n");
-  qudaSpinTaste(MILC_PRECISION, quda_precision, links, src, dest, spin, taste, *refresh_links);
-  *refresh_links = 0;
+  qudaSpinTaste(MILC_PRECISION, quda_precision, links, src, dest, (int)spin, (int)taste, refresh_links);
+  if(refresh_links != NULL)
+    *refresh_links = 0;
 }
 
 #else
@@ -934,12 +934,14 @@ encode_gamma_gamma_index(int s, int t){
 
 static enum gammatype
 decode_gamma_spin_index(int index){
-  return (enum gammatype)((index-128)/16);
+  int i = (index-128)/16;
+  return (enum gammatype)(i);
 }
 
 static enum gammatype
 decode_gamma_taste_index(int index){
-  return (enum gammatype)((index-128)%16);
+  int i = (index-128)%16;
+  return (enum gammatype)(i);
 }
 
 /* True if the index is gamma-gamma type */
@@ -1394,9 +1396,9 @@ gamma_gamma_spin_taste_op(int index, int r0[],
 void
 spin_taste_op(int index, int r0[], su3_vector *dest, const su3_vector *const src){
 
-  if(is_gamma_gamma_index(index))
+  if(is_gamma_gamma_index(index)){
     gamma_gamma_spin_taste_op(index, r0, dest, src);
-
+  }
   else {
     
 #ifdef NO_GAUGE_FIELD
@@ -1421,8 +1423,9 @@ void
 spin_taste_op_fn( void *fn, int index, int r0[],
 		  su3_vector *dest, const su3_vector *const src){
 
-  if(is_gamma_gamma_index(index))
+  if(is_gamma_gamma_index(index)){
     gamma_gamma_spin_taste_op(index, r0, dest, src);
+  }
 
   else {
     
