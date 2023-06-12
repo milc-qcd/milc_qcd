@@ -3,6 +3,7 @@
 /* evaluate the Polyakov loops.  This version uses general_gathers. */
 /* It assumes that nt is even.  Actually, all the code does.  */
 /* DT 12/97 use local matrix "tmat" instead of "tempmat2" */
+/* EW 7/22 create a *_cpu version and a legacy wrapper for QUDA support */
 
 /* Macros ...
 
@@ -14,7 +15,7 @@
 
 #include "generic_includes.h"
 
-complex ploop() {
+complex ploop_cpu() {
 register int i,t;
 register site *st;
 msg_tag *tag;
@@ -75,5 +76,10 @@ int d[4];
     plp.imag = sum.imag /((Real)(nx*ny*nz));
     free(tempmat1);
     return(plp);
+}
+
+complex ploop()
+{
+    return ploop_cpu();
 }
 

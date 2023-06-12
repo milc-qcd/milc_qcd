@@ -207,15 +207,18 @@ gauge_file *reload_lattice( int flag, const char *filename){
     g_floatmax(&max_deviation);
 #if (MILC_PRECISION==1)
     if(this_node==0)printf("Unitarity checked.  Max deviation %.2e\n",
-			   max_deviation); fflush(stdout);
+			   max_deviation);
+    fflush(stdout);
 #else
 #ifndef NO_REUNITARIZE
     reunitarize_cpu();  /* No rephasing here, because phases are not in */
     max_deviation2 = check_unitarity();
     g_floatmax(&max_deviation2);
-    if(this_node==0)
+    if(this_node==0){
       printf("Reunitarized for double precision. Max deviation %.2e changed to %.2e\n",
-                       max_deviation,max_deviation2); fflush(stdout);
+                       max_deviation,max_deviation2);
+      fflush(stdout);
+    }
 #else
     if(this_node==0)printf("Unitarity checked but no reunitarization.  Max deviation %.2e\n",
 			   max_deviation); fflush(stdout);
@@ -619,12 +622,14 @@ int get_f( FILE *fp, int prompt, const char *tag, Real *value ){
 	s = 0;
 	while(s != 1){
 	  printf("enter %s ",tag);
-	  fscanf(fp,"%s",checkvalue);
+	  s = fscanf(fp,"%s",checkvalue);
+	  if(s==1) {
 #if MILC_PRECISION == 1
-	  s=sscanf(checkvalue,"%e",value);
+	    s=sscanf(checkvalue,"%e",value);
 #else
-	  s=sscanf(checkvalue,"%le",value);
+	    s=sscanf(checkvalue,"%le",value);
 #endif
+	  }
 	  if(s==EOF)return 1;
 	  if(s==0)printf("Data format error.\n");
 	  else printf("%s %g\n",tag,*value);

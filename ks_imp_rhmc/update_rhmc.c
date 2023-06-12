@@ -249,6 +249,7 @@ int update() {
       n_multi_x = max_rat_order;
     break;
     default:
+      n_multi_x = 0;  /* Humor the compiler error checker */
       node0_printf("No integration algorithm, or unknown one\n");
       terminate(1);
     break;

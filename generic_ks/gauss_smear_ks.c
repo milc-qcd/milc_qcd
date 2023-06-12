@@ -265,8 +265,8 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
 */
 
 void 
-gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
-		    Real width, int iters, int t0)
+gauss_smear_v_field_cpu(su3_vector *src, su3_matrix *t_links,
+			Real width, int iters, int t0)
 {
   su3_vector *tmp;
   Real ftmp = -(width*width)/(4*iters*4);  /* Extra 4 to compensate for stride 2 */
@@ -312,6 +312,28 @@ gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
   
   destroy_v_field(tmp);
 }
+
+/*------------------------------------------------------------*/
+#if defined(HAVE_QUDA) && defined(USE_GSMEAR_QUDA)
+void 
+gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
+		    Real width, int iters, int t0)
+{
+  gauss_smear_reuse_2link_QUDA( 0 );
+  gauss_smear_v_field_QUDA( src, t_links, width, iters, t0 );
+  gauss_smear_delete_2link_QUDA();
+}
+
+#else
+
+void 
+gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
+		    Real width, int iters, int t0)
+{
+  gauss_smear_v_field_cpu( src, t_links, width, iters, t0 );
+}
+
+#endif
 
 /*------------------------------------------------------------*/
 

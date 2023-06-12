@@ -40,12 +40,15 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} \
 MY_OBJECTS = \
   d_action_rhmc.o \
   eo_fermion_force_rhmc.o \
+  gauge_action_imp_ks.o \
   gauge_info.o \
   gauge_force_imp_ks.o \
+  gauge_measure_ks.o \
   grsource_rhmc.o \
   ks_ratinv.o  \
   load_rhmc_params.o \
   reunitarize_ks.o \
+  ploop3_ks.o \
   setup.o \
   update_h_rhmc.o \
   update_rhmc.o \

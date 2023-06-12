@@ -2459,7 +2459,7 @@ void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom, half_wilson_vector *back
 
 
 void add_3f_force_to_mom_list(veclist *back,
-	veclist *forw, int dir, Real *coeff, int listlength ) {
+	veclist *forw, int dir, Real coeff[2], int listlength ) {
 #if 0
   register site *s ;
   register int i;

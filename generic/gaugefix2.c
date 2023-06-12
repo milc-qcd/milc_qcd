@@ -70,7 +70,7 @@
 #include "generic_includes.h"
 #include "../include/openmp_defs.h"
 #define REUNIT_INTERVAL 20
-#ifdef USE_GAUGEFIX_OVR_QUDA
+#ifdef USE_GAUGEFIX_OVR_GPU
 #include "../include/generic_quda.h"
 #endif
 
@@ -470,7 +470,7 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 
 /* Abbreviated form for fixing only gauge field */
 
-#ifdef USE_GAUGEFIX_OVR_QUDA
+#ifdef USE_GAUGEFIX_OVR_GPU
 
 void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
 	      Real gauge_fix_tol )
@@ -482,7 +482,7 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
   double tolerance;
   unsigned int reunit_interval;
   unsigned int stopWtheta;
-  
+
   if(gauge_dir == TUP)quda_gauge_dir = 3;
   else if(gauge_dir < 0 || gauge_dir > TUP)quda_gauge_dir = 4;
   else{
@@ -499,10 +499,9 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
   quda_relax_boost = relax_boost;
   tolerance = gauge_fix_tol;
   stopWtheta = 0; /* Try this for now */
-  
-  qudaGaugeFixingOVR(MILC_PRECISION, quda_gauge_dir, Nsteps, verbose_interval, quda_relax_boost,
-		     tolerance, reunit_interval, stopWtheta, &arg);
 
+  qudaGaugeFixingOVR(MILC_PRECISION, quda_gauge_dir, Nsteps, verbose_interval, quda_relax_boost,
+    tolerance, reunit_interval, stopWtheta, &arg);
 }
   
 #else

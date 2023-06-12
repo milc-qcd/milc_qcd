@@ -1,6 +1,7 @@
 /******** setup.c *********/
 /* MIMD version 7 */
 
+#define _POSIX_C_SOURCE 200112L /* for gethostname */
 #define IF_OK if(status==0)
 
 #include "ks_spectrum_includes.h"
@@ -8,7 +9,6 @@
 #include <string.h>
 #include "params.h"
 #include <unistd.h>
-//extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
 #endif
@@ -181,7 +181,7 @@ int readin(int prompt) {
 
     IF_OK if (prompt==1) 
       printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
-    IF_OK scanf("%s",savebuf);
+    IF_OK status += scanf("%s",savebuf)==1 ? 0 : 1;
     IF_OK printf("%s\n",savebuf);
     IF_OK {
       if(strcmp("coulomb_gauge_fix",savebuf) == 0 ){
@@ -1329,6 +1329,7 @@ int readin(int prompt) {
   rephase( OFF );
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
   if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
+  refresh_ape_links = 1;
   rephase( ON );
 
 #if EIGMODE == EIGCG

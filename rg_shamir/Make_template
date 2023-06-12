@@ -57,6 +57,7 @@ G_OBJECTS0 = \
   check_unitarity.o \
   d_plaq4.o \
   gaugefix2.o \
+  gauge_action_imp.o \
   gauge_stuff.o \
   io_detect.o \
   io_helpers.o \

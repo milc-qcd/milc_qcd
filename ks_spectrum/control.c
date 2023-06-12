@@ -232,7 +232,8 @@ int main(int argc, char *argv[])
 	destroy_ape_links_4D(ape_links);
 	ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
 	if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
-
+	refresh_ape_links = 1;
+	
 	rephase( ON );
 	invalidate_fermion_links(fn_links);
 
@@ -801,6 +802,7 @@ int main(int argc, char *argv[])
     starttime = endtime;
   } /* readin(prompt) */
   
+  free_lattice();
 
 #ifdef HAVE_QUDA
   finalize_quda();

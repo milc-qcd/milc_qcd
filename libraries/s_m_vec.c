@@ -8,7 +8,7 @@
 #include "../include/su3.h"
 
 /* c <- s*a, vectors */
-void scalar_mult_su3_vector( su3_vector *a, Real s, su3_vector *c){
+void scalar_mult_su3_vector( const su3_vector *const a, Real s, su3_vector *c){
 
 #ifndef NATIVEDOUBLE
 register int i;

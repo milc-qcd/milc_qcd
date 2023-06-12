@@ -68,8 +68,8 @@ int grid_initialized(void){
   return grid_is_initialized;
 }
 
-#define MAXARG 6
-#define MAXARGSTR 32
+#define MAXARG 8
+#define MAXARGSTR 64
 
 GRID_status_t 
 initialize_grid(void){
@@ -99,9 +99,11 @@ initialize_grid(void){
   char tag_grid[] = "--grid";
   char val_grid[MAXARGSTR];
   snprintf (val_grid, MAXARGSTR, "%d.%d.%d.%d\0", nx, ny, nz, nt);
+
   char tag_mpi[] = "--mpi";
   char val_mpi[MAXARGSTR];
   snprintf (val_mpi, MAXARGSTR, "%d.%d.%d.%d\0",  mpiX,   mpiY,   mpiZ,   mpiT);
+
   char val_shm[MAXARGSTR];
 #ifdef GRID_SHMEM_MAX
   snprintf (val_shm, MAXARGSTR, "%d\0", GRID_SHMEM_MAX);
@@ -109,12 +111,23 @@ initialize_grid(void){
 #else
   snprintf (val_shm, MAXARGSTR, "");
   char tag_shm[] = "";
-#endif  
+#endif
+
+  char tag_at[] = "--accelerator-threads";
+  char val_at[MAXARGSTR];
+#ifdef GRID_ACCELERATOR_THREADS
+  int at = GRID_ACCELERATOR_THREADS;
+#else
+  int at = 8;  /* Default */
+#endif
+  snprintf (val_at, MAXARGSTR, "%d\0", at);
+  
   argv[0] = tag_grid; argv[1] = val_grid;
   argv[2] = tag_mpi;  argv[3] = val_mpi;
   argv[4] = tag_shm;  argv[5] = val_shm;
+  argv[6] = tag_at;   argv[7] = val_at;
 
-  if(mynode()==0)printf("Calling Grid_init with %s %s %s %s %s %s\n",argv[0],argv[1],argv[2],argv[3],argv[4],argv[5]);
+  if(mynode()==0)printf("Calling Grid_init with %s %s %s %s %s %s %s %s\n",argv[0],argv[1],argv[2],argv[3],argv[4],argv[5],argv[6],argv[7]);
   Grid_init(&argc, &argv);
 
   grid_full = GRID_create_grid();

@@ -1,0 +1,66 @@
+Wilson/Symanzik Flow application
+MIMD version 7
+Machine = Scalar processor, with 1 nodes
+Host(0) = deviceab
+Username = bazavov
+start: Tue Nov  1 11:29:29 2022
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 8
+LAYOUT = Hypercubes, options = with fixed input-parameter node_geometry
+ON EACH NODE (RANK) 4 x 4 x 4 x 8
+Mallocing 1.1 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Integrator = INTEGRATOR_ADAPT_BS
+Finished setup
+
+
+reload_serial ../../binary_samples/lat.sample.l4448
+wilson
+set staple to wilson
+exp_order 8
+stepsize 0.0625
+local_tol 0.01
+stoptime 1
+forget 
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4448
+Time stamp Wed Oct 10 14:27:08 2001
+Checksums 13f3b413 161f7dde OK
+Time to reload gauge configuration = 2.119541e-04
+CHECK PLAQ: 1.723748e+00 1.690586e+00
+CHECK NERSC LINKTR: 6.921659e-02 CKSUM: b3be9b3b
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 7.104874e-05
+#LABEL time Clover_t Clover_s Plaq_t Plaq_s Rect_t Rect_s charge
+#LABEL2 time stepsize distance local_tol/distance
+GFLOW: 0 1.05787 1.03094 1.69059 1.72375 1.02757 1.0736 0.0955429
+ADAPT: 0 0.0625 0 0
+GFLOW: 0.0625 0.905813 0.879699 2.19787 2.21718 1.58402 1.61709 0.0557593
+ADAPT: 0.0625 0.0625 0.000305105 32.7756
+GFLOW: 0.252515 0.394062 0.368306 2.82317 2.82604 2.57288 2.5887 0.0164885
+ADAPT: 0.252515 0.190015 0.00681128 1.46815
+GFLOW: 0.457678 0.173829 0.146201 2.93461 2.9367 2.84091 2.86006 0.00638609
+ADAPT: 0.457678 0.205164 0.00652053 1.53362
+GFLOW: 0.639327 0.102557 0.078665 2.95646 2.95506 2.91177 2.92891 0.00335084
+ADAPT: 0.639327 0.181648 0.00651675 1.53451
+GFLOW: 0.816428 0.0688252 0.0490046 2.95908 2.95187 2.94141 2.95585 0.00152367
+ADAPT: 0.816428 0.177101 0.00735989 1.35872
+GFLOW: 1 0.0494375 0.0331527 2.93562 2.91175 2.95378 2.96599 0.00081349
+ADAPT: 1 0.183572 0.0107831 0.927381
+Number of steps = 6
+Number of rejected steps = 2
+Time to complete flow = 8.038211e-02 seconds
+
+
+ask_starting_lattice(0): EOF on input.
+RUNNING COMPLETED
+Time = 8.146405e-02 seconds
+exit: Tue Nov  1 11:29:29 2022
+

@@ -53,7 +53,7 @@ ifeq ($(strip ${HAVEQOP}),true)
 endif
 
 ifeq ($(strip ${WANTQUDA}),true)
-  GAUGE_OBJECTS += milc_to_quda_utilities.o
+  GAUGE_OBJECTS += milc_to_quda_utilities.o d_plaq4_gpu.o ploop3_gpu.o
 endif
 
 ifeq ($(strip ${WANTQPHIX}),true)
@@ -94,6 +94,7 @@ KS_LINKS_OBJECTS = \
   fermion_links_from_site.o \
   f_meas.o \
   gauss_smear_ks.o \
+  gauss_smear_ks_QUDA.o \
   grsource_imp.o    \
   naik_eps_utilities.o \
   path_transport.o \
@@ -111,7 +112,7 @@ KS_IO_OBJECTS =  \
 # These are used to compute the spectrum
 
 ifeq ($(strip ${WANT_KS_CONT_CPU}),true)
-# use new CPU contraction code
+# use new CPU contraction code (temporary for testing)
 KS_SPECTRUM_OBJECTS = \
   ks_baryon.o \
   ks_meson_mom_gpu.o \
@@ -401,11 +402,11 @@ endif
 
 # Standard MILC combinations
 
-  GAUGE_FORCE_MILC_CPU = gauge_force_imp.o gauge_stuff.o ranmom.o
+  GAUGE_FORCE_MILC_CPU = gauge_force_imp.o gauge_stuff.o gauge_action_imp.o ranmom.o
 
 # GPU support
 
-  GAUGE_FORCE_MILC_GPU = gauge_force_imp_gpu.o gauge_stuff.o ranmom.o
+  GAUGE_FORCE_MILC_GPU = gauge_force_imp_gpu.o gauge_action_imp_gpu.o gauge_action_imp.o gauge_stuff.o ranmom.o
   
 # Standard QOP combinations
 

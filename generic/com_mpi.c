@@ -570,21 +570,14 @@ initialize_machine(int *argc, char ***argv)
   }
   remove_from_args(argc, argv, first, last);
 
-
   /* Set error handler for this job */
-
-  /* Note: with MPI-2 MPI_Comm_create_errhandler and
-     MPI_Comm_set_errorhandler are preferred, but we keep MPI_Attr_get
-     until MPI-2 is more widely available */ 
-  flag = MPI_Errhandler_create(err_func, &errhandler);
+  flag = MPI_Comm_create_errhandler(err_func, &errhandler);
   if(flag != MPI_SUCCESS) err_func(&MPI_COMM_THISJOB, &flag);
-  flag = MPI_Errhandler_set(MPI_COMM_THISJOB, errhandler);
+  flag = MPI_Comm_set_errhandler(MPI_COMM_THISJOB, errhandler);
   if(flag != MPI_SUCCESS) err_func(&MPI_COMM_THISJOB, &flag);
 
   /* get the number of message types */
-  /* Note: with MPI-2 MPI_Comm_get_attr is preferred,
-     but we keep MPI_Attr_get until MPI-2 is more widely available */ 
-  flag = MPI_Attr_get(MPI_COMM_THISJOB, MPI_TAG_UB, &tag_ub, &found);
+  flag = MPI_Comm_get_attr(MPI_COMM_THISJOB, MPI_TAG_UB, &tag_ub, &found);
   if(flag != MPI_SUCCESS) err_func(&MPI_COMM_THISJOB, &flag);
   if(found == 0){
     num_gather_ids = 1024;

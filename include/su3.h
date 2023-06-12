@@ -362,7 +362,7 @@ void mult_su3_mat_vec_nsum( su3_matrix *a, su3_vector *b, su3_vector *c );
 void mult_adj_su3_mat_vec_sum( su3_matrix *a, su3_vector *b, su3_vector *c );
 void mult_adj_su3_mat_vec_nsum( su3_matrix *a, su3_vector *b, su3_vector *c );
 
-void scalar_mult_su3_vector(  su3_vector *src, Real scalar, 
+void scalar_mult_su3_vector(  const su3_vector *const src, Real scalar, 
 	su3_vector *dest);
 void scalar_mult_sum_su3_vector( su3_vector *src1, su3_vector *src2,
 	Real scalar);

@@ -94,8 +94,11 @@ G_KS_ALL = \
   eo_links_milc.o \
   fn_links_milc.o \
   fn_links_qop.o \
+  gauge_action_imp_ks.o \
   gauge_force_imp_ks.o \
+  gauge_measure_ks.o \
   gauss_smear_ks.o \
+  gauss_smear_ks_QUDA.o \
   gridStaggEigen.o \
   gridStaggInvert.o \
   grsource.o \
@@ -141,6 +144,7 @@ G_KS_ALL = \
   multimass_inverter.o \
   naik_eps_utilities.o \
   path_transport.o \
+  ploop3_ks.o \
   nl_spectrum.o \
   reunitarize_ks.o \
   shift_field.o \
@@ -368,9 +372,15 @@ fermion_links_hypisq_load_milc.o: ../generic_ks/fermion_links_hypisq_load_milc.c
 	${CC} -c ${CFLAGS} $<
 ff_opt.o: ../generic_ks/ff_opt.c
 	${CC} -c ${CFLAGS} $<
+gauge_action_imp_ks.o: ../generic_ks/gauge_action_imp_ks.c
+	${CC} -c ${CFLAGS} $<
 gauge_force_imp_ks.o: ../generic_ks/gauge_force_imp_ks.c
 	${CC} -c ${CFLAGS} $<
+gauge_measure_ks.o: ../generic_ks/gauge_measure_ks.c
+	${CC} -c ${CFLAGS} $<
 gauss_smear_ks.o: ../generic_ks/gauss_smear_ks.c
+	${CC} -c ${CFLAGS} $<
+gauss_smear_ks_QUDA.o: ../generic_ks/gauss_smear_ks_QUDA.c
 	${CC} -c ${CFLAGS} $<
 gridStaggEigen.o: ../generic_ks/gridStaggEigen.cc
 	${CXX} -c ${CXXFLAGS} $<
@@ -473,6 +483,8 @@ naik_eps_utilities.o: ../generic_ks/naik_eps_utilities.c
 nl_spectrum.o: ../generic_ks/nl_spectrum.c
 	${CC} -c ${CFLAGS} $<
 path_transport.o: ../generic_ks/path_transport.c
+	${CC} -c ${CFLAGS} $<
+ploop3_ks.o: ../generic_ks/ploop3_ks.c
 	${CC} -c ${CFLAGS} $<
 rephase.o: ../generic_ks/rephase.c
 	${CC} -c ${CFLAGS} $<

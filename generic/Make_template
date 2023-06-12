@@ -19,6 +19,7 @@ G_ALL = \
  com_vanilla.o \
  d_plaq2.o \
  d_plaq4.o \
+ d_plaq4_gpu.o \
  discretize_wf.o \
  field_strength.o \
  field_translation.o \
@@ -26,6 +27,8 @@ G_ALL = \
  file_types_milc_usqcd.o \
  gaugefix.o \
  gaugefix2.o \
+ gauge_action_imp.o \
+ gauge_action_imp_gpu.o \
  gauge_force_imp.o \
  gauge_force_imp_gpu.o \
  gauge_force_symzk1_qphix.o \
@@ -80,6 +83,7 @@ G_ALL = \
  plaquette4.o \
  ploop2.o \
  ploop3.o \
+ ploop3_gpu.o \
  ploop_dist.o \
  ploop_staple.o \
  project_su3_hit.o \
@@ -147,6 +151,8 @@ d_plaq2.o: ../generic/d_plaq2.c
 	${CC} -c ${CFLAGS} $<
 d_plaq4.o: ../generic/d_plaq4.c
 	${CC} -c ${CFLAGS} $<
+d_plaq4_gpu.o: ../generic/d_plaq4_gpu.c
+	${CC} -c ${CFLAGS} $<
 d_linktrsum.o: ../generic/d_linktrsum.c
 	${CC} -c ${CFLAGS} $<
 discretize_wf.o: ../generic/discretize_wf.c
@@ -162,6 +168,10 @@ field_utilities.o: ../generic/field_utilities.c
 gaugefix.o: ../generic/gaugefix.c
 	${CC} -c ${CFLAGS} $<
 gaugefix2.o: ../generic/gaugefix2.c
+	${CC} -c ${CFLAGS} $<
+gauge_action_imp.o: ../generic/gauge_action_imp.c
+	${CC} -c ${CFLAGS} $<
+gauge_action_imp_gpu.o: ../generic/gauge_action_imp_gpu.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_imp.o: ../generic/gauge_force_imp.c
 	${CC} -c ${CFLAGS} $<
@@ -275,6 +285,8 @@ plaquette4.o: ../generic/plaquette4.c
 ploop2.o: ../generic/ploop2.c
 	${CC} -c ${CFLAGS} $<
 ploop3.o: ../generic/ploop3.c
+	${CC} -c ${CFLAGS} $<
+ploop3_gpu.o: ../generic/ploop3_gpu.c
 	${CC} -c ${CFLAGS} $<
 ploop_dist.o: ../generic/ploop_dist.c
 	${CC} -c ${CFLAGS} $<

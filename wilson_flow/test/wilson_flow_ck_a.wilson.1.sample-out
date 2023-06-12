@@ -1,0 +1,67 @@
+Wilson/Symanzik Flow application
+MIMD version 7
+Machine = Scalar processor, with 1 nodes
+Host(0) = deviceab
+Username = bazavov
+start: Mon Oct 31 16:03:41 2022
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 8
+anisotropy 2
+LAYOUT = Hypercubes, options = with fixed input-parameter node_geometry
+ON EACH NODE (RANK) 4 x 4 x 4 x 8
+Mallocing 0.7 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Integrator = INTEGRATOR_CK
+Finished setup
+
+
+reload_serial ../../binary_samples/lat.sample.l4448
+wilson
+set staple to wilson
+exp_order 8
+stepsize 0.0625
+stoptime 1
+forget 
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4448
+Time stamp Wed Oct 10 14:27:08 2001
+Checksums 13f3b413 161f7dde OK
+Time to reload gauge configuration = 1.971722e-04
+CHECK PLAQ: 1.723748e+00 1.690586e+00
+CHECK NERSC LINKTR: 6.921659e-02 CKSUM: b3be9b3b
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 6.890297e-05
+#LABEL time Clover_t Clover_s Plaq_t Plaq_s Rect_t Rect_s charge
+GFLOW: 0 1.05787 1.03094 1.69059 1.72375 1.02757 1.0736 0.0955429
+GFLOW: 0.0625 0.769681 0.763276 2.5114 2.34845 1.98787 1.8262 0.00859189
+GFLOW: 0.125 0.47819 0.528265 2.79386 2.64905 2.48153 2.28766 -0.0140562
+GFLOW: 0.1875 0.304332 0.368349 2.89393 2.79942 2.70268 2.55148 -0.00876882
+GFLOW: 0.25 0.20607 0.263028 2.93703 2.87865 2.81162 2.70553 -0.00220008
+GFLOW: 0.3125 0.1477 0.1931 2.95886 2.92237 2.87133 2.79831 0.00140213
+GFLOW: 0.375 0.110837 0.145699 2.97122 2.94768 2.90695 2.85624 0.00298274
+GFLOW: 0.4375 0.0862455 0.112701 2.9788 2.96307 2.92967 2.89384 0.00348382
+GFLOW: 0.5 0.0690699 0.0890779 2.98374 2.97291 2.94496 2.91919 0.00343642
+GFLOW: 0.5625 0.0566093 0.0717162 2.98714 2.97947 2.95572 2.93692 0.00313033
+GFLOW: 0.625 0.0472786 0.0586563 2.98956 2.98403 2.96357 2.94972 0.00272312
+GFLOW: 0.6875 0.0401032 0.0486335 2.99135 2.98731 2.96948 2.9592 0.00229803
+GFLOW: 0.75 0.0344592 0.0408082 2.99272 2.98974 2.97405 2.9664 0.00189699
+GFLOW: 0.8125 0.0299338 0.0346073 2.99378 2.99157 2.97766 2.97198 0.00153933
+GFLOW: 0.875 0.0262454 0.0296291 2.99463 2.99299 2.98057 2.97636 0.00123191
+GFLOW: 0.9375 0.0231967 0.0255856 2.99532 2.9941 2.98294 2.97986 0.000974649
+GFLOW: 1 0.0206463 0.0222666 2.99588 2.99499 2.98491 2.98269 0.000763776
+Number of steps = 16
+Time to complete flow = 1.927440e-01 seconds
+
+
+ask_starting_lattice(0): EOF on input.
+RUNNING COMPLETED
+Time = 1.936710e-01 seconds
+exit: Mon Oct 31 16:03:41 2022
+

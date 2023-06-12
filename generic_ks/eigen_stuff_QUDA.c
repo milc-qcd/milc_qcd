@@ -6,7 +6,7 @@
 
 #include "generic_ks_includes.h"
 
-#ifdef USE_EIG_QUDA
+#ifdef USE_EIG_GPU
 
 #include <string.h>
 #include <assert.h>

@@ -9,6 +9,9 @@
 /**#define GFTIME**/ /* For timing gauge force calculation */
 #include "generic_includes.h"	/* definitions files and prototypes */
 #include "../include/openmp_defs.h"
+#if defined (HAVE_QUDA)
+#include "../include/generic_quda.h"
+#endif
 
 /* I don't understand the advantage of following SG 5/25/17 will comment out */
 /*
@@ -56,10 +59,11 @@ static Real **loop_coeff;
     /* for each rotation/reflection, an integer distinct for each starting
 	point, or each cyclic permutation of the links */
 int loop_char[MAX_NUM];
+
 #ifdef ANISOTROPY
     /* for each rotation/reflection, an integer indicating if the path
        is spatial (=0) or temporal (=1) */
-static int **loop_st;
+int **loop_st;
 #endif
 
 static void char_num( int *dig, int *chr, int length);
@@ -245,79 +249,131 @@ static void char_num( int *dig, int *chr, int length){
 
 } /* char_num */
 
-double imp_gauge_action() {
-    register int i;
-    int rep;
-    register site *s;
-    complex trace;
-    double g_action;
-    double action,act2,total_action;
-    su3_matrix *tempmat1;
-    su3_matrix *links;
-    int length;
-
-    /* these are for loop_table  */
-    int ln,iloop;
-
-    g_action=0.0;
-
-    tempmat1 = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
-    if(tempmat1 == NULL){
-      printf("imp_gauge_action: Can't malloc temporary\n");
-      terminate(1);
-    }
-
-    links = create_G_from_site();
-    
-    /* gauge action */
-    for(iloop=0;iloop<NLOOP;iloop++){
-	length=loop_length[iloop];
-	/* loop over rotations and reflections */
-	for(ln=0;ln<loop_num[iloop];ln++){
-
-	    path_product_fields(links, loop_table[iloop][ln] , length, tempmat1 );
-
-	    FORALLSITES_OMP(i,s,private(trace,action,total_action,act2,rep) reduction(+:g_action)){
-		trace=trace_su3( &tempmat1[i] );
-		action =  3.0 - (double)trace.real;
-		/* need the "3 -" for higher characters */
-#ifndef ANISOTROPY
-        	total_action= (double)loop_coeff[iloop][0]*action;
-#else
-		/* NOTE: for anisotropic case every loop is multiplied by
-		   the corresponding spatial (beta[0]) or temporal (beta[1])
-		   coupling, while in the isotropic case all loops are
-		   added together and then multiplied by beta outside
-                   of this function */
-        	total_action= (double)loop_coeff[iloop][0]*action
-                              *beta[loop_st[iloop][ln]];
-		/* loop_st[iloop][ln] is either 0 or 1 */
-#endif
-        	act2=action;
-		for(rep=1;rep<NREPS;rep++){
-		    act2 *= action;
-		    total_action += (double)loop_coeff[iloop][rep]*act2;
-		}
-
-        	g_action  += total_action;
-
-	    } END_LOOP_OMP; /* sites */
-	} /* ln */
-    } /* iloop */
-
-    g_doublesum( &g_action );
-    destroy_G(links);
-    special_free(tempmat1);
-    return( g_action );
-} /* imp_gauge_action */
-
-
-
 /* Measure gauge observables:
     Loops in action (time and space directions treated differently)
     Polyakov loop
-
 */
+
+#if defined (HAVE_QUDA) && defined(USE_GA_GPU) && !defined(ANISOTROPY) && !defined(BPCORR) && NREPS == 1
+void g_measure_gpu( ) {
+    complex p_loop;
+    register int i;
+    register site *s;
+    double ss_plaquette, st_plaquette;
+    complex trace;
+    double average,action,act2,total_action;
+    double this_total_action; /* need for loop over sitest */
+    int length;
+    su3_matrix *tempmat1;
+    su3_matrix *links;
+    /* these are for loop_table  */
+    int ln,iloop,rep;
+
+    /* Count total number of loops */
+    int num_paths = 0;
+    for (iloop = 0; iloop < NLOOP; iloop++)
+        for (ln = 0; ln < loop_num[iloop]; ln++)
+            num_paths++;
+
+    /* Max length */
+    int max_length = get_max_length();
+
+    /* Storage for traces */
+    double *traces = (double*)malloc(2 * num_paths * sizeof(double));
+
+    /* Storage for input paths */
+    int **input_path_buf = (int**)malloc(num_paths * sizeof(int*));
+    for (i = 0; i < num_paths; i++)
+        input_path_buf[i] = (int*)malloc(max_length * sizeof(int));
+
+    /* Storage for path lengths */
+    int *path_length = (int*)malloc(num_paths * sizeof(int));
+
+    /* Storage for loop coefficients */
+    double *loop_coeff = (double*)malloc(num_paths * sizeof(double));
+
+    /* Overall scaling factor */
+    double factor = 1. / volume;
+
+    num_paths = 0;
+    for (iloop = 0; iloop < NLOOP; iloop++) {
+        length = loop_length[iloop];
+        for (ln = 0; ln < loop_num[iloop]; ln++) {
+            path_length[num_paths] = length; /* path length */
+            loop_coeff[num_paths] = 1.0; /* due to the "3. - [...]" convention below, we'll wait to scale then */
+            for (i = 0; i < length; i++)
+                input_path_buf[num_paths][i] = loop_table[iloop][ln][i];
+            num_paths++;
+        }
+    }
+
+    Real **loop_coeff_milc = get_loop_coeff();
+    double plaq_array[3];
+    double ploop_array[2];
+
+    initialize_quda();
+
+    QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+
+    /* Fused kernel that computes the plaquette, temporal Polyakov loop, and gauge loop traces */
+    qudaGaugeMeasurementsPhased(MILC_PRECISION, plaq_array, ploop_array, 3, traces, input_path_buf, path_length,
+                                loop_coeff, num_paths, max_length, factor, &arg, phases_in);
+
+
+    ss_plaquette = 3.0 * plaq_array[1];
+    st_plaquette = 3.0 * plaq_array[2];
+
+#if (MILC_PRECISION==1)
+    node0_printf("PLAQ:\t%f\t%f\n", ss_plaquette, st_plaquette );
+#else
+    node0_printf("PLAQ:\t%.16f\t%.16f\n", ss_plaquette, st_plaquette );
+#endif
+
+    node0_printf("P_LOOP:\t%e\t%e\n", ploop_array[0], ploop_array[1] );
+
+    /* Accumulate the actions out of the gauge loop traces */
+    num_paths = 0;
+    total_action = 0.0;
+    for (iloop = 0; iloop < NLOOP; iloop++) {
+        int length = loop_length[iloop];
+        /* loop over rotations and reflections */
+        for (ln = 0; ln < loop_num[iloop]; ln++) {
+            this_total_action = 0.;
+            average = traces[2 * num_paths]; // extract real part
+            action = 3.0 - traces[2 * num_paths];
+            this_total_action = (double)loop_coeff_milc[iloop][0] * action;
+            total_action += this_total_action;
+            
+            /* dump the loop */
+            node0_printf("G_LOOP:  %d  %d  %d   ", iloop, ln, length);
+#if (MILC_PRECISION==1)
+            node0_printf("\t%e", average);
+#else
+            node0_printf("\t%.16e", average);
+#endif
+            node0_printf("\t( ");
+            for (i = 0; i < length; i++) node0_printf("%d ", loop_table[iloop][ln][i]);
+            node0_printf(" )\n");
+
+            num_paths++;
+        } /* ln */
+    } /* iloop */
+
+    node0_printf("GACTION: %e\n", total_action);
+    /**node0_printf("CHECK:   %e   %e\n",total_action,imp_gauge_action_gpu() );**/
+
+    if(this_node==0)fflush(stdout);
+
+    free(loop_coeff);
+    free(path_length);
+    for (i = 0; i < num_paths; i++)
+        free(input_path_buf[i]);
+    free(input_path_buf);
+    free(traces);
+
+} /* g_measure_gpu */
+#endif
+
 void g_measure( ){
     double ss_plaquette, st_plaquette;
     complex p_loop;
