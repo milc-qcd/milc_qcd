@@ -1,0 +1,4 @@
+# Executable  precision  add-macro input-case  pattern1 pattern2
+
+exec wilson_flow 1 - - WFLOW RUNNING
+exec wilson_flow 2 - - WFLOW RUNNING

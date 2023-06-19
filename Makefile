@@ -419,7 +419,7 @@ endif
 #----------------------------------------------------------------------
 # 15. GPU/QUDA Options
 
-WANTQUDA    ?= #true
+WANTQUDA    ?= false
 
 ifeq ($(strip ${WANTQUDA}),true)
 
@@ -496,7 +496,7 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   ifeq ($(strip ${WANT_EIG_GPU}),true)
     HAVE_EIG_QUDA = true
-    CGPU += -DUSE_EIG_QUDA
+    CGPU += -DUSE_EIG_GPU
   endif
 
   ifeq ($(strip ${WANT_GSMEAR_GPU}),true)
@@ -511,17 +511,17 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   ifeq ($(strip ${WANT_SHIFT_GPU}),true)
     HAVE_SHIFT_GPU = true
-    CGPU += -DUSE_SHIFT_QUDA
+    CGPU += -DUSE_SHIFT_GPU
   endif
 
   ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
     HAVE_SPIN_TASTE_GPU = true
-    CGPU += -DUSE_SPIN_TASTE_QUDA
+    CGPU += -DUSE_SPIN_TASTE_GPU
   endif
 
   ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
     HAVE_GAUGEFIX_OVR_QUDA = true
-    CGPU += -DUSE_GAUGEFIX_OVR_QUDA
+    CGPU += -DUSE_GAUGEFIX_OVR_GPU
   endif
 
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
@@ -616,7 +616,6 @@ endif
 
 WANTHADRONS ?= false # true implies WANTGRID = true
 
-
 ifeq ($(strip ${WANTHADRONS}), true)
 
   HAVE_HADRONS = true
@@ -653,10 +652,20 @@ endif
 #----------------------------------------------------------------------
 # 16. Grid Options
 
-WANTGRID = #true
+WANTGRID ?= false
 
 ifeq ($(strip ${WANTHADRONS}), true)
   WANTGRID = true
+endif
+
+ifeq ($(strip ${WANTGRID}),true)
+
+  WANT_FN_CG_GPU ?= #true    // Automatic for now
+  WANT_FL_GPU ?= true       // Under development
+  WANT_FF_GPU ?= #true       // Future
+  WANT_GF_GPU ?= #true       // Future
+  WANT_EIG_GPU ?= #true     // Automatic for now
+
 endif
 
 ifeq ($(strip ${WANTGRID}), true)
@@ -870,6 +879,7 @@ CCOMPAT += #-DOLD_QOPQDP_NORM
 
 # Prior to version 7.7.2 the conversion from staggeredd to naive was peculiar.
 CCOMPAT += #-DOLD_STAGGERED2NAIVE
+CCOMPAT += #-DOLD_GAUSSRAND
 
 #------------------------------
 # Layout

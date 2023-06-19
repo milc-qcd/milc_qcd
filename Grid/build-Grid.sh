@@ -174,7 +174,7 @@ then
              --enable-unified=no \
 	     --with-fftw=${FFTW_DIR}/.. \
 	     --with-gmp=${OLCF_GMP_ROOT} \
-	     --with-hdf5=${OLCF_HDF5_ROOT} \
+	     --with-hdf5=${HDF5_DIR} \
  	     --with-lime=${INSTALLROOT}/qio \
 	     --with-mpfr=/opt/cray/pe/gcc/mpfr/3.1.4/ \
 	     CXX=hipcc    CXXLD=hipcc \
@@ -182,6 +182,8 @@ then
 	     CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -std=c++14 -O3 -fPIC -fopenmp --amdgpu-target=gfx90a" \
 	     LDFLAGS="-L/lib64 -L${ROCM_PATH}/lib -lamdhip64 ${MPI_LDFLAGS}" \
 
+# HIPFLAGS = --amdgpu-target=gfx90a
+	
         status=$?
         echo "Configure exit status $status"
 	cp ${BUILDDIR}/grid-config ${INSTALLDIR}/bin
@@ -225,16 +227,18 @@ then
   if [ $status -ne 0 ]
   then
     echo "Quitting because of configure errors"
+  else
+    echo "Building in ${BUILDDIR}"
+    ${MAKE} -k -j20
+
+    echo "Installing in ${INSTALLDIR}"
+    ${MAKE} install
+    # Because Grid might not have completed the installation
+    cp ${BUILDDIR}/grid-config ${INSTALLDIR}/bin
   fi
 
-fi
-
-echo "Building in ${BUILDDIR}"
-${MAKE} -k -j20
-
-echo "Installing in ${INSTALLDIR}"
-${MAKE} install
-
+fi     
 popd
+
 
 

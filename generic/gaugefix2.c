@@ -70,7 +70,7 @@
 #include "generic_includes.h"
 #include "../include/openmp_defs.h"
 #define REUNIT_INTERVAL 20
-#ifdef USE_GAUGEFIX_OVR_QUDA
+#ifdef USE_GAUGEFIX_OVR_GPU
 #include "../include/generic_quda.h"
 #endif
 
@@ -470,7 +470,7 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 
 /* Abbreviated form for fixing only gauge field */
 
-#ifdef USE_GAUGEFIX_OVR_QUDA
+#ifdef USE_GAUGEFIX_OVR_GPU
 
 void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
 	      Real gauge_fix_tol )
