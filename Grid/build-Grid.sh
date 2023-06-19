@@ -4,7 +4,8 @@ ARCH=$1
 PK_CC=$2
 PK_CXX=$3
 GIT_REPO=https://github.com/milc-qcd/Grid
-GIT_BRANCH=feature/staggered-a2a-ml
+#GIT_BRANCH=feature/staggered-a2a-ml
+GIT_BRANCH=develop
 
 if [ -z ${PK_CXX} ]
 then
@@ -32,6 +33,8 @@ if [ ! -d ${SRCDIR} ]
 then
   echo "Fetching ${GIT_BRANCH} branch of Grid package from github"
   git clone ${GIT_REPO} -b ${GIT_BRANCH}
+else
+  git checkout ${GIT_BRANCH}
 fi
 
 # Fetch Eigen package, set up Make.inc files and create Grid configure
@@ -54,11 +57,11 @@ then
             --prefix=${INSTALLDIR} \
             --enable-simd=GEN \
             --enable-comms=none \
-	    --with-lime=${HOME}/crusher/quda/install/qio \
+	    --with-lime=${HOME}/scidac/install/qio-single
 	    --with-fftw=${HOME}/fftw/build-gcc \
             --with-mpfr=${HOME}/mpfr \
             CXX="${PK_CXX}" \
-            CXXFLAGS="-std=gnu++17 -O0 -g -Wno-psabi" \
+            CXXFLAGS="-std=gnu++17 -g -Wno-psabi" \
 
 #            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
 # 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
@@ -76,7 +79,7 @@ then
             --enable-mkl=yes \
             --enable-simd=GEN \
             --enable-comms=mpi \
-	    --with-lime=${HOME}/scidac/install/qio-skx \
+	    --with-lime=${HOME}/scidac/install/qio
             --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
 	    --with-hdf5=/opt/cray/pe/hdf5/1.12.0.0/INTEL/19.1 \
             CXX="${PK_CXX}" CC="${PK_CC}" \
@@ -93,6 +96,7 @@ then
             --prefix=${INSTALLDIR} \
             --enable-simd=KNL \
             --enable-comms=mpi \
+	    --disable-gparity \
             --host=x86_64-unknown-linux-gnu \
 	    --with-lime=${HOME}/scidac/install/qio-cori-extend-omp-knl-icc \
 	    --with-hdf5=/opt/cray/pe/hdf5/1.12.0.0/INTEL/19.1 \
@@ -133,7 +137,7 @@ then
 	     --enable-comms=mpi           \
 	     --enable-comms-threads       \
 	     --enable-simd=GPU            \
-	     --enable-shm=shmnone         \
+	     --enable-shm=no              \
              --enable-gen-simd-width=64   \
 	     --enable-accelerator=cuda    \
 	     --disable-fermion-reps       \
