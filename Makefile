@@ -419,7 +419,7 @@ endif
 #----------------------------------------------------------------------
 # 15. GPU/QUDA Options
 
-WANTQUDA    ?= #true
+WANTQUDA    ?= false
 
 ifeq ($(strip ${WANTQUDA}),true)
 
@@ -616,7 +616,6 @@ endif
 
 WANTHADRONS ?= false # true implies WANTGRID = true
 
-
 ifeq ($(strip ${WANTHADRONS}), true)
 
   HAVE_HADRONS = true
@@ -653,10 +652,20 @@ endif
 #----------------------------------------------------------------------
 # 16. Grid Options
 
-WANTGRID = #true
+WANTGRID ?= false
 
 ifeq ($(strip ${WANTHADRONS}), true)
   WANTGRID = true
+endif
+
+ifeq ($(strip ${WANTGRID}),true)
+
+  WANT_FN_CG_GPU ?= #true    // Automatic for now
+  WANT_FL_GPU ?= true       // Under development
+  WANT_FF_GPU ?= #true       // Future
+  WANT_GF_GPU ?= #true       // Future
+  WANT_EIG_GPU ?= #true     // Automatic for now
+
 endif
 
 ifeq ($(strip ${WANTGRID}), true)
