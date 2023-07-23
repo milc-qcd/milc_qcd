@@ -91,6 +91,7 @@ static int initial_set(void){
     show_su3_mat_opts();
     show_hisq_links_opts();
 #endif
+    node0_printf("NOTE, APE links KS phases are now in by default\n");
 
     status = get_prompt(stdin,  &prompt );
     
