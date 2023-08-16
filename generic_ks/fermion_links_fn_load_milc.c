@@ -3,6 +3,7 @@
 
 /* Methods for the fn_links_t structure  */
 /* Compute and load the fat and long links. */
+/* CPU version only */
 
 #include "generic_ks_includes.h"
 #define IMP_QUARK_ACTION_DEFINE_PATH_TABLES
@@ -13,13 +14,9 @@
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
 
-#ifdef QCDOC
-#define special_alloc qcdoc_alloc
-#define special_free qfree
-#else
+/* Stub in case we want special ones */
 #define special_alloc malloc
 #define special_free free
-#endif
 
 /*-------------------------------------------------------------------*/
 /* Special memory allocations for field with one su3_matrix per site */
@@ -297,23 +294,4 @@ load_fn_links_cpu(info_t *info, fn_links_t *fn, ks_action_paths *ap,
   info->final_sec = dtime;
   info->final_flop = final_flop;
 }
-
-#ifdef USE_FL_GPU
-void load_fn_links_gpu(info_t *info, fn_links_t *fn, ks_action_paths *ap,
-		       su3_matrix *links, int want_back)
-{
-  ks_component_paths *p = &ap->p;
-  double dtime = -dclock();
-
-  load_fatlonglinks_gpu(info, fn->fat, fn->lng, p, links);
-
-  if(want_back)
-    load_fn_backlinks(fn);
-  else
-    destroy_fn_backlinks(fn);
-
-  dtime += dclock();
-  info->final_sec = dtime;
-}
-#endif
 

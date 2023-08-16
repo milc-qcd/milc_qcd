@@ -71,10 +71,6 @@ typedef qop_hisq_links_t ferm_links_generic_t;
 typedef milc_hisq_links_t ferm_links_generic_t;
 #endif
 
-#elif FERM_ACTION == HYPISQ
-
-typedef milc_hypisq_links_t ferm_links_generic_t;
-
 #else 
 
 #ifdef HAVE_QOP
@@ -204,6 +200,19 @@ void show_hisq_links_opts( void );
 
 fermion_links_t *create_fermion_links_from_site(int prec, int n_naiks, double *eps_naik);
 void restore_fermion_links_from_site(fermion_links_t *fl, int prec);
+
+/* fermion_links_hisq_load_grid_P.c */
+void load_fatlinks_grid_F(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matrix *thin_links);
+void load_fatlonglinks_grid_F(info_t *info, su3_matrix *fat, su3_matrix *lng, ks_component_paths *p,
+			      su3_matrix *thin_links);
+void load_hisq_aux_links_grid_F(info_t *info, ks_action_paths_hisq *ap,
+				hisq_auxiliary_t *aux, su3_matrix *links);
+
+void load_fatlinks_grid_D(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matrix *thin_links);
+void load_fatlonglinks_grid_D(info_t *info, su3_matrix *fat, su3_matrix *lng, ks_component_paths *p,
+			      su3_matrix *thin_links);
+void load_hisq_aux_links_grid_D(info_t *info, ks_action_paths_hisq *ap,
+				hisq_auxiliary_t *aux, su3_matrix *links);
 
 /* fermion_links_milc.c routines dealing with fermion_links_t */
 

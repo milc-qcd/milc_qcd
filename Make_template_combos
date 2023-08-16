@@ -44,7 +44,7 @@ GAUGE_OBJECTS = \
   show_generic_opts.o \
   show_scidac_opts.o
 
-ifeq ($(strip ${WANTGRID}),true)
+ifeq ($(strip ${HAVE_GRID}),true)
   GAUGE_OBJECTS += gridMap.o milc_to_grid_utilities.o
 endif
 
@@ -52,15 +52,15 @@ ifeq ($(strip ${HAVEQOP}),true)
   GAUGE_OBJECTS += map_milc_to_qopqdp.o milc_to_qop_utilities.o
 endif
 
-ifeq ($(strip ${WANTQUDA}),true)
+ifeq ($(strip ${HAVE_QUDA}),true)
   GAUGE_OBJECTS += milc_to_quda_utilities.o d_plaq4_gpu.o ploop3_gpu.o
 endif
 
-ifeq ($(strip ${WANTQPHIX}),true)
+ifeq ($(strip ${HAVE_QPHIX}),true)
   GAUGE_OBJECTS += map_milc_to_qphix.o milc_to_qphix_utilities.o
 endif
 
-ifeq ($(strip ${WANTQPHIXJ}),true)
+ifeq ($(strip ${HAVE_QPHIXJ}),true)
   GAUGE_OBJECTS += qphixjClovMap.o milc_to_qphixj_utilities.o
 endif
 
@@ -109,19 +109,19 @@ KS_IO_OBJECTS =  \
   io_helpers_ks.o   \
   io_prop_ks.o
 
-# These are used to compute the spectrum
+# These are used to compute the hadron correlators
 
 ifeq ($(strip ${WANT_KS_CONT_CPU}),true)
-# use new CPU contraction code (temporary for testing)
+# use new CPU contraction code (for testing)
 KS_SPECTRUM_OBJECTS = \
   ks_baryon.o \
-  ks_meson_mom_gpu.o \
+  ks_meson_mom_quda.o \
   contraction_cpu.o
 else ifeq ($(strip ${HAVE_KS_CONT_GPU}),true)
-# use GPU contraction code
+# use QUDA GPU contraction code
 KS_SPECTRUM_OBJECTS = \
   ks_baryon.o \
-  ks_meson_mom_gpu.o
+  ks_meson_mom_quda.o
 else
 # otherwise use old CPU contraction code
 KS_SPECTRUM_OBJECTS = \
@@ -171,22 +171,33 @@ endif
 
   FLINKS_FN_MILC_CPU = fermion_links_milc.o ${FLINKS} ks_action_paths.o
 
-  FLINKS_HISQ_MILC_CPU = fermion_links_hisq_milc.o fermion_links_hisq_load_milc.o \
+  FLINKS_HISQ_MILC_CPU = fermion_links_hisq_milc.o fermion_links_hisq_load.o \
     ${FLINKS} ks_action_paths_hisq.o su3_mat_op.o stout_smear.o
 
   FLINKS_EO_MILC = fermion_links.o fermion_links_milc.o fermion_links_eo_load_milc.o \
     eo_links_milc.o ks_action_paths.o
 
-# GPU support
+# QUDA support
 
-  FLINKS_FN_MILC_GPU = fermion_links_milc.o \
-	fermion_links_fn_load_gpu.o \
+  FLINKS_FN_MILC_QUDA = fermion_links_milc.o \
+	fermion_links_fn_load_quda.o \
 	${FLINKS} ks_action_paths.o
   
-  FLINKS_HISQ_MILC_GPU = fermion_links_hisq_milc.o \
-	fermion_links_fn_load_gpu.o \
-	fermion_links_hisq_load_milc.o \
+  FLINKS_HISQ_MILC_QUDA = fermion_links_hisq_milc.o \
+	fermion_links_hisq_load_quda.o \
+	fermion_links_hisq_load.o \
 	${FLINKS} ks_action_paths_hisq.o su3_mat_op.o stout_smear.o
+
+# GRID support
+
+  FLINKS_FN_MILC_GRID = fermion_links_milc.o \
+	fermion_links_hisq_load_grid.o fermion_links_fn_load_grid_D.o fermion_links_fn_load_grid_F.o \
+	gridHISQLinks.o ${FLINKS} ks_action_paths.o
+
+  FLINKS_HISQ_MILC_GRID = fermion_links_hisq_milc.o \
+  	fermion_links_hisq_load.o \
+	fermion_links_hisq_load_grid.o fermion_links_hisq_load_grid_D.o fermion_links_hisq_load_grid_F.o \
+	gridHISQLinks.o ${FLINKS} ks_action_paths_hisq.o su3_mat_op.o stout_smear.o
 
 # Standard QOP combinations
 
@@ -204,8 +215,13 @@ endif
   FLINKS_EO_QOP = ${FLINKS_EO_MILC}
 
 ifeq ($(strip ${HAVE_FL_GPU}),true)
-  FLINKS_FN_MILC = ${FLINKS_FN_MILC_GPU}
-  FLINKS_HISQ_MILC = ${FLINKS_HISQ_MILC_GPU}
+ifeq ($(strip ${HAVE_QUDA}),true)
+  FLINKS_FN_MILC = ${FLINKS_FN_MILC_QUDA}
+  FLINKS_HISQ_MILC = ${FLINKS_HISQ_MILC_QUDA}
+else ifeq ($(strip ${HAVE_GRID}),true)
+  FLINKS_FN_MILC = ${FLINKS_FN_MILC_GRID}
+  FLINKS_HISQ_MILC = ${FLINKS_HISQ_MILC_GRID}
+endif
 else
   FLINKS_FN_MILC = ${FLINKS_FN_MILC_CPU}
   FLINKS_HISQ_MILC = ${FLINKS_HISQ_MILC_CPU}
@@ -218,7 +234,7 @@ endif
 # Standard MILC
 
 # Choices here are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
-ifeq ($(strip ${WANTQUDA}),true)
+ifeq ($(strip ${HAVE_QUDA}),true)
 # When using QUDA, the back links are not used and just add unnecessary overhead
   DSLASH_FN_MILC = dslash_fn.o
 else
@@ -254,9 +270,9 @@ endif
      d_congrad5_fn_grid_D.o d_congrad5_fn_grid_F.o d_congrad5_fn_milc.o \
      gridStaggInvert.o ${CONGRAD_FN_BASE}
 
-# GPU support
+# QUDA support
 
-  CONGRAD_FN_GPU = d_congrad5_fn_gpu.o ${CONGRAD_FN_MILC_CPU}
+  CONGRAD_FN_QUDA = d_congrad5_fn_quda.o ${CONGRAD_FN_MILC_CPU}
 
 # QPHIX support
   
@@ -270,11 +286,13 @@ endif
      d_congrad5_fn_qop_D.o d_congrad5_fn_qop_F.o ${CONGRAD_FN_BASE}
 
 ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
-  CONGRAD_FN_MILC = ${CONGRAD_FN_GPU}
-else ifeq ($(strip ${WANTGRID}),true)
+ifeq ($(strip ${HAVE_QUDA}),true)
+  CONGRAD_FN_MILC = ${CONGRAD_FN_QUDA}
+else ifeq ($(strip ${HAVE_GRID}),true)
   CONGRAD_FN_MILC = ${CONGRAD_FN_GRID}
-else ifeq ($(strip ${WANTQPHIX}),true)
+else ifeq ($(strip ${HAVE_QPHIX}),true)
   CONGRAD_FN_MILC = ${CONGRAD_FN_QPHIX}
+endif
 else
   CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
 endif
@@ -290,9 +308,9 @@ endif
 # No other choice
   MULTI_INV_EO = ks_multicg.o ks_multicg_offset.o
 
-# GPU support
+# QUDA support
 
-  MULTI_INV_FN_GPU = ks_multicg_offset_gpu.o ${MULTI_INV_FN_MILC_CPU}
+  MULTI_INV_FN_QUDA = ks_multicg_offset_quda.o ${MULTI_INV_FN_MILC_CPU}
   
 # Grid support
 
@@ -310,11 +328,13 @@ endif
     ks_multicg_offset_qop_D.o  ks_multicg_offset_qop_F.o
 
 ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
-  MULTI_INV_FN_MILC = ${MULTI_INV_FN_GPU}
-else ifeq ($(strip ${WANTGRID}),true)
+ifeq ($(strip ${HAVE_QUDA}),true)
+  MULTI_INV_FN_MILC = ${MULTI_INV_FN_QUDA}
+else ifeq ($(strip ${HAVE_GRID}),true)
   MULTI_INV_FN_MILC = ${MULTI_INV_FN_GRID}
-else ifeq ($(strip ${WANTQPHIX}),true)
+else ifeq ($(strip ${HAVE_QPHIX}),true)
   MULTI_INV_FN_MILC = ${MULTI_INV_FN_QPHIX}
+endif
 else
   MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_CPU}
 endif

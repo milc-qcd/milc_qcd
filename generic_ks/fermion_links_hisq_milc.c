@@ -259,13 +259,19 @@ create_fermion_links_hisq(int precision, int n_naiks,
 
 #ifdef FLTIME
 #ifdef USE_FL_GPU
+#if defined(HAVE_QUDA)
   if(mynode()==0)printf("FLTIME: time = %e (HISQ QUDA %s) mflops = %e\n",
+	       info.final_sec,milc_prec[MILC_PRECISION-1],
+	       info.final_flop/(1e6*info.final_sec) );
+#elif defined(HAVE_GRID)
+  if(mynode()==0)printf("FLTIME: time = %e (HISQ GRID %s) mflops = %e\n",
 	       info.final_sec,milc_prec[MILC_PRECISION-1],
 	       info.final_flop/(1e6*info.final_sec) );
 #else
   if(mynode()==0)printf("FLTIME: time = %e (HISQ MILC %s) mflops = %e\n",
 	       info.final_sec,milc_prec[MILC_PRECISION-1],
 	       info.final_flop/(1e6*info.final_sec) );
+#endif
 #endif
 #endif
   return fl;

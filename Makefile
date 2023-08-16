@@ -348,22 +348,15 @@ endif
 #----------------------------------------------------------------------
 # 12. FFTW3 Options
 
-WANTFFTW = #true    # On cori, edison loaded by default, but need "true"
+WANTFFTW = true
 
 ifeq ($(strip ${WANTFFTW}),true)
-FFTW=/usr/local/fftw
+  FFTW=${HOME}/fftw/build-gcc
 
-ifeq ($(strip ${PRECISION}),1)
-  FFTW_HEADERS = ${FFTW}/float-mvapich2/include
+  FFTW_HEADERS = ${FFTW}/include
   INCFFTW = -I${FFTW_HEADERS}
-  LIBFFTW = -L${FFTW}/float-mvapich2/lib
-  LIBFFTW += -lfftw3f
-else
-  FFTW_HEADERS = ${FFTW}/double-mvapich2/include
-  INCFFTW = -I${FFTW_HEADERS}
-  LIBFFTW = -L${FFTW}/double-mvapich2/lib
-  LIBFFTW += -lfftw3
-endif
+  LIBFFTW = -L${FFTW}/lib
+  LIBFFTW += -lfftw3 -lfftw3f
   PACKAGE_HEADERS += ${FFTW_HEADERS}
 endif
 
@@ -373,7 +366,7 @@ endif
 #LIBLAPACK = -L/opt/ibmcmp/xlf/bg/11.1/lib /soft/apps/LAPACK/liblapack_bgp.a /soft/apps/LIBGOTO/libgoto.a -lxlf90 -lxlsmp # LAPACK on BG/P
 
 # Utah physics and math Redhat-linux
-# LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran
+# LIBLAPACK = -L/usr/uumath/lib64  -llapack-3.6.0 -lblas-3.6.0 -L/usr/lib/gcc/x86_64-redhat-linux/4.8.2 -lgfortran
 
 # Utah physics and math Centos-linux.  Must link with gfortran. 
 # LIBLAPACK = -L/usr/local/lib64 -llapack -lblas
@@ -391,6 +384,10 @@ endif
 
 # NERSC Edison
 # LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/ivybridge/lib -lsci_intel
+
+# falco Centos-linux.  Must link with gfortran. 
+# LIBLAPACK = -L/usr/uumath/lib64 -llapack -lblas
+# LDLAPACK = gfortran
 
 #----------------------------------------------------------------------
 # 14. PRIMME Options (for arb_overlap and ks_eigen).  REQUIRES LAPACK AS WELL.
@@ -423,17 +420,21 @@ WANTQUDA    ?= false
 
 ifeq ($(strip ${WANTQUDA}),true)
 
-WANT_CL_BCG_GPU ?= #true
-WANT_FN_CG_GPU ?= #true
-WANT_FL_GPU ?= #true
-WANT_FF_GPU ?= #true
-WANT_GF_GPU ?= #true
-WANT_EIG_GPU ?= #true
-WANT_GSMEAR_GPU ?= #true
-WANT_KS_CONT_GPU ?= #true
-WANT_SHIFT_GPU ?= #true
-WANT_SPIN_TASTE_GPU ?= #true
-WANT_GAUGEFIX_OVR_GPU ?= #true
+  HAVE_QUDA = true
+  HAVE_GPU = true
+  CGPU += -DHAVE_QUDA
+
+  WANT_CL_BCG_GPU ?= #true
+  WANT_FN_CG_GPU ?= #true
+  WANT_FL_GPU ?= #true
+  WANT_FF_GPU ?= #true
+  WANT_GF_GPU ?= #true
+  WANT_EIG_GPU ?= #true
+  WANT_GSMEAR_GPU ?= #true
+  WANT_KS_CONT_GPU ?= #true
+  WANT_SHIFT_GPU ?= #true
+  WANT_SPIN_TASTE_GPU ?= #true
+  WANT_GAUGEFIX_OVR_GPU ?= #true
 
 endif
 
@@ -460,76 +461,6 @@ ifeq ($(strip ${WANTQUDA}),true)
     LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -ldl
   endif
 
-# Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
-
-  CGPU += -DHAVE_QUDA
-
-  ifeq ($(strip ${WANT_CL_BCG_GPU}),true)
-    HAVE_CL_GPU = true
-    CGPU += -DUSE_CL_GPU
-  endif
-
-  ifeq ($(strip ${WANT_FN_CG_GPU}),true)
-    HAVE_FN_CG_GPU = true
-    CGPU += -DUSE_CG_GPU
-  endif
-
-  ifeq ($(strip ${WANT_GA_GPU}),true)
-    HAVE_GA_GPU = true
-    CGPU += -DUSE_GA_GPU
-  endif
-
-  ifeq ($(strip ${WANT_GF_GPU}),true)
-    HAVE_GF_GPU = true
-    CGPU += -DUSE_GF_GPU
-  endif
-
-  ifeq ($(strip ${WANT_FL_GPU}),true)
-    HAVE_FL_GPU = true
-    CGPU += -DUSE_FL_GPU
-  endif
-
-  ifeq ($(strip ${WANT_FF_GPU}),true)
-    HAVE_FF_GPU = true
-    CGPU += -DUSE_FF_GPU
-  endif
-
-  ifeq ($(strip ${WANT_EIG_GPU}),true)
-    HAVE_EIG_QUDA = true
-    CGPU += -DUSE_EIG_GPU
-  endif
-
-  ifeq ($(strip ${WANT_GSMEAR_GPU}),true)
-    HAVE_GSMEAR_QUDA = true
-    CGPU += -DUSE_GSMEAR_QUDA
-  endif
-
-  ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
-    HAVE_KS_CONT_GPU = true
-    CGPU += -DUSE_KS_CONT_GPU
-  endif
-
-  ifeq ($(strip ${WANT_SHIFT_GPU}),true)
-    HAVE_SHIFT_GPU = true
-    CGPU += -DUSE_SHIFT_GPU
-  endif
-
-  ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
-    HAVE_SPIN_TASTE_GPU = true
-    CGPU += -DUSE_SPIN_TASTE_GPU
-  endif
-
-  ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
-    HAVE_GAUGEFIX_OVR_QUDA = true
-    CGPU += -DUSE_GAUGEFIX_OVR_GPU
-  endif
-
-  ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
-    CGPU += -DHALF_MIXED # use single precision where appropriate
-  else ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),2)
-    CGPU += -DMAX_MIXED # use half precision where appropriate
-  endif
-
 # Verbosity choices:
 # SET_QUDA_SILENT, SET_QUDA_SUMMARIZE, SET_QUDA_VERBOSE, SET_QUDA_DEBUG_VERBOSE
 
@@ -545,8 +476,6 @@ ifeq ($(strip ${WANTQUDA}),true)
   endif
 
 endif
-
-
 
 #----------------------------------------------------------------------
 # 16. QPhiX Options
@@ -619,7 +548,7 @@ WANTHADRONS ?= false # true implies WANTGRID = true
 ifeq ($(strip ${WANTHADRONS}), true)
 
   HAVE_HADRONS = true
-  CPHI += -DHAVE_HADRONS
+  CGPU += -DHAVE_HADRONS
 
   ifeq ($(strip ${MPP}),true)
     ifeq ($(strip ${ARCH}),knl)
@@ -658,24 +587,25 @@ ifeq ($(strip ${WANTHADRONS}), true)
   WANTGRID = true
 endif
 
-ifeq ($(strip ${WANTGRID}),true)
+ifeq ($(strip ${WANTGRID}), true)
 
-  WANT_FN_CG_GPU ?= #true    // Automatic for now
-  WANT_FL_GPU ?= true       // Under development
-  WANT_FF_GPU ?= #true       // Future
-  WANT_GF_GPU ?= #true       // Future
-  WANT_EIG_GPU ?= #true     // Automatic for now
+  HAVE_GRID = true
+  HAVE_GPU = true
+  CGPU += -DHAVE_GRID
+
+  WANT_FN_CG_GPU ?= false   
+  WANT_FL_GPU ?= false       # Under development
+  WANT_FF_GPU ?= false       # Future
+  WANT_GF_GPU ?= false       # Future
+  WANT_EIG_GPU ?= false      # Automatic for now
+
+  CGPU += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
+  CGPU += -DGRID_SHMEM_MAX=2048
+  CGPU += -DGRID_ACCELERATOR_THREADS=8
 
 endif
 
 ifeq ($(strip ${WANTGRID}), true)
-
-  HAVE_GRID = true
-  CPHI += -DHAVE_GRID
-
-  CPHI += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
-  CPHI += -DGRID_SHMEM_MAX=2048
-  CPHI += -DGRID_ACCELERATOR_THREADS=8
 
   ifeq ($(strip ${MPP}),true)
     ifeq ($(strip ${ARCH}),knl)
@@ -686,8 +616,8 @@ ifeq ($(strip ${WANTGRID}), true)
       GRID_ARCH = avx2
     endif
   else
-    # Scalar version                                                                
 
+    # Scalar version                                                                
     GRID_ARCH = scalar
 
   endif
@@ -701,6 +631,72 @@ ifeq ($(strip ${WANTGRID}), true)
   PACKAGE_HEADERS += ${GRID_HEADERS}/Grid
   PACKAGE_DEPS += Grid
 
+endif
+
+#----------------------------------------------------------------------
+# Definitions of compiler macros -- don't change.  Could go into a Make_template_GPU
+ifeq ($(strip ${HAVE_GPU}),true)
+
+  ifeq ($(strip ${WANT_CL_BCG_GPU}),true)
+      HAVE_CL_GPU = true
+      CGPU += -DUSE_CL_GPU
+  endif
+
+  ifeq ($(strip ${WANT_FN_CG_GPU}),true)
+    HAVE_FN_CG_GPU = true
+    CGPU += -DUSE_CG_GPU
+  endif
+
+  ifeq ($(strip ${WANT_GF_GPU}),true)
+    HAVE_GF_GPU = true
+    CGPU += -DUSE_GF_GPU
+  endif
+
+  ifeq ($(strip ${WANT_FL_GPU}),true)
+    HAVE_FL_GPU = true
+    CGPU += -DUSE_FL_GPU
+  endif
+
+  ifeq ($(strip ${WANT_FF_GPU}),true)
+    HAVE_FF_GPU = true
+    CGPU += -DUSE_FF_GPU
+  endif
+
+  ifeq ($(strip ${WANT_EIG_GPU}),true)
+    HAVE_EIG_GPU = true
+    CGPU += -DUSE_EIG_GPU
+  endif
+
+  ifeq ($(strip ${WANT_GSMEAR_GPU}),true)
+    HAVE_GSMEAR_GPU = true
+    CGPU += -DUSE_GSMEAR_QUDA
+  endif
+
+  ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
+    HAVE_KS_CONT_GPU = true
+    CGPU += -DUSE_KS_CONT_GPU
+  endif
+
+  ifeq ($(strip ${WANT_SHIFT_GPU}),true)
+    HAVE_SHIFT_GPU = true
+    CGPU += -DUSE_SHIFT_GPU
+  endif
+
+  ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
+    HAVE_SPIN_TASTE_GPU = true
+    CGPU += -DUSE_SPIN_TASTE_GPU
+  endif
+
+ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
+    HAVE_GAUGEFIX_OVR_GPU = true
+    CGPU += -DUSE_GAUGEFIX_OVR_GPU
+  endif
+
+  ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
+    CGPU += -DHALF_MIXED # use single precision where appropriate
+  else ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),2)
+    CGPU += -DMAX_MIXED # use half precision where appropriate
+  endif
 endif
 
 #----------------------------------------------------------------------
@@ -993,7 +989,7 @@ CPREFETCH = #
 # MULTISOURCE
 # MULTIGRID
 
-KSCGMULTI ?= -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
+KSCGMULTI ?= -DKS_MULTICG=HYBRID -DMULTISOURCE # -DMULTIGRID # -DNO_REFINE # -DHALF_MIXED
 
 #------------------------------
 # Multifermion force routines

@@ -13,6 +13,9 @@
 #endif
 #include "lattice_qdp.h"
 #include "params.h"
+#ifdef HAVE_GRID
+#include "../include/generic_grid.h"
+#endif
 
 EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
 
@@ -56,20 +59,15 @@ int main( int argc, char **argv ){
     set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
     boundary_twist_fn(fn, ON);
 
-#ifdef CHECK_INVERT
+#if defined(CHECK_INVERT)
     check_ks_invert( param.srcfile[0], srcflag, param.ansfile,
 		     param.ansflag, param.nmass, param.ksp,
 		     param.qic);
-#else
-#ifdef FERMION_FORCE
-#ifndef HAVE_QIO
-#error Checking the fermion force requires QIO compilation
-#endif
-    
+#elif defined(FERMION_FORCE)
     check_fermion_force( param.srcfile, srcflag, param.ansfile[0], 
 			 param.ansflag[0], param.nmass, param.ksp);
-    node0_printf("Done checking fermion force\n");
-#endif
+#elif defined(LINK_FATTENING)
+    check_link_fattening( param.ansfile[0], param.ansflag[0], param.ansfile[1], param.ansflag[1] );
 #endif
     
     /* save lattice if requested */
@@ -106,7 +104,7 @@ int main( int argc, char **argv ){
 #endif
     }
     
-    /* save fatlinks if requested */
+    /* save fat links if requested */
     if (savefatflag != FORGET ){
 #ifdef HAVE_QIO
       filexml = create_QCDML();
@@ -137,7 +135,7 @@ int main( int argc, char **argv ){
     node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
     starttime = endtime; /* In case we continue looping over readin */
   
-#ifndef CHECK_INVERT
+#ifdef FERMION_FORCE
 
 #ifdef HISQ_SVD_COUNTER
     printf("hisq_svd_counter = %d\n", hisq_svd_counter);

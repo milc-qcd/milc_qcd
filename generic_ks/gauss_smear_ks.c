@@ -314,7 +314,7 @@ gauss_smear_v_field_cpu(su3_vector *src, su3_matrix *t_links,
 }
 
 /*------------------------------------------------------------*/
-#if defined(HAVE_QUDA) && defined(USE_GSMEAR_QUDA)
+#if defined(HAVE_QUDA) && defined(USE_GSMEAR_GPU)
 void 
 gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
 		    Real width, int iters, int t0)

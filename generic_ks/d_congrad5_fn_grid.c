@@ -2,6 +2,8 @@
 /* For the Grid interface */
 /* MIMD version 7 */
 
+/* TODO: standardize API with at least d_congrad5_fn_quda.c and possibly d_congrad5_fn_milc.c */
+
 #include "../include/generic_grid.h"
 #include "../include/generic_ks_grid.h"
 #include "../include/generic.h"
@@ -15,7 +17,7 @@
  * Choose the inversion precision
  */
 int
-ks_congrad_parity_grid ( su3_vector *src
+ks_congrad_parity_gpu ( su3_vector *src
 			, su3_vector *sol
 			, quark_invert_control *qic
 			, Real mass
@@ -38,12 +40,12 @@ ks_congrad_parity_grid ( su3_vector *src
  * Choose the inversion precision
  */
 int
-ks_congrad_block_parity_grid ( int nrhs
-			       , su3_vector *src[]
-			       , su3_vector *sol[]
-			       , quark_invert_control *qic
-			       , Real mass
-			       , fn_links_t *fn)			 
+ks_congrad_block_parity_gpu ( int nrhs
+			      , su3_vector *src[]
+			      , su3_vector *sol[]
+			      , quark_invert_control *qic
+			      , Real mass
+			      , fn_links_t *fn)			 
 {
   int iterations_used;
   

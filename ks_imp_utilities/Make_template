@@ -109,7 +109,6 @@ ${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
 fermion_links_fn.o: quark_action.h
 gauge_stuff.o: gauge_action.h 
 gauge_info.o:  quark_action.h
-quark_stuff.o: quark_action.h 
 
 # Directories where we store the improved action headers
 QUARKIMP = ../generic_ks/imp_actions
@@ -150,6 +149,16 @@ make_links_hisq::
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE}"
+
+check_link_fattening::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DHAVE_KS -DLINK_FATTENING \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-9 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-9" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = hisq/hisq_u3_test_action.h" \
+	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} check_link_fattening.o"
 
 check_fermion_force::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \

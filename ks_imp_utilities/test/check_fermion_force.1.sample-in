@@ -8,8 +8,11 @@ iseed 6823045
 reload_serial ../../binary_samples/lat.sample.l8
 u0   0.502
 forget
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
 forget
 forget
+number_of_masses 1
 max_cg_iterations 300
 max_cg_restarts 5
 reload_serial_ks_vector ../../binary_samples/ksvector.src.sample.l8

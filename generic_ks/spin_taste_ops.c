@@ -1358,9 +1358,13 @@ mult_rhois_ape_field( int fdir, enum shift_dir fb, int r0[],
   register site *s;  
   
   /* apply the symmetric shift FN operator (uses APE links) */
-  rephase_field_offset( ape_links, ON, NULL, r0 );
+  /* Use APE links for shifts with phases in and leave them in */
+  if(ape_links_status != ON){
+      rephase_field_offset( ape_links, ON, &ape_links_status, r0 );
+      refresh_ape_links = 1;
+    }
   shift_field( fdir, fb, dest, src, ape_links, &refresh_ape_links);
-  rephase_field_offset( ape_links, OFF, NULL, r0 );
+
   /* Apply an antiquark gamma_5 x gamma_5 */
   FORALLSITES_OMP(i,s,){
     if(s->parity==ODD)
@@ -1382,11 +1386,13 @@ gamma_gamma_spin_taste_op(int index, int r0[],
 #ifdef NO_GAUGE_FIELD
   general_spin_taste_op(spin_index, taste_index, r0, dest, src, NULL);
 #else
-  /* Use APE links for shifts */
-  rephase_field_offset( ape_links, ON, NULL, r0 );
+  /* Use APE links for shifts with phases in and leave them in */
+  if(ape_links_status != ON){
+    rephase_field_offset( ape_links, ON, &ape_links_status, r0 );
+    refresh_ape_links = 1;
+  }
   general_spin_taste_op(spin_index, taste_index, r0, dest, src,
 			ape_links, &refresh_ape_links);
-  rephase_field_offset( ape_links, OFF, NULL, r0 );
 #endif
 }
 
@@ -1404,11 +1410,13 @@ spin_taste_op(int index, int r0[], su3_vector *dest, const su3_vector *const src
 #ifdef NO_GAUGE_FIELD
     spin_taste_op_links(index, r0, dest, src, NULL);
 #else
-    /* Use APE links for shifts */
-    
-    rephase_field_offset( ape_links, ON, NULL, r0 );
+    /* Use APE links for shifts with phases in and leave them in */
+
+    if(ape_links_status != ON){
+      rephase_field_offset( ape_links, ON, &ape_links_status, r0 );
+      refresh_ape_links = 1;
+    }
     spin_taste_op_links(index, r0, dest, src, ape_links, &refresh_ape_links);
-    rephase_field_offset( ape_links, OFF, NULL, r0 );
 #endif
   }
 }

@@ -106,8 +106,11 @@ initial_set()
 			   param.ionode_geometry, 4);
 #endif
 #endif
-    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
-
+    IF_OK {
+      int iseed_in;
+      status += get_i(stdin, prompt,"iseed", &iseed_in);
+      param.iseed = iseed_in;
+    }
     if(status>0) param.stopflag=1; else param.stopflag=0;
   } /* end if(mynode()==0) */
 
@@ -276,11 +279,16 @@ readin(int prompt)
       }
 #endif
     }
-#endif
-#ifdef FERMION_FORCE
-    /* find out what kind of color matrix momentum to use */
+#endif // CHECK_INVERT or FERMION_FORCE
+#if defined(FERMION_FORCE) || defined(LINK_FATTENING)
+    /* Optional answer for fat links or fermion force */
     IF_OK status += ask_color_matrix( prompt, &(param.ansflag[0]),
 				      param.ansfile[0] );
+#ifdef LINK_FATTENING
+    /* Optional answer for fat links or long links */
+    IF_OK status += ask_color_matrix( prompt, &(param.ansflag[1]),
+				      param.ansfile[1] );
+#endif
 #endif
 
 

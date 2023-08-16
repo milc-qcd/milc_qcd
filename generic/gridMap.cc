@@ -1,47 +1,14 @@
 // Mapping between MILC and Grid types
 
-//#if defined(_OPENMP) || defined(OMP)
 #include "../include/openmp_defs.h"
-//#endif
-
 #include <Grid/Grid.h>
-
 #include "../include/mGrid/mGrid_internal.h"
 #include "../include/mGrid/mGrid.h"
 #include "../include/mGrid/mGrid_assert.h"
-
-extern "C" {
-  void get_coords(int coords[], int node, size_t index);
-}
-
-#include "../include/milc_datatypes.h"
-#include "../include/macros.h"
-
-extern	int sites_on_node;		/* number of sites on this node */
-extern	int even_sites_on_node;	/* number of even sites on this node */
-extern  int this_node;
+#include "gridMap.h"
 
 using namespace Grid;
-//using namespace Grid::QCD;
 using namespace std;
-
-extern Coordinate squaresize;
-
-static void
-indexToCoords(uint64_t idx, Coordinate &x){
-
-  int r[4];
-
-  // Gets the lattice coordinates from the MILC index
-  get_coords(r, this_node, idx);
-  // For Grid, we need the coordinates within the sublattice hypercube for the current MPI rank
-  // NOTE: Would be better to provide a get_subl_coords() in MILC layout_*.c
-  for(int i = 0; i < 4; i++)
-    x[i] = r[i] % squaresize[i];
-
-  //printf("Converted %d to %d %d %d %d\n", idx, x[0], x[1], x[2], x[3]); fflush(stdout);
-}
-
 
 // Create the color vector interface object
 
@@ -288,43 +255,6 @@ static void extract_nV_to_vecs( su3_vector *dest[], int n,
   return;
 }
 
-// Copy MILC su3_matrix to Grid vLorentzColourMatrix
-// Precision conversion can happen here
-
-template<typename sobj, typename Complex>
-static void milcSU3MatrixToGrid(su3_matrix *in, sobj &out){
-
-  for (int mu=0; mu<4; mu++)
-    for (int i=0; i<Nc; i++)
-      for (int j=0; j<Nc; j++)
-	out._internal[mu]._internal._internal[i][j] = Complex(in[mu].e[i][j].real, in[mu].e[i][j].imag);
-}
-
-// Map a flattened MILC gauge field (4 matrices per site) to a Grid LatticeGaugeField
-template<typename LatticeGaugeField, typename Complex>
-static void milcGaugeFieldToGrid(su3_matrix *in, LatticeGaugeField &out){
-
-  typedef typename LatticeGaugeField::vector_object vobj;
-  typedef typename vobj::scalar_object sobj;
-
-  GridBase *grid = out.Grid();
-  int lsites = grid->lSites();
-  std::vector<sobj> scalardata(lsites);
-
-  #pragma omp parallel for
-    for (size_t milc_idx = 0; milc_idx < sites_on_node; milc_idx++){
-      Coordinate x(4);
-      indexToCoords(milc_idx, x);
-      int grid_idx;
-      Coordinate lx(4);
-      for (int i = 0; i < 4; i++)lx[i] = x[i];
-      Lexicographic::IndexFromCoor(lx, grid_idx, grid->_ldimensions);
-      milcSU3MatrixToGrid<sobj, Complex>(in + 4*milc_idx, scalardata[grid_idx]);
-    }
-  
-  vectorizeFromLexOrdArray(scalardata, out);
-}
-
 template<typename ColourMatrix>
 static void dumpGrid(ColourMatrix out){
 
@@ -337,13 +267,38 @@ static void dumpGrid(ColourMatrix out){
   std::cout << "\n";
 }
 
-// Create asqtad fermion links object from MILC fields
-// Precision conversion takes place in the copies if need be
+// Create and allocate color matrix structure
+template<typename LatticeGaugeField>
+struct GRID_ColorMatrix_struct<LatticeGaugeField> *
+create_M( GridCartesian *CGrid ){
+  struct GRID_ColorMatrix_struct<LatticeGaugeField> *out;
 
-template<typename LatticeGaugeField, typename LatticeColourMatrix, typename Complex>
-static struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField>  *
-asqtad_create_L_from_MILC( su3_matrix *thn, su3_matrix *fat, 
-			   su3_matrix *lng, GridCartesian *CGrid ){
+  out = ( struct GRID_ColorMatrix_struct<LatticeGaugeField> * )
+    malloc(sizeof(struct GRID_ColorMatrix_struct<LatticeGaugeField>));
+  GRID_ASSERT(out != NULL, GRID_MEM_ERROR);
+
+  out->links = new LatticeGaugeField(CGrid);
+  GRID_ASSERT(out->links != NULL, GRID_MEM_ERROR);
+
+  return out;
+}
+
+// delete color matrix structure
+template<typename LatticeGaugeField>
+static void  
+destroy_M( struct GRID_ColorMatrix_struct<LatticeGaugeField> *mat ){
+
+  if (mat == NULL) return;
+  
+  if (mat->links != NULL) delete mat->links;
+
+  free(mat);
+}
+
+// Create and allocate asqtad fermion links structure
+template<typename LatticeGaugeField>
+struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField>  *
+asqtad_create_L( GridCartesian *CGrid ){
 
   struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *out;
 
@@ -351,17 +306,31 @@ asqtad_create_L_from_MILC( su3_matrix *thn, su3_matrix *fat,
     malloc(sizeof(struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField>));
   GRID_ASSERT(out != NULL, GRID_MEM_ERROR);
 
-
   out->thnlinks = NULL;  // We don't need this one
   out->fatlinks = new LatticeGaugeField(CGrid);
   out->lnglinks = new LatticeGaugeField(CGrid);
   GRID_ASSERT(out->fatlinks != NULL, GRID_MEM_ERROR);
   GRID_ASSERT(out->lnglinks != NULL, GRID_MEM_ERROR);
+
+  return out;
+}  
+
+
+// Create asqtad fermion links object from MILC fields
+// Precision conversion takes place in the copies if need be
+
+template<typename LatticeGaugeField, typename Complex>
+static struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField>  *
+asqtad_create_L_from_MILC( su3_matrix *thn, su3_matrix *fat, 
+			   su3_matrix *lng, GridCartesian *CGrid ){
+
+  struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *out =
+    asqtad_create_L<LatticeGaugeField>(CGrid);
   
   auto start = std::chrono::system_clock::now();
 
-  milcGaugeFieldToGrid<LatticeGaugeField, Complex>(fat, *out->fatlinks);
-  milcGaugeFieldToGrid<LatticeGaugeField, Complex>(lng, *out->lnglinks);
+  milcGaugeFieldToGrid<LatticeGaugeField, Complex>(fat, out->fatlinks);
+  milcGaugeFieldToGrid<LatticeGaugeField, Complex>(lng, out->lnglinks);
 
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
@@ -370,7 +339,27 @@ asqtad_create_L_from_MILC( su3_matrix *thn, su3_matrix *fat,
   return out;
 }
 
-  // free aasqtad fermion links
+// Extract MILC asqtad fermion links from Grid object
+// Precision conversion takes place in the copies if need be
+
+template<typename LatticeGaugeField, typename Complex>
+static void
+asqtad_extract_MILC_from_L( su3_matrix *fat, su3_matrix *lng,
+			    struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *fn,
+			    GridCartesian *CGrid ){
+
+  auto start = std::chrono::system_clock::now();
+
+  gridToMilcGaugeField<LatticeGaugeField, Complex>(fat, fn->fatlinks);
+  gridToMilcGaugeField<LatticeGaugeField, Complex>(lng, fn->lnglinks);
+
+  auto end = std::chrono::system_clock::now();
+  auto elapsed = end - start;
+  std::cout << "Extracted gauge fields in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+	    << "\n" << std::flush;
+}
+
+// free asqtad fermion links
 template<typename LatticeGaugeField>
 static void  
 asqtad_destroy_L( struct GRID_FermionLinksAsqtad_struct<LatticeGaugeField> *Link ){
@@ -617,7 +606,7 @@ GRID_D3_extract_nV_to_vecs( su3_vector *dest[], int n, GRID_D3_ColorVectorBlock 
 GRID_F3_FermionLinksAsqtad  *
 GRID_F3_asqtad_create_L_from_MILC( su3_matrix *thnlinks, su3_matrix *fatlinks, su3_matrix *lnglinks, 
 				   GRID_4Dgrid *grid_full ){
-  return asqtad_create_L_from_MILC<LatticeGaugeFieldF, LatticeColourMatrixF, ComplexF>( thnlinks, 
+  return asqtad_create_L_from_MILC<LatticeGaugeFieldF, ComplexF>( thnlinks, 
                   fatlinks, lnglinks, grid_full->gridF );
 }
 
@@ -625,8 +614,24 @@ GRID_F3_asqtad_create_L_from_MILC( su3_matrix *thnlinks, su3_matrix *fatlinks, s
 GRID_D3_FermionLinksAsqtad  *
 GRID_D3_asqtad_create_L_from_MILC( su3_matrix *thnlinks, su3_matrix *fatlinks, su3_matrix *lnglinks, 
 				   GRID_4Dgrid *grid_full ){
-  return asqtad_create_L_from_MILC<LatticeGaugeFieldD, LatticeColourMatrixD, ComplexD>( thnlinks, 
+  return asqtad_create_L_from_MILC<LatticeGaugeFieldD, ComplexD>( thnlinks, 
 		   fatlinks, lnglinks, grid_full->gridD );
+}
+
+// extract MILC links from fermion link structure
+void
+GRID_F3_extract_MILC_from_L( su3_matrix *fatlinks, su3_matrix *lnglinks, GRID_F3_FermionLinksAsqtad  *fn,
+			     GRID_4Dgrid *grid_full ){
+  asqtad_extract_MILC_from_L<LatticeGaugeFieldF, ComplexF>( fatlinks,
+		   lnglinks, fn, grid_full->gridF );
+}
+
+// extract MILC links from the asqtad link structure
+void
+GRID_D3_extract_MILC_from_L( su3_matrix *fatlinks, su3_matrix *lnglinks, GRID_D3_FermionLinksAsqtad  *fn,
+			     GRID_4Dgrid *grid_full ){
+  asqtad_extract_MILC_from_L<LatticeGaugeFieldD, ComplexD>( fatlinks,
+		    lnglinks, fn, grid_full->gridD );
 }
 
 // free asqtad fermion links
@@ -641,6 +646,19 @@ GRID_D3_asqtad_destroy_L( GRID_D3_FermionLinksAsqtad *gl ){
   asqtad_destroy_L<LatticeGaugeFieldD>( gl );
 }
 
+// load lattice gauge field from MILC
+void
+GRID_F3_load_M_from_mat4( su3_matrix *mat4, GRID_F3_ColorMatrix *out )
+{
+  milcGaugeFieldToGrid<LatticeGaugeFieldF,ComplexF>( mat4, out->links );
+}
+
+// load lattice gauge field from MILC
+void
+GRID_D3_load_M_from_mat4( su3_matrix *mat4, GRID_D3_ColorMatrix *out )
+{
+  milcGaugeFieldToGrid<LatticeGaugeFieldD,ComplexD>( mat4, out->links );
+}
 
 // Create the color vector array interface object
 template< typename ImprovedStaggeredFermion >

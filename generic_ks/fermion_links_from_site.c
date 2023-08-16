@@ -7,14 +7,14 @@
 #include "generic_ks_includes.h"
 #include "../include/fermion_links.h"
 
-#ifdef USE_FL_GPU
+#if defined(USE_FL_GPU) && defined(HAVE_QUDA)
 #include "../include/generic_quda.h"
 #endif
 
 fermion_links_t *create_fermion_links_from_site(int prec, int n_naiks, double *eps_naik){
   fermion_links_t *fl;
 
-#ifdef USE_FL_GPU
+#if defined(USE_FL_GPU) && defined(HAVE_QUDA)
   su3_matrix *links = create_G_from_site_quda();
 #else
   su3_matrix *links = create_G_from_site();
@@ -26,7 +26,7 @@ fermion_links_t *create_fermion_links_from_site(int prec, int n_naiks, double *e
   fl = create_fermion_links(prec, phases_in, links);
 #endif
 
-#ifdef USE_FL_GPU
+#if defined(USE_FL_GPU) && defined(HAVE_QUDA)
   destroy_G_quda(links);
 #else
   free(links);
@@ -38,7 +38,7 @@ void restore_fermion_links_from_site(fermion_links_t *fl, int prec){
 
   if(valid_fermion_links(fl, prec))return;
 
-#ifdef USE_FL_GPU
+#if defined(USE_FL_GPU) && defined(HAVE_QUDA)
   su3_matrix *links = create_G_from_site_quda();
 #else
   su3_matrix *links = create_G_from_site();
@@ -50,7 +50,7 @@ void restore_fermion_links_from_site(fermion_links_t *fl, int prec){
   restore_fermion_links(fl, prec, phases_in, links);
 #endif
 
-#ifdef USE_FL_GPU
+#if defined(USE_FL_GPU) && defined(HAVE_QUDA)
   destroy_G_quda(links);
 #else
   free(links);

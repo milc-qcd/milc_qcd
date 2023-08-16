@@ -172,6 +172,7 @@ ks_spectrum_asqtad::
 	"EXTRA_OBJECTS += ${FN_OBJECTS}"
 
 ks_spectrum_eigcg_asqtad::
+	@echo "Builds without OMP and Grid"
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
 	"DEFINES= -DFN -DHAVE_KS" \

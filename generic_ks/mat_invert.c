@@ -857,7 +857,7 @@ int mat_invert_field(su3_vector *src, su3_vector *dst,
 #endif
     } else {
       /* inv_type == MGTYPE */
-#ifdef USE_CG_GPU
+#if defined(USE_CG_GPU) && defined(HAVE_QUDA)
       /* Currently only available through QUDA on GPUs */
       cgn = mat_invert_mg_field_gpu(src, dst, qic, mass, fn );
 #else
@@ -883,25 +883,29 @@ int mat_invert_block(su3_vector **src, su3_vector **dst,
 		     Real mass, int nsrc, quark_invert_control *qic,
 		     imp_ferm_links_t *fn){
   int cgn = 0;
-  if(qic->inv_type == CGTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD)){
+  if(qic->inv_type == CGTYPE || qic->inv_type == CGZTYPE){
+    node0_printf("Multirhs inversions are available only for the UML and MG types. Consider set_type single'\n");
+    terminate(1);
+  }
+  if(qic->inv_type == UMLTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD))
     cgn = mat_invert_block_uml(src, dst, mass, nsrc, qic, fn);
-
+  else{
+    /* inv_type == MGTYPE */
     if (qic->inv_type == MGTYPE) {
       node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
-#ifdef HAVE_QUDA
+#if defined(USE_CG_GPU) && defined(HAVE_QUDA)
       /* Force a reload b/c of sloppy link precision changes */
       refresh_fn_links(fn);
-#endif
-    }
-  } else {
-    /* inv_type == MGTYPE */
-#ifdef USE_CG_GPU
-    /* Currently only available through QUDA on GPUs */
-    cgn = mat_invert_block_mg(src, dst, mass, nsrc, qic, fn);
+      /* Currently only available through QUDA on GPUs */
+      cgn = mat_invert_block_mg(src, dst, mass, nsrc, qic, fn);
 #else
-    node0_printf("mat_invert_block: ERROR. Multigrid is available only with GPU compilation\n");
-    terminate(1);
+      node0_printf("mat_invert_block: ERROR. Multigrid is available only with QUDA compilation with USE_CG_GPU\n");
+      terminate(1);
 #endif
+    } else {
+      node0_printf("ERROR: Unknown invert type\n");
+      terminate(1);
+    }
   }
   return cgn;
 }

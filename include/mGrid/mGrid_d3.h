@@ -24,6 +24,7 @@ extern "C" {
 
 typedef STRUCT GRID_D3_ColorVector_struct		GRID_D3_ColorVector;
 typedef STRUCT GRID_D3_ColorVectorBlock_struct		GRID_D3_ColorVectorBlock;
+typedef STRUCT GRID_D3_ColorMatrix_struct	        GRID_D3_ColorMatrix;
 typedef STRUCT GRID_D3_FermionLinksAsqtad_struct	GRID_D3_FermionLinksAsqtad;
 
 // create color vectors
@@ -51,14 +52,24 @@ void GRID_D3_extract_V_to_vec( su3_vector *dest, GRID_D3_ColorVector *src, int m
 void GRID_D3_extract_nV_to_vecs( su3_vector *dest[], int n, GRID_D3_ColorVectorBlock *src, int milc_parity);
 
   /*********************/
-  /*  Asqtad routines  */
+  /*  FN routines  */
   /*********************/
 
   /* fermion matrix link routines */
 
+// link fattening
+void GRID_D3_fn_links(GRID_info_t *info,
+		      GRID_D3_FermionLinksAsqtad *out,
+		      su3_matrix *in,
+		      GRID_4Dgrid *grid_full);
+  
 // create asqtad fermion links from MILC
 GRID_D3_FermionLinksAsqtad  *GRID_D3_asqtad_create_L_from_MILC( su3_matrix *thn, su3_matrix *fat, 
 								su3_matrix *lng, GRID_4Dgrid *grid_full);
+
+// extract MILC links from the asqtad link structure
+void GRID_D3_extract_MILC_from_L( su3_matrix *fat, su3_matrix *lng, GRID_D3_FermionLinksAsqtad  *fn,
+				  GRID_4Dgrid *grid_full );
 
 // free asqtad fermion links
 void GRID_D3_asqtad_destroy_L(GRID_D3_FermionLinksAsqtad *L);
@@ -102,9 +113,25 @@ void GRID_D3_asqtad_invert_block (GRID_info_t *info,
 				  GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
 
 
-typedef STRUCT GRID_D3_ColorVectorArray_struct GRID_D3_ColorVectorArray;
+  /*********************/
+  /*  HISQ routines  */
+  /*********************/
+void GRID_D3_hisq_links(GRID_info_t *info,
+			double path_coeff[],
+			su3_matrix *fat,
+			su3_matrix *lng,
+			su3_matrix *in,
+			GRID_4Dgrid *grid_full);
+
+void GRID_D3_hisq_aux_links(GRID_info_t *info,
+			    double path_coeff[],
+			    su3_matrix *U, su3_matrix *V, su3_matrix *W,
+			    GRID_4Dgrid *grid_full);
 
 /* implicitly restarted Lanczos */
+
+typedef STRUCT GRID_D3_ColorVectorArray_struct GRID_D3_ColorVectorArray;
+
 void GRID_D3_implicitly_restarted_lanczos(
   GRID_D3_ColorVectorArray * eigVecs,
   double * eigVals,
