@@ -54,7 +54,10 @@ then
             --prefix=${INSTALLDIR} \
             --enable-simd=GEN \
             --enable-comms=none \
-	    --with-lime=${HOME}/crusher/quda/install/qio \
+	    --disable-fermion-reps       \
+	    --disable-gparity            \
+	    --disable-zmobius \
+	    --with-lime=${HOME}/scidac/install/qio-single \
 	    --with-fftw=${HOME}/fftw/build-gcc \
             --with-mpfr=${HOME}/mpfr \
             CXX="${PK_CXX}" \
@@ -62,9 +65,6 @@ then
 
 #            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
 # 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
-#            --disable-gparity \
-#	    --disable-zmobius \
-#	    --disable-fermion-reps \
 
        status=$?
              ;;
