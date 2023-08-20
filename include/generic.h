@@ -127,6 +127,7 @@ void d_linktrsum(double_complex *linktrsum);
 
 /* d_plaq?.c */
 void d_plaquette(double *ss_plaq,double *st_plaq);
+void d_plaquette_gpu(double *ss_plaq, double *st_plaq);
 
 /* discretize_wf.c */
 void fnal_wavefunction(complex *wf, int stride,
@@ -298,12 +299,17 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off );
 void imp_gauge_force_gpu( Real eps, field_offset mom_off );
 void imp_gauge_force( Real eps, field_offset mom_off );
 
+/* imp_gauge_action_*.c */
+double imp_gauge_action_gpu(void);
+double imp_gauge_action_cpu(void);
+double imp_gauge_action(void);
+
 /* gauge_force_symzk1_qphix.c */
 
 void imp_gauge_force_qphix( Real eps, field_offset mom_off );
 
 /* gauge_stuff.c */
-double imp_gauge_action(void);
+void g_measure_gpu(void);
 void g_measure(void);
 void make_loop_table(void);
 #ifdef ANISOTROPY
@@ -424,6 +430,8 @@ void plaquette(Real *ss_plaq,Real *st_plaq);
 
 /* ploop?.c */
 complex ploop( void );
+complex ploop_cpu( void );
+complex ploop_gpu( void );
 
 /* ploop_staple.c */
 complex ploop_staple(Real alpha_fuzz);

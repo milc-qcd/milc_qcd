@@ -4,6 +4,7 @@
 
 #include "../include/macros.h"
 #include "../include/su3.h"
+#include <stdint.h>
 
 #ifdef CONTROL
 #define EXTERN 
@@ -52,5 +53,6 @@ EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;
+EXTERN int refresh_ape_links;
 
 #endif /* _LATTICE_H */

@@ -4,7 +4,7 @@ ARCH=$1
 PK_CC=$2
 PK_CXX=$3
 GIT_REPO=https://github.com/milc-qcd/Grid
-GIT_BRANCH=develop
+GIT_BRANCH=feature/staggered-a2a-ml
 
 if [ -z ${PK_CXX} ]
 then
@@ -54,7 +54,7 @@ then
             --prefix=${INSTALLDIR} \
             --enable-simd=GEN \
             --enable-comms=none \
-	    --with-lime=${HOME}/scidac/install/qio-single \
+	    --with-lime=${HOME}/crusher/quda/install/qio \
 	    --with-fftw=${HOME}/fftw/build-gcc \
             --with-mpfr=${HOME}/mpfr \
             CXX="${PK_CXX}" \
@@ -127,41 +127,63 @@ then
     gpu-cuda)
 	# Cori: salloc -C gpu -t 60 -N 1 -c 10 --gres=gpu:1 -A m1759
 	# Summit: ./build-Grid.sh gpu-cuda mpicc mpiCC
+	# Perlmutter ./build-Grid.sh gpu-cuda cc CC
 	${SRCDIR}/configure \
-             --prefix ${INSTALLDIR}      \
-	     --enable-comms=mpi          \
+             --prefix ${INSTALLDIR}       \
+	     --enable-comms=mpi           \
+	     --enable-comms-threads       \
 	     --enable-simd=GPU            \
-	     --enable-shm=no              \
-	     --enable-accelerator=cuda    \
-	     --enable-unfied=no           \
+	     --enable-shm=shmnone         \
              --enable-gen-simd-width=64   \
+	     --enable-accelerator=cuda    \
+	     --disable-fermion-reps       \
+	     --enable-unified             \
+	     --disable-gparity            \
              --host=x86_64-unknown-linux-gnu \
-	     --with-mpfr=${HOME}/mpfr \
-	     --with-lime=${HOME}/scidac/install/qio \
-	     --with-hdf5=${OLCF_HDF5_ROOT} \
+	     --with-mpfr=${HOME}/perlmutter/mpfr \
+	     --with-hdf5=${HOME}/perlmutter/hdf5 \
+	     --with-lime=${HOME}/perlmutter/build/usqcd \
              CXX="nvcc"                \
-             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_70,code=sm_70 -std=c++14" \
+	     LDFLAGS="-cudart shared " \
+             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_80,code=sm_80 -std=c++14 -cudart shared" \
+
+        status=$?
+        echo "Configure exit status $status"
 	;;
+
 
     gpu-hip)
 
-	export PATH=/opt/rocm/bin:${PATH}
+	source ${TOPDIR}/env.sh
+
 	${SRCDIR}/configure \
-             --prefix ${INSTALLDIR}      \
-             --enable-unified=no \
+	     --prefix ${INSTALLDIR}      \
+	     --disable-fermion-reps      \
+             --disable-gparity \
+             --disable-zmobius \
 	     --enable-accelerator=hip \
 	     --enable-comms=mpi3-auto \
-	     --enable-simd=GPU \
 	     --enable-gen-simd-width=64 \
-	     --with-mpfr=${HOME}/mpfr \
-	     --with-lime=${HOME}/scidac/install/qio-gcc \
-             --host=x86_64-unknown-linux-gnu \
-	     CXX=hipcc \
-	     MPICXX=mpicxx \
-	     CPPFLAGS="-I/opt/rocm/rocthrust/include" \
-	     LDFLAGS="-L/opt/rocm/rocthrust/lib"
+	     --enable-shm=nvlink \
+	     --enable-simd=GPU \
+	     --enable-tracing=timer \
+             --enable-unified=no \
+	     --with-fftw=${FFTW_DIR}/.. \
+	     --with-gmp=${OLCF_GMP_ROOT} \
+	     --with-hdf5=${HDF5_DIR} \
+ 	     --with-lime=${INSTALLROOT}/qio \
+	     --with-mpfr=/opt/cray/pe/gcc/mpfr/3.1.4/ \
+	     CXX=hipcc    CXXLD=hipcc \
+	     MPICXX=${MPICH_DIR}/bin/mpicxx \
+	     CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -std=c++14 -O3 -fPIC -fopenmp --amdgpu-target=gfx90a" \
+	     LDFLAGS="-L/lib64 -L${ROCM_PATH}/lib -lamdhip64 ${MPI_LDFLAGS}" \
 
-#	     --enable-unified=yes         \
+# HIPFLAGS = --amdgpu-target=gfx90a
+	
+        status=$?
+        echo "Configure exit status $status"
+	cp ${BUILDDIR}/grid-config ${INSTALLDIR}/bin
+
 	;;
 
     gpu-sycl)
@@ -191,7 +213,6 @@ then
 #	     --with-lime=${HOME}/scidac/install/qio-gcc \
 
         status=$?
-
         echo "Configure exit status $status"
 	;;
     *)
@@ -201,15 +222,19 @@ then
 
   if [ $status -ne 0 ]
   then
-      echo "Quitting because of configure errors"
+    echo "Quitting because of configure errors"
   else
     echo "Building in ${BUILDDIR}"
     ${MAKE} -k -j20
 
     echo "Installing in ${INSTALLDIR}"
     ${MAKE} install
+    # Because Grid might not have completed the installation
+    cp ${BUILDDIR}/grid-config ${INSTALLDIR}/bin
   fi
 
 fi     
 popd
+
+
 

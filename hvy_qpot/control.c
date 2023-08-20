@@ -47,7 +47,7 @@ int main(int argc, char *argv[])  {
     
     links = create_G_from_site();
     ape_links = create_G();
-    ape_smear_field_dir( links, TUP, ape_links, staple_weight, u0, 0, ape_iter, 0.0 ); 
+    ape_smear_field_dir( links, TUP, ape_links, staple_weight, u0, 0, ape_iter, 0.0 );
     free(links);
     hvy_pot( ape_links, max_t, max_x );
     free(ape_links);

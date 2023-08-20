@@ -21,7 +21,7 @@ GPU_ARCH ?= # nvidia amd intel
 # 2. Compiler family
 
 COMPILER ?= gnu # intel, ibm, cray-intel, rocm
-OFFLOAD ?= # CUDA HIP SyCL OpenMP
+OFFLOAD ?= # CUDA HIP SYCL OpenMP
 
 #----------------------------------------------------------------------
 # 3. MPP vs Scalar
@@ -94,10 +94,9 @@ endif
 
 # Offload type
 
-ifeq ($(strip ${OFFLOAD}),SyCL)
+ifeq ($(strip ${OFFLOAD}),SYCL)
 
-    MY_CC += -fsycl
-    MY_CXX += -fsycl
+  MY_CXX += -fsycl
 
 endif
 
@@ -106,7 +105,7 @@ CXX = ${MY_CXX}
 
 # If the above construction doesn't work, override the definitions here
 
-# CC = 
+# CC =
 # CXX =
 
 #----------------------------------------------------------------------
@@ -194,8 +193,8 @@ ifeq ($(strip ${COMPILER}),intel)
   OCFLAGS += ${ARCH_FLAG}
   OCXXFLAGS += ${ARCH_FLAG}
   LDFLAGS += ${ARCH_FLAG}
-  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
-  OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -fsave-optimization-record
+  OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -fsave-optimization-record
 
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
@@ -420,7 +419,7 @@ endif
 #----------------------------------------------------------------------
 # 15. GPU/QUDA Options
 
-WANTQUDA    ?= #true
+WANTQUDA    ?= false
 
 ifeq ($(strip ${WANTQUDA}),true)
 
@@ -430,28 +429,36 @@ WANT_FL_GPU ?= #true
 WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 WANT_EIG_GPU ?= #true
+WANT_GSMEAR_GPU ?= #true
 WANT_KS_CONT_GPU ?= #true
-WANT_SHIFT_GPU ?= #true DO NOT USE YET
-WANT_KS_CONT_GPU ?= #true
+WANT_SHIFT_GPU ?= #true
+WANT_SPIN_TASTE_GPU ?= #true
+WANT_GAUGEFIX_OVR_GPU ?= #true
 
 endif
 
 # enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
-WANT_MIXED_PRECISION_GPU ?= 0
+WANT_MIXED_PRECISION_GPU ?= 2
 
 ifeq ($(strip ${WANTQUDA}),true)
+  ifeq ($(strip ${OFFLOAD}),)
+    OFFLOAD = CUDA
+  endif
 
   QUDA_HOME ?= ${HOME}/quda
 
   INCQUDA = -I${QUDA_HOME}/include -I${QUDA_HOME}/tests
   PACKAGE_HEADERS += ${QUDA_HOME}/include
-  LIBQUDA ?= -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcublas -lcufft
+  LIBQUDA ?= -Wl,-rpath ${QUDA_HOME}/lib -L${QUDA_HOME}/lib -lquda
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
-
-  CUDA_HOME ?= /usr/local/cuda
-  INCQUDA += -I${CUDA_HOME}/include
-  PACKAGE_HEADERS += ${CUDA_HOME}/include
   QUDA_HEADERS = ${QUDA_HOME}/include
+
+  ifeq ($(strip ${OFFLOAD}),CUDA)
+    CUDA_HOME ?= /usr/local/cuda
+    INCQUDA += -I${CUDA_HOME}/include
+    PACKAGE_HEADERS += ${CUDA_HOME}/include
+    LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -ldl
+  endif
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
 
@@ -465,6 +472,11 @@ ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${WANT_FN_CG_GPU}),true)
     HAVE_FN_CG_GPU = true
     CGPU += -DUSE_CG_GPU
+  endif
+
+  ifeq ($(strip ${WANT_GA_GPU}),true)
+    HAVE_GA_GPU = true
+    CGPU += -DUSE_GA_GPU
   endif
 
   ifeq ($(strip ${WANT_GF_GPU}),true)
@@ -484,7 +496,12 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   ifeq ($(strip ${WANT_EIG_GPU}),true)
     HAVE_EIG_QUDA = true
-    CGPU += -DUSE_EIG_QUDA
+    CGPU += -DUSE_EIG_GPU
+  endif
+
+  ifeq ($(strip ${WANT_GSMEAR_GPU}),true)
+    HAVE_GSMEAR_QUDA = true
+    CGPU += -DUSE_GSMEAR_QUDA
   endif
 
   ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
@@ -493,8 +510,18 @@ ifeq ($(strip ${WANTQUDA}),true)
   endif
 
   ifeq ($(strip ${WANT_SHIFT_GPU}),true)
-    HAVE_SHIFT_QUDA = true
-    CGPU += -DUSE_SHIFT_QUDA
+    HAVE_SHIFT_GPU = true
+    CGPU += -DUSE_SHIFT_GPU
+  endif
+
+  ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
+    HAVE_SPIN_TASTE_GPU = true
+    CGPU += -DUSE_SPIN_TASTE_GPU
+  endif
+
+  ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
+    HAVE_GAUGEFIX_OVR_QUDA = true
+    CGPU += -DUSE_GAUGEFIX_OVR_GPU
   endif
 
   ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
@@ -503,10 +530,19 @@ ifeq ($(strip ${WANTQUDA}),true)
     CGPU += -DMAX_MIXED # use half precision where appropriate
   endif
 
-# Verbosity choices: 
+# Verbosity choices:
 # SET_QUDA_SILENT, SET_QUDA_SUMMARIZE, SET_QUDA_VERBOSE, SET_QUDA_DEBUG_VERBOSE
 
-  CGPU += -DSET_QUDA_SUMMARIZE
+  QUDA_VERBOSITY ?= SUMMARIZE
+  ifeq ($(strip ${QUDA_VERBOSITY}),SILENT)
+    CGPU += -DSET_QUDA_SILENT # silent output
+  else ifeq ($(strip ${QUDA_VERBOSITY}),SUMMARIZE)
+    CGPU += -DSET_QUDA_SUMMARIZE # summary output
+  else ifeq ($(strip ${QUDA_VERBOSITY}),VERBOSE)
+    CGPU += -DSET_QUDA_VERBOSE # verbose output, outputs autotuning information, residual history of solvers
+  else ifeq ($(strip ${QUDA_VERBOSITY}),DEBUG_VERBOSE)
+    CGPU += -DSET_QUDA_DEBUG_VERBOSE # debug-level output
+  endif
 
 endif
 
@@ -580,7 +616,6 @@ endif
 
 WANTHADRONS ?= false # true implies WANTGRID = true
 
-
 ifeq ($(strip ${WANTHADRONS}), true)
 
   HAVE_HADRONS = true
@@ -617,10 +652,20 @@ endif
 #----------------------------------------------------------------------
 # 16. Grid Options
 
-WANTGRID = #true
+WANTGRID ?= false
 
 ifeq ($(strip ${WANTHADRONS}), true)
   WANTGRID = true
+endif
+
+ifeq ($(strip ${WANTGRID}),true)
+
+  WANT_FN_CG_GPU ?= #true    // Automatic for now
+  WANT_FL_GPU ?= true       // Under development
+  WANT_FF_GPU ?= #true       // Future
+  WANT_GF_GPU ?= #true       // Future
+  WANT_EIG_GPU ?= #true     // Automatic for now
+
 endif
 
 ifeq ($(strip ${WANTGRID}), true)
@@ -630,6 +675,7 @@ ifeq ($(strip ${WANTGRID}), true)
 
   CPHI += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
   CPHI += -DGRID_SHMEM_MAX=2048
+  CPHI += -DGRID_ACCELERATOR_THREADS=8
 
   ifeq ($(strip ${MPP}),true)
     ifeq ($(strip ${ARCH}),knl)
@@ -823,10 +869,6 @@ CPROF =#
 
 CDEBUG = -DCG_OK -DREMAP_STDIO_APPEND # -DCHECK_MALLOC 
 
-# For code checking
-#CDEBUG += -fsanitize=address,undefined
-#LDFLAGS += -fsanitize=address,undefined
-
 #------------------------------
 # Backward compatibility
 
@@ -837,6 +879,7 @@ CCOMPAT += #-DOLD_QOPQDP_NORM
 
 # Prior to version 7.7.2 the conversion from staggeredd to naive was peculiar.
 CCOMPAT += #-DOLD_STAGGERED2NAIVE
+CCOMPAT += #-DOLD_GAUSSRAND
 
 #------------------------------
 # Layout

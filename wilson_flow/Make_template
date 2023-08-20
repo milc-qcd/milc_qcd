@@ -54,6 +54,7 @@ G_OBJECTS = \
   path_product.o \
   ploop3.o \
   remap_stdio_from_args.o \
+  show_generic_opts.o \
   reunitarize2.o \
   ranstuff.o
 
@@ -61,7 +62,7 @@ ifeq ($(strip ${HAVEQIO}),true)
   G_OBJECTS += file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
 endif
 
-# Objects depending on architecture and software package 
+# Objects depending on architecture and software package
 
 LAYOUT = layout_hyper_prime.o # Choices possible here
 
@@ -77,12 +78,12 @@ OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_W_OBJECTS} ${LAYOUT} \
   ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
-QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
+QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a
 
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
 
 # Default rule for C compilation
-.c.o: ; ${CC} -c ${CFLAGS}  $*.c 
+.c.o: ; ${CC} -c ${CFLAGS}  $*.c
 
 # To force a full remake when changing targets
 LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
@@ -104,10 +105,95 @@ ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
 
 ########################################################
-##### Targets: 
+##### Targets:
 
 wilson_flow::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER" \
+
+wilson_flow_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER -DANISOTROPY" \
+
+wilson_flow_cf3::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CF3" \
+
+wilson_flow_cf3_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CF3 -DANISOTROPY" \
+
+wilson_flow_ck::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CK" \
+
+wilson_flow_ck_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CK -DANISOTROPY" \
+
+wilson_flow_bbb::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_BBB" \
+
+wilson_flow_bbb_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_BBB -DANISOTROPY" \
+
+wilson_flow_rkmk3::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK3" \
+
+wilson_flow_rkmk3_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK3 -DANISOTROPY" \
+
+wilson_flow_rkmk4::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK4" \
+
+wilson_flow_rkmk4_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK4 -DANISOTROPY" \
+
+wilson_flow_rkmk5::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK5" \
+
+wilson_flow_rkmk5_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK5 -DANISOTROPY" \
+
+wilson_flow_rkmk8::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK8" \
+
+wilson_flow_rkmk8_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK8 -DANISOTROPY" \
+
+wilson_flow_adpt::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_LUSCHER" \
+
+wilson_flow_adpt_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_LUSCHER -DANISOTROPY" \
+
+wilson_flow_adpt_cf3::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_CF3" \
+
+wilson_flow_adpt_cf3_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_CF3 -DANISOTROPY" \
+
+wilson_flow_adpt_bs::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_BS" \
+
+wilson_flow_adpt_bs_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_BS -DANISOTROPY" \
 
 clean:
 	-/bin/rm -f *.o
@@ -131,5 +217,4 @@ localmake: ${OBJECTS} ${LIBRARIES}
 	${OBJECTS} ${QCDLIB} ${ILIB} -lm
 	touch localmake
 
-target: libmake localmake 
-
+target: libmake localmake

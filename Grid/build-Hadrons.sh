@@ -3,21 +3,23 @@
 ARCH=$1
 PK_CC=$2
 PK_CXX=$3
-GIT_REPO=https://github.com/aportelli/Hadrons
-GIT_BRANCH=develop
+#GIT_REPO=https://github.com/aportelli/Hadrons
+GIT_REPO=https://github.com/milc-qcd/Hadrons
+#GIT_BRANCH=develop
+GIT_BRANCH=feature/staggered-a2a-ml
 
 if [ -z ${PK_CXX} ]
 then
-  echo "Usage $0 <scalar|avx2|avx512-knl|avx512-skx|gpu-cuda> <PK_CC> <PK_CXX>"
+  echo "Usage $0 <scalar|avx2|avx512-knl|avx512-skx|gpu-cuda|gpu-hip|gpu-sycl> <PK_CC> <PK_CXX>"
   exit 1
 fi
 
 case ${ARCH} in
-    scalar|avx512-knl|avx512-skx|avx2|gpu-cuda)
+    scalar|avx2|avx512-knl|avx512-skx|gpu-cuda|gpu-hip|gpu-sycl)
       ;;
     *)
       echo "Unsupported ARCH"
-      echo "Usage $0 <scalar|avx2|avx512-knl|avx512-skx|gpu-cuda> <PK_CC> <PK_CXX>"
+      echo "Usage $0 <scalar|avx2|avx512-knl|avx512-skx|gpu-cuda|gpu-hip|gpu-sycl> <PK_CC> <PK_CXX>"
       exit 1
 esac
 
@@ -27,7 +29,7 @@ BUILDDIR=${TOPDIR}/build-hadrons-${ARCH}
 INSTALLDIR=${TOPDIR}/install-hadrons-${ARCH}
 GRIDINSTALLDIR=${TOPDIR}/install-grid-${ARCH}
 
-MAKE="make V=1"
+MAKE=make
 
 if [ ! -d ${SRCDIR} ]
 then
@@ -100,12 +102,40 @@ then
        status=$?
        echo "Configure exit status $status"
        ;;
+
     gpu-cuda)
 	# Cori: salloc -C gpu -t 60 -N 1 -c 10 --gres=gpu:1 -A m1759
 	${SRCDIR}/configure \
+        --prefix ${INSTALLDIR}      \
+        --with-grid=${GRIDINSTALLDIR} \
+        --host=x86_64-unknown-linux-gnu
+
+        status=$?
+        echo "Configure exit status $status"
+	;;
+
+    gpu-hip)
+
+	source ${TOPDIR}/env.sh
+	# export PATH=/opt/rocm/bin:${PATH}
+
+	${SRCDIR}/configure \
             --prefix ${INSTALLDIR}      \
             --with-grid=${GRIDINSTALLDIR} \
-            --host=x86_64-unknown-linux-gnu
+            --host=x86_64-unknown-linux-gnu \
+	    CXXFLAGS="-std=c++17"
+
+        status=$?
+        echo "Configure exit status $status"
+	;;
+
+    gpu-sycl)
+
+	${SRCDIR}/configure \
+        --prefix ${INSTALLDIR}      \
+        --with-grid=${GRIDINSTALLDIR} \
+        --host=x86_64-unknown-linux-gnu
+
         status=$?
         echo "Configure exit status $status"
 	;;
@@ -118,16 +148,16 @@ then
   if [ $status -ne 0 ]
   then
       echo "Quitting because of configure errors"
-  else
-    echo "Building in ${BUILDDIR}"
-#    ${MAKE} -k -j4
-    ${MAKE}
-
-    echo "Installing in ${INSTALLDIR}"
-#    ${MAKE} install
   fi
 
-fi     
+fi
+
+echo "Building in ${BUILDDIR}"
+${MAKE} -k -j16
+
+echo "Installing in ${INSTALLDIR}"
+${MAKE} install
+
 popd
 
 

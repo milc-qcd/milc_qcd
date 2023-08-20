@@ -5,6 +5,7 @@
 #include "defines.h"
 #include "../include/generic_quark_types.h"
 #include "../include/imp_ferm_links.h"
+#include <stdint.h>
 
 #define MAX_MASS 8
 

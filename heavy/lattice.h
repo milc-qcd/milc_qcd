@@ -152,6 +152,7 @@ EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;
+EXTERN int refresh_ape_links;
 
 /* Storage for the clover term */
 EXTERN clover *gen_clov;

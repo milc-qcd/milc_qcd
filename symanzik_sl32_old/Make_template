@@ -46,6 +46,7 @@ G_OBJECTS =          \
   check_unitarity.o  \
   d_plaq4.o          \
   field_utilities.o  \
+  gauge_action_imp.o \
   gauge_stuff.o      \
   gauge_force_imp.o  \
   gauge_utilities.o \

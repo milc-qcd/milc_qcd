@@ -25,7 +25,7 @@ propagators together to form a meson correlator.
    quark propagator running backwards in time to an antiquark running
    forwards in time, we take the adjoint and apply (-)^(x+y+z+t)
    factors at source and sink.  This sink sign factor is applied in
-   the call to spin_taste_op_fn, so we don't do it explicitly here.
+   the call to spin_taste_op_ape_fn, so we don't do it explicitly here.
    This means, for example, that when we specify O_st = pion5 we get
    simply src_1^\dagger src_2.
 
@@ -68,49 +68,49 @@ propagators together to form a meson correlator.
 
 /*******************************************/
 // Uncomment the following include, then definitions below can be made into comments or removed
-//#include <quda_milc_interface.h>
+#include <quda_milc_interface.h>
 
-#include <limits.h>
-#define QUDA_INVALID_ENUM INT_MIN
-
-// enum_quda.h  describes corr_parity
-typedef enum QudaFFTSymmType_t {
-  QUDA_FFT_SYMM_ODD  = 1,  // sin(phase)
-  QUDA_FFT_SYMM_EVEN = 2,  // cos(phase)
-  QUDA_FFT_SYMM_EO   = 3,  // exp(-i phase)
-  QUDA_FFT_SYMM_INVALID = QUDA_INVALID_ENUM
-} QudaFFTSymmType;
-
-// quda_milc_interface.h  parameters for propagator contractions with FT
-typedef struct {
-  int n_mom;  /* Number of sink momenta */
-  int *mom_modes;  /* List of 4-component momenta as integers. Dimension 4*n_mom */
-  QudaFFTSymmType *fft_type; /* The "parity" of the FT component */
-  int *source_position;  /* The coordinate origin for the Fourier phases */
-  double flops; /* Return value */
-  double dtime; /* Return value */
-} QudaContractArgs_t;
-
-/** quda_milc_interface.h
- * @brief Tie together two staggered propagators including spatial Fourier phases.
- * The result is summed separately over each time slice and across all MPI ranks.
- * The FT is defined by a list of momentum indices (three-component integer vectors)
- * Included with the FT is a parity (symmetry) parameter for each momentum
- * component that selects an exp, cos, or sin factor for each direction
- *
- * @param[in] external_precision Precision of host fields passed to QUDA (2 - double, 1 - single)
- * @param[in,out] parameters for the contraction, including FT specification
- * @param[in] local storage of color spinor field.  three complex values * number of sites on node
- * @param[in] local storage of color spinor field.  three complex values * number of sites on node
- * @param[out] hadron correlator  Flattened double array as though [n_mom][nt][2] for 2 = re,im. 
- */
-void qudaContractFT(int external_precision, // milc_precision
-		    QudaContractArgs_t *cont_args,
-		    void *const quark1, // su3_vector* antiquark
-		    void *const quark2, // su3_vector* quark
-		    double *corr // double_complex meson_q[]
-		    );
-
+// #include <limits.h>
+// #define QUDA_INVALID_ENUM INT_MIN
+// 
+// // enum_quda.h  describes corr_parity
+// typedef enum QudaFFTSymmType_t {
+//   QUDA_FFT_SYMM_ODD  = 1,  // sin(phase)
+//   QUDA_FFT_SYMM_EVEN = 2,  // cos(phase)
+//   QUDA_FFT_SYMM_EO   = 3,  // exp(-i phase)
+//   QUDA_FFT_SYMM_INVALID = QUDA_INVALID_ENUM
+// } QudaFFTSymmType;
+// 
+// // quda_milc_interface.h  parameters for propagator contractions with FT
+// typedef struct {
+//   int n_mom;  /* Number of sink momenta */
+//   int *mom_modes;  /* List of 4-component momenta as integers. Dimension 4*n_mom */
+//   QudaFFTSymmType *fft_type; /* The "parity" of the FT component */
+//   int *source_position;  /* The coordinate origin for the Fourier phases */
+//   double flops; /* Return value */
+//   double dtime; /* Return value */
+// } QudaContractArgs_t;
+// 
+// /** quda_milc_interface.h
+//  * @brief Tie together two staggered propagators including spatial Fourier phases.
+//  * The result is summed separately over each time slice and across all MPI ranks.
+//  * The FT is defined by a list of momentum indices (three-component integer vectors)
+//  * Included with the FT is a parity (symmetry) parameter for each momentum
+//  * component that selects an exp, cos, or sin factor for each direction
+//  *
+//  * @param[in] external_precision Precision of host fields passed to QUDA (2 - double, 1 - single)
+//  * @param[in,out] parameters for the contraction, including FT specification
+//  * @param[in] local storage of color spinor field.  three complex values * number of sites on node
+//  * @param[in] local storage of color spinor field.  three complex values * number of sites on node
+//  * @param[out] hadron correlator  Flattened double array as though [n_mom][nt][2] for 2 = re,im. 
+//  */
+// void qudaContractFT(int external_precision, // milc_precision
+// 		    QudaContractArgs_t *cont_args,
+// 		    void *const quark1, // su3_vector* antiquark
+// 		    void *const quark2, // su3_vector* quark
+// 		    double *corr // double_complex meson_q[]
+// 		    );
+// 
 
 /*******************************************/
 
@@ -335,11 +335,12 @@ void ks_meson_cont_mom(
       if(is_rhosfn_index(spin_taste) || is_rhosape_index(spin_taste)){
 	/* Special treatment for vector-current operators */
 	/* Apply backward sink spin-taste operator to src1 */
+
 	su3_vector *q = create_v_field();
-	spin_taste_op_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
+	spin_taste_op_ape_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
 	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
 	/* Apply forward sink spin-taste operator to src2 */
-	spin_taste_op_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
+	spin_taste_op_ape_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
 	qudaContractFT(MILC_PRECISION, &cont_args, src1, q, dmeson_q);
 	destroy_v_field(q);
 	for(int j = 0; j < nt*num_corr_mom[g]; ++j){
@@ -348,19 +349,19 @@ void ks_meson_cont_mom(
       } else if(is_rhosffn_index(spin_taste) || is_rhosfape_index(spin_taste)){
 	/* Apply forward sink spin-taste operator to src2 */
 	su3_vector *q = create_v_field();
-	spin_taste_op_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
+	spin_taste_op_ape_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
 	qudaContractFT(MILC_PRECISION, &cont_args, src1, q, dmeson_q );
 	destroy_v_field(q);
       } else if(is_rhosbfn_index(spin_taste) || is_rhosbape_index(spin_taste)){
 	/* Apply backward sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
-	spin_taste_op_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
+	spin_taste_op_ape_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
 	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
 	destroy_v_field(q);
       } else {
 	/* Apply sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
-	spin_taste_op_fn(fn_src1, spin_taste, r0, q, src1);
+	spin_taste_op_ape_fn(fn_src1, spin_taste, r0, q, src1);
 	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
 	destroy_v_field(q);
        }
