@@ -318,10 +318,9 @@ void populate_qk_oct_point_split(ks_prop_field **qko,int qknum,int r0[],su3_matr
    for(skIdx=0;skIdx<8;skIdx++){
     n = singlet_index_to_disp(skIdx);
     singlet_index_to_dir(skIdx,dir);
-    apply_par_xport_3pt(ksp,qko[scIdx],n,dir,r0,0x0,links);
-
     fetch_ksp_from_cache(&kspc,qknum,scIdx,skIdx); // get pointer
-    copy_ksp_field(kspc,ksp); // save once
+    apply_par_xport_3pt(kspc,qko[scIdx],n,dir,r0,0x0,links);
+
 #ifdef DO_MSYNC
     msync_ksp_from_cache(qknum,scIdx,skIdx);
 #endif
