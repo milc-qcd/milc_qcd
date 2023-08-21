@@ -308,24 +308,45 @@ void toss_ksp_from_cache(ks_prop_field **ksp){
 /** fill a quark octet memory map with all 8 parallel transports for all 8 quarks*/
 void populate_qk_oct_point_split(ks_prop_field **qko,int qknum,int r0[],su3_matrix *links){
   int scIdx,skIdx;
-  int n;
-  int dir[3] = {0};
-  ks_prop_field *kspc = NULL;
+  int n [8];
+  int dir[8][3] = {0};
+  ks_prop_field * kspc [8];
   ks_prop_field *ksp = create_ksp_field(3);
 
   for(scIdx=0;scIdx<8;scIdx++){
    node0_printf("Creating mmap cache %d for quark object %d...\n",qknum,scIdx);
    for(skIdx=0;skIdx<8;skIdx++){
-    n = singlet_index_to_disp(skIdx);
-    singlet_index_to_dir(skIdx,dir);
-    fetch_ksp_from_cache(&kspc,qknum,scIdx,skIdx); // get pointer
-    apply_par_xport_3pt(kspc,qko[scIdx],n,dir,r0,0x0,links);
+    n[skIdx] = singlet_index_to_disp(skIdx);
+    singlet_index_to_dir(skIdx,dir[skIdx]);
+    fetch_ksp_from_cache(kspc+skIdx,qknum,scIdx,skIdx); // get pointer
+    // check to see if there is a previous partial solution
+    // if some links are already smeared, we can use this as starting point
+    int oldIdx = -1;
+    if (n[skIdx] > 1) {
+      oldIdx = skIdx - 1;
+      for (; oldIdx >= 0; oldIdx --) {
+        if (n[oldIdx] == n[skIdx] - 1) {
+          bool dirsMatch = true;
+          for (int i = 0; i < n[oldIdx]; i ++)
+            dirsMatch &= (dir[oldIdx][i] == dir[skIdx][i]);
+          if (dirsMatch) break;
+        }
+      }
+    }
+    if (oldIdx != -1) {
+      int tempN = 1;
+      int tempDir [3] = {dir[skIdx][n[skIdx]-1], 0, 0};
+      apply_par_xport_3pt(kspc[skIdx],kspc[oldIdx],tempN,tempDir,r0,0x0,links);
+    } else {
+      apply_par_xport_3pt(kspc[skIdx],qko[scIdx],n[skIdx],dir[skIdx],r0,0x0,links);
+    }
 
 #ifdef DO_MSYNC
     msync_ksp_from_cache(qknum,scIdx,skIdx);
 #endif
-    toss_ksp_from_cache(&kspc); // toss pointer
    }
+   for(skIdx=0;skIdx<8;skIdx++)
+    toss_ksp_from_cache(kspc+skIdx); // toss pointer
   }
   destroy_ksp_field(ksp);
   node0_printf("Done with mmap cache %d for quark object\n",qknum);
