@@ -164,11 +164,11 @@ apply_sym_shift_3pt(int n, int *d, int *r0, short doBW, ks_prop_field *dest,
 void
 apply_par_xport_3pt(ks_prop_field *dest, ks_prop_field *src,
                     int n, int dir[], int r0[], short doBW, su3_matrix *links){
+  double start = dclock();
   site *s;
   int i,j,c;
   ks_prop_field *tvec0 = create_ksp_field(3);
   ks_prop_field *tvec1 = create_ksp_field(3);
-  ks_prop_field *tsrc  = create_ksp_field(3);
   int d[6][3] =
     {{XUP,YUP,ZUP},
      {YUP,ZUP,XUP},
@@ -176,22 +176,26 @@ apply_par_xport_3pt(ks_prop_field *dest, ks_prop_field *src,
      {XUP,ZUP,YUP},
      {YUP,XUP,ZUP},
      {ZUP,YUP,XUP}};
-  copy_ksp_field(tsrc,src);
 
   if(n == 0){
     copy_ksp_field(dest,src);
   }
+  #ifdef NO_SINK_LINKS
+  else {
+    apply_sym_shift_3pt(n,dir,r0,doBW,dest,src,links);
+  }
+  #else
   else if(n == 1){
     /* one link */
     d[0][0] = dir[0];
-    apply_sym_shift_3pt(n,d[0],r0,doBW,dest,tsrc,links);
+    apply_sym_shift_3pt(n,d[0],r0,doBW,dest,src,links);
   }
   else if (n == 2){
     /* two link */
     d[0][0] = dir[0]; d[0][1] = dir[1];
     d[1][1] = dir[0]; d[1][0] = dir[1];
-    apply_sym_shift_3pt(n,d[0],r0,doBW,tvec0,tsrc,links);
-    apply_sym_shift_3pt(n,d[1],r0,doBW,tvec1,tsrc,links);
+    apply_sym_shift_3pt(n,d[0],r0,doBW,tvec0,src,links);
+    apply_sym_shift_3pt(n,d[1],r0,doBW,tvec1,src,links);
 
     #pragma omp parallel for private(c,i) collapse(2)
     for(c=0;c<3;c++){
@@ -205,7 +209,7 @@ apply_par_xport_3pt(ks_prop_field *dest, ks_prop_field *src,
     /* three link */
     /* use the d given */  
   for(j=0;j<6;j++){
-    apply_sym_shift_3pt(n,d[j],r0,doBW,tvec0,tsrc,links);
+    apply_sym_shift_3pt(n,d[j],r0,doBW,tvec0,src,links);
     if(j==0) {
       copy_ksp_field(tvec1,tvec0);
     } else {
@@ -224,9 +228,11 @@ apply_par_xport_3pt(ks_prop_field *dest, ks_prop_field *src,
     }
   } // END OMP LOOPS
   } // END c==3
+  #endif
   destroy_ksp_field(tvec1);
   destroy_ksp_field(tvec0);
-  destroy_ksp_field(tsrc);
+  double end = dclock();
+  printf("Time spent in apply_par_xport_3pt with n = %d, dir = (%d, %d, %d): %f sec\n", n, dir[0], dir[1], dir[2], end-start);
   }
 
 #endif // GB_BARYON
