@@ -12,6 +12,9 @@
 
 #include "generic_includes.h"
 
+// always map mmap cache to RAM
+#undef GB_BARYON_MMAP
+
 // Keep track of how big the mmap is
 static long long tot_mmap_size; //accumulated total mmap cache size
 
@@ -100,6 +103,7 @@ int alloc_mmap_cache(mmap_cache* obj, unsigned nbuf, size_t buf_size, const char
   }
   }
   #endif
+  node0_printf("(alloc_mmap_cache) previous mmap size on node0: %lld bytes\n", tot_mmap_size);
   tot_mmap_size += obj->cache_size;
   node0_printf("(alloc_mmap_cache) current mmap size on node0: %lld bytes\n", tot_mmap_size);
   return 0;
@@ -118,9 +122,12 @@ int free_mmap_cache(mmap_cache* obj)
   unlink(obj->back_file);
   free(obj->back_file);
 #else
+  for (int j = 0; j < obj->nbuffers; j ++)
+    free(obj->buffer[j]);
   free(obj->buffer);
   obj->buffer = NULL;
 #endif
+  node0_printf("(free_mmap_cache) previous mmap size on node0: %lld bytes\n", tot_mmap_size);
   tot_mmap_size -= obj->cache_size;
   node0_printf("(free_mmap_cache) current mmap size on node0: %lld bytes\n", tot_mmap_size);
   return 0;
