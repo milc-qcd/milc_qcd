@@ -772,16 +772,17 @@ accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *q
     // static variable initialization is done exactly once by first procedure call
     static bool initialized = false; // Don't initilize it everytime! Make it global variable
     static int corner_indx[8] = {0,0,0,0,0,0,0,0}; // Keep track of index for each corner_sites
-    static node_index_t_tuple corner_sites[8][(100*100*100)/8+1]; // use a fixed size, hopefully big enough
-    if (nx*ny*nz/8 > 100*100*100/8){
-      node0_printf("Lattice size too large. It might cause troubles to tieups. Check accum_baryon_color_asym to change allocation size!");
-      terminate(1);
-    }
-
+    static node_index_t_tuple * corner_sites[8]; // use a pointer to malloc'd memory instead of a fixed size
     if (initialized==false) {
+      int volume = (nx * ny * nz * nt);
       // parallelize over cube corners
       #pragma omp parallel for
       for(int temp_corner=0; temp_corner<8; temp_corner++){
+          // malloc the memory (so we don't need size ahead of time)
+          // Note: This is never free'd, so this is technically a memory leak
+          // But if initialization is only called once, we only allocate once
+          // and then we will use all this memory for the program duration
+          corner_sites[temp_corner] = malloc(sizeof(node_index_t_tuple) * volume/8 + 1);
           int disp_x = ((int) temp_corner % 2     ) ^ flip_snk;
           int disp_y = ((int)(temp_corner / 2) % 2) ^ flip_snk;
           int disp_z = ((int) temp_corner / 4     ) ^ flip_snk;
