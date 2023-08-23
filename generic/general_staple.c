@@ -46,8 +46,8 @@ compute_gen_staple_field(su3_matrix *staple, int mu, int nu,
   su3_matrix tmat1,tmat2;
   msg_tag *mtag0,*mtag1;
   su3_matrix *tempmat = NULL;
-  register site *s ;
   register int i ;
+  site *s;
   register su3_matrix *fat1;
 
 

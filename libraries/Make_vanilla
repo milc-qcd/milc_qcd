@@ -29,7 +29,7 @@ MAKEFILE = Make_vanilla
 # 1. Compiler
 
 ifeq ($(strip ${COMPILER}),intel)
-  CC = icc
+  CC = icx
 else ifeq ($(strip ${COMPILER}),gnu)
   CC = gcc
 else ifeq ($(strip ${COMPILER}),cray-intel)
@@ -59,12 +59,12 @@ endif
 
 #-------------- Intel icc/ecc -----------------------------------
 ifeq ($(strip ${COMPILER}),cray-intel)
-  
+
   # Architecture choices: knl, skx, knc, hsw
   ifeq ($(strip ${ARCH}),knl)
-    OCFLAGS +=  -xMIC-AVX512 
+    OCFLAGS += -xMIC-AVX512
   else ifeq ($(strip ${ARCH}),knc)
-    OCFLAGS +=  -mmic
+    OCFLAGS += -mmic
   else ifeq ($(strip ${ARCH}),skx)
     OCFLAGS += -xCORE-AVX512 -qopt-zmm-usage=high
   else ifeq ($(strip ${ARCH}),hsw)
@@ -72,17 +72,17 @@ ifeq ($(strip ${COMPILER}),cray-intel)
   else
     OCFLAGS += -xavx
   endif
-  
+
   # Debugging and optimization
   OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
 
 else ifeq ($(strip ${COMPILER}),intel)
-  
+
   # Architecture choices: knl, skx, knc, hsw
   ifeq ($(strip ${ARCH}),knl)
-    OCFLAGS +=  -xMIC-AVX512 
+    OCFLAGS += -xMIC-AVX512
   else ifeq ($(strip ${ARCH}),knc)
-    OCFLAGS +=  -mmic
+    OCFLAGS += -mmic
   else ifeq ($(strip ${ARCH}),skx)
     OCFLAGS += -xCORE-AVX512 -qopt-zmm-usage=high
   else ifeq ($(strip ${ARCH}),hsw)
@@ -90,9 +90,9 @@ else ifeq ($(strip ${COMPILER}),intel)
   else
     OCFLAGS += -xavx
   endif
-  
+
   # Debugging and optimization
-  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -fsave-optimization-record
 
 endif
 

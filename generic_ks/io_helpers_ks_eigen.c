@@ -679,7 +679,7 @@ static void print_read_options(void){
 */
 int ask_starting_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
 
-  char *savebuf;
+  const char *savebuf;
   int status;
   char myname[] = "ask_starting_ks_eigen";
   
@@ -736,7 +736,7 @@ static void print_save_options(void){
 */
 int ask_ending_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
 
-  char *savebuf;
+  const char *savebuf;
   int status;
   char myname[] = "ask_ending_ks_eigen";
 

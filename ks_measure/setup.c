@@ -90,7 +90,11 @@ initial_set(){
 			   param.ionode_geometry, 4);
 #endif
 #endif
-    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
+    IF_OK {
+      int iseed_in;
+      status += get_i(stdin, prompt,"iseed", &iseed_in);
+      param.iseed = iseed_in;
+    }
     IF_OK status += get_s(stdin, prompt,"job_id",param.job_id);
     
     if(status>0) param.stopflag=1; else param.stopflag=0;
@@ -416,6 +420,9 @@ int readin(int prompt) {
 	/* The set to which this pbp_mass belongs */
 	IF_OK param.set[npbp_masses] = k;
 
+        /* inversion type */
+        param.qic_pbp[npbp_masses].inv_type = UMLTYPE;
+
 	/* maximum no. of conjugate gradient iterations */
 	param.qic_pbp[npbp_masses].max = max_cg_iterations;
       
@@ -581,6 +588,10 @@ int readin(int prompt) {
   /* We put in antiperiodic bc to the APE links to match what we did to the gauge field */
   apply_apbc( ape_links, 0 );
   rephase( ON );
+  refresh_ape_links = 1;
+  /* Put the KS phases into APE links to match what we did to the gauge field */
+  ape_links_ks_phases = OFF;
+  rephase_field_offset( ape_links, ON, &ape_links_ks_phases, param.coord_origin );
 
 #if EIGMODE == EIGCG
   int Nvecs_max = param.eigcgp.Nvecs_max;

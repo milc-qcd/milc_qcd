@@ -6,6 +6,7 @@
 #include "../include/int32type.h"
 #include "../include/complex.h"
 #include "../include/su3.h"
+#include "../include/gammatypes.h"
 
 /* Structures defining a generic quark source for both KS and Dirac fermions */
 
@@ -171,7 +172,9 @@ typedef struct {
 
 enum inv_type {
   MGTYPE,
-  CGTYPE
+  CGTYPE,
+  CGZTYPE,
+  UMLTYPE
 };
 
 enum mg_rebuild_type {

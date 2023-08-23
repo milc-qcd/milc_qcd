@@ -10,6 +10,7 @@
 
 G_KS_ALL = \
   charge_utilities.o \
+  contraction_cpu.o \
   d_congrad5.cppacs.o \
   d_congrad5.o \
   d_congrad5_eo.o \
@@ -49,6 +50,8 @@ G_KS_ALL = \
   eigen_stuff_helpers.o \
   eigen_stuff_Ritz.o \
   eigen_stuff_PRIMME.o \
+  eigen_stuff_Grid.o \
+  eigen_stuff_QUDA.o \
   f_meas.o \
   f_meas_current.o \
   fermion_force_asqtad.o \
@@ -91,7 +94,9 @@ G_KS_ALL = \
   eo_links_milc.o \
   fn_links_milc.o \
   fn_links_qop.o \
+  gauge_action_imp_ks.o \
   gauge_force_imp_ks.o \
+  gauge_measure_ks.o \
   gauss_smear_ks.o \
   gauss_smear_ks_QUDA.o \
   gb_baryon_mmap.o \
@@ -99,6 +104,7 @@ G_KS_ALL = \
   gb_baryon_3pt.o \
   gb_baryon_src.o \
   gb_ops.o \
+  gridStaggEigen.o \
   gridStaggInvert.o \
   grsource.o \
   hisq_links_qop.o \
@@ -121,6 +127,7 @@ G_KS_ALL = \
   ks_baryon.o \
   ks_invert.o \
   ks_meson_mom.o \
+  ks_meson_mom_gpu.o \
   ks_multicg.o \
   ks_multicg_offset.o \
   ks_multicg_offset_gpu.o \
@@ -142,8 +149,10 @@ G_KS_ALL = \
   multimass_inverter.o \
   naik_eps_utilities.o \
   path_transport.o \
+  ploop3_ks.o \
   nl_spectrum.o \
   reunitarize_ks.o \
+  shift_field.o \
   show_generic_ks_md_opts.o \
   show_generic_ks_opts.o \
   show_hisq_force_opts.o \
@@ -187,6 +196,8 @@ G_KS_ALL_DEPEND = \
 ${G_KS_ALL} : ${G_KS_ALL_DEPEND}
 
 charge_utilities.o: ../generic_ks/charge_utilities.c
+	${CC} -c ${CFLAGS} $<
+contraction_cpu.o: ../generic_ks/contraction_cpu.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5.cppacs.o: ../generic_ks/d_congrad5.cppacs.c
 	${CC} -c ${CFLAGS} $<
@@ -265,6 +276,10 @@ eigen_stuff_helpers.o: ../generic_ks/eigen_stuff_helpers.c
 eigen_stuff_Ritz.o: ../generic_ks/eigen_stuff_Ritz.c
 	${CC} -c ${CFLAGS} $<
 eigen_stuff_PRIMME.o: ../generic_ks/eigen_stuff_PRIMME.c
+	${CC} -c ${CFLAGS} $<
+eigen_stuff_Grid.o: ../generic_ks/eigen_stuff_Grid.c
+	${CC} -c ${CFLAGS} $<
+eigen_stuff_QUDA.o: ../generic_ks/eigen_stuff_QUDA.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad.o: ../generic_ks/fermion_force_asqtad.c
 	${CC} -c ${CFLAGS} $<
@@ -362,7 +377,11 @@ fermion_links_hypisq_load_milc.o: ../generic_ks/fermion_links_hypisq_load_milc.c
 	${CC} -c ${CFLAGS} $<
 ff_opt.o: ../generic_ks/ff_opt.c
 	${CC} -c ${CFLAGS} $<
+gauge_action_imp_ks.o: ../generic_ks/gauge_action_imp_ks.c
+	${CC} -c ${CFLAGS} $<
 gauge_force_imp_ks.o: ../generic_ks/gauge_force_imp_ks.c
+	${CC} -c ${CFLAGS} $<
+gauge_measure_ks.o: ../generic_ks/gauge_measure_ks.c
 	${CC} -c ${CFLAGS} $<
 gauss_smear_ks.o: ../generic_ks/gauss_smear_ks.c
 	${CC} -c ${CFLAGS} $<
@@ -378,6 +397,8 @@ gb_baryon_src.o: ../generic_ks/gb_baryon_src.c
 	${CC} -c ${CFLAGS} $<
 gb_ops.o: ../generic_ks/gb_ops.c
 	${CC} -c ${CFLAGS} $<
+gridStaggEigen.o: ../generic_ks/gridStaggEigen.cc
+	${CXX} -c ${CXXFLAGS} $<
 gridStaggInvert.o: ../generic_ks/gridStaggInvert.cc
 	${CXX} -c ${CXXFLAGS} $<
 grsource.o: ../generic_ks/grsource.c
@@ -423,6 +444,8 @@ ks_baryon.o: ../generic_ks/ks_baryon.c
 ks_invert.o: ../generic_ks/ks_invert.c
 	${CC} -c ${CFLAGS} $<
 ks_meson_mom.o: ../generic_ks/ks_meson_mom.c
+	${CC} -c ${CFLAGS} $<
+ks_meson_mom_gpu.o: ../generic_ks/ks_meson_mom_gpu.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg.o: ../generic_ks/ks_multicg.c
 	${CC} -c ${CFLAGS} $<
@@ -476,9 +499,13 @@ nl_spectrum.o: ../generic_ks/nl_spectrum.c
 	${CC} -c ${CFLAGS} $<
 path_transport.o: ../generic_ks/path_transport.c
 	${CC} -c ${CFLAGS} $<
+ploop3_ks.o: ../generic_ks/ploop3_ks.c
+	${CC} -c ${CFLAGS} $<
 rephase.o: ../generic_ks/rephase.c
 	${CC} -c ${CFLAGS} $<
 reunitarize_ks.o: ../generic_ks/reunitarize_ks.c
+	${CC} -c ${CFLAGS} $<
+shift_field.o: ../generic_ks/shift_field.c
 	${CC} -c ${CFLAGS} $<
 show_generic_ks_md_opts.o: ../generic_ks/show_generic_ks_md_opts.c
 	${CC} -c ${CFLAGS} $<

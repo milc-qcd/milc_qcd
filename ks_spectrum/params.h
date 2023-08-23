@@ -13,8 +13,8 @@
 #define MAX_MASS_PBP 8
 #define MAX_SOURCE 128
 #define MAX_SET 256
-#define MAX_PROP 32
-#define MAX_QK 256
+#define MAX_PROP 64
+#define MAX_QK 512
 #define MAX_COMBO 8
 #define MAX_PAIR 5000
 #define MAX_TRIPLET 64
@@ -24,8 +24,8 @@
 #define MAX_MESON_LABEL 64
 #define MAX_BARYON_LABEL 64
 #define MAX_MESON_MOMENTUM 100
-#define MAX_MOM_LABEL 16
-#define MAX_CORR 200
+#define MAX_MOM_LABEL 32
+#define MAX_CORR 256
 #define STATIC_TYPE 0
 #define KS_TYPE 1
 #define PROP_TYPE 0
@@ -40,7 +40,7 @@
 
 enum check_type { CHECK_NO,  CHECK_YES, CHECK_SOURCE_ONLY };
 
-enum set_type { MULTIMASS_SET, MULTISOURCE_SET };
+enum set_type { MULTIMASS_SET, MULTISOURCE_SET, SINGLES_SET };
 
 /* structure for passing simulation parameters to each node */
 typedef struct {
@@ -67,7 +67,7 @@ typedef struct {
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-  int iseed;
+  uint32_t iseed;
   char job_id[MAXFILENAME]; /* Usually encoded by scripts */
 
   /*  REPEATING BLOCK */
@@ -182,8 +182,8 @@ typedef struct {
     char gbbaryon_label[MAX_TRIPLET][MAX_CORR][MAX_MESON_LABEL];
     int  gbbaryon_phase[MAX_TRIPLET][MAX_CORR];
     Real gbbaryon_factor[MAX_TRIPLET][MAX_CORR];
-    enum gb_baryon_op gbbaryon_src[MAX_TRIPLET][MAX_CORR]; /* gb op at source */
-    enum gb_baryon_op gbbaryon_snk[MAX_TRIPLET][MAX_CORR]; /* gb op at sink */
+    int gbbaryon_src[MAX_TRIPLET][MAX_CORR]; /* gb op at source */
+    int gbbaryon_snk[MAX_TRIPLET][MAX_CORR]; /* gb op at sink */
     int  gb_parity_flip_snk[MAX_TRIPLET][MAX_CORR]; /* Option to flip sink tie up epsilon location */
     int  saveflag_gb[MAX_TRIPLET];              /* Save flag for gb baryon correlator */
     char savefile_gb[MAX_TRIPLET][MAXFILENAME]; /* File for gb baryon correlator */

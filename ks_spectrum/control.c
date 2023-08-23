@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 
       /* Move KS phases and apply time boundary condition, based on the
 	 coordinate origin and time_bc */
-      Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+      Real bdry_phase[4] = {0.,0.,0.,(double)param.time_bc};
       /* Set values in the structure fn */
       set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
       /* Apply the operation */
@@ -232,7 +232,11 @@ int main(int argc, char *argv[])
 	destroy_ape_links_4D(ape_links);
 	ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
 	if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
-
+	refresh_ape_links = 1;  // To signal refreshing of any cached links
+	ape_links_ks_phases = OFF;  
+	/* By default, the phases are ON */
+	rephase_field_offset( ape_links, ON, &ape_links_ks_phases, param.coord_origin );
+	
 	rephase( ON );
 	invalidate_fermion_links(fn_links);
 
@@ -380,6 +384,7 @@ int main(int argc, char *argv[])
       /* We pass the beginning addresses of the set data */
       
       total_iters += solve_ksprop(param.set_type[k],
+				  param.inv_type[k],
 				  num_prop,
 				  param.startflag_ks + i0,
 				  param.startfile_ks + i0,
@@ -553,11 +558,13 @@ int main(int argc, char *argv[])
     
     /* Now destroy all remaining propagator fields */
     
-    for(i = 0; i <= param.end_prop[param.num_set-1]; i++){
-      if(prop[i] != NULL){
-	node0_printf("destroy prop[%d]\n",i);
-	destroy_ksp_field(prop[i]);
-	prop[i] = NULL;
+    if(param.num_set > 0){
+      for(i = 0; i <= param.end_prop[param.num_set-1]; i++){
+	if(prop[i] != NULL){
+	  node0_printf("destroy prop[%d]\n",i);
+	  destroy_ksp_field(prop[i]);
+	  prop[i] = NULL;
+	}
       }
     }
     
@@ -748,8 +755,12 @@ int main(int argc, char *argv[])
       }
       
       /* Clean up eigen storage */
-      for(i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
+      for(i = 0; i < Nvecs_alloc; i++) free(eigVec[i]);
       free(eigVal); free(eigVec); free(resid);
+
+      /* Clean up quark sources, both base and modified */
+      for(i = 0; i < param.num_base_source + param.num_modified_source; i++)
+	clear_qs(&param.src_qs[i]);
       
       ENDTIME("save eigenvectors (if requested)");
     }
@@ -929,9 +940,6 @@ int main(int argc, char *argv[])
 #ifdef HISQ_SVD_COUNTER
     printf("hisq_svd_counter = %d\n",hisq_svd_counter);
 #endif
-#ifdef HYPISQ_SVD_COUNTER
-    printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
-#endif
     fflush(stdout);
     
     for(i = 0; i < param.num_qk; i++){
@@ -960,6 +968,7 @@ int main(int argc, char *argv[])
     starttime = endtime;
   } /* readin(prompt) */
   
+  free_lattice();
 
 #ifdef HAVE_QUDA
   finalize_quda();

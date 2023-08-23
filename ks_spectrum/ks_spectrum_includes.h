@@ -53,7 +53,7 @@ char *create_kss_XML(char *filename, quark_source *ksqs);
 void read_ksprop_to_ksp_field(int startflag, char startfile[],
 			      quark_source *my_ksqs, ks_prop_field *ksp);
 
-int solve_ksprop(int set_type,
+int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 		 int num_prop, int startflag[], char startfile[][MAXFILENAME],
 		 int saveflag[], char savefile[][MAXFILENAME],
 		 ks_prop_field *ksprop[],

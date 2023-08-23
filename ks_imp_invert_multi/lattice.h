@@ -37,7 +37,7 @@ typedef struct {
 	/* is it even or odd? */
 	char parity;
 	/* my index in the array */
-	int index;
+	uint32_t index;
 #ifdef SITERAND
 	/* The state information for a random number generator */
 	double_prn site_prn;
@@ -106,7 +106,7 @@ typedef struct {
    u0 is tadpole improvement factor, perhaps (plaq/3)^(1/4)
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int iseed;
+EXTERN  uint32_t iseed;
 EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 #ifdef FIX_NODE_GEOM
 EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
@@ -121,7 +121,7 @@ EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
-EXTERN	int iseed;		/* random number seed */
+EXTERN	uint32_t iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
 EXTERN  int dyn_flavors[MAX_DYN_MASSES];
 EXTERN  int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
@@ -178,6 +178,7 @@ EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;
+EXTERN int refresh_ape_links;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */

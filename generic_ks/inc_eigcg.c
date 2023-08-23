@@ -831,6 +831,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
   free(ttt); free(cg_p); free(resid);
   /*** EigCG ***/
   if( Nvecs > 0 ){
+    free(iwork); free(ifail);
     free(rwork); free(T); free(T2); free(Y); free(tau); free(work); free(ttt2); free(tmp);
   }
   /*************/

@@ -6,7 +6,7 @@
 
 #include "generic_ks_includes.h"
 
-#ifdef USE_GSMEAR_QUDA
+#if defined(HAVE_QUDA) && defined(USE_GSMEAR_QUDA)
 
 #include <string.h>
 #include <assert.h>
@@ -14,12 +14,49 @@
 #include <quda_milc_interface.h>
 #include "../include/generic_quda.h"
 
-#define GS_TIME
+/* #define GS_TIME */
 /* #define GS_DEBUG */
 
-/* Compute two-link if it is non-zero. */
+/* Indicate if there is pre-computed two-link.
+   If it is set to zero, two-link is computed regardless of compute_2link. */
+static int twolink = 0;
 static int compute_2link = 1;
 
+/* set compute_2link value to
+   0 if flag is nonzero
+   1 if flag is zero.
+*/
+void
+gauss_smear_reuse_2link_QUDA( int flag )
+{
+  if( flag != 0 )
+    compute_2link = 0;
+  else
+    compute_2link = 1;
+
+  return ;
+}
+
+/* Delete saved two-link.
+ */
+void
+gauss_smear_delete_2link_QUDA()
+{
+  if( initialize_quda() )
+  {
+    node0_printf( "%s: FATAL. QUDA has not been initialized.\n", __func__ );
+    terminate(1);
+  }
+
+  qudaFreeTwoLink();
+  twolink = 0;
+
+  return ;
+}
+
+/* Perform gauss_smear_v_field (in gauss_smear_ks.c) on GPU
+   using performTwoLinkGaussianSmearNStep() in QUDA.
+ */
 void
 gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
                          Real width, int iters, int t0)
@@ -34,14 +71,14 @@ gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
   double dtimec;
 #endif
   
-  /* initialize QUDA */
+  /* Initialize QUDA */
   if( initialize_quda() )
   {
     node0_printf( "%s: FATAL. QUDA has not been initialized.\n", myname );
     terminate(1);
   }
   
-  /* input parameters ***************************/
+  /* Input parameters ***************************/
   int laplaceDim = 3;
   /**********************************************/
 
@@ -50,118 +87,13 @@ gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
     node0_printf( "%s: [Warning] t0 is ignored for d>3 dimensional Laplacian.\n", myname );
     t0 = ALL_T_SLICES;
   }
-  
-#ifdef GS_DEBUG
-  setVerbosityQuda( QUDA_DEBUG_VERBOSE, "", stdout );
-#endif
-  
-  /* QUDA inverter setup ************************/
-  QudaInvertParam qip = newQudaInvertParam();
 
-  qip.verbosity = QUDA_SUMMARIZE;
-
-  qip.dslash_type = QUDA_ASQTAD_DSLASH;
-  qip.laplace3D = laplaceDim;
-  qip.Ls = 1;
-
-  qip.mass_normalization = QUDA_KAPPA_NORMALIZATION;
-  qip.mass = 0.0;
-  qip.kappa = 1.0;
-
-  qip.dagger = QUDA_DAG_NO;
-  qip.gauge_smear = QUDA_BOOLEAN_FALSE;
-
-  qip.cpu_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-  qip.cuda_prec = qip.cpu_prec;
-  qip.cuda_prec_sloppy = qip.cpu_prec;
-  qip.cuda_prec_refinement_sloppy = qip.cuda_prec;
-  qip.dirac_order = QUDA_DIRAC_ORDER;
-  qip.input_location = QUDA_CPU_FIELD_LOCATION;
-  qip.output_location = QUDA_CPU_FIELD_LOCATION;
-  /* Removed from QUDA */
-  /* qip.sp_pad = 0; */ 
-  /* qip.cl_pad = 0; */
-
-  /* Not used, but need to be set. */
-  qip.inv_type = QUDA_CG_INVERTER;
-  qip.solution_type = QUDA_MAT_SOLUTION;
-  qip.solve_type = QUDA_DIRECT_SOLVE;
-  qip.matpc_type = QUDA_MATPC_EVEN_EVEN;
-  qip.gamma_basis = QUDA_DEGRAND_ROSSI_GAMMA_BASIS;
-  qip.preserve_source = QUDA_PRESERVE_SOURCE_YES;
-  qip.solver_normalization = QUDA_DEFAULT_NORMALIZATION;
-  qip.tol = 1e-14;
-  qip.tol_restart = 1e-14;
-  qip.maxiter = 1;
-  qip.reliable_delta = 0.1;
-  qip.use_alternative_reliable = QUDA_BOOLEAN_FALSE;
-  qip.use_sloppy_partial_accumulator = QUDA_BOOLEAN_FALSE;
-  qip.solution_accumulator_pipeline = 0;
-  qip.pipeline = 0;
-  qip.residual_type = QUDA_L2_RELATIVE_RESIDUAL;
-  qip.heavy_quark_check = 0;
-  qip.tol_hq = 0;
-  qip.Nsteps = 0;
-  qip.inv_type_precondition = QUDA_INVALID_INVERTER;
-  qip.tol_precondition = 1e-14;
-  qip.maxiter_precondition = 1;
-  qip.verbosity_precondition = QUDA_SILENT;
-  qip.cuda_prec_precondition = QUDA_INVALID_PRECISION;
-  qip.cuda_prec_eigensolver = QUDA_INVALID_PRECISION;
-  qip.gcrNkrylov = 1;
-  qip.ca_basis = QUDA_POWER_BASIS;
-  qip.ca_lambda_min = 0.0;
-  qip.ca_lambda_max = 0.0;
-  qip.native_blas_lapack = QUDA_BOOLEAN_TRUE;
-  /* End of *************** QUDA inverter setup */
-
-  /* QUDA gauge setup ***************************/
-  QudaGaugeParam qgp = newQudaGaugeParam();
-
-  qgp.type = QUDA_SU3_LINKS;
-
-  const int * nsquares = get_logical_dimensions();
-  qgp.X[0] = nx / nsquares[0];
-  qgp.X[1] = ny / nsquares[1];
-  qgp.X[2] = nz / nsquares[2];
-  qgp.X[3] = nt / nsquares[3];  
-
-  qgp.cpu_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-  qgp.cuda_prec = qgp.cpu_prec;
-  qgp.cuda_prec_sloppy = qgp.cuda_prec;
-  qgp.cuda_prec_precondition= qgp.cuda_prec;
-  qgp.cuda_prec_eigensolver = qgp.cuda_prec;
-  qgp.cuda_prec_refinement_sloppy = qgp.cuda_prec;
-
-  qgp.reconstruct = QUDA_RECONSTRUCT_NO;
-  qgp.reconstruct_sloppy = QUDA_RECONSTRUCT_NO;
-  qgp.reconstruct_precondition = QUDA_RECONSTRUCT_NO;
-  qgp.reconstruct_eigensolver = QUDA_RECONSTRUCT_NO;
-  qgp.reconstruct_refinement_sloppy = QUDA_RECONSTRUCT_NO;
-
-  qgp.gauge_order = QUDA_MILC_GAUGE_ORDER;
-  qgp.anisotropy = 1.0;
-  qgp.t_boundary = QUDA_PERIODIC_T;
-  qgp.tadpole_coeff = u0;
-  qgp.gauge_fix = QUDA_GAUGE_FIXED_NO;
-  qgp.staggered_phase_type = QUDA_STAGGERED_PHASE_NO;
-
-  int pad_size = 0;
-  int x_face_size = qgp.X[1] * qgp.X[2] * qgp.X[3] / 2;
-  int y_face_size = qgp.X[0] * qgp.X[2] * qgp.X[3] / 2;
-  int z_face_size = qgp.X[0] * qgp.X[1] * qgp.X[3] / 2;
-  int t_face_size = qgp.X[0] * qgp.X[1] * qgp.X[2] / 2;
-#define MAX(a,b) ( (a)>(b) ? (a) : (b) )
-  pad_size = MAX(x_face_size, y_face_size);
-  pad_size = MAX(pad_size, z_face_size);
-  pad_size = MAX(pad_size, t_face_size);
-
-  qgp.ga_pad = pad_size;
-  qgp.mom_ga_pad = 0;
-  /* End of ****************** QUDA gauge setup */
-  
-  /* Load gauge field */
-  loadGaugeQuda( (void*) t_links, &qgp );
+  int compute_2link_temp = compute_2link;
+  if( compute_2link == 0 && twolink == 0 )
+  {
+    node0_printf( "%s: [Warning] There is no saved two-link. Two-link will be calculated.\n", myname );
+    compute_2link_temp = 1;
+  }
 
 #ifdef GS_TIME
   dtimec = -dclock();
@@ -169,9 +101,21 @@ gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
 #ifdef GS_DEBUG
   node0_printf( "%s: Gaussian smearing starts.\n", myname );
 #endif
-  
+
+  /* Quark smearing parameters */
+  QudaTwoLinkQuarkSmearArgs_t qsmear_args;
+  qsmear_args.n_steps = iters;
+  qsmear_args.width = width;
+  qsmear_args.compute_2link = compute_2link_temp;
+  qsmear_args.delete_2link = 0;
+  qsmear_args.t0 = t0;
+  qsmear_args.laplaceDim = laplaceDim;
+
   /* Run gaussian smearing */
-  performTwoLinkGaussianSmearNStep( (void*) src, &qip, iters, width, compute_2link, t0 );
+  qudaTwoLinkGaussianSmear( MILC_PRECISION, MILC_PRECISION, (void*) t_links, (void*) src, qsmear_args );
+
+  /* two-link is saved. */
+  twolink = 1;
 
 #ifdef GS_DEBUG
   node0_printf( "%s: Gaussian smearing ends.\n", myname );
@@ -180,23 +124,15 @@ gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
   dtimec += dclock();
   node0_printf( "[GS_TIME] QUDA two-link Gaussian smearing: time = %g s, iters = %d\n", dtimec, iters );
 #endif
-  
-  /* Disable two-link calculation in subsequent calls */
-  if( compute_2link != 0 ) compute_2link = 0;  
-  
-#ifdef GS_DEBUG
-  node0_printf( "%s: End\n", myname );
-#endif  
 
   return ;
 }
-
 
 #else /* #ifdef USE_GSMEAR_QUDA */
 
 void
 gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
-        Real width, int iters, int t0)
+                         Real width, int iters, int t0)
 {
   char myname[] = "gauss_smear_v_field_QUDA";
   node0_printf( "%s: Requires compilation with the QUDA library\n", myname );

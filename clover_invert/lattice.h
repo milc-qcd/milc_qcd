@@ -29,7 +29,7 @@ typedef struct {
 	/* is it even or odd? */
 	char parity;
 	/* my index in the array */
-	int index;
+	uint32_t index;
 	/* The state information for a random number generator */
 	double_prn site_prn;
 	/* align to double word boundary (kludge for Intel compiler) */
@@ -122,6 +122,7 @@ EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;
+EXTERN int refresh_ape_links;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */

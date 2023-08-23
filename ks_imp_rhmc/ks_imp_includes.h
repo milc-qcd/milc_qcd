@@ -10,6 +10,7 @@
 #include "../include/config.h"  /* Keep this first */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <math.h>
 #include <string.h>
 #include "../include/complex.h"
@@ -118,6 +119,7 @@ double d_action_rhmc(su3_vector **multi_x, su3_vector *sumvec );
 void gauge_field_copy(field_offset src,field_offset dest);
 double fermion_action( su3_vector **multi_x, su3_vector *sumvec );
 double hmom_action(void);
+void plaquette_action(double *ss_plaq, double *st_plaq);
 
 #endif /* KS_IMP_INCLUDES_H_ */
 

@@ -919,7 +919,7 @@ double dclock(void){
 **  Print time stamp
 */
 void
-time_stamp(char *msg)
+time_stamp(const char *msg)
 {
   time_t time_stamp;
 
@@ -1666,7 +1666,7 @@ declare_strided_gather(
 			   neighbor tables */
   int subl,		/* subl of sites whose neighbors we gather.
 			   It is EVENANDODD, if all sublattices are done. */
-  char ** dest)		/* one of the vectors of pointers */
+  char ** __restrict__ dest)/* one of the vectors of pointers */
 {
   int i;	        /* scratch */
   site *s;	        /* scratch pointer to site */

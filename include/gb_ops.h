@@ -2,6 +2,7 @@
 #define _GOLTERMAN_BAILEY_OPS_H
 
 #include <string.h>
+#include "../generic_ks/generic_ks_includes.h"
 
 #ifdef GB_BARYON
 
@@ -85,6 +86,14 @@ enum gb_baryon_op
 
 /* Extra spin-taste index for doing 2-point tie-ups with 3-point infrastructure */
 #define GB_2POINT_BACKPROP 127
+
+/* generic_ks/gb_baryon_snk.c declaration */
+void gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2[],
+               su3_matrix *links, enum gb_baryon_op src_op[],
+               enum gb_baryon_op snk_op[],
+               int stIdx, short dowall[], short docube[], int num_d, int num_s, int r0[],
+               int mom[], char par[], complex *momfld, int flip_snk[],
+               int num_corr_gb, int phase[], Real fact[], complex *prop[]);
 
 /* generic_ks/gb_ops.c function declarations */
 int gb_baryon_op(char *label);

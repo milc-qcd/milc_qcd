@@ -30,7 +30,7 @@ typedef struct {
 	/* is it even or odd? */
 	char parity;
 	/* my index in the array */
-	int index;
+	uint32_t index;
 	/* The state information for a random number generator */
 	double_prn site_prn;
 	/* align to double word boundary (kludge for Intel compiler) */
@@ -61,7 +61,7 @@ typedef struct {
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int iseed;
+EXTERN  uint32_t iseed;
 EXTERN  int niter, nrestart;
 EXTERN  size_t volume;		/* volume of lattice = nx*ny*nz*nt */
 #ifdef FIX_NODE_GEOM
@@ -124,6 +124,8 @@ EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;
+EXTERN int refresh_ape_links;
+EXTERN int ape_links_ks_phases;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */
@@ -140,6 +142,7 @@ EXTERN Real g_splaq,g_tplaq;	/* global U(1) plaquette measures */
 
 /* For eigenpair calculation */
 EXTERN int Nvecs_tot;
+EXTERN int Nvecs_alloc;
 EXTERN double *eigVal; /* eigenvalues of D^dag D */
 EXTERN su3_vector **eigVec; /* eigenvectors */
 

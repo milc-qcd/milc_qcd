@@ -247,7 +247,12 @@ ks_spectrum_hisq_u1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
 	"DEFINES += -DU1_FIELD" "EXTRA_OBJECTS += ${G_U1_OBJECTS}"
 
-# GB baryon with memory map and blinding
+# GB baryon with memory map and NO blinding
+ks_spectrum_hisq_gb_baryon_no_sink_links::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DNO_SINK_LINKS"
+
+# GB baryon with memory map and blinding (blinding applied for 3pt baryon correlators only)
 ks_spectrum_hisq_gb_baryon_blind_no_sink_links::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
 	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS"

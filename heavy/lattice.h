@@ -30,7 +30,7 @@ typedef struct {
 	/* is it even or odd? */
 	char parity;
 	/* my index in the array */
-	int index;
+	uint32_t index;
 	/* The state information for a random number generator */
 	double_prn site_prn;
 	/* align to double word boundary (kludge for Intel compiler) */
@@ -79,7 +79,7 @@ extern int spins[4];
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
-EXTERN  int iseed;
+EXTERN  uint32_t iseed;
 EXTERN  size_t volume;	/* volume of lattice = nx*ny*nz*nt */
 EXTERN  int nkap;  /****** number of kappa values ******/
 #define MAX_NKAP 20 /* maximum number of kappa values */
@@ -152,6 +152,7 @@ EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;
+EXTERN int refresh_ape_links;
 
 /* Storage for the clover term */
 EXTERN clover *gen_clov;

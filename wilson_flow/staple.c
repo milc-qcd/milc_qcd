@@ -66,7 +66,7 @@ wilson_staple(int dir1, int dir2, field_offset lnk1,
 void
 symanzik1x2_staple(int dir1, int dir2, field_offset lnk1,
                    field_offset lnk2, Real coeff, field_offset stp)
-{	
+{
   register int i;
   register site *s;
   msg_tag *tag0, *tag1, *tag2, *tag3, *tag4, *tag5, *tag6, *tag7, *tag8;
@@ -82,7 +82,7 @@ symanzik1x2_staple(int dir1, int dir2, field_offset lnk1,
 
   wait_gather(tag0);
   wait_gather(tag1);
-	
+
   //Calculate upper 1x1 staple
   FORALLSITES(i, s) {
     mult_su3_nn(SU3_PT(lnk2), (su3_matrix *)gen_pt[1][i], &tmat1);
@@ -102,7 +102,7 @@ symanzik1x2_staple(int dir1, int dir2, field_offset lnk1,
   //Gather lower staple from direction -dir2
   tag3 = start_gather_field(TM(3), sizeof(su3_matrix), OPP_DIR(dir2),
                             EVENANDODD, gen_pt[3]);
-	
+
   //Start construction of 2(dir1)x1(dir2) staple protruding in +dir1
   FORALLSITES(i, s) {
     mult_su3_nn(SU3_PT(lnk1), (su3_matrix *)gen_pt[0][i], &tmat1);
@@ -151,7 +151,7 @@ symanzik1x2_staple(int dir1, int dir2, field_offset lnk1,
     mult_su3_an((su3_matrix *)gen_pt[5][i], SU3_PT(lnk1), &tmat1);
     mult_su3_nn(&tmat1, (su3_matrix *)gen_pt[0][i], TM(8)+i);
   }
-	
+
   //Gather 2(dir1)x1(dir2) left, lower staple from direction -dir2
   tag8 = start_gather_field(TM(8), sizeof(su3_matrix), OPP_DIR(dir2),
                             EVENANDODD, gen_pt[8]);
@@ -177,18 +177,18 @@ symanzik1x2_staple(int dir1, int dir2, field_offset lnk1,
   //Finish lower 1(dir1)x2(dir2) staple
   wait_gather(tag6);
   FORALLSITES(i, s)
-    scalar_mult_add_su3_matrix(SU3_PT(stp), (su3_matrix *)gen_pt[6][i], coeff, 
+    scalar_mult_add_su3_matrix(SU3_PT(stp), (su3_matrix *)gen_pt[6][i], coeff,
                                SU3_PT(stp));
 
   //Add lower 2(dir1)x1(dir2) staple protruding in +dir1
   wait_gather(tag7);
   FORALLSITES(i, s)
-    scalar_mult_add_su3_matrix(SU3_PT(stp), (su3_matrix *)gen_pt[7][i], coeff, 
+    scalar_mult_add_su3_matrix(SU3_PT(stp), (su3_matrix *)gen_pt[7][i], coeff,
                                SU3_PT(stp));
 
   //Add lower 2(dir1)x1(dir2) staple protruding in -dir1
   wait_gather(tag8);
-  FORALLSITES(i, s) 
+  FORALLSITES(i, s)
     scalar_mult_add_su3_matrix(SU3_PT(stp), (su3_matrix *)gen_pt[8][i], coeff,
                                SU3_PT(stp));
 
@@ -204,22 +204,35 @@ symanzik1x2_staple(int dir1, int dir2, field_offset lnk1,
   cleanup_gather(tag8);
 }
 
+/* Correction to Symanzik flow -- Zeuthen flow,
+   Ramos, Sint, 1408.05552 */
+void
+zeuthen_correction( int dir1, field_offset lnk1,
+                    Real coeff, field_offset stp ) {
+
+  //TODO: add Zeuthen correction to the flow equation
+
+}
+
 /* Compiles all contributions to the staple */
 void
-staple() 
+staple()
 {
   register int i;
   register site *s;
   int dir1, dir2;
-  Real coeff1x1, coeff1x2;
+  Real coeff1x1, coeff1x2, coeffz=1/12.;
   field_offset lnk1, lnk2, stp;
+#ifdef ANISOTROPY
+  Real tmp;
+#endif
 
   /* Pick the coefficients for each loop contributing to the staple */
   if( stapleflag==WILSON ) {
     coeff1x1 = 1.0;
     coeff1x2 = 0.0;
   }
-  else { /* stapleflag==SYMANZIK */
+  else { /* stapleflag==SYMANZIK || ZEUTHEN */
     coeff1x1 = 5.0/3.0;
     coeff1x2 = -1.0/12.0;
   }
@@ -237,13 +250,35 @@ staple()
       lnk2 = F_OFFSET(link[dir2]);
       stp = F_OFFSET(staple[dir1]);
 
+#ifdef ANISOTROPY
+      if(dir2==TUP)
+        tmp=ani*ani;
+      else
+        tmp=1.0;
+
+      /* Adds 1x1 (Wilson) contributions */
+      wilson_staple(dir1, dir2, lnk1, lnk2, tmp*coeff1x1, stp);
+
+      /* Adds 1x2 (Symanzik tree level) contributions -- both
+         for Symanzik and Zeuthen flow */
+      if( stapleflag!=WILSON )
+        symanzik1x2_staple(dir1, dir2, lnk1, lnk2, tmp*coeff1x2, stp);
+#else
+
       /* Adds 1x1 (Wilson) contributions */
       wilson_staple(dir1, dir2, lnk1, lnk2, coeff1x1, stp);
 
-      /* Adds 1x2 (Symanzik tree level) contributions */
+      /* Adds 1x2 (Symanzik tree level) contributions -- both
+         for Symanzik and Zeuthen flow */
       if( stapleflag!=WILSON )
         symanzik1x2_staple(dir1, dir2, lnk1, lnk2, coeff1x2, stp);
+#endif
 
     } /* end: dir2 loop */
+
+    if( stapleflag==ZEUTHEN ) //TODO: this is doing nothing at the moment
+      zeuthen_correction(dir1,lnk1,coeffz,stp);
+
+
   } /* end: dir1 loop */
 }

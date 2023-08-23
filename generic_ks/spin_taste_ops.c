@@ -16,9 +16,8 @@
 
 /* Entry points
 
-   general_spin_taste_op  Any spin/taste and any gauge links but not FN
    spin_taste_op          Limited spin/taste set and APE links
-   spin_taste_op_fn       Any spin/taste and APE links except FN links with FN operators
+   spin_taste_op_ape_fn   Any spin/taste and APE links except FN links with FN operators
 
    spin_taste_index       Convert character label to index
    spin_taste_label       Convert index to label
@@ -28,27 +27,21 @@
 
 #include "generic_ks_includes.h"
 #include <string.h>
+#include "../include/imp_ferm_links.h"
 
 #include "../include/gammatypes.h"
-
-enum shift_dir {
-  SHIFT_FORWARD,
-  SHIFT_BACKWARD,
-  SHIFT_SYMMETRIC
-};
+#include "../include/openmp_defs.h"
 
 /*------------------------------------------------------------------*/
 /* Compute the hypercube coordinate relative to an offset.  We assume
    that all lattice dimensions are even, as they should be for
    staggered fermions! */
-static short *
-hyp_coord(site *s, int r0[]){
-  static short h[4];
+static void
+hyp_coord(short h[], site *s, int r0[]){
   h[XUP] = (s->x - r0[XUP]) & 0x1;
   h[YUP] = (s->y - r0[YUP]) & 0x1;
   h[ZUP] = (s->z - r0[ZUP]) & 0x1;
   h[TUP] = (s->t - r0[TUP]) & 0x1;
-  return h;
 }
 
 /* Compute the parity of the site s relative to offset r0. */
@@ -67,80 +60,19 @@ hyp_parity_bit(site *s, int r0[]){
 
 #ifndef NO_GAUGE_FIELD
 
-/*-------------------------------------------------------------*/
-/* Apply the shift operator in direction "dir" with sign fb    *
- * This is the explicit version                                *
- * The KS phases MUST BE in the links                          */
-
-static void 
-shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
-	    su3_matrix *links)
-{
-  register int i ;
-  register site *s ;
-  msg_tag *tag[2] = {NULL, NULL};
-  su3_vector *tvec = create_v_field();
-
-  if(fb == SHIFT_FORWARD || fb == SHIFT_SYMMETRIC)
-    tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
-  
-  if(fb == SHIFT_BACKWARD || fb == SHIFT_SYMMETRIC){
-    FORALLFIELDSITES(i)
-    {
-      mult_adj_su3_mat_vec( links+4*i+dir, src+i, tvec+i ) ;
-    }
-    tag[1] = start_gather_field(tvec, sizeof(su3_vector), OPP_DIR(dir), 
-				EVENANDODD, gen_pt[1] );
-  }
-  
-  if(fb == SHIFT_FORWARD || fb == SHIFT_SYMMETRIC){
-    wait_gather(tag[0]);
-    FORALLSITES(i,s)
-      {
-	mult_su3_mat_vec( links+4*i+dir, (su3_vector *)gen_pt[0][i], dest+i );
-      }
-    cleanup_gather(tag[0]);
-
-  } else {
-
-    clear_v_field(dest);
-
-  }
-
-  if(fb == SHIFT_BACKWARD || fb == SHIFT_SYMMETRIC){
-    wait_gather(tag[1]);
-    FORALLSITES(i,s)
-      {
-	add_su3_vector( dest+i, (su3_vector *)gen_pt[1][i], dest+i ) ;    
-      }
-    cleanup_gather(tag[1]);
-  }
-
-  if(fb == SHIFT_SYMMETRIC){
-    /* Now divide by 2 eq. (4.2b) of Golterman's Meson paper*/
-    FORALLSITES(i,s)
-      {
-	scalar_mult_su3_vector( dest+i, 0.5, dest+i );
-      }
-  }
-
-  destroy_v_field(tvec);
-}
-
 /*------------------------------------------------------------------*/
 /* Apply the symmetric shift with directions                            *
  * stored in the array d. Each shift is multiplied by \zeta_k           *
  * n is the number of shifts                                            *
  * This is the E_\mu(x,y)=\Xi_\mu operator defined by Golterman.        *
- * Nucl. Phys. B245  eq.3.5 and eq. 4.2b                                */
+ * Nucl. Phys. B245, 61 (1984)  eq.3.5 and eq. 4.2b                                */
 
 static void 
 zeta_shift_field(int n, int *d, int r0[], su3_vector *dest, 
-		 su3_vector *src, su3_matrix *links )
+		 const su3_vector *const src, const su3_matrix *const links, int *refresh_links )
 {
   int i,c ;
   site *s;
-  short *h;
   su3_vector *tvec = create_v_field();
   
   for(c=0;c<n;c++)
@@ -148,20 +80,21 @@ zeta_shift_field(int n, int *d, int r0[], su3_vector *dest,
       /* Do the shift in d[c] */ 
       if(c==0)
 	/* first time from source */
-	shift_field(d[c], SHIFT_SYMMETRIC, tvec, src, links);
+	shift_field(d[c], SHIFT_SYMMETRIC, tvec, src, links, refresh_links);
       else
 	/* other times from dest */
-	shift_field(d[c], SHIFT_SYMMETRIC, tvec, dest, links);
+	shift_field(d[c], SHIFT_SYMMETRIC, tvec, dest, links, refresh_links);
       /* Multiply by \zeta_d[c]. Because the phases are               *
        * on we multiply by \zeta * \eta = \epsilon * (-1)^coord[d[c]] */
-      FORALLSITES(i,s){
-	h = hyp_coord(s, r0);
+      FORALLSITES_OMP(i,s,){
+	short h[4];
+	hyp_coord(h, s, r0);
 	/* epsilon times (-1)^coord[d[c]] for others */
 	if( hyp_parity_bit(s, r0) ^ h[d[c]] )
 	  scalar_mult_su3_vector(tvec+i, -1., dest+i );
 	else
 	  dest[i] = tvec[i];
-      }
+      } END_LOOP_OMP;
     }
   destroy_v_field(tvec);
 }
@@ -175,8 +108,10 @@ spin_sign(int spin, int r0[], site *s){
   /* Same as prod_\mu [eta_\mu(x-r0) zeta_\mu(x-r0)]^(s_\mu) */
   int j, mask;
   Real sign = 1.;
-  short *h = hyp_coord(s, r0);
+  short h[4];
   short hp = hyp_parity_bit(s, r0);
+
+  hyp_coord(h, s, r0);
   
   /* For each nonzero gamma_mu bit in "spin",
      a factor of (-)^(x[mu]-r0[mu]) epsilon(x) */
@@ -192,17 +127,17 @@ spin_sign(int spin, int r0[], site *s){
 #ifndef NO_GAUGE_FIELD
 
 static void
-spin_sign_field(int spin, int r0[], su3_vector *dest, su3_vector *src){
+spin_sign_field(int spin, int r0[], su3_vector *dest, const su3_vector *const src){
   /* Apply the spin_sign operation to an entire field */
   int i;
   site *s;
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,){
     if(spin_sign(spin, r0, s) > 0)
       dest[i] = src[i];
     else 
       scalar_mult_su3_vector( src+i, -1.0, dest+i );
-  }
+  } END_LOOP_OMP;
 }
 
 #endif
@@ -217,46 +152,45 @@ antiquark_sign_flip(int r0[], site *s){
 
 /* Extra (-)^(x+y+z+t) to allow for antiquark */
 static void
-antiquark_sign_flip_field(int r0[], su3_vector *dest, su3_vector *src){
+antiquark_sign_flip_field(int r0[], su3_vector *dest, const su3_vector *const src){
   int i;
   site *s;
   
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,){
     if( antiquark_sign_flip(r0, s) )
       scalar_mult_su3_vector( src+i, -1.0, dest+i );
     else 
       dest[i] = src[i];
-  }
+  } END_LOOP_OMP;
 }
 
 /*------------------------------------------------------------------*/
 static void
-sign_flip_field(su3_vector *dest, su3_vector *src){
+sign_flip_field(su3_vector *dest, const su3_vector *const src){
   int i;
   site *s;
-  FORALLSITES(i,s){
+  FORALLFIELDSITES_OMP(i,){
     scalar_mult_su3_vector(src+i, -1.0, dest+i );
-  }
+  } END_LOOP_OMP;
 }
 
 #endif
 
 /*------------------------------------------------------------------*/
 static void 
-local(int spin, int r0[], su3_vector *dest, su3_vector *src){
+local(int spin, int r0[], su3_vector *dest, const su3_vector *const src){
 
   int i;
   site *s;
-  Real sign;
 
-  FORALLSITES(i,s){
-    sign = spin_sign(spin, r0, s);
+  FORALLSITES_OMP(i,s,){
+    Real sign = spin_sign(spin, r0, s);
     if(antiquark_sign_flip(r0, s))sign = -sign;
     if( sign > 0 )
       dest[i] = src[i];
     else 
       scalar_mult_su3_vector( src+i, -1.0, dest+i );
-  }
+  } END_LOOP_OMP;
 }
 
 #ifndef NO_GAUGE_FIELD
@@ -264,14 +198,14 @@ local(int spin, int r0[], su3_vector *dest, su3_vector *src){
 /*------------------------------------------------------------------*/
 static void 
 one_link(int spin, int dir, int r0[], su3_vector *dest, 
-	 su3_vector *src, su3_matrix *links){
+	 const su3_vector *const src, const su3_matrix *const links, int *refresh_links){
 
   int n = 1;
   int c[1] = {dir};
   su3_vector *tvec = create_v_field();
 
   spin_sign_field(spin, r0, tvec, src);
-  zeta_shift_field(n, c, r0, dest, tvec, links);
+  zeta_shift_field(n, c, r0, dest, tvec, links, refresh_links);
   antiquark_sign_flip_field(r0, dest, dest);
 
   destroy_v_field(tvec);
@@ -280,7 +214,7 @@ one_link(int spin, int dir, int r0[], su3_vector *dest,
 /*------------------------------------------------------------------*/
 static void 
 two_link(int spin, int dir1, int dir2, int r0[], su3_vector *dest, 
-	 su3_vector *src, su3_matrix *links){
+	 const su3_vector *const src, const su3_matrix *const links, int *refresh_links){
   int i;
   site *s;
   int n = 2;
@@ -291,18 +225,18 @@ two_link(int spin, int dir1, int dir2, int r0[], su3_vector *dest,
   spin_sign_field(spin, r0, dest, src);
 
   c[0] = dir2; c[1] = dir1;
-  zeta_shift_field(n, c, r0, tvec0, dest, links);
+  zeta_shift_field(n, c, r0, tvec0, dest, links, refresh_links);
 
   c[0] = dir1; c[1] = dir2;
-  zeta_shift_field(n, c, r0, tvec1, dest, links);
+  zeta_shift_field(n, c, r0, tvec1, dest, links, refresh_links);
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,){
     sub_su3_vector( tvec0+i, tvec1+i, dest+i );
     if( antiquark_sign_flip(r0,s) )
       scalar_mult_su3_vector( dest+i, -0.5, dest+i );
     else
       scalar_mult_su3_vector( dest+i,  0.5, dest+i );
-  }
+  } END_LOOP_OMP;
 
   destroy_v_field(tvec1);
   destroy_v_field(tvec0);
@@ -311,7 +245,7 @@ two_link(int spin, int dir1, int dir2, int r0[], su3_vector *dest,
 #if 0
 /*------------------------------------------------------------------*/
 static void 
-three_link(int spin, int r0[], su3_vector *dest, su3_vector *src, su3_matrix *links){
+three_link(int spin, int r0[], su3_vector *dest, const su3_vector *const src, const su3_matrix *const links, int *refresh_links){
   /* NOTE: only for x, y, z links */
   /* For each gamma_mu in the "spin" gamma matrix, the 
      operator gets a factor (-)^x[mu] times a factor (-)^(x+y+z+t).
@@ -338,10 +272,10 @@ three_link(int spin, int r0[], su3_vector *dest, su3_vector *src, su3_matrix *li
   spin_sign_field(spin, r0, tvec0, src);
   for(c=0;c<6;c++)
     {
-      zeta_shift_field(3,p[c].d,r0,tvec1,tvec0,links);
-      FORALLSITES(i,s){
+      zeta_shift_field(3,p[c].d,r0,tvec1,tvec0,links, refresh_links);
+      FORALLFIELDSITES_OMP(i,){
 	scalar_mult_sum_su3_vector(dest+i, tvec1+i, p[c].sign );
-      }
+      } END_LOOP_OMP;
     }
   /* multiply by \epsilon for the anti-quark */
   antiquark_sign_flip_field(r0, dest, dest);
@@ -354,7 +288,7 @@ three_link(int spin, int r0[], su3_vector *dest, su3_vector *src, su3_matrix *li
 /*------------------------------------------------------------------*/
 static void 
 three_link(int spin, int dir1, int dir2, int dir3, int r0[], 
-	   su3_vector *dest, su3_vector *src, su3_matrix *links){
+	   su3_vector *dest, const su3_vector *const src, const su3_matrix *const links, int *refresh_links){
   /* NOTE: only for x, y, z links */
   /* For each gamma_mu in the "spin" gamma matrix, the 
      operator gets a factor (-)^x[mu] times a factor (-)^(x+y+z+t).
@@ -381,10 +315,10 @@ three_link(int spin, int dir1, int dir2, int dir3, int r0[],
   spin_sign_field(spin, r0, tvec0, src);
   for(c=0;c<6;c++)
     {
-      zeta_shift_field(3,p[c].d,r0,tvec1,tvec0,links);
-      FORALLSITES(i,s){
+      zeta_shift_field(3,p[c].d,r0,tvec1,tvec0,links, refresh_links);
+      FORALLFIELDSITES_OMP(i,){
 	scalar_mult_sum_su3_vector(dest+i, tvec1+i, p[c].sign );
-      }
+      } END_LOOP_OMP;
     }
   /* multiply by \epsilon for the anti-quark */
   antiquark_sign_flip_field(r0, dest, dest);
@@ -395,7 +329,7 @@ three_link(int spin, int dir1, int dir2, int dir3, int r0[],
 
 /*------------------------------------------------------------------*/
 static void 
-four_link(int spin, int r0[], su3_vector *dest, su3_vector *src, su3_matrix *links){
+four_link(int spin, int r0[], su3_vector *dest, const su3_vector *const src, const su3_matrix *const links, int *refresh_links){
   /* For each gamma_mu in the "spin" gamma matrix, the 
      operator gets a factor (-)^x[mu] times a factor (-)^(x+y+z+t).
      Then an overall factor (-)^(x+y+z+t) for the antiquark. */
@@ -442,10 +376,10 @@ four_link(int spin, int r0[], su3_vector *dest, su3_vector *src, su3_matrix *lin
   spin_sign_field(spin, r0, tvec0, src);
   for(c=0;c<24;c++)
     {
-      zeta_shift_field(4,p[c].d,r0,tvec1,tvec0,links);
-      FORALLSITES(i,s){
+      zeta_shift_field(4,p[c].d,r0,tvec1,tvec0,links, refresh_links);
+      FORALLFIELDSITES_OMP(i,){
 	scalar_mult_sum_su3_vector(dest+i, tvec1+i, p[c].sign );
-      }
+      } END_LOOP_OMP;
     }
   /* multiply by \epsilon for the anti-quark */
   antiquark_sign_flip_field(r0, dest, dest);
@@ -458,9 +392,10 @@ four_link(int spin, int r0[], su3_vector *dest, su3_vector *src, su3_matrix *lin
 
 /*------------------------------------------------------------------*/
 /* Apply a general spin-taste operator to a field */
-void
-general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int r0[],
-		      su3_vector *dest, su3_vector *src, su3_matrix *links){
+static void
+general_spin_taste_op_cpu(enum gammatype spin_index, enum gammatype taste_index, int r0[],
+			  su3_vector *dest, const su3_vector *const src,
+			  const su3_matrix *const links, int *refresh_links){
 
   /* Convert gamma label to hexadecimal */
   short spin = gamma_hex(spin_index);
@@ -474,25 +409,60 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
     {
     case 0: local(spin, r0, dest, src); break;
 #ifndef NO_GAUGE_FIELD
-    case  1: one_link(spin, XUP, r0, dest, src, links); break;
-    case  2: one_link(spin, YUP, r0, dest, src, links); break;
-    case  3: two_link(spin, XUP, YUP, r0, dest, src, links); break;
-    case  4: one_link(spin, ZUP, r0, dest, src, links); break;
-    case  5: two_link(spin, ZUP, XUP, r0, dest, src, links); break;
-    case  6: two_link(spin, YUP, ZUP, r0, dest, src, links); break;
-    case  7: three_link(spin, XUP, YUP, ZUP, r0, dest, src, links); break;
-    case  8: one_link(spin, TUP, r0, dest, src, links); break;
-    case  9: two_link(spin, XUP, TUP, r0, dest, src, links); break;
-    case 10: two_link(spin, YUP, TUP, r0, dest, src, links); break;
-    case 11: three_link(spin, XUP, YUP, TUP, r0, dest, src, links); break;
-    case 12: two_link(spin, ZUP, TUP, r0, dest, src, links); break;
-    case 13: three_link(spin, XUP, ZUP, TUP, r0, dest, src, links); break;
-    case 14: three_link(spin, YUP, ZUP, TUP, r0, dest, src, links); break;
-    case 15: four_link(spin, r0, dest, src, links); break;
+    case  1: one_link(spin, XUP, r0, dest, src, links, refresh_links); break;
+    case  2: one_link(spin, YUP, r0, dest, src, links, refresh_links); break;
+    case  3: two_link(spin, XUP, YUP, r0, dest, src, links, refresh_links); break;
+    case  4: one_link(spin, ZUP, r0, dest, src, links, refresh_links); break;
+    case  5: two_link(spin, ZUP, XUP, r0, dest, src, links, refresh_links); break;
+    case  6: two_link(spin, YUP, ZUP, r0, dest, src, links, refresh_links); break;
+    case  7: three_link(spin, XUP, YUP, ZUP, r0, dest, src, links, refresh_links); break;
+    case  8: one_link(spin, TUP, r0, dest, src, links, refresh_links); break;
+    case  9: two_link(spin, XUP, TUP, r0, dest, src, links, refresh_links); break;
+    case 10: two_link(spin, YUP, TUP, r0, dest, src, links, refresh_links); break;
+    case 11: three_link(spin, XUP, YUP, TUP, r0, dest, src, links, refresh_links); break;
+    case 12: two_link(spin, ZUP, TUP, r0, dest, src, links, refresh_links); break;
+    case 13: three_link(spin, XUP, ZUP, TUP, r0, dest, src, links, refresh_links); break;
+    case 14: three_link(spin, YUP, ZUP, TUP, r0, dest, src, links, refresh_links); break;
+    case 15: four_link(spin, r0, dest, src, links, refresh_links); break;
 #endif
     default: printf("This operator not supported\n");
     }
 }
+
+/*------------------------------------------------------------------*/
+/* Apply a general spin-taste operator to a field */
+
+#if defined(HAVE_QUDA) && defined(USE_SPIN_TASTE_GPU)
+#include <quda_milc_interface.h>
+
+/* GPU Version */
+static void
+general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int r0[],
+		      su3_vector *dest, const su3_vector *const src,
+		      const su3_matrix *const links, int *refresh_links){
+  
+  int quda_precision = MILC_PRECISION;
+  /* Convert gamma label to hexadecimal */
+  short spin = gamma_hex(spin_index);
+  short taste = gamma_hex(taste_index);
+  
+  qudaSpinTaste(MILC_PRECISION, quda_precision, links, src, dest, (int)spin, (int)taste, refresh_links);
+  if(refresh_links != NULL)
+    *refresh_links = 0;
+}
+
+#else
+
+/* CPU Version */
+
+static void
+general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int r0[],
+		      su3_vector *dest, const su3_vector *const src,
+		      const su3_matrix *const links, int *refresh_links){
+  general_spin_taste_op_cpu(spin_index, taste_index, r0, dest, src, links, refresh_links);
+}
+
+#endif
 
 /*------------------------------------------------------------------*/
 /* Procedures for backward compatibility with former flavor_ops2.c  */
@@ -519,7 +489,7 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
 static enum gammatype 
 dir2gi(int dir, char *myname){
 
-  enum gammatype gi = 0;
+  enum gammatype gi = GT;
 
   switch(dir){
   case XUP: gi = GX; break;
@@ -535,7 +505,7 @@ dir2gi(int dir, char *myname){
 static enum gammatype 
 dir2gi0(int dir, char *myname){
 
-  enum gammatype gi0 = 0;
+  enum gammatype gi0 = GT;
 
   switch(dir){
   case XUP: gi0 = GXT; break;
@@ -553,7 +523,7 @@ dir2gi0(int dir, char *myname){
 static enum gammatype 
 dir2g5i(int dir, char *myname){
 
-  enum gammatype g5i = 0;
+  enum gammatype g5i =GT;
   
   switch(dir){
   case XUP: g5i = G5X; break;
@@ -570,7 +540,7 @@ dir2g5i(int dir, char *myname){
 static enum gammatype 
 dir2gij(int dir, char *myname){
 
-  enum gammatype gij = 0;
+  enum gammatype gij = GT;
   
   switch(dir){
   case XUP: gij = GYZ; break;
@@ -589,7 +559,7 @@ dir2gij(int dir, char *myname){
 /* "Multiply by" the quark-antiquark local pion operator */
 /* Here the operator is gamma_5 x gamma_5 times (-1)^(x+y+z+t) */
 void 
-mult_pion5_field( int r0[], su3_vector *src, su3_vector *dest ){
+mult_pion5_field( int r0[], const su3_vector *const src, su3_vector *dest ){
   /* operator is (-1)^(x+y+z+t), another (-1)^(x+y+z+t) for antiquark,
      so nothing to do */
   
@@ -601,9 +571,9 @@ mult_pion5_field( int r0[], su3_vector *src, su3_vector *dest ){
    It has the other parity state gamma_0 gamma_5 x gamma_0 gamma_5
    (a pion) -CD */
 void 
-mult_pion05_field( int r0[], su3_vector *src, su3_vector *dest ){
+mult_pion05_field( int r0[], const su3_vector *const src, su3_vector *dest ){
 
-  general_spin_taste_op( G1, G1, r0, dest, src, NULL);
+  general_spin_taste_op( G1, G1, r0, dest, src, NULL, NULL);
 }
 
 #ifndef NO_GAUGE_FIELD
@@ -612,15 +582,15 @@ mult_pion05_field( int r0[], su3_vector *src, su3_vector *dest ){
    "pi_i5" or gamma_5 x gamma_i gamma_5 */
 /* Need a minus sign for backward compatibility */
 void 
-mult_pioni5_field( int fdir, int r0[], su3_vector *src, 
-		   su3_vector *dest, su3_matrix *links ){
+mult_pioni5_field( int fdir, int r0[], const su3_vector *const src, 
+		   su3_vector *dest, const su3_matrix *const links, int *refresh_links ){
 
   /* operator is (-)^fdir, another (-1)^(x+y+z+t) for antiquark, 
      so multiply by (-1)^(x+y+z+t) (-)^fdir */
   char myname[] = "mult_pioni5_field";
   enum gammatype g5i = dir2g5i(fdir, myname);
 
-  general_spin_taste_op( G5, g5i, r0, dest, src, links);
+  general_spin_taste_op( G5, g5i, r0, dest, src, links, refresh_links);
   sign_flip_field(dest, dest);
 }
 
@@ -631,14 +601,14 @@ mult_pioni5_field( int fdir, int r0[], su3_vector *src,
    1 x gamma_k
 */
 void 
-mult_pionij_field( int fdir, int r0[], su3_vector *src, 
-		   su3_vector *dest, su3_matrix *links ){
+mult_pionij_field( int fdir, int r0[], const su3_vector *const src, 
+		   su3_vector *dest, const su3_matrix *const links, int *refresh_links ){
   /* operator is (-)^fdir (-)^(x+y+z+t), another (-1)^(x+y+z+t) for antiquark, 
      so multiply by (-1)^fdir */
   char myname[] = "mult_pionij_field";
   enum gammatype gi = dir2gi(fdir, myname);
   
-  general_spin_taste_op( G1, gi, r0, dest, src, links);
+  general_spin_taste_op( G1, gi, r0, dest, src, links, refresh_links);
 }
 
 /* "Multiply by" the two link pion operator. *
@@ -648,14 +618,14 @@ mult_pionij_field( int fdir, int r0[], su3_vector *src,
 */
 
 void 
-mult_pioni_field( int fdir, int r0[], su3_vector *src, 
-		  su3_vector *dest, su3_matrix *links )
+mult_pioni_field( int fdir, int r0[], const su3_vector *const src, 
+		  su3_vector *dest, const su3_matrix *const links, int *refresh_links )
 {
 
   char myname[] = "mult_pioni_field";
   enum gammatype gij = dir2gij(fdir, myname);
 
-  general_spin_taste_op( G1, gij, r0, dest, src, links);
+  general_spin_taste_op( G1, gij, r0, dest, src, links, refresh_links);
 
 }
 
@@ -666,13 +636,13 @@ mult_pioni_field( int fdir, int r0[], su3_vector *src,
    gamma_0 x gamma_5 gamma_i
 */
 void 
-mult_pioni0_field( int fdir, int r0[], su3_vector *src, 
-		   su3_vector *dest, su3_matrix *links )
+mult_pioni0_field( int fdir, int r0[], const su3_vector *const src, 
+		   su3_vector *dest, const su3_matrix *const links, int *refresh_links )
 {
   char myname[] = "mult_pioni0_field";
   enum gammatype g5i = dir2g5i(fdir, myname);
   
-  general_spin_taste_op( GT, g5i, r0, dest, src, links);
+  general_spin_taste_op( GT, g5i, r0, dest, src, links, refresh_links);
 }
 
 
@@ -681,10 +651,10 @@ mult_pioni0_field( int fdir, int r0[], su3_vector *src,
    CD: Actually, by convention, this one is the parity-switched operator
    1 x gamma_0 gamma_5 */
 void 
-mult_pions_field(int r0[], su3_vector *src, su3_vector *dest,
-		 su3_matrix *links)
+mult_pions_field(int r0[], const su3_vector *const src, su3_vector *dest,
+		 const su3_matrix *const links, int *refresh_links)
 {
-  general_spin_taste_op( G1, G5T, r0, dest, src, links);
+  general_spin_taste_op( G1, G5T, r0, dest, src, links, refresh_links);
 }
 
 /* "Multiply by" the three link pion operator.  */
@@ -693,10 +663,10 @@ mult_pions_field(int r0[], su3_vector *src, su3_vector *dest,
    gamma_0 x gamma_5 and then it needs an overall sign flip
 */
 void 
-mult_pion0_field(int r0[], su3_vector *src, su3_vector *dest, 
-		 su3_matrix *links )
+mult_pion0_field(int r0[], const su3_vector *const src, su3_vector *dest, 
+		 const su3_matrix *const links, int *refresh_links )
 {
-  general_spin_taste_op( GT, G5, r0, dest, src, links);
+  general_spin_taste_op( GT, G5, r0, dest, src, links, refresh_links);
   sign_flip_field(dest, dest);
 }
 #endif
@@ -704,26 +674,26 @@ mult_pion0_field(int r0[], su3_vector *src, su3_vector *dest,
 /* "Multiply by" the quark-antiquark local rho operator */
 /* gamma_i x gamma_i */
 void 
-mult_rhoi_field( int pdir,  int r0[], su3_vector *src, su3_vector *dest ){
+mult_rhoi_field( int pdir,  int r0[], const su3_vector *const src, su3_vector *dest ){
   /* operator is gamma_pdir, another (-1)^(x+y+z+t) for antiquark */
 
   char myname[] = "mult_rhoi_field";
   enum gammatype gi = dir2gi(pdir, myname);
 
-  general_spin_taste_op( gi, gi, r0, dest, src, NULL);
+  general_spin_taste_op( gi, gi, r0, dest, src, NULL, NULL);
 
 }
 
 /* "Multiply by" the second quark-antiquark local rho operator */
 void 
-mult_rhoi0_field( int pdir,  int r0[], su3_vector *src, su3_vector *dest ){
+mult_rhoi0_field( int pdir,  int r0[], const su3_vector *const src, su3_vector *dest ){
   /* gamma_0 gamma_i x gamma_0 gamma_i */
   /* operator is gamma_0 gamma_pdir, another (-1)^(x+y+z+t) for antiquark */
 
   char myname[] = "mult_rhoi0_field";
   enum gammatype gi0 = dir2gi0(pdir, myname);
 
-  general_spin_taste_op( gi0, gi0, r0, dest, src, NULL);
+  general_spin_taste_op( gi0, gi0, r0, dest, src, NULL, NULL);
 }
 
 #ifndef NO_GAUGE_FIELD
@@ -731,26 +701,26 @@ mult_rhoi0_field( int pdir,  int r0[], su3_vector *src, su3_vector *dest ){
 /* "Multiply by" the quark-antiquark one link rho operator */
 /* It is gamma_i x 1 times (-1)^(x+y+z+t) for antiquark */
 void 
-mult_rhois_field( int fdir,  int r0[], su3_vector *src, 
-		  su3_vector *dest, su3_matrix *links )
+mult_rhois_field( int fdir,  int r0[], const su3_vector *const src, 
+		  su3_vector *dest, const su3_matrix *const links, int *refresh_links )
 {
   char myname[] = "mult_rhois_field";
   enum gammatype gi = dir2gi(fdir, myname);
 
-  general_spin_taste_op( gi, G1, r0, dest, src, links);
+  general_spin_taste_op( gi, G1, r0, dest, src, links, refresh_links);
 }
 
 /* "Multiply by" the second quark-antiquark one link rho operator */
 /* gamma_i gamma_0 x gamma_0  times (-1)^(x+y+z+t) for antiquark ?? */
 /* Need a minus sign for backward compatibility */
 void 
-mult_rho0_field( int fdir,  int r0[], su3_vector *src, 
-		 su3_vector *dest, su3_matrix *links )
+mult_rho0_field( int fdir,  int r0[], const su3_vector *const src, 
+		 su3_vector *dest, const su3_matrix *const links, int *refresh_links )
 {
   char myname[] = "mult_rhoi0_field";
   enum gammatype gi0 = dir2gi0(fdir, myname);
 
-  general_spin_taste_op( gi0, GT, r0, dest, src, links);
+  general_spin_taste_op( gi0, GT, r0, dest, src, links, refresh_links);
   sign_flip_field(dest, dest);
 }
 
@@ -759,7 +729,7 @@ mult_rho0_field( int fdir,  int r0[], su3_vector *src,
 #if 0
 /* "Multiply by" the quark-antiquark local a1 operator */
 void 
-mult_a1_field( int pdir, int r0[], su3_vector *src, su3_vector *dest ){
+mult_a1_field( int pdir, int r0[], const su3_vector *const src, su3_vector *dest ){
   /* operator is gamma_pdir, (-1)^(x+y+z+t), another (-1)^(x+y+z+t)
      for antiquark */
   register int i;
@@ -772,7 +742,7 @@ mult_a1_field( int pdir, int r0[], su3_vector *src, su3_vector *dest ){
 
 /* "Multiply by" the quark-antiquark local b1 operator */
 void 
-mult_b1_field( int pdir,  int r0[], su3_vector *src, su3_vector *dest ){
+mult_b1_field( int pdir,  int r0[], const su3_vector *const src, su3_vector *dest ){
   /* operator is gamma_pdir, gamma_0, (-1)^(x+y+z+t), another (-1)^(x+y+z+t) for antiquark */
   register int i;
   register site *s;
@@ -853,7 +823,7 @@ enum spin_taste_type {
 };
 
 /* NOTE: The following labels must match the above enum exactly */
-static char *spin_taste_string[MAX_SPIN_TASTE]  = { 
+static const char *spin_taste_string[MAX_SPIN_TASTE]  = { 
   /* Traditional names for local/non-local mesons */
   "pion5",
   "pion05",
@@ -962,14 +932,16 @@ encode_gamma_gamma_index(int s, int t){
   return s*16+t+128;
 }
 
-static int
+static enum gammatype
 decode_gamma_spin_index(int index){
-  return (index-128)/16;
+  int i = (index-128)/16;
+  return (enum gammatype)(i);
 }
 
-static int
+static enum gammatype
 decode_gamma_taste_index(int index){
-  return (index-128)%16;
+  int i = (index-128)%16;
+  return (enum gammatype)(i);
 }
 
 /* True if the index is gamma-gamma type */
@@ -1049,6 +1021,15 @@ forward_index(int index){
   case rhotsfn:
     return rhotsffn;
 
+  case rhoxsffn:
+    return rhoxsffn;
+  case rhoysffn:
+    return rhoysffn;
+  case rhozsffn:
+    return rhozsffn;
+  case rhotsffn:
+    return rhotsffn;
+
   case rhoxsape:
     return rhoxsfape;
   case rhoysape:
@@ -1056,6 +1037,15 @@ forward_index(int index){
   case rhozsape:
     return rhozsfape;
   case rhotsape:
+    return rhotsfape;
+
+  case rhoxsfape:
+    return rhoxsfape;
+  case rhoysfape:
+    return rhoysfape;
+  case rhozsfape:
+    return rhozsfape;
+  case rhotsfape:
     return rhotsfape;
 
   default:
@@ -1075,6 +1065,15 @@ backward_index(int index){
   case rhotsfn:
     return rhotsbfn;
 
+  case rhoxsbfn:
+    return rhoxsbfn;
+  case rhoysbfn:
+    return rhoysbfn;
+  case rhozsbfn:
+    return rhozsbfn;
+  case rhotsbfn:
+    return rhotsbfn;
+
   case rhoxsape:
     return rhoxsbape;
   case rhoysape:
@@ -1082,6 +1081,15 @@ backward_index(int index){
   case rhozsape:
     return rhozsbape;
   case rhotsape:
+    return rhotsbape;
+
+  case rhoxsbape:
+    return rhoxsbape;
+  case rhoysbape:
+    return rhoysbape;
+  case rhozsbape:
+    return rhozsbape;
+  case rhotsbape:
     return rhotsbape;
 
   default:
@@ -1094,7 +1102,7 @@ static char *
 gamma_gamma_string(int index){
 
   static char label[32];
-  int gamma_spin_index, gamma_taste_index;
+  enum gammatype gamma_spin_index, gamma_taste_index;
 
   if( ! is_gamma_gamma_index(index) )
     return "\0";
@@ -1191,7 +1199,7 @@ spin_taste_index(char *label){
 /*------------------------------------------------------------------*/
 /* Map an index to the corresponding label */
 
-char *
+const char *
 spin_taste_label(int index){
   if(is_gamma_gamma_index(index))
     return gamma_gamma_string(index);
@@ -1204,7 +1212,7 @@ spin_taste_label(int index){
 
 static void 
 spin_taste_op_links(int index, int r0[], su3_vector *dest, 
-		    su3_vector *src, su3_matrix *links){
+		    const su3_vector *const src, const su3_matrix *const links, int *refresh_links){
   switch(index){
   case pion5:
     mult_pion5_field(r0, src, dest);
@@ -1214,22 +1222,22 @@ spin_taste_op_links(int index, int r0[], su3_vector *dest,
     break;
 #ifndef NO_GAUGE_FIELD
   case pioni5:
-    mult_pioni5_field(ZUP, r0, src, dest, links);
+    mult_pioni5_field(ZUP, r0, src, dest, links, refresh_links);
     break;
   case pionij:
-    mult_pionij_field(ZUP, r0, src, dest, links);
+    mult_pionij_field(ZUP, r0, src, dest, links, refresh_links);
     break;
   case pioni:
-    mult_pioni_field(ZUP, r0, src, dest, links);
+    mult_pioni_field(ZUP, r0, src, dest, links, refresh_links);
     break;
   case pioni0:
-    mult_pioni0_field(ZUP, r0, src, dest, links);
+    mult_pioni0_field(ZUP, r0, src, dest, links, refresh_links);
     break;
   case pions:
-    mult_pions_field(r0, src, dest, links);
+    mult_pions_field(r0, src, dest, links, refresh_links);
     break;
   case pion0:
-    mult_pion0_field(r0, src, dest, links);
+    mult_pion0_field(r0, src, dest, links, refresh_links);
     break;
 #endif
   case rhox:
@@ -1254,20 +1262,20 @@ spin_taste_op_links(int index, int r0[], su3_vector *dest,
     break;
 #ifndef NO_GAUGE_FIELD
   case rhoxs:
-    mult_rhois_field(XUP, r0, src, dest, links);
+    mult_rhois_field(XUP, r0, src, dest, links, refresh_links);
     break;
   case rhoys:
-    mult_rhois_field(YUP, r0, src, dest, links);
+    mult_rhois_field(YUP, r0, src, dest, links, refresh_links);
     break;
   case rhois:
   case rhozs:
-    mult_rhois_field(ZUP, r0, src, dest, links);
+    mult_rhois_field(ZUP, r0, src, dest, links, refresh_links);
     break;
   case rhots:
-    mult_rhois_field(TUP, r0, src, dest, links);
+    mult_rhois_field(TUP, r0, src, dest, links, refresh_links);
     break;
   case rho0:
-    mult_rho0_field(ZUP, r0, src, dest, links);
+    mult_rho0_field(ZUP, r0, src, dest, links, refresh_links);
     break;
 #endif
   default:
@@ -1291,7 +1299,7 @@ spin_taste_op_links(int index, int r0[], su3_vector *dest,
 
 static void 
 shift_fn_field(imp_ferm_links_t *fn, int dir, enum shift_dir fb, 
-	       su3_vector *src, su3_vector *dest)
+	       const su3_vector *const src, su3_vector *dest)
 {
   char myname[] = "shift_fn_field";
   if(fn == NULL){
@@ -1322,19 +1330,19 @@ shift_fn_field(imp_ferm_links_t *fn, int dir, enum shift_dir fb,
 static void 
 mult_rhois_fn_field( imp_ferm_links_t *fn, int fdir, 
 		     enum shift_dir fb, int r0[],
-		     su3_vector *src, su3_vector *dest )
+		     const su3_vector *const src, su3_vector *dest )
 {
   register int i;
   register site *s;  
   
-  /* apply the shift FN operator (uses fat links) */
+  /* apply the shift FN operator (uses fat links, refresh_links) */
   shift_fn_field(fn, fdir, fb, src, dest);
 
   /* Apply an antiquark gamma_5 x gamma_5 */
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,){
     if(s->parity==ODD)
       scalar_mult_su3_vector( dest+i, -1.0, dest+i );
-  }
+  } END_LOOP_OMP;
 }
 
 /*------------------------------------------------------------------*/
@@ -1344,20 +1352,24 @@ mult_rhois_fn_field( imp_ferm_links_t *fn, int fdir,
 
 static void 
 mult_rhois_ape_field( int fdir, enum shift_dir fb, int r0[],
-		      su3_vector *src, su3_vector *dest )
+		      const su3_vector *const src, su3_vector *dest )
 {
   register int i;
   register site *s;  
   
   /* apply the symmetric shift FN operator (uses APE links) */
-  rephase_field_offset( ape_links, ON, NULL, r0 );
-  shift_field( fdir, fb, dest, src, ape_links);
-  rephase_field_offset( ape_links, OFF, NULL, r0 );
+  /* Use APE links for shifts with phases in and leave them in */
+  if(ape_links_ks_phases != ON){
+      rephase_field_offset( ape_links, ON, &ape_links_ks_phases, r0 );
+      refresh_ape_links = 1;
+    }
+  shift_field( fdir, fb, dest, src, ape_links, &refresh_ape_links);
+
   /* Apply an antiquark gamma_5 x gamma_5 */
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,){
     if(s->parity==ODD)
       scalar_mult_su3_vector( dest+i, -1.0, dest+i );
-  }
+  } END_LOOP_OMP;
 }
 
 #endif
@@ -1366,19 +1378,21 @@ mult_rhois_ape_field( int fdir, enum shift_dir fb, int r0[],
 /* gamma_gamma spin-taste operator                                  */
 static void
 gamma_gamma_spin_taste_op(int index, int r0[], 
-			  su3_vector *dest, su3_vector *src){
+			  su3_vector *dest, const su3_vector *const src){
 
-  int spin_index = decode_gamma_spin_index(index);
-  int taste_index = decode_gamma_taste_index(index);
+  enum gammatype spin_index = decode_gamma_spin_index(index);
+  enum gammatype taste_index = decode_gamma_taste_index(index);
 
 #ifdef NO_GAUGE_FIELD
   general_spin_taste_op(spin_index, taste_index, r0, dest, src, NULL);
 #else
-  /* Use APE links for shifts */
-  rephase_field_offset( ape_links, ON, NULL, r0 );
+  /* Use APE links for shifts with phases in and leave them in */
+  if(ape_links_ks_phases != ON){
+    rephase_field_offset( ape_links, ON, &ape_links_ks_phases, r0 );
+    refresh_ape_links = 1;
+  }
   general_spin_taste_op(spin_index, taste_index, r0, dest, src,
-			ape_links);
-  rephase_field_offset( ape_links, OFF, NULL, r0 );
+			ape_links, &refresh_ape_links);
 #endif
 }
 
@@ -1386,21 +1400,23 @@ gamma_gamma_spin_taste_op(int index, int r0[],
 /*------------------------------------------------------------------*/
 /* Spin-taste operator without the FN option                        */
 void
-spin_taste_op(int index, int r0[], su3_vector *dest, su3_vector *src){
+spin_taste_op(int index, int r0[], su3_vector *dest, const su3_vector *const src){
 
-  if(is_gamma_gamma_index(index))
+  if(is_gamma_gamma_index(index)){
     gamma_gamma_spin_taste_op(index, r0, dest, src);
-
+  }
   else {
     
 #ifdef NO_GAUGE_FIELD
     spin_taste_op_links(index, r0, dest, src, NULL);
 #else
-    /* Use APE links for shifts */
-    
-    rephase_field_offset( ape_links, ON, NULL, r0 );
-    spin_taste_op_links(index, r0, dest, src, ape_links);
-    rephase_field_offset( ape_links, OFF, NULL, r0 );
+    /* Use APE links for shifts with phases in and leave them in */
+
+    if(ape_links_ks_phases != ON){
+      rephase_field_offset( ape_links, ON, &ape_links_ks_phases, r0 );
+      refresh_ape_links = 1;
+    }
+    spin_taste_op_links(index, r0, dest, src, ape_links, &refresh_ape_links);
 #endif
   }
 }
@@ -1409,14 +1425,16 @@ spin_taste_op(int index, int r0[], su3_vector *dest, su3_vector *src){
 #ifdef NO_GAUGE_FIELD
 
 /*------------------------------------------------------------------*/
-/* Spin-taste operator including the FN option                        */
+/* Spin-taste operator but no fn links or ape links are involved (no
+   gauge field) */
 
 void 
-spin_taste_op_fn( void *fn, int index, int r0[],
-		  su3_vector *dest, su3_vector *src){
+spin_taste_op_ape_fn( void *fn, int index, int r0[],
+		      su3_vector *dest, const su3_vector *const src){
 
-  if(is_gamma_gamma_index(index))
+  if(is_gamma_gamma_index(index)){
     gamma_gamma_spin_taste_op(index, r0, dest, src);
+  }
 
   else {
     
@@ -1431,8 +1449,10 @@ spin_taste_op_fn( void *fn, int index, int r0[],
 /* Spin-taste operator including the FN option                      */
 
 void 
-spin_taste_op_fn( imp_ferm_links_t *fn, int index, int r0[],
-		  su3_vector *dest, su3_vector *src){
+spin_taste_op_ape_fn( imp_ferm_links_t *fn, int index, int r0[],
+		      su3_vector *dest, const su3_vector *const src){
+
+  /* With the gamma/gamma notation we always use APE links for the gauge connection */
 
   if(is_gamma_gamma_index(index))
     gamma_gamma_spin_taste_op(index, r0, dest, src);

@@ -560,7 +560,7 @@ double dclock(void){
 **  Print time stamp
 */
 void
-time_stamp(char *msg)
+time_stamp(const char *msg)
 {
   time_t time_stamp;
 

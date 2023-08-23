@@ -4,6 +4,7 @@
 
 #include "../include/macros.h"
 #include "../include/su3.h"
+#include <stdint.h>
 
 #ifdef CONTROL
 #define EXTERN 
@@ -40,7 +41,7 @@ extern int spins[4];
 struct site {
 	short x,y,z,t;
 	char parity;
-	int index;
+	uint32_t index;
 	double_prn site_prn;
 #ifndef NO_GAUGE_FIELD
 	su3_matrix link[4] ALIGNMENT;
@@ -52,5 +53,6 @@ EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;
+EXTERN int refresh_ape_links;
 
 #endif /* _LATTICE_H */

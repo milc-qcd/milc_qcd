@@ -125,7 +125,7 @@ interpret_usqcd_ks_reload_flag(int flag)
 /* read the lattice dimensions from a binary ks prop file */
 
 int 
-read_lat_dim_ksprop(char *filename, int file_type, int *ndim, int dims[])
+read_lat_dim_ksprop(const char *filename, int file_type, int *ndim, int dims[])
 {
   ks_prop_file *kspf;
   int i;
@@ -152,7 +152,7 @@ read_lat_dim_ksprop(char *filename, int file_type, int *ndim, int dims[])
 /* Open KS propagator file for reading one source color at a time */
 
 ks_prop_file *
-r_open_ksprop(int flag, char *filename)
+r_open_ksprop(int flag, const char *filename)
 {
   ks_prop_file *kspf = NULL;
   int file_type, color;
@@ -202,7 +202,7 @@ r_open_ksprop(int flag, char *filename)
    source color at a time. */
 
 ks_prop_file *
-w_open_ksprop(int flag, char *filename, int source_type)
+w_open_ksprop(int flag, const char *filename, int source_type)
 {
   ks_prop_file *kspf = NULL;
   su3_vector *ksp;
@@ -457,7 +457,7 @@ save_ksprop_c_from_field( int flag, ks_prop_file *kspf,
    dest takes a triplet of color vectors per site
 */
 int 
-reload_ksprop_to_field3( int flag, char *filename, quark_source *ksqs,
+reload_ksprop_to_field3( int flag, const char *filename, quark_source *ksqs,
 			 su3_vector *dest, int timing)
 {
   /* 0 normal exit value
@@ -498,7 +498,7 @@ reload_ksprop_to_field3( int flag, char *filename, quark_source *ksqs,
    dest contains an array of nc field pointers, one for each color
 */
 int 
-reload_ksprop_to_ksp_field( int flag, char *filename, quark_source *ksqs,
+reload_ksprop_to_ksp_field( int flag, const char *filename, quark_source *ksqs,
 			    ks_prop_field *source, ks_prop_field *prop, int timing)
 {
   /* 0 normal exit value
@@ -532,7 +532,7 @@ reload_ksprop_to_ksp_field( int flag, char *filename, quark_source *ksqs,
    DEPRECATED.  KEPT FOR BACKWARD COMPATIBILITY.
 */
 int 
-reload_ksprop_to_site3( int flag, char *filename, quark_source *ksqs,
+reload_ksprop_to_site3( int flag, const char *filename, quark_source *ksqs,
 			field_offset dest, int timing)
 {
   /* 0 normal exit value
@@ -570,7 +570,7 @@ reload_ksprop_to_site3( int flag, char *filename, quark_source *ksqs,
    src has a triplet of color vectors for each site
    */
 void 
-save_ksprop_from_field3( int flag, char *filename, char *recxml, 
+save_ksprop_from_field3( int flag, const char *filename, char *recxml, 
 			 quark_source *ksqs,
 			 su3_vector *src, int timing)
 {
@@ -608,7 +608,7 @@ save_ksprop_from_field3( int flag, char *filename, char *recxml,
    src is an array of three color fields
    */
 int
-save_ksprop_from_ksp_field( int flag, char *filename, char *recxml, 
+save_ksprop_from_ksp_field( int flag, const char *filename, char *recxml, 
 			    quark_source *ksqs, ks_prop_field *source,
 			    ks_prop_field *prop, int timing)
 {
@@ -651,7 +651,7 @@ save_ksprop_from_ksp_field( int flag, char *filename, char *recxml,
 
    */
 void 
-save_ksprop_from_site3( int flag, char *filename, char *recxml, 
+save_ksprop_from_site3( int flag, const char *filename, char *recxml, 
 			quark_source *ksqs,
 			field_offset dest, int timing)
 {
@@ -704,7 +704,7 @@ convert_outflag_to_inflag_ksprop(int outflag){
 */
 int 
 ask_starting_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
-  char *savebuf;
+  const char *savebuf;
   int status;
   char myname[] = "ask_starting_ksprop";
   
@@ -766,7 +766,7 @@ print_options(void)
 
 int 
 ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
-  char *savebuf;
+  const char *savebuf;
   int status;
   char myname[] = "ask_ending_ksprop";
 

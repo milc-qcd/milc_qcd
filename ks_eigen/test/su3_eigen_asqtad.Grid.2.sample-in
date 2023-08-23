@@ -1,0 +1,52 @@
+prompt 0
+
+# Lattice dimensions
+nx 4
+ny 4
+nz 4
+nt 4
+# random number seed
+iseed 5682304
+job_id 1412331
+
+# Input lattice
+reload_serial ../../binary_samples/lat.sample.inst
+u0   1.0
+no_gauge_fix
+forget
+
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
+
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+max_number_of_eigenpairs 32
+
+# Eigenvector file
+fresh_ks_eigen
+forget_ks_eigen
+
+# Parameters for the implicitly restarted Lanczos ------------------------
+# You can set any parameters to zero if you want to let them be determined automatically
+
+# Maximum number of restarting iterations
+Max_Lanczos_restart_iters 100
+
+# Eigenvalue tolerance
+eigenval_tolerance 5.0e-13
+
+# Stop Lanczos at Lanczos_max (number of eigenvalues) and restart from Lanczos_restart (number of eigenvalues)
+# Lanczos_max > lanczos_restart >= max_number_of_eigenpairs
+Lanczos_max 60
+Lanczos_restart 40
+
+# Reorthogonalization period
+Lanczos_reorth_period 1
+
+# Chebyshev polynomial (makes region (alpha,beta) smooth and outside diverge. order should be odd.)
+Chebyshev_alpha 10
+Chebyshev_beta 100
+Chebyshev_order 21
+
+# Diagonalization method (LAPACK, QR, or Eigen)
+diag_algorithm Eigen
+# ------------------------------------------------------------------------

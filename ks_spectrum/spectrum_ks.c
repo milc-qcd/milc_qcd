@@ -514,7 +514,9 @@ static void accum_gen_meson(complex **mp, su3_vector *qp0, int naik_index0,
 		    mom_parity_index, fn[naik_index0], fn[naik_index1],
 		    param.spin_taste_snk[pair],
 		    param.meson_phase[pair], param.meson_factor[pair],
-		    param.corr_index[pair], &param.r_offset_m[pair][0]);
+		    param.num_corr_report[pair],
+		    //		    param.corr_index[pair], &param.r_offset_m[pair][0]);
+		    param.corr_index[pair], param.coord_origin);
 }
 
 /*--------------------------------------------------------------------*/
@@ -1064,21 +1066,20 @@ static void spectrum_ks_print_diag(int pair){
       param.saveflag_m[pair] = FORGET;
 
     for(m=0;m<num_report;m++) {
-      norm_fac = num_corr_occur[m];
+      norm_fac = 1./(Real)num_corr_occur[m];
 
       print_start_meson_prop(pair, m);
       print_start_fnal_meson_prop(corr_fp, pair, m);
+      //g_veccomplexsum(pmes_prop[m], nt); //TODO: remove. reduction done by quda or contraction_cpu.c
       for(t=0; t<nt; t++){
 	tp = (t + param.r_offset_m[pair][3]) % nt;
 	prop = pmes_prop[m][tp];
-	g_complexsum( &prop );
-	CDIVREAL(prop, norm_fac, prop);
+	CMULREAL(prop, norm_fac, prop);
 	print_meson_prop(pair, t, prop);
 	print_fnal_meson_prop(corr_fp, pair, t, prop);
       }
       print_end_meson_prop(pair);
       print_end_fnal_meson_prop(corr_fp, pair);
-
     } /* mesons and momenta */
     close_fnal_meson_file(corr_fp, pair);
   }
@@ -1106,15 +1107,15 @@ static void spectrum_ks_print_offdiag(int pair){
 
     /* print meson propagators */
     for(m=0;m<num_report;m++) {
-      norm_fac = num_corr_occur[m];
-
+      norm_fac = 1./(Real)num_corr_occur[m];
+      
       print_start_meson_prop(pair, m);
       print_start_fnal_meson_prop(corr_fp, pair, m);
+      //g_veccomplexsum(pmes_prop[m], nt); //TODO: remove. reduction done by quda or contraction_cpu.c
       for(t=0; t<nt; t++){
 	tp = (t + param.r_offset_m[pair][3]) % nt;
 	prop = pmes_prop[m][tp];
-	g_complexsum( &prop );
-	CDIVREAL(prop, norm_fac, prop);
+	CMULREAL(prop, norm_fac, prop);
 	print_meson_prop(pair, t, prop);
 	print_fnal_meson_prop(corr_fp, pair, t, prop);
       }
@@ -1147,6 +1148,7 @@ static void spectrum_ks_print_baryon(int triplet){
     for(b=0;b<num_corr;b++){
       print_start_baryon_prop(triplet, b);
       print_start_fnal_baryon_prop(corr_fp, triplet, b);
+      g_veccomplexsum(baryon_prop[b], nt); //NOTE: keep until baryon contraction code is modernized
       for(t=0; t<nt; t++){
         tp = (t + param.r_offset_b[triplet][3]) % nt;
         prop = baryon_prop[b][tp];

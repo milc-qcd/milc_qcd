@@ -24,7 +24,7 @@
 
 #ifdef OLD_GAUSSRAND
 
-void initialize_prn(double_prn *prn_pt, int seed, int index) {
+void initialize_prn(double_prn *prn_pt, uint32_t seed, uint32_t index) {
     /* "index" selects which random number generator - which multiplier */
     seed = (69607+8*index)*seed+12345;
     prn_pt->r0 = (seed>>8) & 0xffffff;
@@ -66,7 +66,7 @@ Real myrand(double_prn *prn_pt) {
 
 #else
 
-void initialize_prn(double_prn *prn_pt, int seed, int index) {
+void initialize_prn(double_prn *prn_pt, uint32_t seed, uint32_t index) {
     /* "index" selects which random number generator - which multiplier */
     if(sizeof(unsigned long long)<8) {
       node0_printf("Type long long less than 8 bytes on this machine. Rand problems?\n");
@@ -88,6 +88,9 @@ void initialize_prn(double_prn *prn_pt, int seed, int index) {
     prn_pt->r6 = (seed>>8) & 0xffffff;
     seed = (69607+8*index)*seed+12345;
     prn_pt->ic_state = seed;
+    /* Emulate long long unsigned = int for compatibility */
+    if(seed & 0x80000000)
+      prn_pt->ic_state ^= 0xffffffff00000000;
     prn_pt->multiplier = 100000005 + 8*index;
     prn_pt->addend = 12345;
     prn_pt->scale = 1.0/((Real)0x1000000);
@@ -95,7 +98,7 @@ void initialize_prn(double_prn *prn_pt, int seed, int index) {
 
 Real myrand(double_prn *prn_pt) {
   unsigned long long int s;
-  int t;
+  uint32_t t;
 
     t = ( ((prn_pt->r5 >> 7) | (prn_pt->r6 << 17)) ^
 	  ((prn_pt->r4 >> 1) | (prn_pt->r5 << 23)) ) & 0xffffff;
@@ -113,12 +116,15 @@ Real myrand(double_prn *prn_pt) {
 
 #endif
 
+static int initialized = 0;
+
 #ifdef SITERAND
 void
-initialize_site_prn_from_seed(int iseed){
+initialize_site_prn_from_seed(uint32_t iseed){
   int x, y, z, t, i;
 
-  node0_printf("WARNING!!: Resetting random seed\n");
+  if(initialized == 1)
+    node0_printf("WARNING!!: Resetting random seed\n");
 
   for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
 	  if(node_number(x,y,z,t)==mynode()){
@@ -126,6 +132,7 @@ initialize_site_prn_from_seed(int iseed){
 	    initialize_prn( &(lattice[i].site_prn) , iseed, lattice[i].index);
 	  }
 	}
+  initialized = 1;
 }
 #endif
 

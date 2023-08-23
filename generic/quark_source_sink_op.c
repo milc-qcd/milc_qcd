@@ -105,6 +105,7 @@
 #endif
 #ifdef HAVE_KS
 #include "../include/generic_ks.h"
+#include "../ks_spectrum/ks_spectrum_includes.h"
 #endif
 
 /*-------------------------------------------------------------*/
@@ -130,7 +131,7 @@ void init_qss_op(quark_source_sink_op *qss_op){
   qss_op->r_offset[2]      = 0;
   qss_op->r_offset[3]      = 0;
   qss_op->spin_taste       = -1;
-  qss_op->gamma            = 0;
+  qss_op->gamma            = G1;
   qss_op->mom[0]           = 0.;
   qss_op->mom[1]           = 0.;
   qss_op->mom[2]           = 0.;
@@ -959,7 +960,7 @@ static complex *get_convolving_field(quark_source_sink_op *qss_op, int t0){
   int op_type       = qss_op->type;
   Real a            = qss_op->a;
   Real r0           = qss_op->r0;
-  char *sink_file   = qss_op->source_file;
+  const char *sink_file   = qss_op->source_file;
   int stride        = qss_op->stride;
 #ifndef HAVE_QIO
   char myname[] = "get_convolving_field";
@@ -1021,7 +1022,7 @@ static void apply_modulation_v(su3_vector *src,
 #ifndef HAVE_QIO
   char myname[] = "apply_modulation_wv";
 #endif
-  char *modulation_file  = qss_op->source_file;
+  const char *modulation_file  = qss_op->source_file;
   complex *chi_cs  = create_c_field();
   int i,cf;
   site *s;
@@ -1126,7 +1127,7 @@ static int *
 get_spin_taste(void){
   
   /* Current spin-taste list */
-  char *spin_taste_label[NMU] = {"GX-GX", "GY-GY", "GZ-GZ", "GT-GT"};
+  const char *spin_taste_label[NMU] = {"GX-GX", "GY-GY", "GZ-GZ", "GT-GT"};
   static int spin_taste[NMU];
   int mu;
   
@@ -1147,7 +1148,7 @@ static void apply_aslash_v(su3_vector *src,
 #ifndef HAVE_QIO
   char myname[] = "apply_aslash";
 #endif
-  char *modulation_file  = qss_op->source_file;
+  const char *modulation_file  = qss_op->source_file;
   complex *chi_cs  = create_c_array_field(4);
   su3_vector *dst = create_v_field();
   su3_vector *tmp = create_v_field();
@@ -1325,7 +1326,7 @@ static void apply_modulation_wv(wilson_vector *src,
 #ifndef HAVE_QIO
   char myname[] = "apply_modulation_wv";
 #endif
-  char *modulation_file  = qss_op->source_file;
+  const char *modulation_file  = qss_op->source_file;
   complex *chi_cs  = create_c_field();
   int i,sf,cf;
   site *s;
@@ -1396,7 +1397,7 @@ static void apply_gamma(wilson_vector *src,
 			quark_source_sink_op *qss_op){
   int i;
   site *s;
-  int gam = qss_op->gamma;
+  gammatype gam = qss_op->gamma;
   wilson_vector tmp;
 
   FORALLSITES(i,s){
@@ -1786,7 +1787,7 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
 
     mult_pion5_field( qss_op->r_offset, src, tvec2 );
     rephase_field_offset( ape_links, ON, NULL, qss_op->r_offset );
-    mult_pioni_field( ZUP, qss_op->r_offset, src, tvec1, ape_links );
+    mult_pioni_field( ZUP, qss_op->r_offset, src, tvec1, ape_links, &refresh_ape_links );
     rephase_field_offset( ape_links, OFF, NULL, qss_op->r_offset );
     add_v_fields( tvec2, tvec1, tvec2 );
     mult_rhoi_field( ZUP, qss_op->r_offset, src, tvec1 );
@@ -1803,7 +1804,7 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
 
     mult_pion05_field( qss_op->r_offset, src, tvec2 );
     rephase_field_offset( ape_links, ON, NULL, qss_op->r_offset );
-    mult_pioni0_field( ZUP, qss_op->r_offset, src, tvec1, ape_links );
+    mult_pioni0_field( ZUP, qss_op->r_offset, src, tvec1, ape_links, &refresh_ape_links );
     rephase_field_offset( ape_links, OFF, NULL, qss_op->r_offset );
     add_v_fields( tvec2, tvec1, tvec2 );
     mult_rhoi0_field( ZUP, qss_op->r_offset, src, tvec1 );
@@ -2123,7 +2124,7 @@ void wp_sink_op(quark_source_sink_op *qss_op, wilson_prop_field *wp )
 
 static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
 {
-  char *savebuf;
+  const char *savebuf;
   char myname[] = "ask_field_op";
 
   if (prompt==1){
@@ -2324,7 +2325,7 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
 
 #define IF_OK if(status==0)
 
-static char *encode_dir(int dir){
+static const char *encode_dir(int dir){
   if(dir == XUP)return "x";
   else if(dir == YUP)return "y";
   else if(dir == ZUP)return "z";
@@ -2334,9 +2335,9 @@ static char *encode_dir(int dir){
 
 #if FERM_ACTION == HISQ
 
-static char *encode_sign_dir(int fb, int dir){
+static const char *encode_sign_dir(int fb, int dir){
   static char sign_dir[3] = "  ";
-  char *d = encode_dir(dir);
+  const char *d = encode_dir(dir);
 
   if(fb == 0)return d;
   else if(fb == +1)sign_dir[0] = '+';
@@ -2350,7 +2351,7 @@ static char *encode_sign_dir(int fb, int dir){
 
 
 /* For parsing the derivative direction */
-static int decode_dir(int *dir, char c_dir[]){
+static int decode_dir(int *dir, const char c_dir[]){
   int status = 0;
   if(strcmp(c_dir,"x")==0)
     *dir = XUP;
@@ -2537,7 +2538,6 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_vf(fp, prompt, "weights", qss_op->weights, qss_op->disp);
   }
   else if( op_type == DIRAC_INVERSE){
-    char savebuf[128];
     /* Parameters for Dirac inverse */
     IF_OK status += get_s(stdin, prompt,"kappa", qss_op->kappa_label);
     IF_OK qss_op->dcp.Kappa = atof(qss_op->kappa_label);
@@ -2601,18 +2601,20 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_i(fp, prompt, "derivs",   &qss_op->dhop);
     IF_OK status += get_vs(fp, prompt, "dir", c_dir, 1);
     /* Allow a + or - sign to specify a one-sided hop */
+    char c_dir_mod[3];
     IF_OK {
       if(c_dir[0][0] == '+'){
 	qss_op->fb = +1;
-	strncpy(c_dir[0], c_dir[0]+1, 2);
+	strncpy(c_dir_mod, c_dir[0]+1, 2);
       } else if(c_dir[0][0] == '-'){
 	qss_op->fb = -1;
-	strncpy(c_dir[0], c_dir[0]+1, 2);
+	strncpy(c_dir_mod, c_dir[0]+1, 2);
       } else {
 	qss_op->fb = 0;
+	strncpy(c_dir_mod, c_dir[0], 2);
       }
     }
-    IF_OK status += decode_dir(&qss_op->dir1, c_dir[0]);
+    IF_OK status += decode_dir(&qss_op->dir1, c_dir_mod);
 #if FERM_ACTION == HISQ
     IF_OK status += get_f(fp, prompt, "eps_naik", &qss_op->eps_naik);
 #endif
@@ -2768,7 +2770,7 @@ int get_v_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op){
 
 #define NTAG 31  /* Print line space available for a tag */
 /* Create a fixed-width tag for tidy output */
-static char *make_tag(char prefix[], char tag[]){
+static char *make_tag(const char prefix[], const char tag[]){
   static char full_tag[NTAG];
   full_tag[0] = '\0';
   strncat(full_tag, prefix, NTAG-1);
@@ -2783,7 +2785,7 @@ static char *make_tag(char prefix[], char tag[]){
 }
 
 /*--------------------------------------------------------------------*/
-static int print_single_op_info(FILE *fp, char prefix[], 
+static int print_single_op_info(FILE *fp, const char prefix[], 
 				quark_source_sink_op *qss_op){
   int op_type = qss_op->type;
   int status = 1;
@@ -2985,7 +2987,7 @@ void print_field_op_info(FILE *fp, char prefix[],
 
 /*--------------------------------------------------------------------*/
 /* Same as above, but take data from a flat array of ops */
-void print_field_op_info_list(FILE *fp, char prefix[], 
+void print_field_op_info_list(FILE *fp, const char prefix[], 
 			      quark_source_sink_op *qss_op[], int n){
 
   int i;

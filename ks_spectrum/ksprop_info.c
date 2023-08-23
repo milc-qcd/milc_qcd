@@ -40,7 +40,7 @@ void write_appl_ksprop_info(FILE *fp)
 
   /* The rest are optional */
 
-  write_ksprop_info_item(fp,"quark.mass","%f",(char *)&ksptmp.mass,0,0);
+  write_ksprop_info_item(fp,"quark.mass","%f",(const char *)&ksptmp.mass,0,0);
 
 
 }

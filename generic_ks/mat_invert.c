@@ -75,13 +75,7 @@ void ks_dirac_opsq( su3_vector *src, su3_vector *dst, Real mass, int parity,
     register site *s;
     int otherparity = 0;
     Real msq_x4 = 4.0*mass*mass;
-    su3_vector *tmp;
-
-    tmp = (su3_vector *)malloc(sites_on_node * sizeof(su3_vector));
-    if(tmp==NULL){
-      printf("ks_dirac_opsq(%d): no room for tmp\n",this_node);
-      terminate(1);
-    }
+    su3_vector *tmp = create_v_field();;
 
     switch(parity){
     case(EVEN): otherparity=ODD; break;
@@ -96,7 +90,7 @@ void ks_dirac_opsq( su3_vector *src, su3_vector *dst, Real mass, int parity,
       scalar_mult_sum_su3_vector( dst+i, src+i, msq_x4 );
     } END_LOOP_OMP;
 
-    free(tmp);
+    destroy_v_field(tmp);
 }
 
 /*****************************************************************************/
@@ -154,14 +148,17 @@ static void project_out(su3_vector *vec, int Num, int parity){
 /* Construct the exact solution in the space spanned by eigVec 
    keep the trial solution in the complementary space */
 
-static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int parity){
+static void deflate(su3_vector *dst, su3_vector *src, Real mass,
+		    int Num, int parity, int zerodst){
   int i, j;
   double_complex *c;
 
-  /* Remove the Num low eigenmodes from the trial solution, leaving the
-     high eigenmode trial solution */
+  /* Remove the Num low eigenmodes from the trial solution, leaving
+     the high eigenmode trial solution. Skip this step if dst is
+     supposed to be zero */
 
-  project_out(dst, Num, parity);
+  if(!zerodst)
+    project_out(dst, Num, parity);
 
   /* Then add the exact solution back */
   /* dst_eo <- sum_j ((eigVec_eo[j].src_eo)/(eigVal[j]+4*mass*mass)) eigVec_eo[j] */
@@ -191,6 +188,8 @@ static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int pa
 /*****************************************************************************/
 /* This algorithm solves even and odd sites separately */
 
+/* dst = (M^adj M)^{-1} M^adj src */
+
 int mat_invert_cg_field(su3_vector *src, su3_vector *dst, 
 			quark_invert_control *qic,
 			Real mass, imp_ferm_links_t *fn ){
@@ -198,20 +197,15 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
     su3_vector *tmp;
     double dtime;
 
-    tmp = (su3_vector *)malloc(sites_on_node * sizeof(su3_vector));
-    if(tmp==NULL){
-      printf("mat_invert_cg_field(%d): no room for tmp\n",this_node);
-      terminate(1);
-    }
+    node0_printf("Plain CG inversion from given initial guess for mass %f\n", mass);
+
+    tmp = create_v_field();
 
     /* "Precondition" both even and odd sites */
-    /* temp <- M_adj * src */
+    /* tmp <- M_adj * src */
     /* The following operation is done in the prevailing
        precision.  The algorithm needs to be fixed! */
     ks_dirac_adj_op( src, tmp, mass, EVENANDODD, fn);
-
-    /* We don't call with EVENANDODD anymore because we are
-       transitioning to the QOP/QDP standard */
 
     /* Do deflation if we have eigenvectors and the deflate parameter is true */
 
@@ -222,7 +216,8 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
       node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
 #endif
       
-      deflate(dst, tmp, mass, param.eigen_param.Nvecs, EVEN);
+      /* dst is replaced by the exact low mode solution plus the provided high mode */
+      deflate(dst, tmp, mass, param.eigen_param.Nvecs, EVEN, 0);
       
       dtime += dclock();
 #ifdef CGTIME
@@ -230,7 +225,10 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
 #endif
     }
       
-    /* dst_e <- (M_adj M)^-1 temp_e  (even sites only) */
+    /* We don't call with EVENANDODD anymore because we are
+       transitioning to the QOP/QDP standard */
+
+    /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
     qic->parity = EVEN;
     cgn = ks_congrad_field( tmp, dst, qic, mass, fn );
 
@@ -241,7 +239,7 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
       node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
 #endif
       
-      deflate(dst, tmp, mass, param.eigen_param.Nvecs, ODD);
+      deflate(dst, tmp, mass, param.eigen_param.Nvecs, ODD, 0);
       
       dtime += dclock();
 #ifdef CGTIME
@@ -249,11 +247,91 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
 #endif
     }
 
-    /* dst_o <- (M_adj M)^-1 temp_o  (odd sites only) */
+    /* dst_o <- (M_adj M)^-1 tmp_o  (odd sites only) */
     qic->parity = ODD;
     cgn += ks_congrad_field( tmp, dst, qic, mass, fn );
 
-    free(tmp);
+    destroy_v_field(tmp);
+
+    //    node0_printf("Entering check_invert_field in mat_invert_cg_field\n");
+    //    fflush(stdout);
+    //    check_invert_field( dst, src, mass, 1e-6, fn, EVENANDODD);
+    
+    return cgn;
+}
+
+/*****************************************************************************/
+/* This algorithm solves even and odd sites separately with zero initial guess */
+/* This method may reduce the error in low-mode components for a given residual tolerance */
+/* It is also helpful when the source is purely even or purely odd  */
+
+/* dst = M_adj * (MM^adj)^{-1} src */
+
+int mat_invert_cgz_field(su3_vector *src, su3_vector *dst, 
+			 quark_invert_control *qic,
+			 Real mass, imp_ferm_links_t *fn ){
+    int cgn;
+    su3_vector *tmp;
+    double dtime;
+
+    node0_printf("Plain CG inversion from zero initial guess for mass %f\n", mass);
+
+    /* Create a null tmp as zero initial guess */
+    tmp = create_v_field();
+
+    /* Put "exact" low-mode even-site solution in tmp if deflate parameter is true */
+
+    if(param.eigen_param.Nvecs > 0 && qic->deflate){
+
+      dtime = - dclock();
+#ifdef CGTIME
+      node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
+#endif
+      
+      /* tmp is replaced by the exact low mode solution plus zero high mode */
+     deflate(tmp, src, mass, param.eigen_param.Nvecs, EVEN, 1);
+      
+      dtime += dclock();
+#ifdef CGTIME
+      node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
+#endif
+    }
+      
+    /* Solve for all modes using tmp as an initial guess */
+    /* tmp_e <- (M_adj M)^-1 src_e  (even sites only) */
+    qic->parity = EVEN;
+    cgn = ks_congrad_field( src, tmp, qic, mass, fn );
+
+    /* Put "exact" low-mode odd-site solution in tmp if deflate parameter is true */
+
+    if(param.eigen_param.Nvecs > 0 && qic->deflate){
+
+      dtime = - dclock();
+#ifdef CGTIME
+      node0_printf("deflating on odd sites for mass %g with %d eigenvec\n",
+		   mass, param.eigen_param.Nvecs);
+#endif
+      
+      deflate(tmp, src, mass, param.eigen_param.Nvecs, ODD, 1);
+      
+      dtime += dclock();
+#ifdef CGTIME
+      node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
+#endif
+    }
+
+    /* Solve for all modes using tmp as an initial guess */
+    /* tmp_o <- (M_adj M)^-1 src_o  (odd sites only) */
+    qic->parity = ODD;
+    cgn += ks_congrad_field( src, tmp, qic, mass, fn );
+
+    /* Convert solution to normal equation into solution to M dst = src */
+    /* dst <- M_adj * tmp */
+    /* The following operation is done in the prevailing
+       precision.  The algorithm needs to be fixed! */
+    ks_dirac_adj_op( tmp, dst, mass, EVENANDODD, fn);
+
+    destroy_v_field(tmp);
 
     //    node0_printf("Entering check_invert_field in mat_invert_cg_field\n");
     //    fflush(stdout);
@@ -346,6 +424,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     int even_iters;
     double dtime;
 
+    node0_printf("UML inversion with mass %f\n", mass);
     /* "Precondition" both even and odd sites */
     /* temp <- M_adj * src */
 
@@ -357,7 +436,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
       dtime = - dclock();
       node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
       
-      deflate(dst, tmp, mass, param.eigen_param.Nvecs, EVEN);
+      deflate(dst, tmp, mass, param.eigen_param.Nvecs, EVEN, 0);
 
       dtime += dclock();
 #ifdef CGTIME
@@ -390,7 +469,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
       dtime = - dclock();
       node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.eigen_param.Nvecs);
       
-      deflate(dst, tmp, mass, param.eigen_param.Nvecs, ODD);
+      deflate(dst, tmp, mass, param.eigen_param.Nvecs, ODD, 0);
       
       dtime += dclock();
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
@@ -587,10 +666,11 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
     fflush(stdout);}
 #endif
 
-  //    node0_printf("Entering check_invert_field in mat_invert_mg_field_gpu\n");
-  //    fflush(stdout);
-  //    check_invert_field( t_dest, t_src, mass, 1e-6, fn, EVENANDODD);
+    //node0_printf("Entering check_invert_field in mat_invert_mg_field_gpu\n");
+    //  fflush(stdout);
+    //  check_invert_field( t_dest, t_src, mass, 1e-6, fn, EVENANDODD);
 
+  report_status(qic);
 
   return num_iters;
 
@@ -643,7 +723,7 @@ int mat_invert_block_uml(su3_vector **src, su3_vector **dst,
       node0_printf("deflating on even sites for mass %g with %d eigenvec\n",
 		   mass, param.eigen_param.Nvecs);
       
-      deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, EVEN);
+      deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, EVEN, 0);
       
       dtime += dclock();
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
@@ -669,7 +749,7 @@ int mat_invert_block_uml(su3_vector **src, su3_vector **dst,
       node0_printf("deflating on odd sites for mass %g with %d eigenvec\n",
 		   mass, param.eigen_param.Nvecs);
       
-      deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, ODD);
+      deflate(dst[is], tmp[is], mass, param.eigen_param.Nvecs, ODD, 0);
       
       dtime += dclock();
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
@@ -747,34 +827,50 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 
 int mat_invert_field(su3_vector *src, su3_vector *dst, 
 		     quark_invert_control *qic,
-		     Real mass, imp_ferm_links_t *fn, int use_precond){
+		     Real mass, imp_ferm_links_t *fn){
 
   int cgn = 0;
 
-  /* Use a CG solve for a CGTYPE inversion or an MGTYPE inversion with a CG override */
-  if(qic->inv_type == CGTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD)) {
-    if(use_precond)
-      /* Preconditioned inversion */
+  switch(qic->inv_type){
+  case CGTYPE:
+
+    cgn = mat_invert_cg_field(src, dst, qic, mass, fn );
+    break;
+
+  case CGZTYPE:
+
+    cgn = mat_invert_cgz_field(src, dst, qic, mass, fn );
+    break;
+
+  case UMLTYPE:
+
+    cgn = mat_invert_uml_field(src, dst, qic, mass, fn );
+    break;
+
+  case MGTYPE:
+    if(qic->mg_rebuild_type == CGREBUILD){    
       cgn = mat_invert_uml_field(src, dst, qic, mass, fn );
-    else
-      /* Unpreconditioned inversion */
-      cgn = mat_invert_cg_field(src, dst, qic, mass, fn );
-    if (qic->inv_type == MGTYPE) {
       node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
 #ifdef HAVE_QUDA
       /* Force a reload b/c of sloppy link precision changes */
       refresh_fn_links(fn);
 #endif
-    }
-  } else {
-    /* inv_type == MGTYPE */
+    } else {
+      /* inv_type == MGTYPE */
 #ifdef USE_CG_GPU
-    /* Currently only available through QUDA on GPUs */
-    cgn = mat_invert_mg_field_gpu(src, dst, qic, mass, fn );
+      /* Currently only available through QUDA on GPUs */
+      cgn = mat_invert_mg_field_gpu(src, dst, qic, mass, fn );
 #else
-    node0_printf("mat_invert_field: ERROR. Multigrid is available only with GPU compilation\n");
-    terminate(1);
+      node0_printf("mat_invert_field: ERROR. Multigrid is available only with GPU compilation\n");
+      terminate(1);
 #endif
+    }
+    break;
+
+  default:
+
+    node0_printf("mat_invert_field: Bad inv_type %d\n", qic->inv_type);
+    terminate(1);
   }
   return cgn;
 }
@@ -786,7 +882,7 @@ int mat_invert_field(su3_vector *src, su3_vector *dst,
 int mat_invert_block(su3_vector **src, su3_vector **dst, 
 		     Real mass, int nsrc, quark_invert_control *qic,
 		     imp_ferm_links_t *fn){
-  int cgn;
+  int cgn = 0;
   if(qic->inv_type == CGTYPE || (qic->inv_type == MGTYPE && qic->mg_rebuild_type == CGREBUILD)){
     cgn = mat_invert_block_uml(src, dst, mass, nsrc, qic, fn);
 

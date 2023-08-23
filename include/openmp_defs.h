@@ -77,14 +77,14 @@ _Pragma( STR(omp parallel for private(i) omp_args) )\
   //note extra bracket so all these loops can use the same END_LOOP_OMP
 
 #define FORSOMEPARITY_OMP(i,s,parity,omp_args) \
-  {register int loopend,loopstart;\
+  {int loopend,loopstart;\
   loopend= (parity)==EVEN ? even_sites_on_node : sites_on_node ;\
   loopstart=((parity)==ODD ? even_sites_on_node : 0 );\
 _Pragma( STR(omp parallel for private(i,s) omp_args) )\
   for( i=loopstart; i<loopend; i++){ s= &(lattice[i]);
 
 #define FORSOMEFIELDPARITY_OMP(i,parity,omp_args) \
-  {register int loopend,loopstart;\
+  {int loopend,loopstart;\
   loopend= (parity)==EVEN ? even_sites_on_node : sites_on_node ;\
   loopstart=((parity)==ODD ? even_sites_on_node : 0 );\
 _Pragma( STR(omp parallel for private(i) omp_args) )\

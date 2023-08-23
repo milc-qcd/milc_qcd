@@ -13,6 +13,7 @@
 #include "../include/su3.h"
 #include "../include/comdefs.h"
 #include "../include/info.h"
+#include <stdint.h>
 
 void copy_latvec(field_offset src, field_offset dest, int parity);
 void dslash_site( field_offset src, field_offset dest, int parity );
@@ -63,10 +64,18 @@ void scalar_mult_add_latveclist_proj(anti_hermitmat *mom,
 void scalar_mult_add_latveclist( veclist *dest,
             veclist *src, Real *s, int listlength );
 
+/* gauge_action_imp_ks.c */
+double imp_gauge_action_ks(void);
+
 /* gauge_force_imp_ks.c */
 void imp_gauge_force_ks( Real eps, field_offset mom_off );
 
+/* gauge_measure_ks.c */
+void g_measure_ks(void);
+
 /* gauss_smear_ks.c */
+void gauss_smear_v_field_cpu(su3_vector *src, su3_matrix *t_links,
+			     Real width, int iters, int t0);
 void gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
 			 Real width, int iters, int t0);
 void gauss_smear_ks_prop_field(ks_prop_field *src, su3_matrix *t_links,
@@ -75,6 +84,8 @@ void laplacian_v_field(su3_vector *src, su3_matrix *t_links, int t0);
 /* gauss_smear_ks_QUDA.c */
 void gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
                               Real width, int iters, int t0);
+void gauss_smear_reuse_2link_QUDA( int flag );
+void gauss_smear_delete_2link_QUDA();
 
 /* naik_epsilon_utilities.c */
 int fill_eps_naik(double eps_naik_table[], int *n, double next_eps_naik);
@@ -101,6 +112,9 @@ void path_transport_connection_hisq( su3_matrix * src, su3_matrix **links,
     su3_matrix * dest, int parity, int *dir, int length );
 void link_transport_connection_hisq( su3_matrix * src, su3_matrix *links,
     su3_matrix * dest, su3_matrix * work, int dir );
+
+/* ploop3_ks.c */
+complex ploop_ks(void);
 
 /* rephase.c */
 void apply_apbc( su3_matrix *links, int r0t );

@@ -70,7 +70,7 @@ typedef struct {
    Add more as needed.
 */
 #ifdef CONTROL
-char *ks_eigen_info_keyword[] = {
+const char *ks_eigen_info_keyword[] = {
   //      "magic_number",
       "time_stamp",
       "checksums",

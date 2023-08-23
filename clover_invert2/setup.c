@@ -510,6 +510,7 @@ int readin(int prompt) {
       param.qic[i].parity = EVENANDODD;
       param.qic[i].min = 0;
       param.qic[i].nsrc = 1;
+      param.qic[i].inv_type = UMLTYPE;
       
       /* Momentum twist and time boundary condition */
 
@@ -1004,6 +1005,8 @@ int readin(int prompt) {
   /* Construct APE smeared links */
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
   if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
+  refresh_ape_links = 1;
+  ape_links_ks_phases = OFF;
 
   /* Set options for fermion links in case we use them */
   

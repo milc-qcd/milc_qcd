@@ -597,7 +597,7 @@ int get_complex_source(quark_source *qs){
   int z0                    = qs->z0; 
   int t0                    = qs->t0;
   Real r0                   = qs->r0;
-  char *source_file         = qs->source_file;
+  const char *source_file         = qs->source_file;
   int *mom                  = qs->mom;
   int status = 0;
 #ifndef HAVE_QIO
@@ -781,7 +781,7 @@ static int get_dirac_source(quark_source *qs, int spin, int color){
   int y0                    = qs->y0; 
   int z0                    = qs->z0; 
   int t0                    = qs->t0;
-  char *source_file         = qs->source_file;
+  const char *source_file         = qs->source_file;
   int *mom                  = qs->mom;
   char myname[] = "get_dirac_source";
   
@@ -1200,7 +1200,7 @@ int wv_source_site(field_offset src, quark_source *qs)
 static int ask_quark_source( FILE *fp, int prompt, int *source_type, 
 			     char *descrp )
 {
-  char *savebuf;
+  const char *savebuf;
   char myname[] = "ask_quark_source";
 
   if (prompt==1){
@@ -1360,7 +1360,7 @@ int encode_mask(int *mask, char c_mask[]){
   return status;
 }
 
-char *decode_mask(int mask){
+const char *decode_mask(int mask){
   if(mask == FULL)
     return "full";
   else if (mask == HYPERCUBE)
@@ -1370,7 +1370,7 @@ char *decode_mask(int mask){
 }
 
 int ask_starting_source( FILE *fp, int prompt, int *flag, char *filename ){
-  char *savebuf;
+  const char *savebuf;
   int status;
   char myname[] = "ask_starting_source";
 
@@ -1590,7 +1590,7 @@ int get_wv_quark_source(FILE *fp, int prompt, quark_source *qs){
 //      printf("'KS', ");
 //      printf("\n");
 //    }
-//    char *savebuf = get_next_tag(fp, "field type", myname);
+//    const char *savebuf = get_next_tag(fp, "field type", myname);
 //    if (savebuf == NULL) return 1;
 //    if(strcmp("Dirac",savebuf) == 0){
 //      qs->field_type = WILSON_FIELD;
@@ -1701,7 +1701,7 @@ int get_wv_quark_source(FILE *fp, int prompt, quark_source *qs){
 
 #define NTAG 30
 /* Create a fixed-width tag for tidy output */
-static char *make_tag(char prefix[], char tag[]){
+static const char *make_tag(char prefix[], char tag[]){
   static char full_tag[NTAG];
   full_tag[0] = '\0';
   strncat(full_tag, prefix, NTAG-1);
