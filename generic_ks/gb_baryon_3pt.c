@@ -87,15 +87,14 @@ sym_shift_3pt(int dir, short doBW, su3_vector *dest, su3_vector *src, su3_matrix
 {
   register int i;
   msg_tag *tag[2] = {NULL};
-  su3_vector *tvec  = create_v_field();
-  su3_vector *cvec0 = create_v_field();
-  su3_vector *cvec1 = create_v_field();
+  su3_vector *cvec1;
 
   // shifting in dir moves +dir to 0
   tag[0] = start_gather_field(src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0]);
   #ifdef NO_SINK_LINKS
-    copy_v_field(cvec1,src);
+    cvec1 = src;
   #else
+    cvec1 = create_v_field();
     FORALLFIELDSITES_OMP(i,) { 
       mult_adj_su3_mat_vec( links+4*i+dir, src+i, cvec1+i ); 
     } END_LOOP_OMP
@@ -127,9 +126,9 @@ sym_shift_3pt(int dir, short doBW, su3_vector *dest, su3_vector *src, su3_matrix
     cleanup_gather(tag[1]);
   #endif // ONE_SIDED_SHIFT_GB
 
-  destroy_v_field(tvec);
-  destroy_v_field(cvec0);
-  destroy_v_field(cvec1);
+  #ifndef NO_SINK_LINKS
+    destroy_v_field(cvec1);
+  #endif
 }
 
 /*------------------------------------------------------------------*/
