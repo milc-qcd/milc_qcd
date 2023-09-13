@@ -1455,20 +1455,24 @@ int readin(int prompt) {
 
 		  /* Check input symmetry and isospin */
 			IF_OK {
-		          if(!strcmp("S",     symiso_label_src) == 0 &&
-		             !strcmp("A",     symiso_label_src) == 0 &&
-		             !strcmp("M1/2",  symiso_label_src) == 0   ){
+		          if(strcmp("S",     symiso_label_src) == 0 ||
+		             strcmp("A",     symiso_label_src) == 0 ||
+		             strcmp("M1/2",  symiso_label_src) == 0   ) {
+			       } /* match is okay */
+			  else {
 		            printf("error in input: unknown operator symmetry %s\n",symiso_label_src);
 			    status++;
 		          }
 		        }
 			IF_OK {
-		          if(!strcmp("S",     symiso_label_snk) == 0 &&
-		             !strcmp("A",     symiso_label_snk) == 0 &&
-		             !strcmp("M1/2",  symiso_label_snk) == 0 &&
-		             !strcmp("S*",    symiso_label_snk) == 0 &&
-		             !strcmp("A*",    symiso_label_snk) == 0 &&
-		             !strcmp("M1/2*", symiso_label_snk) == 0   ){
+		          if(strcmp("S",     symiso_label_snk) == 0 ||
+		             strcmp("A",     symiso_label_snk) == 0 ||
+		             strcmp("M1/2",  symiso_label_snk) == 0 ||
+		             strcmp("S*",    symiso_label_snk) == 0 ||
+		             strcmp("A*",    symiso_label_snk) == 0 ||
+		             strcmp("M1/2*", symiso_label_snk) == 0   ) {
+			       } /* match is okay */
+			  else  {
 		            printf("error in input: unknown operator symmetry %s\n",symiso_label_snk);
 			    status++;
 		          }
@@ -1486,25 +1490,28 @@ int readin(int prompt) {
 
 		  /* Check input GTS irrep */
 			IF_OK {
-		          if (!strcmp("8",  gts_label_src) == 0 &&
-		              !strcmp("8'", gts_label_src) == 0 &&
-		              !strcmp("16+",gts_label_src) == 0 &&
-		              !strcmp("16-",gts_label_src) == 0){
-		            printf("error in input: unknown GTS irrep %s\n",gts_label_src);
+		          if (strcmp("8",  gts_label_src) == 0 ||
+		              strcmp("8'", gts_label_src) == 0 ||
+		              strcmp("16+",gts_label_src) == 0 ||
+		              strcmp("16-",gts_label_src) == 0) {
+			       } /* match is okay */
+			  else {
+			    printf("error in input: unknown GTS irrep %s\n",gts_label_src);
 			    status++;
 		          }
 		        }
 
 		  /* Check input GTS irrep */
-			IF_OK {
-          if (!strcmp("8",  gts_label_snk) == 0 &&
-              !strcmp("8'", gts_label_snk) == 0 &&
-              !strcmp("16+",gts_label_snk) == 0 &&
-              !strcmp("16-",gts_label_snk) == 0){
-            printf("error in input: unknown GTS irrep %s\n",gts_label_snk);
-			    status++;
-		          }
-		        }
+	IF_OK {
+          if (strcmp("8",  gts_label_snk) == 0 ||
+              strcmp("8'", gts_label_snk) == 0 ||
+              strcmp("16+",gts_label_snk) == 0 ||
+              strcmp("16-",gts_label_snk) == 0) {
+	      }  /* match is okay */
+	  else {
+	      printf("error in input: unknown GTS irrep %s\n",gts_label_snk);
+	      status++; }
+	}
 
       /* Check input source class */
       IF_OK {
@@ -1520,7 +1527,7 @@ int readin(int prompt) {
           printf("error in input: unknown source class %i\n",gb_class_src);
           status++;
         			}
-		        }
+      }
 
       /* Check input sink class */
       IF_OK {
@@ -1533,10 +1540,10 @@ int readin(int prompt) {
             gb_class_snk != 61 &&
             gb_class_snk != 62 &&
             gb_class_snk != 7){
-          printf("error in input: unknown sink class %i\n",gb_class_snk);
-          status++;
-			        }
-			      }
+          	printf("error in input: unknown sink class %i\n",gb_class_snk);
+          	status++;
+	    }
+       }
 
       IF_OK {
         param.gbbaryon_src[itriplet][i] =

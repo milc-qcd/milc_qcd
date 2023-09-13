@@ -81,6 +81,15 @@ void spectrum_ks_baryon(ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *q
 #ifdef GB_BARYON
 void spectrum_ks_gb_baryon(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **qko2,
   su3_matrix *links, int triplet);
+/* gb_baryon_snk.c */
+void gb_baryon(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **qko2,
+              su3_matrix *links, enum gb_baryon_op *src_op,
+              enum gb_baryon_op *snk_op,
+              int stIdx, short *dowall, short *docube, int num_d, int num_s, int *r0,
+              int *mom, char *par, complex *momfld, int *flip_snk,
+              int num_corr_gb, int *phase, Real *fact, complex **prop);
+
+
 #endif
 
 /*  ks_spectrum_includes.h */
