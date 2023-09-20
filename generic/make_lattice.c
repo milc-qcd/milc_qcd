@@ -24,9 +24,9 @@ void make_lattice(){
 
 #ifdef HAVE_QUDA
   initialize_quda();
-  lattice = (site *)qudaAllocatePinned( sites_on_node * sizeof(site) );
+  lattice = (site *)qudaAllocatePinned( sites_on_node * (size_t) sizeof(site) );
 #else
-  lattice = (site *)malloc( sites_on_node * sizeof(site) );
+  lattice = (site *)malloc( sites_on_node * (size_t) sizeof(site) );
 #endif
   if(lattice==NULL){
     printf("NODE %d: no room for lattice\n",this_node);
