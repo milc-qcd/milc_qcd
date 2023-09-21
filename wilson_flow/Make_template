@@ -33,6 +33,7 @@ MY_OBJECTS= \
   gauge_info.o \
   staple.o \
   integrate.o \
+  flow_helpers.o \
   fmunu.o \
   setup.o
 
@@ -194,6 +195,23 @@ wilson_flow_adpt_bs::
 wilson_flow_adpt_bs_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
         "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_BS -DANISOTROPY" \
+
+
+sphaleron::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER -DSPHALERON" \
+        "EXTRA_OBJECTS= ax_gauge.o \
+        sphaleron.o \
+        field_strength_region.o fmunu_region.o \
+        integrate_region.o staple_region.o" \
+
+debug_blocking::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER -DSPHALERON -DDEBUG_BLOCKING" \
+        "EXTRA_OBJECTS= ax_gauge.o \
+        sphaleron.o \
+        field_strength_region.o fmunu_region.o \
+        integrate_region.o staple_region.o" \
 
 clean:
 	-/bin/rm -f *.o

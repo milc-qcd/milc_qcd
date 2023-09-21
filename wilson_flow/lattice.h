@@ -22,7 +22,7 @@ typedef struct {
   /* is it even or odd? */
   char parity;
   /* my index in the array */
-  uint32_t index;
+  u_int32type index;
   /* The state information for a random number generator */
   double_prn site_prn;
 
@@ -56,6 +56,11 @@ typedef struct {
   anti_hermitmat accumulate[4]; /* accumulation matrix for smearing */
   su3_matrix fieldstrength[6]; /* components of fmunu */
 
+// #ifdef SPHALERON
+//   su3_matrix link_xtra1[4] ALIGNMENT; /* extra resp. half time-step or one flow-time step shifted gauge field */
+//   su3_matrix link_xtra2[4] ALIGNMENT; /* extra resp. one flow-time steps shifted gauge field */
+//   su3_matrix fieldstrength_xtra[6]; /* extra resp. half time-step shifted components of fmunu */
+// #endif
 } site;
 
 /* End definition of site structure */
@@ -72,6 +77,9 @@ typedef struct {
 /* Initialization parameters */
 EXTERN	int nx,ny,nz,nt;
 EXTERN  size_t volume;
+#ifdef SPHALERON
+EXTERN  int block_stride;
+#endif
 #ifdef ANISOTROPY
 EXTERN  Real ani;
 #endif
@@ -82,6 +90,12 @@ EXTERN  u_int32type nersc_checksum;
 /* Flow Parameters */
 EXTERN  Real stepsize;
 EXTERN  Real stoptime;
+#ifdef SPHALERON
+EXTERN  Real stepsize_bulk;
+EXTERN  Real stepsize_bdry;
+EXTERN  Real stoptime_bulk;
+EXTERN  Real stoptime_bdry;
+#endif
 EXTERN  int total_steps;
 EXTERN  int exp_order;
 EXTERN  char flow_description[20];
@@ -136,7 +150,7 @@ EXTERN int is_final_step;
 EXTERN int startflag;
 EXTERN int saveflag;
 EXTERN char startfile[MAXFILENAME], savefile[MAXFILENAME];
-EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
+EXTERN char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 
 
 /* Some of these global variables are node dependent */
@@ -162,5 +176,4 @@ EXTERN su3_matrix *tempmat[N_TEMPORARY];
 /* Generic pointers, for gather routines */
 #define N_POINTERS 9
 EXTERN char ** gen_pt[N_POINTERS];
-
 #endif /* _LATTICE_H */

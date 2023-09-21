@@ -130,7 +130,7 @@ run_gradient_flow() {
 
 
 
-
+#if 0
 /* Resets all entries in an anti-hermition matrix to zero */
 void
 clear_anti_hermitian( anti_hermitmat *dest )
@@ -449,7 +449,7 @@ su3mat_distance( su3_matrix *a, su3_matrix *b ) {
   return temp;
 }
 #endif
-
+#endif
 
 #if GF_INTEGRATOR==INTEGRATOR_LUSCHER || GF_INTEGRATOR==INTEGRATOR_CK \
  || GF_INTEGRATOR==INTEGRATOR_BBB || GF_INTEGRATOR==INTEGRATOR_CF3
@@ -863,7 +863,7 @@ integrate_adapt_bs() {
 #endif
 
 
-
+#if 0
 #ifdef DEBUG_FIELDS
 #define REPACK_TO_DOUBLE
 #ifdef REPACK_TO_DOUBLE
@@ -930,4 +930,5 @@ void dump_double_lattice() {
   fclose( fp );
 
 }
+#endif
 #endif

@@ -16,6 +16,12 @@ typedef struct {
 #endif
   Real stepsize; /* wilson flow time integration step size */
   Real stoptime; /* maximum flow time, -1 means auto-determined */
+#ifdef SPHALERON
+  Real stepsize_bulk; /* wilson flow time integration step size for bulk*/
+  Real stepsize_bdry; /* wilson flow time integration step size for boundary*/
+  Real stoptime_bulk; /* maximum flow time for bulk, -1 means auto-determined */
+  Real stoptime_bdry; /* maximum flow time for boundary, -1 means auto-determined */
+#endif
   int exp_order; /* where to end series expansion of exponential */
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \

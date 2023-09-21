@@ -206,13 +206,56 @@ symanzik1x2_staple(int dir1, int dir2, field_offset lnk1,
 
 /* Correction to Symanzik flow -- Zeuthen flow,
    Ramos, Sint, 1408.05552 */
+#define TMZ(tagi) tempmat[tagi]
 void
 zeuthen_correction( int dir1, field_offset lnk1,
                     Real coeff, field_offset stp ) {
 
-  //TODO: add Zeuthen correction to the flow equation
+  register int i;
+  register site *s;
+  Real weight = 1.0 - 2.0 * coeff;
+  msg_tag *tag0, *tag1;
+  su3_matrix tmat1, tmat2;
+
+  // Get blocked_staple from direction dir1
+  tag0 = start_gather_site( stp, sizeof(su3_matrix), 
+                            dir1, EVENANDODD, gen_pt[0]);
+
+  // Calculate blocked laplacian's downward contribution at OPP_DIR(dir1)
+  FORALLSITES(i, s)
+  {
+    mult_su3_an( SU3_PT(lnk1), SU3_PT(stp), &tmat1);
+    mult_su3_nn(&tmat1, SU3_PT(lnk1), TMZ(1)+i);
+  }
+
+  // Get blocked laplacian's downward contribution from direction OPP_DIR(dir1)
+  tag1 = start_gather_field( TMZ(1), sizeof(su3_matrix), 
+                            OPP_DIR(dir1), EVENANDODD, gen_pt[1]);
+
+  wait_gather(tag0);
+
+  // Calculate blocked laplacian's upward contribution
+  FORALLSITES(i, s)
+  {
+    mult_su3_nn( SU3_PT(lnk1), (su3_matrix *)gen_pt[0][i], &tmat1);
+    mult_su3_na(&tmat1, SU3_PT(lnk1), TMZ(0)+i);
+  }
+
+  wait_gather(tag1);
+
+  //Combine blocked laplacian's shifted contributions with weighted on-site staple
+  FORALLSITES(i, s)
+  {
+    scalar_mult_su3_matrix( SU3_PT(stp), weight, &tmat1 );
+    add_su3_matrix( TMZ(0)+i, (su3_matrix *)gen_pt[1][i], &tmat2);
+    scalar_mult_add_su3_matrix( &tmat1, &tmat2, coeff, SU3_PT(stp) );
+  }
+
+  cleanup_gather(tag0);
+  cleanup_gather(tag1);
 
 }
+
 
 /* Compiles all contributions to the staple */
 void
@@ -274,11 +317,12 @@ staple()
         symanzik1x2_staple(dir1, dir2, lnk1, lnk2, coeff1x2, stp);
 #endif
 
+    // node0_printf("dirs %d %d\n",dir1,dir2);
+    // dumpmat( &(lattice->staple[XUP]) );
     } /* end: dir2 loop */
 
-    if( stapleflag==ZEUTHEN ) //TODO: this is doing nothing at the moment
+    if( stapleflag==ZEUTHEN ) 
       zeuthen_correction(dir1,lnk1,coeffz,stp);
-
 
   } /* end: dir1 loop */
 }

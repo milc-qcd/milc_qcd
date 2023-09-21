@@ -15,6 +15,12 @@ params par_buf;
 
 int initial_set();
 
+#ifdef SPHALERON
+static void nth_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
+static void make_2n_gathers(void);
+static void make_4n_gathers(void);
+#endif
+
 int
 setup()
 {
@@ -34,6 +40,18 @@ setup()
   /* set up neighbor pointers and comlink structures */
   make_nn_gathers();
   node0_printf("Made nn gathers\n"); fflush(stdout);
+#ifdef SPHALERON
+  /* set up 2nd and 4th nearest neighbor pointers and comlink structures
+     code for this routine is below  */
+#if (MAX_BLOCK_STRIDE >= 2)
+  make_2n_gathers();
+  node0_printf("Made 2n gathers for BLOCKING\n"); fflush(stdout);
+#endif
+#if (MAX_BLOCK_STRIDE >= 4)
+  make_4n_gathers();
+  node0_printf("Made 4n gathers for BLOCKING\n"); fflush(stdout);
+#endif
+#endif
 
   /* initialize Runge-Kutta integrator for the flow */
   initialize_integrator();
@@ -97,6 +115,10 @@ initial_set()
   number_of_nodes = numnodes();
   volume=(size_t)nx*ny*nz*nt;
 
+#ifdef SPHALERON
+  block_stride = 1;
+#endif
+
   return prompt;
 }
 
@@ -152,6 +174,12 @@ readin(int prompt)
     IF_OK status += get_f(stdin, prompt, "local_tol", &par_buf.local_tol);
 #endif
     IF_OK status += get_f(stdin, prompt, "stoptime", &par_buf.stoptime);
+#ifdef SPHALERON
+    IF_OK status += get_f(stdin, prompt, "stepsize_bulk", &par_buf.stepsize_bulk);
+    IF_OK status += get_f(stdin, prompt, "stoptime_bulk", &par_buf.stoptime_bulk);
+    IF_OK status += get_f(stdin, prompt, "stepsize_bdry", &par_buf.stepsize_bdry);
+    IF_OK status += get_f(stdin, prompt, "stoptime_bdry", &par_buf.stoptime_bdry);
+#endif
 
     /* Determine what to do with the final configuration */
     IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
@@ -181,6 +209,12 @@ readin(int prompt)
   exp_order = par_buf.exp_order;
   stepsize = par_buf.stepsize;
   stoptime = par_buf.stoptime;
+#ifdef SPHALERON
+  stepsize_bulk = par_buf.stepsize_bulk;
+  stepsize_bdry = par_buf.stepsize_bdry;
+  stoptime_bulk = par_buf.stoptime_bulk;
+  stoptime_bdry = par_buf.stoptime_bdry;
+#endif
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
@@ -194,7 +228,6 @@ readin(int prompt)
   /* Load configuration (no phases in this program) */
   if( par_buf.startflag != CONTINUE )
     startlat_p = reload_lattice( par_buf.startflag, par_buf.startfile );
-
   return 0;
 }
 
@@ -482,3 +515,79 @@ initialize_integrator()
 #endif
 
 }
+
+
+#ifdef SPHALERON
+/* Set up comlink structures for 2nd and 4th nearest gather pattern; 
+   make_lattice() and  make_nn_gathers() must be called first, 
+   preferably just before calling make_2n_gathers() and make_4n_gathers().
+*/
+static void 
+make_2n_gathers(void)
+{
+  int i;
+  
+  for(i=X2UP; i<=T2UP; i++) {
+    make_gather(nth_neighbor, &i, WANT_INVERSE,
+    ALLOW_EVEN_ODD, SAME_PARITY);
+  }
+  
+  /* Sort into the order we want for nearest neighbor gathers,
+     so you can use X2UP, X2DOWN, etc. as argument in calling them. */
+  
+  sort_eight_gathers(X2UP);
+}
+
+static void 
+make_4n_gathers(void)
+{
+  int i;
+  
+  for(i=X4UP; i<=T4UP; i++) {
+    make_gather(nth_neighbor, &i, WANT_INVERSE,
+    ALLOW_EVEN_ODD, SAME_PARITY);
+  }
+  
+  /* Sort into the order we want for nearest neighbor gathers,
+     so you can use X4UP, X4DOWN, etc. as argument in calling them. */
+  
+  sort_eight_gathers(X4UP);
+}
+
+/* this routine uses n-step directions (X2UP..T4DOWN) as directions */
+/* returning the coords of the 4th nearest neighbor in that direction */
+
+static void 
+nth_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
+         int *xp, int *yp, int *zp, int *tp)
+     /* int x,y,z,t,*dirpt,FB;  coordinates of site, direction (eg XUP), and
+  "forwards/backwards"  */
+     /* int *xp,*yp,*zp,*tp;    pointers to coordinates of neighbor */
+{
+  int dir = NODIR, step = 1;
+  if (*dirpt >= XUP && *dirpt <= TUP) {
+    step = 1;
+    dir = (FB==FORWARDS) ? *dirpt-XUP : OPP_DIR(*dirpt-XUP);
+  } 
+  if (*dirpt >= X2UP && *dirpt <= T2UP) {
+    step = 2;
+    dir = (FB==FORWARDS) ? *dirpt-X2UP : OPP_DIR(*dirpt-X2UP);
+  } 
+  if (*dirpt >= X4UP && *dirpt <= T4UP) {
+    step = 4;
+    dir = (FB==FORWARDS) ? *dirpt-X4UP : OPP_DIR(*dirpt-X4UP);
+  } 
+  *xp = x; *yp = y; *zp = z; *tp = t;
+  switch(dir){
+  case XUP: *xp = (x+step)%nx; break;
+  case XDOWN: *xp = (x+(step+1)*nx-step)%nx; break;
+  case YUP: *yp = (y+step)%ny; break;
+  case YDOWN: *yp = (y+(step+1)*ny-step)%ny; break;
+  case ZUP: *zp = (z+step)%nz; break;
+  case ZDOWN: *zp = (z+(step+1)*nz-step)%nz; break;
+  case TUP: *tp = (t+step)%nt; break;
+  case TDOWN: *tp = (t+(step+1)*nt-step)%nt; break;
+  default: printf("nth_neighb: bad direction\n"); exit(1);
+  }
+}
+#endif
