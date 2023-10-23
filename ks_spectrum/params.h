@@ -12,10 +12,10 @@
 #define MAX_MASS_PBP 8
 #define MAX_SOURCE 32
 #define MAX_SET 256
-#define MAX_PROP 64
-#define MAX_QK 1024
+#define MAX_PROP 128
+#define MAX_QK 1536
 #define MAX_COMBO 8
-#define MAX_PAIR 5000
+#define MAX_PAIR 5760
 #define MAX_TRIPLET 64
 #define MAX_QKPAIR_LABEL 64
 #define MAX_MESON 32
