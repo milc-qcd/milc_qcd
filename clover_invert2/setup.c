@@ -1006,6 +1006,7 @@ int readin(int prompt) {
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
   if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
   refresh_ape_links = 1;
+  ape_links_ks_phases = OFF;
 
   /* Set options for fermion links in case we use them */
   

@@ -349,8 +349,8 @@ block_current_stochastic( int nr, Real *j_mu_mass[], Real mass, int nsrc, int si
       
       /* Apply the appropriate spin_taste operator for
 	 a nearly conserved current.  */
-      spin_taste_op_fn(fn_mass, spin_taste[mu], r_offset, gr_mu, M_inv_gr[is]);
-      spin_taste_op_fn(fn_mass, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+      spin_taste_op_ape_fn(fn_mass, spin_taste[mu], r_offset, gr_mu, M_inv_gr[is]);
+      spin_taste_op_ape_fn(fn_mass, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
       
       /* J_mu = -imag[gr * M_inv_gr] */
       /* If sign = +1, add the result.  If sign = -1, subtract it */
@@ -432,8 +432,8 @@ block_current_stochastic_deltam( Real *j_mu01[], Real mass0, Real mass1,
       
       /* Apply the appropriate spin_taste operator for
 	 a nearly conserved current.  */
-      spin_taste_op_fn(fn01, spin_taste[mu], r_offset, gr_mu, M_inv_gr[is]);
-      spin_taste_op_fn(fn01, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+      spin_taste_op_ape_fn(fn01, spin_taste[mu], r_offset, gr_mu, M_inv_gr[is]);
+      spin_taste_op_ape_fn(fn01, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
       
       /* J_mu = -imag[gr * M_inv_gr] */
       /* Multiply result by the mass difference squared times four */
@@ -536,10 +536,10 @@ block_current_stochastic_delta_udus( Real **j_mu[], Real masses[],
       
       /* Apply the appropriate spin_taste operator for
 	 a nearly conserved current.  */
-      spin_taste_op_fn(fn_us, spin_taste[mu], r_offset, gr_us_mu, Mus_inv_gr[is]);
-      spin_taste_op_fn(fn_us, spin_taste_index("pion05"), r_offset, gr_us_mu, gr_us_mu);
-      spin_taste_op_fn(fn_us, spin_taste[mu], r_offset, gr_ud_mu, Mud_inv_gr[is]);
-      spin_taste_op_fn(fn_ud, spin_taste_index("pion05"), r_offset, gr_ud_mu, gr_ud_mu);
+      spin_taste_op_ape_fn(fn_us, spin_taste[mu], r_offset, gr_us_mu, Mus_inv_gr[is]);
+      spin_taste_op_ape_fn(fn_us, spin_taste_index("pion05"), r_offset, gr_us_mu, gr_us_mu);
+      spin_taste_op_ape_fn(fn_us, spin_taste[mu], r_offset, gr_ud_mu, Mud_inv_gr[is]);
+      spin_taste_op_ape_fn(fn_ud, spin_taste_index("pion05"), r_offset, gr_ud_mu, gr_ud_mu);
       
       /* J_mu = -imag[gr * Mus_inv_gr] */
       /* Multiply result by the mass difference squared times four */
@@ -649,10 +649,10 @@ block_current_stochastic_delta_udls( Real **j_mu[], Real masses[],
       
       /* Apply the appropriate spin_taste operator for
 	 a nearly conserved current.  */
-      spin_taste_op_fn(fn_ls, spin_taste[mu], r_offset, gr_ls_mu, Mls_inv_gr[is]);
-      spin_taste_op_fn(fn_ls, spin_taste_index("pion05"), r_offset, gr_ls_mu, gr_ls_mu);
-      spin_taste_op_fn(fn_ls, spin_taste[mu], r_offset, gr_ud_mu, Mud_inv_gr[is]);
-      spin_taste_op_fn(fn_ud, spin_taste_index("pion05"), r_offset, gr_ud_mu, gr_ud_mu);
+      spin_taste_op_ape_fn(fn_ls, spin_taste[mu], r_offset, gr_ls_mu, Mls_inv_gr[is]);
+      spin_taste_op_ape_fn(fn_ls, spin_taste_index("pion05"), r_offset, gr_ls_mu, gr_ls_mu);
+      spin_taste_op_ape_fn(fn_ls, spin_taste[mu], r_offset, gr_ud_mu, Mud_inv_gr[is]);
+      spin_taste_op_ape_fn(fn_ud, spin_taste_index("pion05"), r_offset, gr_ud_mu, gr_ud_mu);
       
       /* J_mu = -imag[gr * Mls_inv_gr] */
       /* Multiply result by the mass difference squared times four */
@@ -1363,8 +1363,8 @@ exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
     dslash_fn_field(eigVec[n], gr0, ODD, fn_mass);
     for(int mu = 0; mu < NMU; mu++){
       
-      spin_taste_op_fn(fn_mass, spin_taste[mu], r_offset, gr_mu, gr0);
-      spin_taste_op_fn(fn_mass, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+      spin_taste_op_ape_fn(fn_mass, spin_taste[mu], r_offset, gr_mu, gr0);
+      spin_taste_op_ape_fn(fn_mass, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
       
       FOREVENFIELDSITES(i){
 	complex z;
@@ -1372,8 +1372,8 @@ exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
 	jlow_mu[NMU*i + mu] += -z.imag/(eigVal[n]+4.0*mass*mass);
       } /* i */
       
-      spin_taste_op_fn(fn_mass, spin_taste[mu], r_offset, gr_mu, eigVec[n]);
-      spin_taste_op_fn(fn_mass, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+      spin_taste_op_ape_fn(fn_mass, spin_taste[mu], r_offset, gr_mu, eigVec[n]);
+      spin_taste_op_ape_fn(fn_mass, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
       
       FORODDFIELDSITES(i){
 	complex z;
@@ -1413,8 +1413,8 @@ exact_current_delta_ls(Real *jlow_mu[], Real masses[],
     dslash_fn_field(eigVec[n], gr0, ODD, fn_ud);
     for(int mu = 0; mu < NMU; mu++){
       
-      spin_taste_op_fn(fn_ud, spin_taste[mu], r_offset, gr_mu, gr0);
-      spin_taste_op_fn(fn_ud, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+      spin_taste_op_ape_fn(fn_ud, spin_taste[mu], r_offset, gr_mu, gr0);
+      spin_taste_op_ape_fn(fn_ud, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
       
       FOREVENFIELDSITES(i){
 	complex z;
@@ -1424,8 +1424,8 @@ exact_current_delta_ls(Real *jlow_mu[], Real masses[],
 	jlow_mu_ud[NMU*i + mu] += -z.imag*dm2_ls4/(dl*ds);
       } /* i */
       
-      spin_taste_op_fn(fn_ud, spin_taste[mu], r_offset, gr_mu, eigVec[n]);
-      spin_taste_op_fn(fn_ud, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+      spin_taste_op_ape_fn(fn_ud, spin_taste[mu], r_offset, gr_mu, eigVec[n]);
+      spin_taste_op_ape_fn(fn_ud, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
       
       FORODDFIELDSITES(i){
 	complex z;
@@ -1475,8 +1475,8 @@ exact_current_delta_udus(Real *jlow_mu[], Real masses[], imp_ferm_links_t *fn[])
     dslash_fn_field(eigVec[n], gr0, ODD, fn_udls);
     for(int mu = 0; mu < NMU; mu++){
       
-      spin_taste_op_fn(fn_udls, spin_taste[mu], r_offset, gr_mu, gr0);
-      spin_taste_op_fn(fn_udls, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+      spin_taste_op_ape_fn(fn_udls, spin_taste[mu], r_offset, gr_mu, gr0);
+      spin_taste_op_ape_fn(fn_udls, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
       
       FOREVENFIELDSITES(i){
 	complex z;
@@ -1488,8 +1488,8 @@ exact_current_delta_udus(Real *jlow_mu[], Real masses[], imp_ferm_links_t *fn[])
 	jlow_mu_us[NMU*i + mu] += -z.imag*dm2_us4/(du*ds);
       } /* i */
       
-      spin_taste_op_fn(fn_udls, spin_taste[mu], r_offset, gr_mu, eigVec[n]);
-      spin_taste_op_fn(fn_udls, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+      spin_taste_op_ape_fn(fn_udls, spin_taste[mu], r_offset, gr_mu, eigVec[n]);
+      spin_taste_op_ape_fn(fn_udls, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
       
       FORODDFIELDSITES(i){
 	complex z;

@@ -962,8 +962,8 @@ mult_rhois_fn_field( imp_ferm_links_t *fn, int fdir, int r0[],
 /* Generic spin-taste operator                                      */
 
 void 
-spin_taste_op_fn( imp_ferm_links_t *fn, int index, int r0[],
-		  su3_vector *dest, su3_vector *src){
+spin_taste_op_ape_fn( imp_ferm_links_t *fn, int index, int r0[],
+		      su3_vector *dest, su3_vector *src){
   switch(index){
 #ifndef NO_GAUGE_FIELD
   case rhoxsfn:

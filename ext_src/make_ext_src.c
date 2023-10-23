@@ -330,7 +330,7 @@ void extract_ksprop_to_ks_source(int startflag, char startfile[], int ncolor,
     print_timing(dtime,"sink_smear_ks_src");
 
     /* Apply sink spin-taste operation */
-    spin_taste_op_fn(NULL, snk_spin_taste, r0, w, v);
+    spin_taste_op_ape_fn(NULL, snk_spin_taste, r0, w, v);
     /* The spin_taste_op phases were designed for tying together two
        forward propagators by first converting one of them to an
        antiquark propagator.  So they include the antiquark phase
@@ -338,7 +338,7 @@ void extract_ksprop_to_ks_source(int startflag, char startfile[], int ncolor,
        antiquark phase.  The next step removes it.  That way the user
        input snk_spin_taste label describes the actual meson at the
        extended source. */
-    spin_taste_op_fn(NULL, spin_taste_index("pion05"), r0, v, w);
+    spin_taste_op_ape_fn(NULL, spin_taste_index("pion05"), r0, v, w);
 
     /* Write the extended source as a time slice of the propagator */
     for(j = 0; j < nt0; j++){
