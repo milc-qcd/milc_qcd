@@ -1,0 +1,68 @@
+com_qmp: set thread-safety level to 0
+Wilson/Symanzik/Zeuthen Flow application
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
+Host(0) = jhw-Precision-5570
+Username = johannes
+start: Thu Nov 30 20:43:04 2023
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 8
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE (RANK) 4 x 4 x 4 x 8
+Mallocing 0.7 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Integrator = INTEGRATOR_BBB
+Finished setup
+
+
+reload_serial ../../binary_samples/lat.sample.l4448
+zeuthen
+set staple to zeuthen
+exp_order 8
+stepsize 0.0625
+stoptime 1
+forget 
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4448
+Time stamp Wed Oct 10 14:27:08 2001
+Checksums 13f3b413 161f7dde OK
+Time to reload gauge configuration = 3.960133e-04
+CHECK PLAQ: 1.723748e+00 1.690586e+00
+CHECK NERSC LINKTR: 6.921659e-02 CKSUM: b3be9b3b
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 7.700920e-05
+#LABEL time Clover_t Clover_s Plaq_t Plaq_s Rect_t Rect_s charge
+GFLOW: 0 1.05787 1.03094 1.69059 1.72375 1.02757 1.0736 0.0955429
+GFLOW: 0.0625 0.868323 0.844176 2.28731 2.30126 1.70322 1.72923 0.0489582
+GFLOW: 0.125 0.641656 0.620283 2.61554 2.6201 2.19016 2.20474 0.0223212
+GFLOW: 0.1875 0.460595 0.437998 2.78377 2.78665 2.48773 2.50129 0.0125687
+GFLOW: 0.25 0.335236 0.310035 2.8703 2.87383 2.66178 2.67749 0.00998669
+GFLOW: 0.3125 0.251443 0.22465 2.91648 2.92076 2.76473 2.78222 0.0088383
+GFLOW: 0.375 0.194791 0.167763 2.94247 2.94716 2.82789 2.84615 0.00750613
+GFLOW: 0.4375 0.155389 0.129062 2.958 2.96282 2.86849 2.88669 0.00601825
+GFLOW: 0.5 0.127095 0.101968 2.96787 2.97261 2.89586 2.91351 0.00462495
+GFLOW: 0.5625 0.106159 0.0824402 2.9745 2.97905 2.91515 2.93197 0.00345567
+GFLOW: 0.625 0.090256 0.0679865 2.97916 2.98348 2.92925 2.94514 0.00253186
+GFLOW: 0.6875 0.0779027 0.0570361 2.98258 2.98665 2.93988 2.95483 0.00182437
+GFLOW: 0.75 0.0681229 0.0485719 2.98516 2.98898 2.94811 2.96214 0.00129013
+GFLOW: 0.8125 0.0602527 0.0419155 2.98717 2.99075 2.95461 2.96778 0.000888446
+GFLOW: 0.875 0.0538282 0.0366015 2.98875 2.99212 2.95984 2.97221 0.000586192
+GFLOW: 0.9375 0.0485166 0.0323025 2.99003 2.99319 2.9641 2.97574 0.000358054
+GFLOW: 1 0.0440741 0.0287829 2.99108 2.99405 2.96763 2.9786 0.000185303
+Number of steps = 16
+Time to complete flow = 6.694369e-01 seconds
+
+
+ask_starting_lattice(0): EOF on input.
+RUNNING COMPLETED
+Time = 6.800699e-01 seconds
+exit: Thu Nov 30 20:43:04 2023
+

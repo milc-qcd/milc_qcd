@@ -1,0 +1,117 @@
+com_qmp: set thread-safety level to 0
+Wilson/Symanzik/Zeuthen Flow application
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
+Host(0) = jhw-Precision-5570
+Username = johannes
+start: Thu Nov 30 11:42:09 2023
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 8
+ny 8
+nz 8
+nt 8
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE (RANK) 8 x 8 x 8 x 8
+Mallocing 5.2 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 2n gathers for BLOCKING
+Made 4n gathers for BLOCKING
+Integrator = INTEGRATOR_LUSCHER
+Finished setup
+
+
+reload_serial ../../binary_samples/lat.sample.l8888
+zeuthen
+set staple to zeuthen
+exp_order 8
+stepsize 0.1
+stoptime 1
+zeuthen
+set bulk staple to zeuthen
+exp_order_bulk 8
+stepsize_bulk 0.1
+stoptime_bulk 0.5
+zeuthen
+set boundary staple to zeuthen
+exp_order_bdry 8
+stepsize_bdry 0.1
+stoptime_bdry 4
+qthr_bulk 0.025
+minqthr_bulk 2
+maxnflow_bulk 10
+qthr_bdry 0.05
+minqthr_bdry 2
+maxnflow_bdry 20
+qs_tol 0.1
+block_1to2_time 4
+block_2to4_time 8
+forget 
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l8888
+Time stamp Tue Mar 13 15:47:22 2012
+Checksums 4f9d000e 8d72f72e OK
+Time to reload gauge configuration = 2.928019e-03
+CHECK PLAQ: 1.779002e+00 1.782359e+00
+CHECK NERSC LINKTR: -6.456386e-04 CKSUM: 4a3bbf43
+Unitarity checked.  Max deviation 2.98e-07
+Time to check unitarity = 6.518364e-04
+#LABEL time Clover_t Clover_s iClover_t iClover_s Plaq_t Plaq_s Rect_t Rect_s charge icharge
+GFLOW: 0 1.00078 1.00149 2.27138 2.27179 1.78236 1.779 1.15278 1.14804 0.0187417 0.183972 0.0890632 0.374154
+GFLOW: 1 0.0462048 0.0477752 0.0570034 0.0582131 2.99066 2.99044 2.96611 2.96514 -0.00738362 -0.00803 -0.00195372 -0.00238616
+Number of steps = 10
+Time to complete flow = 2.369556e+00 seconds
+Fixed to axial gauge
+#LABEL      time Clover_t Clover_s iClover_t iClover_s Plaq_t Plaq_s Rect_t Rect_s charge icharge
+REPT_FULL: 1 0.0462048 0.0477752 0.0570034 0.0582131 2.99066 2.99044 2.96611 2.96514 -0.0073837 -0.00803006 -0.00195379 -0.00238622
+REPT_BULK: 1 0.0521561 0.0499417 0 0.0608444 2.99042 2.99001 2.96537 2.96357 -0.0757989 -0.0826432 0 0
+REPT_HALF: 1 0.0523242 0.0495388 0 0.0604408 2.99757 2.99007 2.99105 2.96383 -0.0794142 -0.0868049 0 0
+#LABEL      time Clover_t Clover_s iClover_t iClover_s Plaq_t Plaq_s Rect_t Rect_s charge icharge
+GFLOW_BULK: 0 0.0521561 0.0499417 0 0.0608444 2.99042 2.99001 2.96537 2.96357 -0.0757989 -0.0826432 0 0
+GFLOW_BULK: 0.5 0.0373074 0.0371607 0 0.044287 2.99321 2.99274 2.97591 2.97321 -0.0761819 -0.0842415 0 0
+Number of steps = 5
+#LABEL      time Clover_t Clover_s iClover_t iClover_s Plaq_t Plaq_s Rect_t Rect_s charge icharge
+REPT_FULL: 1.5 0.0388614 0.039787 0.0478206 0.0478647 2.99205 2.99215 2.97133 2.97117 -0.00717577 -0.00893825 -0.000853446 -0.00243297
+REPT_BULK: 1.5 0.0373074 0.0371607 0 0.044287 2.99321 2.99274 2.97591 2.97321 -0.0761819 -0.0842415 0 0
+REPT_HALF: 1.5 0.0441606 0.0336899 0 0.0397956 2.99794 2.99348 2.99236 2.97583 -0.0798975 -0.0882023 0 0
+#LABEL      time Clover_t Clover_s iClover_t iClover_s Plaq_t Plaq_s Rect_t Rect_s charge icharge
+GFLOW_BULK: 0 0.0373074 0.0371607 0 0.044287 2.99321 2.99274 2.97591 2.97321 -0.0761819 -0.0842415 0 0
+GFLOW_BULK: 0.5 0.0316672 0.0324561 0 0.0385868 2.99429 2.99367 2.98002 2.97663 -0.0772984 -0.0855299 0 0
+Number of steps = 5
+#LABEL      time Clover_t Clover_s iClover_t iClover_s Plaq_t Plaq_s Rect_t Rect_s charge icharge
+REPT_FULL: 2 0.0354596 0.0368467 0.0439273 0.0443022 2.99259 2.99273 2.97354 2.9733 -0.00823656 -0.0101596 -0.00144915 -0.00318285
+REPT_BULK: 2 0.0316672 0.0324561 0 0.0385868 2.99429 2.99367 2.98002 2.97663 -0.0772984 -0.0855299 0 0
+REPT_HALF: 2 0.0432844 0.0275684 0 0.032308 2.99794 2.99471 2.99245 2.98029 -0.0799944 -0.0883932 0 0
+Time to complete bulk flow = 1.351317e+00 seconds
+#LABEL      time Clover_t Clover_s iClover_t iClover_s Plaq_t Plaq_s Rect_t Rect_s charge icharge
+GFLOW_BDRY: 0 2.49461e-16 0.0485197 0 0.0591809 3 2.99028 0 2.96458 -4.96596e-10 -6.42976e-10 -4.96596e-10 -6.42976e-10
+GFLOW_BDRY: 4 9.20721e-06 0.00361666 0 0.00386653 2.99999 2.99933 0 2.99739 0.000223587 0.000234393 0.0746054 0.082309
+ACCUM_BDRY 4 9.20721e-06 0.00361666 0 0.00386653 2.99999 2.99933 0 2.99739 0.000223587 0.000234393 0.0746054 0.082309
+Number of steps = 40
+FULL_ACCUM @ 01 q_acc (0.0746054,0.082309) delta_q2 (0.00556597,0.00677478) q_s = (-0.00322084, -0.00608413) delta_qs2 = (1.03738e-05, 3.70166e-05) PASS
+BLOCK spatial links from STRIDE 1 to STRIDE 2
+#LABEL      time Clover_t Clover_s iClover_t iClover_s Plaq_t Plaq_s Rect_t Rect_s charge icharge
+GFLOW_BDRY: 0 2.35413e-16 0.0469943 0 0.0591565 2.99999 2.99035 0 2.9652 5.55953e-11 6.04073e-11 5.55953e-11 6.04073e-11
+GFLOW_BDRY: 4 1.40128e-06 0.000177218 0 0.000210554 2.99999 2.99994 0 2.99982 1.43896e-05 1.5501e-05 0.00715633 0.00786325
+ACCUM_BDRY 4 1.40128e-06 0.000177218 0 0.000210554 2.99999 2.99994 0 2.99982 1.43896e-05 1.5501e-05 0.00715633 0.00786325
+Number of steps = 40
+FULL_ACCUM @ 02 q_acc (0.0817618,0.0901723) delta_q2 (5.1213e-05,6.18306e-05) PASS q_s = (0.0046424, 0.00177912) delta_qs2 = (2.15519e-05, 3.16526e-06) PASS
+BLOCK spatial links from STRIDE 2 to STRIDE 4
+#LABEL      time Clover_t Clover_s iClover_t iClover_s Plaq_t Plaq_s Rect_t Rect_s charge icharge
+GFLOW_BDRY: 0 2.64406e-16 0.00156169 0 0.00268775 2.99998 2.99949 0 2.99851 4.34536e-12 8.15022e-12 4.34536e-12 8.15022e-12
+GFLOW_BDRY: 4 4.38494e-13 1.06316e-11 0 1.8758e-11 2.99998 2.99996 0 2.99994 4.98922e-13 6.34971e-13 8.75756e-05 0.000112044
+ACCUM_BDRY 4 4.38494e-13 1.06316e-11 0 1.8758e-11 2.99998 2.99996 0 2.99994 4.98922e-13 6.34971e-13 8.75756e-05 0.000112044
+Number of steps = 40
+FULL_ACCUM @ 03 q_acc (0.0818493,0.0902843) delta_q2 (7.66923e-09,1.25534e-08) PASS q_s = (0.00475445, 0.00189116) delta_qs2 = (2.26048e-05, 3.57648e-06) PASS
+Time to complete bdry flow = 3.250915e+00 seconds
+
+
+ask_starting_lattice(0): EOF on input.
+RUNNING COMPLETED
+Time = 6.991551e+00 seconds
+exit: Thu Nov 30 11:42:16 2023
+

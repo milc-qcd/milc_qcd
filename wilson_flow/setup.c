@@ -15,11 +15,12 @@ params par_buf;
 
 int initial_set();
 
-#ifdef SPHALERON
+#ifdef BLOCKING
 static void nth_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 static void make_2n_gathers(void);
 static void make_4n_gathers(void);
 #endif
+static int get_flow_description( char *description, int *stapleflag );
 
 int
 setup()
@@ -40,7 +41,7 @@ setup()
   /* set up neighbor pointers and comlink structures */
   make_nn_gathers();
   node0_printf("Made nn gathers\n"); fflush(stdout);
-#ifdef SPHALERON
+#ifdef BLOCKING
   /* set up 2nd and 4th nearest neighbor pointers and comlink structures
      code for this routine is below  */
 #if (MAX_BLOCK_STRIDE >= 2)
@@ -69,7 +70,7 @@ initial_set()
 
   if(mynode()==0){
     /* print banner */
-    printf("Wilson/Symanzik Flow application\n");
+    printf("Wilson/Symanzik/Zeuthen Flow application\n");
     printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n", machine_type(), numnodes());
     gethostname(hostname, 128);
@@ -115,9 +116,9 @@ initial_set()
   number_of_nodes = numnodes();
   volume=(size_t)nx*ny*nz*nt;
 
-#ifdef SPHALERON
+// #ifdef BLOCKING
   block_stride = 1;
-#endif
+// #endif
 
   return prompt;
 }
@@ -142,28 +143,11 @@ readin(int prompt)
     IF_OK {
       /* Get flow description */
       if (prompt==1)
-        printf("enter 'wilson' or 'symanzik'\n");
-      scanf("%s", par_buf.flow_description);
-      printf("%s\n", par_buf.flow_description);
-
-      /* Check flow description and set staple flag */
-      if( strcmp("wilson", par_buf.flow_description) == 0 ) {
-        par_buf.stapleflag = WILSON;
-        printf("set staple to wilson\n");
-      }
-      else if( strcmp("symanzik", par_buf.flow_description) == 0 ) {
-        par_buf.stapleflag = SYMANZIK;
-        printf("set staple to symanzik\n");
-      }
-      else if( strcmp("zeuthen", par_buf.flow_description) == 0 ) {
-        par_buf.stapleflag = ZEUTHEN;
-        printf("set staple to zeuthen\n");
-      }
-      else {
-        printf("Error: flow_description %s is invalid\n",
-               par_buf.flow_description);
+        printf("enter 'wilson' or 'symanzik' or 'zeuthen'\n");
+      if( get_flow_description(&par_buf.flow_description, &par_buf.stapleflag ) == 0 ){
+        printf("set staple to %s\n",par_buf.flow_description);
+      } else
         status++;
-      }
     } /*end: flow_description IF_OK */
 
     IF_OK status += get_i(stdin, prompt, "exp_order", &par_buf.exp_order);
@@ -174,11 +158,60 @@ readin(int prompt)
     IF_OK status += get_f(stdin, prompt, "local_tol", &par_buf.local_tol);
 #endif
     IF_OK status += get_f(stdin, prompt, "stoptime", &par_buf.stoptime);
+
 #ifdef SPHALERON
+    IF_OK {
+      /* Get flow description for bulk */
+      if (prompt==1)
+        printf("enter 'wilson' or 'symanzik' or 'zeuthen'\n");
+      if( get_flow_description( &par_buf.flow_description_bulk, &par_buf.stapleflag_bulk ) == 0 ) {
+        printf("set bulk staple to %s\n",par_buf.flow_description_bulk);
+      } else
+        status++;
+    } /*end: flow_description IF_OK */
+    IF_OK status += get_i(stdin, prompt, "exp_order_bulk", &par_buf.exp_order_bulk);
     IF_OK status += get_f(stdin, prompt, "stepsize_bulk", &par_buf.stepsize_bulk);
+#if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
+    IF_OK status += get_f(stdin, prompt, "local_tol_bulk", &par_buf.local_tol_bulk);
+#endif
     IF_OK status += get_f(stdin, prompt, "stoptime_bulk", &par_buf.stoptime_bulk);
+
+    IF_OK {
+      /* Get flow description for bdry */
+      if (prompt==1)
+        printf("enter 'wilson' or 'symanzik' or 'zeuthen'\n");
+      if( get_flow_description( &par_buf.flow_description_bdry, &par_buf.stapleflag_bdry ) == 0 ) {
+        printf("set boundary staple to %s\n",par_buf.flow_description_bdry);
+      } else
+        status++;
+    } /*end: flow_description for bdry IF_OK */
+    IF_OK status += get_i(stdin, prompt, "exp_order_bdry", &par_buf.exp_order_bdry);
     IF_OK status += get_f(stdin, prompt, "stepsize_bdry", &par_buf.stepsize_bdry);
+#if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
+    IF_OK status += get_f(stdin, prompt, "local_tol_bdry", &par_buf.local_tol_bdry);
+#endif
     IF_OK status += get_f(stdin, prompt, "stoptime_bdry", &par_buf.stoptime_bdry);
+#endif
+
+#ifdef SPHALERON
+    IF_OK status += get_f(stdin, prompt, "qthr_bulk", &par_buf.qthr_bulk);
+    IF_OK status += get_i(stdin, prompt, "minqthr_bulk", &par_buf.minqthr_bulk);
+    IF_OK status += get_i(stdin, prompt, "maxnflow_bulk", &par_buf.maxnflow_bulk);
+
+    IF_OK status += get_f(stdin, prompt, "qthr_bdry", &par_buf.qthr_bdry);
+    IF_OK status += get_i(stdin, prompt, "minqthr_bdry", &par_buf.minqthr_bdry);
+    IF_OK status += get_i(stdin, prompt, "maxnflow_bdry", &par_buf.maxnflow_bdry);
+
+    IF_OK status += get_f(stdin, prompt, "qs_tol", &par_buf.qs_tol);
+#endif
+
+#ifdef BLOCKING
+    IF_OK status += get_f(stdin, prompt, "block_1to2_time", &par_buf.block_1to2_time);
+    IF_OK status += get_f(stdin, prompt, "block_2to4_time", &par_buf.block_2to4_time);
 #endif
 
     /* Determine what to do with the final configuration */
@@ -209,16 +242,51 @@ readin(int prompt)
   exp_order = par_buf.exp_order;
   stepsize = par_buf.stepsize;
   stoptime = par_buf.stoptime;
-#ifdef SPHALERON
-  stepsize_bulk = par_buf.stepsize_bulk;
-  stepsize_bdry = par_buf.stepsize_bdry;
-  stoptime_bulk = par_buf.stoptime_bulk;
-  stoptime_bdry = par_buf.stoptime_bdry;
-#endif
 #if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
     GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
   local_tol = par_buf.local_tol;
+#endif
+
+#ifdef SPHALERON
+  strcpy(flow_description_bulk, par_buf.flow_description_bulk);
+  stapleflag_bulk = par_buf.stapleflag_bulk;
+  exp_order_bulk = par_buf.exp_order_bulk;
+  stepsize_bulk = par_buf.stepsize_bulk;
+#if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
+  local_tol_bulk = par_buf.local_tol_bulk;
+#endif
+  stoptime_bulk = par_buf.stoptime_bulk;
+
+  strcpy(flow_description_bdry, par_buf.flow_description_bdry);
+  stapleflag_bdry = par_buf.stapleflag_bdry;
+  exp_order_bdry = par_buf.exp_order_bdry;
+  stepsize_bdry = par_buf.stepsize_bdry;
+#if GF_INTEGRATOR==INTEGRATOR_ADAPT_LUSCHER || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_CF3 || \
+    GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
+  local_tol_bdry = par_buf.local_tol_bdry;
+#endif
+  stoptime_bdry = par_buf.stoptime_bdry;
+#endif
+
+#ifdef SPHALERON
+  qthr_bulk = par_buf.qthr_bulk;
+  minqthr_bulk = par_buf.minqthr_bulk;
+  maxnflow_bulk = par_buf.maxnflow_bulk;
+
+  qthr_bdry = par_buf.qthr_bdry;
+  minqthr_bdry = par_buf.minqthr_bdry;
+  maxnflow_bdry = par_buf.maxnflow_bdry;
+
+  qs_tol = par_buf.qs_tol;
+#endif
+
+#ifdef BLOCKING
+  block_1to2_time = par_buf.block_1to2_time;
+  block_2to4_time = par_buf.block_2to4_time;
 #endif
 
   saveflag = par_buf.saveflag;
@@ -512,12 +580,18 @@ initialize_integrator()
   a_RK[3][0] = 7/24.; a_RK[3][1] = 1/4.;
   a_RK[3][2] = 1/3.; a_RK[3][3] = 1/8.;
   node0_printf("Integrator = INTEGRATOR_ADAPT_BS\n");
+#elif GF_INTEGRATOR==INTEGRATOR_EULER
+  N_stages = 1;
+  // EULER coefficients in proper 2N-storage format
+  A_2N[0] = 0.;
+  B_2N[0] = 1.;
+  node0_printf("Integrator = INTEGRATOR_EULER\n");
 #endif
 
 }
 
 
-#ifdef SPHALERON
+#ifdef BLOCKING
 /* Set up comlink structures for 2nd and 4th nearest gather pattern; 
    make_lattice() and  make_nn_gathers() must be called first, 
    preferably just before calling make_2n_gathers() and make_4n_gathers().
@@ -591,3 +665,28 @@ nth_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
   }
 }
 #endif
+
+/* Get flow description */
+static int get_flow_description( char *description, int *stapleflag ) {
+
+  scanf("%s", description);
+  printf("%s\n", description);
+
+  /* Check flow description and set staple flag */
+  if( strcmp("wilson", description) == 0 ) {
+    *stapleflag = WILSON;
+  }
+  else if( strcmp("symanzik", description) == 0 ) {
+    *stapleflag = SYMANZIK;
+  }
+  else if( strcmp("zeuthen", description) == 0 ) {
+    *stapleflag = ZEUTHEN;
+  }
+  else {
+    printf("Error: flow_description %s is invalid\n",
+           description);
+    return 1;
+  }
+
+  return 0;
+}

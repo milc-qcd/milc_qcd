@@ -1,6 +1,7 @@
 /************************ staple.c ********************************/
 /* Computes the wilson and symanzik staples at each link          */
 
+#ifndef REGIONS
 /* Definitions, files, and prototypes */
 #include "wilson_flow_includes.h"
 #define SU3_PT(field) (su3_matrix*)F_PT(s,field)
@@ -217,43 +218,38 @@ zeuthen_correction( int dir1, field_offset lnk1,
   msg_tag *tag0, *tag1;
   su3_matrix tmat1, tmat2;
 
-  // Get blocked_staple from direction dir1
-  tag0 = start_gather_site( stp, sizeof(su3_matrix), 
-                            dir1, EVENANDODD, gen_pt[0]);
+  // node0_printf("Z staple (%d) @ coeff %f in reg %d\n",dir0,coeff,region);
 
-  // Calculate blocked laplacian's downward contribution at OPP_DIR(dir1)
+  // Calculate the plaquette
   FORALLSITES(i, s)
   {
-    mult_su3_an( SU3_PT(lnk1), SU3_PT(stp), &tmat1);
-    mult_su3_nn(&tmat1, SU3_PT(lnk1), TMZ(1)+i);
+    mult_su3_na( SU3_PT(stp), SU3_PT(lnk1), &(TMZ(2)[i]) );
+    mult_su3_an( SU3_PT(lnk1), SU3_PT(stp), &(TMZ(3)[i]) );
   }
 
-  // Get blocked laplacian's downward contribution from direction OPP_DIR(dir1)
-  tag1 = start_gather_field( TMZ(1), sizeof(su3_matrix), 
-                            OPP_DIR(dir1), EVENANDODD, gen_pt[1]);
+  // Get plaq from direction dir1
+  tag0 = start_gather_field( TMZ(2), sizeof(su3_matrix), 
+                             dir1, EVENANDODD, gen_pt[0]);
+
+  // Get plaq from direction OPP_DIR(dir1)
+  tag1 = start_gather_field( TMZ(3), sizeof(su3_matrix), 
+                             OPP_DIR(dir1), EVENANDODD, gen_pt[1]);
 
   wait_gather(tag0);
-
-  // Calculate blocked laplacian's upward contribution
-  FORALLSITES(i, s)
-  {
-    mult_su3_nn( SU3_PT(lnk1), (su3_matrix *)gen_pt[0][i], &tmat1);
-    mult_su3_na(&tmat1, SU3_PT(lnk1), TMZ(0)+i);
-  }
-
   wait_gather(tag1);
 
   //Combine blocked laplacian's shifted contributions with weighted on-site staple
   FORALLSITES(i, s)
   {
     scalar_mult_su3_matrix( SU3_PT(stp), weight, &tmat1 );
-    add_su3_matrix( TMZ(0)+i, (su3_matrix *)gen_pt[1][i], &tmat2);
+    mult_su3_nn( SU3_PT(lnk1), (su3_matrix *)gen_pt[0][i], &(TMZ(0)[i]) );
+    mult_su3_nn( (su3_matrix *)gen_pt[1][i], SU3_PT(lnk1), &(TMZ(1)[i]) );
+    add_su3_matrix( &(TMZ(0)[i]), &(TMZ(1)[i]), &tmat2);
     scalar_mult_add_su3_matrix( &tmat1, &tmat2, coeff, SU3_PT(stp) );
   }
 
   cleanup_gather(tag0);
   cleanup_gather(tag1);
-
 }
 
 
@@ -326,3 +322,5 @@ staple()
 
   } /* end: dir1 loop */
 }
+
+#endif

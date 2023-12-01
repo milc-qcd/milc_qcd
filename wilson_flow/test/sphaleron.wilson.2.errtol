@@ -1,0 +1,15 @@
+REPT_FULL: 0      2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08 
+REPT_BULK: 0      2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  0  0
+REPT_HALF: 0      2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  0  0
+REPT_FULL: 2e-08 2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08 
+REPT_BULK: 2e-08 2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  0  0
+REPT_HALF: 2e-08 2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  0  0
+REPT_FULL: 2e-08 2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08 
+REPT_BULK: 2e-08 2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  0  0
+REPT_HALF: 2e-08 2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  0  0
+ACCUM_BDRY 2e-08 2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08
+FULL_ACCUM @ 0 q_acc (2e-08,2e-08) delta_q2 (2e-08,2e-08) q_s = (2e-08, 2e-08) delta_qs2 = (2e-08, 2e-08) PASS
+ACCUM_BDRY 2e-08 2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08
+FULL_ACCUM @ 0 q_acc (2e-08,2e-08) delta_q2 (2e-08,2e-08) PASS q_s = (2e-08, 2e-08) delta_qs2 = (2e-08, 2e-08) PASS
+ACCUM_BDRY 2e-08 2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08  2e-08
+FULL_ACCUM @ 0 q_acc (2e-08,2e-08) delta_q2 (2e-08,2e-08) PASS q_s = (2e-08, 2e-08) delta_qs2 = (2e-08, 2e-08) PASS

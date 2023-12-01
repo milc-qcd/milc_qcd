@@ -1,0 +1,37 @@
+prompt 0
+nx 8
+ny 8
+nz 8
+nt 8
+
+reload_serial ../../binary_samples/lat.sample.l8888
+zeuthen
+exp_order 8
+stepsize 0.10
+stoptime 1.0
+
+zeuthen
+exp_order_bulk 8
+stepsize_bulk 0.10
+stoptime_bulk 0.5
+
+zeuthen
+exp_order_bdry 8
+stepsize_bdry 0.10
+stoptime_bdry 4.0
+
+qthr_bulk 0.025
+minqthr_bulk 2
+maxnflow_bulk 10
+
+qthr_bdry 0.05
+minqthr_bdry 2
+maxnflow_bdry 20
+
+qs_tol 0.1
+
+block_1to2_time 4.0
+block_2to4_time 8.0
+
+forget
+

@@ -25,7 +25,8 @@ main( int argc, char **argv )
   double dtime, dtimec, dclock();
   int i;
 #ifdef SPHALERON
-  double dtimeb; 
+  double dtimebulk,dtimebdry; 
+  Real q_bulk[3];
 #endif
 
   /* Initialization */
@@ -52,8 +53,8 @@ main( int argc, char **argv )
     dtimec = -dclock();
 
     /* integrate the flow */
-#ifdef SPHALERON
-    run_gradient_flow_region( FULLVOL );
+#ifdef REGIONS
+    run_gradient_flow( FULLVOL );
     // run_gradient_flow();
 #else
     run_gradient_flow();
@@ -72,38 +73,32 @@ main( int argc, char **argv )
     fflush(stdout);
 
 #ifdef SPHALERON
-    /* Start timer for this configuration (doesn't include load time) */
-    dtimeb = -dclock();
+
 #ifdef DEBUG_BLOCKING
     test_blocking();
     normal_exit(0);
 #else
-    prepare_bulk_links();
-    report_bulk( stoptime );
-    /* integrate the flow */
-    run_gradient_flow_region( BULK );
-    report_bulk( stoptime + stoptime_bulk );
-    run_gradient_flow_region( BOUNDARY );
-    report_bulk( stoptime + stoptime_bulk + stoptime_bdry );
-    spatial_blocking();
-    report_bulk( stoptime + stoptime_bulk + stoptime_bdry );
-    run_gradient_flow_region( BOUNDARY );
-    report_bulk( stoptime + stoptime_bulk + 2. * stoptime_bdry );
-    run_gradient_flow_region( BOUNDARY );
-    report_bulk( stoptime + stoptime_bulk + 3. * stoptime_bdry );
-    run_gradient_flow_region( BOUNDARY );
-    report_bulk( stoptime + stoptime_bulk + 4. * stoptime_bdry );
-    run_gradient_flow_region( BOUNDARY );
-    report_bulk( stoptime + stoptime_bulk + 5. * stoptime_bdry );
-    run_gradient_flow_region( BOUNDARY );
-    report_bulk( stoptime + stoptime_bulk + 6. * stoptime_bdry );
-    run_gradient_flow_region( BOUNDARY );
-    report_bulk( stoptime + stoptime_bulk + 7. * stoptime_bdry );
-#endif
-    /* Stop and print timer for this configuration */
-    dtimeb += dclock();
-    node0_printf("Time to complete bulk flow = %e seconds\n", dtimeb);
+#ifndef HALF_LATTICE_TEST
+
+    /* Start timer for bulk flow (doesn't include 4D preflow time) */
+    dtimebulk = -dclock();
+    bulk_flow( q_bulk );
+    /* Stop and print timer for bulk flow  */
+    dtimebulk += dclock();
+    node0_printf("Time to complete bulk flow = %e seconds\n", dtimebulk);
     fflush(stdout);
+#else
+    report_bulk( stoptime, q_bulk );
+#endif
+    /* Start timer for bdry flow (doesn't include 4D pre- and bulk-flow time) */
+    dtimebdry = -dclock();
+    bdry_flow( q_bulk );
+    /* Stop and print timer for this configuration */
+    dtimebdry += dclock();
+    node0_printf("Time to complete bdry flow = %e seconds\n", dtimebdry);
+    fflush(stdout);
+#endif
+
 #endif
   }/* end: loop over configurations */
 

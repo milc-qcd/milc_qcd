@@ -38,6 +38,7 @@ typedef struct {
   /* gauge field at the beginning of RK step */
   su3_matrix link0[4] ALIGNMENT;
 #endif
+#ifndef USE_FIELD
   /* Temporary matrices for staple, smoothing, and field strength */
   su3_matrix staple[4]; /* staple for each link */
 #if GF_INTEGRATOR==INTEGRATOR_RKMK3
@@ -55,12 +56,7 @@ typedef struct {
 #endif
   anti_hermitmat accumulate[4]; /* accumulation matrix for smearing */
   su3_matrix fieldstrength[6]; /* components of fmunu */
-
-// #ifdef SPHALERON
-//   su3_matrix link_xtra1[4] ALIGNMENT; /* extra resp. half time-step or one flow-time step shifted gauge field */
-//   su3_matrix link_xtra2[4] ALIGNMENT; /* extra resp. one flow-time steps shifted gauge field */
-//   su3_matrix fieldstrength_xtra[6]; /* extra resp. half time-step shifted components of fmunu */
-// #endif
+#endif
 } site;
 
 /* End definition of site structure */
@@ -77,9 +73,9 @@ typedef struct {
 /* Initialization parameters */
 EXTERN	int nx,ny,nz,nt;
 EXTERN  size_t volume;
-#ifdef SPHALERON
+// #ifdef BLOCKING
 EXTERN  int block_stride;
-#endif
+// #endif
 #ifdef ANISOTROPY
 EXTERN  Real ani;
 #endif
@@ -90,16 +86,45 @@ EXTERN  u_int32type nersc_checksum;
 /* Flow Parameters */
 EXTERN  Real stepsize;
 EXTERN  Real stoptime;
-#ifdef SPHALERON
-EXTERN  Real stepsize_bulk;
-EXTERN  Real stepsize_bdry;
-EXTERN  Real stoptime_bulk;
-EXTERN  Real stoptime_bdry;
-#endif
 EXTERN  int total_steps;
 EXTERN  int exp_order;
 EXTERN  char flow_description[20];
 EXTERN  int stapleflag;
+
+#ifdef REGIONS
+EXTERN  Real stepsize_bulk;
+EXTERN  Real stoptime_bulk;
+EXTERN  int total_steps_bulk;
+EXTERN  int exp_order_bulk;
+EXTERN  char flow_description_bulk[20];
+EXTERN  int stapleflag_bulk;
+
+EXTERN  Real stepsize_bdry;
+EXTERN  Real stoptime_bdry;
+EXTERN  int total_steps_bdry;
+EXTERN  int exp_order_bdry;
+EXTERN  char flow_description_bdry[20];
+EXTERN  int stapleflag_bdry;
+#endif
+
+#ifdef SPHALERON
+EXTERN  Real qthr_bulk;
+EXTERN  int minqthr_bulk;
+EXTERN  int maxnflow_bulk;
+
+EXTERN  Real qthr_bdry;
+EXTERN  int minqthr_bdry;
+EXTERN  int maxnflow_bdry;
+
+EXTERN  Real q_acc[2];
+EXTERN  Real qs_tol;
+#endif
+
+#ifdef BLOCKING
+EXTERN  Real block_1to2_time;
+EXTERN  Real block_2to4_time;
+#endif
+
 /* Integrator parameters */
 // Maximum number of stages (for storing coefficients)
 #define MAX_RK_NS 13
@@ -108,7 +133,8 @@ EXTERN int N_stages;
 // order of the method
 EXTERN int p_order;
 /* 2N-storage schemes */
-#if GF_INTEGRATOR==INTEGRATOR_LUSCHER || GF_INTEGRATOR==INTEGRATOR_CK \
+#if GF_INTEGRATOR==INTEGRATOR_EULER || \
+    GF_INTEGRATOR==INTEGRATOR_LUSCHER || GF_INTEGRATOR==INTEGRATOR_CK \
  || GF_INTEGRATOR==INTEGRATOR_BBB || GF_INTEGRATOR==INTEGRATOR_CF3
 // A, B coefficients
 EXTERN Real A_2N[MAX_RK_NS];
@@ -128,6 +154,10 @@ EXTERN Real Lambda[3];
 EXTERN int steps_rejected;
 // local tolerance for adaptive integrators
 EXTERN Real local_tol;
+#ifdef REGIONS
+EXTERN Real local_tol_bulk;
+EXTERN Real local_tol_bdry;
+#endif
 // distance between two approximations in adaptive schemes
 EXTERN Real dist;
 #elif GF_INTEGRATOR==INTEGRATOR_ADAPT_BS
@@ -138,6 +168,10 @@ EXTERN Real b_RK[MAX_RK_NS];
 EXTERN int steps_rejected;
 // local tolerance for adaptive integrators
 EXTERN Real local_tol;
+#ifdef REGIONS
+EXTERN Real local_tol_bulk;
+EXTERN Real local_tol_bdry;
+#endif
 // distance between two approximations in adaptive schemes
 EXTERN Real dist;
 // to use FSAL property permute indices in the storage array

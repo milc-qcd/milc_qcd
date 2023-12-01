@@ -31,16 +31,25 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 MY_OBJECTS= \
   control.o \
   gauge_info.o \
-  staple.o \
-  integrate.o \
   flow_helpers.o \
-  fmunu.o \
-  setup.o
+  setup.o  
+
+NOFIELD_OBJECTS= \
+	field_strength.o \
+	fmunu.o \
+	integrate.o \
+	staple.o
+
+USEFIELD_OBJECTS= \
+	blocking.o \
+	field_strength_region.o \
+	fmunu_region.o \
+	integrate_region.o \
+	staple_region.o
 
 G_OBJECTS = \
   check_unitarity.o \
   d_plaq4.o \
-  field_strength.o  \
   field_translation.o \
   field_utilities.o \
   gauge_utilities.o \
@@ -110,108 +119,321 @@ ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
 wilson_flow::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER -DANISOTROPY" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER -DANISOTROPY \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_cf3::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CF3" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CF3 \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_cf3_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CF3 -DANISOTROPY" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CF3 -DANISOTROPY \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_ck::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CK" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CK \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_ck_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CK -DANISOTROPY" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CK -DANISOTROPY \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_bbb::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_BBB" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_BBB \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_bbb_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_BBB -DANISOTROPY" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_BBB -DANISOTROPY \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_rkmk3::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK3" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK3 \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_rkmk3_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK3 -DANISOTROPY" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK3 -DANISOTROPY \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_rkmk4::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK4" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK4 \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_rkmk4_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK4 -DANISOTROPY" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK4 -DANISOTROPY \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_rkmk5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK5" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK5 \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_rkmk5_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK5 -DANISOTROPY" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK5 -DANISOTROPY \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_rkmk8::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK8" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK8 \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_rkmk8_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK8 -DANISOTROPY" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK8 -DANISOTROPY \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_adpt::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_LUSCHER" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_LUSCHER \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_adpt_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_LUSCHER -DANISOTROPY" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_LUSCHER -DANISOTROPY \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_adpt_cf3::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_CF3" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_CF3 \
+        -DREPORT=1 " \
 
 wilson_flow_adpt_cf3_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_CF3 -DANISOTROPY" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_CF3 -DANISOTROPY \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_adpt_bs::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_BS" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_BS \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
 wilson_flow_adpt_bs_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_BS -DANISOTROPY" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_BS -DANISOTROPY \
+        -DREPORT=1 " \
+        "EXTRA_OBJECTS= ${NOFIELD_OBJECTS}" \
 
+
+
+region_flow::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER -DANISOTROPY \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_cf3::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CF3 \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_cf3_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CF3 -DANISOTROPY \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_ck::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CK \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_ck_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_CK -DANISOTROPY \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_bbb::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_BBB \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_bbb_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_BBB -DANISOTROPY \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_rkmk3::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK3 \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_rkmk3_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK3 -DANISOTROPY \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_rkmk4::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK4 \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_rkmk4_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK4 -DANISOTROPY \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_rkmk5::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK5  \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_rkmk5_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK5 -DANISOTROPY \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_rkmk8::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK8 \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_rkmk8_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_RKMK8 -DANISOTROPY \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_adpt::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_LUSCHER \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_adpt_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_LUSCHER -DANISOTROPY \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_adpt_cf3::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_CF3 \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_adpt_cf3_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_CF3 -DANISOTROPY \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_adpt_bs::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_BS \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+region_flow_adpt_bs_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_ADAPT_BS -DANISOTROPY \
+        -DREGIONS -DUSE_FIELD -DREPORT=2 " \
+        "EXTRA_OBJECTS= ${USEFIELD_OBJECTS}" \
+
+
+sphaleron_verbose::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER \
+        -DSPHALERON -DREGIONS -DBLOCKING -DUSE_FIELD \
+        -DREPORT=2" \
+        "EXTRA_OBJECTS= ax_gauge.o \
+        sphaleron.o \
+        ${USEFIELD_OBJECTS}" \
 
 sphaleron::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER -DSPHALERON" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER \
+        -DSPHALERON -DREGIONS -DBLOCKING -DUSE_FIELD \
+        -DREPORT=0 " \
         "EXTRA_OBJECTS= ax_gauge.o \
         sphaleron.o \
-        field_strength_region.o fmunu_region.o \
-        integrate_region.o staple_region.o" \
+        ${USEFIELD_OBJECTS}" \
+
+sphaleron_nofield_verbose::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER \
+        -DSPHALERON -DREGIONS -DBLOCKING -DREPORT=2 " \
+        "EXTRA_OBJECTS= ax_gauge.o \
+        sphaleron.o \
+        ${USEFIELD_OBJECTS}" \
+
+sphaleron_nofield::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER \
+        -DSPHALERON -DREGIONS -DBLOCKING -DREPORT=0 " \
+        "EXTRA_OBJECTS= ax_gauge.o \
+        sphaleron.o \
+        ${USEFIELD_OBJECTS}" \
 
 debug_blocking::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER -DSPHALERON -DDEBUG_BLOCKING" \
+        "DEFINES= -DGF_INTEGRATOR=INTEGRATOR_LUSCHER \
+        -DSPHALERON -DREGIONS -DBLOCKING -DREPORT=0 \
+        -DUSE_FIELD -DDEBUG_BLOCKING " \
         "EXTRA_OBJECTS= ax_gauge.o \
         sphaleron.o \
-        field_strength_region.o fmunu_region.o \
-        integrate_region.o staple_region.o" \
+        ${USEFIELD_OBJECTS}" \
+
+half_lattice_test::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DGF_INTEGRATOR=INTEGRATOR_EULER \
+	-DSPHALERON -DREGIONS -DBLOCKING -DUSE_FIELD \
+	-DHALF_LATTICE_TEST -DREPORT=2 " \
+	"EXTRA_OBJECTS= ax_gauge.o \
+	sphaleron.o \
+	${USEFIELD_OBJECTS}" \
 
 clean:
 	-/bin/rm -f *.o

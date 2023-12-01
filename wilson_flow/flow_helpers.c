@@ -1,7 +1,217 @@
 /************************* flow_helpers.c **********************/
-/* Utilities associated with integrating the Wilson Flow */
+/* Utilities associated with integrating the Wilson Flow 
+   or otherwise generic utilities used across multiple modules */
 
 #include "wilson_flow_includes.h"
+#include <string.h>
+
+
+void print_observables( char *TAG, double flowtime, 
+                        double *Et_WS, double *Es_WS, 
+                        double *Et_C, double *Es_C, 
+                        double *charge ) {
+
+  #if (MILC_PRECISION==1)
+    #if (REPORT == OLDREPORT) 
+      node0_printf("%s %.6g %.6g %.6g %.6g %.6g %.6g %.6g %.6g\n", 
+        TAG, flowtime, Et_C[0], Es_C[0], Et_WS[0], Es_WS[0], Et_WS[1], Es_WS[1], 
+        charge[0]);
+    #else // REPORT == NEWREPORT || REPORT == NO_REPORT
+      node0_printf("%s %.6g %.6g %.6g %.6g %.6g %.6g %.6g %.6g %.6g %.6g %.6g %.6g %.6g\n", 
+        TAG, flowtime, Et_C[0], Es_C[0], Et_C[1], Es_C[1], Et_WS[0], Es_WS[0], Et_WS[1], Es_WS[1], 
+        charge[0], charge[1], charge[2], charge[3]);
+    #endif
+  #else
+    #if (REPORT == OLDREPORT) 
+      node0_printf("%s %.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g\n", 
+        TAG, flowtime, Et_C[0], Es_C[0], Et_WS[0], Es_WS[0], Et_WS[1], Es_WS[1], 
+        charge[0]);
+    #else // REPORT == NEWREPORT || REPORT == NO_REPORT
+      node0_printf("%s %.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g\n", 
+        TAG, flowtime, Et_C[0], Es_C[0], Et_C[1], Es_C[1], Et_WS[0], Es_WS[0], Et_WS[1], Es_WS[1], 
+        charge[0], charge[1], charge[2], charge[3]);
+    #endif
+  #endif
+}
+
+void clear_field ( su3_matrix **this, size_t ncomp ) {
+
+  if ( this == NULL ) {
+    node0_printf("Tried to clear unallocated field\n"); 
+    terminate(1);
+  }
+  if ( this[0] == NULL ) {
+    node0_printf("Tried to clear unallocated field\n"); 
+    terminate(1);
+  }
+  memset( this[0], '\0', ncomp * sizeof(su3_matrix) * sites_on_node );
+}
+
+void destroy_field ( su3_matrix ***this ) {
+
+  if ( *this == NULL ) {
+    node0_printf("Tried to clear unallocated field\n"); 
+    terminate(1);
+  }
+  if ( **this == NULL ) {
+    node0_printf("Tried to free unallocated field\n"); 
+    terminate(1);
+  }
+
+  free( **this );
+  free( *this );
+  *this = NULL;
+}
+
+su3_matrix ** new_field( size_t ncomp ) {
+
+  register int i;
+  register site *s;
+  su3_matrix **this = (su3_matrix **)malloc( ncomp * sizeof(su3_matrix*) );
+  if(this == NULL) {
+    printf( "new_field: can't malloc this\n" );
+    fflush(stdout); terminate(1);
+  }
+
+  this[0] = (su3_matrix *)malloc( ncomp * sizeof(su3_matrix) * sites_on_node );
+  if(this[0] == NULL) {
+    printf( "new_field: can't malloc this[0]\n" );
+    fflush(stdout); terminate(1);
+  }
+  memset( this[0], '\0', ncomp * sizeof(su3_matrix) * sites_on_node );
+  for ( i = 1; i < ncomp; i++ ) 
+    this[i] = this[0] + i * sites_on_node;
+
+  return ( this );
+}
+
+su3_matrix ** new_links_from_site( int region_flag, size_t nlink ) {
+
+  register int i, dir;
+  register site *s;
+  if( nlink > 4 ) {
+    node0_printf( "new_links_from_site: can't create than four links from site; instead %ld\n", nlink );
+    fflush(stdout); terminate(1);
+  }
+  su3_matrix **this = new_field( nlink );
+
+  for (dir = XUP; dir < nlink; dir++ )
+  FORALLSITES(i, s) 
+  IF_BLOCKED(s, block_stride)       
+  IF_REGION(s, region_flag) 
+    su3mat_copy( &(s->link[dir]), &(this[dir][i]) );
+
+  return ( this );
+}
+
+
+/* Clear an anti-hermition field */
+void clear_anti_hermitian_field ( anti_hermitmat **this, size_t ncomp ) {
+
+  if ( this == NULL ) {
+    node0_printf("Tried to clear unallocated anti_hermitian field\n"); 
+    terminate(1);
+  }
+  if ( this[0] == NULL ) {
+    node0_printf("Tried to clear unallocated anti_hermitian field\n"); 
+    terminate(1);
+  }
+  memset( this[0], '\0', ncomp * sizeof(anti_hermitmat) * sites_on_node );
+}
+
+/* Destroy an anti-hermition field */
+void destroy_anti_hermitian_field ( anti_hermitmat ***this ) {
+
+  if ( *this == NULL ) {
+    node0_printf("Tried to clear unallocated anti_hermitian field\n"); 
+    terminate(1);
+  }
+  if ( **this == NULL ) {
+    node0_printf("Tried to free unallocated anti_hermitian field\n"); 
+    terminate(1);
+  }
+
+  free( **this );
+  free( *this );
+  *this = NULL;
+}
+
+/* Create a new, empty anti-hermitian field */
+anti_hermitmat ** new_anti_hermitian_field( size_t ncomp ) {
+
+  register int i;
+  register site *s;
+  anti_hermitmat **this = (anti_hermitmat **)malloc( ncomp * sizeof(anti_hermitmat*) );
+  if(this == NULL) {
+    printf( "new_anti_hermitian_field: can't malloc this\n" );
+    fflush(stdout); terminate(1);
+  }
+
+  this[0] = (anti_hermitmat *)malloc( ncomp * sizeof(anti_hermitmat) * sites_on_node );
+  if(this[0] == NULL) {
+    printf( "new_anti_hermitian_field: can't malloc this[0]\n" );
+    fflush(stdout); terminate(1);
+  }
+  memset( this[0], '\0', ncomp * sizeof(anti_hermitmat) * sites_on_node );
+  for ( i = 1; i < ncomp; i++ ) 
+    this[i] = this[0] + i * sites_on_node;
+
+  return ( this );
+}
+
+/* Destroy an anti-hermition twodim_field */
+void destroy_anti_hermitian_twodim_field ( anti_hermitmat ****this ) {
+
+  if ( *this == NULL ) {
+    node0_printf("Tried to clear unallocated anti_hermitian twodim_field\n"); 
+    terminate(1);
+  }
+  if ( **this == NULL ) {
+    node0_printf("Tried to free unallocated anti_hermitian twodim_field\n"); 
+    terminate(1);
+  }
+  if ( ***this == NULL ) {
+    node0_printf("Tried to free unallocated anti_hermitian twodim_field\n"); 
+    terminate(1);
+  }
+
+  free( ***this );
+  free( **this );
+  free( *this );
+  *this = NULL;
+}
+
+/* Create a new, empty anti-hermitian twodim_field */
+anti_hermitmat *** new_anti_hermitian_twodim_field( size_t dim1, size_t dim2 ) {
+
+  register int i1,i2;
+  register site *s;
+  anti_hermitmat ***this = (anti_hermitmat ***)malloc( dim1 * sizeof(anti_hermitmat**) );
+  if(this == NULL) {
+    printf( "new_anti_hermitian_field: can't malloc this\n" );
+    fflush(stdout); terminate(1);
+  }
+  this[0] = (anti_hermitmat **)malloc( dim1 * sizeof(anti_hermitmat*) * dim2 );
+  if(this[0] == NULL) {
+    printf( "new_anti_hermitian_field: can't malloc this[0]\n" );
+    fflush(stdout); terminate(1);
+  }
+  this[0][0] = (anti_hermitmat *)malloc( dim1 * dim2 * sizeof(anti_hermitmat) * sites_on_node );
+  if(this[0][0] == NULL) {
+    printf( "new_anti_hermitian_field: can't malloc this[0]\n" );
+    fflush(stdout); terminate(1);
+  }
+  memset( this[0][0], '\0', dim1 * dim2 * sizeof(anti_hermitmat) * sites_on_node );
+  for ( i1 = 0; i1 < dim1; i1++ ) {
+    this[i1] = this[0] + i1 * dim2;
+    for ( i2 = 0; i2 < dim2; i2++ ) 
+      this[i1][i2] = this[0][0] + ( i2 + i1 * dim2 ) * sites_on_node;
+  }
+
+  return ( this );
+}
+
+
 
 /* Resets all entries in an anti-hermition matrix to zero */
 void

@@ -1,0 +1,152 @@
+-------------------------------------------------------------------------------
+CHANGELOG FLOW v4:
+-------------------------------------------------------------------------------
+This version of the gradient flow application includes a wide range of edits, 
+some of which are fairly generic, while others are specific to the SPHALERON 
+application.
+
+GENERIC STUFF:
+a) Added the Zeuthen correction ot the flow action. Now three options for 
+the flow action are Wilson, Symanzik, Zeuthen. If needed anisotropy is accounted 
+for. Chosen via input files independent of the integrators.
+
+b) Local field implementations of field strengths (separately spatial or temporal) 
+without reference to a fieldstrength in the sites. Wrappers to do both at once. 
+Independent of generic/fieldstrenght.c.
+
+c) Added the improved clover definition of the field strength tensor. Those are
+computed anyways.
+Sequence Bc,Ec,Bi,Ei.
+
+d) Added improved-clover Ei^2 and Bi^2 with three extra improved-clover Qtops as 
+EcBc, EcBi, EiBc, EiBi. Their output as 
+Ec^2,Bc^2,Ei^2,Bi^2,Ep^2,Bp^2,Er^2,Bp^2, Qcc,Qci,Qic,Qii is triggered via 
+compiler macro "REPORT=2". "REPORT=0" reports only zeroth and last flow steps. 
+
+e) All auxiliary field variables for flow integration can be taken out from the 
+sites. Reduces memory footprint and code becomes typically ~20% faster. Triggered 
+by compiler macro "USE_FIELD". Separate versions w/o USE_FIELD exist.
+Module/function interfaces are kept the same wherever possible.
+
+f) Auxiliary helper functions for SU3-group/algebra fields in flow integration 
+taken out from integrate.c, and reorganized together with others in flow_helpers.c.
+
+g) New versions/functionalities automatically included in flow executables labeled 
+"region_flow" instead of "wilson_flow"; the latter use the old structures and 
+are 100% backwards compatible (in all tests that were done). 
+
+h) Distinction between different versions of flow triggered via "REGIONS" macro.
+All existing modules have REGIONALIZED version, i.e.
+field_strength_region.c
+fmunu_region.c
+integrate_region.c
+staple_region.c
+Module/function interfaces are kept the same wherever possible.
+
+i) Fixed generic/axial.c to be independent of a staple component using local fields.
+
+j) Generally streamlined and improved code consistency/conventions across 
+different modules.
+
+
+NON-GENERIC STUFF FOR SPHALERON APPLICATION:
+Any not at least potentiall generic additions are triggered by the macro SPHALERON.
+There are a few key pieces of logic of behind these additions. 
+Namely, the entirety of 3D vs 4D flow, flow or observables restricted to certain 
+REGIONS, limitations in the number of directions (no TUP links), and BLOCKING. 
+These can be controlled by two parameters, named "block_stride" and "region(_flag)".
+
+BLOCKING:
+A block_stride parameter implies that only every "block_stride"th site in each 
+spatial direction holds a non-trivial link (that has been extended to a length 
+of "block_stride"). So far, this is done for factors of two up to factor four 
+in total. For this purpose 2n- and 4n-gathers are defined. Adding 8n-gather 
+would be trivial. Merging with applications inlcuding 3n-gathers needs some care.
+
+Blocking via the "spatial_blocking" function. Once the blocking has been done, 
+sites are skipped via the "IF_BLOCKED(s, block_stride)" statement. "block_stride" 
+is an external variable (set to 1 if BLOCKING is undefined). 
+Special care is required when building the staples, the fieldstrengths, etc. 
+A function "setup_blocked_dirs" populates 2-arrays for blocked forward and 
+backward directions to be used in gathers. Aware of temporal vs spatial. 
+Corresponding macros indefines.h. 
+
+There is one test, which checks the first stage of BLOCKING, and explicitly 
+builds blocked plaquettes and rectangles from unblocked links, then blocks, 
+rebuilds and compares all of these loops. Compile as "debug_blocking".
+Not yet sure, to which extent this can be fully generalized. 
+
+REGIONS:
+Calculations in different regions may use different fields. These have been 
+excorporated from the sites, and turned into fields. Most definitions in 
+defines.h. Region-specific versions of observables in 
+field_strength_region.c and fmunnu_region.c.
+
+The FULLVOL region corrsponds to all directions and standard 4D flow. 
+The corresponding FULL 4D observables are accessible through
+void 
+make_fieldstrength_full ( su3_matrix **fieldstrength );
+void
+fmunu_fmunu_full( double *time, double *space, double *charge );
+void
+gauge_action_w_s_full( double wlt[2], double wls[2] );
+The corresponding flow is accessible with "region_flag = FULLVOL" through 
+void 
+run_gradient_flow( int region_flag );
+
+The BULK region corresponds to 4D flow with fixed spatial links in its 
+temporal boundary slices. This setup works without fixing AXIAL GAUGE. 
+Once AXIAL GAUGE is fixed, the temporal links in the BULK 
+observables could be omitted analogous to the HALF observables; this is 
+triggered by the macro DROP_TIME_LINKS, but not exactly equivalent, since 
+4D flow in the bulk changes the temporal links ever slightly. For topology 
+this is not expected to change anything.
+
+The corresponding BULK observables are accessible through
+void 
+make_fieldstrength_bulk ( su3_matrix **fieldstrength );
+void
+fmunu_fmunu_bulk( double *time, double *space, double *charge );
+void 
+gauge_action_w_s_bulk( double wlt[2], double wls[2] );
+There is an alternative set of bulk observables accessible through 
+void 
+make_fieldstrength_half ( field_offset link_src, 
+                          su3_matrix **fieldstrength );
+void
+fmunu_fmunu_half( double *time, double *space, double *charge );
+void 
+gauge_action_w_s_half( double wlt[2], double wls[2] );
+where the spatial links have been interpolated to half-integer time, 
+and temporal loops use half-integer time steps.
+
+The corresponding BULK flow is accessible with "region_flag = BULK" through 
+void 
+run_gradient_flow( int region_flag );
+
+In the construction of staples for spatial links, one has to pay attention that 
+the temporal staples for these links could receive contributions from spatial 
+links outside of the regions. For that purpose a separate REGIONALIZED version 
+of staple.c has been produced. Temporal staples in iproved flow actions 
+(Symanzik or Zeuthen) are swapped for Wilson flow staples (with corresponding 
+coefficients) whenever the flow is restricted to regions other than FULLVOL.
+
+The BOUNDARY region corresponds to 3D flow within the fixed temporal boundaries. 
+
+The corresponding BOUNDARY observables are accessible through
+void 
+make_fieldstrength_bdry ( field_offset link_src, 
+                          su3_matrix **link_last_flow, 
+                          su3_matrix **fieldstrength );
+void 
+fmunu_fmunu_bdry( su3_matrix **link_last_flow, 
+                  double *time, double *space, double *charge );
+void 
+gauge_action_w_s_bdry( su3_matrix **link_last_flow,  
+                       double wlt[2], double wls[2] );
+The temporal/electric/topological observables make only sense once 
+"su3_matrix **link_last_flow" has been populated during the flow evolution.
+
+The corresponding BOUNDARY flow is accessible with "region_flag = BOUNDARY" through 
+void 
+run_gradient_flow_region( int region_flag );
