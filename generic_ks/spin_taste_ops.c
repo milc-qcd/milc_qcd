@@ -445,8 +445,12 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
   /* Convert gamma label to hexadecimal */
   short spin = gamma_hex(spin_index);
   short taste = gamma_hex(taste_index);
+
+  int refresh  = 0;
+  if(refresh_links != NULL)
+    refresh = *refresh_links;
   
-  qudaSpinTaste(MILC_PRECISION, quda_precision, links, src, dest, (int)spin, (int)taste, refresh_links);
+  qudaSpinTaste(MILC_PRECISION, quda_precision, links, src, dest, (int)spin, (int)taste, refresh);
   if(refresh_links != NULL)
     *refresh_links = 0;
 }
@@ -1384,7 +1388,7 @@ gamma_gamma_spin_taste_op(int index, int r0[],
   enum gammatype taste_index = decode_gamma_taste_index(index);
 
 #ifdef NO_GAUGE_FIELD
-  general_spin_taste_op(spin_index, taste_index, r0, dest, src, NULL);
+  general_spin_taste_op(spin_index, taste_index, r0, dest, src, NULL, NULL);
 #else
   /* Use APE links for shifts with phases in and leave them in */
   if(ape_links_ks_phases != ON){
