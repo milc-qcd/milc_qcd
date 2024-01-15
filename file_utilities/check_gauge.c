@@ -31,7 +31,7 @@
 #include <qio.h>
 #endif
 
-gauge_file *r_serial_i(char *filename);
+gauge_file *r_serial_i(const char *filename);
 void r_serial_f(gauge_file *gf);
 
 #define PARALLEL 1
@@ -569,8 +569,13 @@ int main(int argc, char *argv[])
   if(gh->magic_number == LIME_MAGIC_NO){
     /* SciDAC format gauge files */
 
+#ifdef HAVE_QIO
     node0_printf("Scanning to verify only checksums.\n");
     gf = file_scan_serial_scidac(filename);
+#else
+    node0_printf("This appears to be a SciDAC file. Recompile with QIO to scan.\n");
+    terminate(1);
+#endif
     
   } else {
     /* MILC format gauge files */

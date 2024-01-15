@@ -125,6 +125,7 @@ EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;
 EXTERN int refresh_ape_links;
+EXTERN int ape_links_ks_phases;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */

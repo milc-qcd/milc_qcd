@@ -4,6 +4,7 @@
 
 #include "../include/macros.h"
 #include "../include/su3.h"
+#include <stdint.h>
 
 #ifdef CONTROL
 #define EXTERN 

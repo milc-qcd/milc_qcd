@@ -116,12 +116,15 @@ Real myrand(double_prn *prn_pt) {
 
 #endif
 
+static int initialized = 0;
+
 #ifdef SITERAND
 void
 initialize_site_prn_from_seed(uint32_t iseed){
   int x, y, z, t, i;
 
-  node0_printf("WARNING!!: Resetting random seed\n");
+  if(initialized == 1)
+    node0_printf("WARNING!!: Resetting random seed\n");
 
   for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
 	  if(node_number(x,y,z,t)==mynode()){
@@ -129,6 +132,7 @@ initialize_site_prn_from_seed(uint32_t iseed){
 	    initialize_prn( &(lattice[i].site_prn) , iseed, lattice[i].index);
 	  }
 	}
+  initialized = 1;
 }
 #endif
 
