@@ -36,6 +36,8 @@ else ifeq ($(strip ${COMPILER}),cray-intel)
   CC = icc
 else ifeq ($(strip ${COMPILER}),ibm)
   CC = xlc_r
+else ifeq ($(strip ${COMPILER}),amdclang)
+  CC = amdclang
 endif
 
 # Override

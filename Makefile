@@ -79,6 +79,16 @@ else ifeq ($(strip ${COMPILER}),ibm)
     MY_CXX ?= xlc++_r
   endif
 
+else ifeq ($(strip ${COMPILER}),amdclang)
+
+  ifeq ($(strip ${MPP}),true)
+    MY_CC ?= mpicc
+    MY_CXX ?= mpicxx
+  else
+    MY_CC ?= amdclang
+    MY_CXX ?= amdclang++
+  endif
+
 endif
 
 # Accelerator
@@ -242,6 +252,17 @@ endif
 #-------------- Portland Group ----------------------------
 #OCFLAGS = -tp p6 -Munroll=c:4,n:4
 #OCFLAGS= -mpentiumpro -march=pentiumpro -funroll-all-loops -malign-double -D_REENTRANT  # Pentium pro
+
+#-------------- AMD Clang ----------------------------
+ifeq ($(strip ${COMPILER}),amdclang)
+
+  ifeq ($(strip ${OMP}),true)
+    OCFLAGS += -fopenmp
+    OCXXFLAGS += -fopenmp
+    LDFLAGS += -fopenmp
+  endif
+
+endif
 
 #----------------------------------------------------------------------
 # 8. Choose large file support.
