@@ -199,9 +199,6 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
     for( uint64_t idx = loopstart; idx < loopend; idx++){
       Coordinate x(4);
       indexToCoords(idx,x);
-//      Coordinate x5(1,0);
-//      for( int d = 0; d < 4; d++ )
-//	x5.push_back(x[d]);
       Coordinate x5(5);
       for( int d = 0; d < 4; d++ )
 	x5[d+1] = x[d];
@@ -264,14 +261,12 @@ static void extract_nV_to_vecs( su3_vector *dest[], int n,
     {
       Coordinate x(4);
       indexToCoords(idx, x);
-      Coordinate x5(1,0);
+      Coordinate x5(5);
       for( int d = 0; d < 4; d++ )
-	x5.push_back(x[d]);
-      Coordinate lx5(5);
-      for (int i = 0; i < 4; i++)lx5[i] = x[i];
+	x5[d+1] = x[d];
 
       for( int j = 0; j < n; j++ ){
-	lx5[0] = j;
+	x5[0] = j;
 
 	ColourVector cVec;
         autoView(Src_cv, (*(src->cv)), CpuRead);
