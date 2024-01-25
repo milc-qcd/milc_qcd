@@ -136,8 +136,6 @@ void LOAD_FATLONGLINKS_GPU(info_t *info, su3_matrix *fat, su3_matrix *lng, ks_co
   double dtime = -dclock();
   GRID_info_t grid_info;
   GRID_hisq_links(&grid_info, path_coeff, fat, lng, thin_links, grid_full);
-  printf("in fatlong\n");
-  dumpmat(fat);
 
 #if 0
   if(want_back)
