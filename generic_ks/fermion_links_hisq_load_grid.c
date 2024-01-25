@@ -20,8 +20,7 @@ void
 load_hisq_aux_links_gpu(info_t *info, ks_action_paths_hisq *ap,
 			hisq_auxiliary_t *aux, su3_matrix *links){
   if(MILC_PRECISION == 1)
-    printf("ERROR. load_hisq_aux_links_grid_F not supported\n");
-    // load_hisq_aux_links_grid_F(info, ap, aux, links);
+    load_hisq_aux_links_grid_F(info, ap, aux, links);
   else
     load_hisq_aux_links_grid_D(info, ap, aux, links);
 
@@ -30,8 +29,7 @@ load_hisq_aux_links_gpu(info_t *info, ks_action_paths_hisq *ap,
 void load_fatlonglinks_gpu(info_t *info, su3_matrix *fatlinks, su3_matrix *longlinks,
 			   ks_component_paths *p, su3_matrix *links){
   if(MILC_PRECISION == 1)
-    printf("ERROR. load_fatlonglinks_grid_F\n");
-    // load_fatlonglinks_grid_F(info, fatlinks, longlinks, p, links);
+    load_fatlonglinks_grid_F(info, fatlinks, longlinks, p, links);
   else
     load_fatlonglinks_grid_D(info, fatlinks, longlinks, p, links);
 }
