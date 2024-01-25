@@ -351,7 +351,7 @@ endif
 WANTFFTW = true
 
 ifeq ($(strip ${WANTFFTW}),true)
-  FFTW=${HOME}/fftw/build-gcc
+  FFTW ?= ${HOME}/fftw/build-gcc
 
   FFTW_HEADERS = ${FFTW}/include
   INCFFTW = -I${FFTW_HEADERS}
