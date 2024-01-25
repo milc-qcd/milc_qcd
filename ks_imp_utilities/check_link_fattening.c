@@ -140,6 +140,6 @@ void check_link_fattening( char *lngansfile, int lngansflag, char *fatansfile, i
     Real reldiff = maxdiff/maxnorm;
     node0_printf("Relative difference %e\n",reldiff);
   } else {
-    node0_printf("Absolute difference %e but norm is 0???\n",maxdiff);
+    node0_printf("Absolute difference %e but maxnorm is 0???\n",maxdiff);
   }      
 }      
