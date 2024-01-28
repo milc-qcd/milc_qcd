@@ -516,7 +516,7 @@ int readin(int prompt) {
 
     nprop = 0;
     IF_OK for(k = 0; k < param.num_set; k++){
-      int max_cg_iterations, max_cg_restarts;
+      int max_cg_iterations, max_inner_cg_iterations, max_cg_restarts;
       enum check_type check = CHECK_NO;
       char mgparamfile[MAXFILENAME] = "";
 
@@ -564,6 +564,14 @@ int readin(int prompt) {
 	/* maximum no. of conjugate gradient restarts */
         IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
 			      &max_cg_restarts );
+
+#if (defined(HALF_MIXED) || defined(MAX_MIXED)) && ! defined(HAVE_QUDA)
+	/* (QUDA sets its own value).  We need this value for GRID mixed precision */
+        IF_OK status += get_i(stdin,prompt,"max_inner_cg_iterations", 
+			      &max_inner_cg_iterations );
+#else
+      max_inner_cg_iterations = 0;
+#endif
       }
 	  
       /* Should we be checking (computing) the propagator by running
@@ -703,6 +711,10 @@ int readin(int prompt) {
 	/* maximum no. of conjugate gradient iterations */
 	param.qic[nprop].max = max_cg_iterations;
       
+	/* maximum no. of inner conjugate gradient iterations */
+	/* (QUDA has its own internal definition) */
+	param.qic[nprop].max_inner = max_inner_cg_iterations;
+
 	/* maximum no. of conjugate gradient restarts */
 	param.qic[nprop].nrestart = max_cg_restarts;
 
