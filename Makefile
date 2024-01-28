@@ -458,8 +458,9 @@ WANT_GAUGEFIX_OVR_GPU ?= #true
 
 endif
 
-# enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
-WANT_MIXED_PRECISION_GPU ?= 2
+# enabled mixed-precision solvers for QUDA and GRID  (if set, overrides HALF_MIXED and MAX_MIXED macros)
+WANT_MIXED_PRECISION ?= 2
+WANT_MIXED_PRECISION_GPU ?= WANT_MIXED_PRECISION
 
 ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${OFFLOAD}),)
