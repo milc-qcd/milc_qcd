@@ -48,7 +48,9 @@ then
 
   case ${ARCH} in
 
-    scalar)
+     scalar)
+
+       echo "Scalar configure"
 
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
@@ -67,6 +69,7 @@ then
 # 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
 
        status=$?
+       echo "Configure exit code ${status}"
              ;;
 
     avx2)
