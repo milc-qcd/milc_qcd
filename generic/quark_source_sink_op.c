@@ -1747,9 +1747,10 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
     su3_vector *tvec2 = create_v_field();
 
     mult_pion5_field( qss_op->r_offset, src, tvec2 );
-    rephase_field_offset( ape_links, ON, NULL, qss_op->r_offset );
+    if(ape_links_ks_phases == OFF)
+      rephase_field_offset( ape_links, ON, &ape_links_ks_phases, qss_op->r_offset );
     mult_pioni_field( ZUP, qss_op->r_offset, src, tvec1, ape_links, &refresh_ape_links );
-    rephase_field_offset( ape_links, OFF, NULL, qss_op->r_offset );
+    rephase_field_offset( ape_links, OFF, &ape_links_ks_phases, qss_op->r_offset );
     add_v_fields( tvec2, tvec1, tvec2 );
     mult_rhoi_field( ZUP, qss_op->r_offset, src, tvec1 );
     add_v_fields( src, tvec1, tvec2 );
@@ -1764,9 +1765,10 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
     su3_vector *tvec2 = create_v_field();
 
     mult_pion05_field( qss_op->r_offset, src, tvec2 );
-    rephase_field_offset( ape_links, ON, NULL, qss_op->r_offset );
+    if(ape_links_ks_phases == OFF)
+      rephase_field_offset( ape_links, ON, &ape_links_ks_phases, qss_op->r_offset );
     mult_pioni0_field( ZUP, qss_op->r_offset, src, tvec1, ape_links, &refresh_ape_links );
-    rephase_field_offset( ape_links, OFF, NULL, qss_op->r_offset );
+    rephase_field_offset( ape_links, OFF, &ape_links_ks_phases, qss_op->r_offset );
     add_v_fields( tvec2, tvec1, tvec2 );
     mult_rhoi0_field( ZUP, qss_op->r_offset, src, tvec1 );
     add_v_fields( src, tvec1, tvec2 );
