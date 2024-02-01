@@ -188,7 +188,7 @@ typedef struct {
   int prec;           /* precision of the inversion 1 = single; 2 = double */
   int min;            /* minimum number of iterations (being phased out) */
   int max;            /* maximum number of iterations per restart */
-  int max_inner;      /* maximum number of innter iterations (for mixed precision{ */
+  int max_inner;      /* maximum number of inner iterations (for mixed precision{ */
   int nrestart;       /* maximum restarts */
   int parity;         /* EVEN, ODD, or EVENANDODD (for some inverters) */
   int start_flag;     /* 0: use a zero initial guess; 1: use dest */
