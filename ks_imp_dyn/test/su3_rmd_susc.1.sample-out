@@ -117,99 +117,123 @@ G_LOOP:  2  13  6   	1.171796e+00	( 1 2 4 6 5 3  )
 G_LOOP:  2  14  6   	1.108556e+00	( 1 5 3 6 2 4  )
 G_LOOP:  2  15  6   	1.125138e+00	( 1 5 4 6 2 3  )
 GACTION: 5.201888e+00
+UML inversion with mass 0.100000
  OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 2 iters= 42
  OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     4.789262e-02  1.628757e-01  -2.902848e-02  -2.902852e-02 ( 1 of 4 )
 FACTION: mass = 1.000000e-01,  1.402318e+00 ( 1 of 4 )
 PB_DMDMU_P: mass 1.000000e-01  -1.392131e-01  -1.419366e-01  8.365024e-03  -7.462960e-03 ( 1 of 4 )
 PB_D2MDMU2_P: mass 1.000000e-01  6.520910e-01  6.235537e-01  2.882020e-02  2.469156e-02 ( 1 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
  OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MM_INV: mass 1.000000e-01,  -5.060805e-01 ( 1 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
  OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MidM_MidM: mass 1.000000e-01,  9.803518e-03 ( 1 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
  OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     2.748038e-01  -2.447241e-02  2.094861e-02  2.094824e-02 ( 2 of 4 )
 FACTION: mass = 1.000000e-01,  1.500334e+00 ( 2 of 4 )
 PB_DMDMU_P: mass 1.000000e-01  -1.467626e-01  -4.997124e-02  -1.225537e-01  3.174714e-02 ( 2 of 4 )
 PB_D2MDMU2_P: mass 1.000000e-01  7.286726e-01  6.428667e-01  -9.479306e-03  -4.850731e-02 ( 2 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
  OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MM_INV: mass 1.000000e-01,  -5.948425e-01 ( 2 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 1.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 2 iters= 43
  OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 TR_MidM_MidM: mass 1.000000e-01,  -1.633597e-01 ( 2 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
  OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     9.494006e-02  1.445328e-01  -4.609677e-03  -4.609874e-03 ( 3 of 4 )
 FACTION: mass = 1.000000e-01,  1.611672e+00 ( 3 of 4 )
 PB_DMDMU_P: mass 1.000000e-01  8.553852e-02  -2.113077e-01  1.671616e-01  4.875241e-03 ( 3 of 4 )
 PB_D2MDMU2_P: mass 1.000000e-01  6.199334e-01  7.164850e-01  -9.911435e-02  2.040472e-02 ( 3 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
  OK converged final_rsq= 2.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MM_INV: mass 1.000000e-01,  -5.743595e-01 ( 3 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
  OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MidM_MidM: mass 1.000000e-01,  -1.002547e-03 ( 3 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
  OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     2.456784e-01  -3.819080e-03  -7.543778e-02  -7.543769e-02 ( 4 of 4 )
 FACTION: mass = 1.000000e-01,  1.633599e+00 ( 4 of 4 )
 PB_DMDMU_P: mass 1.000000e-01  -1.242421e-01  6.123499e-02  -5.086172e-02  -7.231782e-03 ( 4 of 4 )
 PB_D2MDMU2_P: mass 1.000000e-01  6.551400e-01  6.886494e-01  5.268894e-02  2.785559e-02 ( 4 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
  OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 TR_MM_INV: mass 1.000000e-01,  -5.775998e-01 ( 4 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
  OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MidM_MidM: mass 1.000000e-01,  -9.562181e-02 ( 4 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
  OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     1.969553e-02  1.878153e-01  -3.564937e-03  -3.565125e-03 ( 1 of 4 )
 FACTION: mass = 1.000000e-01,  1.398742e+00 ( 1 of 4 )
 PB_DMDMU_P: mass 1.000000e-01  2.545007e-02  -1.097043e-01  3.210321e-02  4.947544e-02 ( 1 of 4 )
 PB_D2MDMU2_P: mass 1.000000e-01  5.925585e-01  6.015194e-01  -2.516536e-03  2.512469e-02 ( 1 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 2 iters= 44
  OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 TR_MM_INV: mass 1.000000e-01,  -4.964444e-01 ( 1 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
  OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MidM_MidM: mass 1.000000e-01,  9.339360e-03 ( 1 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
  OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     1.393413e-01  7.614420e-02  1.982030e-02  1.982041e-02 ( 2 of 4 )
 FACTION: mass = 1.000000e-01,  1.488862e+00 ( 2 of 4 )
 PB_DMDMU_P: mass 1.000000e-01  -1.004183e-01  4.578237e-04  -1.440569e-02  -2.939194e-02 ( 2 of 4 )
 PB_D2MDMU2_P: mass 1.000000e-01  6.090789e-01  7.657386e-01  -3.629759e-02  -3.374719e-02 ( 2 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
  OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MM_INV: mass 1.000000e-01,  -5.167631e-01 ( 2 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
  OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MidM_MidM: mass 1.000000e-01,  -7.376394e-02 ( 2 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
  OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     1.210711e-01  1.028422e-01  1.793092e-02  1.793105e-02 ( 3 of 4 )
 FACTION: mass = 1.000000e-01,  1.533882e+00 ( 3 of 4 )
 PB_DMDMU_P: mass 1.000000e-01  -4.129509e-03  -1.325748e-01  -1.370776e-01  -4.417603e-02 ( 3 of 4 )
 PB_D2MDMU2_P: mass 1.000000e-01  6.601297e-01  6.759769e-01  3.637513e-02  1.463703e-02 ( 3 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
  OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MM_INV: mass 1.000000e-01,  -5.390407e-01 ( 3 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
  OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 TR_MidM_MidM: mass 1.000000e-01,  1.039673e-02 ( 3 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
  OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     1.297646e-01  9.077199e-02  7.318185e-02  7.318132e-02 ( 4 of 4 )
 FACTION: mass = 1.000000e-01,  1.479380e+00 ( 4 of 4 )
 PB_DMDMU_P: mass 1.000000e-01  6.859637e-02  9.073269e-03  -1.002266e-01  1.015655e-01 ( 4 of 4 )
 PB_D2MDMU2_P: mass 1.000000e-01  6.840222e-01  6.268631e-01  -4.334496e-03  7.273434e-02 ( 4 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
  OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MM_INV: mass 1.000000e-01,  -5.286528e-01 ( 4 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
  OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MidM_MidM: mass 1.000000e-01,  1.562486e-02 ( 4 of 4 )
@@ -258,30 +282,37 @@ G_LOOP:  2  13  6   	1.146419e+00	( 1 2 4 6 5 3  )
 G_LOOP:  2  14  6   	1.116733e+00	( 1 5 3 6 2 4  )
 G_LOOP:  2  15  6   	1.121062e+00	( 1 5 4 6 2 3  )
 GACTION: 5.161609e+00
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
  OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     7.953048e-02  1.465838e-01  3.639726e-02  3.639708e-02 ( 1 of 4 )
 FACTION: mass = 1.000000e-01,  1.578508e+00 ( 1 of 4 )
 PB_DMDMU_P: mass 1.000000e-01  9.001188e-02  -5.354173e-02  -2.009468e-02  -1.670317e-01 ( 1 of 4 )
 PB_D2MDMU2_P: mass 1.000000e-01  7.550567e-01  7.545352e-01  2.371350e-02  4.088727e-02 ( 1 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
  OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MM_INV: mass 1.000000e-01,  -5.438040e-01 ( 1 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
  OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MidM_MidM: mass 1.000000e-01,  1.903723e-02 ( 1 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
  OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 PBP: mass 1.000000e-01     5.862344e-02  1.807654e-01  1.859915e-02  1.859955e-02 ( 2 of 4 )
 FACTION: mass = 1.000000e-01,  1.565875e+00 ( 2 of 4 )
 PB_DMDMU_P: mass 1.000000e-01  -1.311859e-02  -9.784899e-02  -2.278602e-02  -1.577276e-01 ( 2 of 4 )
 PB_D2MDMU2_P: mass 1.000000e-01  7.022014e-01  7.259266e-01  -7.402203e-02  1.575690e-02 ( 2 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 2 iters= 44
  OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MM_INV: mass 1.000000e-01,  -5.737718e-01 ( 2 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
  OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 TR_MidM_MidM: mass 1.000000e-01,  -7.843516e-02 ( 2 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
  OK converged final_rsq= 2.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 PBP: mass 1.000000e-01     1.503243e-01  5.941264e-02  -1.388758e-02  -1.388772e-02 ( 3 of 4 )
@@ -291,9 +322,11 @@ PB_D2MDMU2_P: mass 1.000000e-01  6.045777e-01  6.088768e-01  8.378090e-02  5.999
  OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 2 iters= 44
  OK converged final_rsq= 2.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MM_INV: mass 1.000000e-01,  -5.048263e-01 ( 3 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
  OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 2 iters= 9
 TR_MidM_MidM: mass 1.000000e-01,  4.226674e-02 ( 3 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 1.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 2 iters= 41
  OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 PBP: mass 1.000000e-01     2.191333e-01  5.552210e-03  2.350643e-02  2.350657e-02 ( 4 of 4 )
@@ -303,9 +336,11 @@ PB_D2MDMU2_P: mass 1.000000e-01  6.832371e-01  7.925116e-01  2.638224e-02  5.058
  OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
  OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 TR_MM_INV: mass 1.000000e-01,  -5.398512e-01 ( 4 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
  OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 TR_MidM_MidM: mass 1.000000e-01,  4.082234e-02 ( 4 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
  OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 PBP: mass 1.000000e-01     1.302360e-01  8.826438e-02  -2.026568e-02  -2.026565e-02 ( 1 of 4 )
@@ -315,9 +350,11 @@ PB_D2MDMU2_P: mass 1.000000e-01  6.954350e-01  6.185134e-01  8.986311e-02  -6.64
  OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
  OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MM_INV: mass 1.000000e-01,  -5.235569e-01 ( 1 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
  OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 TR_MidM_MidM: mass 1.000000e-01,  2.034527e-02 ( 1 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
  OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 PBP: mass 1.000000e-01     1.636332e-01  5.504465e-02  1.309531e-03  1.309465e-03 ( 2 of 4 )
@@ -327,9 +364,11 @@ PB_D2MDMU2_P: mass 1.000000e-01  7.097813e-01  7.443196e-01  8.158262e-02  2.069
  OK converged final_rsq= 2.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 2 iters= 43
  OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MM_INV: mass 1.000000e-01,  -5.268106e-01 ( 2 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 1.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 2 iters= 42
  OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 TR_MidM_MidM: mass 1.000000e-01,  -9.504914e-02 ( 2 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
  OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 2 iters= 10
 PBP: mass 1.000000e-01     5.075694e-02  1.663685e-01  9.182308e-02  9.182301e-02 ( 3 of 4 )
@@ -339,9 +378,11 @@ PB_D2MDMU2_P: mass 1.000000e-01  6.471197e-01  5.838282e-01  1.431332e-02  1.239
  OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
  OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 9
 TR_MM_INV: mass 1.000000e-01,  -5.215059e-01 ( 3 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
  OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 2 iters= 9
 TR_MidM_MidM: mass 1.000000e-01,  6.399150e-02 ( 3 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
  OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     5.118237e-02  1.450026e-01  -1.727599e-02  -1.727585e-02 ( 4 of 4 )
@@ -351,6 +392,7 @@ PB_D2MDMU2_P: mass 1.000000e-01  5.610932e-01  6.366447e-01  5.933325e-02  -8.23
  OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
  OK converged final_rsq= 2.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MM_INV: mass 1.000000e-01,  -4.708845e-01 ( 4 of 4 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
  OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 TR_MidM_MidM: mass 1.000000e-01,  -7.150935e-02 ( 4 of 4 )

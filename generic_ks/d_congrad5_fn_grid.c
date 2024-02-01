@@ -23,17 +23,32 @@ ks_congrad_parity_grid ( su3_vector *src
 {
   int iterations_used;
   
-  if(qic->prec == 1)
+  if(qic->prec == 1){
+
+#if defined(HALF_MIXED) || defined(MAX_MIXED)
+    node0_printf("ERROR: Mixed precision in GRID is supported only for double precision\n");
+    node0_printf("Solving unmixed in single precision");
+#endif
     iterations_used = 
       ks_congrad_parity_grid_F( src, sol, qic, mass, fn );
-  else
+
+  } else {
+
+#if defined(HALF_MIXED) || defined(MAX_MIXED)
+    node0_printf("Using ks_congrad_mixed_parity_grid_D\n");
+    iterations_used = 
+      ks_congrad_mixed_parity_grid_D( src, sol, qic, mass, fn );
+#else    
     iterations_used = 
       ks_congrad_parity_grid_D( src, sol, qic, mass, fn );
+#endif
+
+  }
   
   return iterations_used;
 }
 
-/*! \brief call to ks_congrad_parity_grid.
+/*! \brief call to ks_congrad_block_parity_grid.
  *
  * Choose the inversion precision
  */
@@ -47,12 +62,25 @@ ks_congrad_block_parity_grid ( int nrhs
 {
   int iterations_used;
   
-  if(qic->prec == 1)
+  if(qic->prec == 1){
+
+#if defined(HALF_MIXED) || defined(MAX_MIXED)
+    node0_printf("ERROR: Mixed precision in GRID is supported only for double precision\n");
+    node0_printf("Solving unmixed in single precision");
+#endif
     iterations_used = 
       ks_congrad_block_parity_grid_F( nrhs, src, sol, qic, mass, fn );
-  else
+  } else {
+
+#if defined(HALF_MIXED) || defined(MAX_MIXED)
+    node0_printf("Using ks_congrad_block_mixed_parity_grid_D\n");
+    iterations_used = 
+      ks_congrad_mixed_block_parity_grid_D( nrhs, src, sol, qic, mass, fn );
+#else
     iterations_used = 
       ks_congrad_block_parity_grid_D( nrhs, src, sol, qic, mass, fn );
+#endif
+  }
   
   return iterations_used;
 }

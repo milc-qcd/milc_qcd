@@ -14,7 +14,7 @@ MAKEFILE = Makefile_scalar
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH ?= # skx knl knc hsw pow8 pow9
+ARCH ?= skx # skx knl knc hsw pow8 pow9
 
 #----------------------------------------------------------------------
 # 2. Compiler family
@@ -300,7 +300,7 @@ QMP_BACKEND = QMP_MPI
 # Edit these locations for the installed SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
-SCIDAC = /work1/simone/contract/scidac_x86_64/install
+SCIDAC = ${HOME}/scidac/install
 TAG=
 # Parallel versions
 QMPPAR ?= ${SCIDAC}/qmp${TAG}
@@ -413,7 +413,7 @@ WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 
 # enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
-WANT_MIXED_PRECISION_GPU ?= 0
+WANT_MIXED_PRECISION_GPU ?= 1
 
 ifeq ($(strip ${WANTQUDA}),true)
 
@@ -457,12 +457,6 @@ ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${WANT_FF_GPU}),true)
     HAVE_FF_GPU = true
     CGPU += -DUSE_FF_GPU
-  endif
-
-  ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
-    CGPU += -DHALF_MIXED # use single precision where appropriate
-  else ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),2)
-    CGPU += -DMAX_MIXED # use half precision where appropriate
   endif
 
 # Verbosity choices:
@@ -540,14 +534,14 @@ endif
 #----------------------------------------------------------------------
 # 16. Grid Options
 
-WANTGRID = #true
+WANTGRID ?= true
 
 ifeq ($(strip ${WANTGRID}), true)
 
   HAVE_GRID = true
   CPHI += -DHAVE_GRID
 
-  CPHI += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
+  CPHI += -DGRID_MULTI_CG=GRID_5DCG  # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
   CPHI += -DGRID_SHMEM_MAX=2048
 
   ifeq ($(strip ${MPP}),true)
@@ -565,11 +559,13 @@ ifeq ($(strip ${WANTGRID}), true)
 
   endif
 
-  GRID_HOME = ../Grid/install-${GRID_ARCH}
+  GRID_ARCH = avx2
+  MPFR_DIR = ${HOME}/perlmutter/mpfr
+  GRID_HOME = ../Grid/install-grid-${GRID_ARCH}
   GRID_LIBRARIES = ${GRID_HOME}/lib
-  LIBGRID = -L${GRID_LIBRARIES} -lGrid
+  LIBGRID = -L${GRID_LIBRARIES} -lGrid -L${HDF5_DIR}/lib -L${MPFR_DIR}/lib
   GRID_HEADERS = ${GRID_HOME}/include
-  INCGRID = -I${GRID_HEADERS}
+  INCGRID = -I${GRID_HEADERS} -I${HDF5_DIR}/include -I${MPFR_DIR}/include
 
   PACKAGE_HEADERS += ${GRID_HEADERS}/Grid
   PACKAGE_DEPS += Grid
@@ -703,7 +699,7 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 
 # REMAP  report remapping time for QDP, QOP in conjunction with above
 
-CTIME = -DPRTIME # -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
+CTIME = -DPRTIME -DCGTIME # -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
 
 #------------------------------
 # Profiling
@@ -734,7 +730,7 @@ CPROF =#
 # HISQ_SVD_COUNTER    Print summary count of SVD uses
 # HISQ_FORCE_FILTER_COUNTER Print summary count of force filter applications.
 
-CDEBUG = -DCG_OK -DREMAP_STDIO_APPEND # -DCHECK_MALLOC
+CDEBUG = -DCG_OK -DCG_DEBUG -DREMAP_STDIO_APPEND # -DCHECK_MALLOC
 
 #------------------------------
 # Backward compatibility
@@ -772,7 +768,7 @@ CCOMPAT += #-DOLD_STAGGERED2NAIVE
 #     and extra list of dimensions in the parameter input file.
 #     See e.g. ks_imp_rhmc.
 
-CGEOM ?=#-DFIX_NODE_GEOM
+CGEOM ?=-DFIX_NODE_GEOM
 
 #------------------------------
 # I/O node grid layout
@@ -786,7 +782,7 @@ CGEOM ?=#-DFIX_NODE_GEOM
 #     by the macro FIX_IONODE_GEOM.  Then the parameter input file
 #     includes a list of dimensions.
 
-CGEOM +=# -DFIX_IONODE_GEOM
+CGEOM +=-DFIX_IONODE_GEOM
 
 #------------------------------
 # Improved staggered CG inverter and Dslash
@@ -1022,6 +1018,12 @@ endif
 
 ifeq ($(strip ${WANTARPACK}),true)
   HAVEARPACK = true
+endif
+
+ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
+  CGPU += -DHALF_MIXED # use single precision where appropriate
+else ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),2)
+  CGPU += -DMAX_MIXED # use half precision where appropriate
 endif
 
 # Make_template_combos defines convenience macros for interdependent

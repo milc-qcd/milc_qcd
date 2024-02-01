@@ -40,7 +40,7 @@
 
 enum check_type { CHECK_NO,  CHECK_YES, CHECK_SOURCE_ONLY };
 
-enum set_type { MULTIMASS_SET, MULTISOURCE_SET, SINGLES_SET };
+enum set_type { MULTIMASS_SET, MULTISOURCE_SET, MULTICOLORSOURCE_SET, SINGLES_SET };
 
 /* structure for passing simulation parameters to each node */
 typedef struct {

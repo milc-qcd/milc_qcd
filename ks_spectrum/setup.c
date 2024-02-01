@@ -91,8 +91,6 @@ static int initial_set(void){
     show_su3_mat_opts();
     show_hisq_links_opts();
 #endif
-    node0_printf("NOTE, APE links KS phases are now in by default\n");
-
     status = get_prompt(stdin,  &prompt );
 
     IF_OK status += get_i(stdin,prompt,"nx", &param.nx );
@@ -533,9 +531,11 @@ int readin(int prompt) {
 	  param.set_type[k] = MULTISOURCE_SET;
 	else if(strcmp(savebuf,"single") == 0)
 	  param.set_type[k] = SINGLES_SET;
+	else if(strcmp(savebuf,"multicolorsource") == 0)
+	  param.set_type[k] = MULTICOLORSOURCE_SET;
 	else {
 	  printf("Unrecognized set type %s\n",savebuf);
-	  printf("Choices are 'multimass', 'multisource', 'single'\n");
+	  printf("Choices are 'single', 'multimass', 'multisource', 'multicolorsource'\n");
 	  status++;
 	}
       }
@@ -574,11 +574,11 @@ int readin(int prompt) {
 	/* (QUDA sets its own value).  We need this value for GRID mixed precision */
         IF_OK status += get_i(stdin,prompt,"max_inner_cg_iterations", 
 			      &max_inner_cg_iterations );
-      }
 #else
-      max_inner_cg_iterations = 0;
+	max_inner_cg_iterations = 0;
 #endif
-	  
+      }
+      
       /* Should we be checking (computing) the propagator by running
 	 the solver? */
 
@@ -631,7 +631,8 @@ int readin(int prompt) {
 
       IF_OK {
 
-	if(param.set_type[k] == MULTISOURCE_SET){
+	if(param.set_type[k] == MULTISOURCE_SET ||
+	   param.set_type[k] == MULTICOLORSOURCE_SET){
 	  /* Get mass label common to this set */
 	  IF_OK status += get_s(stdin,prompt,"mass", savebuf);
 #if ( FERM_ACTION == HISQ )
@@ -674,7 +675,8 @@ int readin(int prompt) {
 
 	IF_OK {
 	  
-	  if(param.set_type[k]  == MULTISOURCE_SET){
+	  if(param.set_type[k]  == MULTISOURCE_SET ||
+	     param.set_type[k]  == MULTICOLORSOURCE_SET){
 
 	    /* Get source index common to this set */
 	    IF_OK status += get_i(stdin,prompt,"source", &param.source[nprop]);

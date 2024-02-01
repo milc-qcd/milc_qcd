@@ -121,6 +121,7 @@ GACTION: 5.201888e+00
  OK converged final_rsq= 2.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 PBP: mass 1.000000e-01     4.789267e-02  1.628757e-01  -2.902843e-02  -2.902854e-02 ( 1 of 1 )
 FACTION: mass = 1.000000e-01,  1.402318e+00 ( 1 of 1 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 2.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
  OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     2.748038e-01  -2.447240e-02  2.094859e-02  2.094828e-02 ( 1 of 1 )
@@ -174,6 +175,7 @@ GACTION: 5.217091e+00
  OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 PBP: mass 1.000000e-01     1.027866e-01  1.276190e-01  -5.292211e-03  -5.292329e-03 ( 1 of 1 )
 FACTION: mass = 1.000000e-01,  1.458371e+00 ( 1 of 1 )
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
  OK converged final_rsq= 2.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 PBP: mass 1.000000e-01     1.509451e-01  8.950629e-02  -1.686744e-02  -1.686722e-02 ( 1 of 1 )
