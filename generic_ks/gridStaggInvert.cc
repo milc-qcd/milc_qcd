@@ -322,7 +322,7 @@ asqtadInvertBlock (GRID_info_t *info,
 		   GridCartesian *FCGrid, GridRedBlackCartesian *FRBGrid,
 		   GridCartesian *CGrid, GridRedBlackCartesian *RBGrid)
 {
-#if 1
+#if 0
   std::cout << "Block inverter currently unavailable" << std::endl;
 #else
   // In and out fields must be on the same lattice
