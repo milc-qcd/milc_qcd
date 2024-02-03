@@ -65,7 +65,7 @@ zero_block_source( int nsrc, su3_vector **src,
   /* Source is zero so answer is zero */
   for(int is = 0; is < nsrc; is++){
     FORSOMEFIELDPARITY_OMP(i,parity,){
-      memset(dest + i, 0, sizeof(su3_vector));
+      memset(dest[is] + i, 0, sizeof(su3_vector));
     } END_LOOP_OMP;
   }
 
