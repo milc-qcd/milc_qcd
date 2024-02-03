@@ -532,7 +532,7 @@ KS_CONGRAD_MIXED_BLOCK_PARITY_GRID ( int nrhs,
   double nflop = 1187;
   int iters = 0;
   GRID_info_t info = GRID_INFO_ZERO;
-  GRID_ColorVectorBlock *grid_sol, *grid_src;
+  GRID_D3_ColorVectorBlock *grid_sol, *grid_src;
   GRID_resid_arg_t *grid_resid_arg;
   GRID_invert_arg_t grid_invert_arg = GRID_INVERT_ARG_DEFAULT;
   GRID_D3_FermionLinksAsqtad  *links_d;    
@@ -598,7 +598,7 @@ KS_CONGRAD_MIXED_BLOCK_PARITY_GRID ( int nrhs,
   
   /* Copy results back to su3_vector */
   double t_sl = -dclock();
-  GRID_extract_nV_to_vecs( sol, nrhs, grid_sol, qic->parity);
+  GRID_D3_extract_nV_to_vecs( sol, nrhs, grid_sol, qic->parity);
   t_sl += dclock();
 
 #if 0
