@@ -14,12 +14,12 @@ MAKEFILE = Makefile_multisrc
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH ?= knl # skx knl knc hsw pow8 pow9
+ARCH ?= hsw # skx knl knc hsw pow8 pow9
 
 #----------------------------------------------------------------------
 # 2. Compiler family
 
-COMPILER ?= intel # intel, ibm, portland, cray-intel
+COMPILER ?= cray-intel # intel, ibm, portland, cray-intel
 
 #----------------------------------------------------------------------
 # 3. MPP vs Scalar
@@ -205,7 +205,7 @@ ifeq ($(strip ${COMPILER}),cray-intel)
   ARCH_FLAG = -mmic
   BINEXT=.knc
   else ifeq ($(strip ${ARCH}),hsw)
-  ARCH_FLAG = -xCORE-AVX2
+  ARCH_FLAG =# -xCORE-AVX2
   BINEXT=.hsw
   else
   ARCH_FLAG = -mavx
@@ -215,13 +215,13 @@ ifeq ($(strip ${COMPILER}),cray-intel)
   OCFLAGS += ${ARCH_FLAG}
   OCXXFLAGS += ${ARCH_FLAG}
   LDFLAGS += ${ARCH_FLAG}
-  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
-  OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCFLAGS +=# -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCXXFLAGS +=#-parallel-source-info=2 -debug inline-debug-info -qopt-report=5
 
   ifeq ($(strip ${OMP}),true)
-    OCFLAGS += -qopenmp
-    OCXXFLAGS += -qopenmp
-    LDFLAGS += -qopenmp
+    OCFLAGS += -fopenmp
+    OCXXFLAGS += -fopenmp
+    LDFLAGS += -fopenmp
   endif
 
 endif
@@ -298,8 +298,8 @@ QMP_BACKEND = QMP_MPI
 # Edit these locations for the installed SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
-SCIDAC = ../scidac/install
-TAG=-openmpi
+SCIDAC = ${HOME}/scidac/install
+TAG=
 # Parallel versions
 QMPPAR ?= ${SCIDAC}/qmp${TAG}
 QIOPAR ?= $(SCIDAC)/qio${TAG}
@@ -413,8 +413,9 @@ WANT_FL_GPU ?= #true
 WANT_FF_GPU ?= #true
 WANT_GF_GPU ?= #true
 
-# enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
-WANT_MIXED_PRECISION_GPU ?= 0
+# enabled mixed-precision solvers for QUDA and GRID  (if set for QUDA, overrides HALF_MIXED and MAX_MIXED macros)
+WANT_MIXED_PRECISION ?= 1
+WANT_MIXED_PRECISION_GPU ?= WANT_MIXED_PRECISION
 
 ifeq ($(strip ${WANTQUDA}),true)
 
@@ -541,7 +542,7 @@ endif
 #----------------------------------------------------------------------
 # 16. Grid Options
 
-WANTGRID = true
+WANTGRID ?= true
 
 ifeq ($(strip ${WANTGRID}), true)
 
@@ -549,7 +550,7 @@ ifeq ($(strip ${WANTGRID}), true)
   CPHI += -DHAVE_GRID
 
   CPHI += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
-  CPHI += -DGRID_SHMEM_MAX=2048
+  CPHI += -DGRID_SHMEM_MAX=8192
 
   ifeq ($(strip ${MPP}),true)
     ifeq ($(strip ${ARCH}),knl)
@@ -566,11 +567,12 @@ ifeq ($(strip ${WANTGRID}), true)
 
   endif
 
-  GRID_HOME = ../Grid/install-grid-avx512-knl
+  GRID_ARCH=avx2
+  GRID_HOME = ../Grid/install-grid-${GRID_ARCH}
   GRID_LIBRARIES = ${GRID_HOME}/lib
-  LIBGRID = -L${GRID_LIBRARIES} -lGrid -lz
+  LIBGRID = -L${GRID_LIBRARIES} -lGrid -lz -L${HOME}/perlmutter/mpfr/lib -lmpfr -lrt
   GRID_HEADERS = ${GRID_HOME}/include
-  INCGRID = -I${GRID_HEADERS}
+  INCGRID = -I${GRID_HEADERS} -I${HOME}/perlmutter/mpfr/include
 
   PACKAGE_HEADERS += ${GRID_HEADERS}/Grid
   PACKAGE_DEPS += Grid
@@ -773,7 +775,7 @@ CCOMPAT += #-DOLD_STAGGERED2NAIVE
 #     and extra list of dimensions in the parameter input file.
 #     See e.g. ks_imp_rhmc.
 
-CGEOM ?=#-DFIX_NODE_GEOM
+CGEOM ?=-DFIX_NODE_GEOM
 
 #------------------------------
 # I/O node grid layout
@@ -787,7 +789,7 @@ CGEOM ?=#-DFIX_NODE_GEOM
 #     by the macro FIX_IONODE_GEOM.  Then the parameter input file
 #     includes a list of dimensions.
 
-CGEOM +=# -DFIX_IONODE_GEOM
+CGEOM += -DFIX_IONODE_GEOM
 
 #------------------------------
 # Improved staggered CG inverter and Dslash
@@ -1025,6 +1027,14 @@ endif
 
 ifeq ($(strip ${WANTARPACK}),true)
   HAVEARPACK = true
+endif
+
+ifeq ($(strip ${WANT_MIXED_PRECISION}),1)
+  CGPU += -DHALF_MIXED # use single precision where appropriate
+else ifeq ($(strip ${WANT_MIXED_PRECISION}),2)
+  CGPU += -DMAX_MIXED # use half precision where appropriate
+else
+  CGPU += ""
 endif
 
 # Make_template_combos defines convenience macros for interdependent
