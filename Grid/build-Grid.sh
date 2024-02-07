@@ -57,17 +57,17 @@ then
             --prefix=${INSTALLDIR} \
             --enable-simd=GEN \
             --enable-comms=none \
-	    --with-lime=${HOME}/scidac/install/qio-single
+	    --disable-fermion-reps       \
+	    --disable-gparity            \
+	    --disable-zmobius \
+	    --with-lime=${HOME}/scidac/install/qio-single \
 	    --with-fftw=${HOME}/fftw/build-gcc \
             --with-mpfr=${HOME}/mpfr \
             CXX="${PK_CXX}" \
-            CXXFLAGS="-std=gnu++17 -g -Wno-psabi" \
+            CXXFLAGS="-std=gnu++17 -O0 -g -Wno-psabi" \
 
 #            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
 # 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
-#            --disable-gparity \
-#	    --disable-zmobius \
-#	    --disable-fermion-reps \
 
        status=$?
              ;;
@@ -76,14 +76,16 @@ then
 
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
-            --enable-mkl=yes \
+            --enable-mkl=no \
             --enable-simd=GEN \
-            --enable-comms=mpi \
-	    --with-lime=${HOME}/scidac/install/qio
-            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
-	    --with-hdf5=/opt/cray/pe/hdf5/1.12.0.0/INTEL/19.1 \
+            --enable-shm=shmnone \
+            --enable-comms=mpi3 \
+	    --with-lime=${HOME}/scidac/install/qio \
+	    --with-lime=${HOME}/scidac/install/qio \
+	    --with-hdf5=${CRAY_HDF5_DIR} \
+            --with-mpfr=${HOME}/perlmutter/mpfr \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++11 -xCORE-AVX2" \
+            CXXFLAGS="-std=c++17 -xCORE-AVX2" \
 
        status=$?
              ;;
@@ -134,7 +136,7 @@ then
 	# Perlmutter ./build-Grid.sh gpu-cuda cc CC
 	${SRCDIR}/configure \
              --prefix ${INSTALLDIR}       \
-	     --enable-comms=mpi           \
+	     --enable-comms=mpi3          \
 	     --enable-comms-threads       \
 	     --enable-simd=GPU            \
 	     --enable-shm=no              \
@@ -146,10 +148,10 @@ then
              --host=x86_64-unknown-linux-gnu \
 	     --with-mpfr=${HOME}/perlmutter/mpfr \
 	     --with-hdf5=${HOME}/perlmutter/hdf5 \
-	     --with-lime=${HOME}/perlmutter/build/usqcd \
+	     --with-lime=${HOME}/perlmutter/quda/install/lib \
              CXX="nvcc"                \
 	     LDFLAGS="-cudart shared " \
-             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_80,code=sm_80 -std=c++14 -cudart shared" \
+             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_80,code=sm_80 -std=c++17 -cudart shared" \
 
         status=$?
         echo "Configure exit status $status"
