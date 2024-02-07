@@ -14,6 +14,7 @@
 # These are required for essentially all applications
 
 STANDARD_OBJECTS = \
+  blind_data.o \
   field_translation.o \
   field_utilities.o  \
   gauge_utilities.o  \
@@ -21,6 +22,7 @@ STANDARD_OBJECTS = \
   io_helpers.o \
   io_lat_utils.o \
   make_lattice.o \
+	mmap_cache.o \
   ranstuff.o \
   remap_stdio_from_args.o
 
@@ -125,6 +127,11 @@ KS_SPECTRUM_OBJECTS = \
 else
 # otherwise use old CPU contraction code
 KS_SPECTRUM_OBJECTS = \
+	gb_baryon_mmap.o \
+	gb_baryon_snk.o \
+	gb_baryon_3pt.o \
+        gb_baryon_src.o \
+	gb_ops.o \
   ks_baryon.o \
   ks_meson_mom.o
 endif
@@ -144,7 +151,7 @@ CL_IO_OBJECTS  = \
   canopy2weyl_rot.o  \
   io_helpers_w.o     \
   io_prop_w.o        \
-  staggered2naive.o 
+  staggered2naive.o
 
 # These are used to compute the spectrum
 
@@ -182,7 +189,7 @@ endif
   FLINKS_FN_MILC_GPU = fermion_links_milc.o \
 	fermion_links_fn_load_gpu.o \
 	${FLINKS} ks_action_paths.o
-  
+
   FLINKS_HISQ_MILC_GPU = fermion_links_hisq_milc.o \
 	fermion_links_fn_load_gpu.o \
 	fermion_links_hisq_load_milc.o \
@@ -249,7 +256,7 @@ endif
   CONGRAD_EO = d_congrad5_eo.o d_congrad_opt.o mat_invert.o ks_invert.o report_invert_status.o
 
 # GRID support
-  
+
   CONGRAD_FN_GRID = d_congrad5_two_src.o d_congrad5_fn_grid.o \
      d_congrad5_fn_grid_D.o d_congrad5_fn_grid_F.o d_congrad5_fn_milc.o \
      gridStaggInvert.o ${CONGRAD_FN_BASE}
@@ -259,7 +266,7 @@ endif
   CONGRAD_FN_GPU = d_congrad5_fn_gpu.o ${CONGRAD_FN_MILC_CPU}
 
 # QPHIX support
-  
+
   CONGRAD_FN_QPHIX = d_congrad5_two_src.o d_congrad5_fn_qphix.o \
      d_congrad5_fn_qphix_D.o d_congrad5_fn_qphix_F.o d_congrad5_fn_milc.o \
      ${CONGRAD_FN_BASE}
@@ -293,12 +300,12 @@ endif
 # GPU support
 
   MULTI_INV_FN_GPU = ks_multicg_offset_gpu.o ${MULTI_INV_FN_MILC_CPU}
-  
+
 # Grid support
 
   MULTI_INV_FN_GRID = ks_multicg_offset_grid.o ${MULTI_INV_FN_MILC_CPU} \
     ks_multicg_offset_grid_D.o  ks_multicg_offset_grid_F.o
-  
+
 # QPHIX support
 
   MULTI_INV_FN_QPHIX = ks_multicg.o ks_multicg_offset_qphix.o \
@@ -337,10 +344,10 @@ endif
 
 # GPU support
 
-  ASQ_FORCE_MILC_GPU = ${ASQ_FORCE_MILC_CPU} fermion_force_asqtad_gpu.o 
+  ASQ_FORCE_MILC_GPU = ${ASQ_FORCE_MILC_CPU} fermion_force_asqtad_gpu.o
 
   HISQ_FORCE_MILC_GPU = ${HISQ_FORCE_MILC_CPU}
-  
+
 # Standard QOP combinations
 
   ASQ_FORCE_QOP = fermion_force_asqtad_qop.o fermion_force_asqtad_qop_F.o \
@@ -375,15 +382,15 @@ endif
 
 # Standard MILC combinations
   CONGRAD_CL_MILC_CPU = d_bicgilu_cl.o ${CONGRAD_CL_BASE}
-  
-# GPU support 
+
+# GPU support
   CONGRAD_CL_MILC_GPU = d_bicgilu_cl_gpu.o ${CONGRAD_CL_BASE}
 
-# QPHIXJ support 
+# QPHIXJ support
 #  CONGRAD_CL_MILC_QPHIXJ = d_bicgilu_cl_qphixj.o d_bicgilu_cl_qphixj_F.o \
 #      d_bicgilu_cl_qphixj_D.o ${CONGRAD_CL_BASE}
 
-# QPHIXJ support 
+# QPHIXJ support
   CONGRAD_CL_MILC_QPHIXJ = d_bicgilu_cl_qphixj.o qphixjClovInvert.o \
       d_bicgilu_cl_qphixj_F.o d_bicgilu_cl_qphixj_D.o ${CONGRAD_CL_BASE}
 
@@ -443,7 +450,7 @@ ifeq ($(strip ${HAVEQOP}),true)
   GAUGE_FORCE   = ${GAUGE_FORCE_QOP}
   ASQ_FORCE     = ${ASQ_FORCE_QOP}
   HISQ_FORCE    = ${HISQ_FORCE_QOP}
-else	        
+else
   CONGRAD_CL    = ${CONGRAD_CL_MILC}
   FLINKS_EO     = ${FLINKS_EO_MILC}
   FLINKS_FN     = ${FLINKS_FN_MILC}
@@ -487,5 +494,4 @@ HISQ_OBJECTS = \
   ${CONGRAD_FN} \
   ${DSLASH_FN} \
   ${MULTI_INV_FN}
-
 

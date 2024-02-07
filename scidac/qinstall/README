@@ -1,0 +1,92 @@
+qinstall -- a simple installer/updater for SciDAC Lattice QCD libraries
+
+Usage:
+
+Choose a .prf file that you want to use or create a new one (see below).
+
+To install a library do:
+
+qinstall <prf> <package> <version>
+
+<prf> is the name of the .prf file you want to use (without the .prf)
+<package> is name of a SciDAC Lattice QCD package
+          the current options are: qmp, qio, qla, qdp, qopqdp, qdp++ and chroma
+<version> is the version to install
+
+example:
+
+qinstall jlab-6n qdp 1.7.1
+
+will install qdp-1.7.1 using the jlab-6n.prf profile.
+
+
+INSTALLATION PROCEDURE:
+
+given the example command:
+
+qinstall jlab-6n qdp 1.7.1
+
+qinstall first looks for an existing source directory "qdp-1.7.1" in the
+specified source root (/dist/scidac-build/src).  If not found it will
+look for the tarball "qdp-1.7.1.tar.gz" in the download directory.  If that
+is not found it will attempt to fetch it from the SciDAC website.  The
+package is then untarred to create the missing source directory.
+
+Next it looks for a the build directory ("qdp-1.7.1-6n") and creates it if
+not found.  It also creates the configure command to be used in the file
+"configure-qdp" in the build dir, if it does not already exist.  It then
+runs that configure command and then proceeds to "make", "make install"
+and optionally "make check".  The outputs of these can be found in the
+build dir in "make.log", "make-install.log", and "make-check.log" respectively.
+
+Lastly it creates a symbolic link in the install dir from "qdp" to "qdp-1.7.1".
+This allows one to use the version-less link in makefiles to automatically
+get the latest version.
+
+
+CONFIGURATION:
+
+Each .prf file defines a set of directories and the configure templates
+to be used for each package along with a few options.
+The .prf file is interpereted by bash to set the necessary variables.
+
+The directories needed are:
+DLDIR    where the package tarballs are downloaded to
+SRCROOT  where the source tarballs are untarred into
+BLDROOT  where the package build dirs will be
+INSROOT  where the package installation directories will be
+
+Each version of each package will have its own source, build and install
+directory under each of the respective root directories.
+
+For example:
+$SRCDIR/qmp-2.1.7
+$SRCDIR/qio-2.2.0
+$SRCDIR/qla-1.6.2
+...
+and likewise for the build and install dirs.
+
+Each package then has a set of variables like:
+qmp=mpi-6n-gcc
+qmptag=6n
+qmpcheck=yes
+
+The first, "qmp", specifies which configure template will be used to configure
+the package of the same name.  These are found in the subdirectory with the
+same name as the package.  In this case it will use the file "qmp/mpi-6n-gcc".
+
+The second, "qmptag", specifies an optional tag that will be appended to the
+build and install directories.  In this case something like "qdp-1.7.1-6n".
+If left blank the build and install dirs will just be like "qdp-1.7.1".
+
+The third, "qmpcheck", specifies whether to run "make check" or not.
+
+The configure templates are just the configure command to run with the
+following self explanatory substitutions made:
+SRCDIR
+INSDIR
+QMPDIR
+QIODIR
+QLADIR
+QDPDIR
+QDPXXDIR

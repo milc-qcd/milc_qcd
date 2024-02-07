@@ -1,6 +1,6 @@
 /**************************** jacobi.c ****************************/
 /* MIMD version 7 */
-#include <malloc.h>
+#include <stdlib.h>
 #include <math.h>
 #include "../include/complex.h"
 #include "../include/jacobi.h"

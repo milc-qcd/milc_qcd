@@ -81,7 +81,6 @@ then
             --enable-shm=shmnone \
             --enable-comms=mpi3 \
 	    --with-lime=${HOME}/scidac/install/qio \
-	    --with-lime=${HOME}/scidac/install/qio \
 	    --with-hdf5=${CRAY_HDF5_DIR} \
             --with-mpfr=${HOME}/perlmutter/mpfr \
             CXX="${PK_CXX}" CC="${PK_CC}" \
