@@ -76,14 +76,15 @@ then
 
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
-            --enable-mkl=yes \
+            --enable-mkl=no \
             --enable-simd=GEN \
-            --enable-comms=mpi \
-	    --with-lime=${HOME}/scidac/install/qio
-            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
-	    --with-hdf5=/opt/cray/pe/hdf5/1.12.0.0/INTEL/19.1 \
+            --enable-shm=shmopen \
+            --enable-comms=mpi3 \
+	    --with-lime=${HOME}/scidac/install/qio \
+	    --with-hdf5=${CRAY_HDF5_DIR} \
+            --with-mpfr=${HOME}/perlmutter/mpfr \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++11 -xCORE-AVX2" \
+            CXXFLAGS="-std=c++17" \
 
        status=$?
              ;;
