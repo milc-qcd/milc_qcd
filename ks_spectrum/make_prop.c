@@ -286,13 +286,21 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
   case(MULTIMASS_SET):
     
     for(int color = 0; color < nc; color++){
-      node0_printf("%s: color = %d; all masses\n", myname, color);
+      node0_printf("%s: color index = %d; all masses\n", myname, color);
       mat_invert_multi(src[num_prop*color], &dst[num_prop*color], my_ksp,
 		       num_prop, my_qic, fn_multi);
     }
     break;
     
   case(MULTISOURCE_SET):
+
+    for(int color = 0; color < nc; color++){
+      node0_printf("%s: color index = %d; mass = %f\n", myname, color, my_ksp[0].mass);
+      mat_invert_block(&src[num_prop*color], &dst[num_prop*color], my_ksp[0].mass,
+		       num_prop, my_qic, fn_multi[0]);
+    }
+    break;
+
   case(MULTICOLORSOURCE_SET):
 
     node0_printf("%s: all colors; mass = %f\n", myname, my_ksp[0].mass);
