@@ -10,6 +10,7 @@
 #include "generic_ks_includes.h"
 #include "../include/fermion_links.h"
 #include "../include/openmp_defs.h"
+#include <string.h>
 
 static int
 zero_source( su3_vector *src, su3_vector *dest,
