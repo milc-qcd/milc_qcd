@@ -367,7 +367,6 @@ asqtadInvertBlock (GRID_info_t *info,
 
 	// 5D CG
 
-	Ds.ZeroCounters();
 	std::cout << "Running 5D CG for " << nrhs << " sources\n" << std::flush;
 	auto start = std::chrono::system_clock::now();
 	restartCG<FermionField>(inv_arg->nrestart, res_arg, CG, HermOp, 
@@ -377,12 +376,10 @@ asqtadInvertBlock (GRID_info_t *info,
 	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
 	std::cout << "Inverted in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
 		  << "\n";
-	Ds.Report();
 
 #elif GRID_MULTI_CG == GRID_MRHSCG
 
 	// multiRHS
-	Ds.ZeroCounters();
 	std::cout << "Running multiRHS CG for " << nrhs << " sources\n" << std::flush;
 	auto start = std::chrono::system_clock::now();
 	mCG(HermOp, *(in->cv), *(out->cv));
@@ -393,12 +390,10 @@ asqtadInvertBlock (GRID_info_t *info,
 	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
 	std::cout << "Inverted in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
 		  << "\n";
-	Ds.Report();
 
 #else
 
 	// Block CG
-	Ds.ZeroCounters();
 	std::cout << "Running Block CG for " << nrhs << " sources\n" << std::flush;
         auto start = std::chrono::system_clock::now();
 	BCGrQ(HermOp, *(in->cv), *(out->cv));
@@ -409,7 +404,6 @@ asqtadInvertBlock (GRID_info_t *info,
 	info->final_sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()/1000.;
 	std::cout << "Inverted in " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
 		  << "\n";
-	Ds.Report();
 #endif	
 	break;
       }
