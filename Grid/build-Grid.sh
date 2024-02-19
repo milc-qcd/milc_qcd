@@ -3,8 +3,7 @@
 ARCH=$1
 PK_CC=$2
 PK_CXX=$3
-GIT_REPO=https://github.com/milc-qcd/Grid
-#GIT_BRANCH=feature/staggered-a2a-ml
+GIT_REPO=https://github.com/paboyle/grid
 GIT_BRANCH=develop
 
 if [ -z ${PK_CXX} ]
@@ -23,7 +22,7 @@ case ${ARCH} in
 esac
 
 TOPDIR=`pwd`
-SRCDIR=${TOPDIR}/Grid
+SRCDIR=${TOPDIR}/grid
 BUILDDIR=${TOPDIR}/build-grid-${ARCH}
 INSTALLDIR=${TOPDIR}/install-grid-${ARCH}
 
@@ -193,26 +192,37 @@ then
 
     gpu-sycl)
 
-	# ./build-Grid.sh gpu-sycl dpcpp dpcpp
+	# Aurora: ./build-Grid.sh gpu-sycl icc icpx
 
 
 	${SRCDIR}/configure \
 	 --prefix ${INSTALLDIR}      \
 	 --enable-simd=GPU \
-	 --enable-comms=mpi \
 	 --enable-gen-simd-width=64  \
+	 --enable-comms=mpi-auto \
+ 	 --enable-accelerator-cshift \
          --disable-gparity \
-         --disable-zmobius \
          --disable-fermion-reps \
+         --disable-zmobius \
+	 --enable-shm=nvlink \
          --enable-accelerator=sycl   \
-	 --enable-unified=yes \
-	 CXXCPP="/soft/packaging/spack-builds/linux-opensuse_leap15-x86_64/gcc-10.2.0/gcc-10.2.0-yudlyezca7twgd5o3wkkraur7wdbngdn/bin/cpp" \
+	 --enable-unified=no \
+	 MPICXX=mpicxx \
          CXX="${PK_CXX}" CC="${PK_CC}" \
-	 CXXFLAGS="-cxx=dpcpp -fsycl-unnamed-lambda -fsycl -no-fma -std=c++17 -O0 -g" \
-	 LDFLAGS="-fsycl-device-code-split=per_kernel -fsycl-device-lib=all" \
+	 LDFLAGS="-fiopenmp -fsycl -fsycl-device-code-split=per_kernel -fsycl-device-lib=all -lze_loader" \
+	 CXXFLAGS="-fiopenmp -fsycl-unnamed-lambda -fsycl -I/include -Wno-tautological-compare"
 
-	 
-#	 CXXFLAGS="-cxx=dpcpp -fsycl-unnamed-lambda -fsycl -no-fma -std=c++17" \
+	# /soft/compilers/oneapi/2023.12.15.001/oneapi/2024.0/include
+	# MPICXX=mpicxx \
+
+	       #       TOOLS=$HOME/tools
+#	LDFLAGS="-fiopenmp -fsycl -fsycl-device-code-split=per_kernel -fsycl-device-lib=all -lze_loader -L$TOOLS/lib64/" \
+#	CXXFLAGS="-fiopenmp -fsycl-unnamed-lambda -fsycl -I$INSTALL/include -Wno-tautological-compare -I$HOME/ -I$TOOLS/include"	
+#	CXXFLAGS="-cxx=dpcpp -fsycl-unnamed-lambda -fsycl -no-fma -std=c++17 -O0 -g" \
+#	 LDFLAGS="-fsycl-device-code-split=per_kernel -fsycl-device-lib=all" \
+#	 CXXCPP="/soft/packaging/spack-builds/linux-opensuse_leap15-x86_64/gcc-10.2.0/gcc-10.2.0-yudlyezca7twgd5o3wkkraur7wdbngdn/bin/cpp" \
+
+	 #	 CXXFLAGS="-cxx=dpcpp -fsycl-unnamed-lambda -fsycl -no-fma -std=c++17" \
 
 	 #	     --enable-comms=mpi          \
 #	     --with-lime=${HOME}/scidac/install/qio-gcc \
@@ -220,9 +230,11 @@ then
         status=$?
         echo "Configure exit status $status"
 	;;
+
     *)
     echo "Unsupported ARCH ${ARCH}"
           exit 1;
+
   esac
 
   if [ $status -ne 0 ]
