@@ -432,7 +432,7 @@ static void random_complex_wall(complex *src, int t0){
     if( s->t==t0 || t0 == ALL_T_SLICES){
 	src[i] = complex_gaussian_rand_no(&(s->site_prn));
       }
-    x = 1.0/cabs( &src[i] );
+    x = 1.0/mycabs( &src[i] );
     CMULREAL( src[i], x, src[i] );
   }
 }
