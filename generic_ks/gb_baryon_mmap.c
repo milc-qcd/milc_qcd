@@ -13,22 +13,6 @@
 //#define UNIT_TEST_NEGATIVE_SNK_Y_LINK
 //#define UNIT_TEST_NEGATIVE_SNK_Z_LINK
 
-//static void
-//print_unit_cube8(char *tag, su3_vector *vec){
-//  register int i;
-//  register site *s;
-//  printf("printing field %s:\n",tag);
-//  FORALLSITES(i,s){
-//    if(s->y<3    && s->z==0    && s->t == 8){
-//      printf("site %i %i %i %i (%i):  vals %e %e %e %e %e %e\n",s->x,s->y,s->z,s->t,i,
-//        (vec+i)->c[0].real,(vec+i)->c[0].imag,
-//        (vec+i)->c[1].real,(vec+i)->c[1].imag,
-//        (vec+i)->c[2].real,(vec+i)->c[2].imag);
-//    }
-//  }
-//  printf("done printing field %s:\n",tag);
-//}
-
 static mmap_cache **gb_qk_cache = NULL;
 static mmap_cache *gb_src_cache = NULL;
 
@@ -224,18 +208,6 @@ apply_par_xport_mmap(ks_prop_field *dest, ks_prop_field *src,
   destroy_ksp_field(tsrc);
 }
 
-//static void conj_ksp_field(ks_prop_field *dest,ks_prop_field *src){
-//  int i,csrc,csnk;
-//  site *s;
-//  for(csrc=0;csrc<3;csrc++){
-//   FORALLSITES(i,s){
-//    for(csnk=0;csnk<3;csnk++){
-//     CONJG(src->v[csrc][i].c[csnk],dest->v[csrc][i].c[csnk]);
-//    }
-//   }
-//  }
-//}
-
 /** need special routine to set ks_prop_field so it doesn't try to reallocate space */
 void fetch_ksp_from_cache(ks_prop_field **dest,int qknum,int scIdx,int skIdx){
   int c;
@@ -369,8 +341,6 @@ void populate_sink_oct_point_split(su3_vector **sko,int qknum,int r0[],su3_matri
     }
     n = singlet_index_to_disp(disp);
     singlet_index_to_dir(disp,dir);
-    //if(skIdx==0 && disp == 0){print_unit_cube("k0d0t0",ksp0->v[0]);}
-    //if(skIdx==1 && disp == 0){print_unit_cube("k0d0t0",ksp0->v[0]);}
     apply_par_xport_mmap(ksp1,ksp0,n,dir,r0,links);
 
     fetch_ksp_from_cache(&kspc,qknum,skIdx,disp); // get pointer, ksp pointers are okay
