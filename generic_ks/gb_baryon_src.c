@@ -1,58 +1,6 @@
 #include "generic_ks_includes.h"
 #include <math.h>
 
-//static void
-//print_unit_cube(char *tag, int t0, su3_vector *vec){
-//  register int i;
-//  register site *s;
-//  int cube_size=2;
-//  node0_printf("printing field %s:\n",tag);
-//  FORALLSITES(i,s){
-//    if(s->x<cube_size && s->y<cube_size && s->z<cube_size && s->t == t0){
-//      node0_printf("%s %i %i %i %i:",tag,s->x,s->y,s->z,s->t);
-//      node0_printf("  vals %f %f %f %f %f %f\n",
-//        (vec+i)->c[0].real,(vec+i)->c[0].imag,
-//        (vec+i)->c[1].real,(vec+i)->c[1].imag,
-//        (vec+i)->c[2].real,(vec+i)->c[2].imag);
-//    }
-//  }
-//  node0_printf("done printing field %s:\n",tag);
-//}
-//
-//static void
-//print_link(char *tag, su3_matrix *links, int dir, int i, site *s){
-//  node0_printf("link on site %i %i %i %i\n",s->x,s->y,s->z,s->t);
-//  node0_printf("c0 - %f +i%f   %f +i%f   %f +i %f\n",
-//    (links+4*i+dir)->e[0][0].real, (links+4*i+dir)->e[0][0].imag,
-//    (links+4*i+dir)->e[0][1].real, (links+4*i+dir)->e[0][1].imag,
-//    (links+4*i+dir)->e[0][2].real, (links+4*i+dir)->e[0][2].imag);
-//  node0_printf("c1 - %f +i%f   %f +i%f   %f +i %f\n",
-//    (links+4*i+dir)->e[1][0].real, (links+4*i+dir)->e[1][0].imag,
-//    (links+4*i+dir)->e[1][1].real, (links+4*i+dir)->e[1][1].imag,
-//    (links+4*i+dir)->e[1][2].real, (links+4*i+dir)->e[1][2].imag);
-//  node0_printf("c2 - %f +i%f   %f +i%f   %f +i %f\n",
-//    (links+4*i+dir)->e[2][0].real, (links+4*i+dir)->e[2][0].imag,
-//    (links+4*i+dir)->e[2][1].real, (links+4*i+dir)->e[2][1].imag,
-//    (links+4*i+dir)->e[2][2].real, (links+4*i+dir)->e[2][2].imag);
-//  node0_printf("done with link %i\n",dir);
-//}
-
-///*------------------------------------------------------------------*/
-///**
-//   Function which takes phases in src with magnitudes in mod to create dest
-//  */
-//static void
-//match_phase_su3_vec( su3_vector *src, su3_vector *mod, su3_vector *dest )
-//{
-//  register int c;
-//  complex cc;
-//  for(c=0;c<3;c++){
-//    cc.real = cabs(&mod->c[c]);
-//    cc.imag = 0.;
-//    CMUL(cc, ce_itheta(carg(&(src->c[c]))), dest->c[c]);
-//  }
-//
-//}
 
 /*------------------------------------------------------------------*/
 /**
