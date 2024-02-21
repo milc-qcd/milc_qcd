@@ -294,7 +294,7 @@ void populate_qk_oct_point_split(ks_prop_field **qko,int qknum,int r0[],su3_matr
     // check to see if there is a previous partial solution
     // if some links are already smeared, we can use this as starting point
     int oldIdx = -1;
-    if (n[skIdx] > 2) {
+    if (n[skIdx] > 1) {
       oldIdx = skIdx - 1;
       for (; oldIdx >= 1; oldIdx --) {
         if (n[oldIdx] == n[skIdx] - 1) {
