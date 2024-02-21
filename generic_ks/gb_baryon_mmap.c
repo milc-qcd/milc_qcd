@@ -285,18 +285,18 @@ void populate_qk_oct_point_split(ks_prop_field **qko,int qknum,int r0[],su3_matr
   ks_prop_field * kspc [8];
   ks_prop_field *ksp = create_ksp_field(3);
 
-  for(scIdx=0;scIdx<8;scIdx++){
+  for(scIdx=1;scIdx<7;scIdx++){
    node0_printf("Creating mmap cache %d for quark object %d...\n",qknum,scIdx);
-   for(skIdx=0;skIdx<8;skIdx++){
+   for(skIdx=1;skIdx<7;skIdx++){
     n[skIdx] = singlet_index_to_disp(skIdx);
     singlet_index_to_dir(skIdx,dir[skIdx]);
     fetch_ksp_from_cache(kspc+skIdx,qknum,scIdx,skIdx); // get pointer
     // check to see if there is a previous partial solution
     // if some links are already smeared, we can use this as starting point
     int oldIdx = -1;
-    if (n[skIdx] > 1) {
+    if (n[skIdx] > 2) {
       oldIdx = skIdx - 1;
-      for (; oldIdx >= 0; oldIdx --) {
+      for (; oldIdx >= 1; oldIdx --) {
         if (n[oldIdx] == n[skIdx] - 1) {
           bool dirsMatch = true;
           for (int i = 0; i < n[oldIdx]; i ++)
@@ -317,7 +317,7 @@ void populate_qk_oct_point_split(ks_prop_field **qko,int qknum,int r0[],su3_matr
     msync_ksp_from_cache(qknum,scIdx,skIdx);
 #endif
    }
-   for(skIdx=0;skIdx<8;skIdx++)
+   for(skIdx=1;skIdx<7;skIdx++)
     toss_ksp_from_cache(kspc+skIdx); // toss pointer
   }
   destroy_ksp_field(ksp);
