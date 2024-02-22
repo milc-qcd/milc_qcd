@@ -399,40 +399,26 @@ unmap_ksp_field(ks_prop_field **ksp){
 */
 inline void
 baryon_color_asym_v(su3_vector *qk0, su3_vector *qk1, su3_vector *qk2, complex *dt){
-  su3_matrix tempmat;
   /* TODO: make this faster? */
-  //for(c=0;c<3;c++) tempmat.e[0][c] = qk0->c[c];
-  tempmat.e[0][0] = qk0->c[0];
-  tempmat.e[0][1] = qk0->c[1];
-  tempmat.e[0][2] = qk0->c[2];
-  //for(c=0;c<3;c++) tempmat.e[1][c] = qk1->c[c];
-  tempmat.e[1][0] = qk1->c[0];
-  tempmat.e[1][1] = qk1->c[1];
-  tempmat.e[1][2] = qk1->c[2];
-  //for(c=0;c<3;c++) tempmat.e[2][c] = qk2->c[c];
-  tempmat.e[2][0] = qk2->c[0];
-  tempmat.e[2][1] = qk2->c[1];
-  tempmat.e[2][2] = qk2->c[2];
-  // inlined *dt = det_su3( &tempmat );
   {
     complex cc,dd,sum;
-    CMUL(tempmat.e[0][0],tempmat.e[1][1],cc);
-    CMUL(cc,tempmat.e[2][2],sum);
-    CMUL(tempmat.e[0][0],tempmat.e[1][2],cc);
-    CMUL(cc,tempmat.e[2][1],dd);
+    CMUL(qk0->c[0],qk1->c[1],cc);
+    CMUL(qk0->c[1],qk1->c[0],dd);
+    CSUB(cc,dd,cc);
+    CMUL(cc,qk2->c[2],sum);
+
+    CMUL(qk0->c[0],qk1->c[2],cc);
+    CMUL(qk0->c[2],qk1->c[0],dd);
+    CSUB(cc,dd,cc);
+    CMUL(cc,qk2->c[1],dd);
     CSUB(sum,dd,sum);
-    CMUL(tempmat.e[0][1],tempmat.e[1][2],cc);
-    CMUL(cc,tempmat.e[2][0],dd);
+
+    CMUL(qk0->c[1],qk1->c[2],cc);
+    CMUL(qk0->c[2],qk1->c[1],dd);
+    CSUB(cc,dd,cc);
+    CMUL(cc,qk2->c[0],dd);
     CADD(sum,dd,sum);
-    CMUL(tempmat.e[0][1],tempmat.e[1][0],cc);
-    CMUL(cc,tempmat.e[2][2],dd);
-    CSUB(sum,dd,sum);
-    CMUL(tempmat.e[0][2],tempmat.e[1][0],cc);
-    CMUL(cc,tempmat.e[2][1],dd);
-    CADD(sum,dd,sum);
-    CMUL(tempmat.e[0][2],tempmat.e[1][1],cc);
-    CMUL(cc,tempmat.e[2][0],dd);
-    CSUB(sum,dd,sum);
+
     *dt = sum;
   } // end inlined det_su3
 }
@@ -1356,8 +1342,10 @@ gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2[],
 
   for(i=0;i<num_corr_gb;i++){
     node0_printf("gb baryon: %s %s\n", gb_baryon_label(src_op[i]),gb_baryon_label(snk_op[i]));
+    double dtime = start_timing();
     gb_source_term_loop(qko0,qko1,qko2,links,src_op[i],snk_op[i],stIdx,dowall[i],docube[i],
      num_d,num_s,r0,domom,momfld,flip_snk[i],prop[i]);
+    print_timing(dtime, "computing correlator");
     norm_corr( phase[i], fact[i], prop[i] );
   }
 }
