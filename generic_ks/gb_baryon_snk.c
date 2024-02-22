@@ -804,15 +804,11 @@ gb_mixed_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
   stsign = spin_taste_sign(stphs,orig);
 
   // three partial sums
-  complex isum1[nt], isum2[nt], isum3[nt];
+  complex isum1[nt];
   int t;
   for(t=0;t<nt;t++){
     (isum1[t]).real = 0.0;
     (isum1[t]).imag = 0.0;
-    (isum2[t]).real = 0.0;
-	  (isum2[t]).imag = 0.0;
-	  (isum3[t]).real = 0.0;
-    (isum3[t]).imag = 0.0;
   }
 
   /* apply sink point splitting */
@@ -822,30 +818,11 @@ gb_mixed_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
     si_snk[1], r0, links, remap);
   map_ksp_field(&ksp2, qk2, 2, offset_singlet_index(si_src[2], k_disp),
     si_snk[2], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,stsign*2.*pfi, dowall, isum1);
-  remap = 0x1;
-
-  map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0], k_disp),
-    si_snk[1], r0, links, remap);
-  map_ksp_field(&ksp1, qk1, 1, offset_singlet_index(si_src[1], k_disp),
-    si_snk[2], r0, links, remap);
-  map_ksp_field(&ksp2, qk2, 2, offset_singlet_index(si_src[2], k_disp),
-    si_snk[0], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,-stsign*pfi, dowall, isum2);
-
-  map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0], k_disp),
-    si_snk[2], r0, links, remap);
-  map_ksp_field(&ksp1, qk1, 1, offset_singlet_index(si_src[1], k_disp),
-    si_snk[0], r0, links, remap);
-  map_ksp_field(&ksp2, qk2, 2, offset_singlet_index(si_src[2], k_disp),
-    si_snk[1], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,-stsign*pfi, dowall, isum3);
+  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,stsign*3.*pfi, dowall, isum1);
 
   // Sum up partial sums
   for(t=0;t<nt;t++){
     CSUM(dt[t],isum1[t]);
-    CSUM(dt[t],isum2[t]);
-    CSUM(dt[t],isum3[t]);
   }
   } // orig
 
