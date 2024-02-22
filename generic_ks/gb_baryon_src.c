@@ -22,26 +22,10 @@ one_link_sym_shift_source(int dir, su3_vector *dest, su3_vector *src,
   /* With ONE_SIDED_SHIFT_GB defined, the shift is asymmetric */
 #ifndef ONE_SIDED_SHIFT_GB
   
-  /* Never use links for source for staggered baryon */
-  //if(use_links){
-  //  FORALLSITES(i,s)
-  //    {
-  //      mult_adj_su3_mat_vec( links+4*i+dir, src+i, tvec0+i );
-  //    }
-  // } else {
-    /* src -> tvec0 */
-  //}
   tag[1] = start_gather_field(src, sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1]);
 #endif
   wait_gather(tag[0]);
 
-  /* Never use links for source for staggered baryon */
-  //if(use_links){
-  //  FORALLSITES(i,s)
-  //    {
-  //      mult_su3_mat_vec( links+4*i+dir, (su3_vector *)gen_pt[0][i], dest+i );
-  //    }
-  //} else {
   FORALLSITES(i,s){
      /* gen_pt -> dest */
     su3vec_copy((su3_vector *)gen_pt[0][i], dest+i );
@@ -80,36 +64,6 @@ apply_par_xport_src_v(su3_vector *dest, su3_vector *src,
   if(n==0){
     copy_v_field(dest,tsrc); 
     
-    /*
-    // DEBUG
-    site *s;
-    g_sync();
-    node0_printf("===========================================\n");
-    node0_printf("symmetric shift\n");
-    node0_printf("===========================================\n");
-    g_sync();
-    FORALLSITES(i,s){
-      if(s->x==4 && s->y==20 && s->z==14 && s->t==0){
-        printf("(4,20,14,0): %.5f\n", (dest+i)->c[0].real);
-      }
-      if(s->x==5 && s->y==20 && s->z==14 && s->t==0){
-        printf("(5,20,14,0): %.5f\n", (dest+i)->c[0].real);
-      }
-      if(s->x==6 && s->y==20 && s->z==14 && s->t==0){
-        printf("(6,20,14,0): %.5f\n", (dest+i)->c[0].real);
-      }
-      if(s->x==7 && s->y==20 && s->z==14 && s->t==0){
-        printf("(7,20,14,0): %.5f\n", (dest+i)->c[0].real);
-      }
-      if(s->x==8 && s->y==20 && s->z==14 && s->t==0){
-        printf("(8,20,14,0): %.5f\n", (dest+i)->c[0].real);
-      }
-    }
-
-    g_sync();
-    node0_printf("===========================================\n");
-    g_sync();
-    */
 
   }
   if(n==1){
@@ -149,47 +103,5 @@ apply_par_xport_src_v(su3_vector *dest, su3_vector *src,
   destroy_v_field(tvec1);
   destroy_v_field(tsrc);
  
-  /*
-  double global_sum_src = 0.0;
-  int icolor;
-  FORALLFIELDSITES(i){ 
-    for (icolor=0; icolor<3; icolor++){
-      global_sum_src += ((dest+i)->c[icolor].real)*((dest+i)->c[icolor].real); 
-    }
-  }
-  g_doublesum( &global_sum_src );
-  node0_printf("apply_xport: source_norm = %e\n", (double)global_sum_src);
-  */
-  //FORALLFIELDSITES(i){ scalar_mult_su3_vector(dest+i, 1./sqrt(global_sum_src),dest+i); }
-  
-  /* not necessary if phases are not in links */
-  //if(n == 1){
-  //  /* one link */
-  //  d[0][0] = qss_op->dir1;
-  //  apply_sym_shift_src_v(n,d[0],r0,dest,src,links);
-  //}
-  //else if (n == 2){
-  //  /* two link */
-  //  d[0][0] = qss_op->dir1; d[0][1] = qss_op->dir2;
-  //  d[1][1] = qss_op->dir1; d[1][0] = qss_op->dir2;
-  //  apply_sym_shift_src_v(n,d[0],r0,tvec0,src,links);
-  //  apply_sym_shift_src_v(n,d[1],r0,tvec1,src,links);
-  //  FORALLSITES(i,s){
-  //    add_su3_vector( tvec0+i, tvec1+i, dest+i );
-  //    scalar_mult_su3_vector( dest+i, 0.5, dest+i );
-  //  }
-  //}
-  //else if (n == 3){
-  //  /* three link */
-  //  /* use the d given */
-  //  for(j=0;j<6;j++){
-  //    apply_sym_shift_src_v(n,d[j],r0,tvec0,src,links);
-  //    if(j==0) copy_v_field(tvec1,tvec0);
-  //    else add_v_fields(tvec1,tvec1,tvec0);
-  //  }
-  //  FORALLSITES(i,s){
-  //    scalar_mult_su3_vector( tvec1+i, 1./6., dest+i );
-  //  }
-  //}
 }
 
