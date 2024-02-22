@@ -731,20 +731,7 @@ gb_symm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
 
   remap = 0x1;
 
-  accum_baryon_color_asym(ksp0,ksp1,ksp5,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
-  accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
-  map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0],orig),
-    si_snk[1], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp2,ksp3,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
-
-  map_ksp_field(&ksp2, qk1, 1, offset_singlet_index(si_src[1],orig),
-    si_snk[0], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp2,ksp5,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
-
-  map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0],orig),
-    si_snk[2], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
-  accum_baryon_color_asym(ksp0,ksp1,ksp3,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
+  accum_baryon_color_asym(ksp0,ksp1,ksp5,domom,mom,flip_snk,k_disp,stsign*pfi, dowall, dt);
 
   } // orig
 
