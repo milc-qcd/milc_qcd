@@ -69,8 +69,6 @@ hisqAuxLinks (GRID_info_t *info,
   // Load U links
   LatticeGaugeField Ugrid(CGrid);
 
-  std::cerr << "hisqAuxLinks: WARNING: Reunitarization NOT SUPPORTED\n" << std::endl;
-
   // Do the first level fattening
   hisqLinks<LatticeGaugeField, Gimpl, Complex>(info, path_coeff, V, NULL, U, CGrid);
 
@@ -80,7 +78,6 @@ hisqAuxLinks (GRID_info_t *info,
   milcGaugeFieldToGrid<LatticeGaugeField, Complex>(V, &Vgrid);
 
   // Do the reunitarization
-  // Instantiate the Smear_HISQ class
   Smear_HISQ<Gimpl> HL(CGrid, path_coeff);
   HL.projectU3(Wgrid, Vgrid);
   
