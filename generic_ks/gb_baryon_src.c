@@ -50,6 +50,7 @@ one_link_sym_shift_source(int dir, su3_vector *dest, su3_vector *src,
 void
 apply_par_xport_src_v(su3_vector *dest, su3_vector *src,
       quark_source_sink_op *qss_op, su3_matrix *links){
+  double dtime = start_timing();
 
   int i,c;
   int n = qss_op->disp;
@@ -103,5 +104,6 @@ apply_par_xport_src_v(su3_vector *dest, su3_vector *src,
   destroy_v_field(tvec1);
   destroy_v_field(tsrc);
  
+  print_timing(dtime, "parallel transporting source");
 }
 

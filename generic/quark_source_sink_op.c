@@ -1493,6 +1493,8 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
 			     int t0){
 
   /* Smearing is done with coordinate stride 2 to preserve taste */
+  printf("Applying covariant smearing with t0 = %d\n", t0);
+  double dtime = start_timing();
 
   int op_type       = qss_op->type;
   int iters         = qss_op->iters;
@@ -1517,6 +1519,7 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
   else
     return 0;
 
+  print_timing(dtime, "covariant smearing");
   return 1;
 }
 
