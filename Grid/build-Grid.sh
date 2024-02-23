@@ -192,8 +192,9 @@ then
 
     gpu-sycl)
 
-	# Aurora: ./build-Grid.sh gpu-sycl icc icpx
+	# Aurora: ./build-Grid.sh gpu-sycl icx icpx
 
+	source ${TOPDIR}/env.sh
 
 	${SRCDIR}/configure \
 	 --prefix ${INSTALLDIR}      \
@@ -209,7 +210,7 @@ then
 	 --enable-unified=no \
 	 MPICXX=mpicxx \
          CXX="${PK_CXX}" CC="${PK_CC}" \
-	 LDFLAGS="-fiopenmp -fsycl -fsycl-device-code-split=per_kernel -fsycl-device-lib=all -lze_loader" \
+	 LDFLAGS="-fiopenmp -fsycl -fsycl-device-code-split=per_kernel -fsycl-device-lib=all -lze_loader /home/detar/gecko/compile_feb19/milc_qcd/libraries/stacktrace.o" \
 	 CXXFLAGS="-fiopenmp -fsycl-unnamed-lambda -fsycl -I/include -Wno-tautological-compare"
 
 	# /soft/compilers/oneapi/2023.12.15.001/oneapi/2024.0/include
