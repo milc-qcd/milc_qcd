@@ -147,8 +147,8 @@ then
 	     --with-hdf5=${HOME}/perlmutter/hdf5 \
 	     --with-lime=${HOME}/perlmutter/build/usqcd \
              CXX="nvcc"                \
-	     LDFLAGS="-cudart shared " \
-             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_80,code=sm_80 -std=c++14 -cudart shared" \
+	     LDFLAGS="-L${CUDATOOLKIT_HOME}/targets/x86_64-linux/lib -cudart shared " \
+             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_80,code=sm_80 -std=c++17 -cudart shared" \
 
         status=$?
         echo "Configure exit status $status"
