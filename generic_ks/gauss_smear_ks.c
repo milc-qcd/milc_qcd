@@ -319,9 +319,8 @@ void
 gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
 		    Real width, int iters, int t0)
 {
-  gauss_smear_reuse_2link_QUDA( 0 );
+  gauss_smear_reuse_2link_QUDA( 1 );
   gauss_smear_v_field_QUDA( src, t_links, width, iters, t0 );
-  gauss_smear_delete_2link_QUDA();
 }
 
 #else

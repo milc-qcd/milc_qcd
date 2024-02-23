@@ -334,6 +334,12 @@ int main(int argc, char *argv[])
 
     } /* is */
 
+
+#if defined(HAVE_QUDA) && defined(USE_GSMEAR_QUDA)
+    // delete 2-link current used for smearing
+    gauss_smear_delete_2link_QUDA();
+#endif
+
     ENDTIME("create sources");
 
     /**************************************************************/
@@ -554,6 +560,11 @@ int main(int argc, char *argv[])
 	destroy_ksp_field(quark[oldiq1]); quark[oldiq1] = NULL;
 	node0_printf("destroy quark[%d]\n",oldiq1);
       }
+#endif
+
+#if defined(HAVE_QUDA) && defined(USE_GSMEAR_QUDA)
+    // delete 2-link current used for smearing
+    gauss_smear_delete_2link_QUDA();
 #endif
     
     /* Now destroy all remaining propagator fields */
