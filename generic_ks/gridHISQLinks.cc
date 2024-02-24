@@ -42,11 +42,13 @@ hisqLinks (GRID_info_t *info,
 
   if(lng != NULL){
     HL.smear(fatlinks, lnglinks, Umu);
+    std::cout << "Done with smear" << std::endl << std::flush;
     gridToMilcGaugeField<LatticeGaugeField, Complex>(fat, &fatlinks);
     gridToMilcGaugeField<LatticeGaugeField, Complex>(lng, &lnglinks);
   }
   else{
     HL.smear(fatlinks, lnglinks, Umu);
+    std::cout << "Done with smear" << std::endl << std::flush;
     gridToMilcGaugeField<LatticeGaugeField, Complex>(fat, &fatlinks);
   }
 

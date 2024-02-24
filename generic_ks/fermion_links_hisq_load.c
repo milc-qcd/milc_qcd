@@ -502,9 +502,11 @@ load_X_from_W(info_t *info, fn_links_t *fn, hisq_auxiliary_t *aux,
   double final_flop = 0.0;
   double dtime = -dclock();
 #ifdef USE_FL_GPU
+  printf("Calling load_fatlonglinks_gpu\n"); fflush(stdout);
   load_fatlonglinks_gpu(info, fat, lng, p, aux->W_unitlink);
   final_flop += info->final_flop;
 #else
+  printf("Calling load_fatlinks (cpu)\n"); fflush(stdout);
   load_fatlinks(info, fat, p, aux->W_unitlink );
   final_flop += info->final_flop;
   load_lnglinks(info, lng, p, aux->W_unitlink );

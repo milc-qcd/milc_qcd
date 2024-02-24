@@ -58,6 +58,7 @@ LOAD_FATLINKS_GPU(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matr
   path_coeff[5] = p->act_path_coeff.lepage;
 
   GRID_info_t grid_info;
+  printf("Calling GRID_hisq_links\n"); fflush(stdout);
   GRID_hisq_links(&grid_info, path_coeff, fat, NULL, thin_links, grid_full);
   dumpmat(fat);
 
@@ -135,6 +136,7 @@ void LOAD_FATLONGLINKS_GPU(info_t *info, su3_matrix *fat, su3_matrix *lng, ks_co
 
   double dtime = -dclock();
   GRID_info_t grid_info;
+  printf("Calling GRID_hisq_links2\n"); fflush(stdout);
   GRID_hisq_links(&grid_info, path_coeff, fat, lng, thin_links, grid_full);
 
 #if 0
