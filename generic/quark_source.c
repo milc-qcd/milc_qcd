@@ -141,6 +141,8 @@ void init_qs(quark_source *qs){
   qs->mom[1]           = 0;
   qs->mom[2]           = 0;
   qs->op               = NULL;
+  // extra parameters for multi-point sources
+  qs->num_points       = 0;
 }
 
 /* Allocate cached source members */
@@ -408,7 +410,8 @@ void gaussian_source(complex *src, Real r0,
   }
 }
 
-static void point_source(complex *src, int x0, int y0, int z0, int t0){
+static void scaled_point_source(complex *src, int x0, int y0, int z0, int t0,
+                                double weight){
   int i;
   
   /* load 1.0 into source at cooordinates given by source_coord */
@@ -417,8 +420,12 @@ static void point_source(complex *src, int x0, int y0, int z0, int t0){
   
   if(node_number(x0,y0,z0,t0) == mynode()){
     i = node_index(x0,y0,z0,t0);
-    src[i].real = 1.0;
+    src[i].real = weight;
   }
+}
+
+static void point_source(complex *src, int x0, int y0, int z0, int t0){
+  scaled_point_source(src, x0, y0, z0, t0, 1.0);
 }
 
 /* Generate a random complex source with variance 1 */
@@ -581,6 +588,7 @@ int is_complex_source(int source_type){
     source_type == EVENANDODD_WALL ||
     source_type == EVENMINUSODD_WALL ||
     source_type == GAUSSIAN ||
+    source_type == MULTI_POINT ||
     source_type == POINT ||
     source_type == RANDOM_COMPLEX_WALL ||
     source_type == WAVEFUNCTION_FILE;
@@ -665,6 +673,12 @@ int get_complex_source(quark_source *qs){
     gaussian_source(qs->c_src, r0, x0, y0, z0, t0);
     subset_mask_c(qs->c_src, qs->subset, t0);
   }      
+  else if(source_type == MULTI_POINT) {
+    for (int i = 0; i < qs->num_points; i ++)
+      scaled_point_source(qs->c_src, qs->points[4*i],   qs->points[4*i+1],
+                                     qs->points[4*i+2], qs->points[4*i+3],
+                                     1.0 / qs->num_points);
+  }
   else if(source_type == POINT) {
     point_source(qs->c_src, x0, y0, z0, t0);
   }
@@ -1293,6 +1307,10 @@ static int ask_quark_source( FILE *fp, int prompt, int *source_type,
     *source_type = GAUSSIAN;
     strcpy(descrp,"gaussian");
   }
+  else if(strcmp("multi_point",savebuf) == 0 ){
+    *source_type = MULTI_POINT;
+    strcpy(descrp,"multi_point");
+  }
   else if(strcmp("point",savebuf) == 0 ){
     *source_type = POINT;
     strcpy(descrp,"point");
@@ -1407,15 +1425,20 @@ int ask_starting_source( FILE *fp, int prompt, int *flag, char *filename ){
 static int get_quark_source(int *status_p, FILE *fp, int prompt, 
 			    quark_source *qs){
   
-  int  source_loc[4] = { 0,0,0,0 };
+  int  source_loc[4 * MAXPOINTS] = {0};
   char source_file[MAXFILENAME] = "";
   Real source_r0 = 0.;
   int  source_type = qs->type;
   int  status = *status_p;
+  int  num_points = 1;
   
   /* Complex field sources */
   if ( source_type == POINT ){
     IF_OK status += get_vi(fp, prompt, "origin", source_loc, 4);
+  }
+  else if (source_type == MULTI_POINT) {
+    IF_OK status += get_i( fp, prompt, "num_points", &num_points);
+    IF_OK status += get_vi(fp, prompt, "points", source_loc, 4 * num_points);
   }
   else if ( source_type == CORNER_WALL ||
             source_type == CORNER_WALL_0 ||
@@ -1483,6 +1506,8 @@ static int get_quark_source(int *status_p, FILE *fp, int prompt,
   qs->z0    = source_loc[2];
   qs->t0    = source_loc[3];
   qs->r0    = source_r0;
+  qs->num_points = num_points;
+  memcpy(qs->points, source_loc, sizeof(int) * 4 * MAXPOINTS);
   strcpy(qs->source_file,source_file);
   
   *status_p = status;
