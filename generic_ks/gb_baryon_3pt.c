@@ -105,6 +105,9 @@ sym_shift_3pt(int dir, short doBW, su3_vector *dest, su3_vector *src, su3_matrix
     tag[1] = start_gather_field(cvec1, sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1]);
   #endif
   wait_gather(tag[0]);
+  #ifndef ONE_SIDED_SHIFT_GB
+    wait_gather(tag[1]);
+  #endif // ONE_SIDED_SHIFT_GB
 
   FORALLFIELDSITES_OMP(i,) {
     #ifdef NO_SINK_LINKS 
@@ -112,17 +115,14 @@ sym_shift_3pt(int dir, short doBW, su3_vector *dest, su3_vector *src, su3_matrix
     #else
       mult_su3_mat_vec( links+4*i+dir, (su3_vector*)gen_pt[0][i], dest+i );
     #endif // NO_SINK_LINKS
-  } END_LOOP_OMP
-  cleanup_gather(tag[0]);
-
-  #ifndef ONE_SIDED_SHIFT_GB
-    wait_gather(tag[1]);
-
-    FORALLFIELDSITES_OMP(i,) {
+    #ifndef ONE_SIDED_SHIFT_GB
       add_su3_vector(dest+i, (su3_vector*)gen_pt[1][i], dest+i ); 
       scalar_mult_su3_vector( dest+i, .5, dest+i ); 
-    } END_LOOP_OMP
+    #endif // ONE_SIDED_SHIFT_GB
+  } END_LOOP_OMP
 
+  cleanup_gather(tag[0]);
+  #ifndef ONE_SIDED_SHIFT_GB
     cleanup_gather(tag[1]);
   #endif // ONE_SIDED_SHIFT_GB
 
