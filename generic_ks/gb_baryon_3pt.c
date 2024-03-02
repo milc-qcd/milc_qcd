@@ -1,5 +1,6 @@
 #include "generic_ks_includes.h"
 #include "../include/openmp_defs.h"
+#include <assert.h>
 /*
  Unit test -
   Source should be point-split point source
@@ -166,8 +167,13 @@ apply_par_xport_3pt(ks_prop_field *dest, ks_prop_field *src,
   double start = dclock();
   site *s;
   int i,j,c;
+  // the specific case we care about has no sink links and n = 0 or 1
+  #ifdef NO_SINK_LINKS
+  assert(n <= 1);
+  #else
   ks_prop_field *tvec0 = create_ksp_field(3);
   ks_prop_field *tvec1 = create_ksp_field(3);
+  #endif
   int d[6][3] =
     {{XUP,YUP,ZUP},
      {YUP,ZUP,XUP},
@@ -207,29 +213,29 @@ apply_par_xport_3pt(ks_prop_field *dest, ks_prop_field *src,
   else if (n == 3){
     /* three link */
     /* use the d given */  
-  for(j=0;j<6;j++){
-    apply_sym_shift_3pt(n,d[j],r0,doBW,tvec0,src,links);
-    if(j==0) {
-      copy_ksp_field(tvec1,tvec0);
-    } else {
-      #pragma omp parallel for private(c,i) collapse(2)
-      for(c=0;c<3;c++){
-	for(i=0;i<sites_on_node;i++) {
-	  add_su3_vector(&tvec1->v[c][i],&tvec0->v[c][i],&tvec1->v[c][i]);
-	}
-      } // END OMP LOOPS
+    for(j=0;j<6;j++){
+      apply_sym_shift_3pt(n,d[j],r0,doBW,tvec0,src,links);
+      if(j==0) {
+        copy_ksp_field(tvec1,tvec0);
+      } else {
+        #pragma omp parallel for private(c,i) collapse(2)
+        for(c=0;c<3;c++){
+          for(i=0;i<sites_on_node;i++) {
+            add_su3_vector(&tvec1->v[c][i],&tvec0->v[c][i],&tvec1->v[c][i]);
+          }
+        } // END OMP LOOPS
+      }
     }
-  }
-  #pragma omp parallel for private(c,i) collapse(2)
-  for(c=0;c<3;c++){
-    for(i=0;i<sites_on_node;i++) {
-      scalar_mult_su3_vector( &tvec1->v[c][i], 1./6., &dest->v[c][i] );
-    }
-  } // END OMP LOOPS
+    #pragma omp parallel for private(c,i) collapse(2)
+    for(c=0;c<3;c++){
+      for(i=0;i<sites_on_node;i++) {
+        scalar_mult_su3_vector( &tvec1->v[c][i], 1./6., &dest->v[c][i] );
+      }
+    } // END OMP LOOPS
   } // END c==3
-  #endif
   destroy_ksp_field(tvec1);
   destroy_ksp_field(tvec0);
+  #endif
   double end = dclock();
   printf("Time spent in apply_par_xport_3pt with n = %d, dir = (%d, %d, %d): %f sec\n", n, dir[0], dir[1], dir[2], end-start);
   }
