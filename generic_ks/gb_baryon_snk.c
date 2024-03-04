@@ -1,7 +1,7 @@
 #include "generic_ks_includes.h"
 #include "../include/openmp_defs.h"
 
-inline void _scalar_mult_su3_vector(su3_vector *a, Real s, su3_vector *c)
+static inline void _scalar_mult_su3_vector(su3_vector *a, Real s, su3_vector *c)
 {
 	c->c[0].real = s * a->c[0].real;
 	c->c[0].imag = s * a->c[0].imag;
@@ -11,7 +11,7 @@ inline void _scalar_mult_su3_vector(su3_vector *a, Real s, su3_vector *c)
 	c->c[2].imag = s * a->c[2].imag;
 }
 
-inline void _su3vec_copy( su3_vector *a, su3_vector *b ){
+static inline void _su3vec_copy( su3_vector *a, su3_vector *b ){
     b->c[0].real = a->c[0].real;
     b->c[0].imag = a->c[0].imag;
     b->c[1].real = a->c[1].real;
@@ -566,7 +566,7 @@ unmap_ksp_field(ks_prop_field **ksp){
    This subroutine specifically handles the baryon sink antisymmetry.
    Result is saved to dt, overwriting previous
 */
-inline void
+static inline void
 baryon_color_asym_v(su3_vector *qk0, su3_vector *qk1, su3_vector *qk2, complex *dt){
   su3_matrix tempmat;
   /* TODO: make this faster? */
