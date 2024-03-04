@@ -83,7 +83,7 @@ then
 	    --with-hdf5=${CRAY_HDF5_DIR} \
             --with-mpfr=${HOME}/perlmutter/mpfr \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++17 -xCORE-AVX2" \
+            CXXFLAGS="-std=c++17 -mavx2" \
 
        status=$?
              ;;
