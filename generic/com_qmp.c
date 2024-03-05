@@ -119,17 +119,6 @@
 
 #define NOWHERE -1	/* Not an index in array of fields */
 
-#if 0
-/* message types used here */
-#define SEND_INTEGER_ID    1  /* send an integer to one other node */
-#define SEND_FIELD_ID      2  /* id of field sent from one node to another */
-#define GENERAL_GATHER_ID  3  /* id used by general_gather routines */
-#define GATHER_BASE_ID     4  /* ids greater than or equal to this are used
-                                 by the gather routines */
-/* macro to compute the message id */
-#define GATHER_ID(x) (GATHER_BASE_ID+(x))
-#endif
-
 /* If we want to do our own checksums */
 #ifdef COM_CRC
 u_int32type crc32(u_int32type crc, const unsigned char *buf, size_t len);
@@ -1305,74 +1294,6 @@ make_send_receive_list(
   return(firstpt);
 }
 
-#if 0
-/*
-**  determine tag offsets needed by sender
-*/
-static id_list_t *
-make_id_list(
-  comlink *recv,       /* neighborlist */
-  int n_recv,          /* number of receives */
-  comlink *send)       /* neighborlist_send */
-{
-  int i, *buf;
-  id_list_t *tol_top, *tol, **tol_next;
-  QMP_msgmem_t *smm, rmm;
-  QMP_msghandle_t *smh, rmh;
-
-  buf = (int *)malloc(n_recv*sizeof(int));
-  smm = (QMP_msgmem_t *)malloc(n_recv*sizeof(QMP_msgmem_t));
-  smh = (QMP_msghandle_t *)malloc(n_recv*sizeof(QMP_msghandle_t));
-
-  for(i=0; recv!=NULL; ++i, recv=recv->nextcomlink) {
-    buf[i] = i;
-    smm[i] = QMP_declare_msgmem(&buf[i], sizeof(int));
-    smh[i] = QMP_declare_send_to(smm[i], recv->othernode, 0);
-    QMP_start(smh[i]);
-  }
-  if(i!=n_recv) {printf("error i!=n_recv\n"); terminate(1);}
-
-  tol_next = &tol_top;
-  while(send!=NULL) {
-    tol = *tol_next = (id_list_t *)malloc(sizeof(id_list_t));
-    rmm = QMP_declare_msgmem(&i, sizeof(int));
-    rmh = QMP_declare_receive_from(rmm, send->othernode, 0);
-    QMP_start(rmh);
-    QMP_wait(rmh);
-    QMP_free_msghandle(rmh);
-    QMP_free_msgmem(rmm);
-    tol->id_offset = i;
-    tol_next = &(tol->next);
-    send = send->nextcomlink;
-  }
-  *tol_next = NULL;
-
-  for(i=0; i<n_recv; ++i) {
-    QMP_wait(smh[i]);
-    QMP_free_msghandle(smh[i]);
-    QMP_free_msgmem(smm[i]);
-  }
-
-  free(smh);
-  free(smm);
-  free(buf);
-
-  return tol_top;
-}
-
-/*
-**  determine max number of ids needed for gather
-*/
-static int
-get_max_receives(int n_recv)
-{
-  double temp;
-  temp = n_recv;
-  QMP_max_double(&temp);
-  return (int)(temp+0.5);
-}
-#endif
-
 /*
 **  add another gather to the list of tables
 */
@@ -1525,16 +1446,6 @@ make_gather(
 			      &gather_array[dir].n_send_msgs );
   } /* End general case for send lists */
 
-#if 0
-  gather_array[dir].id_list =
-    make_id_list( gather_array[dir].neighborlist,
-		  gather_array[dir].n_recv_msgs,
-		  gather_array[dir].neighborlist_send );
-
-  gather_array[dir].offset_increment =
-    get_max_receives( gather_array[dir].n_recv_msgs );
-#endif
-
   if( inverse != WANT_INVERSE ) {
     free(send_subl);
     return(dir);
@@ -1589,16 +1500,6 @@ make_gather(
       make_send_receive_list( func, args, want_even_odd, BACKWARDS, SEND,
 			      &gather_array[dir].n_send_msgs );
   } /* End making new lists for inverse gather */
-
-#if 0
-  gather_array[dir].id_list =
-    make_id_list( gather_array[dir].neighborlist,
-		  gather_array[dir].n_recv_msgs,
-		  gather_array[dir].neighborlist_send );
-
-  gather_array[dir].offset_increment =
-    get_max_receives(gather_array[dir].n_recv_msgs);
-#endif
 
   free(send_subl);
   return(dir-1);
@@ -1675,7 +1576,6 @@ declare_strided_gather(
   gmem_t *gmem;
   comlink *compt;	/* pointer to current comlink */
   gather_t *gt;         /* pointer to current gather */
-  //id_list_t *idl;
 
   gt = &gather_array[index];
 
@@ -1708,11 +1608,6 @@ declare_strided_gather(
   mtag->index = index;
 #endif
   mtag->prepared = 0;
-
-#if 0
-  mtag->nids = gt->offset_increment;
-  mtag->ids = NULL;
-#endif
 
   /* allocate a buffer for the msg_sr_t's.  This is dynamically allocated
      because there may be an arbitrary number of gathers in progress
@@ -1753,7 +1648,6 @@ declare_strided_gather(
        compt = compt->nextcomlink ) {
     if(compt->n_subl_connected[subl]==0) continue;
     mrecv[i].msg_node = compt->othernode;
-    //mrecv[i].id_offset = i;
     mrecv[i].msg_size = size*compt->n_subl_connected[subl];
     mrecv[i].msg_buf = NULL;
     gmem = (gmem_t *)malloc(sizeof(gmem_t));
@@ -1773,7 +1667,6 @@ declare_strided_gather(
        compt = compt->nextcomlink/*, idl = idl->next*/ ) {
     if(compt->n_subl_connected[subl]==0) continue;
     msend[i].msg_node = compt->othernode;
-    //msend[i].id_offset = idl->id_offset;
     msend[i].msg_size = size*compt->n_subl_connected[subl];
     msend[i].msg_buf = NULL;
     gmem = (gmem_t *)malloc(sizeof(gmem_t));
@@ -1808,26 +1701,6 @@ prepare_gather(msg_tag *mtag)
   }
   mtag->prepared = 1;
 
-#if 0
-  nids = mtag->nids;
-  if(nids!=0) {
-    mtag->ids = ids = (int *)malloc(nids*sizeof(int));
-    for(i=0, j=id_offset; i<nids; i++, j=(j+1)%num_gather_ids) {
-      /* find next available type */
-      while(id_array[j]!=0) {
-	j = (j+1)%num_gather_ids;
-	if(j==id_offset) {
-	  printf("error: not enough message ids\n");
-	  terminate(1);
-	}
-      }
-      ids[i] = j;
-      id_array[j] = 1;
-    }
-    id_offset = j;
-  }
-#endif
-
   if( mtag->nrecvs == 0 )
     mtag->mhrecvlist = NULL;
   else{
@@ -1852,7 +1725,6 @@ prepare_gather(msg_tag *mtag)
     memset(tpt, '\0', mrecv[i].msg_size+CRCBYTES);
 #endif
     mrecv[i].mm = QMP_declare_msgmem(mrecv[i].msg_buf, mrecv[i].msg_size+CRCBYTES);
-    //mrecv[i].mh = QMP_declare_receive_from(mrecv[i].mm, mrecv[i].msg_node, 0);
     mtag->mhrecvlist[i] = QMP_declare_receive_from(mrecv[i].mm, mrecv[i].msg_node, 0);
     /* set pointers in sites to correct location */
     gmem = mrecv[i].gmem;
@@ -1892,7 +1764,6 @@ prepare_gather(msg_tag *mtag)
     }
     msend[i].msg_buf = (char *) QMP_get_memory_pointer(msend[i].qmp_mem);
     msend[i].mm = QMP_declare_msgmem(msend[i].msg_buf, msend[i].msg_size+CRCBYTES);
-    //msend[i].mh = QMP_declare_send_to(msend[i].mm, msend[i].msg_node, 0);
     mtag->mhsendlist[i] = QMP_declare_send_to(msend[i].mm, msend[i].msg_node, 0);
   }
   if(mtag->nsends==1) {
@@ -1992,11 +1863,6 @@ wait_gather(msg_tag *mtag)
   if(mtag->nrecvs>0) QMP_wait( mtag->mhrecv );
 
   /* wait for all send messages */
-#if 0
-  for(i=0; i<mtag->nsends; i++) {
-    QMP_wait( mtag->send_msgs[i].mh );
-  }
-#endif
   if(mtag->nsends>0) QMP_wait( mtag->mhsend );
 #if COM_CRC
   /* Verify the checksums received */
@@ -2060,8 +1926,6 @@ cleanup_gather(msg_tag *mtag)
   /* free all receive buffers */
   if(mtag->nrecvs>0) QMP_free_msghandle( mtag->mhrecv );
   for(i=0; i<mtag->nrecvs; i++) {
-    //QMP_free_msghandle( mtag->recv_msgs[i].mh );
-    //QMP_free_msghandle( mtag->mhrecvlist[i] );
     QMP_free_msgmem( mtag->recv_msgs[i].mm );
     QMP_free_memory( mtag->recv_msgs[i].qmp_mem );
     gmem = mtag->recv_msgs[i].gmem;
@@ -2074,8 +1938,6 @@ cleanup_gather(msg_tag *mtag)
   /*  free all send buffers */
   if(mtag->nsends>0) QMP_free_msghandle( mtag->mhsend );
   for(i=0; i<mtag->nsends; i++) {
-    //QMP_free_msghandle( mtag->send_msgs[i].mh );
-    //QMP_free_msghandle( mtag->mhsendlist[i] );
     QMP_free_msgmem( mtag->send_msgs[i].mm );
     QMP_free_memory( mtag->send_msgs[i].qmp_mem );
     gmem = mtag->send_msgs[i].gmem;

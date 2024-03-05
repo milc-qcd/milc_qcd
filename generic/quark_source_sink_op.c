@@ -383,84 +383,6 @@ static void smear_wv_field(wilson_vector *wv, complex *chi_cs){
 
 #endif /* ifdef HAVE_DIRAC */
 
-#if 0
-/* Smear a ksprop field */
-
-static void sink_smear_ksprop(ks_prop_field *ksprop, quark_source *qs){
-  
-  int color;
-  int ci,cf;
-  int i;
-  site *s;
-  complex *chi_cs, z;
-  Real x;
-  su3_vector *v;
-  double dtime = start_timing();
-  int key[4] = {1,1,1,0};  /* 3D Fourier transform */
-  
-  /* Set up Fourier transform for smearing */
-  setup_restrict_fourier(key, NULL);
-
-  chi_cs = create_c_field();
-
-  /* Now convolute the quark propagator with a given wave function for
-     the smeared mesons. This is done with FFT's */
-  
-  /* fft quark_propagator (in place) */
-  for(color = 0; color < ksprop->nc; color++){
-    v = ksprop->v[color];
-    /* v points into ksprop, so ksprop is changed here */
-    restrict_fourier_field((complex *)v, sizeof(su3_vector), 
-			   FORWARDS);
-  }
-
-  print_timing(dtime,"FFT");
-
-  dtime = start_timing();
-
-  /* Build sink smearing wave function as a complex field repeated on
-     each time slice */
-  ks_sink_field(chi_cs, qs);
-
-  /* Normalize (for FFT) */
-  x = 1./(((Real)nx)*((Real)ny)*(Real)nz);
-  FORALLSITES(i,s){
-    CMULREAL(chi_cs[i],x,chi_cs[i]);
-  }
-  
-  print_timing(dtime,"build sink field");
-
-  dtime = start_timing();
-  restrict_fourier_field(chi_cs, sizeof(complex), FORWARDS);
-  
-  /* Now multiply quark by sink wave function */
-  for(ci=0;ci<3;ci++){
-    FORALLSITES(i,s)
-      for(cf=0;cf<ksprop->nc;cf++){
-	z = ksprop->v[ci][i].c[cf];
-	CMUL(z, chi_cs[i], ksprop->v[ci][i].c[cf]);
-      }
-  }
-  
-  print_timing(dtime, "FFT of chi and multiply");
-
-  /* Inverse FFT */
-  dtime = start_timing();
-  /* fft quark_propagator (in place) */
-  for(color = 0; color < ksprop->nc; color++){
-    v = ksprop->v[color];
-    /* v points into ksprop, so ksprop is changed here */
-    restrict_fourier_field((complex *)v, sizeof(su3_vector), 
-			   BACKWARDS);
-  }
-  print_timing(dtime,"FFT");
-  cleanup_restrict_fourier();
-  destroy_c_field(chi_cs);
-}  /* sink_smear_ksprop */
-
-#endif
-
-
 #ifndef NO_GAUGE_FIELD
 
 /*--------------------------------------------------------------------*/
@@ -667,81 +589,9 @@ static void cov_deriv_wv(wilson_vector *wv_dst, wilson_vector *wv_src,
 
 #endif /* ifndef NO_GAUGE_FIELD */
 
-#if 0
-/* Covariant derivative of Wilson propagator field */
-static void cov_deriv_wp(wilson_prop_field *wp_dst, wilson_prop_field *wp_src,
-			 su3_matrix *t_links, int dir, int disp, 
-			 Real weights[]){
-  wilson_vector *wv_src, *wv_dst;
-  int spin, color;
-
-  if(wp_dst->nc != wp_src->nc){
-    node0_printf("cov_deriv_wp: inconsistent number of colors\n");
-    terminate(1);
-  }
-  wv_src = create_wv_field();
-  wv_dst = create_wv_field();
-  for(color = 0; color < wp_src->nc; color++)
-    for(spin=0;spin<4;spin++){
-      copy_wv_from_wp(wv_src, wp_src, color, spin);
-      cov_deriv_wv(wv_dst, wv_src, t_links, dir, disp, weights);
-      copy_wp_from_wv(wp_dst, wv_dst, color, spin);
-    }
-  
-  destroy_wv_field(wv_src);
-  destroy_wv_field(wv_dst);
-} /* cov_deriv_wp */
-#endif
-
 /*--------------------------------------------------------------------*/
 /* Covariant Gauss smearing wrapper                                   */
 /*--------------------------------------------------------------------*/
-
-#if 0
-
-/* On wilson_prop_field type */
-
-static void gauss_smear_wprop_field(wilson_prop_field *wp, 
-				    su3_matrix *t_links, int subset,
-				    Real r0, int iters, int t0){
-  wilson_vector *wv;
-  int spin, color;
-  int subset, stride;
-
-  if(subset == FULL)stride = 1;
-  else stride = 2;
-
-  wv = create_wv_field();
-  for(color = 0; color < wp->nc; color++)
-    for(spin=0;spin<4;spin++){
-      copy_wv_from_wp(wv, wp, color, spin);
-      gauss_smear_wv_field(wv, stride, t_links, r0, iters, t0);
-      copy_wp_from_wv(wp, wv, color, spin);
-    }
-  
-  destroy_wv_field(wv);
-} /* gauss_smear_wprop_field */
-
-/* On ks_prop_field type */
-
-static void gauss_smear_ksprop_field(ksprop_field *ksp, 
-				     su3_matrix *t_links,
-				     Real r0, int iters, int t0){
-  su3_vector *v;
-  int color, stride;
-
-  v = create_v_field();
-  for(color = 0; color < ksp->nc; color++){
-      copy_v_from_ksp(v, ksp, color);
-      gauss_smear_v_field(v, t_links, r0, iters, t0);
-      copy_ksp_from_v(ksp, wv, color);
-    }
-  
-  destroy_v_field(v);
-
-} /* guass_smear_ksprop_field */
-
-#endif /* #if 0 */
 
 
 #ifdef HAVE_DIRAC
@@ -873,51 +723,6 @@ static void ks_gamma_inv(wilson_vector *src, int r0[])
 
 #endif
 
-#if 0
-/*--------------------------------------------------------------------*/
-static void rotate_prop_field(wilson_prop_field *dst, wilson_prop_field *src, 
-			      quark_source *qs){
-  
-  int spin, color;
-  int i;
-  site *s;
-  wilson_vector *psi, *mp, *tmp;
-  spin_wilson_vector *rp;
-  /* The MILC sign convention for gamma matrix in Dslash is
-     opposite FNAL, so we rotate with -d1 */
-  Real d1 = -qs->d1;
-  
-  psi = create_wv_field();
-  mp  = create_wv_field();
-  tmp = create_wv_field();
-
-  for(color = 0; color < src->nc; color++){
-    rp = dst->swv[color];
-
-    /* Construct propagator for "rotated" fields,
-       psi_rot = Dslash psi, with Dslash the naive operator. */
-    for(spin=0;spin<4;spin++){
-      copy_wv_from_wp(psi, src, color, spin);
-      
-      /* Do Wilson Dslash on the psi field */
-      dslash_w_3D_field(psi, mp,  PLUS, EVENANDODD);
-      dslash_w_3D_field(psi, tmp, MINUS, EVENANDODD);
-      
-      FORALLSITES(i,s){
-	/* From subtraction we get 2*Dslash */
-	sub_wilson_vector(mp + i, tmp + i, &rp[i].d[spin]);
-	/* Apply rotation */
-	scalar_mult_add_wvec(psi + i, &rp[i].d[spin], d1/4., &rp[i].d[spin]);
-      }
-    }
-  }
-    
-  cleanup_dslash_w_3D_temps();
-  destroy_wv_field(psi); 
-  destroy_wv_field(mp); 
-  destroy_wv_field(tmp);
-} /* rotate_wprop_field */
-#endif
 
 /*--------------------------------------------------------------------*/
 /* Time-slice operations on color vector fields                       */
@@ -1191,25 +996,8 @@ static void apply_aslash_v(su3_vector *src,
 
 
 static void apply_par_xport_v(su3_vector *src, quark_source_sink_op *qss_op){
-
-  //su3_matrix * g_links = create_G_from_site();
-
-//#ifdef NO_GAUGE_FIELD
   apply_par_xport_src_v(src, src, qss_op, NULL); // gb_baryon_src.c
-//#else
-  /* Use APE links for shifts */
-  /* no need to put in sign factors if rephase_field_offset is off */
-  /* unsmeared links usually have staggered phases included */
-  //rephase_field_offset( ape_links, ON, NULL, c0 );
-  //rephase_field_offset( ape_links, OFF, NULL, c0 );
-//  node0_printf("Parallel transport smeared gauge links are ON\n");
-//  apply_par_xport_src_v(src, src, qss_op, ape_links);
-  //node0_printf("Parallel transport smeared gauge links are OFF\n");
-  //apply_par_xport_src_v(src, src, qss_op, g_links);
-//#endif
   apply_momentum_v(src, qss_op, qss_op->t0);
-
-  //destroy_G(g_links);
 }
 
 static void apply_save_vector_src_v(su3_vector *src, 
@@ -1705,6 +1493,8 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
 			     int t0){
 
   /* Smearing is done with coordinate stride 2 to preserve taste */
+  printf("Applying covariant smearing with t0 = %d\n", t0);
+  double dtime = start_timing();
 
   int op_type       = qss_op->type;
   int iters         = qss_op->iters;
@@ -1729,6 +1519,7 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
   else
     return 0;
 
+  print_timing(dtime, "covariant smearing");
   return 1;
 }
 
@@ -2900,9 +2691,6 @@ static int print_single_op_info(FILE *fp, const char prefix[],
       fprintf(fp,"%s%s,\n", make_tag(prefix, "dir2"), encode_dir(YUP));
       fprintf(fp,"%s%s,\n", make_tag(prefix, "dir3"), encode_dir(ZUP));
     }    
-    //fprintf(fp,"%s[%d, %d, %d],\n", make_tag(prefix, "mom"), qss_op->mom[0],
-    //        qss_op->mom[1], qss_op->mom[2]);
-    //fprintf(fp,"%s%d\n", make_tag(prefix, "t0"), qss_op->t0);
   }
   else if ( op_type == EXT_SRC_KS ){
     fprintf(fp,",\n");

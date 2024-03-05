@@ -334,6 +334,12 @@ int main(int argc, char *argv[])
 
     } /* is */
 
+
+#if defined(HAVE_QUDA) && defined(USE_GSMEAR_QUDA)
+    // delete 2-link current used for smearing
+    gauss_smear_delete_2link_QUDA();
+#endif
+
     ENDTIME("create sources");
 
     /**************************************************************/
@@ -555,6 +561,11 @@ int main(int argc, char *argv[])
 	node0_printf("destroy quark[%d]\n",oldiq1);
       }
 #endif
+
+#if defined(HAVE_QUDA) && defined(USE_GSMEAR_QUDA)
+    // delete 2-link current used for smearing
+    gauss_smear_delete_2link_QUDA();
+#endif
     
     /* Now destroy all remaining propagator fields */
     
@@ -567,6 +578,14 @@ int main(int argc, char *argv[])
 	}
       }
     }
+
+    // also destroy the source fields here
+    for(is=0; is<param.num_base_source+param.num_modified_source; is++){
+      if(source[is] != NULL)node0_printf("destroy source[%d]\n",is);
+      destroy_ksp_field(source[is]); source[is] = NULL;
+    }
+    
+    
     
     /****************************************************************/
     /* Compute the meson propagators */
@@ -951,11 +970,6 @@ int main(int argc, char *argv[])
     destroy_ape_links_3D(ape_links);
     
 
-    for(is=0; is<param.num_base_source+param.num_modified_source; is++){
-      if(source[is] != NULL)node0_printf("destroy source[%d]\n",is);
-      destroy_ksp_field(source[is]); source[is] = NULL;
-    }
-    
     /* Destroy fermion links (created in readin() */
     
 #if FERM_ACTION == HISQ

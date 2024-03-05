@@ -20,52 +20,6 @@ static inline void _su3vec_copy( su3_vector *a, su3_vector *b ){
     b->c[2].imag = a->c[2].imag;
 }
 
-//#define NO_SINK_LINKS
-
-//#define UNIT_TEST_ORIGIN_TRANSLATE 7
-
-//static void
-//print_unit_cube(char *tag, su3_vector *vec){
-//  register int i;
-//  register site *s;
-//  node0_printf("printing field %s:\n",tag);
-//  FORALLSITES(i,s){
-//    if(s->x<3 && s->y<3 && s->z<3 && s->t == 8){
-//      node0_printf("site %i %i %i %i:",s->x,s->y,s->z,s->t);
-//      node0_printf("  vals %f %f %f %f %f %f\n",
-//        (vec+i)->c[0].real,(vec+i)->c[0].imag,
-//        (vec+i)->c[1].real,(vec+i)->c[1].imag,
-//        (vec+i)->c[2].real,(vec+i)->c[2].imag);
-//    }
-//  }
-//  node0_printf("done printing field %s:\n",tag);
-//}
-
-//
-//static void
-//print_color_vector(su3_vector *vec){
-//  node0_printf("vector %f %f %f %f %f %f\n",
-//    vec->c[0].real,vec->c[0].imag,
-//    vec->c[1].real,vec->c[1].imag,
-//    vec->c[2].real,vec->c[2].imag);
-//}
-
-/*------------------------------------------------------------------*/
-/**
-   Compute the hypercube coordinate relative to an offset.  We assume
-   that all lattice dimensions are even, as they should be for
-   staggered fermions!
- */
-//static short *
-//hyp_coord(site *s, int r0[]){
-//  static short h[4];
-//  h[XUP] = (s->x - r0[XUP]) & 0x1;
-//  h[YUP] = (s->y - r0[YUP]) & 0x1;
-//  h[ZUP] = (s->z - r0[ZUP]) & 0x1;
-//  h[TUP] = (s->t - r0[TUP]) & 0x1;
-//  return h;
-//}
-
 #ifdef GB_BARYON
 
 /** Get a Fourier factor for a site */
@@ -123,66 +77,6 @@ norm_corr(int phase, Real fact, complex prop[])
 }
 
 /*------------------------------------------------------------------*/
-//static void
-//sign_flip_field(ks_prop_field *dest, ks_prop_field *src){
-//  int i,c;
-//  site *s;
-//  //node0_printf("Entering sign_flip_field\n");
-//  for(c=0;c<3;c++){
-//    FORALLSITES(i,s){
-//      _scalar_mult_su3_vector(&src->v[c][i], -1.0, &dest->v[c][i] );
-//    }
-//  }
-//  //node0_printf("Leaving sign_flip_field\n");
-//}
-
-/*------------------------------------------------------------------*/
-/**
-   Compute eta_[dir](x-r0)
-   undoes the boundary phase contribution to the source
- */
-//static Real
-//eta_sign(int dir, int r0[], site *s){
-//  int j;
-//  Real sign = 1.;
-//  short *h = hyp_coord(s, r0);
-//
-//  /* Make sure dir only in up directions */
-//  if (dir==TUP) return 1.;
-//  for(j  = XUP; j<=dir; j++){
-//    if( h[(j-1)%4]%2 == 1 ) sign = -sign;
-//  }
-//
-//  return sign;
-//}
-
-/*------------------------------------------------------------------*/
-/**
-   Apply the eta_sign operation to an entire field
- */
-//static void
-//eta_sign_field(int dir, int r0[], ks_prop_field *dest, ks_prop_field *src){
-//  register int i;
-//  int c;
-//  int fdir;
-//  site *s;
-//
-//  //node0_printf("Entering eta_sign_field: dir %i\n",dir);
-//  if(dir>TUP) fdir = OPP_DIR(dir);
-//  else fdir = dir;
-//  for(c=0;c<3;c++){
-//    FORALLSITES(i,s){
-//      //if(s->x<2 && s->y<2 && s->z<2 && s->t<2)
-//      // node0_printf("eta sign: %f\n",eta_sign(fdir, r0, s));
-//      if(eta_sign(fdir, r0, s) > 0)
-//        dest->v[c][i] = src->v[c][i];
-//      else
-//        _scalar_mult_su3_vector( &src->v[c][i], -1.0, &dest->v[c][i] );
-//    }
-//  }
-//}
-
-/*------------------------------------------------------------------*/
 // convert to sensible representation
 static int gamma_bits[16] = {1,2,4,8,15,6,5,3,9,10,12,14,13,11,7,0};
 
@@ -215,16 +109,12 @@ spin_taste_phase_factor_bits(int stIdx){
   shiftbit = (decode_gamma_taste_bits(stIdx)/8)%2; // gamma4 only
   if(shiftbit) { signbit = 7; } // -1^(x+y+z)
   else         { signbit = 0; }
-  //node0_printf("node %d: spin-taste %d shiftbit %d signbit %d\n",
-  //  this_node,stIdx,shiftbit,signbit);
 
   linkbit = spin ^ taste; // bitwise xor
   nlink = (linkbit/4)%2 + (linkbit/2)%2 + linkbit%2;
   if(nlink > 1){
     // multi-link partner
     signbit = signbit ^ 2; // *-1^y
-    //node0_printf("node %d: spin-taste %d multilink %d signbit %d\n",
-     // this_node,stIdx,nlink,signbit);
   }
 
   if(taste == 0 || taste == 7){
@@ -239,13 +129,7 @@ spin_taste_phase_factor_bits(int stIdx){
         case 6: case 1:
         default: break; // \eta_x
       }
-      //node0_printf("node %d: spin-taste %d 3-dim eta spin %d signbit %d\n",
-      //  this_node,stIdx,spin,signbit);
     }
-    // else 1-dimensional, no modification
-    //else {
-    //node0_printf("node %d: spin-taste %d trivial taste signbit %d\n",this_node,stIdx,signbit);
-    //}
   }
   else{
     // T_jk/V_i or A_i/T_i4 taste
@@ -261,8 +145,6 @@ spin_taste_phase_factor_bits(int stIdx){
         default: break; // 1
       }
       signbit = signbit ^ 0x7;
-      //node0_printf("node %d: spin-taste %d 3-dim local %d signbit %d\n",
-      //  this_node,stIdx,spin,signbit);
     }
     else{
       if(spin == 0 || spin == 7){
@@ -275,8 +157,6 @@ spin_taste_phase_factor_bits(int stIdx){
           case 3: case 4:
           default: break; // \zeta_z
         } // switch taste
-        //node0_printf("node %d: spin-taste %d 3-dim zeta taste %d signbit %d\n",
-        //  this_node,stIdx,taste,signbit);
       }
       else {
         // 6-dimensional irrep, eta_j * -1^(x_i)\eta_4\zeta_4
@@ -288,8 +168,6 @@ spin_taste_phase_factor_bits(int stIdx){
           case 6: case 1:
           default: break; // \eta_x
         }
-        //node0_printf("node %d: spin-taste %d 6-dim eta spin %d signbit %d\n",
-        //  this_node,stIdx,spin,signbit);
         switch(taste){
           case 3: case 4:
             signbit = signbit ^ 4; break; // -1^z
@@ -300,14 +178,10 @@ spin_taste_phase_factor_bits(int stIdx){
           default: break; // 1
         }
         signbit = signbit ^ 7;
-        //node0_printf("node %d: spin-taste %d 6-dim phase taste %d signbit %d\n",
-        //  this_node,stIdx,taste,signbit);
 
       } // if spin = 0,7
     } // else nlink != 0,3
   } //else taste != 0,7
-  //node0_printf("node %d: spin-taste %d some-dim phase taste %d signbit %d\n",
-  // this_node,stIdx,taste,signbit);
   return signbit;
 }
 
@@ -346,15 +220,11 @@ sym_shift_sink(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
   node0_printf("Entering sym_shift_sink\n");
 
 
-  //node0_printf("src: %.5e + i %.5e\n", src[100].c[0].real, src[100].c[0].imag); 
-
   tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
   /* With ONE_SIDED_SHIFT_GB defined, the shift is asymmetric */
 #ifndef ONE_SIDED_SHIFT_GB
 #ifdef NO_SINK_LINKS
   FORALLFIELDSITES_OMP(i,) { _su3vec_copy(src+i, tvec+i); } END_LOOP_OMP
-
-  //node0_printf("tvec: %.5e + i %.5e\n", tvec[100].c[0].real, tvec[100].c[0].imag);
 
 #else
   FORALLFIELDSITES_OMP(i,)
@@ -370,31 +240,21 @@ sym_shift_sink(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
 #ifdef NO_SINK_LINKS
   FORALLFIELDSITES_OMP(i,) { _su3vec_copy((su3_vector *)gen_pt[0][i],dest+i); } END_LOOP_OMP
 
-  //node0_printf("gen_pt[0]: %.5e + i %.5e\n", ((su3_vector *) gen_pt[0][100])->c[0].real, 
-  //                                            ((su3_vector *) gen_pt[0][100])->c[0].imag);
-  //node0_printf("dest: %.5e + i %.5e\n", dest[100].c[0].real, dest[100].c[0].imag);
-  
 #else
   FORALLFIELDSITES_OMP(i,)
     {
       mult_su3_mat_vec( links+4*i+dir, (su3_vector *)gen_pt[0][i], dest+i );
     } END_LOOP_OMP
 #endif // NO_SINK_LINKS
-  //node0_printf("gen_pt multiply done\n");
 #ifndef ONE_SIDED_SHIFT_GB
   wait_gather(tag[1]);
   FORALLFIELDSITES_OMP(i,)
     {
       add_su3_vector(dest+i, (su3_vector*)gen_pt[1][i], dest+i );
    
-      //node0_printf("gen_pt[1]: %.5e + i %.5e\n", ((su3_vector *) gen_pt[1][100])->c[0].real,
-      //                                           ((su3_vector *) gen_pt[0][100])->c[0].imag);
-      //node0_printf("dest: %.5e + i %.5e\n", dest[100].c[0].real, dest[100].c[0].imag);
-
       /* Now divide by 2 eq. (4.2b) of Golterman's Meson paper*/
       _scalar_mult_su3_vector( dest+i, .5, dest+i ) ;
     } END_LOOP_OMP
- // node0_printf("dest: %.5e + i %.5e\n\n\n", dest[100].c[0].real, dest[100].c[0].imag);
   cleanup_gather(tag[1]);
 #endif
   cleanup_gather(tag[0]);
@@ -411,10 +271,6 @@ apply_sym_shift_snk_v(int n, int *d, int *r0, ks_prop_field *dest,
   int i,c;
   ks_prop_field *tmp0 = create_ksp_field(3);
 
-  //node0_printf("d(%d) = ",n);
-  //for(i=0;i<n;i++){ node0_printf("%d ",d[i]); }
-  //node0_printf("\n");
-  //print_unit_cube("src",src->v[0]);
   for(i=0;i<n;i++)
   {
     /* Do the shift in d[i] */
@@ -429,25 +285,6 @@ apply_sym_shift_snk_v(int n, int *d, int *r0, ks_prop_field *dest,
     }
   }
 
-  /* NO LINK PHASES HERE!! */
-  /* apply signs to undo link phases */
-  //if(n==1) eta_sign_field(d[0],r0,dest,dest);
-  //else if(n==2){
-  //  /* two eta factors and an extra -1 for certain orders */
-  //  eta_sign_field(d[0],r0,dest,dest);
-  //  eta_sign_field(d[1],r0,dest,dest);
-  //  if(d[0]>d[1]) sign_flip_field(dest,dest);
-  //} else if(n==3){
-  //  eta_sign_field(d[0],r0,dest,dest);
-  //  eta_sign_field(d[1],r0,dest,dest);
-  //  eta_sign_field(d[2],r0,dest,dest);
-  //  /* even/odd permutation */
-  //  switch(d[0]){
-  //    case XUP: if(d[1] == ZUP) sign_flip_field(dest,dest); break;
-  //    case YUP: if(d[1] == XUP) sign_flip_field(dest,dest); break;
-  //    case ZUP: if(d[1] == YUP) sign_flip_field(dest,dest); break;
-  //  }
-  //}
   destroy_ksp_field(tmp0);
 }
 
@@ -465,12 +302,6 @@ apply_par_xport_snk_v(ks_prop_field *dest, ks_prop_field *src,
      {XUP,ZUP,YUP},
      {YUP,XUP,ZUP},
      {ZUP,YUP,XUP}};
-  //node0_printf("Entering apply_par_xport_snk_v\n");
-  //node0_printf("n = %i, dir =",n);
-  //for(i=0;i<n;i++){
-  //  node0_printf(" %i ",dir[i]);
-  //}
-  //node0_printf("\n");
   copy_ksp_field(tsrc,src);
 
   if(n == 0){
@@ -568,40 +399,26 @@ unmap_ksp_field(ks_prop_field **ksp){
 */
 static inline void
 baryon_color_asym_v(su3_vector *qk0, su3_vector *qk1, su3_vector *qk2, complex *dt){
-  su3_matrix tempmat;
   /* TODO: make this faster? */
-  //for(c=0;c<3;c++) tempmat.e[0][c] = qk0->c[c];
-  tempmat.e[0][0] = qk0->c[0];
-  tempmat.e[0][1] = qk0->c[1];
-  tempmat.e[0][2] = qk0->c[2];
-  //for(c=0;c<3;c++) tempmat.e[1][c] = qk1->c[c];
-  tempmat.e[1][0] = qk1->c[0];
-  tempmat.e[1][1] = qk1->c[1];
-  tempmat.e[1][2] = qk1->c[2];
-  //for(c=0;c<3;c++) tempmat.e[2][c] = qk2->c[c];
-  tempmat.e[2][0] = qk2->c[0];
-  tempmat.e[2][1] = qk2->c[1];
-  tempmat.e[2][2] = qk2->c[2];
-  // inlined *dt = det_su3( &tempmat );
   {
     complex cc,dd,sum;
-    CMUL(tempmat.e[0][0],tempmat.e[1][1],cc);
-    CMUL(cc,tempmat.e[2][2],sum);
-    CMUL(tempmat.e[0][0],tempmat.e[1][2],cc);
-    CMUL(cc,tempmat.e[2][1],dd);
+    CMUL(qk0->c[0],qk1->c[1],cc);
+    CMUL(qk0->c[1],qk1->c[0],dd);
+    CSUB(cc,dd,cc);
+    CMUL(cc,qk2->c[2],sum);
+
+    CMUL(qk0->c[0],qk1->c[2],cc);
+    CMUL(qk0->c[2],qk1->c[0],dd);
+    CSUB(cc,dd,cc);
+    CMUL(cc,qk2->c[1],dd);
     CSUB(sum,dd,sum);
-    CMUL(tempmat.e[0][1],tempmat.e[1][2],cc);
-    CMUL(cc,tempmat.e[2][0],dd);
+
+    CMUL(qk0->c[1],qk1->c[2],cc);
+    CMUL(qk0->c[2],qk1->c[1],dd);
+    CSUB(cc,dd,cc);
+    CMUL(cc,qk2->c[0],dd);
     CADD(sum,dd,sum);
-    CMUL(tempmat.e[0][1],tempmat.e[1][0],cc);
-    CMUL(cc,tempmat.e[2][2],dd);
-    CSUB(sum,dd,sum);
-    CMUL(tempmat.e[0][2],tempmat.e[1][0],cc);
-    CMUL(cc,tempmat.e[2][1],dd);
-    CADD(sum,dd,sum);
-    CMUL(tempmat.e[0][2],tempmat.e[1][1],cc);
-    CMUL(cc,tempmat.e[2][0],dd);
-    CSUB(sum,dd,sum);
+
     *dt = sum;
   } // end inlined det_su3
 }
@@ -629,7 +446,6 @@ baryon_color_asym_mat(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *qk2
   CSUB(*dt,cc,*dt);
   baryon_color_asym_v(&qk0->v[2][i], &qk1->v[1][i], &qk2->v[0][i],&cc);
   CSUB(*dt,cc,*dt);
-  //node0_printf("dt[t=0] = %.7e + i %.7e\n", (dt[0]).real, (dt[0]).imag);
 }
 /** same as above, but multiplies in momentum too */
 static void
@@ -637,10 +453,6 @@ baryon_color_asym_mat_mom(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field 
                       complex *mom, int i, complex *dt){
   complex cc;
   baryon_color_asym_v(&qk0->v[0][i], &qk1->v[1][i], &qk2->v[2][i],dt);
-  //if(i==0) print_color_vector(&qk0->v[0][0]);
-  //if(i==0) print_color_vector(&qk1->v[1][0]);
-  //if(i==0) print_color_vector(&qk2->v[2][0]);
-  //if(i==0) node0_printf("Antisymmetrizing +result %f %f\n", dt->real,dt->imag);
   baryon_color_asym_v(&qk0->v[1][i], &qk1->v[2][i], &qk2->v[0][i],&cc);
   CSUM(*dt,cc);
   baryon_color_asym_v(&qk0->v[2][i], &qk1->v[0][i], &qk2->v[1][i],&cc);
@@ -676,7 +488,6 @@ baryon_color_asym_mat_wall(su3_vector *vqk0, su3_vector *vqk1, su3_vector *vqk2,
   CSUB(*dt,cc,*dt);
   baryon_color_asym_v(vqk0+2, vqk1+1, vqk2+0,&cc);
   CSUB(*dt,cc,*dt);
-  //node0_printf("dt[t=0] = %.7e + i %.7e\n", (dt[0]).real, (dt[0]).imag);
 }
 
 /*------------------------------------------------------------------*/
@@ -699,7 +510,6 @@ accum_baryon_color_asym(ks_prop_field *qk0, ks_prop_field *qk1, ks_prop_field *q
     (csum_new[t]).real = 0.;
     (csum_new[t]).imag = 0.;
   }
-  //node0_printf("Entering accum_baryon_color_asym: pf=%f\n",pfi);
 
    
   if (dowall) {  // wall sink tieups    
@@ -880,8 +690,6 @@ gb_symm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
   if(flip_snk){
    for(c=0;c<3;c++){ si_snk[c] = offset_singlet_index(si_snk[c],7); }
   }
-  //node0_printf("combo %d %d %d %d %d %d\n",
-  // si_src[0],si_src[1],si_src[2],si_snk[0],si_snk[1],si_snk[2]);
 
   if (docube){ cubestart = 0; cubeend = 8; }
   else {
@@ -912,8 +720,6 @@ gb_symm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
   map_ksp_field(&ksp1, qk1, 1, offset_singlet_index(si_src[1],orig),
     si_snk[1], r0, links, remap);
 
-  //node0_printf("ksp1: %.5e + i %.5e\n", (ksp1->v[2][100]).c[1].real, (ksp1->v[2][100]).c[1].imag);
-
   map_ksp_field(&ksp2, qk1, 1, offset_singlet_index(si_src[1],orig),
     si_snk[2], r0, links, remap);
   map_ksp_field(&ksp3, qk2, 2, offset_singlet_index(si_src[2],orig),
@@ -925,36 +731,7 @@ gb_symm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
 
   remap = 0x1;
 
-  //node0_printf("ksp1: %.5e + i %.5e\n", (ksp1->v[2][100]).c[1].real, (ksp1->v[2][100]).c[1].imag);
-  //node0_printf("qk1: %.5e + i %.5e\n", (qk1[si_src[1]]->v[2][100]).c[1].real, (qk1[si_src[1]]->v[2][100]).c[1].imag);
-  //node0_printf("src singlet: %d, snk singlet: %d \n", offset_singlet_index(si_src[1],orig), 
-  //             offset_singlet_index(si_snk[1],orig));
-  //node0_printf("ksp5: %.5e + i %.5e\n", (ksp5->v[2][100]).c[1].real, (ksp5->v[2][100]).c[1].imag);
-
-  accum_baryon_color_asym(ksp0,ksp1,ksp5,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
-  //node0_printf("dt[t=0] = %.7e + i %.7e\n", (dt[0]).real, (dt[0]).imag);
-  accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
-  map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0],orig),
-    si_snk[1], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp2,ksp3,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
-
-  map_ksp_field(&ksp2, qk1, 1, offset_singlet_index(si_src[1],orig),
-    si_snk[0], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp2,ksp5,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
-
-  map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0],orig),
-    si_snk[2], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp2,ksp4,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
-  accum_baryon_color_asym(ksp0,ksp1,ksp3,domom,mom,flip_snk,k_disp,stsign*pfi/6., dowall, dt);
-
-  //node0_printf("dt[t=0] = %.7e + i %.7e\n", (dt[0]).real, (dt[0]).imag);
-
-  //if(node_number(0,0,0,32) == this_node ) { printf("xsrc: ci%d cj%d ck%d ki%d kj%d kk%d o%d\n",si_src[0],si_src[1],si_src[2],si_snk[0],si_snk[1],si_snk[2],k_disp); }
-  //if(node_number(0,0,0,32) == this_node ) { printf("xsrc: ci%d cj%d ck%d ki%d kj%d kk%d o%d\n",si_src[0],si_src[1],si_src[2],si_snk[0],si_snk[2],si_snk[1],k_disp); }
-  //if(node_number(0,0,0,32) == this_node ) { printf("xsrc: ci%d cj%d ck%d ki%d kj%d kk%d o%d\n",si_src[0],si_src[1],si_src[2], si_snk[1],si_snk[2],si_snk[0],k_disp); }
-  //if(node_number(0,0,0,32) == this_node ) { printf("xsrc: ci%d cj%d ck%d ki%d kj%d kk%d o%d\n",si_src[0],si_src[1],si_src[2], si_snk[1],si_snk[0],si_snk[2],k_disp); }
-  //if(node_number(0,0,0,32) == this_node ) { printf("xsrc: ci%d cj%d ck%d ki%d kj%d kk%d o%d\n",si_src[0],si_src[1],si_src[2], si_snk[2],si_snk[0],si_snk[1],k_disp); }
-  //if(node_number(0,0,0,32) == this_node ) { printf("xsrc: ci%d cj%d ck%d ki%d kj%d kk%d o%d\n",si_src[0],si_src[1],si_src[2], si_snk[2],si_snk[1],si_snk[0],k_disp); }
+  accum_baryon_color_asym(ksp0,ksp1,ksp5,domom,mom,flip_snk,k_disp,stsign*pfi, dowall, dt);
 
   } // orig
 
@@ -991,7 +768,6 @@ gb_mixed_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
   int stphs=0;
   short remap = 0x0;
   Real stsign;
-  //node0_printf("Entering gb_mixed_sink_term\n");
 
   /** sink displacement - mod8 removes time direction
    number of links displaced is just the sum mod2
@@ -1009,38 +785,6 @@ gb_mixed_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
    for(c=0;c<3;c++){ si_snk[c] = offset_singlet_index(si_snk[c],7); }
   }
 
-  ///* Always assume the sequential prop is the first quark octect: qk0
-  // * Because we are using the same codebase for 2pt and 3pt sequential tieups
-  // * In 2pt case, we assume uud is at both source and sink. However,
-  // * When we put the current in, we assume the source is d*du or dd*u and
-  // * sink and uud where d* represent the sequential propagator that convert
-  // * a down quark to up quark. After applying the mixed symmetry operatrion
-  // * in the source loop, we have to switch d quark with up quark */
-  //if (stIdx != GB_2POINT_BACKPROP) {
-  // int tmpindx;
-  // if (qk1 == qk2) {
-  //  tmpindx = si_src[1];
-  //  si_src[1] = si_src[2];
-  //  si_src[2] = tmpindx;
-  // }
-  // else if (qk0 == qk2) {
-  //  tmpindx = si_src[0];
-  //  si_src[0] = si_src[2];
-  //  si_src[2] = tmpindx;
-  // }
-  //}
-
-  /* Assume a charged current interaction, which swaps flavors
-   * As a consequence, the flavors must be reversed
-   * uud -> ddu
-   * invoke this as a permutation of tastes */
-  /*
-  if (stIdx != GB_2POINT_BACKPROP) {
-    int tmpindx = si_src[1];
-    si_src[1] = si_src[2];
-    si_src[2] = tmpindx;
-  }
-  */
 
   if (docube){ cubestart = 0; cubeend = 8; }
   else {
@@ -1060,15 +804,11 @@ gb_mixed_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
   stsign = spin_taste_sign(stphs,orig);
 
   // three partial sums
-  complex isum1[nt], isum2[nt], isum3[nt];
+  complex isum1[nt];
   int t;
   for(t=0;t<nt;t++){
     (isum1[t]).real = 0.0;
     (isum1[t]).imag = 0.0;
-    (isum2[t]).real = 0.0;
-	  (isum2[t]).imag = 0.0;
-	  (isum3[t]).real = 0.0;
-    (isum3[t]).imag = 0.0;
   }
 
   /* apply sink point splitting */
@@ -1078,48 +818,12 @@ gb_mixed_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
     si_snk[1], r0, links, remap);
   map_ksp_field(&ksp2, qk2, 2, offset_singlet_index(si_src[2], k_disp),
     si_snk[2], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,stsign*2.*pfi, dowall, isum1);
-  remap = 0x1;
-
-  map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0], k_disp),
-    si_snk[1], r0, links, remap);
-  map_ksp_field(&ksp1, qk1, 1, offset_singlet_index(si_src[1], k_disp),
-    si_snk[2], r0, links, remap);
-  map_ksp_field(&ksp2, qk2, 2, offset_singlet_index(si_src[2], k_disp),
-    si_snk[0], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,-stsign*pfi, dowall, isum2);
-
-  map_ksp_field(&ksp0, qk0, 0, offset_singlet_index(si_src[0], k_disp),
-    si_snk[2], r0, links, remap);
-  map_ksp_field(&ksp1, qk1, 1, offset_singlet_index(si_src[1], k_disp),
-    si_snk[0], r0, links, remap);
-  map_ksp_field(&ksp2, qk2, 2, offset_singlet_index(si_src[2], k_disp),
-    si_snk[1], r0, links, remap);
-  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,-stsign*pfi, dowall, isum3);
+  accum_baryon_color_asym(ksp0,ksp1,ksp2,domom,mom,flip_snk,orig,stsign*3.*pfi, dowall, isum1);
 
   // Sum up partial sums
   for(t=0;t<nt;t++){
     CSUM(dt[t],isum1[t]);
-    CSUM(dt[t],isum2[t]);
-    CSUM(dt[t],isum3[t]);
   }
-  /*
-  node0_printf(" %.1f, (%i, %i, %i), (%i, %i, %i), %e + i %e, dt = %e + i%e \n",
-		        2.*stsign*pfi, si_snk[0],si_snk[1],si_snk[2],
-		                       si_src[0],si_src[1],si_src[2],
-							   (isum1[0]).real, (isum1[0]).imag, (dt[0]).real, (dt[0]).imag);
-  node0_printf(" %.1f, (%i, %i, %i), (%i, %i, %i), %e + i %e \n",
-		        -stsign*pfi, si_snk[1],si_snk[2],si_snk[0],
-		                     si_src[0],si_src[1],si_src[2],
-							 (isum2[0]).real, (isum2[0]).imag);
-  node0_printf(" %.1f, (%i, %i, %i), (%i, %i, %i), %e + i %e \n",
-		        -stsign*pfi, si_snk[2],si_snk[0],si_snk[1],
-		                       si_src[0],si_src[1],si_src[2],
-  							  (isum3[0]).real, (isum3[0]).imag);
-  */
-
-
-
   } // orig
 
   unmap_ksp_field(&ksp0);
@@ -1155,7 +859,6 @@ gb_asymm_sink_term(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2
   int stphs=0;
   short remap = 0x0;
   Real stsign;
-  //node0_printf("Entering gb_asymm_sink_term\n");
 
   /** sink displacement - mod8 removes time direction
    number of links displaced is just the sum mod2
@@ -1246,7 +949,6 @@ gb_sink_term_loop(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
   int perm[3] = {0};            /* permuted order of taste indices, for mixed symmetry */
   enum gb_sym_type stype;   /* symmetry type of the operator */
   Real psign = 1.;              /* sign of Bailey operator mixed symmetry permutation */
-  //node0_printf("Entering gb_sink_term_loop\n");
 
   nperm = gb_get_num_permutations(snk_op, num_d, num_s);
   nterm = gb_get_num_terms(snk_op);
@@ -1258,12 +960,9 @@ gb_sink_term_loop(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
     pfsum+=pf[j]*pf[j];
   }
 
-  //node0_printf("gb_baryon sink: ");
   for(j=0;j<nterm;j++){
     triplet_to_singlet_index(tskIdx[j],s_idx);
-    //node0_printf(" %i %i %i %i, ",pf[j],s_idx[0],s_idx[1],s_idx[2]);
   }
-  //node0_printf(" snk_op: %s\n", gb_baryon_label(snk_op));
 
   if(stype == GBSYM_SYM) {
     /* simple implementation */
@@ -1298,29 +997,6 @@ gb_sink_term_loop(ks_prop_field **qk0, ks_prop_field **qk1, ks_prop_field **qk2,
         gb_mixed_sink_term(qk0, qk1, qk2, links, tscIdx, singlet_to_triplet_index(temp_perm),
           r0, stIdx, dowall, docube, domom, mom, flip_snk, pfi*(Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
 
-        /* This does not work. If you tieup this way for mixed symmetry operator,
-         * it will give zero by definiteion.
-          temp_perm[0] = perm[0];
-          temp_perm[1] = perm[2];
-          temp_perm[2] = perm[1];
-          gb_mixed_sink_term(qk0, qk1, qk2, links, tscIdx, singlet_to_triplet_index(temp_perm),
-            r0, stIdx, docube, domom, mom, flip_snk, pfi*(Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
-          temp_perm[0] = perm[1];
-          temp_perm[1] = perm[2];
-          temp_perm[2] = perm[0];
-          gb_mixed_sink_term(qk0, qk1, qk2, links, tscIdx, singlet_to_triplet_index(temp_perm),
-            r0, stIdx, docube, domom, mom, flip_snk, pfi*(Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
-          temp_perm[0] = perm[2];
-          temp_perm[1] = perm[1];
-          temp_perm[2] = perm[0];
-          gb_mixed_sink_term(qk0, qk1, qk2, links, tscIdx, singlet_to_triplet_index(temp_perm),
-            r0, stIdx, docube, domom, mom, flip_snk, pfi*(Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
-          temp_perm[0] = perm[2];
-          temp_perm[1] = perm[0];
-          temp_perm[2] = perm[1];
-          gb_mixed_sink_term(qk0, qk1, qk2, links, tscIdx, singlet_to_triplet_index(temp_perm),
-            r0, stIdx, docube, domom, mom, flip_snk, pfi*(Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
-    }*/
       }
     }
   }
@@ -1355,22 +1031,6 @@ gb_symm_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_fie
        terminate(1);
     }
   }
-  /*
-       gb_sink_term_loop(qko0, qko1, qko2, links, t_idx, snk_op, num_d, num_s,
-       r0, stIdx, docube, domom, mom, flip_snk, pfi, dt);
-
-  else if((qko0 == qko1 || qko1 == qko2)
-    || (s_idx[0]==s_idx[1] || s_idx[1] == s_idx[2])){
-    gb_sink_term_loop(qko0, qko1, qko2, links, t_idx, snk_op, num_d, num_s,
-      r0, stIdx, docube, domom, mom, flip_snk, pfi/3., dt);
-    s_perm[0] = s_idx[1]; s_perm[1] = s_idx[2]; s_perm[2] = s_idx[0];
-    gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-      snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, pfi/3., dt);
-    s_perm[0] = s_idx[2]; s_perm[1] = s_idx[0]; s_perm[2] = s_idx[1];
-    gb_sink_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(s_perm),
-      snk_op, num_d, num_s, r0, stIdx, docube, domom, mom, flip_snk, pfi/3., dt);
-  }
-  */
  /* all unique quarks and tastes */
 
 	gb_sink_term_loop(qko0, qko1, qko2, links, t_idx, snk_op, num_d, num_s,
@@ -1541,7 +1201,6 @@ gb_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **
   int perm[3] = {0};            /* permuted order of taste indices, for mixed symmetry */
   enum gb_sym_type stype;       /* symmetry type of the operator */
   Real psign = 1.;              /* sign of Bailey operator mixed symmetry permutation */
-  //node0_printf("Entering gb_source_term_loop\n");
 
   nperm = gb_get_num_permutations(src_op, num_d, num_s);
   nterm = gb_get_num_terms(src_op);
@@ -1552,12 +1211,6 @@ gb_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **
   for(j=0;j<nterm;j++){
     pfsum+=pf[j]*pf[j];
   }
-  //node0_printf("gb_baryon source: ");
-  //for(j=0;j<nterm;j++){
-  //  triplet_to_singlet_index(t_idx[j],s_idx);
-  //  node0_printf(" %i %i %i %i, ",pf[j],s_idx[0],s_idx[1],s_idx[2]);
-  //}
-  //node0_printf(" src_op: %s\n", gb_baryon_label(src_op));
 
   if(stype == GBSYM_SYM || stype == GBSYM_ANTISYM) {
     /* simple implementation */
@@ -1591,16 +1244,10 @@ gb_source_term_loop(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **
         	/* For 3pt only, the goal is to make uud with ud insertion into ddu
         	 * You need to permute the last down quark around a bit */
         	char qkLoc[] = "d'ud";
-		    //node0_printf("-------------------------------------------------------------\n");
-		    //node0_printf("-------------------- extended at 0 --------------------------\n");
-		    //node0_printf("-------------------------------------------------------------\n");
             gb_mixed_source_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(perm),
               snk_op, num_d, num_s, qkLoc, r0, stIdx, dowall, docube, domom, mom,
               flip_snk, (Real)pf[j]*psign/sqrt(nperm*pfsum), dt);
 
-		    //node0_printf("-------------------------------------------------------------\n");
-		    //node0_printf("-------------------- extended at 1 --------------------------\n");
-		    //node0_printf("-------------------------------------------------------------\n");
             strcpy(qkLoc, "ud'd");
 			gb_mixed_source_term_loop(qko0, qko1, qko2, links, singlet_to_triplet_index(perm),
 			   snk_op, num_d, num_s, qkLoc, r0, stIdx, dowall, docube, domom, mom,
@@ -1659,11 +1306,11 @@ gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2[],
 
   for(i=0;i<num_corr_gb;i++){
     node0_printf("gb baryon: %s %s\n", gb_baryon_label(src_op[i]),gb_baryon_label(snk_op[i]));
-    //node0_printf("BEFORE: qko0: %.5e + i %.5e\n", (qko0[0]->v[2][100]).c[1].real, (qko0[0]->v[2][100]).c[1].imag);
+    double dtime = start_timing();
     gb_source_term_loop(qko0,qko1,qko2,links,src_op[i],snk_op[i],stIdx,dowall[i],docube[i],
      num_d,num_s,r0,domom,momfld,flip_snk[i],prop[i]);
+    print_timing(dtime, "computing correlator");
     norm_corr( phase[i], fact[i], prop[i] );
-    //node0_printf("AFTER: qko0: %.5e + i %.5e\n", (qko0[0]->v[2][100]).c[1].real, (qko0[0]->v[2][100]).c[1].imag);
   }
 }
 
