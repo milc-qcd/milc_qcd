@@ -545,12 +545,6 @@ ifeq ($(strip ${WANTQUDA}),true)
     CGPU += -DMULTIGRID
   endif
 
-  ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
-    CGPU += -DHALF_MIXED # use single precision where appropriate
-  else ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),2)
-    CGPU += -DMAX_MIXED # use half precision where appropriate
-  endif
-
 # Verbosity choices:
 # SET_QUDA_SILENT, SET_QUDA_SUMMARIZE, SET_QUDA_VERBOSE, SET_QUDA_DEBUG_VERBOSE
 
@@ -700,8 +694,10 @@ ifeq ($(strip ${WANTGRID}), true)
   GRID_MULTI_CG  ?= GRID_5DCG # GRID_5DCG GRID_BLOCKCG GRID_MRHSCG
 
   CPHI += -DGRID_SHMEM_MAX=${GRID_SHMEM_MAX}
+  CPHI += -DGRID_SHMEM_MPI=${GRID_SHMEM_MPI}
   CPHI += -DGRID_DEVICE_MEM_MAX=${GRID_DEVICE_MEM_MAX}
   CPHI += -DGRID_ACCELERATOR_THREADS=${GRID_ACCELERATOR_THREADS}
+  CPHI += -DGRID_COMMS_OVERLAP=${GRID_COMMS_OVERLAP}
   CPHI += -DGRID_MULTI_CG=${GRID_MULTI_CG}
 
   ifeq ($(strip ${OFFLOAD}),sycl)
@@ -1021,7 +1017,7 @@ KSCGMULTI ?= -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
 # Mixed precision
 # enabled mixed-precision solvers for QUDA and GRID  (if set, overrides HALF_MIXED and MAX_MIXED macros below)
 WANT_MIXED_PRECISION ?= 2
-WANT_MIXED_PRECISION_GPU ?= WANT_MIXED_PRECISION
+WANT_MIXED_PRECISION_GPU ?= ${WANT_MIXED_PRECISION}
 
 # HALF_MIXED         (not QUDA or GRID) If PRECISION=2, do multimass solve in single precision
 #                    and single-mass refinements in double
@@ -1030,6 +1026,12 @@ WANT_MIXED_PRECISION_GPU ?= WANT_MIXED_PRECISION
 #                    (for multi-shift, behavior is as HALF_MIXED)
 
 KSCGMIXED ?= #
+
+ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
+  CGPU += -DHALF_MIXED # use single precision where appropriate
+else ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),2)
+  CGPU += -DMAX_MIXED # use half precision where appropriate
+endif
 
 #------------------------------
 # Multi source types
