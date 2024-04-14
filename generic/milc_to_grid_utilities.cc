@@ -68,7 +68,7 @@ int grid_initialized(void){
   return grid_is_initialized;
 }
 
-#define MAXARG 10
+#define MAXARG 13
 #define MAXARGSTR 64
 
 GRID_status_t 
@@ -113,6 +113,15 @@ initialize_grid(void){
   char tag_shm[] = "";
 #endif
 
+  char val_shmmpi[MAXARGSTR];
+#ifdef GRID_SHMEM_MPI
+  snprintf (val_shmmpi, MAXARGSTR, "%d\0", GRID_SHMEM_MPI);
+  char tag_shmmpi[] = "--shm-mpi";
+#else
+  snprintf (val_shmmpi, MAXARGSTR, "");
+  char tag_shmmpi[] = "";
+#endif
+
   char val_device_mem[MAXARGSTR];
 #ifdef GRID_DEVICE_MEM_MAX
   snprintf (val_device_mem, MAXARGSTR, "%d\0", GRID_DEVICE_MEM_MAX);
@@ -121,7 +130,6 @@ initialize_grid(void){
   snprintf (val_device_mem, MAXARGSTR, "");
   char tag_device_mem[] = "";
 #endif
-
 
   char tag_at[] = "--accelerator-threads";
   char val_at[MAXARGSTR];
@@ -132,13 +140,21 @@ initialize_grid(void){
 #endif
   snprintf (val_at, MAXARGSTR, "%d\0", at);
   
+#ifdef GRID_COMMS_OVERLAP
+  char tag_co[] = "--comms-overlap";
+#else
+  char tag_co[] = "";
+#endif
+  
   argv[0] = tag_grid; argv[1] = val_grid;
   argv[2] = tag_mpi;  argv[3] = val_mpi;
   argv[4] = tag_shm;  argv[5] = val_shm;
-  argv[6] = tag_device_mem;  argv[7] = val_device_mem;
-  argv[8] = tag_at;   argv[9] = val_at;
+  argv[6] = tag_shmmpi; argv[7] = val_shmmpi;
+  argv[8] = tag_device_mem;  argv[9] = val_device_mem;
+  argv[10] = tag_at;   argv[11] = val_at;
+  argv[12] = tag_co;
 
-  if(mynode()==0)printf("Calling Grid_init with %s %s %s %s %s %s %s %s %s %s\n",argv[0],argv[1],argv[2],argv[3],argv[4],argv[5],argv[6],argv[7],argv[8],argv[9]);
+  if(mynode()==0)printf("Calling Grid_init with %s %s %s %s %s %s %s %s %s %s %s %s %s\n",argv[0],argv[1],argv[2],argv[3],argv[4],argv[5],argv[6],argv[7],argv[8],argv[9],argv[10],argv[11],argv[12]);
   Grid_init(&argc, &argv);
 
   grid_full = GRID_create_grid();
