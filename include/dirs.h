@@ -33,4 +33,19 @@
 #define DIR3(dir) ((dir)+8)
 #define FORALL3UPDIR(dir) for(dir=X3UP; dir<=T3UP; dir++)
 
+/* defines for 2nd nearest neighbor stuff */
+/* Added by Hwancheol Jeong 4/2024 */
+#define X2UP 16
+#define Y2UP 17
+#define Z2UP 18
+#define T2UP 19
+#define T2DOWN 20
+#define Z2DOWN 21
+#define Y2DOWN 22
+#define X2DOWN 23
+
+#define OPP_2_DIR(dir) (39-(dir))
+#define DIR2(dir) ((dir)+16)
+#define FORALL2UPDIR(dir) for(dir=X2UP; dir<=T2UP; dir++)
+
 #endif /* _DIRS_H */

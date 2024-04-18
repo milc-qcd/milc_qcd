@@ -877,15 +877,10 @@ CTIME ?= -DNERSC_TIME -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOT
 CPROF =#
 
 #------------------------------
-# Troubleshooting
-# Applications: All
-
-# COM_CRC            Message passing test.  Checksums on all gathers.
-
-#------------------------------
 # Debugging and diagnostics
 # Applications:  all
 
+# COM_CRC             Message passing test.  Checksums on all gathers.
 # CHECK_MALLOC        Report malloc/free activity.
 #                     (Then process stdout using check_malloc.pl)
 # CG_DEBUG            Print debugging information for the inverters.
@@ -1059,6 +1054,10 @@ KSSOURCE ?= #
 KSFFMULTI = -DKS_MULTIFF=FNMAT
 
 #------------------------------
+# KS gaussian smearing
+GAUSS_SMEAR_KS_TWOLINK ?= true   # Compute two-link field to use in smearing
+
+#------------------------------
 # RHMC molecular dynamics algorithm
 # Applications: ks_imp_rhmc
 
@@ -1203,6 +1202,10 @@ endif
 
 ifeq ($(strip ${WANTARPACK}),true)
   HAVEARPACK = true
+endif
+
+ifeq ($(strip ${GAUSS_SMEAR_KS_TWOLINK}),true)
+  OCFLAGS += -DGAUSS_SMEAR_KS_TWOLINK
 endif
 
 # Make_template_combos defines convenience macros for interdependent

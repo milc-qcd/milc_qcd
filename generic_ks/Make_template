@@ -98,6 +98,7 @@ G_KS_ALL = \
   gauge_force_imp_ks.o \
   gauge_measure_ks.o \
   gauss_smear_ks.o \
+  gauss_smear_ks_cpu.o \
   gauss_smear_ks_QUDA.o \
   gb_baryon_mmap.o \
   gb_baryon_snk.o \
@@ -384,6 +385,8 @@ gauge_force_imp_ks.o: ../generic_ks/gauge_force_imp_ks.c
 gauge_measure_ks.o: ../generic_ks/gauge_measure_ks.c
 	${CC} -c ${CFLAGS} $<
 gauss_smear_ks.o: ../generic_ks/gauss_smear_ks.c
+	${CC} -c ${CFLAGS} $<
+gauss_smear_ks_cpu.o: ../generic_ks/gauss_smear_ks_cpu.c
 	${CC} -c ${CFLAGS} $<
 gauss_smear_ks_QUDA.o: ../generic_ks/gauss_smear_ks_QUDA.c
 	${CC} -c ${CFLAGS} $<

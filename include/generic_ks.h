@@ -14,6 +14,7 @@
 #include "../include/comdefs.h"
 #include "../include/info.h"
 #include <stdint.h>
+#include <stdbool.h>
 
 void copy_latvec(field_offset src, field_offset dest, int parity);
 void dslash_site( field_offset src, field_offset dest, int parity );
@@ -74,17 +75,24 @@ void imp_gauge_force_ks( Real eps, field_offset mom_off );
 void g_measure_ks(void);
 
 /* gauss_smear_ks.c */
-void gauss_smear_v_field_cpu(su3_vector *src, su3_matrix *t_links,
-			     Real width, int iters, int t0);
 void gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
 			 Real width, int iters, int t0);
+void laplacian_v_field(su3_vector *src, su3_matrix *t_links, int t0);
 void gauss_smear_ks_prop_field(ks_prop_field *src, su3_matrix *t_links,
 			       Real width, int iters, int t0);
-void laplacian_v_field(su3_vector *src, su3_matrix *t_links, int t0);
+/* gauss_smear_ks_cpu.c */
+void gauss_smear_reuse_2link_cpu( _Bool flag );
+void gauss_smear_delete_2link_cpu();
+void klein_gord_field(su3_vector *psi, su3_vector *chi, 
+		      su3_matrix *t_links, Real msq, int t0);
+void klein_gord_field_twolink(su3_vector *psi, su3_vector *chi, 
+			      su3_matrix *t_links, Real msq, int t0);
+void gauss_smear_v_field_cpu(su3_vector *src, su3_matrix *t_links,
+			     Real width, int iters, int t0);
 /* gauss_smear_ks_QUDA.c */
 void gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
                               Real width, int iters, int t0);
-void gauss_smear_reuse_2link_QUDA( int flag );
+void gauss_smear_reuse_2link_QUDA( _Bool flag );
 void gauss_smear_delete_2link_QUDA();
 
 /* naik_epsilon_utilities.c */
