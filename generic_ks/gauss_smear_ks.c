@@ -61,9 +61,9 @@ laplacian_v_field(su3_vector *src, su3_matrix *t_links, int t0)
   copy_v_field(tmp, src);
 
 #ifdef GAUSS_SMEAR_KS_TWOLINK
-  klein_gord_field(tmp, src, t_links, 0., t0);
-#else
   klein_gord_field_twolink(tmp, src, t_links, 0., t0);
+#else
+  klein_gord_field(tmp, src, t_links, 0., t0);
 #endif
 
   destroy_v_field(tmp);

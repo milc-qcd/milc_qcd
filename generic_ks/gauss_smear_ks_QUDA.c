@@ -13,18 +13,17 @@
 
 #include <quda_milc_interface.h>
 #include "../include/generic_quda.h"
-#include <stdbool.h>
 
 /* #define GS_TIME */
 /* #define GS_DEBUG */
 
 static int twolink = 0; /* Presumed QUDA state of twolink field. 0 = not computed */
-static _Bool recompute_2link = true; 
+static int recompute_2link = 1; 
 
 void
-gauss_smear_reuse_2link_QUDA( _Bool flag )
+gauss_smear_reuse_2link_QUDA( int flag )
 {
-  recompute_2link = ! flag;
+  recompute_2link = flag? 0 : 1;
 }
 
 /* Delete saved two-link.
@@ -40,7 +39,7 @@ gauss_smear_delete_2link_QUDA()
 
   qudaFreeTwoLink();
   twolink = 0;
-  gauss_smear_reuse_2link_QUDA(false);
+  gauss_smear_reuse_2link_QUDA(0);
 
   return ;
 }
@@ -95,7 +94,7 @@ gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
   if( ! recompute_2link && twolink == 0 )
   {
     node0_printf( "%s: [Warning] recompute_2link is false but there is no saved two-link. Two-link will be calculated.\n", myname );
-    gauss_smear_reuse_2link_QUDA(false);
+    gauss_smear_reuse_2link_QUDA(0);
   }
 
 #ifdef GS_TIME
@@ -119,7 +118,7 @@ gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
 
   /* two-link is saved. */
   twolink = 1;
-  gauss_smear_reuse_2link_QUDA(true);
+  gauss_smear_reuse_2link_QUDA(1);
 
 
 #ifdef GS_DEBUG

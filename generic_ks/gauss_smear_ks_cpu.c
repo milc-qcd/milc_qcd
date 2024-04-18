@@ -9,7 +9,6 @@
 #include "generic_ks_includes.h"
 #include <string.h>
 #include "../include/openmp_defs.h"
-#include <stdbool.h>
 
 static su3_vector *wtmp[8] ;
 static const char *prec_label[2] = {"F", "D"};
@@ -20,10 +19,10 @@ static int made_2link_gathers = 0;   /* To force make_2n_gathers on first call *
 /* Procedures for allowing reuse of the 2-link gauge connection */
 
 su3_matrix *twolink = NULL;
-static _Bool recompute_2link = true;
+static int recompute_2link = 1;
 
 void
-gauss_smear_reuse_2link_cpu( _Bool flag )
+gauss_smear_reuse_2link_cpu( int flag )
 {
   recompute_2link = ! flag;
 }
@@ -40,7 +39,7 @@ gauss_smear_delete_2link_cpu()
 {
   free(twolink);
   twolink = NULL;
-  gauss_smear_reuse_2link_cpu(false);
+  gauss_smear_reuse_2link_cpu(0);
 }
 
 
@@ -630,7 +629,7 @@ gauss_smear_v_field_cpu_twolink(su3_vector *src, su3_matrix *t_links,
 
   if(recompute_2link || twolink == NULL){
     gauss_smear_compute_twolink(t_links);
-    gauss_smear_reuse_2link_cpu(true);
+    gauss_smear_reuse_2link_cpu(1);
   }    
 
   /*-----------------------------------------*/
