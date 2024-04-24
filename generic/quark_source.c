@@ -111,6 +111,7 @@
 void init_qs(quark_source *qs){
   qs->type             = UNKNOWN;
   qs->orig_type        = UNKNOWN;
+  qs->parity           = 0;
   qs->subset           = FULL;
   qs->scale_fact       = 1.;
   qs->spin_snk         = 0;
@@ -123,6 +124,9 @@ void init_qs(quark_source *qs){
   qs->v_src            = NULL;
   qs->wv_src           = NULL;
   qs->source_file[0]   = '\0';
+  qs->save_file[0]     = '\0';
+  qs->savetype         = UNKNOWN; 
+  qs->saveflag         = SAVE_SERIAL;
   qs->sourceflag       = RELOAD_SERIAL;
   qs->source_file_initialized = 0;
   qs->save_file_initialized = 0;
@@ -137,12 +141,14 @@ void init_qs(quark_source *qs){
   qs->t0               = 0;
   qs->r0               = 0.;
   qs->descrp[0]        = '\0';
+  qs->label[0]         = '\0';
   qs->mom[0]           = 0;
   qs->mom[1]           = 0;
   qs->mom[2]           = 0;
   qs->op               = NULL;
   // extra parameters for multi-point sources
   qs->num_points       = 0;
+  for(int i = 0; i < 4*MAXPOINTS; i++)qs->points[i] = 0;
 }
 
 /* Allocate cached source members */
