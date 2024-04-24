@@ -967,15 +967,16 @@ int main(int argc, char *argv[])
       destroy_ksp_field(quark[i]); quark[i] = NULL;
     }
     
-    destroy_ape_links_3D(ape_links);
-    
+    destroy_ape_links_4D(ape_links);
 
+#if ! defined(HAVE_QUDA) && defined(GAUSS_SMEAR_KS_TWOLINK)
+    gauss_smear_delete_2link_cpu();
+#endif
+    
     /* Destroy fermion links (created in readin() */
     
 #if FERM_ACTION == HISQ
     destroy_fermion_links_hisq(fn_links);
-#elif FERM_ACTION == HYPISQ
-    destroy_fermion_links_hypisq(fn_links);
 #else
     destroy_fermion_links(fn_links);
 #endif
