@@ -18,6 +18,9 @@
 static int initial_set(void);
 static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 static void make_3n_gathers(void);
+static void second_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
+			    int *xp, int *yp, int *zp, int *tp);
+static void make_2n_gathers(void);
 
 static int hash_corr_label(char meson_label[MAX_CORR][MAX_MESON_LABEL],
 			   char mom_label[MAX_CORR][MAX_MOM_LABEL],
@@ -49,11 +52,19 @@ int setup()   {
   /* Initialize fermion links as unallocated */
   //  init_ferm_links(&fn_links, &ks_act_paths);
   //  init_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
+
+  /* The following make gathers must appear in this order in order
+     to be compatible with the include/dirs.h macros */
+  /* They must also be called before any make_gathers call */
   /* set up nearest neighbor gathers */
   make_nn_gathers();
   /* set up 3rd nearest neighbor pointers and comlink structures
      code for this routine is below  */
   make_3n_gathers();
+  /* make 2nd neighbor gathers for two-link gauss smearing */
+#ifdef GAUSS_SMEAR_KS_TWOLINK
+  make_2n_gathers();
+#endif
   /* set up K-S phase vectors, antiperiodic boundary conditions */
   phaseset();
 
@@ -1910,3 +1921,54 @@ third_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
   default: printf("third_neighb: bad direction\n"); exit(1);
   }
 }
+
+/*------------------------------------------------------------*/
+/* Set up comlink structures for the 2nd nearest gather pattern; 
+   make_lattice(), make_nn_gathers() and make_3n_gathers() must be called before.
+*/
+/* Hwancheol Jeong 4/2024 */
+
+static void
+make_2n_gathers(void)
+{
+  int i;
+  
+  for(i=XUP; i<=TUP; i++) {
+    make_gather(second_neighbor, &i, WANT_INVERSE,
+                ALLOW_EVEN_ODD, SAME_PARITY);
+  }
+  
+  /* Sort into the order we want for nearest neighbor gathers,
+     so you can use X2UP, X2DOWN, etc. as argument in calling them. */
+  
+  sort_eight_gathers(X2UP);
+}
+
+/*------------------------------------------------------------*/
+/* this routine uses only fundamental directions (XUP..TDOWN) as directions */
+/* returning the coords of the 2nd nearest neighbor in that direction */
+/* Hwancheol Jeong 4/2024 */
+
+static void
+second_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
+                int *xp, int *yp, int *zp, int *tp)
+/* int x,y,z,t,*dirpt,FB;  coordinates of site, direction (eg XUP), and
+   "forwards/backwards"  */
+/* int *xp,*yp,*zp,*tp;    pointers to coordinates of neighbor */
+{
+  int dir;
+  dir = (FB==FORWARDS) ? *dirpt : OPP_DIR(*dirpt);
+  *xp = x; *yp = y; *zp = z; *tp = t;
+  switch(dir){
+  case XUP: *xp = (x+2)%nx; break;
+  case XDOWN: *xp = (x+2*nx-2)%nx; break;
+  case YUP: *yp = (y+2)%ny; break;
+  case YDOWN: *yp = (y+2*ny-2)%ny; break;
+  case ZUP: *zp = (z+2)%nz; break;
+  case ZDOWN: *zp = (z+2*nz-2)%nz; break;
+  case TUP: *tp = (t+2)%nt; break;
+  case TDOWN: *tp = (t+2*nt-2)%nt; break;
+  default: printf("second_neighb: bad direction\n"); exit(1);
+  }
+}
+

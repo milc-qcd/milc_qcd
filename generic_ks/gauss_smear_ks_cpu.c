@@ -13,8 +13,6 @@
 static su3_vector *wtmp[8] ;
 static const char *prec_label[2] = {"F", "D"};
 
-static int made_2link_gathers = 0;   /* To force make_2n_gathers on first call */
-
 /*--------------------------------------------------------------*/
 /* Procedures for allowing reuse of the 2-link gauge connection */
 
@@ -76,58 +74,6 @@ gauss_smear_compute_twolink(su3_matrix *t_links){
   }
 
   destroy_m_field(link1);
-}
-
-
-/*------------------------------------------------------------*/
-/* this routine uses only fundamental directions (XUP..TDOWN) as directions */
-/* returning the coords of the 2nd nearest neighbor in that direction */
-/* Hwancheol Jeong 4/2024 */
-
-static void
-second_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
-                int *xp, int *yp, int *zp, int *tp)
-/* int x,y,z,t,*dirpt,FB;  coordinates of site, direction (eg XUP), and
-   "forwards/backwards"  */
-/* int *xp,*yp,*zp,*tp;    pointers to coordinates of neighbor */
-{
-  int dir;
-  dir = (FB==FORWARDS) ? *dirpt : OPP_DIR(*dirpt);
-  *xp = x; *yp = y; *zp = z; *tp = t;
-  switch(dir){
-  case XUP: *xp = (x+2)%nx; break;
-  case XDOWN: *xp = (x+2*nx-2)%nx; break;
-  case YUP: *yp = (y+2)%ny; break;
-  case YDOWN: *yp = (y+2*ny-2)%ny; break;
-  case ZUP: *zp = (z+2)%nz; break;
-  case ZDOWN: *zp = (z+2*nz-2)%nz; break;
-  case TUP: *tp = (t+2)%nt; break;
-  case TDOWN: *tp = (t+2*nt-2)%nt; break;
-  default: printf("second_neighb: bad direction\n"); exit(1);
-  }
-}
-
-/*------------------------------------------------------------*/
-/* Set up comlink structures for the 2nd nearest gather pattern; 
-   make_lattice(), make_nn_gathers() and make_3n_gathers() must be called before.
-*/
-/* Hwancheol Jeong 4/2024 */
-
-void
-make_2n_gathers(void)
-{
-  int i;
-  
-  for(i=XUP; i<=TUP; i++) {
-    make_gather(second_neighbor, &i, WANT_INVERSE,
-                ALLOW_EVEN_ODD, SAME_PARITY);
-  }
-  
-  /* Sort into the order we want for nearest neighbor gathers,
-     so you can use X2UP, X2DOWN, etc. as argument in calling them. */
-  
-  sort_eight_gathers(X2UP);
-  made_2link_gathers = 1;
 }
 
 /*------------------------------------------------------------*/
@@ -485,8 +431,6 @@ klein_gord_field_twolink(su3_vector *psi, su3_vector *chi,
 
   malloc_kg_temps();
 
-  if(! made_2link_gathers) make_2n_gathers();
-
   /* chi = psi * ftmp; */
   if(t0 == ALL_T_SLICES){
     FORALLFIELDSITES_OMP(i,){
@@ -615,8 +559,6 @@ gauss_smear_v_field_cpu_twolink(su3_vector *src, su3_matrix *t_links,
     printf("%s(%d): NULL t_links\n", __func__, this_node);
     terminate(1);
   }
-
-  if(! made_2link_gathers) make_2n_gathers();
 
   double dtime = -dclock();
 
