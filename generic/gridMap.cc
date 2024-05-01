@@ -747,9 +747,9 @@ static void extract_V_array_to_vec_array(
   int loopend = (milc_parity)==EVEN ? even_sites_on_node : sites_on_node;
   int loopstart = (milc_parity)==ODD ? even_sites_on_node : 0;
 
-  autoView( Src_cv, ( *(src->cv) )[i], CpuRead );
   for( i=0; i<n; i++ )
   {
+    autoView( Src_cv, ( *(src->cv) )[i], CpuRead );
 #pragma omp parallel for
     for( size_t idx=loopstart; idx<loopend; idx++ )
     {
