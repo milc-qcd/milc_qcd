@@ -74,9 +74,9 @@ ifeq ($(strip ${COMPILER}),cray-intel)
   else ifeq ($(strip ${ARCH}),icx)
     OCFLAGS += -xCORE-AVX512 -qopt-zmm-usage=high
   else ifeq ($(strip ${ARCH}),hsw)
-    OCFLAGS += -xCORE-AVX2
+    OCFLAGS += -mavx2
   else
-    OCFLAGS += -xavx
+    OCFLAGS += -mavx
   endif
 
   # Debugging and optimization
