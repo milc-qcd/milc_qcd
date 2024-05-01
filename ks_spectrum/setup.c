@@ -135,7 +135,7 @@ static int initial_set(void){
   broadcast_bytes((char *)&param,sizeof(param));
 
   if( param.stopflag != 0 )
-    return param.stopflag;
+    terminate(1);
 
   if(prompt==2)return prompt;
 
