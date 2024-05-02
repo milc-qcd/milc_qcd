@@ -19,6 +19,18 @@
 /* Prototypes for functions in high level code */
 int setup();
 int readin(int prompt);
-void stout_step_rk();
+void run_gradient_flow();
+void flow_step();
+
+//void stout_step_rk();
 void staple();
 void fmunu_fmunu(double *time, double *space, double *charge);
+void initialize_integrator();
+void gauge_action_w_s( double *wl1x1s, double *wl1x1t,
+                       double *wl1x2s, double *wl1x2t );
+// various integrators, compile-time choice
+void integrate_RK_2N();
+void integrate_RKMK3();
+void integrate_RKMK_generic();
+void integrate_adapt_RK_2N();
+void integrate_adapt_bs();

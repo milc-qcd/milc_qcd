@@ -17,7 +17,7 @@
 /* Entry points
 
    spin_taste_op          Limited spin/taste set and APE links
-   spin_taste_op_fn       Any spin/taste and APE links except FN links with FN operators
+   spin_taste_op_ape_fn   Any spin/taste and APE links except FN links with FN operators
 
    spin_taste_index       Convert character label to index
    spin_taste_label       Convert index to label
@@ -445,8 +445,12 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
   /* Convert gamma label to hexadecimal */
   short spin = gamma_hex(spin_index);
   short taste = gamma_hex(taste_index);
+
+  int refresh  = 0;
+  if(refresh_links != NULL)
+    refresh = *refresh_links;
   
-  qudaSpinTaste(MILC_PRECISION, quda_precision, links, src, dest, (int)spin, (int)taste, refresh_links);
+  qudaSpinTaste(MILC_PRECISION, quda_precision, links, src, dest, (int)spin, (int)taste, refresh);
   if(refresh_links != NULL)
     *refresh_links = 0;
 }
@@ -1359,8 +1363,8 @@ mult_rhois_ape_field( int fdir, enum shift_dir fb, int r0[],
   
   /* apply the symmetric shift FN operator (uses APE links) */
   /* Use APE links for shifts with phases in and leave them in */
-  if(ape_links_status != ON){
-      rephase_field_offset( ape_links, ON, &ape_links_status, r0 );
+  if(ape_links_ks_phases != ON){
+      rephase_field_offset( ape_links, ON, &ape_links_ks_phases, r0 );
       refresh_ape_links = 1;
     }
   shift_field( fdir, fb, dest, src, ape_links, &refresh_ape_links);
@@ -1384,11 +1388,11 @@ gamma_gamma_spin_taste_op(int index, int r0[],
   enum gammatype taste_index = decode_gamma_taste_index(index);
 
 #ifdef NO_GAUGE_FIELD
-  general_spin_taste_op(spin_index, taste_index, r0, dest, src, NULL);
+  general_spin_taste_op(spin_index, taste_index, r0, dest, src, NULL, NULL);
 #else
   /* Use APE links for shifts with phases in and leave them in */
-  if(ape_links_status != ON){
-    rephase_field_offset( ape_links, ON, &ape_links_status, r0 );
+  if(ape_links_ks_phases != ON){
+    rephase_field_offset( ape_links, ON, &ape_links_ks_phases, r0 );
     refresh_ape_links = 1;
   }
   general_spin_taste_op(spin_index, taste_index, r0, dest, src,
@@ -1412,8 +1416,8 @@ spin_taste_op(int index, int r0[], su3_vector *dest, const su3_vector *const src
 #else
     /* Use APE links for shifts with phases in and leave them in */
 
-    if(ape_links_status != ON){
-      rephase_field_offset( ape_links, ON, &ape_links_status, r0 );
+    if(ape_links_ks_phases != ON){
+      rephase_field_offset( ape_links, ON, &ape_links_ks_phases, r0 );
       refresh_ape_links = 1;
     }
     spin_taste_op_links(index, r0, dest, src, ape_links, &refresh_ape_links);
@@ -1425,11 +1429,12 @@ spin_taste_op(int index, int r0[], su3_vector *dest, const su3_vector *const src
 #ifdef NO_GAUGE_FIELD
 
 /*------------------------------------------------------------------*/
-/* Spin-taste operator including the FN option                        */
+/* Spin-taste operator but no fn links or ape links are involved (no
+   gauge field) */
 
 void 
-spin_taste_op_fn( void *fn, int index, int r0[],
-		  su3_vector *dest, const su3_vector *const src){
+spin_taste_op_ape_fn( void *fn, int index, int r0[],
+		      su3_vector *dest, const su3_vector *const src){
 
   if(is_gamma_gamma_index(index)){
     gamma_gamma_spin_taste_op(index, r0, dest, src);
@@ -1448,8 +1453,10 @@ spin_taste_op_fn( void *fn, int index, int r0[],
 /* Spin-taste operator including the FN option                      */
 
 void 
-spin_taste_op_fn( imp_ferm_links_t *fn, int index, int r0[],
-		  su3_vector *dest, const su3_vector *const src){
+spin_taste_op_ape_fn( imp_ferm_links_t *fn, int index, int r0[],
+		      su3_vector *dest, const su3_vector *const src){
+
+  /* With the gamma/gamma notation we always use APE links for the gauge connection */
 
   if(is_gamma_gamma_index(index))
     gamma_gamma_spin_taste_op(index, r0, dest, src);

@@ -117,6 +117,7 @@ G_LOOP:  2  13  6   	1.171796e+00	( 1 2 4 6 5 3  )
 G_LOOP:  2  14  6   	1.108556e+00	( 1 5 3 6 2 4  )
 G_LOOP:  2  15  6   	1.125138e+00	( 1 5 4 6 2 3  )
 GACTION: 5.201888e+00
+UML inversion with mass 0.100000
  OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 2 iters= 42
  OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     4.789262e-02  1.628757e-01  -2.902848e-02  -2.902852e-02 ( 1 of 1 )
@@ -170,6 +171,7 @@ G_LOOP:  2  13  6   	1.147773e+00	( 1 2 4 6 5 3  )
 G_LOOP:  2  14  6   	1.109078e+00	( 1 5 3 6 2 4  )
 G_LOOP:  2  15  6   	1.104965e+00	( 1 5 4 6 2 3  )
 GACTION: 5.217091e+00
+UML inversion with mass 0.100000
  OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
  OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 PBP: mass 1.000000e-01     1.027867e-01  1.276190e-01  -5.292182e-03  -5.292356e-03 ( 1 of 1 )

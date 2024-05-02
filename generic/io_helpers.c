@@ -49,70 +49,102 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
 	    break;
         case SAVE_SERIAL_ILDG:
 #ifdef HAVE_QIO
- 	    gf = save_serial_ildg(filename,stringLFN);
+	    gf = save_serial_ildg(filename,1,stringLFN);
 #else
 	    node0_printf("save_serial_ildg requires QIO compilation\n");
 	    terminate(1);
 #endif
             break;
+        case SAVE_SERIAL_ILDG_DP:
+#ifdef HAVE_QIO
+	    gf = save_serial_ildg(filename,2,stringLFN);
+#else
+	    node0_printf("save_serial_ildg_dp requires QIO compilation\n");
+	    terminate(1);
+#endif
+            break;
         case SAVE_PARALLEL_ILDG:
 #ifdef HAVE_QIO
- 	    gf = save_parallel_ildg(filename,stringLFN);
+	    gf = save_parallel_ildg(filename,1,stringLFN);
 #else
 	    node0_printf("save_parallel_ildg requires QIO compilation\n");
 	    terminate(1);
 #endif
             break;
-        case SAVE_PARTFILE_ILDG:
+        case SAVE_PARALLEL_ILDG_DP:
 #ifdef HAVE_QIO
- 	    gf = save_partfile_ildg(filename,stringLFN);
+	    gf = save_parallel_ildg(filename,2,stringLFN);
 #else
-	    node0_printf("save_partfile_ildg requires QIO compilation\n");
-	    terminate(1);
-#endif
-            break;
-        case SAVE_MULTIFILE_ILDG:
-#ifdef HAVE_QIO
- 	    gf = save_multifile_ildg(filename,stringLFN);
-#else
-	    node0_printf("save_multifile_ildg requires QIO compilation\n");
+	    node0_printf("save_parallel_ildg_dp requires QIO compilation\n");
 	    terminate(1);
 #endif
             break;
         case SAVE_SERIAL_SCIDAC:
 #ifdef HAVE_QIO
- 	    gf = save_serial_scidac(filename);
+	    gf = save_serial_scidac(filename, 1);
 #else
 	    node0_printf("save_serial_scidac requires QIO compilation\n");
 	    terminate(1);
 #endif
             break;
+        case SAVE_SERIAL_SCIDAC_DP:
+#ifdef HAVE_QIO
+	    gf = save_serial_scidac(filename, 2);
+#else
+	    node0_printf("save_serial_scidac_dp requires QIO compilation\n");
+	    terminate(1);
+#endif
+            break;
         case SAVE_PARALLEL_SCIDAC:
 #ifdef HAVE_QIO
- 	    gf = save_parallel_scidac(filename);
+	    gf = save_parallel_scidac(filename, 1);
 #else
 	    node0_printf("save_parallel_scidac requires QIO compilation\n");
 	    terminate(1);
 #endif
             break;
+        case SAVE_PARALLEL_SCIDAC_DP:
+#ifdef HAVE_QIO
+	    gf = save_parallel_scidac(filename, 2);
+#else
+	    node0_printf("save_parallel_scidac_dp requires QIO compilation\n");
+	    terminate(1);
+#endif
+            break;
         case SAVE_MULTIFILE_SCIDAC:
 #ifdef HAVE_QIO
-	    gf = save_multifile_scidac(filename);
+	    gf = save_multifile_scidac(filename, 1);
 #else
 	    node0_printf("save_multifile_scidac requires QIO compilation\n");
 	    terminate(1);
 #endif
             break;
+        case SAVE_MULTIFILE_SCIDAC_DP:
+#ifdef HAVE_QIO
+	    gf = save_multifile_scidac(filename, 2);
+#else
+	    node0_printf("save_multifile_scidac_dp requires QIO compilation\n");
+	    terminate(1);
+#endif
+            break;
         case SAVE_PARTFILE_SCIDAC:
 #ifdef HAVE_QIO
- 	    gf = save_partfile_scidac(filename);
+	    gf = save_partfile_scidac(filename, 1);
 #else
 	    node0_printf("save_partfile_scidac requires QIO compilation\n");
 	    terminate(1);
 #endif
             break;
+        case SAVE_PARTFILE_SCIDAC_DP:
+#ifdef HAVE_QIO
+	    gf = save_partfile_scidac(filename, 2);
+#else
+	    node0_printf("save_partfile_scidac_dp requires QIO compilation\n");
+	    terminate(1);
+#endif
+            break;
 	case SAVE_SERIAL_ARCHIVE:
-	    gf = save_serial_archive(filename);
+	    gf = save_serial_archive(filename);  /* NERSC format */
 	    break;
 	default:
 	    node0_printf("\nsave_lattice: ERROR: unknown type for saving lattice\n");
@@ -362,7 +394,7 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
   const char myname[] = "ask_ending_lattice";
   
   if (prompt==1) printf(
-			"'forget' lattice at end,  'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partfile_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_partfile_ildg', or 'save_multifile_ildg'\n");
+			"'forget' lattice at end, 'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partfile_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_serial_scidac_dp', 'save_parallel_scidac_dp', 'save_multifile_scidac_dp', 'save_partfile_scidac_dp', 'save_serial_archive_dp', 'save_serial_ildg_dp', or 'save_parallel_ildg_dp'\n");
   
   savebuf = get_next_tag(fp, "save lattice command", myname);
   if (savebuf == NULL)return 1;
@@ -391,9 +423,25 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
     terminate(1);
 #endif
   }
+  else if(strcmp("save_serial_scidac_dp",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_SERIAL_SCIDAC_DP;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
   else if(strcmp("save_parallel_scidac",savebuf) == 0 ) {
 #ifdef HAVE_QIO
     *flag=SAVE_PARALLEL_SCIDAC;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_parallel_scidac_dp",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARALLEL_SCIDAC_DP;
 #else
     node0_printf("requires QIO compilation!\n");
     terminate(1);
@@ -407,9 +455,25 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
     terminate(1);
 #endif
   }
+  else if(strcmp("save_multifile_scidac_dp",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_MULTIFILE_SCIDAC_DP;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
   else if(strcmp("save_partfile_scidac",savebuf) == 0 ) {
 #ifdef HAVE_QIO
     *flag=SAVE_PARTFILE_SCIDAC;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_partfile_scidac_dp",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARTFILE_SCIDAC_DP;
 #else
     node0_printf("requires QIO compilation!\n");
     terminate(1);
@@ -426,6 +490,14 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
     terminate(1);
 #endif
   }
+  else if(strcmp("save_serial_ildg_dp",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_SERIAL_ILDG_DP;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
   else if(strcmp("save_parallel_ildg",savebuf) == 0 ) {
 #ifdef HAVE_QIO
     *flag=SAVE_PARALLEL_ILDG;
@@ -434,17 +506,9 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
     terminate(1);
 #endif
   }
-  else if(strcmp("save_partfile_ildg",savebuf) == 0 ) {
+  else if(strcmp("save_parallel_ildg_dp",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-    *flag=SAVE_PARTFILE_ILDG;
-#else
-    node0_printf("requires QIO compilation!\n");
-    terminate(1);
-#endif
-  }
-  else if(strcmp("save_multifile_ildg",savebuf) == 0 ) {
-#ifdef HAVE_QIO
-    *flag=SAVE_MULTIFILE_ILDG;
+    *flag=SAVE_PARALLEL_ILDG_DP;
 #else
     node0_printf("requires QIO compilation!\n");
     terminate(1);
@@ -525,7 +589,9 @@ int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN){
   if( flag == SAVE_SERIAL_ILDG ||
       flag == SAVE_PARALLEL_ILDG ||
       flag == SAVE_PARTFILE_ILDG ||
-      flag == SAVE_MULTIFILE_ILDG ){
+      flag == SAVE_MULTIFILE_ILDG ||
+      flag == SAVE_SERIAL_ILDG_DP ||
+      flag == SAVE_PARALLEL_ILDG_DP){
     status = get_s(fp, prompt, "ILDG_LFN", stringLFN);
   }
   else

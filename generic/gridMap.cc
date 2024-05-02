@@ -64,6 +64,7 @@ create_nV(int n, int milc_parity,
   if(milc_parity == EVEN || milc_parity == ODD){
     std::cout << "Constructing 5D field\n" << std::flush;
     out->cv = new typename ImprovedStaggeredFermion5D::FermionField(FRBGrid);
+    std::cout << "Done constructing 5D field\n" << std::flush;
     GRID_ASSERT(out->cv != NULL, GRID_MEM_ERROR);
     out->cv->Checkerboard() = milc_parity == EVEN ? Even : Odd ;
   } else {
@@ -110,6 +111,7 @@ create_V_from_vec( su3_vector *src, int milc_parity,
   struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *out;
 
   out = create_V<ImprovedStaggeredFermion>(milc_parity, CGrid, RBGrid);
+  autoView(Dst_cv, (*(out->cv)), CpuWrite);
 
   int loopend= (milc_parity)==EVEN ? even_sites_on_node : sites_on_node ;
   int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
@@ -129,7 +131,6 @@ create_V_from_vec( su3_vector *src, int milc_parity,
 	  Complex(src[idx].c[col].real, src[idx].c[col].imag);
       }
       
-      autoView(Dst_cv, (*(out->cv)), CpuWrite);
       pokeLocalSite(cVec, Dst_cv, x);
       
     }
@@ -154,6 +155,7 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
   struct GRID_ColorVectorBlock_struct<ImprovedStaggeredFermion5D> *out;
 
   out = create_nV<ImprovedStaggeredFermion5D>(n, milc_parity, FCGrid, FRBGrid, CGrid, RBGrid);
+  autoView(Dst_cv, (*(out->cv)), CpuWrite);
 
   int loopend= (milc_parity)==EVEN ? even_sites_on_node : sites_on_node ;
   int loopstart=((milc_parity)==ODD ? even_sites_on_node : 0 );
@@ -166,9 +168,6 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
     for( uint64_t idx = loopstart; idx < loopend; idx++){
       Coordinate x(4);
       indexToCoords(idx,x);
-//      Coordinate x5(1,0);
-//      for( int d = 0; d < 4; d++ )
-//	x5.push_back(x[d]);
       Coordinate x5(5);
       for( int d = 0; d < 4; d++ )
 	x5[d+1] = x[d];
@@ -180,7 +179,6 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
 	  cVec._internal._internal._internal[col] = 
 	    Complex(src[j][idx].c[col].real, src[j][idx].c[col].imag);
 	}
-        autoView(Dst_cv, (*(out->cv)), CpuWrite);
         pokeLocalSite(cVec, Dst_cv, x5);
       }
     }
@@ -198,6 +196,7 @@ static void extract_V_to_vec( su3_vector *dest,
 			      struct GRID_ColorVector_struct<ImprovedStaggeredFermion> *src, 
 			      int milc_parity ){
   uint64_t idx;
+  autoView(Src_cv, (*(src->cv)), CpuRead);
 
   FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
     {
@@ -207,7 +206,6 @@ static void extract_V_to_vec( su3_vector *dest,
       Coordinate lx(4);
       for (int i = 0; i < 4; i++)lx[i] = x[i];
 
-      autoView(Src_cv, (*(src->cv)), CpuRead);
       peekLocalSite(cVec, Src_cv, x);
 
       for(int col = 0; col < Nc; col++)
@@ -227,21 +225,19 @@ static void extract_nV_to_vecs( su3_vector *dest[], int n,
 				int milc_parity ){
   uint64_t idx;
 
+  autoView(Src_cv, (*(src->cv)), CpuRead);
   FORSOMEFIELDPARITY_OMP(idx, milc_parity, )
     {
       Coordinate x(4);
       indexToCoords(idx, x);
-      Coordinate x5(1,0);
+      Coordinate x5(5);
       for( int d = 0; d < 4; d++ )
-	x5.push_back(x[d]);
-      Coordinate lx5(5);
-      for (int i = 0; i < 4; i++)lx5[i] = x[i];
+	x5[d+1] = x[d];
 
       for( int j = 0; j < n; j++ ){
-	lx5[0] = j;
+	x5[0] = j;
 
 	ColourVector cVec;
-        autoView(Src_cv, (*(src->cv)), CpuRead);
         peekLocalSite(cVec, Src_cv, x5);
 	
 	for(int col = 0; col < Nc; col++)
@@ -734,9 +730,10 @@ create_V_array_from_vec_array( su3_vector ** src, int n, int milc_parity, GridCa
   int loopend = (milc_parity)==EVEN ? even_sites_on_node : sites_on_node;
   int loopstart = (milc_parity)==ODD ? even_sites_on_node : 0;
 
-#pragma omp parallel for collapse(1)
   for( i=0; i<n; i++ )
   {
+    autoView( Dst_cv,  ( *(out->cv) )[i], CpuWrite);
+#pragma omp parallel for
     for( size_t idx=loopstart; idx<loopend; idx++ )
     {
       Coordinate x(4);
@@ -749,8 +746,6 @@ create_V_array_from_vec_array( su3_vector ** src, int n, int milc_parity, GridCa
         cVec._internal._internal._internal[col] =
           Complex( (*(src+i))[idx].c[col].real, (*(src+i))[idx].c[col].imag );
       }
-
-      autoView( Dst_cv, ( *(out->cv) )[i], CpuWrite );
       pokeLocalSite( cVec, Dst_cv, x );      
     }
   }
@@ -770,16 +765,16 @@ static void extract_V_array_to_vec_array(
   int loopend = (milc_parity)==EVEN ? even_sites_on_node : sites_on_node;
   int loopstart = (milc_parity)==ODD ? even_sites_on_node : 0;
 
-#pragma omp parallel for collapse(1)
   for( i=0; i<n; i++ )
   {
+    autoView( Src_cv, ( *(src->cv) )[i], CpuRead );
+#pragma omp parallel for
     for( size_t idx=loopstart; idx<loopend; idx++ )
     {
       Coordinate x(4);
       indexToCoords( idx, x );
 
       ColourVector cVec;
-      autoView( Src_cv, ( *(src->cv) )[i], CpuRead );
       peekLocalSite( cVec, Src_cv, x );
 
       for( int col=0; col<Nc; col++ )
@@ -787,7 +782,6 @@ static void extract_V_array_to_vec_array(
         (*(dest+i))[idx].c[col].real = cVec._internal._internal._internal[col].real();
         (*(dest+i))[idx].c[col].imag = cVec._internal._internal._internal[col].imag();
       }
-      
     }
   }
 

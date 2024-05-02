@@ -101,8 +101,14 @@ G_KS_ALL = \
   gauge_force_imp_ks.o \
   gauge_measure_ks.o \
   gauss_smear_ks.o \
+  gauss_smear_ks_cpu.o \
   gauss_smear_ks_QUDA.o \
   gridHISQLinks.o \
+  gb_baryon_mmap.o \
+  gb_baryon_snk.o \
+  gb_baryon_3pt.o \
+  gb_baryon_src.o \
+  gb_ops.o \
   gridStaggEigen.o \
   gridStaggInvert.o \
   grsource.o \
@@ -222,7 +228,7 @@ d_congrad5_fn.old.o: ../generic_ks/d_congrad5_fn.old.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qop.o: ../generic_ks/d_congrad5_fn_qop.c
 	${CC} -c ${CFLAGS} $<
-d_congrad5_fn_qop_D.o: ../generic_ks/d_congrad5_fn_qop_D.c ../generic_ks/d_congrad5_fn_qop_P.c 
+d_congrad5_fn_qop_D.o: ../generic_ks/d_congrad5_fn_qop_D.c ../generic_ks/d_congrad5_fn_qop_P.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qop_F.o: ../generic_ks/d_congrad5_fn_qop_F.c ../generic_ks/d_congrad5_fn_qop_P.c
 	${CC} -c ${CFLAGS} $<
@@ -284,10 +290,10 @@ fermion_force_asqtad.o: ../generic_ks/fermion_force_asqtad.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qop.o: ../generic_ks/fermion_force_asqtad_qop.c
 	${CC} -c ${CFLAGS} $<
-fermion_force_asqtad_qop_F.o: ../generic_ks/fermion_force_asqtad_qop_F.c ../generic_ks/fermion_force_asqtad_qop_P.c 
+fermion_force_asqtad_qop_F.o: ../generic_ks/fermion_force_asqtad_qop_F.c ../generic_ks/fermion_force_asqtad_qop_P.c
 fermion_force_asqtad_qop_F.o: ../generic_ks/fermion_force_asqtad_qop_F.c
 	${CC} -c ${CFLAGS} $<
-fermion_force_asqtad_qop_D.o: ../generic_ks/fermion_force_asqtad_qop_D.c ../generic_ks/fermion_force_asqtad_qop_P.c 
+fermion_force_asqtad_qop_D.o: ../generic_ks/fermion_force_asqtad_qop_D.c ../generic_ks/fermion_force_asqtad_qop_P.c
 fermion_force_asqtad_qop_D.o: ../generic_ks/fermion_force_asqtad_qop_D.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qop_milc.o: ../generic_ks/fermion_force_asqtad_qop_milc.c
@@ -304,10 +310,10 @@ fermion_force_hisq_multi.o: ../generic_ks/fermion_force_hisq_multi.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_hisq_qop.o: ../generic_ks/fermion_force_hisq_qop.c
 	${CC} -c ${CFLAGS} $<
-fermion_force_hisq_qop_F.o: ../generic_ks/fermion_force_hisq_qop_F.c ../generic_ks/fermion_force_hisq_qop_P.c 
+fermion_force_hisq_qop_F.o: ../generic_ks/fermion_force_hisq_qop_F.c ../generic_ks/fermion_force_hisq_qop_P.c
 fermion_force_hisq_qop_F.o: ../generic_ks/fermion_force_hisq_qop_F.c
 	${CC} -c ${CFLAGS} $<
-fermion_force_hisq_qop_D.o: ../generic_ks/fermion_force_hisq_qop_D.c ../generic_ks/fermion_force_hisq_qop_P.c 
+fermion_force_hisq_qop_D.o: ../generic_ks/fermion_force_hisq_qop_D.c ../generic_ks/fermion_force_hisq_qop_P.c
 fermion_force_hisq_qop_D.o: ../generic_ks/fermion_force_hisq_qop_D.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_hypisq_multi.o: ../generic_ks/fermion_force_hypisq_multi.c
@@ -388,10 +394,25 @@ gauge_measure_ks.o: ../generic_ks/gauge_measure_ks.c
 	${CC} -c ${CFLAGS} $<
 gauss_smear_ks.o: ../generic_ks/gauss_smear_ks.c
 	${CC} -c ${CFLAGS} $<
+gauss_smear_ks_cpu.o: ../generic_ks/gauss_smear_ks_cpu.c
+	${CC} -c ${CFLAGS} $<
 gauss_smear_ks_QUDA.o: ../generic_ks/gauss_smear_ks_QUDA.c
 	${CC} -c ${CFLAGS} $<
+<<<<<<< HEAD
 gridHISQLinks.o: ../generic_ks/gridHISQLinks.cc
 	${CXX} -c ${CXXFLAGS} $<
+=======
+gb_baryon_mmap.o: ../generic_ks/gb_baryon_mmap.c
+	${CC} -c ${CFLAGS} $<
+gb_baryon_snk.o: ../generic_ks/gb_baryon_snk.c
+	${CC} -c ${CFLAGS} $<
+gb_baryon_3pt.o: ../generic_ks/gb_baryon_3pt.c
+	${CC} -c ${CFLAGS} $<
+gb_baryon_src.o: ../generic_ks/gb_baryon_src.c
+	${CC} -c ${CFLAGS} $<
+gb_ops.o: ../generic_ks/gb_ops.c
+	${CC} -c ${CFLAGS} $<
+>>>>>>> develop
 gridStaggEigen.o: ../generic_ks/gridStaggEigen.cc
 	${CXX} -c ${CXXFLAGS} $<
 gridStaggInvert.o: ../generic_ks/gridStaggInvert.cc

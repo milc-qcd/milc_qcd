@@ -91,6 +91,7 @@ double_complex dce_itheta( double theta );
 #define set_complex_equal(a,b) { (*b).real=(*a).real; (*b).imag=(*a).imag; }
 								/*    |*a|    */
 #define cabs(a) (sqrt( (*a).real*(*a).real + (*a).imag*(*a).imag ) )
+#define mycabs(a) (sqrt( (*a).real*(*a).real + (*a).imag*(*a).imag ) )
 								/*  *a * *a*  */
 #define dcabs cabs
 #define cabs_sq(a) ( (*a).real*(*a).real + (*a).imag*(*a).imag )

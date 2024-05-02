@@ -2,24 +2,24 @@
 # NOTE: The following executables have no QOP support and
 # will fail to compile:
 # su3_hmc_eo_symzk1_p4 
-exec  su3_rmd                           1 - - WARMUPS RUNNING
-exec  su3_rmd_eos			1 - - WARMUPS RUNNING
-exec  su3_rmd_susc			1 - - WARMUPS RUNNING
-exec  su3_rmd_mu_eos			1 - - WARMUPS RUNNING
+exec  su3_rmd                           1 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION'
+exec  su3_rmd_eos			1 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION|TR_MM_INV|PB_DMDU_P'
+exec  su3_rmd_susc			1 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION|TR_MM_INV|TR_MidM_MidM|PB_DMDMU_P|PB_D2MDMU2_P'
+exec  su3_rmd_mu_eos			1 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION|TR_MM_INV|PB_DMDU_P|d1_trlnM_dmu1|d2_trlnM_dmu2|d3_trlnM_dmu3|d4_trlnM_dmu4|d5_trlnM_dmu5|d6_trlnM_dmu6|d1_trMi_dmu1|d2_trMi_dmu2|d3_trMi_dmu3|d4_trMi_dmu4|d5_trMi_dmu5|d6_trMi_dmu6|d0_trdMduMi_dmu0|d1_trdMduMi_dmu1|d2_trdMduMi_dmu2|d3_trdMduMi_dmu3|d4_trdMduMi_dmu4|d5_trdMduMi_dmu5|d6_trdMduMi_dmu6|trM_inv'
 #exec  su3_hmc_eo_symzk1_p4		1 - - WARMUPS RUNNING
-exec  su3_rmd_dblstore_gath13_fewsums	1 - - WARMUPS RUNNING
-exec  su3_rmd_plaq_fat7naik		1 - - WARMUPS RUNNING
-exec  su3_rmd1				1 - - WARMUPS RUNNING
-exec  su3_rmd_plaq_fat7naik1		1 - - WARMUPS RUNNING
-exec  su3_rmd_naive                     1 - - WARMUPS RUNNING
+exec  su3_rmd_dblstore_gath13_fewsums	1 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION'
+exec  su3_rmd_plaq_fat7naik		1 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION'
+exec  su3_rmd1				1 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION'
+exec  su3_rmd_plaq_fat7naik1		1 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION'
+exec  su3_rmd_naive                     1 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION'
 
-exec  su3_rmd                           2 - - WARMUPS RUNNING
-exec  su3_rmd_eos			2 - - WARMUPS RUNNING
-exec  su3_rmd_susc			2 - - WARMUPS RUNNING
-exec  su3_rmd_mu_eos			2 - - WARMUPS RUNNING
+exec  su3_rmd                           2 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION'
+exec  su3_rmd_eos			2 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION|TR_MM_INV|PB_DMDU_P'
+exec  su3_rmd_susc			2 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION|TR_MM_INV|TR_MidM_MidM|PB_DMDMU_P|PB_D2MDMU2_P'
+exec  su3_rmd_mu_eos			2 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION|TR_MM_INV|PB_DMDU_P|d1_trlnM_dmu1|d2_trlnM_dmu2|d3_trlnM_dmu3|d4_trlnM_dmu4|d5_trlnM_dmu5|d6_trlnM_dmu6|d1_trMi_dmu1|d2_trMi_dmu2|d3_trMi_dmu3|d4_trMi_dmu4|d5_trMi_dmu5|d6_trMi_dmu6|d0_trdMduMi_dmu0|d1_trdMduMi_dmu1|d2_trdMduMi_dmu2|d3_trdMduMi_dmu3|d4_trdMduMi_dmu4|d5_trdMduMi_dmu5|d6_trdMduMi_dmu6|trM_inv'
 #exec  su3_hmc_eo_symzk1_p4		2 - - WARMUPS RUNNING
-exec  su3_rmd_dblstore_gath13_fewsums	2 - - WARMUPS RUNNING
-exec  su3_rmd_plaq_fat7naik		2 - - WARMUPS RUNNING
-exec  su3_rmd1				2 - - WARMUPS RUNNING
-exec  su3_rmd_plaq_fat7naik1		2 - - WARMUPS RUNNING
-exec  su3_rmd_naive                     2 - - WARMUPS RUNNING
+exec  su3_rmd_dblstore_gath13_fewsums	2 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION'
+exec  su3_rmd_plaq_fat7naik		2 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION'
+exec  su3_rmd1				2 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION'
+exec  su3_rmd_plaq_fat7naik1		2 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION'
+exec  su3_rmd_naive                     2 - - WARMUPS RUNNING 'SELECT=PLAQ|P_LOOP|G_LOOP|GACTION|PBP|FACTION'

@@ -22,3 +22,9 @@
 #include "../include/generic_schroed.h"
 #endif
 #include "../include/check_malloc.h"
+
+#ifdef GB_BARYON
+#ifdef blind
+#include "../include/blind_data.h"
+#endif
+#endif

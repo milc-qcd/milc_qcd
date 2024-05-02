@@ -1973,7 +1973,10 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
   /* for each node which has neighbors of my sites */
   for(i=0; i<mtag->nrecvs; i++) {
     /* post receive */
-    MPI_Irecv( mbuf[i].msg_buf, mbuf[i].msg_size+CRCBYTES, MPI_BYTE, MPI_ANY_SOURCE,
+//    MPI_Irecv( mbuf[i].msg_buf, mbuf[i].msg_size+CRCBYTES, MPI_BYTE, MPI_ANY_SOURCE,
+//	       GATHER_ID(mtag->ids[mbuf[i].id_offset]), MPI_COMM_THISJOB,
+//	       &mbuf[i].msg_req );
+    MPI_Irecv( mbuf[i].msg_buf, mbuf[i].msg_size+CRCBYTES, MPI_BYTE, mbuf[i].msg_node,
 	       GATHER_ID(mtag->ids[mbuf[i].id_offset]), MPI_COMM_THISJOB,
 	       &mbuf[i].msg_req );
   }

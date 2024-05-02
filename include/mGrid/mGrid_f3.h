@@ -101,7 +101,7 @@ void GRID_F3_asqtad_invert_multi (GRID_info_t *info,
 				  GRID_F3_ColorVector *in,
 				  GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
 
-// block CG inverter
+  // block CG inverter
 void GRID_F3_asqtad_invert_block (GRID_info_t *info,
 				  GRID_F3_FermionLinksAsqtad *asqtad,
 				  GRID_invert_arg_t *inv_arg,

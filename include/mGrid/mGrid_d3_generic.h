@@ -6,7 +6,9 @@
 #define GRID_extract_MILC_from_L        GRID_D3_extract_MILC_from_L     
 #define GRID_asqtad_destroy_L		GRID_D3_asqtad_destroy_L
 #define GRID_asqtad_invert_multi        GRID_D3_asqtad_invert_multi
+#define GRID_asqtad_invert_mixed        GRID_D3_asqtad_invert_mixed
 #define GRID_asqtad_invert_block        GRID_D3_asqtad_invert_block
+#define GRID_asqtad_invert_mixed_block  GRID_D3_asqtad_invert_mixed_block
 #define GRID_asqtad_invert              GRID_D3_asqtad_invert
 #define GRID_create_M_from_mat4         GRID_D3_create_M_from_mat4
 #define GRID_create_V			GRID_D3_create_V

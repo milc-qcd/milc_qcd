@@ -14,14 +14,14 @@ MAKEFILE = Makefile
 # 1. Host and accelerator architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH ?= # skx knl hsw pow8 pow9
-GPU_ARCH ?= # nvidia amd intel
+ARCH ?= # epyc hsw skx clx icx spr knl pow8 pow9
+#GPU_ARCH ?= # nvidia amd intel
 
 #----------------------------------------------------------------------
 # 2. Compiler family
 
 COMPILER ?= gnu # intel, ibm, cray-intel, rocm
-OFFLOAD ?= # CUDA HIP SYCL OpenMP
+OFFLOAD ?= # cuda hip sycl openmp
 
 #----------------------------------------------------------------------
 # 3. MPP vs Scalar
@@ -46,7 +46,7 @@ ifeq ($(strip ${COMPILER}),intel)
     MY_CXX ?= mpicxx
   else
     MY_CC  ?= icx
-    MY_CXX ?= dpcpp
+    MY_CXX ?= icpx
   endif
 
 else ifeq ($(strip ${COMPILER}),cray-intel)
@@ -79,24 +79,24 @@ else ifeq ($(strip ${COMPILER}),ibm)
     MY_CXX ?= xlc++_r
   endif
 
-endif
-
-# Accelerator
-
-ifeq ($(strip ${GPU_ARCH}),intel)
+else ifeq ($(strip ${COMPILER}),amdclang)
 
   ifeq ($(strip ${MPP}),true)
-    MY_CC += -cc=icx
-    MY_CXX += -cxx=dpcpp
+    MY_CC ?= mpicc
+    MY_CXX ?= mpicxx
+  else
+    MY_CC ?= amdclang
+    MY_CXX ?= amdclang++
   endif
 
 endif
 
-# Offload type
+# Accelerator
 
-ifeq ($(strip ${OFFLOAD}),SYCL)
+ifeq ($(strip ${OFFLOAD}),sycl)
 
-  MY_CXX += -fsycl
+  MY_CC += -cc=icx
+  MY_CXX += -cxx=icpx -fsycl
 
 endif
 
@@ -113,7 +113,7 @@ CXX = ${MY_CXX}
 # Choices include -g -O, etc
 # Power9 recommendations are -Ofast
 
-OPT              ?= -O3
+OPT              ?= -O3 -g
 
 # OpenMP?
 
@@ -127,7 +127,7 @@ OMP ?= #true
 ifeq ($(strip ${COMPILER}),gnu)
 
   OCFLAGS += -std=c99
-  OCXXFLAGS += -std=c++11
+  OCXXFLAGS += -std=c++17
 
   ifeq ($(strip ${ARCH}),pow8)
     ARCH_FLAG = -mcpu=power8
@@ -155,7 +155,7 @@ endif
 ifeq ($(strip ${COMPILER}),ibm)
 
   OCFLAGS = -std=gnu99
-  OCXXFLAGS += -std=c++11
+  OCXXFLAGS += -std=c++17
 
   # consider running with XLSMPOPTS=stack=10M or higher
   ifeq ($(strip ${OMP}),true)
@@ -171,7 +171,7 @@ endif
 ifeq ($(strip ${COMPILER}),intel)
 
   OCFLAGS += -std=c99
-  OCXXFLAGS += -std=c++11
+  OCXXFLAGS += -std=c++17
 
   ifeq ($(strip ${ARCH}),knl)
   ARCH_FLAG = -xMIC-AVX512
@@ -182,6 +182,12 @@ ifeq ($(strip ${COMPILER}),intel)
   else ifeq ($(strip ${ARCH}),skx)
   ARCH_FLAG = -xCORE-AVX512 -qopt-zmm-usage=high
   BINEXT=.skx
+  else ifeq ($(strip ${ARCH}),clx)
+  ARCH_FLAG = -xCORE-AVX512 -qopt-zmm-usage=high
+  else ifeq ($(strip ${ARCH}),spr)
+  ARCH_FLAG = ""
+  else ifeq ($(strip ${ARCH}),icx)
+  ARCH_FLAG = -xCORE-AVX512 -qopt-zmm-usage=high
   else ifeq ($(strip ${ARCH}),hsw)
   ARCH_FLAG = -xCORE-AVX2
   BINEXT=.hsw
@@ -209,7 +215,7 @@ endif
 ifeq ($(strip ${COMPILER}),cray-intel)
 
   OCFLAGS += -std=c99
-  OCXXFLAGS += -std=c++11
+  OCXXFLAGS += -std=c++17
 
   ifeq ($(strip ${ARCH}),knl)
   ARCH_FLAG = -xMIC-AVX512
@@ -242,6 +248,17 @@ endif
 #-------------- Portland Group ----------------------------
 #OCFLAGS = -tp p6 -Munroll=c:4,n:4
 #OCFLAGS= -mpentiumpro -march=pentiumpro -funroll-all-loops -malign-double -D_REENTRANT  # Pentium pro
+
+#-------------- AMD Clang ----------------------------
+ifeq ($(strip ${COMPILER}),amdclang)
+
+  ifeq ($(strip ${OMP}),true)
+    OCFLAGS += -fopenmp
+    OCXXFLAGS += -fopenmp
+    LDFLAGS += -fopenmp
+  endif
+
+endif
 
 #----------------------------------------------------------------------
 # 8. Choose large file support.
@@ -368,7 +385,7 @@ endif
 # Utah physics and math Redhat-linux
 # LIBLAPACK = -L/usr/uumath/lib64  -llapack-3.6.0 -lblas-3.6.0 -L/usr/lib/gcc/x86_64-redhat-linux/4.8.2 -lgfortran
 
-# Utah physics and math Centos-linux.  Must link with gfortran. 
+# Utah physics and math Centos-linux.  Must link with gfortran. Incompatible with Grid!
 # LIBLAPACK = -L/usr/local/lib64 -llapack -lblas
 # LDLAPACK = gfortran
 
@@ -401,6 +418,9 @@ ifeq ($(strip ${WANTPRIMME}),true)
   INCPRIMME = -I${PRIMME_HEADERS}
   PACKAGE_HEADERS += ${PRIMME_HEADERS}
   LIBPRIMME = -L${HOME}/PRIMME/lib -lprimme
+
+  CEIG ?= # -DPRIMME_PRECOND -DPOLY_EIGEN
+
 endif
 
 #----------------------------------------------------------------------
@@ -435,11 +455,8 @@ ifeq ($(strip ${WANTQUDA}),true)
   WANT_SHIFT_GPU ?= #true
   WANT_SPIN_TASTE_GPU ?= #true
   WANT_GAUGEFIX_OVR_GPU ?= #true
-
+  WANT_MULTIGRID ?= #true
 endif
-
-# enabled mixed-precision solvers for QUDA (if set, overrides HALF_MIXED and MAX_MIXED macros)
-WANT_MIXED_PRECISION_GPU ?= 2
 
 ifeq ($(strip ${WANTQUDA}),true)
   ifeq ($(strip ${OFFLOAD}),)
@@ -459,6 +476,74 @@ ifeq ($(strip ${WANTQUDA}),true)
     INCQUDA += -I${CUDA_HOME}/include
     PACKAGE_HEADERS += ${CUDA_HOME}/include
     LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -ldl
+  endif
+
+# Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
+
+  CGPU += -DHAVE_QUDA
+
+  ifeq ($(strip ${WANT_CL_BCG_GPU}),true)
+    HAVE_CL_GPU = true
+    CGPU += -DUSE_CL_GPU
+  endif
+
+  ifeq ($(strip ${WANT_FN_CG_GPU}),true)
+    HAVE_FN_CG_GPU = true
+    CGPU += -DUSE_CG_GPU
+  endif
+
+  ifeq ($(strip ${WANT_GA_GPU}),true)
+    HAVE_GA_GPU = true
+    CGPU += -DUSE_GA_GPU
+  endif
+
+  ifeq ($(strip ${WANT_GF_GPU}),true)
+    HAVE_GF_GPU = true
+    CGPU += -DUSE_GF_GPU
+  endif
+
+  ifeq ($(strip ${WANT_FL_GPU}),true)
+    HAVE_FL_GPU = true
+    CGPU += -DUSE_FL_GPU
+  endif
+
+  ifeq ($(strip ${WANT_FF_GPU}),true)
+    HAVE_FF_GPU = true
+    CGPU += -DUSE_FF_GPU
+  endif
+
+  ifeq ($(strip ${WANT_EIG_GPU}),true)
+    HAVE_EIG_QUDA = true
+    CGPU += -DUSE_EIG_GPU
+  endif
+
+  ifeq ($(strip ${WANT_GSMEAR_GPU}),true)
+    HAVE_GSMEAR_QUDA = true
+    CGPU += -DUSE_GSMEAR_QUDA
+  endif
+
+  ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
+    HAVE_KS_CONT_GPU = true
+    CGPU += -DUSE_KS_CONT_GPU
+  endif
+
+  ifeq ($(strip ${WANT_SHIFT_GPU}),true)
+    HAVE_SHIFT_GPU = true
+    CGPU += -DUSE_SHIFT_GPU
+  endif
+
+  ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
+    HAVE_SPIN_TASTE_GPU = true
+    CGPU += -DUSE_SPIN_TASTE_GPU
+  endif
+
+  ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
+    HAVE_GAUGEFIX_OVR_QUDA = true
+    CGPU += -DUSE_GAUGEFIX_OVR_GPU
+  endif
+
+  ifeq ($(strip ${WANT_MULTIGRID}),true)
+    CGPU += -DMULTIGRID
   endif
 
 # Verbosity choices:
@@ -603,23 +688,47 @@ ifeq ($(strip ${WANTGRID}), true)
   CGPU += -DGRID_SHMEM_MAX=2048
   CGPU += -DGRID_ACCELERATOR_THREADS=8
 
+  GRID_SHMEM_MAX ?= 2048        # Megabytes
+  GRID_DEVICE_MEM_MAX ?= 32768  # Megabytes
+  GRID_ACCELERATOR_THREADS ?= 8
+  GRID_MULTI_CG  ?= GRID_5DCG # GRID_5DCG GRID_BLOCKCG GRID_MRHSCG
+
+  CPHI += -DGRID_SHMEM_MAX=${GRID_SHMEM_MAX}
+  CPHI += -DGRID_SHMEM_MPI=${GRID_SHMEM_MPI}
+  CPHI += -DGRID_DEVICE_MEM_MAX=${GRID_DEVICE_MEM_MAX}
+  CPHI += -DGRID_ACCELERATOR_THREADS=${GRID_ACCELERATOR_THREADS}
+  CPHI += -DGRID_COMMS_OVERLAP=${GRID_COMMS_OVERLAP}
+  CPHI += -DGRID_MULTI_CG=${GRID_MULTI_CG}
+
 endif
 
 ifeq ($(strip ${WANTGRID}), true)
 
-  ifeq ($(strip ${MPP}),true)
-    ifeq ($(strip ${ARCH}),knl)
-      GRID_ARCH = avx512
-    else ifeq ($(strip ${ARCH}),skx)
-      GRID_ARCH = avx512
-    else ifeq ($(strip ${ARCH}),hsw)
-      GRID_ARCH = avx2
-    endif
+  # Accelerator offloads
+  ifeq ($(strip ${OFFLOAD}),sycl)
+    GRID_ARCH = gpu-sycl
+  else ifeq ($(strip ${OFFLOAD}),cuda)
+    GRID_ARCH = gpu-cuda
+  else ifeq ($(strip ${OFFLOAD}),hip)
+    GRID_ARCH = gpu-hip
   else
 
+  # CPU only
+  ifeq ($(strip ${ARCH}),knl)
+    GRID_ARCH = avx512
+  ifeq ($(strip ${ARCH}),skx)
+    GRID_ARCH = avx512
+  else ifeq ($(strip ${ARCH}),clx)
+    GRID_ARCH = avx512
+  else ifeq ($(strip ${ARCH}),icx)
+    GRID_ARCH = avx512
+  else ifeq ($(strip ${ARCH}),hsw)
+    GRID_ARCH = avx2
+  else ifeq ($(strip ${ARCH}),epyc)
+    GRID_ARCH = avx2
+  else
     # Scalar version                                                                
     GRID_ARCH = scalar
-
   endif
 
   GRID_HOME = ../Grid/install-grid-${GRID_ARCH}
@@ -832,7 +941,7 @@ CGITVER = -DMILC_CODE_VERSION=\"$(GIT_VERSION)\"
 
 # REMAP  report remapping time for QDP, QOP in conjunction with above
 
-CTIME ?= # -DNERSC_TIME -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
+CTIME ?= -DNERSC_TIME -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
 
 #------------------------------
 # Profiling
@@ -843,15 +952,10 @@ CTIME ?= # -DNERSC_TIME -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DI
 CPROF =#
 
 #------------------------------
-# Troubleshooting
-# Applications: All
-
-# COM_CRC            Message passing test.  Checksums on all gathers.
-
-#------------------------------
 # Debugging and diagnostics
 # Applications:  all
 
+# COM_CRC             Message passing test.  Checksums on all gathers.
 # CHECK_MALLOC        Report malloc/free activity.
 #                     (Then process stdout using check_malloc.pl)
 # CG_DEBUG            Print debugging information for the inverters.
@@ -974,22 +1078,37 @@ CPREFETCH = #
 # KS_MULTICG=FAKE    Iterate the single mass solver.
 # KS_MULTICG=REVERSE Iterate in reverse order
 # KS_MULTICG=REVHYB  Same as HYBRID but with vectors in reverse order.
+# NO_REFINE          No refinements except for masses with nonzero Naik eps
+# CPU_REFINE         Refine on CPU only (if at all), not GPU
 
-# HALF_MIXED         (not QUDA) If PRECISION=2, do multimass solve in single precision
+KSCGMULTI ?= -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
+
+#------------------------------
+# Mixed precision
+# enabled mixed-precision solvers for QUDA and GRID  (if set, overrides HALF_MIXED and MAX_MIXED macros below)
+WANT_MIXED_PRECISION ?= 2
+WANT_MIXED_PRECISION_GPU ?= ${WANT_MIXED_PRECISION}
+
+# HALF_MIXED         (not QUDA or GRID) If PRECISION=2, do multimass solve in single precision
 #                    and single-mass refinements in double
 # HALF_MIXED         (QUDA) If PRECISION=2, use double-single mixed-precision solvers
 # MAX_MIXED          (QUDA) Use double-half or single-half mixed-precision solvers
 #                    (for multi-shift, behavior is as HALF_MIXED)
-# NO_REFINE          No refinements except for masses with nonzero Naik eps
-# CPU_REFINE         Refine on CPU only (if at all), not GPU
-# PRIMME_PRECOND
-# POLY_EIGEN
-# MATVEC_PRECOND
-# CHEBYSHEV_EIGEN
-# MULTISOURCE
-# MULTIGRID
 
-KSCGMULTI ?= -DKS_MULTICG=HYBRID -DMULTISOURCE # -DMULTIGRID # -DNO_REFINE # -DHALF_MIXED
+KSCGMIXED ?= #
+
+ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
+  CGPU += -DHALF_MIXED # use single precision where appropriate
+else ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),2)
+  CGPU += -DMAX_MIXED # use half precision where appropriate
+endif
+
+#------------------------------
+# Multi source types
+# MULTISOURCE (deprecated)
+# MULTICOLORSOURCE (deprecated)
+
+KSSOURCE ?= #
 
 #------------------------------
 # Multifermion force routines
@@ -1009,6 +1128,9 @@ KSCGMULTI ?= -DKS_MULTICG=HYBRID -DMULTISOURCE # -DMULTIGRID # -DNO_REFINE # -DH
 
 KSFFMULTI = -DKS_MULTIFF=FNMAT
 
+#------------------------------
+# KS gaussian smearing
+GAUSS_SMEAR_KS_TWOLINK ?= true   # Compute two-link field to use in smearing
 
 #------------------------------
 # RHMC molecular dynamics algorithm
@@ -1082,9 +1204,9 @@ LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBARPACK} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX
 #------------------------------
 # Summary
 
-CODETYPE = ${CTIME} ${CPROF} ${CDEBUG} ${CGEOM} ${KSCGSTORE} ${CPREFETCH} \
- ${KSCGMULTI} ${KSFFMULTI} ${KSRHMCINT} ${KSSHIFT} ${CLCG} ${CLMEM} ${CQOP} \
- ${CCOMPAT} ${CGITVER}
+CODETYPE = ${CTIME} ${CPROF} ${CDEBUG} ${CGEOM} ${CEIG} ${KSCGSTORE} ${CPREFETCH} \
+ ${KSCGMULTI} ${KSCGMIXED} ${KSSOURCE} ${KSFFMULTI} ${KSRHMCINT} ${KSSHIFT} \
+ ${CLCG} ${CLMEM} ${CQOP} ${CCOMPAT} ${CGITVER}
 
 #----------------------------------------------------------------------
 # MILC library make file in libraries directory.  
@@ -1155,6 +1277,10 @@ endif
 
 ifeq ($(strip ${WANTARPACK}),true)
   HAVEARPACK = true
+endif
+
+ifeq ($(strip ${GAUSS_SMEAR_KS_TWOLINK}),true)
+  OCFLAGS += -DGAUSS_SMEAR_KS_TWOLINK
 endif
 
 # Make_template_combos defines convenience macros for interdependent

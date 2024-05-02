@@ -101,7 +101,18 @@ void GRID_D3_asqtad_invert_multi (GRID_info_t *info,
 				  GRID_D3_ColorVector *in,
 				  GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
 
-// block CG inverter
+  // mixed-precision CG inverter
+void GRID_D3_asqtad_invert_mixed(GRID_info_t *info,
+				 GRID_F3_FermionLinksAsqtad *asqtad_f,
+				 GRID_D3_FermionLinksAsqtad *asqtad_d,
+				 GRID_invert_arg_t *inv_arg,
+				 GRID_resid_arg_t *res_arg,
+				 double mass,
+				 GRID_D3_ColorVector *out,
+				 GRID_D3_ColorVector *in,
+				 GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
+
+  // block CG inverter
 void GRID_D3_asqtad_invert_block (GRID_info_t *info,
 				  GRID_D3_FermionLinksAsqtad *asqtad,
 				  GRID_invert_arg_t *inv_arg,
@@ -112,6 +123,17 @@ void GRID_D3_asqtad_invert_block (GRID_info_t *info,
 				  GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
 				  GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
 
+  // block mixed-precision CG inverter
+void GRID_D3_asqtad_invert_mixed_block(GRID_info_t *info,
+				       GRID_F3_FermionLinksAsqtad *asqtad_f,
+				       GRID_D3_FermionLinksAsqtad *asqtad_d,
+				       GRID_invert_arg_t *inv_arg,
+				       GRID_resid_arg_t *res_arg,
+				       double mass, int nrhs,
+				       GRID_D3_ColorVectorBlock *out,
+				       GRID_D3_ColorVectorBlock *in,
+				       GRID_5Dgrid *grid_5D, GRID_5DRBgrid *grid_5Drb, 
+				       GRID_4Dgrid *grid_full, GRID_4DRBgrid *grid_rb);
 
   /*********************/
   /*  HISQ routines  */
