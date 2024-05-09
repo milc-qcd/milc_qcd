@@ -40,7 +40,7 @@ typedef struct {
 	/* gauge field */
 	su3_matrix link[4] ALIGNMENT;
 
-	/* The Kogut-Susskind phases, which have been absorbed into 
+	/* The Kogut-Susskind phases, which have been absorbed into
 		the matrices.  Also the antiperiodic boundary conditions.  */
  	Real phase[4];
 
@@ -54,7 +54,7 @@ typedef struct {
 
 
 #ifdef CONTROL
-#define EXTERN 
+#define EXTERN
 #else
 #define EXTERN extern
 #endif
@@ -129,7 +129,8 @@ EXTERN int ape_links_ks_phases;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */
-#define N_POINTERS 16	/* Number of generic pointers */
+#define P_OFFSET 8
+#define N_POINTERS 26+P_OFFSET	/* Number of generic pointers */
 /* NEED 8 WHEN GAUGEFIXING */
 EXTERN char ** gen_pt[N_POINTERS];
 

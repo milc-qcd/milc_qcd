@@ -622,8 +622,15 @@ save_ksprop_from_ksp_field( int flag, const char *filename, char *recxml,
 
   status = 0;
   for(color = 0; color < prop->nc; color++){
-    status = save_ksprop_c_from_field(flag, kspf, ksqs, color, source->v[color],
+    /* Dummy source (NULL) has no colors. Use prop instead */ 
+    if (source == NULL) {
+    status = save_ksprop_c_from_field(flag, kspf, ksqs, color, prop->v[color],
 				      prop->v[color], recxml, timing);
+    }
+    else {
+    status = save_ksprop_c_from_field(flag, kspf, ksqs, color, source->v[color],
+                                      prop->v[color], recxml, timing);
+    }
     if(status != 0)break;
   }
   

@@ -1,0 +1,8 @@
+SRCDIR/configure \
+ --prefix=INSDIR \
+ --with-qmp=QMPDIR \
+ --enable-largefile \
+ --enable-fast_route \
+ --enable-dml-output-buffering \
+ CC=mpiicc CXX=mpiicpc\
+ CFLAGS="-fPIC -Wall -O3 -std=c99"

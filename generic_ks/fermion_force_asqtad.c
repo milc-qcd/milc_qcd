@@ -859,7 +859,7 @@ u_shift_veclist_fermion(veclist *src, veclist *dest,
 
 static void 
 add_3f_force_to_mom_list(veclist *back,	 veclist *forw, int dir, 
-			 Real coeff[2], int listlength ) ;
+			 Real *coeff, int listlength ) ;
 
 static void 
 side_link_3f_force_list(int mu, int nu, Real *coeff, veclist *Path, 
@@ -1203,10 +1203,11 @@ fermion_force_asqtad_multi( Real eps, Real *residues,
 
 	  /* Length 3 paths (Not the Naik term) */
 	  /* Add the force F_mu the 0(2) link in the path: +     */
-	  if(GOES_FORWARDS(mu)) 
-	    P3mu = vl[mu];  /* OK to clobber P5nu */
-	    u_shift_veclist_fermion( P3[sig], P3mu, mu, &mt[mu], temp_vl[mu], nterms );
-	    /* The above shift is not needed if mu is backwards */
+	    if(GOES_FORWARDS(mu)){
+	      P3mu = vl[mu];  /* OK to clobber P5nu */
+	      u_shift_veclist_fermion( P3[sig], P3mu, mu, &mt[mu], temp_vl[mu], nterms );
+	      /* The above shift is not needed if mu is backwards */
+	    }
 	  side_link_3f_force_list(mu, sig, ThreeSt, temp_x, P3[sig], Pmu, P3mu, nterms );
 	}
 

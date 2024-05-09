@@ -33,7 +33,7 @@ Restart_Rayleigh 10
 Kalkreuter_iters 20
 
 # Eigenvalue tolerance
-eigenval_tolerance 1.0e-7
+eigenval_tolerance 1.0e-8
 
 # See README.ks_eigen - For optimizing the RR CG
 error_decrease .3

@@ -23,6 +23,13 @@
 #include "../include/io_u1lat.h"
 #include "../include/generic_u1.h"
 
+#ifdef GB_BARYON
+#include "../include/gb_ops.h"
+#ifdef BLIND
+#include "../include/blind_data.h"
+#endif
+#endif
+
 #ifdef PRTIME
 #define STARTTIME dtime = -dclock();
 #define ENDTIME(string) dtime += dclock(); node0_printf("Aggregate time to %s %e\n",(string),dtime);  fflush(stdout);
@@ -43,7 +50,7 @@ char *create_ks_XML(void);
 char *create_kss_XML(char *filename, quark_source *ksqs);
 
 /* make_prop.c */
-void read_ksprop_to_ksp_field(int startflag, char startfile[], 
+void read_ksprop_to_ksp_field(int startflag, char startfile[],
 			      quark_source *my_ksqs, ks_prop_field *ksp);
 
 int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
@@ -59,7 +66,7 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 		 int r0[4],
 		 int check);
 
-void dump_ksprop_from_ksp_field(int saveflag, char savefile[], 
+void dump_ksprop_from_ksp_field(int saveflag, char savefile[],
 				ks_prop_field *ksp);
 ks_prop_field *reread_ksprop_to_ksp_field(int saveflag, char savefile[], int nc);
 
@@ -68,9 +75,21 @@ int setup(void);
 int readin(int prompt);
 
 /* spectrum_ks.c */
-
 int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename);
 void spectrum_ks(ks_prop_field *qp0, int naik_index0, ks_prop_field *qp1, int naik_index1, int pair);
 void spectrum_ks_baryon(ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *qp2, int triplet);
+#ifdef GB_BARYON
+void spectrum_ks_gb_baryon(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **qko2,
+  su3_matrix *links, int triplet);
+/* gb_baryon_snk.c */
+void gb_baryon(ks_prop_field **qko0, ks_prop_field **qko1, ks_prop_field **qko2,
+              su3_matrix *links, enum gb_baryon_op *src_op,
+              enum gb_baryon_op *snk_op,
+              int stIdx, short *dowall, short *docube, int num_d, int num_s, int *r0,
+              int *mom, char *par, complex *momfld, int *flip_snk,
+              int num_corr_gb, int *phase, Real *fact, complex **prop);
+
+
+#endif
 
 /*  ks_spectrum_includes.h */

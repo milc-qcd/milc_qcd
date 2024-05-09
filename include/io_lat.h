@@ -38,6 +38,12 @@
 #define SAVE_SERIAL_ARCHIVE              56
 #define SAVE_SERIAL_PACKED               57
 #define SAVE_PARALLEL_PACKED             58
+#define SAVE_SERIAL_ILDG_DP              59
+#define SAVE_SERIAL_SCIDAC_DP            60
+#define SAVE_PARALLEL_ILDG_DP            61
+#define SAVE_PARALLEL_SCIDAC_DP          62
+#define SAVE_MULTIFILE_SCIDAC_DP         63
+#define SAVE_PARTFILE_SCIDAC_DP          64
 
 /* Format for NERSC archive files */
 #define ARCHIVE_3x2   0
@@ -357,14 +363,14 @@ void write_appl_gauge_info(FILE *fp, gauge_file *gf);
 /* Prototypes for io_scidac routines */
 gauge_file *file_scan_serial_scidac(const char *filename);
 gauge_file *file_scan_parallel_scidac(const char *filename);
-gauge_file *save_serial_scidac(const char *filename);
-gauge_file *save_parallel_scidac(const char *filename);
-gauge_file *save_multifile_scidac(const char *filename);
-gauge_file *save_partfile_scidac(const char *filename);
-gauge_file *save_serial_ildg(const char *filename, const char *stringLFN);
-gauge_file *save_parallel_ildg(const char *filename, const char *stringLFN);
-gauge_file *save_partfile_ildg(const char *filename, const char *stringLFN);
-gauge_file *save_multifile_ildg(const char *filename, const char *stringLFN);
+gauge_file *save_serial_scidac(const char *filename, int prec);
+gauge_file *save_parallel_scidac(const char *filename, int prec);
+gauge_file *save_multifile_scidac(const char *filename, int prec);
+gauge_file *save_partfile_scidac(const char *filename, int prec);
+gauge_file *save_serial_ildg(const char *filename, int prec, const char *stringLFN);
+gauge_file *save_parallel_ildg(const char *filename, int prec, const char *stringLFN);
+gauge_file *save_partfile_ildg(const char *filename, int prec, const char *stringLFN);
+gauge_file *save_multifile_ildg(const char *filename, int prec, const char *stringLFN);
 gauge_file *restore_serial_scidac(const char *filename);
 gauge_file *restore_parallel_scidac(const char *filename);
 

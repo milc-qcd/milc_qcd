@@ -65,6 +65,7 @@ typedef struct {
   /* these are quantities that apply to all masses in the multi inverter */
 typedef struct {
   int max;			/* (in) max number of iterations */
+  int maxInner;			/* (in) max number of iterations for inner solve (mixed prec) */
   int restart;			/* (in) number of iterations before restart */
   int nrestart;			/* (in) number of restarts allowed */
   GRID_evenodd_t parity;	/* (in) subset of source vector */

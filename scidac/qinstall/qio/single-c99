@@ -1,0 +1,6 @@
+SRCDIR/configure \
+ --prefix=INSDIR \
+ --enable-parallel-arch=scalar \
+ --enable-largefile \
+ CC=gcc \
+ CFLAGS="-fPIC -Wall -O -std=c99"

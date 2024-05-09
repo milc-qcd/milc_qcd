@@ -31,6 +31,9 @@
    funnywall1                 pion5 + pioni5 + pioni + pions + rhoi + rhos
    funnywall2                 pion05 + pionij + pioni0 + pion0 + rhoi0 + rho0
    ks_inverse                 Multiply by a staggered propagator
+   save_vector_src            Save a vector field as a source for loading with vector_field.
+                              The vector will not be modified, but the saved vector may
+                              be restricted to the specified timeslice.                         
    spin_taste
    spin_taste_extend
 
@@ -99,6 +102,10 @@
 #endif
 #ifdef HAVE_DIRAC
 #include "../include/generic_clover.h"
+#endif
+#ifdef HAVE_KS
+#include "../include/generic_ks.h"
+#include "../ks_spectrum/ks_spectrum_includes.h"
 #endif
 
 /*-------------------------------------------------------------*/
@@ -376,84 +383,6 @@ static void smear_wv_field(wilson_vector *wv, complex *chi_cs){
 
 #endif /* ifdef HAVE_DIRAC */
 
-#if 0
-/* Smear a ksprop field */
-
-static void sink_smear_ksprop(ks_prop_field *ksprop, quark_source *qs){
-  
-  int color;
-  int ci,cf;
-  int i;
-  site *s;
-  complex *chi_cs, z;
-  Real x;
-  su3_vector *v;
-  double dtime = start_timing();
-  int key[4] = {1,1,1,0};  /* 3D Fourier transform */
-  
-  /* Set up Fourier transform for smearing */
-  setup_restrict_fourier(key, NULL);
-
-  chi_cs = create_c_field();
-
-  /* Now convolute the quark propagator with a given wave function for
-     the smeared mesons. This is done with FFT's */
-  
-  /* fft quark_propagator (in place) */
-  for(color = 0; color < ksprop->nc; color++){
-    v = ksprop->v[color];
-    /* v points into ksprop, so ksprop is changed here */
-    restrict_fourier_field((complex *)v, sizeof(su3_vector), 
-			   FORWARDS);
-  }
-
-  print_timing(dtime,"FFT");
-
-  dtime = start_timing();
-
-  /* Build sink smearing wave function as a complex field repeated on
-     each time slice */
-  ks_sink_field(chi_cs, qs);
-
-  /* Normalize (for FFT) */
-  x = 1./(((Real)nx)*((Real)ny)*(Real)nz);
-  FORALLSITES(i,s){
-    CMULREAL(chi_cs[i],x,chi_cs[i]);
-  }
-  
-  print_timing(dtime,"build sink field");
-
-  dtime = start_timing();
-  restrict_fourier_field(chi_cs, sizeof(complex), FORWARDS);
-  
-  /* Now multiply quark by sink wave function */
-  for(ci=0;ci<3;ci++){
-    FORALLSITES(i,s)
-      for(cf=0;cf<ksprop->nc;cf++){
-	z = ksprop->v[ci][i].c[cf];
-	CMUL(z, chi_cs[i], ksprop->v[ci][i].c[cf]);
-      }
-  }
-  
-  print_timing(dtime, "FFT of chi and multiply");
-
-  /* Inverse FFT */
-  dtime = start_timing();
-  /* fft quark_propagator (in place) */
-  for(color = 0; color < ksprop->nc; color++){
-    v = ksprop->v[color];
-    /* v points into ksprop, so ksprop is changed here */
-    restrict_fourier_field((complex *)v, sizeof(su3_vector), 
-			   BACKWARDS);
-  }
-  print_timing(dtime,"FFT");
-  cleanup_restrict_fourier();
-  destroy_c_field(chi_cs);
-}  /* sink_smear_ksprop */
-
-#endif
-
-
 #ifndef NO_GAUGE_FIELD
 
 /*--------------------------------------------------------------------*/
@@ -660,81 +589,9 @@ static void cov_deriv_wv(wilson_vector *wv_dst, wilson_vector *wv_src,
 
 #endif /* ifndef NO_GAUGE_FIELD */
 
-#if 0
-/* Covariant derivative of Wilson propagator field */
-static void cov_deriv_wp(wilson_prop_field *wp_dst, wilson_prop_field *wp_src,
-			 su3_matrix *t_links, int dir, int disp, 
-			 Real weights[]){
-  wilson_vector *wv_src, *wv_dst;
-  int spin, color;
-
-  if(wp_dst->nc != wp_src->nc){
-    node0_printf("cov_deriv_wp: inconsistent number of colors\n");
-    terminate(1);
-  }
-  wv_src = create_wv_field();
-  wv_dst = create_wv_field();
-  for(color = 0; color < wp_src->nc; color++)
-    for(spin=0;spin<4;spin++){
-      copy_wv_from_wp(wv_src, wp_src, color, spin);
-      cov_deriv_wv(wv_dst, wv_src, t_links, dir, disp, weights);
-      copy_wp_from_wv(wp_dst, wv_dst, color, spin);
-    }
-  
-  destroy_wv_field(wv_src);
-  destroy_wv_field(wv_dst);
-} /* cov_deriv_wp */
-#endif
-
 /*--------------------------------------------------------------------*/
 /* Covariant Gauss smearing wrapper                                   */
 /*--------------------------------------------------------------------*/
-
-#if 0
-
-/* On wilson_prop_field type */
-
-static void gauss_smear_wprop_field(wilson_prop_field *wp, 
-				    su3_matrix *t_links, int subset,
-				    Real r0, int iters, int t0){
-  wilson_vector *wv;
-  int spin, color;
-  int subset, stride;
-
-  if(subset == FULL)stride = 1;
-  else stride = 2;
-
-  wv = create_wv_field();
-  for(color = 0; color < wp->nc; color++)
-    for(spin=0;spin<4;spin++){
-      copy_wv_from_wp(wv, wp, color, spin);
-      gauss_smear_wv_field(wv, stride, t_links, r0, iters, t0);
-      copy_wp_from_wv(wp, wv, color, spin);
-    }
-  
-  destroy_wv_field(wv);
-} /* gauss_smear_wprop_field */
-
-/* On ks_prop_field type */
-
-static void gauss_smear_ksprop_field(ksprop_field *ksp, 
-				     su3_matrix *t_links,
-				     Real r0, int iters, int t0){
-  su3_vector *v;
-  int color, stride;
-
-  v = create_v_field();
-  for(color = 0; color < ksp->nc; color++){
-      copy_v_from_ksp(v, ksp, color);
-      gauss_smear_v_field(v, t_links, r0, iters, t0);
-      copy_ksp_from_v(ksp, wv, color);
-    }
-  
-  destroy_v_field(v);
-
-} /* guass_smear_ksprop_field */
-
-#endif /* #if 0 */
 
 
 #ifdef HAVE_DIRAC
@@ -866,51 +723,6 @@ static void ks_gamma_inv(wilson_vector *src, int r0[])
 
 #endif
 
-#if 0
-/*--------------------------------------------------------------------*/
-static void rotate_prop_field(wilson_prop_field *dst, wilson_prop_field *src, 
-			      quark_source *qs){
-  
-  int spin, color;
-  int i;
-  site *s;
-  wilson_vector *psi, *mp, *tmp;
-  spin_wilson_vector *rp;
-  /* The MILC sign convention for gamma matrix in Dslash is
-     opposite FNAL, so we rotate with -d1 */
-  Real d1 = -qs->d1;
-  
-  psi = create_wv_field();
-  mp  = create_wv_field();
-  tmp = create_wv_field();
-
-  for(color = 0; color < src->nc; color++){
-    rp = dst->swv[color];
-
-    /* Construct propagator for "rotated" fields,
-       psi_rot = Dslash psi, with Dslash the naive operator. */
-    for(spin=0;spin<4;spin++){
-      copy_wv_from_wp(psi, src, color, spin);
-      
-      /* Do Wilson Dslash on the psi field */
-      dslash_w_3D_field(psi, mp,  PLUS, EVENANDODD);
-      dslash_w_3D_field(psi, tmp, MINUS, EVENANDODD);
-      
-      FORALLSITES(i,s){
-	/* From subtraction we get 2*Dslash */
-	sub_wilson_vector(mp + i, tmp + i, &rp[i].d[spin]);
-	/* Apply rotation */
-	scalar_mult_add_wvec(psi + i, &rp[i].d[spin], d1/4., &rp[i].d[spin]);
-      }
-    }
-  }
-    
-  cleanup_dslash_w_3D_temps();
-  destroy_wv_field(psi); 
-  destroy_wv_field(mp); 
-  destroy_wv_field(tmp);
-} /* rotate_wprop_field */
-#endif
 
 /*--------------------------------------------------------------------*/
 /* Time-slice operations on color vector fields                       */
@@ -1180,6 +992,21 @@ static void apply_aslash_v(su3_vector *src,
   spin_taste_op(spin_taste_index("pion05"), qss_op->r_offset, src, dst);
   destroy_v_field(dst);
   destroy_c_array_field(chi_cs, NMU);
+}
+
+
+static void apply_par_xport_v(su3_vector *src, quark_source_sink_op *qss_op){
+  apply_par_xport_src_v(src, src, qss_op, NULL); // gb_baryon_src.c
+  apply_momentum_v(src, qss_op, qss_op->t0);
+}
+
+static void apply_save_vector_src_v(su3_vector *src, 
+			    quark_source_sink_op *qss_op){
+
+  if(qss_op->qs_save.saveflag != FORGET){
+	  if(w_source_ks(src, &qss_op->qs_save) != 0)
+	    node0_printf("Error writing source\n");
+	}
 }
 
 static void apply_ext_src_v(su3_vector *src, 
@@ -1666,6 +1493,8 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
 			     int t0){
 
   /* Smearing is done with coordinate stride 2 to preserve taste */
+  printf("Applying covariant smearing with t0 = %d\n", t0);
+  double dtime = start_timing();
 
   int op_type       = qss_op->type;
   int iters         = qss_op->iters;
@@ -1690,6 +1519,7 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
   else
     return 0;
 
+  print_timing(dtime, "covariant smearing");
   return 1;
 }
 
@@ -1747,9 +1577,10 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
     su3_vector *tvec2 = create_v_field();
 
     mult_pion5_field( qss_op->r_offset, src, tvec2 );
-    rephase_field_offset( ape_links, ON, NULL, qss_op->r_offset );
+    if(ape_links_ks_phases == OFF)
+      rephase_field_offset( ape_links, ON, &ape_links_ks_phases, qss_op->r_offset );
     mult_pioni_field( ZUP, qss_op->r_offset, src, tvec1, ape_links, &refresh_ape_links );
-    rephase_field_offset( ape_links, OFF, NULL, qss_op->r_offset );
+    rephase_field_offset( ape_links, OFF, &ape_links_ks_phases, qss_op->r_offset );
     add_v_fields( tvec2, tvec1, tvec2 );
     mult_rhoi_field( ZUP, qss_op->r_offset, src, tvec1 );
     add_v_fields( src, tvec1, tvec2 );
@@ -1764,9 +1595,10 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
     su3_vector *tvec2 = create_v_field();
 
     mult_pion05_field( qss_op->r_offset, src, tvec2 );
-    rephase_field_offset( ape_links, ON, NULL, qss_op->r_offset );
+    if(ape_links_ks_phases == OFF)
+      rephase_field_offset( ape_links, ON, &ape_links_ks_phases, qss_op->r_offset );
     mult_pioni0_field( ZUP, qss_op->r_offset, src, tvec1, ape_links, &refresh_ape_links );
-    rephase_field_offset( ape_links, OFF, NULL, qss_op->r_offset );
+    rephase_field_offset( ape_links, OFF, &ape_links_ks_phases, qss_op->r_offset );
     add_v_fields( tvec2, tvec1, tvec2 );
     mult_rhoi0_field( ZUP, qss_op->r_offset, src, tvec1 );
     add_v_fields( src, tvec1, tvec2 );
@@ -1880,6 +1712,12 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
 
   else if(op_type == MOMENTUM)
     apply_momentum_v(src, qss_op, t0);
+
+  else if(op_type == PAR_XPORT_SRC_KS)
+    apply_par_xport_v(src, qss_op);
+
+  else if (op_type == SAVE_VECTOR_SRC)
+    apply_save_vector_src_v(src, qss_op);
 
   else if(op_type == EXT_SRC_KS)
     apply_ext_src_v(src, qss_op);
@@ -2020,12 +1858,29 @@ void ksp_sink_op(quark_source_sink_op *qss_op, ks_prop_field *ksp )
   int color;
   su3_vector *v = create_v_field();
 
+  /* Initilize source files if saving as source */
+  if (qss_op->type  == SAVE_VECTOR_SRC) {
+    if(qss_op->qs_save.saveflag != FORGET){
+      char *fileinfo = create_ks_XML();
+      w_source_open_ks(&qss_op->qs_save, fileinfo);
+      free(fileinfo);
+    }
+  }
+
+  /* Actual work here */
   for(color = 0; color < ksp->nc; color++){
+    if (qss_op->type == SAVE_VECTOR_SRC) {
+      /* Important to keep track of internal color counter */
+      qss_op->qs_save.color = color; 
+    }
       copy_v_from_ksp(v, ksp, color);
-      v_field_op( v, qss_op, FULL, ALL_T_SLICES);
+      v_field_op(v, qss_op, FULL, ALL_T_SLICES);
       insert_ksp_from_v(ksp, v, color);
   }
   
+  if (qss_op->type  == SAVE_VECTOR_SRC) {
+    if(qss_op->qs_save.saveflag != FORGET) w_source_close(&qss_op->qs_save);
+  }
   destroy_v_field(v);
 } /* ksp_sink_op */
 
@@ -2097,6 +1952,8 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     printf("'momentum', ");
     printf("'modulation', ");
     printf("'project_t_slice', ");
+    printf("'par_xport_src_ks', ");
+    printf("'save_vector_src', ");
     printf("'ext_src_ks', ");
     printf("'ext_src_dirac', ");
     printf("\n     ");
@@ -2147,6 +2004,14 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
   else if(strcmp("momentum",savebuf) == 0 ){
     *source_type = MOMENTUM;
     strcpy(descrp,"momentum");
+  }
+  else if(strcmp("par_xport_src_ks",savebuf) == 0 ){ 
+    *source_type = PAR_XPORT_SRC_KS;
+    strcpy(descrp,"par_xport_src_ks");
+  }
+  else if(strcmp("save_vector_src",savebuf) == 0 ){
+    *source_type = SAVE_VECTOR_SRC;
+    strcpy(descrp,"save_vector_src");
   }
   else if(strcmp("ext_src_ks",savebuf) == 0 ){
     *source_type = EXT_SRC_KS;
@@ -2365,6 +2230,51 @@ static int get_field_op(int *status_p, FILE *fp,
   }
 #endif
 #ifdef HAVE_KS
+  else if ( op_type == PAR_XPORT_SRC_KS ){
+    char use_links[4];
+    IF_OK status += get_i(fp, prompt, "disp", &qss_op->disp);
+    if(qss_op->disp == 0){
+      // do nothing!
+    } else if(qss_op->disp == 1){
+      IF_OK status += get_vs(fp, prompt, "dir", c_dir, 1);
+      IF_OK status += decode_dir(&qss_op->dir1, c_dir[0]);
+    } else if(qss_op->disp == 2){
+      IF_OK status += get_vs(fp, prompt, "dir", c_dir, 2);
+      IF_OK status += decode_dir(&qss_op->dir1, c_dir[0]);
+      IF_OK status += decode_dir(&qss_op->dir2, c_dir[1]);
+    } else if(qss_op->disp != 3){
+      // all directions for 3; don't need to save
+      printf("\n%i is not a valid displacement\n",qss_op->disp);
+      status++;
+    }    
+  }
+  else if ( op_type == SAVE_VECTOR_SRC ){
+    IF_OK {
+      int source_type, saveflag_s;
+      char descrp[MAXDESCRP];
+      char savefile_s[MAXFILENAME];
+
+      IF_OK init_qs(&qss_op->qs_save);
+    
+      status +=
+        ask_output_quark_source_file(fp, prompt, &saveflag_s,
+              &source_type, NULL, descrp,
+              savefile_s );
+      IF_OK {
+        qss_op->qs_save.savetype = source_type;
+        qss_op->qs_save.saveflag = saveflag_s;
+        strcpy(qss_op->qs_save.save_file, savefile_s);
+        if(saveflag_s != FORGET && source_type != VECTOR_FIELD_FILE){
+          printf("Unsupported output source type\n");
+          status++;
+        }
+      } /* OK */
+    } /* OK */
+
+    /* Get t0 */
+    IF_OK status += get_i(fp, prompt, "t0", &qss_op->t0);
+    qss_op->qs_save.t0 = qss_op->t0;
+  }
   else if ( op_type == EXT_SRC_KS ){
     char gam_op_lab[MAXGAMMA];
     IF_OK status += get_s(fp, prompt, "spin_taste_extend", gam_op_lab);
@@ -2766,6 +2676,21 @@ static int print_single_op_info(FILE *fp, const char prefix[],
     fprintf(fp,",\n");
     fprintf(fp,"%s%s\n", make_tag(prefix, "spin_taste_extend"), 
 	    spin_taste_label(qss_op->spin_taste));
+  }
+  else if ( op_type == PAR_XPORT_SRC_KS ){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%i,\n", make_tag(prefix, "disp"), qss_op->disp);
+    if(qss_op->disp == 1)
+      fprintf(fp,"%s%s,\n", make_tag(prefix, "dir1"), encode_dir(qss_op->dir1));
+    if(qss_op->disp == 2){
+      fprintf(fp,"%s%s,\n", make_tag(prefix, "dir1"), encode_dir(qss_op->dir1));
+      fprintf(fp,"%s%s,\n", make_tag(prefix, "dir2"), encode_dir(qss_op->dir2));
+    }    
+    if(qss_op->disp == 3) { 
+      fprintf(fp,"%s%s,\n", make_tag(prefix, "dir1"), encode_dir(XUP));
+      fprintf(fp,"%s%s,\n", make_tag(prefix, "dir2"), encode_dir(YUP));
+      fprintf(fp,"%s%s,\n", make_tag(prefix, "dir3"), encode_dir(ZUP));
+    }    
   }
   else if ( op_type == EXT_SRC_KS ){
     fprintf(fp,",\n");

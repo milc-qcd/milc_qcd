@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+
+prf="$1"
+package="$2"
+ver="$3"
+if [ "X$ver" = "X" ]; then
+    echo "$0 <profile> <package> <version>"
+    exit 1
+fi
+
+mydir="`dirname $0`"
+if [ -L $0 ]; then
+  exe="`\ls -l $0 |sed 's/.*->//'`"
+  mydir="$mydir/`dirname $exe`"
+fi
+prffn=$mydir/$prf".prf"
+if [ ! -f $prffn ]; then
+    echo "error: profile file $prffn not found"
+    exit 1
+fi
+. $prffn
+
+if [ ! -d $SRCROOT ]; then
+    echo "error: source root dir $SRCROOT not found"
+    exit 1;
+fi
+if [ ! -d $DLDIR ]; then
+    echo "error: download dir $DLDIR not found"
+    exit 1;
+fi
+if [ ! -d $BLDROOT ]; then
+    echo "error: build root dir $BLDROOT not found"
+    exit 1;
+fi
+if [ ! -d $INSROOT ]; then
+    echo "error: installation root dir $INSROOT not found"
+    exit 1;
+fi
+
+GTAR="`which gtar`"
+if [ ! -f "$GTAR" ]; then
+  GTAR=tar
+fi
+
+pkg=`echo $package |tr '+-' 'x_'`
+conftmpl=$mydir/$package/${!pkg}
+
+pt=$pkg"tag"
+tg=${!pt}
+tag=${tg:+-$tg}
+
+pc=$pkg"check"
+check=${!pc}
+
+qmpdir=$INSROOT/qmp${qmptag:+-$qmptag}
+qiodir=$INSROOT/qio${qiotag:+-$qiotag}
+qladir=$INSROOT/qla${qlatag:+-$qlatag}
+qdpdir=$INSROOT/qdp${qdptag:+-$qdptag}
+qdpxxdir=$INSROOT/qdp++${qdpxxtag:+-$qdpxxtag}
+
+pv=$package-$ver
+tarfile=$pv.tar.gz
+usqcd=http://usqcd.jlab.org/usqcd-software
+srcdir=$SRCROOT/$pv
+blddir=$BLDROOT/$pv$tag
+insdir=$INSROOT/$pv$tag
+conf=configure-$package$tag
+
+# get source
+if [ -d $srcdir ]; then
+    echo "using existing source in $srcdir"
+else
+# download source
+    if [ -f $DLDIR/$tarfile ]; then
+        echo "using existing tarfile $DLDIR/$tarfile"
+    else
+        cd $DLDIR
+        if ! wget $usqcd/$package/$tarfile; then
+            echo "error: can't get $usqcd/$package/$tarfile"
+            cd -
+            exit 1
+        fi
+        cd -
+    fi
+# untar
+    cd $SRCROOT
+    $GTAR zxvf $DLDIR/$tarfile
+    if [ ! -d $srcdir ]; then
+        echo "warning: tarfile unpacked to wrong directory"
+	if [ -d $package ]; then
+	    echo "assuming unpacked into found dir $package"
+	    echo "moving to $srcdir"
+	    mv -v $package $srcdir
+	else
+	    echo "can't find source dir"
+	    cd -
+	    exit 1
+	fi
+    fi
+    cd -
+fi
+
+# create configure script
+###if [ `date -r $blddir/$conf "+%s"` -ge `date -r $conf "+%s"` ]; then
+if [ -f $blddir/$conf ]; then
+    echo "using existing configuration $blddir/$conf"
+else
+    if [ ! -f $conftmpl ]; then
+        echo "error: can't find configure template $conftmpl"
+        exit 1
+    fi
+    if [ ! -d $blddir ]; then
+        echo "creating build directory $blddir"
+        mkdir -pv $blddir
+    fi
+    sed "s|SRCDIR|$srcdir|g;s|INSDIR|$insdir|g;s|QMPDIR|$qmpdir|g;s|QIODIR|$qiodir|g;s|QLADIR|$qladir|g;s|QDPDIR|$qdpdir|g;s|QDPXXDIR|$qdpxxdir|g" $conftmpl >$blddir/$conf
+    chmod 755 $blddir/$conf
+fi
+
+# configure & build
+if cd $blddir; then
+    if ! ./$conf; then
+        echo "error: can't configure package"
+        exit 1
+    fi
+    echo "building package..."
+    if ! make >&make.log; then
+        echo "error: can't build package"
+        exit 1
+    fi
+    echo "installing package..."
+    if ! make install >&make-install.log; then
+        echo "error: can't install package"
+        exit 1
+    fi
+    if [ "X$check" = "Xyes" ]; then
+	echo "checking package..."
+	if ! make check >&make-check.log; then
+	    echo "error: package check failed"
+	    exit 1
+	fi
+    fi
+    cd - >/dev/null
+fi
+
+# make link to latest version
+if cd $INSROOT; then
+    rm -f $package$tag
+    ln -s $pv$tag $package$tag
+    echo -e "updated link: $package$tag -> $pv$tag"
+    cd - >/dev/null
+fi

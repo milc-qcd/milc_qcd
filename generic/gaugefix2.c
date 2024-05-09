@@ -482,7 +482,6 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
   double tolerance;
   unsigned int reunit_interval;
   unsigned int stopWtheta;
-
   if(gauge_dir == TUP)quda_gauge_dir = 3;
   else if(gauge_dir < 0 || gauge_dir > TUP)quda_gauge_dir = 4;
   else{

@@ -30,12 +30,25 @@ int ks_congrad_parity_grid_D( su3_vector *src,
 			      Real mass,
 			      fn_links_t *fn);
 
+int ks_congrad_mixed_parity_grid_D( su3_vector *src,
+				    su3_vector *sol,
+				    quark_invert_control *qic,
+				    Real mass,
+				    fn_links_t *fn);
+
 int ks_congrad_block_parity_grid_D( int nrhs,
 				    su3_vector *src[],
 				    su3_vector *sol[],
 				    quark_invert_control *qic,
 				    Real mass,
 				    fn_links_t *fn);
+
+int ks_congrad_mixed_block_parity_grid_D( int nrhs,
+					  su3_vector *src[],
+					  su3_vector *sol[],
+					  quark_invert_control *qic,
+					  Real mass,
+					  fn_links_t *fn);
 
 /* ks_multicg_offset_grid_F.c */
 
