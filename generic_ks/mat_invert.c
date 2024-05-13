@@ -1017,7 +1017,7 @@ int mat_invert_field(su3_vector *src, su3_vector *dst,
       /* Currently only available through QUDA on GPUs */
       cgn = mat_invert_mg_field_gpu(src, dst, qic, mass, fn );
 #else
-      node0_printf("mat_invert_field: ERROR. Multigrid is available only with GPU compilation\n");
+      node0_printf("mat_invert_field: ERROR. Multigrid is available only with QUDA compilation\n");
       terminate(1);
 #endif
     }
@@ -1068,7 +1068,7 @@ int mat_invert_block(su3_vector **src, su3_vector **dst,
 #endif
     } else {
       /* inv_type == MGTYPE */
-#ifdef USE_CG_GPU
+#if defined(USE_CG_GPU) && defined(HAVE_QUDA)
       /* Currently only available through QUDA on GPUs */
       cgn = mat_invert_block_mg(src, dst, mass, nsrc, qic, fn);
 #else
@@ -1082,7 +1082,6 @@ int mat_invert_block(su3_vector **src, su3_vector **dst,
 
     node0_printf("mat_invert_block: Bad inv_type %d\n", qic->inv_type);
     terminate(1);
->>>>>>> develop
   }
   return cgn;
 }
