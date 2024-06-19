@@ -344,7 +344,7 @@ typedef struct {
   char diagAlg[10];
   int parity; 
 } ks_eigen_param;
-#elif defined(USE_EIG_QUDA)
+#elif defined(USE_EIG_GPU)
 #define ks_eigensolve ks_eigensolve_QUDA
 typedef struct {
   int Nvecs ; /* number of eigenvectors */
