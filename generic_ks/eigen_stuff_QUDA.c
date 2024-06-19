@@ -217,7 +217,8 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   qep.check_interval = 1;
 
   qep.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  
+  qep.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;  
+
   qep.use_dagger = QUDA_BOOLEAN_FALSE;
   qep.compute_gamma5 = QUDA_BOOLEAN_FALSE;
   qep.compute_svd = QUDA_BOOLEAN_FALSE;
