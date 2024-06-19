@@ -427,6 +427,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     ks_dirac_adj_op( src, tmp, mass, EVENANDODD, fn );
 
 #if EIGMODE != EIGCG
+#ifndef USE_CG_GPU
     if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
       dtime = - dclock();
@@ -439,6 +440,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
     }
+#endif
 #endif
 
     /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
@@ -460,6 +462,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     } END_LOOP_OMP;
 
 #if EIGMODE != EIGCG
+#ifndef USE_CG_GPU
     if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
       dtime = - dclock();
@@ -470,6 +473,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
       dtime += dclock();
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
     }
+#endif
 #endif
 
     /* Polish off odd sites to correct for possible roundoff error */

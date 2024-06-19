@@ -133,6 +133,14 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   inv_args.tadpole = u0;
 #endif
 
+  /** Deflation parameters **/
+  inv_args.n_ev = param.eigen_param.Nvecs; /** Number of eigenvectors **/
+  inv_args.n_ev_deflate = param.eigen_param.Nvecs; /** Number of eigenvectors to use in deflation **/
+  strcpy( inv_args.vec_infile, param.ks_eigen_startfile );
+  strcpy( inv_args.vec_outfile, param.ks_eigen_savefile );
+  inv_args.preserve_deflation = QUDA_BOOLEAN_TRUE; /** Whether to preserve the deflation space for the next solve **/
+  inv_args.preserve_evals = QUDA_BOOLEAN_TRUE; /** Whether to use evalues computed during earlier solve **/  
+
   qudaInvert(MILC_PRECISION,
 	     quda_precision, 
 	     mass,
