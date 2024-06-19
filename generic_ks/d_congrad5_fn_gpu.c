@@ -134,7 +134,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 #endif
 
   /** Deflation parameters **/
-  inv_args.n_ev = param.eigen_param.Nvecs; /** Number of eigenvectors **/
+  inv_args.n_ev = param.eigen_param.Nvecs_in; /** Number of eigenvectors **/
   inv_args.n_ev_deflate = param.eigen_param.Nvecs; /** Number of eigenvectors to use in deflation **/
   strcpy( inv_args.vec_infile, param.ks_eigen_startfile );
   strcpy( inv_args.vec_outfile, param.ks_eigen_savefile );
