@@ -18,7 +18,7 @@
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
-#include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "ks_imp_utilities_includes.h"	/* definitions files and prototypes */
 #include <lattice_qdp.h>
 
 EXTERN gauge_header start_lat_hdr;
@@ -87,7 +87,13 @@ initial_set()
 #ifdef FERMION_FORCE
     printf("Fermion-force checking\n");
 #else
+#ifdef LINK_FATTENING
     printf("Creating FN link files\n");
+#else
+#ifdef REUNIT
+    printf("Reunitarization checking\n");
+#else
+#error "Must specify what is being checked"
 #endif
 #endif
     printf("MIMD version 7\n");
@@ -313,8 +319,9 @@ readin(int prompt)
   /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));
 
-  if( param.stopflag != 0 )
+  if( param.stopflag != 0 ){
     return param.stopflag;
+  }
 
   if(prompt==2)return 0;
 
