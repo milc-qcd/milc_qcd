@@ -7,7 +7,7 @@
    contain (M_adjoint*M)^(-1) * phi1 and phi2.
 */
 
-#include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "ks_imp_utilities_includes.h"	/* definitions files and prototypes */
 Real ahmat_mag_sq(anti_hermitmat *pt);
 
 /*DEBUG*/

@@ -6,7 +6,7 @@
 /* Application-dependent routine for generating metadata for KS
    propagator and source files */
 
-#include "ks_imp_includes.h"
+#include "ks_imp_utilities_includes.h"
 #include <quark_action.h>
 #include "../include/io_ksprop.h"
 #define MAX_XML 2049
