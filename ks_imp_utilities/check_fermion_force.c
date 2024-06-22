@@ -5,7 +5,7 @@
 
 /* This code performs and/or checks the fermion force calculation */
 
-#include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "ks_imp_utilities_includes.h"	/* definitions files and prototypes */
 #ifdef HAVE_QIO
 #include <qio.h>
 #else
