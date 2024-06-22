@@ -89,10 +89,8 @@ ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP (not supported, so same as below)
   ifeq ($(strip ${HAVEPRIMME}),true)
      DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
-     ADDDEFINES += -DPRIMME
   else ifeq ($(strip ${HAVEARPACK}),true)
      DEFLATE_OBJECTS += eigen_stuff_ARPACK.o
-     ADDDEFINES += -DARPACK
   else
      DEFLATE_OBJECTS += eigen_stuff_Ritz.o
      ADDDEFINES += -DKalkreuter_Ritz
@@ -103,10 +101,8 @@ else
   else
     ifeq ($(strip ${HAVEPRIMME}),true)
        DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
-       ADDDEFINES += -DPRIMME
     else ifeq ($(strip ${HAVEARPACK}),true)
        DEFLATE_OBJECTS += eigen_stuff_ARPACK.o
-       ADDDEFINES += -DARPACK
     else
        DEFLATE_OBJECTS += eigen_stuff_Ritz.o
        ADDDEFINES += -DKalkreuter_Ritz

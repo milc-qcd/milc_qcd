@@ -50,7 +50,7 @@ G_U1_OBJECTS =       \
   u1link.o           \
   u1plaq.o
 
-# # Objects depending on architecture and software package 
+# # Objects depending on architecture and software package
 
 # Selection of layout
 
@@ -58,14 +58,12 @@ LAYOUT = layout_hyper_prime.o # Choices possible here
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG}
 
-# Always use PRIMME if it is provided
-ifeq ($(strip ${HAVEPRIMME}),true)
-  ADDDEFINES += -DPRIMME
-# Always use ARPACK if it is provided
-else ifeq ($(strip ${HAVEARPACK}),true)
-  ADDDEFINES += -DARPACK
-else
-  ADDDEFINES += -DKalkreuter_Ritz
+# Always use ARPACK or PRIMME if they are provided
+# Otherwise, Kalkreuter_Ritz
+ifneq ($(strip ${HAVEPRIMME}),true)
+  ifneq ($(strip ${HAVEARPACK}),true)
+    ADDDEFINES += -DKalkreuter_Ritz
+  endif
 endif
 
 DEFLATE_OBJECTS = \
@@ -108,7 +106,7 @@ endif
 
 #Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
-QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
+QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a
 
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
 LIBRARIES += ${QPHIX_LIBRARIES} ${QPHIXJ_LIBRARIES} ${GRID_LIBRARIES}
@@ -247,6 +245,29 @@ ks_spectrum_hisq_u1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
 	"DEFINES += -DU1_FIELD" "EXTRA_OBJECTS += ${G_U1_OBJECTS}"
 
+# GB baryon with memory map and NO blinding
+ks_spectrum_hisq_gb_baryon_no_sink_links::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DNO_SINK_LINKS"
+
+# GB baryon with memory map and blinding (blinding applied for 3pt baryon correlators only)
+ks_spectrum_hisq_gb_baryon_blind_no_sink_links::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS"
+
+ks_spectrum_hisq_gb_baryon_blind_no_sink_links_no_gauss_links::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+        "DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS -DNO_GAUSS_SMEAR_LINKS"
+
+ks_spectrum_hisq_gb_baryon_blind_one_sided_shift::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS -DONE_SIDED_SHIFT_GB"
+
+# Extremly slow implementation. Use for debug only
+ks_spectrum_hisq_gb_baryon_blind_no_mmap::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DBLIND -DNO_SINK_LINKS"
+
 clean:
 	-/bin/rm -f *.o quark_action.h
 
@@ -276,9 +297,10 @@ libmake:
 	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" \
         "ARCH=${ARCH}" "COMPILER=${COMPILER}" all
 
+# added -lcrypto for blinding
 localmake: ${OBJECTS} ${LIBRARIES}
 	${LD} -o ${MYTARGET} ${LDFLAGS} \
-	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm -lcrypto
 	touch localmake
 
-target: libmake localmake 
+target: libmake localmake

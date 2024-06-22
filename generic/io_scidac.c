@@ -193,17 +193,19 @@ void close_scidac_input(QIO_Reader *infile)
 /********************************************************************/
 
 #ifdef NO_GAUGE_FIELD
-gauge_file *save_scidac(const char *filename, int volfmt, int serpar, int ildgstyle,
-			const char *stringLFN){
+static gauge_file *
+save_scidac(const char *filename, int volfmt, int serpar, int ildgstyle,
+	    int prec, const char *stringLFN){
   printf("Can't save a lattice if we compile with -DNO_GAUGE_FIELD\n");
   terminate(1);
   return NULL;
 }
 #else
-/* Save the single precision lattice in SciDAC format */
+/* Save the lattice in the site structure in SciDAC format */
 /* The QIO file is closed after writing the lattice */
-gauge_file *save_scidac(const char *filename, int volfmt, int serpar, int ildgstyle,
-			const char *stringLFN){
+static gauge_file *
+save_scidac(const char *filename, int volfmt, int serpar, int ildgstyle,
+	    int prec, const char *stringLFN){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Writer *outfile;
@@ -243,7 +245,10 @@ gauge_file *save_scidac(const char *filename, int volfmt, int serpar, int ildgst
   QIO_string_set(recxml, info);
 
   /* Write the lattice field */
-  status = write_F3_M_from_site(outfile, recxml, src, LATDIM);
+  if(prec == 1)
+    status = write_F3_M_from_site(outfile, recxml, src, LATDIM);
+  else
+    status = write_D3_M_from_site(outfile, recxml, src, LATDIM);
   if(status)terminate(1);
 
   /* Discard for now */
@@ -317,48 +322,48 @@ int read_lat_dim_scidac(const char *filename, int *ndim, int dims[])
   return 0;
 }
 
-gauge_file *save_serial_scidac(const char *filename){
-  return save_scidac(filename, QIO_SINGLEFILE, QIO_SERIAL, QIO_ILDGNO, NULL);
+gauge_file *save_serial_scidac(const char *filename, int prec){
+  return save_scidac(filename, QIO_SINGLEFILE, QIO_SERIAL, QIO_ILDGNO, prec, NULL);
 }
 
-gauge_file *save_parallel_scidac(const char *filename){
-  return save_scidac(filename, QIO_SINGLEFILE, QIO_PARALLEL, QIO_ILDGNO, NULL);
+gauge_file *save_parallel_scidac(const char *filename, int prec){
+  return save_scidac(filename, QIO_SINGLEFILE, QIO_PARALLEL, QIO_ILDGNO, prec, NULL);
 }
 
-gauge_file *save_multifile_scidac(const char *filename){
-  return save_scidac(filename, QIO_MULTIFILE, QIO_SERIAL, QIO_ILDGNO, NULL);
+gauge_file *save_multifile_scidac(const char *filename, int prec){
+  return save_scidac(filename, QIO_MULTIFILE, QIO_SERIAL, QIO_ILDGNO, prec, NULL);
 }
 
-gauge_file *save_partfile_scidac(const char *filename){
-  return save_scidac(filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGNO, NULL);
+gauge_file *save_partfile_scidac(const char *filename, int prec){
+  return save_scidac(filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGNO, prec, NULL);
 }
 
-gauge_file *save_partfile_dir_scidac(const char *filename){
-  return save_scidac(filename, QIO_PARTFILE_DIR, QIO_SERIAL, QIO_ILDGNO, NULL);
+gauge_file *save_partfile_dir_scidac(const char *filename, int prec){
+  return save_scidac(filename, QIO_PARTFILE_DIR, QIO_SERIAL, QIO_ILDGNO, prec, NULL);
 }
 
-gauge_file *save_serial_ildg(const char *filename, const char *stringLFN){
-  return save_scidac(filename, QIO_SINGLEFILE, QIO_SERIAL, QIO_ILDGLAT, 
+gauge_file *save_serial_ildg(const char *filename, int prec, const char *stringLFN){
+  return save_scidac(filename, QIO_SINGLEFILE, QIO_SERIAL, QIO_ILDGLAT, prec,
 		     stringLFN);
 }
 
-gauge_file *save_parallel_ildg(const char *filename, const char *stringLFN){
-  return save_scidac(filename, QIO_SINGLEFILE, QIO_PARALLEL, QIO_ILDGLAT,
+gauge_file *save_parallel_ildg(const char *filename, int prec, const char *stringLFN){
+  return save_scidac(filename, QIO_SINGLEFILE, QIO_PARALLEL, QIO_ILDGLAT, prec,
 		     stringLFN);
 }
 
-gauge_file *save_multifile_ildg(const char *filename, const char *stringLFN){
-  return save_scidac(filename, QIO_MULTIFILE, QIO_SERIAL, QIO_ILDGLAT,
+gauge_file *save_multifile_ildg(const char *filename, int prec, const char *stringLFN){
+  return save_scidac(filename, QIO_MULTIFILE, QIO_SERIAL, QIO_ILDGLAT, prec,
 		     stringLFN);
 }
 
-gauge_file *save_partfile_ildg(const char *filename, const char *stringLFN){
-  return save_scidac(filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGLAT,
+gauge_file *save_partfile_ildg(const char *filename, int prec, const char *stringLFN){
+  return save_scidac(filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGLAT, prec,
 		     stringLFN);
 }
 
-gauge_file *save_partfile_dir_ildg(const char *filename, const char *stringLFN){
-  return save_scidac(filename, QIO_PARTFILE_DIR, QIO_SERIAL, QIO_ILDGLAT,
+gauge_file *save_partfile_dir_ildg(const char *filename, int prec, const char *stringLFN){
+  return save_scidac(filename, QIO_PARTFILE_DIR, QIO_SERIAL, QIO_ILDGLAT, prec,
 		     stringLFN);
 }
 

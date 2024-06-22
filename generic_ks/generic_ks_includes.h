@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdbool.h>
 #include "../include/config.h"  /* Keep this first */
 #include "../include/random.h"
 #include <lattice.h>
@@ -21,3 +22,7 @@
 #include "../include/dirs.h"
 #include "../include/io_ksprop.h"
 #include "../include/check_malloc.h"
+
+#ifdef GB_BARYON
+#include "../include/gb_ops.h"
+#endif

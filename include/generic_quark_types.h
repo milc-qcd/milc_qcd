@@ -14,6 +14,7 @@
 #define MAXDESCRP 128
 #define MAXSRCLABEL 32
 #define MAXWEIGHTS 5
+#define MAXPOINTS 8
 
 #ifdef HAVE_QIO
 #include <qio.h>
@@ -66,6 +67,7 @@ enum source_type {
   KS_INVERSE,
   MODULATION_FILE,
   MOMENTUM,
+  MULTI_POINT,
   PAR_XPORT_SRC_KS,
   POINT, 
   POINT_WEYL, 
@@ -188,7 +190,7 @@ typedef struct {
   int prec;           /* precision of the inversion 1 = single; 2 = double */
   int min;            /* minimum number of iterations (being phased out) */
   int max;            /* maximum number of iterations per restart */
-  int max_inner;      /* maximum number of innter iterations (for mixed precision{ */
+  int max_inner;      /* maximum number of inner iterations (for mixed precision) */
   int nrestart;       /* maximum restarts */
   int parity;         /* EVEN, ODD, or EVENANDODD (for some inverters) */
   int start_flag;     /* 0: use a zero initial guess; 1: use dest */
@@ -261,6 +263,9 @@ typedef struct {
   int src_pointer ;   /* smearing function (for the moment, only
 		         clover_finite_p_vary/create_wilson_source.c) */
   int wall_cutoff;    /* half size of box for w_source_h */
+  // extra parameters for multi-point sources
+  int num_points;     /* number of point sources to add together */
+  int points[4 * MAXPOINTS];       /* list of origins of point sources */
 
 } quark_source;
 

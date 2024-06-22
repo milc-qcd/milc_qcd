@@ -35,9 +35,14 @@ eigenval_tolerance 5.0e-13
 
 # Restart Lanczos iteration at Lanczos_max (number of eigenvalues)
 # Lanczos_max >= max_number_of_eigenpairs + 6
+# This corresponds to the QUDA parameter n_kr
+# Typical reasonable choice is ~2*max_number_of_eigenpairs
 Lanczos_max 60
 
 # Chebyshev polynomial (makes region (alpha,beta) smooth and outside diverge. even order gives even function.)
+# Chebyshev_beta should be greater than the largest eigenvalue of the system. For HISQ, a value of 24 should be sufficient
+# Chebyshev_beta=0 prompts QUDA to estimate the largest eigenvalue and use that
+# Chebyshev_alpha should be greater than the largest eigenvalue that is being requested
 Chebyshev_alpha 10
 Chebyshev_beta 100
 Chebyshev_order 20

@@ -24,8 +24,6 @@ enum accel_type { NO_POLY, POLY_X , MSQ_POLY , CHEBY , POLY_INV , NO_POLY_SQRT ,
 /* Include files */
 
 #include "generic_ks_includes.h"
-
-#ifdef ARPACK
 #include "../include/arpack.h"
 #include <string.h>
 
@@ -1234,28 +1232,3 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
   cleanup_Matrix() ;
   return iparam[2] ;  /*****  update ************/
 }
-  
-  
-
-
-  
-
-
-/*****************************************************************************/
-
-
-
-#else  /* ifdef ARPACK */
-
-/* Stub to allow compilation (but not execution) in case ARPACK is not available */
-
-int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal, 
-			 ks_eigen_param *eigen_param, int init)
-{
-  node0_printf("ks_eigensolve_ARPACK: Requires compilation with the ARPACK package\n");
-  terminate(1);
-
-  return 0;
-}
-
-#endif /* ifdef ARPACK */

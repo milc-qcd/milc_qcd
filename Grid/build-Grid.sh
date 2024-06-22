@@ -3,8 +3,7 @@
 ARCH=$1
 PK_CC=$2
 PK_CXX=$3
-GIT_REPO=https://github.com/milc-qcd/Grid
-#GIT_BRANCH=feature/staggered-a2a-ml
+GIT_REPO=https://github.com/paboyle/grid
 GIT_BRANCH=develop
 
 if [ -z ${PK_CXX} ]
@@ -23,7 +22,7 @@ case ${ARCH} in
 esac
 
 TOPDIR=`pwd`
-SRCDIR=${TOPDIR}/Grid
+SRCDIR=${TOPDIR}/grid
 BUILDDIR=${TOPDIR}/build-grid-${ARCH}
 INSTALLDIR=${TOPDIR}/install-grid-${ARCH}
 
@@ -34,7 +33,9 @@ then
   echo "Fetching ${GIT_BRANCH} branch of Grid package from github"
   git clone ${GIT_REPO} -b ${GIT_BRANCH}
 else
+  pushd ${SRCDIR}
   git checkout ${GIT_BRANCH}
+  popd
 fi
 
 # Fetch Eigen package, set up Make.inc files and create Grid configure
@@ -57,17 +58,17 @@ then
             --prefix=${INSTALLDIR} \
             --enable-simd=GEN \
             --enable-comms=none \
-	    --with-lime=${HOME}/scidac/install/qio-single
+	    --disable-fermion-reps       \
+	    --disable-gparity            \
+	    --disable-zmobius \
+	    --with-lime=${HOME}/scidac/install/qio-single \
 	    --with-fftw=${HOME}/fftw/build-gcc \
             --with-mpfr=${HOME}/mpfr \
             CXX="${PK_CXX}" \
-            CXXFLAGS="-std=gnu++17 -g -Wno-psabi" \
+            CXXFLAGS="-std=gnu++17 -O0 -g -Wno-psabi" \
 
 #            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
 # 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
-#            --disable-gparity \
-#	    --disable-zmobius \
-#	    --disable-fermion-reps \
 
        status=$?
              ;;
@@ -78,9 +79,11 @@ then
             --prefix=${INSTALLDIR} \
             --enable-mkl=no \
             --enable-simd=GEN \
-            --enable-comms=mpi \
+            --enable-shm=shmnone \
+            --enable-comms=mpi3 \
 	    --with-lime=${HOME}/scidac/install/qio \
-	    --with-hdf5=${CRAY_HDF5_PREFIX} \
+	    --with-hdf5=${CRAY_HDF5_DIR} \
+            --with-mpfr=${HOME}/perlmutter/mpfr \
             CXX="${PK_CXX}" CC="${PK_CC}" \
             CXXFLAGS="-std=c++17 -mavx2" \
 
@@ -133,22 +136,24 @@ then
 	# Perlmutter ./build-Grid.sh gpu-cuda cc CC
 	${SRCDIR}/configure \
              --prefix ${INSTALLDIR}       \
-	     --enable-comms=mpi           \
-	     --enable-comms-threads       \
-	     --enable-simd=GPU            \
-	     --enable-shm=no              \
+	     --enable-comms=mpi3-auto     \
+	     --enable-shm=nvlink          \
              --enable-gen-simd-width=64   \
-	     --enable-accelerator=cuda    \
-	     --disable-fermion-reps       \
-	     --enable-unified             \
-	     --disable-gparity            \
+	     --enable-simd=GPU \
+	     --enable-accelerator=cuda \
+	     --enable-setdevice \
+	     --disable-accelerator-cshift \
+	     --disable-fermion-reps \
+	     --disable-unified \
+	     --disable-gparity \
              --host=x86_64-unknown-linux-gnu \
+	     --with-gmp=${HOME}/perlmutter/gmp \
 	     --with-mpfr=${HOME}/perlmutter/mpfr \
-	     --with-hdf5=${HOME}/perlmutter/hdf5 \
-	     --with-lime=${HOME}/perlmutter/build/usqcd \
+	     --with-hdf5=${HDF5_ROOT} \
+	     --with-lime=${HOME}/perlmutter/quda/install/lib \
              CXX="nvcc"                \
 	     LDFLAGS="-cudart shared " \
-             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_80,code=sm_80 -std=c++14 -cudart shared" \
+             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_80,code=sm_80 -std=c++17 -cudart shared" \
 
         status=$?
         echo "Configure exit status $status"
@@ -191,26 +196,38 @@ then
 
     gpu-sycl)
 
-	# ./build-Grid.sh gpu-sycl dpcpp dpcpp
+	# Aurora: ./build-Grid.sh gpu-sycl icx icpx
 
+	source ${TOPDIR}/env.sh
 
 	${SRCDIR}/configure \
 	 --prefix ${INSTALLDIR}      \
 	 --enable-simd=GPU \
-	 --enable-comms=mpi \
 	 --enable-gen-simd-width=64  \
+	 --enable-comms=mpi-auto \
+ 	 --enable-accelerator-cshift \
          --disable-gparity \
-         --disable-zmobius \
          --disable-fermion-reps \
+         --disable-zmobius \
+	 --enable-shm=nvlink \
          --enable-accelerator=sycl   \
-	 --enable-unified=yes \
-	 CXXCPP="/soft/packaging/spack-builds/linux-opensuse_leap15-x86_64/gcc-10.2.0/gcc-10.2.0-yudlyezca7twgd5o3wkkraur7wdbngdn/bin/cpp" \
+	 --enable-unified=no \
+	 MPICXX=mpicxx \
          CXX="${PK_CXX}" CC="${PK_CC}" \
-	 CXXFLAGS="-cxx=dpcpp -fsycl-unnamed-lambda -fsycl -no-fma -std=c++17 -O0 -g" \
-	 LDFLAGS="-fsycl-device-code-split=per_kernel -fsycl-device-lib=all" \
+	 LDFLAGS="-fiopenmp -fsycl -fsycl-device-code-split=per_kernel -fsycl-device-lib=all -lze_loader" \
+	 CXXFLAGS="-fiopenmp -fsycl-unnamed-lambda -fsycl -I/include -Wno-tautological-compare"
 
-	 
-#	 CXXFLAGS="-cxx=dpcpp -fsycl-unnamed-lambda -fsycl -no-fma -std=c++17" \
+	# /soft/compilers/oneapi/2023.12.15.001/oneapi/2024.0/include
+	# MPICXX=mpicxx \
+
+	       #       TOOLS=$HOME/tools
+#	LDFLAGS="-fiopenmp -fsycl -fsycl-device-code-split=per_kernel -fsycl-device-lib=all -lze_loader -L$TOOLS/lib64/" \
+#	CXXFLAGS="-fiopenmp -fsycl-unnamed-lambda -fsycl -I$INSTALL/include -Wno-tautological-compare -I$HOME/ -I$TOOLS/include"	
+#	CXXFLAGS="-cxx=dpcpp -fsycl-unnamed-lambda -fsycl -no-fma -std=c++17 -O0 -g" \
+#	 LDFLAGS="-fsycl-device-code-split=per_kernel -fsycl-device-lib=all" \
+#	 CXXCPP="/soft/packaging/spack-builds/linux-opensuse_leap15-x86_64/gcc-10.2.0/gcc-10.2.0-yudlyezca7twgd5o3wkkraur7wdbngdn/bin/cpp" \
+
+	 #	 CXXFLAGS="-cxx=dpcpp -fsycl-unnamed-lambda -fsycl -no-fma -std=c++17" \
 
 	 #	     --enable-comms=mpi          \
 #	     --with-lime=${HOME}/scidac/install/qio-gcc \
@@ -218,9 +235,11 @@ then
         status=$?
         echo "Configure exit status $status"
 	;;
+
     *)
     echo "Unsupported ARCH ${ARCH}"
           exit 1;
+
   esac
 
   if [ $status -ne 0 ]

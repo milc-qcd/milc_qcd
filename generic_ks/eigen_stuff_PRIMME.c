@@ -10,8 +10,6 @@
 /* Include files */
 #include "generic_ks_includes.h"
 
-#ifdef PRIMME
-
 /* NOTE: The PRIMME release version has clashing definitions for complex functions, so we provide
    a modified version.  This must be checked against future releases. 
    Also, watch out for the definition of PRIMME_INT = long? */
@@ -329,17 +327,3 @@ static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme
 
     *ierr = 0 ;
 }
-
-#else  /* ifdef PRIMME */
-
-/* Stub to allow compilation (but not execution) in case PRIMME is not available */
-
-int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal, ks_eigen_param *eigen_param, int init)
-{
-  node0_printf("ks_eigensolve_PRIMME: Requires compilation with the PRIMME package\n");
-  terminate(1);
-
-  return 0;
-}
-
-#endif
