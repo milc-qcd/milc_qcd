@@ -33,7 +33,9 @@ then
   echo "Fetching ${GIT_BRANCH} branch of Grid package from github"
   git clone ${GIT_REPO} -b ${GIT_BRANCH}
 else
+  pushd ${SRCDIR}
   git checkout ${GIT_BRANCH}
+  popd
 fi
 
 # Fetch Eigen package, set up Make.inc files and create Grid configure
@@ -134,18 +136,20 @@ then
 	# Perlmutter ./build-Grid.sh gpu-cuda cc CC
 	${SRCDIR}/configure \
              --prefix ${INSTALLDIR}       \
-	     --enable-comms=mpi3          \
-	     --enable-comms-threads       \
-	     --enable-simd=GPU            \
-	     --enable-shm=no              \
+	     --enable-comms=mpi3-auto     \
+	     --enable-shm=nvlink          \
              --enable-gen-simd-width=64   \
-	     --enable-accelerator=cuda    \
-	     --disable-fermion-reps       \
-	     --enable-unified             \
-	     --disable-gparity            \
+	     --enable-simd=GPU \
+	     --enable-accelerator=cuda \
+	     --enable-setdevice \
+	     --disable-accelerator-cshift \
+	     --disable-fermion-reps \
+	     --disable-unified \
+	     --disable-gparity \
              --host=x86_64-unknown-linux-gnu \
+	     --with-gmp=${HOME}/perlmutter/gmp \
 	     --with-mpfr=${HOME}/perlmutter/mpfr \
-	     --with-hdf5=${HOME}/perlmutter/hdf5 \
+	     --with-hdf5=${HDF5_ROOT} \
 	     --with-lime=${HOME}/perlmutter/quda/install/lib \
              CXX="nvcc"                \
 	     LDFLAGS="-cudart shared " \
