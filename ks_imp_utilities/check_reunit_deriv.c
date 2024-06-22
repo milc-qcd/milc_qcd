@@ -12,6 +12,11 @@
 #error "Requires QIO compilation"
 #endif
 
+#ifdef HAVE_GRID
+#include "../include/mGrid/mGrid.h"  /* For GRID_info_t */
+extern GRID_4Dgrid *grid_full;
+#endif
+
 static void ranmat(su3_matrix *mat)
 {
   int i,j,k,dir;
@@ -50,8 +55,8 @@ static void check_answer(su3_matrix *dW, su3_matrix *ansdW, Real tol){
       diff = sqrt(realtrace_su3( &diffmat, &diffmat ));
       norm = sqrt(realtrace_su3( tmat, tmat));
       if(diff > tol * norm){
-	printf("Intolerable relative difference %e node %d site %d\n",
-	       diff/norm,this_node,i);
+	printf("Intolerable relative difference %e node %d site %d dir %d\n",
+	       diff/norm,this_node,i,dir);
 	dumpmat(dW + 4*i + dir);
 	dumpmat(tmat);
       }
@@ -73,7 +78,7 @@ static void check_answer(su3_matrix *dW, su3_matrix *ansdW, Real tol){
 
 /* Pretend that Q contains the old accumulated force, and V contains the link matrices
    to be unitarized. Then W contains the unitarized link matrices.
-   Calculate the derivatives of W with respect to and W^+ with respect to V:
+   Calculate the derivatives of W with respect to respect to V:
    dW/dV and d(W^+)/dV (at fixed V^+ !), where W=V(V^+V)^-1/2 
    Return dW = Tr[Q dW/dV) + Tr(Q^+ dW+/dV) */
 
@@ -107,6 +112,17 @@ static void milc_u3_reunit_deriv( info_t info, su3_matrix *V, su3_matrix *dW, su
   }
 }
 
+#ifdef HAVE_GRID
+static void
+extract_grid_info( info_t *info, GRID_info_t *grid_info ){
+  info->final_sec = grid_info->final_sec;
+  info->final_flop = grid_info->final_flop;
+  info->status = grid_info->status;
+  info->count1 = grid_info->count1;
+  info->count2 = grid_info->count2;
+}
+#endif
+
 void check_reunitarization_derivative( char *ansfilein, int ansflagin,
 				       char *ansfileout, int ansflagout )
 {
@@ -116,7 +132,7 @@ void check_reunitarization_derivative( char *ansfilein, int ansflagin,
 #if (MILC_PRECISION == 1)
   Real tol = 1e-3;
 #else
-  Real tol = 1e-5;
+  Real tol = 1e-8;
 #endif
   int ff_prec = MILC_PRECISION;  /* Just use prevailing precision for now */
 
@@ -136,17 +152,22 @@ void check_reunitarization_derivative( char *ansfilein, int ansflagin,
   ranmat(V);
   ranmat(Q);
 
+  info_t info = INFO_ZERO;
+
 #ifdef HAVE_GRID
   {
+    GRID_info_t grid_info = GRID_INFO_ZERO;
+    
     node0_printf("Calling for unitarization derivative via Grid\n"); fflush(stdout);
     if(MILC_PRECISION == 1)
-      GRID_u3_reunit_deriv_F( info, V, dW, Q);
+      GRID_F3_reunit_deriv( &grid_info, V, dW, Q, grid_full);
     else
-      GRID_u3_reunit_deriv_D( info, V, dW, Q);
+      GRID_D3_reunit_deriv( &grid_info, V, dW, Q, grid_full);
+
+    extract_grid_info( &info, &grid_info );
   }
 #else
   {
-    info_t info = INFO_ZERO;
     node0_printf("Calling for unitarization derivative via MILC\n"); fflush(stdout);
     milc_u3_reunit_deriv( info, V, dW, Q );
   }
