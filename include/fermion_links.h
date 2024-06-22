@@ -10,6 +10,7 @@
 #include <quark_action.h>
 #include "../include/imp_ferm_links.h"
 #include "../include/ks_action_paths.h"
+#include "../include/info.h"
 
 #ifdef HAVE_QOP
 #include "../include/ks_action_coeffs_qop.h"
@@ -181,19 +182,44 @@ void fermion_force_multi_hisq_D( Real eps, Real *residues,
 /* fermion_force_fn_multi.c */
 
 enum ks_multiff_opt_t {ASVEC, FNMAT, FNMATREV};
-  
-const char *ks_multiff_opt_chr( void );
-
-void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
-			     int nterms, int prec, fermion_links_t *fn);
 void fermion_force_fn_multi( Real eps, Real *residues, su3_vector **multi_x, 
 			     int nterms, int prec, fermion_links_t *fn);
+const char *ks_multiff_opt_chr( void );
+
 void fermion_force_fn_multi_reverse( Real eps, Real *residues, 
 				     su3_vector **multi_x, int nterms,
 				     fermion_links_t *fn);
+/* fermion_force_hisq_multi.c */
+
+void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
+			     int nterms, int prec, fermion_links_t *fn);
 void show_hisq_force_opts( void );
 void show_su3_mat_opts( void );
 void show_hisq_links_opts( void );
+
+/* fermion_force_hisq_multi.c */
+
+void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
+			     int nterms, int prec, fermion_links_t *fl);
+const char *ks_multiff_opt_chr( void );
+
+/* fermion_force_hisq_multi_cpu.c */
+
+void fermion_force_multi_hisq_cpu( info_t *info, int prec, Real eps, Real *residues,
+				   su3_vector **multi_x, int nterms,
+				   fermion_links_t *fl);
+
+/* fermion_force_hisq_multi_grid.c */
+
+void fermion_force_multi_hisq_grid(info_t* info, int prec, Real eps, Real *residues, 
+				   su3_vector **multi_x, int nterms,
+				   fermion_links_t *fl);
+
+/* fermion_force_hisq_multi_quda.c */
+
+void fermion_force_multi_hisq_quda(info_t* info, int prec, Real eps, Real *residues, 
+				   su3_vector **multi_x, int nterms,
+				   fermion_links_t *fl);
 
 /* Temporary, until we move completely to field-based gauge links */
 /* fermion_links_from_site.c */
