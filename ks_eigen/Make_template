@@ -67,6 +67,8 @@ else ifeq ($(strip ${HAVEARPACK}),true)
   ADDDEFINES += -DARPACK
 else ifeq ($(strip ${HAVE_GRID}),true)
   ADDDEFINES += -DGrid_EIG
+else ifeq ($(strip ${HAVE_EIG_QUDA}),true)
+  ADDDEFINES += -DUSE_EIG_GPU
 else
   ADDDEFINES += -DKalkreuter_Ritz
 endif
