@@ -105,9 +105,6 @@ int main(int argc, char *argv[])
 #ifdef HISQ_SVD_COUNTER
     hisq_svd_counter = 0;
 #endif
-#ifdef HYPISQ_SVD_COUNTER
-    hypisq_svd_counter = 0;
-#endif
     
     /**************************************************************/
     /* Compute Dirac eigenpairs           */
