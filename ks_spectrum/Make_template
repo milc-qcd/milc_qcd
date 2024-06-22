@@ -58,14 +58,12 @@ LAYOUT = layout_hyper_prime.o # Choices possible here
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG}
 
-# Always use PRIMME if it is provided
-ifeq ($(strip ${HAVEPRIMME}),true)
-  ADDDEFINES += -DPRIMME
-# Always use ARPACK if it is provided
-else ifeq ($(strip ${HAVEARPACK}),true)
-  ADDDEFINES += -DARPACK
-else
-  ADDDEFINES += -DKalkreuter_Ritz
+# Always use ARPACK or PRIMME if they are provided
+# Otherwise, Kalkreuter_Ritz
+ifneq ($(strip ${HAVEPRIMME}),true)
+  ifneq ($(strip ${HAVEARPACK}),true)
+    ADDDEFINES += -DKalkreuter_Ritz
+  endif
 endif
 
 DEFLATE_OBJECTS = \

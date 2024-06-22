@@ -6,7 +6,7 @@
 
 #include "generic_ks_includes.h"
 
-#if defined(HAVE_QUDA) && defined(USE_GSMEAR_QUDA)
+#if defined(HAVE_QUDA) && defined(USE_GSMEAR_GPU)
 
 #include <string.h>
 #include <assert.h>

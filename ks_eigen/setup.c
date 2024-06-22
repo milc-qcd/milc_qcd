@@ -251,17 +251,17 @@ int readin(int prompt) {
     /* eigenvector output */
     IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
 					param.ks_eigen_savefile);
-#if defined(PRIMME)
+#if defined(HAVEPRIMME)
     /* PRIMME */
     IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
     IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart );
     IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
-#elif defined(ARPACK)
+#elif defined(HAVEARPACK)
     /* ARPACK */
     IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
     IF_OK status += get_i(stdin, prompt,"nArnoldi", &param.eigen_param.nArnoldi );
     IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
-#elif defined(Grid_EIG)
+#elif defined(HAVE_GRID) && defined(USE_EIG_GPU)
     /* Grid */
     IF_OK status += get_i(stdin, prompt, "Max_Lanczos_restart_iters", &param.eigen_param.MaxIter );
     IF_OK status += get_f(stdin, prompt, "eigenval_tolerance", &param.eigen_param.tol );
@@ -272,7 +272,7 @@ int readin(int prompt) {
     IF_OK status += get_f(stdin, prompt, "Chebyshev_beta", &param.eigen_param.poly.maxE );
     IF_OK status += get_i(stdin, prompt, "Chebyshev_order", &param.eigen_param.poly.norder );
     IF_OK status += get_s(stdin, prompt, "diag_algorithm", param.eigen_param.diagAlg );
-#elif defined(USE_EIG_GPU)
+#elif defined(HAVE_QUDA) && defined(USE_EIG_GPU)
     /* QUDA */
     IF_OK status += get_i(stdin, prompt, "Max_Lanczos_restart_iters", &param.eigen_param.MaxIter );    
     IF_OK status += get_f(stdin, prompt, "eigenval_tolerance", &param.eigen_param.tol );
@@ -292,14 +292,14 @@ int readin(int prompt) {
 
 #ifdef POLY_EIGEN
     /* Chebyshev preconditioner */
-#ifdef ARPACK
+#ifdef HAVEARPACK
     IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
 #endif
     IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
     IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
     IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
     
-#ifdef ARPACK
+#ifdef HAVEARPACK
     IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
     IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
     IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );

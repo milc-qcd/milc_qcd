@@ -115,7 +115,7 @@ poly( double am, double aM, int p, double x) {
 
 /* Use Chebyshev preconditioned operator p(DdagD) vec */
 
-#if defined(PRIMME) || defined(ARPACK)
+#if defined(HAVEPRIMME) || defined(HAVEARPACK)
 static void 
 PDdagD( su3_vector *res, su3_vector *src, ks_eigen_param *eigen_param, imp_ferm_links_t *fn )
 
@@ -218,7 +218,7 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res,
 }
 
 /*****************************************************************************/
-#if defined(PRIMME) || defined(ARPACK)
+#if defined(HAVEPRIMME) || defined(HAVEARPACK)
 
 /* The Matrix_Vec_mult and cleanup_Matrix() */
 

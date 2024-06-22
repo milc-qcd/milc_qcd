@@ -305,7 +305,7 @@ typedef struct {
   double eigmax;
 } ks_eigen_poly;
 
-#if defined(PRIMME)
+#if defined(HAVEPRIMME)
 #define ks_eigensolve ks_eigensolve_PRIMME
 typedef struct {
   int Nvecs ; /* number of eigenvectors */
@@ -318,7 +318,7 @@ typedef struct {
   int parity; 
   ks_eigen_poly poly; /* Preconditioning polynomial */
 } ks_eigen_param;
-#elif defined(ARPACK)
+#elif defined(HAVEARPACK)
 #define ks_eigensolve ks_eigensolve_ARPACK
 typedef struct {
   int Nvecs ; /* number of eigenvectors */
@@ -330,7 +330,7 @@ typedef struct {
   int parity; 
   ks_eigen_poly poly; /* Preconditioning polynomial */
 } ks_eigen_param;
-#elif defined(Grid_EIG)
+#elif defined(USE_EIG_GPU) && defined(HAVE_GRID)
 #define ks_eigensolve ks_eigensolve_Grid
 typedef struct {
   int Nvecs; /* number of eigenvectors */
@@ -344,7 +344,7 @@ typedef struct {
   char diagAlg[10];
   int parity; 
 } ks_eigen_param;
-#elif defined(USE_EIG_GPU)
+#elif defined(USE_EIG_GPU) && defined(HAVE_QUDA)
 #define ks_eigensolve ks_eigensolve_QUDA
 typedef struct {
   int Nvecs ; /* number of eigenvectors */

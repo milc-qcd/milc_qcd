@@ -443,18 +443,19 @@ WANTQUDA    ?= false
 
 ifeq ($(strip ${WANTQUDA}),true)
 
-WANT_CL_BCG_GPU ?= #true
-WANT_FN_CG_GPU ?= #true
-WANT_FL_GPU ?= #true
-WANT_FF_GPU ?= #true
-WANT_GF_GPU ?= #true
-WANT_EIG_GPU ?= #true
-WANT_GSMEAR_GPU ?= #true
-WANT_KS_CONT_GPU ?= #true
-WANT_SHIFT_GPU ?= #true
-WANT_SPIN_TASTE_GPU ?= #true
-WANT_GAUGEFIX_OVR_GPU ?= #true
-WANT_MULTIGRID ?= #true
+  WANT_CL_BCG_GPU ?= #true
+  WANT_FN_CG_GPU ?= #true
+  WANT_FL_GPU ?= #true
+  WANT_FF_GPU ?= #true
+  WANT_GF_GPU ?= #true
+  WANT_EIG_GPU ?= #true
+  WANT_GSMEAR_GPU ?= #true
+  WANT_KS_CONT_GPU ?= #true
+  WANT_SHIFT_GPU ?= #true
+  WANT_SPIN_TASTE_GPU ?= #true
+  WANT_GAUGEFIX_OVR_GPU ?= #true
+  WANT_MULTIGRID ?= #true
+
 endif
 
 ifeq ($(strip ${WANTQUDA}),true)
@@ -477,73 +478,7 @@ ifeq ($(strip ${WANTQUDA}),true)
     LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -ldl
   endif
 
-# Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
-
   CGPU += -DHAVE_QUDA
-
-  ifeq ($(strip ${WANT_CL_BCG_GPU}),true)
-    HAVE_CL_GPU = true
-    CGPU += -DUSE_CL_GPU
-  endif
-
-  ifeq ($(strip ${WANT_FN_CG_GPU}),true)
-    HAVE_FN_CG_GPU = true
-    CGPU += -DUSE_CG_GPU
-  endif
-
-  ifeq ($(strip ${WANT_GA_GPU}),true)
-    HAVE_GA_GPU = true
-    CGPU += -DUSE_GA_GPU
-  endif
-
-  ifeq ($(strip ${WANT_GF_GPU}),true)
-    HAVE_GF_GPU = true
-    CGPU += -DUSE_GF_GPU
-  endif
-
-  ifeq ($(strip ${WANT_FL_GPU}),true)
-    HAVE_FL_GPU = true
-    CGPU += -DUSE_FL_GPU
-  endif
-
-  ifeq ($(strip ${WANT_FF_GPU}),true)
-    HAVE_FF_GPU = true
-    CGPU += -DUSE_FF_GPU
-  endif
-
-  ifeq ($(strip ${WANT_EIG_GPU}),true)
-    HAVE_EIG_QUDA = true
-    CGPU += -DUSE_EIG_GPU
-  endif
-
-  ifeq ($(strip ${WANT_GSMEAR_GPU}),true)
-    HAVE_GSMEAR_QUDA = true
-    CGPU += -DUSE_GSMEAR_QUDA
-  endif
-
-  ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
-    HAVE_KS_CONT_GPU = true
-    CGPU += -DUSE_KS_CONT_GPU
-  endif
-
-  ifeq ($(strip ${WANT_SHIFT_GPU}),true)
-    HAVE_SHIFT_GPU = true
-    CGPU += -DUSE_SHIFT_GPU
-  endif
-
-  ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
-    HAVE_SPIN_TASTE_GPU = true
-    CGPU += -DUSE_SPIN_TASTE_GPU
-  endif
-
-  ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
-    HAVE_GAUGEFIX_OVR_QUDA = true
-    CGPU += -DUSE_GAUGEFIX_OVR_GPU
-  endif
-
-  ifeq ($(strip ${WANT_MULTIGRID}),true)
-    CGPU += -DMULTIGRID
-  endif
 
 # Verbosity choices:
 # SET_QUDA_SILENT, SET_QUDA_SUMMARIZE, SET_QUDA_VERBOSE, SET_QUDA_DEBUG_VERBOSE
@@ -560,7 +495,6 @@ ifeq ($(strip ${WANTQUDA}),true)
   endif
 
 endif
-
 
 
 #----------------------------------------------------------------------
@@ -1142,6 +1076,72 @@ MAKELIBRARIES = Make_vanilla
 #----------------------------------------------------------------------
 # End of user choices.  Please, also, check choices in include/config.h.
 #----------------------------------------------------------------------
+
+# Definitions of compiler macros -- don't change.
+
+ifeq ($(strip ${WANT_CL_BCG_GPU}),true)
+  HAVE_CL_GPU = true
+  CGPU += -DUSE_CL_GPU
+endif
+
+ifeq ($(strip ${WANT_FN_CG_GPU}),true)
+  HAVE_FN_CG_GPU = true
+  CGPU += -DUSE_CG_GPU
+endif
+
+ifeq ($(strip ${WANT_GA_GPU}),true)
+  HAVE_GA_GPU = true
+  CGPU += -DUSE_GA_GPU
+endif
+
+ifeq ($(strip ${WANT_GF_GPU}),true)
+  HAVE_GF_GPU = true
+  CGPU += -DUSE_GF_GPU
+endif
+
+ifeq ($(strip ${WANT_FL_GPU}),true)
+  HAVE_FL_GPU = true
+  CGPU += -DUSE_FL_GPU
+endif
+
+ifeq ($(strip ${WANT_FF_GPU}),true)
+  HAVE_FF_GPU = true
+  CGPU += -DUSE_FF_GPU
+endif
+
+ifeq ($(strip ${WANT_EIG_GPU}),true)
+  HAVE_EIG_GPU = true
+  CGPU += -DUSE_EIG_GPU
+endif
+
+ifeq ($(strip ${WANT_GSMEAR_GPU}),true)
+  HAVE_GSMEAR_GPU = true
+  CGPU += -DUSE_GSMEAR_GPU
+endif
+
+ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
+  HAVE_KS_CONT_GPU = true
+  CGPU += -DUSE_KS_CONT_GPU
+endif
+
+ifeq ($(strip ${WANT_SHIFT_GPU}),true)
+  HAVE_SHIFT_GPU = true
+  CGPU += -DUSE_SHIFT_GPU
+endif
+
+ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
+  HAVE_SPIN_TASTE_GPU = true
+  CGPU += -DUSE_SPIN_TASTE_GPU
+endif
+
+ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
+  HAVE_GAUGEFIX_OVR_GPU = true
+  CGPU += -DUSE_GAUGEFIX_OVR_GPU
+endif
+
+ifeq ($(strip ${WANT_MULTIGRID}),true)
+  CGPU += -DMULTIGRID
+endif
 
 ifeq ($(strip ${OMP}),true)
   OCFLAGS += -DOMP
