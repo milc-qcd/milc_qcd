@@ -65,8 +65,8 @@ else ifeq ($(strip ${COMPILER}),gnu)
     MY_CC ?= mpicc
     MY_CXX ?= mpiCC
   else
-    MY_CC  ?= gcc
-    MY_CXX ?= g++
+    MY_CC  ?= gcc-8
+    MY_CXX ?= g++-8
   endif
 
 else ifeq ($(strip ${COMPILER}),ibm)
@@ -127,7 +127,7 @@ OMP ?= #true
 ifeq ($(strip ${COMPILER}),gnu)
 
   OCFLAGS += -std=c99
-  OCXXFLAGS += -std=c++17
+  OCXXFLAGS += -std=gnu++17
 
   ifeq ($(strip ${ARCH}),pow8)
     ARCH_FLAG = -mcpu=power8
@@ -234,8 +234,8 @@ ifeq ($(strip ${COMPILER}),cray-intel)
   OCFLAGS += ${ARCH_FLAG}
   OCXXFLAGS += ${ARCH_FLAG}
   LDFLAGS += ${ARCH_FLAG}
-  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
-  OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCFLAGS += # -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCXXFLAGS += # -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
 
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
@@ -478,6 +478,7 @@ ifeq ($(strip ${WANTQUDA}),true)
     LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -ldl
   endif
 
+  HAVE_QUDA = true
   CGPU += -DHAVE_QUDA
 
 # Verbosity choices:
@@ -609,11 +610,11 @@ endif
 
 ifeq ($(strip ${WANTGRID}),true)
 
-  WANT_FN_CG_GPU ?= #true    // Automatic for now
-  WANT_FL_GPU ?= #true       // Under development
-  WANT_FF_GPU ?= #true       // Future
-  WANT_GF_GPU ?= #true       // Future
-  WANT_EIG_GPU ?= #true     // Automatic for now
+  WANT_FN_CG_GPU ?= #true
+  WANT_FL_GPU ?= #true       # Under development
+  WANT_FF_GPU ?= #true       # Future
+  WANT_GF_GPU ?= #true       # Future
+  WANT_EIG_GPU ?= #true
 
 endif
 
