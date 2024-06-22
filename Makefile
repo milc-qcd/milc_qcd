@@ -392,7 +392,7 @@ endif
 # Utah physics and math Redhat-linux
 # LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran
 
-# Utah physics and math Centos-linux.  Must link with gfortran. 
+# Utah physics and math Centos-linux.  Must link with gfortran. Incompatible with Grid!
 # LIBLAPACK = -L/usr/local/lib64 -llapack -lblas
 # LDLAPACK = gfortran
 

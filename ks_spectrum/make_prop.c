@@ -94,12 +94,22 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 
   for(int j = 1; j < num_prop; j++){
     if(my_qic[j].resid != my_qic[0].resid){
-      node0_printf("ERROR: %s: inversion error parameter mismatch within set\n", myname);
-      terminate(1);
+      if(set_type == MULTIMASS_SET){
+	node0_printf("WARNING: %s: inversion error parameters do not match within the set\n", myname);
+	node0_printf("WARNING: %s: will correct this in the refinement step.\n", myname);
+      } else {
+	node0_printf("ERROR: %s: found a nonmatching inversion error parameter the set\n", myname);
+	terminate(1);
+      }
     }
     if(my_ksp[j].naik_term_epsilon_index != my_ksp[0].naik_term_epsilon_index){
-      node0_printf("ERROR: %s: Naik epsilon  mismatch within set\n", myname);
-      terminate(1);
+      if(set_type == MULTIMASS_SET){
+	node0_printf("WARNING: %s: Naik parameters do not match within the set\n", myname);
+	node0_printf("WARNING: %s: will correct for this in the refinement step.\n", myname);
+      } else {
+	node0_printf("ERROR: %s: Naik epsilon  mismatch within set\n", myname);
+	terminate(1);
+      }
     }
     if(source[j]->nc != source[0]->nc){
       node0_printf("ERROR: %s: Source color mismatch within set\n", myname);
