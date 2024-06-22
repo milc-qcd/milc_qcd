@@ -25,18 +25,16 @@ MY_HEADERS = \
   lattice_qdp.h \
   params.h \
   defines.h \
-  ks_imp_includes.h \
+  ks_imp_utilities_includes.h \
   quark_action.h \
   gauge_action.h
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
 MY_OBJECTS= \
-  control.o \
   gauge_info.o \
   io_helpers_ks_utils.o \
-  ks_info.o \
-  setup.o
+  ks_info.o
 
 # G_OBJECTS = \
 #   gauge_stuff.o \
@@ -129,47 +127,55 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 
 check_ks_invert::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHAVE_KS -DCHECK_INVERT" \
+	"DEFINES= -DFN -DHAVE_KS " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS=  ${FN_OBJECTS} \
-	check_invert2.o	check_ks_invert.o"
+	check_invert2.o	check_ks_invert.o \
+	control_ks_invert.o setup_ks_invert.o"
 
 check_ks_invert_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHAVE_KS -DCHECK_INVERT" \
+	"DEFINES= -DFN -DHAVE_KS -DCHECK_HISQ_INVERT " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = hisq/hisq_u3_action.h" \
-	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} \
-	check_invert2.o check_ks_invert.o"
+	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} \
+	check_ks_invert.o check_invert2.o \
+	control_ks_invert.o setup_ks_invert.o"
 
 make_links_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHAVE_KS" \
+	"DEFINES= -DFN -DHAVE_KS \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = hisq/hisq_u3_action.h" \
-	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE}"
+	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	control_link_fattening.o setup_link_fattening.o"
 
 check_link_fattening::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHAVE_KS -DLINK_FATTENING \
+	"DEFINES= -DFN -DHAVE_KS -DCHECK_FATTENING \
 	-DHISQ_REUNIT_ALLOW_SVD \
-	-DHISQ_REUNIT_SVD_REL_ERROR=1e-9 \
-	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-9" \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = hisq/hisq_u3_test_action.h" \
-	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} check_link_fattening.o"
+	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} check_link_fattening.o \
+	control_link_fattening.o setup_link_fattening.o"
 
 check_fermion_force::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHAVE_KS -DFERMION_FORCE" \
+	"DEFINES= -DFN -DHAVE_KS " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS=  ${FN_OBJECTS} ${ASQ_FORCE} check_fermion_force.o"
+	"EXTRA_OBJECTS=  ${FN_OBJECTS} ${ASQ_FORCE} check_fermion_force.o \
+	control_fermion_force.o setup_fermion_force.o"
 
 check_fermion_force_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHAVE_KS -DFERMION_FORCE \
+	"DEFINES= -DFN -DHAVE_KS \
 	-DHISQ_REUNIT_ALLOW_SVD \
 	-DHISQ_REUNIT_SVD_REL_ERROR=1e-9 \
 	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-9 \
@@ -179,7 +185,23 @@ check_fermion_force_hisq::
 	-DHISQ_FORCE_FILTER_COUNTER" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = hisq/hisq_u3_action.h" \
-	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} check_fermion_force.o"
+	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} check_fermion_force.o \
+	control_fermion_force.o setup_fermion_force.o"
+
+check_reunit_deriv::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DHAVE_KS -DREUNIT \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-9 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-9 \
+        -DHISQ_SVD_COUNTER \
+        -DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5 \
+	-DHISQ_FORCE_FILTER_COUNTER" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} check_reunit_deriv.o \
+	control_reunit_deriv.o setup_reunit_deriv.o"
 
 clean:
 	-/bin/rm -f *.o
