@@ -131,7 +131,6 @@ KS_SPECTRUM_OBJECTS = \
 	gb_baryon_mmap.o \
 	gb_baryon_snk.o \
 	gb_baryon_3pt.o \
-        gb_baryon_src.o \
 	gb_ops.o \
   ks_baryon.o \
   ks_meson_mom.o
@@ -177,9 +176,9 @@ endif
   FLINKS =  fermion_links.o fermion_links_fn_load_milc.o \
     fermion_links_fn_twist_milc.o general_staple.o fn_links_milc.o
 
-  FLINKS_FN_MILC_CPU = fermion_links_milc.o ${FLINKS} ks_action_paths.o
+  FLINKS_FN_MILC = fermion_links_milc.o ${FLINKS} ks_action_paths.o
 
-  FLINKS_HISQ_MILC_CPU = fermion_links_hisq_milc.o fermion_links_hisq_load.o \
+  FLINKS_HISQ_MILC = fermion_links_hisq_milc.o fermion_links_hisq_load.o \
     ${FLINKS} ks_action_paths_hisq.o su3_mat_op.o stout_smear.o
 
   FLINKS_EO_MILC = fermion_links.o fermion_links_milc.o fermion_links_eo_load_milc.o \
@@ -187,26 +186,21 @@ endif
 
 # QUDA support
 
-  FLINKS_FN_MILC_QUDA = fermion_links_milc.o \
+  FLINKS_FN_QUDA = fermion_links_milc.o \
 	fermion_links_fn_load_quda.o \
 	${FLINKS} ks_action_paths.o
 
-  FLINKS_HISQ_MILC_QUDA = fermion_links_hisq_milc.o \
+  FLINKS_HISQ_QUDA = fermion_links_hisq_milc.o \
 	fermion_links_hisq_load_quda.o \
 	fermion_links_hisq_load.o \
 
-  FLINKS_HISQ_MILC_GPU = fermion_links_hisq_milc.o \
-	fermion_links_fn_load_gpu.o \
-	fermion_links_hisq_load_milc.o \
-	${FLINKS} ks_action_paths_hisq.o su3_mat_op.o stout_smear.o
-
 # GRID support
 
-  FLINKS_FN_MILC_GRID = fermion_links_milc.o \
-	fermion_links_hisq_load_grid.o fermion_links_fn_load_grid_D.o fermion_links_fn_load_grid_F.o \
+  FLINKS_FN_GRID = fermion_links_milc.o \
+	fermion_links_hisq_load_grid.o fermion_links_hisq_load_grid_D.o fermion_links_hisq_load_grid_F.o \
 	gridHISQLinks.o ${FLINKS} ks_action_paths.o
 
-  FLINKS_HISQ_MILC_GRID = fermion_links_hisq_milc.o \
+  FLINKS_HISQ_GRID = fermion_links_hisq_milc.o \
   	fermion_links_hisq_load.o \
 	fermion_links_hisq_load_grid.o fermion_links_hisq_load_grid_D.o fermion_links_hisq_load_grid_F.o \
 	gridHISQLinks.o ${FLINKS} ks_action_paths_hisq.o su3_mat_op.o stout_smear.o
@@ -227,16 +221,25 @@ endif
   FLINKS_EO_QOP = ${FLINKS_EO_MILC}
 
 ifeq ($(strip ${HAVE_FL_GPU}),true)
-ifeq ($(strip ${HAVE_QUDA}),true)
-  FLINKS_FN_MILC = ${FLINKS_FN_MILC_QUDA}
-  FLINKS_HISQ_MILC = ${FLINKS_HISQ_MILC_QUDA}
-else ifeq ($(strip ${HAVE_GRID}),true)
-  FLINKS_FN_MILC = ${FLINKS_FN_MILC_GRID}
-  FLINKS_HISQ_MILC = ${FLINKS_HISQ_MILC_GRID}
-endif
+  ifeq ($(strip ${HAVE_QUDA}),true)
+    FLINKS_FN = ${FLINKS_FN_QUDA}
+    FLINKS_EO = ${FLINKS_EO_MILC}
+    FLINKS_HISQ = ${FLINKS_HISQ_QUDA}
+  else ifeq ($(strip ${HAVE_GRID}),true)
+    FLINKS_FN = ${FLINKS_FN_GRID}
+    FLINKS_EO = ${FLINKS_EO_MILC}
+    FLINKS_HISQ = ${FLINKS_HISQ_GRID}
+  endif
 else
-  FLINKS_FN_MILC = ${FLINKS_FN_MILC_CPU}
-  FLINKS_HISQ_MILC = ${FLINKS_HISQ_MILC_CPU}
+  ifeq ($(strip ${HAVEQOP}),true)
+    FLINKS_FN     = ${FLINKS_FN_QOP}
+    FLINKS_EO     = ${FLINKS_EO_QOP}
+    FLINKS_HISQ   = ${FLINKS_HISQ_QOP}
+  else
+    FLINKS_FN = ${FLINKS_FN_MILC}
+    FLINKS_EO = ${FLINKS_EO_MILC}
+    FLINKS_HISQ = ${FLINKS_HISQ_MILC}
+  endif
 endif
 
 ######################################################################
@@ -355,38 +358,55 @@ endif
 # Staggered fermion force routines
 ######################################################################
 
-# Standard MILC combinations
+# Standard MILC CPU combinations
 
-  FORCE = show_hisq_force_opts.o ff_opt.o 
+  ASQ_FORCE_MILC  = fermion_force_asqtad.o fermion_force_multi.o \
+	fermion_force_fn_multi.o ff_opt.o
 
-  ASQ_FORCE_MILC_CPU  = fermion_force_asqtad.o fermion_force_multi.o \
-	fermion_force_fn_multi.o ${FORCE}
+  HISQ_FORCE_MILC = fermion_force_hisq_multi.o fermion_force_hisq_multi_cpu.o \
+        show_hisq_force_opts.o
 
-  HISQ_FORCE_MILC_CPU = fermion_force_hisq_multi.o ${FORCE}
+# For 2 and 2+1 flavor (one-term and two-term only)
 
-# No other choice
-  EO_FORCE   = fermion_force_eo_milc.o ${FORCE}
+  EO_FORCE  = fermion_force_eo_milc.o show_hisq_force_opts.o
 
-# GPU support
-
-  ASQ_FORCE_MILC_GPU = ${ASQ_FORCE_MILC_CPU} fermion_force_asqtad_gpu.o
-
-  HISQ_FORCE_MILC_GPU = ${HISQ_FORCE_MILC_CPU}
-
-# Standard QOP combinations
+# QOP support
 
   ASQ_FORCE_QOP = fermion_force_asqtad_qop.o fermion_force_asqtad_qop_F.o \
-     fermion_force_asqtad_qop_D.o ${FORCE}
+     fermion_force_asqtad_qop_D.o ff_opt.o ${FORCE_OPTS}
 
   HISQ_FORCE_QOP = fermion_force_hisq_qop.o fermion_force_hisq_qop_F.o \
-     fermion_force_hisq_qop_D.o ${FORCE}
+     fermion_force_hisq_qop_D.o show_hisq_force_opts.o
+
+# QUDA support
+
+  ASQ_FORCE_QUDA = ${ASQ_FORCE_MILC} fermion_force_asqtad_gpu.o
+
+  HISQ_FORCE_QUDA = fermion_force_hisq_multi.o fermion_force_hisq_multi_quda.o \
+        show_hisq_force_opts.o
+
+# GRID support
+
+  HISQ_FORCE_GRID = fermion_force_hisq_multi.o fermion_force_hisq_multi_grid.o \
+        show_hisq_force_opts.o
+
+# Define ASQ_FORCE and HISQ_FORCE depending on compilation parameters
 
 ifeq ($(strip ${HAVE_FF_GPU}),true)
-  ASQ_FORCE_MILC = ${ASQ_FORCE_MILC_GPU}
-  HISQ_FORCE_MILC = ${HISQ_FORCE_MILC_GPU}
-else
-  ASQ_FORCE_MILC = ${ASQ_FORCE_MILC_CPU}
-  HISQ_FORCE_MILC = ${HISQ_FORCE_MILC_CPU}
+  ifeq ($(strip ${HAVE_QUDA}),true)
+    ASQ_FORCE = ${ASQ_FORCE_QUDA}
+    HISQ_FORCE = ${HISQ_FORCE_QUDA}
+  else ifeq ($(strip ${HAVE_GRID}),true)
+    HISQ_FORCE = ${HISQ_FORCE_GRID}
+  endif
+else	     
+  ifeq ($(strip ${HAVEQOP}),true)
+    ASQ_FORCE = ${ASQ_FORCE_QOP}
+    HISQ_FORCE = ${HISQ_FORCE_QOP}
+  else
+    ASQ_FORCE = ${ASQ_FORCE_MILC}
+    HISQ_FORCE = ${HISQ_FORCE_MILC}
+  endif
 endif
 
 ######################################################################
@@ -466,26 +486,16 @@ endif
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
   CONGRAD_CL    = ${CONGRAD_CL_QOP}
-  FLINKS_EO     = ${FLINKS_EO_QOP}
-  FLINKS_FN     = ${FLINKS_FN_QOP}
-  FLINKS_HISQ   = ${FLINKS_HISQ_QOP}
   DSLASH_FN     = ${DSLASH_FN_QOP}
   CONGRAD_FN    = ${CONGRAD_FN_QOP}
   MULTI_INV_FN  = ${MULTI_INV_FN_QOP}
   GAUGE_FORCE   = ${GAUGE_FORCE_QOP}
-  ASQ_FORCE     = ${ASQ_FORCE_QOP}
-  HISQ_FORCE    = ${HISQ_FORCE_QOP}
 else
   CONGRAD_CL    = ${CONGRAD_CL_MILC}
-  FLINKS_EO     = ${FLINKS_EO_MILC}
-  FLINKS_FN     = ${FLINKS_FN_MILC}
-  FLINKS_HISQ   = ${FLINKS_HISQ_MILC}
   DSLASH_FN     = ${DSLASH_FN_MILC}
   CONGRAD_FN    = ${CONGRAD_FN_MILC}
   MULTI_INV_FN  = ${MULTI_INV_FN_MILC}
   GAUGE_FORCE   = ${GAUGE_FORCE_MILC}
-  ASQ_FORCE     = ${ASQ_FORCE_MILC}
-  HISQ_FORCE    = ${HISQ_FORCE_MILC}
 endif
 
 ######################################################################
