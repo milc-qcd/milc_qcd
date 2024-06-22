@@ -149,15 +149,9 @@ main( int argc, char **argv )
 #ifdef HISQ_SVD_COUNTER
       printf("hisq_svd_counter = %d\n",hisq_svd_counter);
 #endif
-#ifdef HYPISQ_SVD_COUNTER
-      printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
-#endif
       
 #ifdef HISQ_FORCE_FILTER_COUNTER
       printf("hisq_force_filter_counter = %d\n",hisq_force_filter_counter);
-#endif
-#ifdef HYPISQ_FORCE_FILTER_COUNTER
-      printf("hypisq_force_filter_counter = %d\n",hypisq_force_filter_counter);
 #endif
     }
     fflush(stdout);
