@@ -7,7 +7,7 @@
 
 /* This code performs and/or checks the KS inversion */
 
-#include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "ks_imp_utilities_includes.h"	/* definitions files and prototypes */
 #include "params.h"
 #ifdef HAVE_QIO
 #include <qio.h>
