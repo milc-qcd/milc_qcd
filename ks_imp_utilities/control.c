@@ -7,7 +7,7 @@
    and/or compares with a standard file, the fermion force calculation */
 
 #define CONTROL
-#include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "ks_imp_utilities_includes.h"	/* definitions files and prototypes */
 #ifdef HAVE_QIO
 #include <qio.h>
 #endif
@@ -68,6 +68,8 @@ int main( int argc, char **argv ){
 			 param.ansflag[0], param.nmass, param.ksp);
 #elif defined(LINK_FATTENING)
     check_link_fattening( param.ansfile[0], param.ansflag[0], param.ansfile[1], param.ansflag[1] );
+#elif defined(REUNIT)
+    check_reunitarization( param.ansfile[0], param.ansflag[0], param.ansfile[1], param.ansflag[1] );
 #endif
     
     /* save lattice if requested */
