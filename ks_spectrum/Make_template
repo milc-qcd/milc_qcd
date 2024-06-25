@@ -56,25 +56,7 @@ G_U1_OBJECTS =       \
 
 LAYOUT = layout_hyper_prime.o # Choices possible here
 
-ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG}
-
-# Always use ARPACK or PRIMME if they are provided
-# Otherwise, Kalkreuter_Ritz
-ifneq ($(strip ${HAVEPRIMME}),true)
-  ifneq ($(strip ${HAVEARPACK}),true)
-    ADDDEFINES += -DKalkreuter_Ritz
-  endif
-endif
-
-DEFLATE_OBJECTS = \
- eigen_stuff_helpers.o \
- io_helpers_ks_eigen.o \
- io_ks_eigen.o \
- jacobi.o
-
-ifeq ($(strip ${HAVEQIO}),true)
-  DEFLATE_OBJECTS += io_scidac_ks_eigen.o
-endif
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} read_eigen_param.o
 
 OBJECTS = \
   ${MY_OBJECTS} \
@@ -85,24 +67,12 @@ OBJECTS = \
   ${FERMION_OBJECTS} \
   ${KS_SPECTRUM_OBJECTS} \
   ${STANDARD_OBJECTS} \
-  ${DEFLATE_OBJECTS} \
+  ${EIGEN_OBJECTS} \
   ${ADD_OBJECTS} \
   ${EXTRA_OBJECTS}
 
 EIGCG_OBJECTS = \
  inc_eigcg.o
-
-# Selection of eigensolver program
-ifeq ($(strip ${HAVEQOP}),true)
-# Interface to access QOP (not supported, so use default)
-  DEFLATE_OBJECTS += eigen_stuff_Ritz.o
-  DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
-else ifeq ($(strip ${HAVEQDP}),true)
-  DEFLATE_OBJECTS += eigen_stuff_qdp.o
-else
-  DEFLATE_OBJECTS += eigen_stuff_Ritz.o
-  DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
-endif
 
 #Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
