@@ -243,46 +243,12 @@ int readin(int prompt) {
       
       if(param.ks_eigen_startflag == FRESH){
 	
-	/* max  Rayleigh iterations */
-	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
-	
-	/* Restart  Rayleigh every so many iterations */
-	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
-	
-	/* Kalkreuter iterations */
-	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
-	
-	/* Tolerance for the eigenvalue computation */
-	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
-	
-	/* error decrease per Rayleigh minimization */
-	IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
-	
-#ifdef POLY_EIGEN
-	/* Chebyshev preconditioner */
-#ifdef HAVEARPACK
-	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
-#endif
-	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
-	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
-	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
-	
-#ifdef HAVEARPACK
-	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
-	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
-	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
-#endif
-#endif
-      } else {
-	param.eigen_param.MaxIter = 0;
-	param.eigen_param.Restart = 0;
-	param.eigen_param.Kiters = 0;
-	param.eigen_param.tol = 0;
-	param.eigen_param.error_decr = 0.0;
+	status += read_ks_eigen_param(&param.eigen_param, status, prompt);
+
       }
+    }
 
 #endif
-    }
 
     /*------------------------------------------------------------*/
     /* Chiral condensate and related quantities                   */

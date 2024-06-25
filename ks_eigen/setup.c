@@ -251,61 +251,12 @@ int readin(int prompt) {
     /* eigenvector output */
     IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
 					param.ks_eigen_savefile);
-#if defined(HAVEPRIMME)
-    /* PRIMME */
-    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
-    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart );
-    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
-#elif defined(HAVEARPACK)
-    /* ARPACK */
-    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
-    IF_OK status += get_i(stdin, prompt,"nArnoldi", &param.eigen_param.nArnoldi );
-    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
-#elif defined(HAVE_GRID) && defined(USE_EIG_GPU)
-    /* Grid */
-    IF_OK status += get_i(stdin, prompt, "Max_Lanczos_restart_iters", &param.eigen_param.MaxIter );
-    IF_OK status += get_f(stdin, prompt, "eigenval_tolerance", &param.eigen_param.tol );
-    IF_OK status += get_i(stdin, prompt, "Lanczos_max", &param.eigen_param.Nmax );
-    IF_OK status += get_i(stdin, prompt, "Lanczos_restart", &param.eigen_param.Nrestart );
-    IF_OK status += get_i(stdin, prompt, "Lanczos_reorth_period", &param.eigen_param.reorth_period );
-    IF_OK status += get_f(stdin, prompt, "Chebyshev_alpha", &param.eigen_param.poly.minE );
-    IF_OK status += get_f(stdin, prompt, "Chebyshev_beta", &param.eigen_param.poly.maxE );
-    IF_OK status += get_i(stdin, prompt, "Chebyshev_order", &param.eigen_param.poly.norder );
-    IF_OK status += get_s(stdin, prompt, "diag_algorithm", param.eigen_param.diagAlg );
-#elif defined(HAVE_QUDA) && defined(USE_EIG_GPU)
-    /* QUDA */
-    IF_OK status += get_i(stdin, prompt, "Max_Lanczos_restart_iters", &param.eigen_param.MaxIter );    
-    IF_OK status += get_f(stdin, prompt, "eigenval_tolerance", &param.eigen_param.tol );
-    IF_OK status += get_i(stdin, prompt, "Lanczos_max", &param.eigen_param.Nkr );
-    IF_OK status += get_f(stdin, prompt, "Chebyshev_alpha", &param.eigen_param.poly.minE );
-    IF_OK status += get_f(stdin, prompt, "Chebyshev_beta", &param.eigen_param.poly.maxE );
-    IF_OK status += get_i(stdin, prompt, "Chebyshev_order", &param.eigen_param.poly.norder );
-    IF_OK status += get_i(stdin, prompt, "block_size", &param.eigen_param.blockSize );
-#else
-    /* Kalkreuter_Ritz */
-    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter );
-    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart );
-    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters );
-    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol );
-    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
-#endif
-
-#ifdef POLY_EIGEN
-    /* Chebyshev preconditioner */
-#ifdef HAVEARPACK
-    IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
-#endif
-    IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
-    IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
-    IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
+    /*------------------------------------------------------------*/
+    /* Dirac eigenpair parameters                                 */
+    /*------------------------------------------------------------*/
     
-#ifdef HAVEARPACK
-    IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
-    IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
-    IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
-#endif
-#endif
-	
+    status += read_ks_eigen_param(&param.eigen_param, status, prompt);
+    
     /* End of input fields */
     if( status > 0)param.stopflag=1; else param.stopflag=0;
   } /* end if(this_node==0) */
