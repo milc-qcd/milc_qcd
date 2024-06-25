@@ -115,7 +115,7 @@ poly( double am, double aM, int p, double x) {
 
 /* Use Chebyshev preconditioned operator p(DdagD) vec */
 
-#if defined(HAVEPRIMME) || defined(HAVEARPACK)
+#if defined(HAVE_PRIMME) || defined(HAVE_ARPACK)
 static void 
 PDdagD( su3_vector *res, su3_vector *src, ks_eigen_param *eigen_param, imp_ferm_links_t *fn )
 
@@ -218,7 +218,7 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res,
 }
 
 /*****************************************************************************/
-#if defined(HAVEPRIMME) || defined(HAVEARPACK)
+#if defined(HAVE_PRIMME) || defined(HAVE_ARPACK)
 
 /* The Matrix_Vec_mult and cleanup_Matrix() */
 
@@ -319,7 +319,7 @@ void print_densities(su3_vector *src, char *tag, int y,int z,int t,
 /* Reset the eigenvalues from the eigenvectors using the Rayleigh quotient   */
 /* (Needed when the eigenvalues are from a preconditioned operator)          */
 
-void reset_eigenvalues(su3_vector *eigVec[], double *eigVal,
+void reset_eigenvalues(su3_vector *eigVec[], Real *eigVal,
 		       int Nvecs, int parity, imp_ferm_links_t *fn)
 {
   int i,j;
@@ -398,8 +398,8 @@ static void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1,
 /* Use first-order perturbation theory to shift eigenvalues and eigenvectorsa
    from an old to a new Dslash^2 operator */
 
-void perturb_eigpair(su3_vector *eigVec_new[], double *eigVal_new,
-		     su3_vector *eigVec_old[], double *eigVal_old,
+void perturb_eigpair(su3_vector *eigVec_new[], Real *eigVal_new,
+		     su3_vector *eigVec_old[], Real *eigVal_old,
 		     int Nvecs, int parity, imp_ferm_links_t *fn_new,
 		     imp_ferm_links_t *fn_old){
 
@@ -434,7 +434,7 @@ void perturb_eigpair(su3_vector *eigVec_new[], double *eigVal_new,
 /* Check the residues and norms of the eigenvectors                          */
 /* Hiroshi Ono */
 
-void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
+void check_eigres(double *resid, su3_vector *eigVec[], Real *eigVal,
 		  int Nvecs, int parity, imp_ferm_links_t *fn){
 
   su3_vector *ttt;
@@ -507,7 +507,7 @@ static void double_vec_mult(double *a, su3_vector *vec1,
 /* Construct odd-site eigenvectors from even                                 */
 /* (Simply multiply even-site vectors by dslash and normalize                */
 
-void construct_eigen_odd(su3_vector *eigVec[], double eigVal[], 
+void construct_eigen_odd(su3_vector *eigVec[], Real eigVal[], 
 			 ks_eigen_param *eigen_param, imp_ferm_links_t *fn){
   
   char myname[] = "construct_eigen_odd";
