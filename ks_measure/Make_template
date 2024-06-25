@@ -61,15 +61,10 @@ ifeq ($(strip ${HAVEQOP}),true)
   ADD_OBJECTS += ${GENERICQOP}
 endif
 
-DEFLATE_OBJECTS = \
- eigen_stuff_helpers.o \
- gammas.o \
- io_helpers_ks_eigen.o \
- io_ks_eigen.o \
- io_scidac_ks_eigen.o \
- jacobi.o \
- spin_taste_ops.o \
- shift_field.o
+ADD_OBJECTS += \
+  gammas.o \
+  spin_taste_ops.o \
+  shift_field.o
 
 OBJECTS = \
   ${MY_OBJECTS} \
@@ -77,7 +72,7 @@ OBJECTS = \
   ${LAYOUT} \
   ${FFT_OBJECTS} \
   ${STANDARD_OBJECTS} \
-  ${DEFLATE_OBJECTS} \
+  ${EIGEN_OBJECTS} \
   ${ADD_OBJECTS} \
   ${EXTRA_OBJECTS}
 
@@ -87,9 +82,9 @@ EIGCG_OBJECTS = \
 # Selection of eigensolver program
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP (not supported, so same as below)
-  ifeq ($(strip ${HAVEPRIMME}),true)
+  ifeq ($(strip ${HAVE_PRIMME}),true)
      DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
-  else ifeq ($(strip ${HAVEARPACK}),true)
+  else ifeq ($(strip ${HAVE_ARPACK}),true)
      DEFLATE_OBJECTS += eigen_stuff_ARPACK.o
   else
      DEFLATE_OBJECTS += eigen_stuff_Ritz.o
@@ -99,9 +94,9 @@ else
   ifeq ($(strip ${HAVEQDP}),true)
     DEFLATE_OBJECTS += eigen_stuff_qdp.o
   else
-    ifeq ($(strip ${HAVEPRIMME}),true)
+    ifeq ($(strip ${HAVE_PRIMME}),true)
        DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
-    else ifeq ($(strip ${HAVEARPACK}),true)
+    else ifeq ($(strip ${HAVE_ARPACK}),true)
        DEFLATE_OBJECTS += eigen_stuff_ARPACK.o
     else
        DEFLATE_OBJECTS += eigen_stuff_Ritz.o
