@@ -21,7 +21,7 @@ extern GRID_4DRBgrid * grid_rb;
 /* Compute eigenvalues and eigenvectors of the Kogut-Susskind
  * dslash^2. */
 int ks_eigensolve_Grid( su3_vector ** eigVec,
-                        double * eigVal,
+                        Real * eigVal,
                         ks_eigen_param * eigen_param,
                         int init )
 {
