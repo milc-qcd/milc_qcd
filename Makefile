@@ -940,6 +940,10 @@ CPREFETCH = #
 # KS_MULTICG=REVHYB  Same as HYBRID but with vectors in reverse order.
 # NO_REFINE          No refinements except for masses with nonzero Naik eps
 # CPU_REFINE         Refine on CPU only (if at all), not GPU
+# PRIMME_PRECOND
+# POLY_EIGEN
+# MATVEC_PRECOND
+# CHEBYSHEV_EIGEN
 
 KSCGMULTI ?= -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
 
@@ -1198,11 +1202,13 @@ ifeq ($(strip ${WANTFFTW}),true)
 endif
 
 ifeq ($(strip ${WANTPRIMME}),true)
-  HAVEPRIMME = true
+  HAVE_PRIMME = true
+  OCFLAGS += -DHAVE_PRIMME
 endif
 
 ifeq ($(strip ${WANTARPACK}),true)
-  HAVEARPACK = true
+  HAVE_ARPACK = true
+  OCFLAGS += -DHAVE_ARPACK
 endif
 
 ifeq ($(strip ${GAUSS_SMEAR_KS_TWOLINK}),true)
