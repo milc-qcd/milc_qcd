@@ -50,24 +50,7 @@ G_U1_OBJECTS =       \
 
 LAYOUT = layout_hyper_prime.o # Choices possible here
 
-ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} jacobi.o spin_taste_ops.o shift_field.o gammas.o
-
-# Always use PRIMME if it is provided
-ifeq ($(strip ${HAVEPRIMME}),true)
-# Always use ARPACK if it is provided
-else ifeq ($(strip ${HAVEARPACK}),true)
-  ADD_OBJECTS += eigen_stuff_ARPACK.o
-else ifeq ($(strip ${HAVE_GRID}),true)
-  ADD_OBJECTS += eigen_stuff_Grid.o
-  ADD_OBJECTS += gridStaggEigen.o
-else ifeq ($(strip ${HAVE_QUDA}),true)
-  ADD_OBJECTS += eigen_stuff_QUDA.o
-else
-  ADDDEFINES += -DKalkreuter_Ritz
-  ADD_OBJECTS += eigen_stuff_Ritz.o
-endif
-
-ADD_OBJECTS += eigen_stuff_helpers.o io_helpers_ks_eigen.o io_ks_eigen.o io_scidac_ks_eigen.o
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} spin_taste_ops.o shift_field.o gammas.o
 
 OBJECTS = \
   ${MY_OBJECTS} \
@@ -75,6 +58,7 @@ OBJECTS = \
   ${GAUGE_OBJECTS} \
   ${LAYOUT} \
   ${STANDARD_OBJECTS} \
+  ${EIGEN_OBJECTS} \
   ${ADD_OBJECTS} \
   ${EXTRA_OBJECTS}
 
