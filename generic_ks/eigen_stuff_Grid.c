@@ -5,9 +5,6 @@
 /**********************************************/
 
 #include "generic_ks_includes.h"
-
-#ifdef Grid_EIG
-
 #include <string.h>
 #include <assert.h>
 
@@ -24,7 +21,7 @@ extern GRID_4DRBgrid * grid_rb;
 /* Compute eigenvalues and eigenvectors of the Kogut-Susskind
  * dslash^2. */
 int ks_eigensolve_Grid( su3_vector ** eigVec,
-                        double * eigVal,
+                        Real * eigVal,
                         ks_eigen_param * eigen_param,
                         int init )
 {
@@ -171,16 +168,3 @@ int ks_eigensolve_Grid( su3_vector ** eigVec,
 
   return 0;
 }
-
-#else /* #ifdef Grid_EIG */
-
-int ks_eigensolve_Grid( su3_vector ** eigeVec, double * eigVal, ks_eigen_param * eigen_param, int init )
-{
-  char myname[] = "ks_eigensolve_Grid";
-  node0_printf( "%s: Requires compilation with the Grid library\n", myname );
-  terminate(1);
-
-  return 0;
-}
-
-#endif

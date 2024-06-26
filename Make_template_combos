@@ -167,6 +167,35 @@ ifeq ($(strip ${HAVEQIO}),true)
   CL_IO_OBJECTS += io_scidac_w.o
 endif
 
+# These are used to calculate eigenvectors
+
+EIGEN_OBJECTS = eigen_stuff_helpers.o io_helpers_ks_eigen.o io_ks_eigen.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  EIGEN_OBJECTS += io_scidac_ks_eigen.o
+endif
+
+ifeq ($(strip ${HAVE_EIG_GPU}),true)
+  ifeq ($(strip ${HAVE_GRID}),true)
+    EIGEN_OBJECTS += eigen_stuff_Grid.o gridStaggEigen.o
+  else ifeq ($(strip ${HAVE_QUDA}),true)
+    EIGEN_OBJECTS +=  eigen_stuff_QUDA.o
+  else
+    EIGEN_OBJECTS += must_specify_HAVE_QUDA_or_HAVE_GRID.o
+  endif
+else
+  ifeq ($(strip ${HAVE_PRIMME}),true)
+    EIGEN_OBJECTS += eigen_stuff_PRIMME.o
+  else ifeq ($(strip ${HAVE_ARPACK}),true)
+    EIGEN_OBJECTS += eigen_stuff_ARPACK.o
+  else ifeq ($(strip ${HAVEQDP}),true)
+    EIGEN_OBJECTS += eigen_stuff_qdp.o jacobi.o
+  else
+    # Default solver
+    EIGEN_OBJECTS += eigen_stuff_Ritz.o jacobi.o
+  endif
+endif
+
 ######################################################################
 # Staggered fermion links routines
 ######################################################################

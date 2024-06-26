@@ -332,7 +332,7 @@ int main(int argc, char *argv[])
     } /* is */
 
 
-#if defined(HAVE_QUDA) && defined(USE_GSMEAR_QUDA)
+#if defined(HAVE_QUDA) && defined(USE_GSMEAR_GPU)
     // delete 2-link current used for smearing
     gauss_smear_delete_2link_QUDA();
 #endif
@@ -559,7 +559,7 @@ int main(int argc, char *argv[])
       }
 #endif
 
-#if defined(HAVE_QUDA) && defined(USE_GSMEAR_QUDA)
+#if defined(HAVE_QUDA) && defined(USE_GSMEAR_GPU)
     // delete 2-link current used for smearing
     gauss_smear_delete_2link_QUDA();
 #endif

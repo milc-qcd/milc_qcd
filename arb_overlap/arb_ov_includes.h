@@ -171,9 +171,9 @@ void cleanup_Matrix() ;
 int Rayleigh_min(wilson_vector *vec,wilson_vector **eigVec,Real Tolerance, 
                  Real RelTol,int Nvecs,int MaxIter,int Restart);
 
-#ifdef PRIMME
+#ifdef HAVE_PRIMME
 #define ks_eigensolve ks_eigensolve_PRIMME
-#else ARPACK
+#else HAVE_ARPACK
 #define ks_eigensolve ks_eigensolve_ARPACK
 #else
 #define ks_eigensolve ks_eigensolve_Kalkreuter_Ritz

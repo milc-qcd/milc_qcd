@@ -294,7 +294,7 @@ typedef struct {
   double eigmax;
 } ks_eigen_poly;
 
-#if defined(PRIMME)
+#if defined(HAVE_PRIMME)
 #define ks_eigensolve ks_eigensolve_PRIMME
 typedef struct {
   int Nvecs ; /* number of eigenvectors */
@@ -307,7 +307,7 @@ typedef struct {
   int parity; 
   ks_eigen_poly poly; /* Preconditioning polynomial */
 } ks_eigen_param;
-#elif defined(ARPACK)
+#elif defined(HAVE_ARPACK)
 #define ks_eigensolve ks_eigensolve_ARPACK
 typedef struct {
   int Nvecs ; /* number of eigenvectors */
@@ -319,7 +319,7 @@ typedef struct {
   int parity; 
   ks_eigen_poly poly; /* Preconditioning polynomial */
 } ks_eigen_param;
-#elif defined(Grid_EIG)
+#elif defined(USE_EIG_GPU) && defined(HAVE_GRID)
 #define ks_eigensolve ks_eigensolve_Grid
 typedef struct {
   int Nvecs; /* number of eigenvectors */
@@ -333,7 +333,7 @@ typedef struct {
   char diagAlg[10];
   int parity; 
 } ks_eigen_param;
-#elif defined(USE_EIG_QUDA)
+#elif defined(USE_EIG_GPU) && defined(HAVE_QUDA)
 #define ks_eigensolve ks_eigensolve_QUDA
 typedef struct {
   int Nvecs ; /* number of eigenvectors */
@@ -364,14 +364,14 @@ typedef struct {
 int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance, 
 		 Real RelTol, int Nvecs, int MaxIter, int Restart, 
 		 ks_eigen_param *eigen_param, imp_ferm_links_t *fn);
-int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, 
+int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, Real *eigVal, 
 				  ks_eigen_param *eigen_param, int init );
-int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
+int ks_eigensolve_PRIMME(su3_vector **eigVec, Real *eigVal,
 				  ks_eigen_param *eigen_param, int init );
-int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal, 
+int ks_eigensolve_ARPACK(su3_vector **eigVec, Real *eigVal, 
 				  ks_eigen_param *eigen_param, int init );
-int ks_eigensolve_Grid( su3_vector ** eigVec, double * eigVal, ks_eigen_param * eigen_param, int init );
-int ks_eigensolve_QUDA( su3_vector ** eigVec, double * eigVal, ks_eigen_param * eigen_param, int init );
+int ks_eigensolve_Grid( su3_vector ** eigVec, Real * eigVal, ks_eigen_param * eigen_param, int init );
+int ks_eigensolve_QUDA( su3_vector ** eigVec, Real * eigVal, ks_eigen_param * eigen_param, int init );
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *eigen_param, 
 		     imp_ferm_links_t *fn );
 void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *eigen_param, 
@@ -380,15 +380,15 @@ void cleanup_Matrix();
 void measure_chirality(su3_vector *src, double *chirality, int parity);
 void print_densities(su3_vector *src, char *tag, int y,int z,int t, 
 		     int parity);
-void reset_eigenvalues(su3_vector *eigVec[], double *eigVal,
+void reset_eigenvalues(su3_vector *eigVec[], Real *eigVal,
 		       int Nvecs, int parity, imp_ferm_links_t *fn);
-void perturb_eigpair(su3_vector *eigVec_new[], double *eigVal_new,
-		     su3_vector *eigVec_old[], double *eigVal_old,
+void perturb_eigpair(su3_vector *eigVec_new[], Real *eigVal_new,
+		     su3_vector *eigVec_old[], Real *eigVal_old,
 		     int Nvecs, int parity, imp_ferm_links_t *fn_new,
 		     imp_ferm_links_t *fn_old);
-void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
+void check_eigres(double *resid, su3_vector *eigVec[], Real *eigVal,
 		  int Nvecs, int parity, imp_ferm_links_t *fn);
-void construct_eigen_odd(su3_vector **eigVec, double *eigVal, ks_eigen_param* eigen_param, imp_ferm_links_t *fn);
+void construct_eigen_odd(su3_vector **eigVec, Real *eigVal, ks_eigen_param* eigen_param, imp_ferm_links_t *fn);
 
 
 /* fn_links_qop.c  and fn_links_milc.c */
@@ -439,12 +439,12 @@ typedef struct {
   int Nvecs_max;     /* Maximum number of eigenpairs computed in entire incremental eigCG */
   double_complex *H; /* H = -U^+ Dslash^2 U, U: projection onto smaller subspace */
 } eigcg_params;
-void calc_eigenpairs(double *eigVal, su3_vector **eigVec, eigcg_params *eigcgp, int parity);
-void calc_eigresid(int Nvecs, double *resid, double *norm, double *eigVal,
+void calc_eigenpairs(Real *eigVal, su3_vector **eigVec, eigcg_params *eigcgp, int parity);
+void calc_eigresid(int Nvecs, double *resid, double *norm, Real *eigVal,
 		   su3_vector **eigVec, int parity, imp_ferm_links_t *fn);
-int ks_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal, su3_vector **eigVec,
+int ks_eigCG_parity( su3_vector *src, su3_vector *dest, Real *eigVal, su3_vector **eigVec,
 		     int m, int Nvecs, quark_invert_control *qic, Real mass, imp_ferm_links_t *fn);
-int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
+int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, Real *eigVal,
 			 su3_vector **eigVec, eigcg_params *eigcgp, quark_invert_control *qic,
 			 Real mass, imp_ferm_links_t *fn);
 
@@ -543,6 +543,9 @@ int multimass_inverter( params_mminv *mminv, imp_ferm_links_t *fn);
 int nl_spectrum( Real vmass, field_offset tempvec1, field_offset tempvec2,
 		 field_offset tempmat1, field_offset tempmat2,
 		 imp_ferm_links_t *fn);
+
+/* read_eigen_param.c */
+int read_ks_eigen_param(ks_eigen_param *eigen_param, int status, int prompt);
 
 /* spectrum.c */
 int spectrum(imp_ferm_links_t *fn);
