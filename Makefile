@@ -479,9 +479,6 @@ ifeq ($(strip ${WANTQUDA}),true)
     LIBQUDA += -L${CUDA_HOME}/lib64 -L${CUDA_MATH}/lib64 -L${CUDA_COMP}/lib -lcudart -lcuda -lcublas -lcufft -ldl
   endif
 
-  HAVE_QUDA = true
-  CGPU += -DHAVE_QUDA
-
 # Verbosity choices:
 # SET_QUDA_SILENT, SET_QUDA_SUMMARIZE, SET_QUDA_VERBOSE, SET_QUDA_DEBUG_VERBOSE
 
@@ -608,16 +605,6 @@ ifeq ($(strip ${WANTHADRONS}), true)
   WANTGRID = true
 endif
 
-ifeq ($(strip ${WANTGRID}),true)
-
-  WANT_FN_CG_GPU ?= #true
-  WANT_FL_GPU ?= #true       # Under development
-  WANT_FF_GPU ?= #true       # Future
-  WANT_GF_GPU ?= #true       # Future
-  WANT_EIG_GPU ?= #true
-
-endif
-
 ifeq ($(strip ${WANTGRID}), true)
 
   HAVE_GRID = true
@@ -630,12 +617,9 @@ ifeq ($(strip ${WANTGRID}), true)
   WANT_GF_GPU ?= false       # Future
   WANT_EIG_GPU ?= false      # Automatic for now
 
-  CGPU += -DGRID_MULTI_CG=GRID_5DCG # Choices: GRID_BLOCKCG GRID_5DCG GRID_MRHSCG
-  CGPU += -DGRID_SHMEM_MAX=2048
-  CGPU += -DGRID_ACCELERATOR_THREADS=8
-
   GRID_SHMEM_MAX ?= 2048        # Megabytes
   GRID_DEVICE_MEM_MAX ?= 32768  # Megabytes
+  GRID_SHMEM_MPI ?= 1
   GRID_ACCELERATOR_THREADS ?= 8
   GRID_MULTI_CG  ?= GRID_5DCG # GRID_5DCG GRID_BLOCKCG GRID_MRHSCG
 
@@ -658,23 +642,23 @@ ifeq ($(strip ${WANTGRID}), true)
   else ifeq ($(strip ${OFFLOAD}),hip)
     GRID_ARCH = gpu-hip
   else
-
-  # CPU only
-  ifeq ($(strip ${ARCH}),knl)
-    GRID_ARCH = avx512
-  ifeq ($(strip ${ARCH}),skx)
-    GRID_ARCH = avx512
-  else ifeq ($(strip ${ARCH}),clx)
-    GRID_ARCH = avx512
-  else ifeq ($(strip ${ARCH}),icx)
-    GRID_ARCH = avx512
-  else ifeq ($(strip ${ARCH}),hsw)
-    GRID_ARCH = avx2
-  else ifeq ($(strip ${ARCH}),epyc)
-    GRID_ARCH = avx2
-  else
-    # Scalar version                                                                
-    GRID_ARCH = scalar
+    # CPU only
+    ifeq ($(strip ${ARCH}),knl)
+      GRID_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),skx)
+      GRID_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),clx)
+      GRID_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),icx)
+      GRID_ARCH = avx512
+    else ifeq ($(strip ${ARCH}),hsw)
+      GRID_ARCH = avx2
+    else ifeq ($(strip ${ARCH}),epyc)
+      GRID_ARCH = avx2
+    else
+      # Scalar version                                                                
+      GRID_ARCH = scalar
+    endif
   endif
 
   GRID_HOME = ../Grid/install-grid-${GRID_ARCH}
@@ -686,72 +670,6 @@ ifeq ($(strip ${WANTGRID}), true)
   PACKAGE_HEADERS += ${GRID_HEADERS}/Grid
   PACKAGE_DEPS += Grid
 
-endif
-
-#----------------------------------------------------------------------
-# Definitions of compiler macros -- don't change.  Could go into a Make_template_GPU
-ifeq ($(strip ${HAVE_GPU}),true)
-
-  ifeq ($(strip ${WANT_CL_BCG_GPU}),true)
-      HAVE_CL_GPU = true
-      CGPU += -DUSE_CL_GPU
-  endif
-
-  ifeq ($(strip ${WANT_FN_CG_GPU}),true)
-    HAVE_FN_CG_GPU = true
-    CGPU += -DUSE_CG_GPU
-  endif
-
-  ifeq ($(strip ${WANT_GF_GPU}),true)
-    HAVE_GF_GPU = true
-    CGPU += -DUSE_GF_GPU
-  endif
-
-  ifeq ($(strip ${WANT_FL_GPU}),true)
-    HAVE_FL_GPU = true
-    CGPU += -DUSE_FL_GPU
-  endif
-
-  ifeq ($(strip ${WANT_FF_GPU}),true)
-    HAVE_FF_GPU = true
-    CGPU += -DUSE_FF_GPU
-  endif
-
-  ifeq ($(strip ${WANT_EIG_GPU}),true)
-    HAVE_EIG_GPU = true
-    CGPU += -DUSE_EIG_GPU
-  endif
-
-  ifeq ($(strip ${WANT_GSMEAR_GPU}),true)
-    HAVE_GSMEAR_GPU = true
-    CGPU += -DUSE_GSMEAR_QUDA
-  endif
-
-  ifeq ($(strip ${WANT_KS_CONT_GPU}),true)
-    HAVE_KS_CONT_GPU = true
-    CGPU += -DUSE_KS_CONT_GPU
-  endif
-
-  ifeq ($(strip ${WANT_SHIFT_GPU}),true)
-    HAVE_SHIFT_GPU = true
-    CGPU += -DUSE_SHIFT_GPU
-  endif
-
-  ifeq ($(strip ${WANT_SPIN_TASTE_GPU}),true)
-    HAVE_SPIN_TASTE_GPU = true
-    CGPU += -DUSE_SPIN_TASTE_GPU
-  endif
-
-ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
-    HAVE_GAUGEFIX_OVR_GPU = true
-    CGPU += -DUSE_GAUGEFIX_OVR_GPU
-  endif
-
-  ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),1)
-    CGPU += -DHALF_MIXED # use single precision where appropriate
-  else ifeq ($(strip ${WANT_MIXED_PRECISION_GPU}),2)
-    CGPU += -DMAX_MIXED # use half precision where appropriate
-  endif
 endif
 
 #----------------------------------------------------------------------
