@@ -114,27 +114,21 @@ KS_IO_OBJECTS =  \
 
 # These are used to compute the hadron correlators
 
-ifeq ($(strip ${WANT_KS_CONT_CPU}),true)
-# use new CPU contraction code (for testing)
-KS_SPECTRUM_OBJECTS = \
-  ks_baryon.o \
-  ks_meson_mom_quda.o \
-  contraction_cpu.o
-else ifeq ($(strip ${HAVE_KS_CONT_GPU}),true)
-# use QUDA GPU contraction code
-KS_SPECTRUM_OBJECTS = \
-  ks_baryon.o \
-  ks_meson_mom_quda.o
+KS_SPECTRUM_OBJECTS = ks_baryon.o
+ifeq ($(strip ${HAVE_KS_CONT_GPU}),true)
+  # use QUDA GPU contraction code
+  KS_SPECTRUM_OBJECTS += ks_meson_mom_quda.o
 else
-# otherwise use old CPU contraction code
-KS_SPECTRUM_OBJECTS = \
-	gb_baryon_mmap.o \
-	gb_baryon_snk.o \
-	gb_baryon_3pt.o \
-	gb_ops.o \
-  ks_baryon.o \
-  ks_meson_mom.o
+  # otherwise use old CPU contraction code
+  KS_SPECTRUM_OBJECTS += ks_meson_mom.o
 endif
+
+GB_BARYON_OBJECTS = \
+  gb_baryon_mmap.o \
+  gb_baryon_snk.o \
+  gb_baryon_src.o \
+  gb_baryon_3pt.o \
+  gb_ops.o
 
 ifeq ($(strip ${HAVEQIO}),true)
   KS_IO_OBJECTS += io_scidac_ks.o
@@ -169,7 +163,7 @@ endif
 
 # These are used to calculate eigenvectors
 
-EIGEN_OBJECTS = eigen_stuff_helpers.o io_helpers_ks_eigen.o io_ks_eigen.o
+EIGEN_OBJECTS = eigen_stuff_helpers.o io_helpers_ks_eigen.o io_ks_eigen.o read_eigen_param.o
 
 ifeq ($(strip ${HAVEQIO}),true)
   EIGEN_OBJECTS += io_scidac_ks_eigen.o
