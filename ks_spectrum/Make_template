@@ -56,7 +56,7 @@ G_U1_OBJECTS =       \
 
 LAYOUT = layout_hyper_prime.o # Choices possible here
 
-ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} read_eigen_param.o
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG}
 
 OBJECTS = \
   ${MY_OBJECTS} \
@@ -219,25 +219,30 @@ ks_spectrum_hisq_u1::
 # GB baryon with memory map and NO blinding
 ks_spectrum_hisq_gb_baryon_no_sink_links::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
-	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DNO_SINK_LINKS"
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DNO_SINK_LINKS" \
+	"EXTRA_OBJECTS += ${GB_BARYON_OBJECTS}"
 
 # GB baryon with memory map and blinding (blinding applied for 3pt baryon correlators only)
 ks_spectrum_hisq_gb_baryon_blind_no_sink_links::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
-	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS"
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS" \
+	"EXTRA_OBJECTS += ${GB_BARYON_OBJECTS}"
 
 ks_spectrum_hisq_gb_baryon_blind_no_sink_links_no_gauss_links::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
-        "DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS -DNO_GAUSS_SMEAR_LINKS"
+        "DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS -DNO_GAUSS_SMEAR_LINKS" \
+	"EXTRA_OBJECTS += ${GB_BARYON_OBJECTS}"
 
 ks_spectrum_hisq_gb_baryon_blind_one_sided_shift::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
-	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS -DONE_SIDED_SHIFT_GB"
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS -DONE_SIDED_SHIFT_GB" \
+	"EXTRA_OBJECTS += ${GB_BARYON_OBJECTS}"
 
 # Extremly slow implementation. Use for debug only
 ks_spectrum_hisq_gb_baryon_blind_no_mmap::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
-	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DBLIND -DNO_SINK_LINKS"
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DBLIND -DNO_SINK_LINKS" \
+	"EXTRA_OBJECTS += ${GB_BARYON_OBJECTS}"
 
 clean:
 	-/bin/rm -f *.o quark_action.h
