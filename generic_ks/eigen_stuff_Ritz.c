@@ -465,7 +465,7 @@ static void RotateBasis(su3_vector **eigVec, Matrix *V, int parity){
 }
 
 /*****************************************************************************/
-int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, 
+int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, Real *eigVal, 
 				  ks_eigen_param *eigen_param, int init ){
 
   Real Tolerance = eigen_param->tol;
@@ -629,4 +629,6 @@ int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal,
   }
   free(MeigVec);
   cleanup_Matrix();
+
+  return 0;
 }
