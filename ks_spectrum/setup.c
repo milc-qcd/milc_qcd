@@ -546,7 +546,7 @@ int readin(int prompt) {
         IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
 			      &max_cg_restarts );
 
-#if (defined(HALF_MIXED) || defined(MAX_MIXED)) && ! defined(HAVE_QUDA)
+#if (defined(HALF_MIXED) || defined(MAX_MIXED)) && ! defined(HAVE_QUDA) && defined(HAVE_GRID)
 	/* (QUDA sets its own value).  We need this value for GRID mixed precision */
         IF_OK status += get_i(stdin,prompt,"max_inner_cg_iterations", 
 			      &max_inner_cg_iterations );
