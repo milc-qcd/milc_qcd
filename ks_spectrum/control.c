@@ -793,7 +793,7 @@ int main(int argc, char *argv[])
     ks_prop_field *qko1[8];
     ks_prop_field *qko2[8];
     #ifdef GB_BARYON_MMAP
-        int jqo0,jqo1,jqo2;
+        int jqo0=0,jqo1=0,jqo2=0;
         mmap_cache *tmp_cache0; /* Pointers to temporarily retain memory */
         mmap_cache *tmp_cache1;
         mmap_cache *tmp_cache2;
