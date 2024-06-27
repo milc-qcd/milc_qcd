@@ -19,6 +19,7 @@
 #include "../include/generic.h"
 #include "../include/generic_wilson.h"
 #include "../include/generic_clover.h"
+#include "../include/imp_ferm_links.h"
 #include "../include/dirs.h"
 
 #ifdef PRTIME
