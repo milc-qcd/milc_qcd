@@ -537,15 +537,15 @@ typedef struct {
 
 int multimass_inverter( params_mminv *mminv, imp_ferm_links_t *fn);
 
+/* read_eigen_param.c */
+int read_ks_eigen_param(ks_eigen_param *eigen_param, int status, int prompt);
+
 #if 0  /* obsolete */
 
 /* nl_spectrum.c */
 int nl_spectrum( Real vmass, field_offset tempvec1, field_offset tempvec2,
 		 field_offset tempmat1, field_offset tempmat2,
 		 imp_ferm_links_t *fn);
-
-/* read_eigen_param.c */
-int read_ks_eigen_param(ks_eigen_param *eigen_param, int status, int prompt);
 
 /* spectrum.c */
 int spectrum(imp_ferm_links_t *fn);
