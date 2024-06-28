@@ -3,8 +3,8 @@
 # Build quda
 BRANCH=develop
 ARCH=sm_70 # V100 sm_70; A100 sm_80
-export CXX=g++-8
-export CC=gcc-8
+QUDA_HOME=`pwd`/quda
+QUDA_INSTALL=${QUDA_HOME}/install
 
 if [ -d quda ]
 then
@@ -16,7 +16,6 @@ else
   git clone -b ${BRANCH} https://github.com/lattice/quda
 fi
 
-QUDA_HOME=`pwd`/quda
 
 mkdir -p build
 pushd build
@@ -27,6 +26,7 @@ MULTIGRID_FLAG=""
 
 cmake \
     -DCMAKE_BUILD_TYPE=RELEASE \
+    -DCMAKE_INSTALL_PREFIX=${QUDA_INSTALL} \
     -DQUDA_BUILD_SHAREDLIB=ON \
     -DQUDA_CONTRACT=ON \
     -DQUDA_COVDEV=ON \
