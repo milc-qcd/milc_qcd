@@ -426,7 +426,7 @@ readin(int prompt)
 #endif
   u0 = param.u0;
 
-#ifdef ONE_MASS
+#ifdef ONEMASS
   n_order_naik_total = 1;
   eps_naik[0] = 0.0;
   n_naiks = 1;
