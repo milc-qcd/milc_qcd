@@ -16,8 +16,10 @@
 
 /* This routine is valid only for Asqtad, so requires the FN flag */
 #ifndef FN
-BOMB THE COMPILE
+#error "Must build with FN"
 #endif
+
+#error "Can't build for QUDA: QUDA no longer supports qudaComputeOprod."
 
 static void 
 fermion_force_oprod_site(Real eps, Real weight1, Real weight2,
