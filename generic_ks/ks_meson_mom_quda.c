@@ -25,7 +25,7 @@ propagators together to form a meson correlator.
    quark propagator running backwards in time to an antiquark running
    forwards in time, we take the adjoint and apply (-)^(x+y+z+t)
    factors at source and sink.  This sink sign factor is applied in
-   the call to spin_taste_op_fn, so we don't do it explicitly here.
+   the call to spin_taste_op_ape_fn, so we don't do it explicitly here.
    This means, for example, that when we specify O_st = pion5 we get
    simply src_1^\dagger src_2.
 
@@ -337,10 +337,10 @@ void ks_meson_cont_mom(
 	/* Apply backward sink spin-taste operator to src1 */
 
 	su3_vector *q = create_v_field();
-	spin_taste_op_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
+	spin_taste_op_ape_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
 	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
 	/* Apply forward sink spin-taste operator to src2 */
-	spin_taste_op_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
+	spin_taste_op_ape_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
 	qudaContractFT(MILC_PRECISION, &cont_args, src1, q, dmeson_q);
 	destroy_v_field(q);
 	for(int j = 0; j < nt*num_corr_mom[g]; ++j){
@@ -349,19 +349,19 @@ void ks_meson_cont_mom(
       } else if(is_rhosffn_index(spin_taste) || is_rhosfape_index(spin_taste)){
 	/* Apply forward sink spin-taste operator to src2 */
 	su3_vector *q = create_v_field();
-	spin_taste_op_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
+	spin_taste_op_ape_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
 	qudaContractFT(MILC_PRECISION, &cont_args, src1, q, dmeson_q );
 	destroy_v_field(q);
       } else if(is_rhosbfn_index(spin_taste) || is_rhosbape_index(spin_taste)){
 	/* Apply backward sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
-	spin_taste_op_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
+	spin_taste_op_ape_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
 	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
 	destroy_v_field(q);
       } else {
 	/* Apply sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
-	spin_taste_op_fn(fn_src1, spin_taste, r0, q, src1);
+	spin_taste_op_ape_fn(fn_src1, spin_taste, r0, q, src1);
 	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
 	destroy_v_field(q);
        }
