@@ -55,6 +55,7 @@ G_KS_ALL = \
   f_meas.o \
   f_meas_current.o \
   fermion_force_asqtad.o \
+  fermion_force_asqtad_gpu.o \
   fermion_force_asqtad_qop.o \
   fermion_force_asqtad_qop_D.o \
   fermion_force_asqtad_qop_F.o \
@@ -284,6 +285,8 @@ eigen_stuff_Grid.o: ../generic_ks/eigen_stuff_Grid.c
 eigen_stuff_QUDA.o: ../generic_ks/eigen_stuff_QUDA.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad.o: ../generic_ks/fermion_force_asqtad.c
+	${CC} -c ${CFLAGS} $<
+fermion_force_asqtad_gpu.o: ../generic_ks/fermion_force_asqtad_gpu.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qop.o: ../generic_ks/fermion_force_asqtad_qop.c
 	${CC} -c ${CFLAGS} $<
