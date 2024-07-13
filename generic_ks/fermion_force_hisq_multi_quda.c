@@ -3,6 +3,18 @@
 /* Multisource fermion force wrapper for QUDA */
 /* May 5, 2024 C. DeTar: Split from fermion_force_hisq_multi.c */
 
+#include "generic_ks_includes.h"
+#include "../include/prefetch.h"
+#define FETCH_UP 1
+
+#define LOOPEND
+#include "../include/loopend.h"
+#include <string.h>
+#include "../include/generic.h"
+
+#include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
+
 static void
 write_path_coeffs_to_array(ks_component_paths paths, double array[6])
 {
