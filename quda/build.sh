@@ -2,8 +2,8 @@
 
 # Build quda
 BRANCH=develop
-ARCH=sm_70 # V100 sm_70; A100 sm_80
-QUDA_HOME=`pwd`/quda
+ARCH=sm_80 # V100 sm_70; A100 sm_80
+QUDA_HOME=`pwd`
 QUDA_INSTALL=${QUDA_HOME}/install
 
 if [ -d quda ]
