@@ -423,8 +423,8 @@ ks_eigen_file *w_serial_ks_eigen_i(char *filename, int parity){
 /*---------------------------------------------------------------------------*/
 
 /* Here only node 0 writes eigenvectors to a serial file */
-void w_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, double *eigVal, su3_vector **eigVec,
-		       double *resid){
+void w_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal, su3_vector **eigVec,
+		       Real *resid){
 
   FILE *fp = NULL;
   u_int32type *val;
@@ -641,7 +641,7 @@ ks_eigen_file *r_serial_ks_eigen_i(char *filename){
 /* Here only node 0 reads the KS eigenvectors from a binary file */
 /* 0 is normal exit code
    >1 for seek, read error, or missing data error */
-int r_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, double *eigVal, su3_vector **eigVec){
+int r_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal, su3_vector **eigVec){
 
   FILE *fp;
   char *filename;
@@ -928,8 +928,8 @@ ks_eigen_file *w_ascii_ks_eigen_i(char *filename, int parity){
 /*---------------------------------------------------------------------------*/
 
 /* Write ASCII KS eigenvector from field */
-void w_ascii_ks_eigen(ks_eigen_file *kseigf, int  Nvecs, double *eigVal, su3_vector **eigVec,
-		      double *resid){
+void w_ascii_ks_eigen(ks_eigen_file *kseigf, int  Nvecs, Real *eigVal, su3_vector **eigVec,
+		      Real *resid){
 
   FILE *fp;
   int currentnode, newnode;
@@ -1135,7 +1135,7 @@ ks_eigen_file *r_ascii_ks_eigen_i(char *filename){
 /* Read eigenvectors */
 /* 0 is normal exit code
    >1 for seek, read error, or missing data error */
-int r_ascii_ks_eigen(ks_eigen_file *kseigf, int Nvecs, double *eigVal, su3_vector **eigVec){
+int r_ascii_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal, su3_vector **eigVec){
 
   FILE *fp;
   int destnode;

@@ -25,7 +25,7 @@
 #include "../include/io_ks_eigen.h"
 
 /* Restore the ODD (EVEN) part of KS eigenvectors from the EVEN (ODD) part */
-void restore_eigVec(int Nvecs, double *eigVal, su3_vector **eigVec, int parity,
+void restore_eigVec(int Nvecs, Real *eigVal, su3_vector **eigVec, int parity,
 		    imp_ferm_links_t *fn){
 
   register int i, j;
@@ -159,7 +159,7 @@ void w_close_ks_eigen(int flag, ks_eigen_file *kseigf){
    0 is normal exit code
    >1 for seek, read error, or missing data error 
 */
-int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
+int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, Real *eigVal,
 		    su3_vector **eigVec, imp_ferm_links_t *fn, int timing){
   
   register int i, j;
@@ -250,7 +250,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
    0 is normal exit code
    >1 for seek, read error, or missing data error 
 */
-int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
+int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, Real *eigVal,
 		    su3_vector **eigVec, imp_ferm_links_t *fn, int timing){
 
   register int i, j;
@@ -308,8 +308,8 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
    FORGET, SAVE_ASCII, SAVE_SERIAL
 */
  
-int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
-		  su3_vector **eigVec, double *resid, int timing){
+int save_ks_eigen(int flag, char *savefile, int Nvecs, Real *eigVal,
+		  su3_vector **eigVec, Real *resid, int timing){
 
   QIO_Writer *outfile;
   int status = 0;
@@ -394,8 +394,8 @@ int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
 /* Save the lowest Nvecs KS eigenvectors:
    FORGET, SAVE_ASCII, SAVE_SERIAL
 */
-int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
-		   su3_vector **eigVec, double *resid, int timing){
+int save_ks_eigen(int flag, char *savefile, int Nvecs, Real *eigVal,
+		   su3_vector **eigVec, Real *resid, int timing){
 
   int status = 0;
   ks_eigen_file *kseigf;

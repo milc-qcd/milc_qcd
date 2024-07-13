@@ -158,7 +158,7 @@ create_record_xml(double eigVal, double resid){
 /* Extract the eigenvalue from the file XML */
 
 static void
-parse_record_xml(double *eigVal, char *xml){
+parse_record_xml(Real *eigVal, char *xml){
 
   char begtag[] = "<eigVal>";
   char endtag[] = "</eigVal>";
@@ -224,8 +224,8 @@ open_ks_eigen_outfile(const char *filename, int Nvecs, int volfmt, int serpar, i
 /* Write an eigenvector and its eigenvalue */
 
 int
-write_ks_eigenvector(QIO_Writer *outfile, int packed, su3_vector *eigVec, double eigVal, 
-		     double resid){
+write_ks_eigenvector(QIO_Writer *outfile, int packed, su3_vector *eigVec, Real eigVal, 
+		     Real resid){
   int status;
   char *xml;
   QIO_String *recxml = QIO_string_create();
@@ -316,7 +316,7 @@ open_ks_eigen_infile(const char *filename, int *Nvecs, int *packed, int *file_ty
 /* Read an eigenvector and its eigenvalue */
 
 int
-read_ks_eigenvector(QIO_Reader *infile, int packed, su3_vector *eigVec, double *eigVal){
+read_ks_eigenvector(QIO_Reader *infile, int packed, su3_vector *eigVec, Real *eigVal){
   int status;
   char *xml;
   QIO_String *recxml = QIO_string_create();
@@ -359,7 +359,7 @@ read_ks_eigenvector(QIO_Reader *infile, int packed, su3_vector *eigVec, double *
 /* Read a set of eigenvectors from a QUDA-formated color-spin-field file */
 
 int
-read_quda_ks_eigenvectors(QIO_Reader *infile, su3_vector *eigVec[], double *eigVal, int *Nvecs,
+read_quda_ks_eigenvectors(QIO_Reader *infile, su3_vector *eigVec[], Real *eigVal, int *Nvecs,
 			  int parity){
   char myname[] = "read_quda_ks_eigenvectors";
   int status;
