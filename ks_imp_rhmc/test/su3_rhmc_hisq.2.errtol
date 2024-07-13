@@ -35,7 +35,7 @@ G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 1e-06 ( 0 0 0 0 0 0 )
 GACTION: 8e-06
-PBP: mass 2e-08 8e-08 6e-08 5e-08 2e-08 ( 0 of 0 )
+PBP: mass 2e-08 8e-08 6e-08 5e-08 6e-08 ( 0 of 0 )
 FACTION: mass = 2e-08 3e-08 ( 0 of 0 )
 PBP: mass 2e-08 2e-06 9e-07 1e-06 1e-06 ( 0 of 0 )
 FACTION: mass = 2e-08 3e-08 ( 0 of 0 )
