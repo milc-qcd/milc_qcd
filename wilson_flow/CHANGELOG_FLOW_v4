@@ -100,7 +100,7 @@ Once AXIAL GAUGE is fixed, the temporal links in the BULK
 observables could be omitted analogous to the HALF observables; this is 
 triggered by the macro DROP_TIME_LINKS, but not exactly equivalent, since 
 4D flow in the bulk changes the temporal links ever slightly. For topology 
-this is not expected to change anything.
+this is not expected to change anything important.
 
 The corresponding BULK observables are accessible through
 void 
@@ -150,3 +150,14 @@ The temporal/electric/topological observables make only sense once
 The corresponding BOUNDARY flow is accessible with "region_flag = BOUNDARY" through 
 void 
 run_gradient_flow_region( int region_flag );
+
+Compared to previous versions, the entire SPHALERON specific part is encapsulated 
+into two functions 
+void bulk_flow( Real *q_bulk );
+void bdry_flow( Real *q_bulk );
+taking care of link preparation, running the flows, measuring observables, and 
+convergence determination for the topological observables of the 4D BULK or 3D 
+BOUNDARY, respectively. The latter contains blocking at appropriate flow times.
+Convergence is checked by looking at stabilization of q_bulk, q_acc (for the 
+sum of the BOUNDARIES), and their combinations q_s using different pairings.
+Details of all this are found in sphaleron.c.

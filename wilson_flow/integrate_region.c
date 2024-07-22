@@ -329,7 +329,6 @@ integrate_RK_2N_one_stage( Real cA, Real cB )
 
   /* Calculate the new staple */
   #ifdef USE_FIELD
-    su3_matrix *STAP;
     staple( region, stap );
   #else
     staple( region );
@@ -355,8 +354,10 @@ integrate_RK_2N_one_stage( Real cA, Real cB )
 
       /* Update the accumulation matrix A = cA*A + proj(U*S) */
       #ifdef USE_FIELD
-        STAP = &(stap[dir][i]);
-        mult_su3_na( U, STAP, &tempS1 );
+        // su3_matrix *STAP = &(stap[dir][i]);
+        // STAP = &(stap[dir][i]);
+        // mult_su3_na( U, STAP, &tempS1 );
+        mult_su3_na( U, &(stap[dir][i]), &tempS1 );
       #else
         mult_su3_na( U, &(s->staple[dir]), &tempS1 );
       #endif

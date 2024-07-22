@@ -8,6 +8,9 @@
 #include "../include/field_strength.h"
 #include <string.h>
 
+/* activate or deactivate general gathers; activated is bugged for some geometries */
+// #define USE_GG
+
 #define LINK_OFFSET(dir) link_src+sizeof(su3_matrix)*(dir)
 #define LINK(dir) (((su3_matrix *)F_PT(s,link_src))[dir])
 
@@ -301,17 +304,17 @@ make_improved_spatial_fieldstrength_region ( int region_flag,
   int dir[2] = {NODIR,NODIR}, 
       dirb[2] = {NODIR, NODIR}, 
       diro[2] = {NODIR,NODIR};
-  int disp[4];
+  int disp[4] = {0,0,0,0};
   register site *s;
   complex cc;
 
   Real coeff1x1 = 5.0/3.0, coeff1x2 = -1.0/6.0;
-  // Real coeff1x1 = 3.0/3.0, coeff1x2 = -0.0/6.0;
+  //Real coeff1x1 = 3.0/3.0, coeff1x2 = -0.0/6.0;
   #define NGATHER 8
   msg_tag *tag[NGATHER];
   #define NTEMP (NGATHER)
   su3_matrix **temp = new_field( NTEMP );
-  #define NCLOV 3
+  #define NCLOV 4
   su3_matrix **clov = new_field( NCLOV );
   su3_matrix edge[4], loop[4], tmat;
 
@@ -485,11 +488,20 @@ make_improved_spatial_fieldstrength_region ( int region_flag,
     cleanup_gather(tag[6]);
     cleanup_gather(tag[7]);
 
-
-    /* general gather lower left clover from diagonally across the square */
-    tag[P11] = start_general_gather_field( clov[P11], sizeof(su3_matrix), 
-                                           disp, EVENANDODD, gen_pt[P11] );
-
+    /* Note: it appears that segmentation faults may occur with a general gather for certain 
+     * blocked lattices as soon as the number of sites per node in any direction is not an 
+     * integer after blocking, i.e. if there are different numbers of active sites on different 
+     * nodes. Thus, the problem occurs only for certain combinations of layouts and node 
+     * geometries. Thus, we do two simple gathers in sequence as a viable workaround. */
+    #ifndef USE_GG
+      /* first part of diagonal gather lower left clover from diagonally across the square */
+      tag[3] = start_gather_field( clov[P11], sizeof(su3_matrix), 
+                                   diro[0], EVENANDODD, gen_pt[3] );
+    #else
+      /* general gather lower left clover from diagonally across the square */
+      tag[P11] = start_general_gather_field( clov[P11], sizeof(su3_matrix), 
+                                             disp, EVENANDODD, gen_pt[P11] );
+    #endif
     /* gather upper left clover from proper position */
     tag[P10] = start_gather_field( clov[P10], sizeof(su3_matrix), 
                                    diro[0], EVENANDODD, gen_pt[P10] );
@@ -498,11 +510,28 @@ make_improved_spatial_fieldstrength_region ( int region_flag,
     tag[P01] = start_gather_field( clov[P01], sizeof(su3_matrix), 
                                    diro[1], EVENANDODD, gen_pt[P01] );
 
+    #ifndef USE_GG
+      /* wait, copy, cleanup for first part of diagonal gather lower left clover from diagonally across the square */
+      wait_gather(tag[3]);
+      FORALLSITES(i,s)
+      IF_BLOCKED(s, block_stride)       
+      // IF_REGION(s, region_flag) 
+      {
+        su3mat_copy( (su3_matrix *)(gen_pt[3][i]), &(temp[3][i]) );
+      }
+      cleanup_gather(tag[3]);
+      /* second part of gather lower left clover from diagonally across the square */
+      tag[P11] = start_gather_field( temp[3], sizeof(su3_matrix), 
+                                     diro[1], EVENANDODD, gen_pt[P11] );
+
+      /* wait, copy, cleanup for second part of diagonal gather lower left clover from diagonally across the square */
+      wait_gather(tag[P11]);
+    #else
+      wait_general_gather(tag[P11]);
+    #endif
 
     wait_gather(tag[P10]);
     wait_gather(tag[P01]);
-    wait_general_gather(tag[P11]);
-
 
     FORALLSITES(i,s)
     IF_BLOCKED(s, block_stride)       
@@ -512,12 +541,16 @@ make_improved_spatial_fieldstrength_region ( int region_flag,
       add_su3_matrix( &(fstrength[icomp][i]), (su3_matrix *)(gen_pt[P11][i]), &(fstrength[icomp][i]) );
       add_su3_matrix( &(fstrength[icomp][i]), (su3_matrix *)(gen_pt[P01][i]), &(fstrength[icomp][i]) );
     }
-    
-    cleanup_general_gather(tag[P11]);
+
+    #ifndef USE_GG
+      /* cleanup for second part of diagonal gather lower left clover from diagonally across the square */
+      cleanup_gather(tag[P11]);
+    #else
+      cleanup_general_gather(tag[P11]);
+    #endif
+
     cleanup_gather(tag[P10]);
     cleanup_gather(tag[P01]);
-
-    // cleanup_gather(tag[P11]);
 
     /* Make traceless */
     FORALLSITES(i,s)
@@ -755,15 +788,14 @@ make_improved_temporal_fieldstrength_full ( su3_matrix **link_s,
   int dir[2] = {NODIR,NODIR}, 
       dirb[2] = {NODIR, NODIR}, 
       diro[2] = {NODIR,NODIR};
-  int disp[4];
-  register int ig;
+  int disp[4] = {0,0,0,0};
   register site *s;
   complex cc;
 
   Real coeff1x1 = 5.0/3.0, coeff1x2 = -1.0/6.0;
-  // Real coeff1x1 = 0.0/3.0, coeff1x2 = -1.0/6.0;
+  // Real coeff1x1 = 3.0/3.0, coeff1x2 = -0.0/6.0;
   #define NGATHER 8
-  msg_tag *tag[NGATHER],*mtagx;
+  msg_tag *tag[NGATHER];
   #define NTEMP (NGATHER)
   su3_matrix **temp = new_field( NTEMP );
   #define NCLOV 4
@@ -779,6 +811,8 @@ make_improved_temporal_fieldstrength_full ( su3_matrix **link_s,
     }
     setup_blocked_dirs( dir, dirb ,diro );
     memset( disp, '\0', 4 * sizeof(int) );
+    memset( loop, '\0', 4 * sizeof(su3_matrix) );
+    clear_field( &(fstrength[icomp]), 1 ); 
     disp[dir[0]] = -block_stride;
     disp[dir[1]] = -1;
     #define LINK0 link_s[dir[0]]
@@ -939,11 +973,20 @@ make_improved_temporal_fieldstrength_full ( su3_matrix **link_s,
     cleanup_gather(tag[6]);
     cleanup_gather(tag[7]);
 
-
+    /* Note: it appears that segmentation faults may occur with a general gather for certain 
+     * blocked lattices as soon as the number of sites per node in any direction is not an 
+     * integer after blocking, i.e. if there are different numbers of active sites on different 
+     * nodes. Thus, the problem occurs only for certain combinations of layouts and node 
+     * geometries. Thus, we do two simple gathers in sequence as a viable workaround. */
+#ifndef USE_GG
+    /* first part of diagonal gather lower left clover from diagonally across the square */
+    tag[3] = start_gather_field( clov[P11], sizeof(su3_matrix), 
+                                  diro[0], EVENANDODD, gen_pt[3] );
+#else
     /* general gather lower left clover from diagonally across the square */
     tag[P11] = start_general_gather_field( clov[P11], sizeof(su3_matrix), 
                                            disp, EVENANDODD, gen_pt[P11] );
-
+#endif
     /* gather upper left clover from proper position */
     tag[P10] = start_gather_field( clov[P10], sizeof(su3_matrix), 
                                    diro[0], EVENANDODD, gen_pt[P10] );
@@ -952,11 +995,28 @@ make_improved_temporal_fieldstrength_full ( su3_matrix **link_s,
     tag[P01] = start_gather_field( clov[P01], sizeof(su3_matrix), 
                                    diro[1], EVENANDODD, gen_pt[P01] );
 
+#ifndef USE_GG
+    /* wait, copy, cleanup for first part of diagonal gather lower left clover from diagonally across the square */
+    wait_gather(tag[3]);
+    FORALLSITES(i,s)
+    IF_BLOCKED(s, block_stride)       
+    // IF_REGION(s, region_flag) 
+    {
+      su3mat_copy( (su3_matrix *)(gen_pt[3][i]), &(temp[3][i]) );
+    }
+    cleanup_gather(tag[3]);
+    /* second part of gather lower left clover from diagonally across the square */
+    tag[P11] = start_gather_field( temp[3], sizeof(su3_matrix), 
+                                  diro[1], EVENANDODD, gen_pt[P11] );
+
+    /* wait, copy, cleanup for second part of diagonal gather lower left clover from diagonally across the square */
+    wait_gather(tag[P11]);
+#else
+    wait_general_gather(tag[P11]);
+#endif
 
     wait_gather(tag[P10]);
     wait_gather(tag[P01]);
-    wait_general_gather(tag[P11]);
-
 
     FORALLSITES(i,s)
     IF_BLOCKED(s, block_stride)       
@@ -966,13 +1026,17 @@ make_improved_temporal_fieldstrength_full ( su3_matrix **link_s,
       add_su3_matrix( &(fstrength[icomp][i]), (su3_matrix *)(gen_pt[P11][i]), &(fstrength[icomp][i]) );
       add_su3_matrix( &(fstrength[icomp][i]), (su3_matrix *)(gen_pt[P01][i]), &(fstrength[icomp][i]) );
     }
-    
+
+#ifndef USE_GG
+    /* cleanup for second part of diagonal gather lower left clover from diagonally across the square */
+    cleanup_gather(tag[P11]);
+#else
     cleanup_general_gather(tag[P11]);
+#endif
+
     cleanup_gather(tag[P10]);
     cleanup_gather(tag[P01]);
-
-    // cleanup_gather(tag[P11]);
-
+    
     /* Make traceless */
     FORALLSITES(i,s)
     IF_BLOCKED(s, block_stride)       
@@ -998,7 +1062,6 @@ make_improved_temporal_fieldstrength_full ( su3_matrix **link_s,
   destroy_field( &clov ); 
   #undef NTEMP
   #undef NCLOV
-
   #undef NGATHER
 }
 

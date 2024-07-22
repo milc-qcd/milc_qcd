@@ -67,6 +67,7 @@ su3_matrix ** new_field( size_t ncomp ) {
 
   register int i;
   register site *s;
+  
   su3_matrix **this = (su3_matrix **)malloc( ncomp * sizeof(su3_matrix*) );
   if(this == NULL) {
     printf( "new_field: can't malloc this\n" );

@@ -242,7 +242,7 @@ void bulk_flow( Real *q_bulk ) {
     if ( delta_q2[0] > thresh_q2 && delta_q2[1] > thresh_q2 ) {
       thr_bulk = 0;
     } else 
-      thr_bulk++;
+      // thr_bulk++;
     for ( i = 0; i < 2; i++ ) 
     	q_last[i] = q_bulk[i];
   }
@@ -252,7 +252,7 @@ void bulk_flow( Real *q_bulk ) {
 void bdry_flow( Real *q_bulk ) {
 
 	int i, ibdry, thr_bdry = 0, thr_qs2 = 0;
-  Real q_last[2] = {0.0, 0.0}, q_bdry, delta_q2[2];
+  Real q_last[2] = {0.0, 0.0}, delta_q2[2];
   Real q_s[2], q_int[2], delta_qs2[2]; 
   Real thresh_qs2 = qs_tol * qs_tol;
   Real thresh_q2 = ( qthr_bdry * qthr_bdry < thresh_qs2 
@@ -310,7 +310,7 @@ void bdry_flow( Real *q_bulk ) {
     node0_printf(" q_acc (%.6g,%.6g) delta_q2 (%.6g,%.6g)",
       q_acc[0],q_acc[1], delta_q2[0],delta_q2[1]);
     if ( delta_q2[0] < thresh_q2 || delta_q2[1] < thresh_q2 ) {
-      thr_bdry++;
+      // thr_bdry++;
       node0_printf(" PASS");
     } else {
       thr_bdry = 0;
@@ -318,7 +318,7 @@ void bdry_flow( Real *q_bulk ) {
     node0_printf(" q_s = (%.6g, %.6g) delta_qs2 = (%.6g, %.6g)",
       q_s[0],q_s[1], delta_qs2[0],delta_qs2[1]);
     if ( delta_qs2[0] < thresh_qs2 || delta_qs2[1] < thresh_qs2 ) {
-      thr_qs2++;
+      // thr_qs2++;
       node0_printf(" PASS");
     } else {
       thr_qs2 = 0;
