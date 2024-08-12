@@ -55,8 +55,8 @@ static void check_answer(su3_matrix *dW, su3_matrix *ansdW, Real tol){
       diff = sqrt(realtrace_su3( &diffmat, &diffmat ));
       norm = sqrt(realtrace_su3( tmat, tmat));
       if(diff > tol * norm){
-	printf("Intolerable relative difference %e node %d site %d dir %d\n",
-	       diff/norm,this_node,i,dir);
+	printf("Intolerable relative difference %e (norm %e) node %d site %d dir %d\n",
+	       diff/norm,norm,this_node,i,dir);
 	dumpmat(dW + 4*i + dir);
 	dumpmat(tmat);
       }
