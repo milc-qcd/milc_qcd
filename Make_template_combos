@@ -30,6 +30,10 @@ ifeq ($(strip ${HAVEQIO}),true)
   STANDARD_OBJECTS +=  file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
 endif
 
+ifeq ($(strip ${HAVE_APE_IO}),true)
+  STANDARD_OBJECTS += io_ape_links.o
+endif  
+
 # These use the gauge field extensively
 
 GAUGE_OBJECTS = \

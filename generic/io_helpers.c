@@ -49,7 +49,7 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
 	    break;
         case SAVE_SERIAL_ILDG:
 #ifdef HAVE_QIO
-	    gf = save_serial_ildg(filename,1,stringLFN);
+	  gf = save_serial_ildg(NULL, filename,1,stringLFN);
 #else
 	    node0_printf("save_serial_ildg requires QIO compilation\n");
 	    terminate(1);
@@ -57,7 +57,7 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
             break;
         case SAVE_SERIAL_ILDG_DP:
 #ifdef HAVE_QIO
-	    gf = save_serial_ildg(filename,2,stringLFN);
+	  gf = save_serial_ildg(NULL, filename,2,stringLFN);
 #else
 	    node0_printf("save_serial_ildg_dp requires QIO compilation\n");
 	    terminate(1);
@@ -65,7 +65,7 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
             break;
         case SAVE_PARALLEL_ILDG:
 #ifdef HAVE_QIO
-	    gf = save_parallel_ildg(filename,1,stringLFN);
+	  gf = save_parallel_ildg(NULL, filename,1,stringLFN);
 #else
 	    node0_printf("save_parallel_ildg requires QIO compilation\n");
 	    terminate(1);
@@ -73,7 +73,7 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
             break;
         case SAVE_PARALLEL_ILDG_DP:
 #ifdef HAVE_QIO
-	    gf = save_parallel_ildg(filename,2,stringLFN);
+	  gf = save_parallel_ildg(NULL, filename,2,stringLFN);
 #else
 	    node0_printf("save_parallel_ildg_dp requires QIO compilation\n");
 	    terminate(1);
@@ -81,7 +81,7 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
             break;
         case SAVE_SERIAL_SCIDAC:
 #ifdef HAVE_QIO
-	    gf = save_serial_scidac(filename, 1);
+	  gf = save_serial_scidac(NULL, filename, 1);
 #else
 	    node0_printf("save_serial_scidac requires QIO compilation\n");
 	    terminate(1);
@@ -89,7 +89,7 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
             break;
         case SAVE_SERIAL_SCIDAC_DP:
 #ifdef HAVE_QIO
-	    gf = save_serial_scidac(filename, 2);
+	  gf = save_serial_scidac(NULL, filename, 2);
 #else
 	    node0_printf("save_serial_scidac_dp requires QIO compilation\n");
 	    terminate(1);
@@ -97,7 +97,7 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
             break;
         case SAVE_PARALLEL_SCIDAC:
 #ifdef HAVE_QIO
-	    gf = save_parallel_scidac(filename, 1);
+	  gf = save_parallel_scidac(NULL, filename, 1);
 #else
 	    node0_printf("save_parallel_scidac requires QIO compilation\n");
 	    terminate(1);
@@ -105,7 +105,7 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
             break;
         case SAVE_PARALLEL_SCIDAC_DP:
 #ifdef HAVE_QIO
-	    gf = save_parallel_scidac(filename, 2);
+	  gf = save_parallel_scidac(NULL, filename, 2);
 #else
 	    node0_printf("save_parallel_scidac_dp requires QIO compilation\n");
 	    terminate(1);
@@ -113,7 +113,7 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
             break;
         case SAVE_MULTIFILE_SCIDAC:
 #ifdef HAVE_QIO
-	    gf = save_multifile_scidac(filename, 1);
+	  gf = save_multifile_scidac(NULL, filename, 1);
 #else
 	    node0_printf("save_multifile_scidac requires QIO compilation\n");
 	    terminate(1);
@@ -121,7 +121,7 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
             break;
         case SAVE_MULTIFILE_SCIDAC_DP:
 #ifdef HAVE_QIO
-	    gf = save_multifile_scidac(filename, 2);
+	  gf = save_multifile_scidac(NULL, filename, 2);
 #else
 	    node0_printf("save_multifile_scidac_dp requires QIO compilation\n");
 	    terminate(1);
@@ -129,7 +129,7 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
             break;
         case SAVE_PARTFILE_SCIDAC:
 #ifdef HAVE_QIO
-	    gf = save_partfile_scidac(filename, 1);
+	  gf = save_partfile_scidac(NULL, filename, 1);
 #else
 	    node0_printf("save_partfile_scidac requires QIO compilation\n");
 	    terminate(1);
@@ -137,7 +137,7 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
             break;
         case SAVE_PARTFILE_SCIDAC_DP:
 #ifdef HAVE_QIO
-	    gf = save_partfile_scidac(filename, 2);
+	  gf = save_partfile_scidac(NULL, filename, 2);
 #else
 	    node0_printf("save_partfile_scidac_dp requires QIO compilation\n");
 	    terminate(1);

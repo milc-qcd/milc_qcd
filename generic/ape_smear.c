@@ -507,3 +507,134 @@ void destroy_ape_links_4D(su3_matrix *ape_links){
 } /* destroy_ape_links_4D */
 
 
+#ifdef APE_LINKS_FILE
+/* find out how to get the input APE link file to use.  This routine
+   is only called by node 0. */
+int ask_starting_apelinks( FILE *fp, int prompt, int *flag, char *filename ){
+  const char *savebuf;
+  int status;
+  const char myname[] = "ask_starting_apelinks";
+  
+  if (prompt==1) printf("enter 'fresh_ape' or 'reload_serial_ape'\n");
+  
+  savebuf = get_next_tag(fp, "read APE links command", myname);
+  if (savebuf == NULL)return 1;
+  
+  printf("%s ",savebuf);
+  if(strcmp("fresh_ape",savebuf) == 0 ) {
+    *flag = FRESH;
+    printf("\n");
+  }
+  else if(strcmp("reload_serial_ape",savebuf) == 0 ) {
+    *flag = RELOAD_SERIAL;
+  }
+  else{
+    printf(" is not a valid starting lattice command. INPUT ERROR.\n"); 
+    return 1;
+  }
+  
+  /*read name of file and load it */
+  if( *flag != FRESH ){
+    if(prompt==1)printf("enter name of file containing lattice\n");
+    status=fscanf(fp," %s",filename);
+    if(status !=1) {
+      printf("\n%s(%d): ERROR IN INPUT: error reading file name\n",
+	     myname, this_node); 
+      return 1;
+    }
+    printf("%s\n",filename);
+  }
+  return 0;
+}
+
+/* find out how to save APE links.  This routine is only called by
+   node 0.
+*/
+int ask_ending_apelinks(FILE *fp, int prompt, int *flag, char *filename ){
+  const char *savebuf;
+  int status;
+  const char myname[] = "ask_ending_lattice";
+  
+  if (prompt==1) printf(
+			"'forget_ape' links at end, 'save_serial_scidac_ape', 'save_parallel_scidac_ape', 'save_partfile_scidac_ape', 'save_serial_scidac_ape_dp', 'save_parallel_scidac_ape_dp', 'save_partfile_scidac_ape_dp'\n");
+  
+  savebuf = get_next_tag(fp, "save APE file command", myname);
+  if (savebuf == NULL)return 1;
+
+  printf("%s ",savebuf);
+  if(strcmp("save_serial_ape",savebuf) == 0 ) {
+    *flag=SAVE_SERIAL;
+  }
+  else if(strcmp("save_parallel_ape",savebuf) == 0 ) {
+    *flag=SAVE_PARALLEL;
+  }
+  else if(strcmp("save_serial_scidac_ape",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_SERIAL_SCIDAC;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_serial_scidac_ape_dp",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_SERIAL_SCIDAC_DP;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_parallel_scidac_ape",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARALLEL_SCIDAC;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_parallel_scidac_ape_dp",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARALLEL_SCIDAC_DP;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_partfile_scidac_ape",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARTFILE_SCIDAC;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_partfile_scidac_dp",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARTFILE_SCIDAC_DP;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("forget_ape",savebuf) == 0 ) {
+    *flag=FORGET;
+    printf("\n");
+  }
+  else {
+    printf("is not a save lattice command. INPUT ERROR\n");
+    return 1;
+  }
+  
+  if( *flag != FORGET ){
+    if(prompt==1)printf("enter filename\n");
+    status=fscanf(fp,"%s",filename);
+    if(status !=1){
+      printf("\nask_ending_apelinks: ERROR IN INPUT: error reading filename\n"); return 1;
+    }
+    printf("%s\n",filename);
+    
+  }
+  return 0;
+}
+
+#endif

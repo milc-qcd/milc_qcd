@@ -1693,7 +1693,7 @@ gauge_file *restore_serial(const char *filename)
       /* Close this reader and reread to get the header */
       free_input_gauge_file(gf);
 #ifdef HAVE_QIO
-      gf = restore_serial_scidac(filename);
+      gf = restore_serial_scidac(NULL, filename);
 #else
       node0_printf("Looks like a SciDAC file.  Recompile with QIO.\n");
       terminate(1);
@@ -1725,7 +1725,7 @@ gauge_file *restore_parallel(const char *filename)
       free(gf->header);
       free(gf);
 #ifdef HAVE_QIO
-      gf = restore_parallel_scidac(filename);
+      gf = restore_parallel_scidac(NULL, filename);
 #else
       node0_printf("Looks like a SciDAC file.  Recompile with QIO.\n");
       terminate(1);

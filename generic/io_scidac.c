@@ -194,7 +194,7 @@ void close_scidac_input(QIO_Reader *infile)
 
 #ifdef NO_GAUGE_FIELD
 static gauge_file *
-save_scidac(const char *filename, int volfmt, int serpar, int ildgstyle,
+save_scidac(su3_matrix *field,  const char *filename, int volfmt, int serpar, int ildgstyle,
 	    int prec, const char *stringLFN){
   printf("Can't save a lattice if we compile with -DNO_GAUGE_FIELD\n");
   terminate(1);
@@ -204,13 +204,12 @@ save_scidac(const char *filename, int volfmt, int serpar, int ildgstyle,
 /* Save the lattice in the site structure in SciDAC format */
 /* The QIO file is closed after writing the lattice */
 static gauge_file *
-save_scidac(const char *filename, int volfmt, int serpar, int ildgstyle,
+save_scidac(su3_matrix *field, const char *filename, int volfmt, int serpar, int ildgstyle,
 	    int prec, const char *stringLFN){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Writer *outfile;
   int status;
-  field_offset src = F_OFFSET(link[0]);
   gauge_file *gf;
   char *info;
   QIO_String *filexml;
@@ -245,10 +244,19 @@ save_scidac(const char *filename, int volfmt, int serpar, int ildgstyle,
   QIO_string_set(recxml, info);
 
   /* Write the lattice field */
-  if(prec == 1)
-    status = write_F3_M_from_site(outfile, recxml, src, LATDIM);
-  else
-    status = write_D3_M_from_site(outfile, recxml, src, LATDIM);
+  if(field == NULL){
+    field_offset src = F_OFFSET(link[0]);
+    if(prec == 1)
+      status = write_F3_M_from_site(outfile, recxml, src, LATDIM);
+    else
+      status = write_D3_M_from_site(outfile, recxml, src, LATDIM);
+  } else {
+    if(prec == 1)
+      status = write_F3_M_from_field(outfile, recxml, field, LATDIM);
+    else
+      status = write_D3_M_from_field(outfile, recxml, field, LATDIM);
+  }
+
   if(status)terminate(1);
 
   /* Discard for now */
@@ -322,54 +330,54 @@ int read_lat_dim_scidac(const char *filename, int *ndim, int dims[])
   return 0;
 }
 
-gauge_file *save_serial_scidac(const char *filename, int prec){
-  return save_scidac(filename, QIO_SINGLEFILE, QIO_SERIAL, QIO_ILDGNO, prec, NULL);
+gauge_file *save_serial_scidac(su3_matrix *field, const char *filename, int prec){
+  return save_scidac(field, filename, QIO_SINGLEFILE, QIO_SERIAL, QIO_ILDGNO, prec, NULL);
 }
 
-gauge_file *save_parallel_scidac(const char *filename, int prec){
-  return save_scidac(filename, QIO_SINGLEFILE, QIO_PARALLEL, QIO_ILDGNO, prec, NULL);
+gauge_file *save_parallel_scidac(su3_matrix *field, const char *filename, int prec){
+  return save_scidac(field, filename, QIO_SINGLEFILE, QIO_PARALLEL, QIO_ILDGNO, prec, NULL);
 }
 
-gauge_file *save_multifile_scidac(const char *filename, int prec){
-  return save_scidac(filename, QIO_MULTIFILE, QIO_SERIAL, QIO_ILDGNO, prec, NULL);
+gauge_file *save_multifile_scidac(su3_matrix *field, const char *filename, int prec){
+  return save_scidac(field, filename, QIO_MULTIFILE, QIO_SERIAL, QIO_ILDGNO, prec, NULL);
 }
 
-gauge_file *save_partfile_scidac(const char *filename, int prec){
-  return save_scidac(filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGNO, prec, NULL);
+gauge_file *save_partfile_scidac(su3_matrix *field, const char *filename, int prec){
+  return save_scidac(field, filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGNO, prec, NULL);
 }
 
-gauge_file *save_partfile_dir_scidac(const char *filename, int prec){
-  return save_scidac(filename, QIO_PARTFILE_DIR, QIO_SERIAL, QIO_ILDGNO, prec, NULL);
+gauge_file *save_partfile_dir_scidac(su3_matrix *field, const char *filename, int prec){
+  return save_scidac(field, filename, QIO_PARTFILE_DIR, QIO_SERIAL, QIO_ILDGNO, prec, NULL);
 }
 
-gauge_file *save_serial_ildg(const char *filename, int prec, const char *stringLFN){
-  return save_scidac(filename, QIO_SINGLEFILE, QIO_SERIAL, QIO_ILDGLAT, prec,
+gauge_file *save_serial_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN){
+  return save_scidac(field, filename, QIO_SINGLEFILE, QIO_SERIAL, QIO_ILDGLAT, prec,
 		     stringLFN);
 }
 
-gauge_file *save_parallel_ildg(const char *filename, int prec, const char *stringLFN){
-  return save_scidac(filename, QIO_SINGLEFILE, QIO_PARALLEL, QIO_ILDGLAT, prec,
+gauge_file *save_parallel_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN){
+  return save_scidac(field, filename, QIO_SINGLEFILE, QIO_PARALLEL, QIO_ILDGLAT, prec,
 		     stringLFN);
 }
 
-gauge_file *save_multifile_ildg(const char *filename, int prec, const char *stringLFN){
-  return save_scidac(filename, QIO_MULTIFILE, QIO_SERIAL, QIO_ILDGLAT, prec,
+gauge_file *save_multifile_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN){
+  return save_scidac(field, filename, QIO_MULTIFILE, QIO_SERIAL, QIO_ILDGLAT, prec,
 		     stringLFN);
 }
 
-gauge_file *save_partfile_ildg(const char *filename, int prec, const char *stringLFN){
-  return save_scidac(filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGLAT, prec,
+gauge_file *save_partfile_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN){
+  return save_scidac(field, filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGLAT, prec,
 		     stringLFN);
 }
 
-gauge_file *save_partfile_dir_ildg(const char *filename, int prec, const char *stringLFN){
-  return save_scidac(filename, QIO_PARTFILE_DIR, QIO_SERIAL, QIO_ILDGLAT, prec,
+gauge_file *save_partfile_dir_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN){
+  return save_scidac(field, filename, QIO_PARTFILE_DIR, QIO_SERIAL, QIO_ILDGLAT, prec,
 		     stringLFN);
 }
 
 /* The QIO file is closed after reading the lattice */
 #if 0
-static gauge_file *restore_scidac(const char *filename, int serpar){
+static gauge_file *restore_scidac(const const char *filename, su3_matrix *field, int serpar){
   printf("Can't restore a lattice if we compile with -DNO_GAUGE_FIELD\n");
   terminate(1);
   return NULL;
@@ -379,7 +387,7 @@ static gauge_file *restore_scidac(const char *filename, int serpar){
 
 #ifndef NO_GAUGE_FIELD
 
-static gauge_file *restore_scidac(const char *filename, int serpar){
+static gauge_file *restore_scidac(su3_matrix *field, const char *filename, int serpar){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
@@ -387,7 +395,6 @@ static gauge_file *restore_scidac(const char *filename, int serpar){
   QIO_String *recxml;
   int status;
   int typesize;
-  field_offset dest = F_OFFSET(link[0]);
   gauge_file *gf;
 
   QIO_verbose(QIO_VERB_OFF);
@@ -417,15 +424,29 @@ static gauge_file *restore_scidac(const char *filename, int serpar){
 
   /* Read the lattice field as single or double precision according to
      the type size (bytes in a single SU(3) matrix) */
-  if(typesize == 72)
-    status = read_F3_M_to_site(infile, recxml, dest, LATDIM);
-  else if (typesize == 144)
-    status = read_D3_M_to_site(infile, recxml, dest, LATDIM);
-  else
-    {
-      node0_printf("restore_scidac: Bad typesize %d\n",typesize);
-      terminate(1);
-    }
+  if(field == NULL){
+    field_offset dest = F_OFFSET(link[0]);
+    if(typesize == 72)
+      status = read_F3_M_to_site(infile, recxml, dest, LATDIM);
+    else if (typesize == 144)
+      status = read_D3_M_to_site(infile, recxml, dest, LATDIM);
+    else
+      {
+	node0_printf("restore_scidac: Bad typesize %d\n",typesize);
+	terminate(1);
+      }
+  } else {
+    if(typesize == 72)
+      status = read_F3_M_to_field(infile, recxml, field, LATDIM);
+    else if (typesize == 144)
+      status = read_D3_M_to_field(infile, recxml, field, LATDIM);
+    else
+      {
+	node0_printf("restore_scidac: Bad typesize %d\n",typesize);
+	terminate(1);
+      }
+  }
+  
   if(status)terminate(1);
 
   /* Discard for now */
@@ -517,22 +538,19 @@ static gauge_file *file_scan_scidac(const char *filename, int serpar){
   return gf;
 }
 
-/* The QIO file is closed after reading the lattice */
-gauge_file *restore_serial_scidac(const char *filename){
-  return restore_scidac(filename, QIO_SERIAL);
+/* In all cases the QIO file is closed after reading the lattice */
+gauge_file *restore_serial_scidac(su3_matrix *field, const char *filename){
+  return restore_scidac(field, filename, QIO_SERIAL);
 }
 
-/* The QIO file is closed after reading the lattice */
-gauge_file *restore_parallel_scidac(const char *filename){
-  return restore_scidac(filename, QIO_PARALLEL);
+gauge_file *restore_parallel_scidac(su3_matrix *field, const char *filename){
+  return restore_scidac(field, filename, QIO_PARALLEL);
 }
 
-/* The QIO file is closed after reading the lattice */
 gauge_file *file_scan_serial_scidac(const char *filename){
   return file_scan_scidac(filename, QIO_SERIAL);
 }
 
-/* The QIO file is closed after reading the lattice */
 gauge_file *file_scan_parallel_scidac(const char *filename){
   return file_scan_scidac(filename, QIO_PARALLEL);
 }

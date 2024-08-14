@@ -352,6 +352,10 @@ QOP = ${QOPQDP}
 include ../Make_template_scidac
 
 #----------------------------------------------------------------------
+# 12. APE link I/O
+WANT_APE_IO ?= # true
+
+#----------------------------------------------------------------------
 # 12. Intel MKL for FFTW and LAPACK
 
 ifeq ($(strip ${COMPILER}),intel)
@@ -1199,6 +1203,11 @@ ifeq ($(strip ${WANTDCAP}),true)
    MACHINE_DEP_IO = io_dcap.o
    OCFLAGS += -I${DCAP_DIR}/include
    LDFLAGS += -L${DCAP_DIR}/${DCAPLIB} -Wl,--rpath,${DCAP_DIR}/${DCAPLIB} -ldcap
+endif
+
+ifeq ($(strip ${WANT_APE_IO}),true)
+  HAVE_APE_IO = true
+  OCFLAGS += -DAPE_LINKS_FILE
 endif
 
 ifeq ($(strip ${WANTFFTW}),true)
