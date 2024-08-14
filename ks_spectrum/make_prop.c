@@ -98,7 +98,7 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 	node0_printf("WARNING: %s: inversion error parameters do not match within the set\n", myname);
 	node0_printf("WARNING: %s: will correct this in the refinement step.\n", myname);
       } else {
-	node0_printf("ERROR: %s: found a nonmatching inversion error parameter the set\n", myname);
+	node0_printf("ERROR: %s: found a nonmatching inversion error parameter in the set\n", myname);
 	terminate(1);
       }
     }
