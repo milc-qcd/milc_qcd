@@ -46,6 +46,7 @@ int setup()   {
 #ifdef U1_FIELD
   u1_A = create_u1_A_field();
 #endif
+  ape_links = NULL;
   FORALLUPDIR(dir){
     boundary_phase[dir] = 0.;
   }
@@ -71,9 +72,6 @@ int setup()   {
   return(prompt);
 }
 
-
-static int n_naiks = 1;
-static double eps_naik[MAX_NAIK];
 
 /* SETUP ROUTINES */
 static int initial_set(void){
@@ -224,11 +222,22 @@ int readin(int prompt) {
        links */
     /* APE smearing parameters (if needed) */
     /* Zero suppresses APE smearing */
+#ifdef APE_LINKS_FILE
+    IF_OK status += ask_starting_apelinks(stdin, prompt, &param.start_ape_flag, param.start_ape_file);
+    if(param.start_ape_flag == FRESH){
+      IF_OK status += get_f(stdin, prompt, "staple_weight",
+			    &param.staple_weight);
+      IF_OK status += get_i(stdin, prompt, "ape_iter",
+			    &param.ape_iter);
+    }
+    IF_OK status += ask_ending_apelinks(stdin, prompt, &param.save_ape_flag, param.save_ape_file);
+#else
     IF_OK status += get_f(stdin, prompt, "staple_weight",
 			  &param.staple_weight);
     IF_OK status += get_i(stdin, prompt, "ape_iter",
 			  &param.ape_iter);
-
+#endif
+    
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
     IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
     IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
@@ -1599,13 +1608,13 @@ int readin(int prompt) {
      epsilon index.  We need to list any required Naik epsilons. */
 
   /* First term is always zero */
-  start_eps_naik(eps_naik, &n_naiks);
+  start_eps_naik(param.eps_naik, &param.n_naiks);
 
   /* Contribution from the chiral condensate epsilons */
   for(i = 0; i < param.num_pbp_masses; i++){
     param.ksp_pbp[i].naik_term_epsilon_index =
-      fill_eps_naik(eps_naik,
-	  &n_naiks, param.ksp_pbp[i].naik_term_epsilon);
+      fill_eps_naik(param.eps_naik,
+	  &param.n_naiks, param.ksp_pbp[i].naik_term_epsilon);
   }
 
   /* Contribution from the propagator epsilons */
@@ -1613,8 +1622,8 @@ int readin(int prompt) {
     nprop = param.end_prop[param.num_set-1] + 1;
     for(i = 0; i < nprop; i++)
       param.ksp[i].naik_term_epsilon_index = 
-	fill_eps_naik(eps_naik, 
-		      &n_naiks, param.ksp[i].naik_term_epsilon);
+	fill_eps_naik(param.eps_naik, 
+		      &param.n_naiks, param.ksp[i].naik_term_epsilon);
   }
 
   /* Requests from any embedded inverse and hopping operators in the
@@ -1624,7 +1633,7 @@ int readin(int prompt) {
     int is = param.num_base_source + i;
     /* If the operator uses Dslash, get the requested Naik epsilon */
     if(get_qss_eps_naik(&eps, &param.src_qs_op[is])){
-      insert_qss_eps_naik_index(fill_eps_naik(eps_naik, &n_naiks, eps), &param.src_qs_op[is]);
+      insert_qss_eps_naik_index(fill_eps_naik(param.eps_naik, &param.n_naiks, eps), &param.src_qs_op[is]);
     }
   }
 
@@ -1634,7 +1643,7 @@ int readin(int prompt) {
     Real eps = 0.;
     /* If the operator uses Dslash, get the requested Naik epsilon */
     if(get_qss_eps_naik(&eps, &param.snk_qs_op[i])){
-      insert_qss_eps_naik_index(fill_eps_naik(eps_naik, &n_naiks, eps), &param.snk_qs_op[i]);
+      insert_qss_eps_naik_index(fill_eps_naik(param.eps_naik, &param.n_naiks, eps), &param.snk_qs_op[i]);
     }
   }
 
@@ -1648,126 +1657,8 @@ int readin(int prompt) {
       param.naik_index[i] = param.naik_index[param.prop_for_qk[i]];
   }
 
- /* Do whatever is needed to get lattice */
-  if( param.startflag == CONTINUE ){
-    rephase( OFF );
-  }
-  if( param.startflag != CONTINUE ){
-    startlat_p = reload_lattice( param.startflag, param.startfile );
-  }
-  /* if a lattice was read in, put in KS phases and AP boundary condition */
-  phases_in = OFF;
-  rephase( ON );
 
-
-#ifdef U1_FIELD
-  /* Read the U(1) gauge field, if wanted */
-  start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
-#endif
-
-  /* Set options for fermion links */
-
-#ifdef DBLSTORE_FN
-  /* We want to double-store the links for optimization */
-  fermion_links_want_back(1);
-#endif
-
-  /* Don't need to save HISQ auxiliary links */
-  fermion_links_want_aux(0);
-  
-#if FERM_ACTION == HISQ
-
-#ifdef DM_DEPS
-  fermion_links_want_deps(1);
-#endif
-
-  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
-
-#else
-
-#ifdef DM_DU0
-  fermion_links_want_du0(1);
-#endif
-
-  fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
-
-#endif
-
-  /* Construct APE smeared links without KS phases, but with
-     conventional antiperiodic bc.  This is the same initial
-     setup as the gauge field itself.  Later the phases are
-     adjusted according to boundary phases and momentum twists. */
-  rephase( OFF );
-  ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
-  if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
-  refresh_ape_links = 1;
-  ape_links_ks_phases = OFF;
-  /* By default, the phases are ON */
-  rephase_field_offset( ape_links, ON, &ape_links_ks_phases, param.coord_origin );
-  
-  rephase( ON );
-
-#if EIGMODE == EIGCG
-  int Nvecs_max = param.eigcgp.Nvecs_max;
-  if(param.ks_eigen_startflag == FRESH)
-    Nvecs_tot = ((Nvecs_max - 1)/param.eigcgp.Nvecs)*param.eigcgp.Nvecs
-      + param.eigcgp.m;
-  else
-    Nvecs_tot = Nvecs_max;
-
-  Nvecs_alloc = Nvecs_tot;
-  eigVal = (double *)malloc(Nvecs_alloc*sizeof(double));
-  eigVec = (su3_vector **)malloc(Nvecs_alloc*sizeof(su3_vector *));
-  for(i = 0; i < Nvecs_alloc; i++)
-    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-
-  /* Do whatever is needed to get eigenpairs */
-  imp_ferm_links_t **fn = get_fm_links(fn_links);
-  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile,
-			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
-
-  if(param.fixflag != NO_GAUGE_FIX){
-    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
-  }
-  if(status != 0) normal_exit(0);
-
-  if(param.ks_eigen_startflag != FRESH){
-    param.eigcgp.Nvecs = 0;
-    param.eigcgp.Nvecs_curr = Nvecs_tot;
-    param.eigcgp.H = (double_complex *)malloc(Nvecs_max*Nvecs_max
-					      *sizeof(double_complex));
-    for(i = 0; i < Nvecs_max; i++){
-      for(k = 0; k < i; k++)
-	param.eigcgp.H[k + Nvecs_max*i] = dcmplx((double)0.0, (double)0.0);
-      param.eigcgp.H[(Nvecs_max+1)*i] = dcmplx(eigVal[i], (double)0.0);
-    }
-  }
-#endif
-
-#if EIGMODE != EIGCG
-  if(param.eigen_param.Nvecs > 0){
-    /* malloc for eigenpairs */
-    eigVal = (Real *)malloc(param.eigen_param.Nvecs*sizeof(double));
-    eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
-    for(i=0; i < param.eigen_param.Nvecs; i++){
-      eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-      if(eigVec[i] == NULL){
-	printf("No room for eigenvector\n");
-	terminate(1);
-      }
-    }
-
-    /* Do whatever is needed to get eigenpairs */
-    imp_ferm_links_t **fn = get_fm_links(fn_links);
-    status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
-    if(param.fixflag != NO_GAUGE_FIX){
-      node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
-    }
-  }
-#endif
-
-  ENDTIME("readin");
+  ENDTIME("read parameters");
 
   return 0;
 }

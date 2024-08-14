@@ -105,17 +105,249 @@ int main(int argc, char *argv[])
 #ifdef HISQ_SVD_COUNTER
     hisq_svd_counter = 0;
 #endif
+
+    STARTTIME;
+    
+    /**************************************************************/
+    /* Do whatever is needed to get lattice */
+    if( param.startflag == CONTINUE ){
+      rephase( OFF );
+    }
+    if( param.startflag != CONTINUE ){
+      startlat_p = reload_lattice( param.startflag, param.startfile );
+    }
+    /* if a lattice was read in, put in KS phases and AP boundary condition */
+    phases_in = OFF;
+    rephase( ON );
+
+#ifdef U1_FIELD
+    /* Read the U(1) gauge field, if wanted */
+    start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
+#endif
+
+    ENDTIME("read lattice");
+
+    /**************************************************************/
+    /* Fix the gauge, but not if we are "continuing"              */
+    
+    if( param.fixflag == COULOMB_GAUGE_FIX && ! (param.startflag == CONTINUE) )
+      {
+	if(this_node == 0) 
+	  printf("Fixing to Coulomb gauge\n");
+
+	rephase( OFF );
+
+	STARTTIME;
+	gaugefix(TUP,(Real)1.8,500,GAUGE_FIX_TOL);
+	//gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL);
+	ENDTIME("gauge fix");
+
+#if 0
+	/* (Re)construct APE smeared links after gauge fixing.  
+	   No KS phases here! */
+	destroy_ape_links_4D(ape_links);
+	ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+	if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
+	refresh_ape_links = 1;  // To signal refreshing of any cached links
+	ape_links_ks_phases = OFF;  
+	/* By default, the phases are ON */
+	rephase_field_offset( ape_links, ON, &ape_links_ks_phases, param.coord_origin );
+#endif
+	
+	rephase( ON );
+	invalidate_fermion_links(fn_links);
+
+      }
+    else
+      if(this_node == 0)printf("COULOMB GAUGE FIXING SKIPPED.\n");
+    
+    /**************************************************************/
+    /* Construct APE smeared links without KS phases, but with
+       conventional antiperiodic bc.  This is the same initial setup as
+       the gauge field itself.  Later the phases are adjusted according
+       to boundary phases and momentum twists.  If we are reading from a
+       file, we assume it was saved with the same conventions.
+    */
+#ifdef APE_LINKS_FILE
+    
+    if(param.start_ape_flag == FRESH){
+
+      /* Do APE smearing */
+      rephase( OFF );
+
+      ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+      if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
+      refresh_ape_links = 1;
+      ape_links_ks_phases = OFF;
+      /* By default, the KS phases in the APE links are ON */
+      rephase_field_offset( ape_links, ON, &ape_links_ks_phases, param.coord_origin );
+      
+      rephase( ON );
+
+    } else {
+
+      /* Reload APE links from a file */
+      if(ape_links == NULL) ape_links = create_G();
+      reload_apelinks( param.start_ape_flag, ape_links, param.start_ape_file );
+
+    }
+    
+#else
+
+    rephase( OFF );
+
+    /* Do APE smearing */
+    ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+    if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
+    refresh_ape_links = 1;
+    ape_links_ks_phases = OFF;
+    /* By default, the phases are ON */
+    rephase_field_offset( ape_links, ON, &ape_links_ks_phases, param.coord_origin );
+    
+    rephase( ON );
+
+#endif
+  
+    /**************************************************************/
+    /* save lattice if requested */
+
+    STARTTIME;
+    
+    if( param.saveflag != FORGET ){
+      rephase( OFF );
+      savelat_p = save_lattice( param.saveflag, param.savefile, 
+				param.stringLFN );
+      rephase( ON );
+    }
+
+#ifdef U1_FIELD
+    if( param.save_u1flag != FORGET ){
+      save_u1_lattice( param.save_u1flag, param.save_u1file );
+    }
+#endif
+
+#ifdef APE_LINKS_FILE
+
+    /* Save the APE links to a file if requested */
+    if(param.save_ape_flag != FORGET){
+      if(ape_links == NULL){
+	node0_printf("ERROR: setup: Requested saving empty APE links\n");
+	terminate(1);
+      }
+      save_apelinks( param.save_ape_flag, ape_links, param.save_ape_file );
+    }
+
+#endif
+
+    ENDTIME("save lattice");
+
+    /**************************************************************/
+    /* Set up fermion links */
+    
+    STARTTIME;
+    
+#ifdef DBLSTORE_FN
+    /* We want to double-store the links for optimization */
+    fermion_links_want_back(1);
+#endif
+    
+    /* Don't need to save HISQ auxiliary links */
+    fermion_links_want_aux(0);
+    
+#if FERM_ACTION == HISQ
+    
+#ifdef DM_DEPS
+    fermion_links_want_deps(1);
+#endif
+    
+    fn_links = create_fermion_links_from_site(MILC_PRECISION, param.n_naiks, param.eps_naik);
+    
+#else
+    
+#ifdef DM_DU0
+    fermion_links_want_du0(1);
+#endif
+    
+    fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
+    
+#endif
+    
+    ENDTIME("create fermion links");
+
+    
+    /**************************************************************/
+    /* Set up eigenpairs, if requested */
+
+    STARTTIME;
+      
+#if EIGMODE == EIGCG
+    int Nvecs_max = param.eigcgp.Nvecs_max;
+    if(param.ks_eigen_startflag == FRESH)
+      Nvecs_tot = ((Nvecs_max - 1)/param.eigcgp.Nvecs)*param.eigcgp.Nvecs
+	+ param.eigcgp.m;
+    else
+      Nvecs_tot = Nvecs_max;
+    
+    Nvecs_alloc = Nvecs_tot;
+    eigVal = (double *)malloc(Nvecs_alloc*sizeof(double));
+    eigVec = (su3_vector **)malloc(Nvecs_alloc*sizeof(su3_vector *));
+    for(i = 0; i < Nvecs_alloc; i++)
+      eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+    
+    /* Do whatever is needed to get eigenpairs */
+    imp_ferm_links_t **fn = get_fm_links(fn_links);
+    int status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile,
+				 &Nvecs_tot, eigVal, eigVec, fn[0], 1);
+    
+    if(param.fixflag != NO_GAUGE_FIX){
+      node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
+    }
+    if(status != 0) normal_exit(0);
+    
+    if(param.ks_eigen_startflag != FRESH){
+      param.eigcgp.Nvecs = 0;
+      param.eigcgp.Nvecs_curr = Nvecs_tot;
+      param.eigcgp.H = (double_complex *)malloc(Nvecs_max*Nvecs_max
+						*sizeof(double_complex));
+      for(i = 0; i < Nvecs_max; i++){
+	for(k = 0; k < i; k++)
+	  param.eigcgp.H[k + Nvecs_max*i] = dcmplx((double)0.0, (double)0.0);
+	param.eigcgp.H[(Nvecs_max+1)*i] = dcmplx(eigVal[i], (double)0.0);
+      }
+    }
+#endif
+    
+#if EIGMODE != EIGCG
+    if(param.eigen_param.Nvecs > 0){
+      /* malloc for eigenpairs */
+      eigVal = (Real *)malloc(param.eigen_param.Nvecs*sizeof(double));
+      eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
+      for(i=0; i < param.eigen_param.Nvecs; i++){
+	eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+	if(eigVec[i] == NULL){
+	  printf("No room for eigenvector\n");
+	  terminate(1);
+	}
+      }
+      
+      /* Do whatever is needed to get eigenpairs */
+      imp_ferm_links_t **fn = get_fm_links(fn_links);
+      int status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+				   &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
+      if(param.fixflag != NO_GAUGE_FIX){
+	node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+      }
+    }
+#endif
     
     /**************************************************************/
     /* Compute Dirac eigenpairs           */
-
+    
     Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
       
     if(param.eigen_param.Nvecs > 0){
       
 #if EIGMODE != EIGCG
-      
-      STARTTIME;
       
       param.eigen_param.parity = EVEN;  /* Required */
       imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
@@ -172,17 +404,18 @@ int main(int argc, char *argv[])
 	}
       }
       
-      ENDTIME("calculate Dirac eigenpairs");
 #endif
     }
     
+    ENDTIME("calculate Dirac eigenpairs");
+
     /**************************************************************/
     /* Compute chiral condensate and related quantities           */
-
+    
     STARTTIME;
-
+    
     /* Make fermion links if not already done */
-
+    
     for(i = 0; i < param.num_pbp_masses; i++){
 #ifdef U1_FIELD
       u1phase_on(param.charge_pbp[i], u1_A);
@@ -209,52 +442,6 @@ int main(int argc, char *argv[])
     }
 
     ENDTIME("calculate pbp, etc");
-
-    /**************************************************************/
-    /* Fix the gauge */
-    
-    if( param.fixflag == COULOMB_GAUGE_FIX)
-      {
-	if(this_node == 0) 
-	  printf("Fixing to Coulomb gauge\n");
-
-	rephase( OFF );
-	STARTTIME;
-	gaugefix(TUP,(Real)1.8,500,GAUGE_FIX_TOL);
-	//gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL);
-	ENDTIME("gauge fix");
-
-	/* (Re)construct APE smeared links after gauge fixing.  
-	   No KS phases here! */
-	destroy_ape_links_4D(ape_links);
-	ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
-	if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
-	refresh_ape_links = 1;  // To signal refreshing of any cached links
-	ape_links_ks_phases = OFF;  
-	/* By default, the phases are ON */
-	rephase_field_offset( ape_links, ON, &ape_links_ks_phases, param.coord_origin );
-	
-	rephase( ON );
-	invalidate_fermion_links(fn_links);
-
-      }
-    else
-      if(this_node == 0)printf("COULOMB GAUGE FIXING SKIPPED.\n");
-    
-    /* save lattice if requested */
-    if( param.saveflag != FORGET ){
-      rephase( OFF );
-      savelat_p = save_lattice( param.saveflag, param.savefile, 
-				param.stringLFN );
-      rephase( ON );
-    }
-
-#ifdef U1_FIELD
-    if( param.save_u1flag != FORGET ){
-      save_u1_lattice( param.save_u1flag, param.save_u1file );
-    }
-#endif
-
 
     if(this_node==0)printf("END OF HEADER\n");
     

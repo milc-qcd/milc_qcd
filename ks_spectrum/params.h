@@ -73,17 +73,21 @@ typedef struct {
   /*  REPEATING BLOCK */
   int startflag;	/* what to do for beginning lattice */
   int start_u1flag;	/* what to do for beginning u(1) lattice */
+  int start_ape_flag;   /* what to do for input APE links */
   Real u0;
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
   int time_bc;          /* 0 for antiperiodic, 1 for periodic */
-  int fixflag;    /* whether to gauge fix */
-  int saveflag;	/* what to do for saving lattice */
+  int fixflag;          /* whether to gauge fix */
+  int saveflag;	        /* what to do for saving lattice */
   int save_u1flag;	/* what to do with ending u(1) lattice */
+  int save_ape_flag;	/* how to save the APE links */
   Real staple_weight;
   int ape_iter;
 #if EIGMODE == EIGCG
   eigcg_params eigcgp; /* parameters for eigCG */
 #endif
+  int n_naiks;                /* For HISQ links */
+  double eps_naik[MAX_NAIK];  /* For HISQ links */
   char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
   char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
   int ks_eigen_startflag; /* what to do for beginning eigenvectors */
@@ -196,8 +200,10 @@ typedef struct {
   /* Filenames */
   char startfile[MAXFILENAME];  /* Gauge file */
   char start_u1file[MAXFILENAME]; /* U(1) gauge file */
-  char save_u1file[MAXFILENAME]; /* U(1) gauge file */
+  char start_ape_file[MAXFILENAME]; /* APE links file */
   char savefile[MAXFILENAME];
+  char save_u1file[MAXFILENAME]; /* U(1) gauge file */
+  char save_ape_file[MAXFILENAME]; /* APE links file */
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
   char scratchstem_w[MAXFILENAME];
 }  params;
