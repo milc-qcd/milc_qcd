@@ -315,6 +315,12 @@ EXTERN  char ensemble_id[MAXFILENAME];
 EXTERN  int sequence_number;
 
 /**********************************************************************/
+
+/* Prototypes for io_ape.c */
+
+gauge_file *save_apelinks( int flag, su3_matrix *links, const char *filename);
+gauge_file *reload_apelinks( int flag, su3_matrix *links, const char *filename);
+
 /* Prototypes for io_lat4.c */
 
 int big_endian(void);
@@ -363,16 +369,16 @@ void write_appl_gauge_info(FILE *fp, gauge_file *gf);
 /* Prototypes for io_scidac routines */
 gauge_file *file_scan_serial_scidac(const char *filename);
 gauge_file *file_scan_parallel_scidac(const char *filename);
-gauge_file *save_serial_scidac(const char *filename, int prec);
-gauge_file *save_parallel_scidac(const char *filename, int prec);
-gauge_file *save_multifile_scidac(const char *filename, int prec);
-gauge_file *save_partfile_scidac(const char *filename, int prec);
-gauge_file *save_serial_ildg(const char *filename, int prec, const char *stringLFN);
-gauge_file *save_parallel_ildg(const char *filename, int prec, const char *stringLFN);
-gauge_file *save_partfile_ildg(const char *filename, int prec, const char *stringLFN);
-gauge_file *save_multifile_ildg(const char *filename, int prec, const char *stringLFN);
-gauge_file *restore_serial_scidac(const char *filename);
-gauge_file *restore_parallel_scidac(const char *filename);
+gauge_file *save_serial_scidac(su3_matrix *field, const char *filename, int prec);
+gauge_file *save_parallel_scidac(su3_matrix *field, const char *filename, int prec);
+gauge_file *save_multifile_scidac(su3_matrix *field, const char *filename, int prec);
+gauge_file *save_partfile_scidac(su3_matrix *field, const char *filename, int prec);
+gauge_file *save_serial_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
+gauge_file *save_parallel_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
+gauge_file *save_partfile_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
+gauge_file *save_multifile_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
+gauge_file *restore_serial_scidac(su3_matrix *field, const char *filename);
+gauge_file *restore_parallel_scidac(su3_matrix *field, const char *filename);
 
 /**********************************************************************/
 /* Prototypes for parallel I/O routine interfaces:

@@ -113,6 +113,11 @@ su3_matrix *ape_smear_4D(Real staple_weight, int iters);
 void destroy_ape_links_3D(su3_matrix *ape_links);
 void destroy_ape_links_4D(su3_matrix *ape_links);
 
+#ifdef APE_LINKS_FILE
+int ask_starting_apelinks( FILE *fp, int prompt, int *flag, char *filename );
+int ask_ending_apelinks(FILE *fp, int prompt, int *flag, char *filename );
+#endif
+
 /* ax_gauge.c */
 void ax_gauge(void);
 
