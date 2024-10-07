@@ -276,6 +276,7 @@ void bdry_flow( Real *q_bulk ) {
       rest_time = 0.0;
       if ( ( ibdry - 1 ) * stoptime_bdry <= block_time 
         && block_time < ibdry  * stoptime_bdry 
+        && block_time < maxnflow_bdry * stoptime_bdry 
         ) {
         rest_time = ibdry * stoptime_bdry - block_time;
         block_time = stoptime_bdry - rest_time;
@@ -288,7 +289,7 @@ void bdry_flow( Real *q_bulk ) {
       run_gradient_flow( BOUNDARY );
     }
     #ifdef BLOCKING
-      if ( rest_time > 0.0 ) {
+      if ( rest_time > 0.0 && block_time < maxnflow_bdry * stoptime_bdry ) {
         /* block one step */
         spatial_blocking();
         stoptime_bdry = rest_time;
@@ -311,7 +312,7 @@ void bdry_flow( Real *q_bulk ) {
     node0_printf(" q_acc (%.6g,%.6g) delta_q2 (%.6g,%.6g)",
       q_acc[0],q_acc[1], delta_q2[0],delta_q2[1]);
     if ( delta_q2[0] < thresh_q2 || delta_q2[1] < thresh_q2 ) {
-      // thr_bdry++;
+      thr_bdry++;
       node0_printf(" PASS");
     } else {
       thr_bdry = 0;
@@ -319,7 +320,7 @@ void bdry_flow( Real *q_bulk ) {
     node0_printf(" q_s = (%.6g, %.6g) delta_qs2 = (%.6g, %.6g)",
       q_s[0],q_s[1], delta_qs2[0],delta_qs2[1]);
     if ( delta_qs2[0] < thresh_qs2 || delta_qs2[1] < thresh_qs2 ) {
-      // thr_qs2++;
+      thr_qs2++;
       node0_printf(" PASS");
     } else {
       thr_qs2 = 0;
