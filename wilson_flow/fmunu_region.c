@@ -1953,7 +1953,7 @@ gauge_action_w_s_upr_bdry ( su3_matrix **link_last_flow,
 
   spatial_gauge_action_w_s_region( UPPER_BOUNDARY, &(wls[0]), &(wls[1]), link_last_flow );
 
-  double wl2x1t[0];
+  double wl2x1t[1];
   dropped_temporal_gauge_action_w_s_upr_bdry( &(wlt[0]), &(wlt[1]), wl2x1t, link, link_last_flow );
   wlt[1] = ( wlt[1] + *wl2x1t ) * 0.5;
 
@@ -1978,7 +1978,7 @@ gauge_action_w_s_half( double wlt[2], double wls[2] ) {
 	spatial_gauge_action_w_s_region( LOWER_BULK, &(wls[0]), &(wls[1]), link_half );
 
   // temporal action still not corrected
-  double wl2x1t[0];
+  double wl2x1t[1];
   dropped_temporal_gauge_action_w_s_half( &(wlt[0]), &(wlt[1]), wl2x1t, link, link_half );
   wlt[1] = ( wlt[1] + *wl2x1t ) * 0.5;
 
