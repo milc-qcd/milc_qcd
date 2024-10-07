@@ -19,6 +19,7 @@ int initial_set();
 static void nth_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 static void make_2n_gathers(void);
 static void make_4n_gathers(void);
+static void make_8n_gathers(void);
 #endif
 static int get_flow_description( char *description, int *stapleflag );
 
@@ -51,6 +52,10 @@ setup()
 #if (MAX_BLOCK_STRIDE >= 4)
   make_4n_gathers();
   node0_printf("Made 4n gathers for BLOCKING\n"); fflush(stdout);
+#endif
+#if (MAX_BLOCK_STRIDE >= 8)
+  make_8n_gathers();
+  node0_printf("Made 8n gathers for BLOCKING\n"); fflush(stdout);
 #endif
 #endif
 
@@ -210,8 +215,15 @@ readin(int prompt)
 #endif
 
 #ifdef BLOCKING
-    IF_OK status += get_f(stdin, prompt, "block_1to2_time", &par_buf.block_1to2_time);
-    IF_OK status += get_f(stdin, prompt, "block_2to4_time", &par_buf.block_2to4_time);
+    #if (MAX_BLOCK_STRIDE >= 2)
+      IF_OK status += get_f(stdin, prompt, "block_1to2_time", &par_buf.block_1to2_time);
+    #endif
+    #if (MAX_BLOCK_STRIDE >= 4)
+      IF_OK status += get_f(stdin, prompt, "block_2to4_time", &par_buf.block_2to4_time);
+    #endif
+    #if (MAX_BLOCK_STRIDE >= 8)
+      IF_OK status += get_f(stdin, prompt, "block_4to8_time", &par_buf.block_4to8_time);
+    #endif
 #endif
 
     /* Determine what to do with the final configuration */
@@ -285,8 +297,15 @@ readin(int prompt)
 #endif
 
 #ifdef BLOCKING
-  block_1to2_time = par_buf.block_1to2_time;
-  block_2to4_time = par_buf.block_2to4_time;
+  #if (MAX_BLOCK_STRIDE >= 2)
+    block_1to2_time = par_buf.block_1to2_time;
+  #endif
+  #if (MAX_BLOCK_STRIDE >= 4)
+    block_2to4_time = par_buf.block_2to4_time;
+  #endif
+  #if (MAX_BLOCK_STRIDE >= 8)
+    block_4to8_time = par_buf.block_4to8_time;
+  #endif
 #endif
 
   saveflag = par_buf.saveflag;
@@ -628,8 +647,24 @@ make_4n_gathers(void)
   sort_eight_gathers(X4UP);
 }
 
-/* this routine uses n-step directions (X2UP..T4DOWN) as directions */
-/* returning the coords of the 4th nearest neighbor in that direction */
+static void 
+make_8n_gathers(void)
+{
+  int i;
+  
+  for(i=X8UP; i<=T8UP; i++) {
+    make_gather(nth_neighbor, &i, WANT_INVERSE,
+    ALLOW_EVEN_ODD, SAME_PARITY);
+  }
+  
+  /* Sort into the order we want for nearest neighbor gathers,
+     so you can use X8UP, X8DOWN, etc. as argument in calling them. */
+  
+  sort_eight_gathers(X8UP);
+}
+
+/* this routine uses n-step directions (X2UP..T8DOWN) as directions */
+/* returning the coords of the 2nd, 4th or 8th nearest neighbor in that direction */
 
 static void 
 nth_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
@@ -650,6 +685,10 @@ nth_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
   if (*dirpt >= X4UP && *dirpt <= T4UP) {
     step = 4;
     dir = (FB==FORWARDS) ? *dirpt-X4UP : OPP_DIR(*dirpt-X4UP);
+  } 
+  if (*dirpt >= X8UP && *dirpt <= T8UP) {
+    step = 8;
+    dir = (FB==FORWARDS) ? *dirpt-X8UP : OPP_DIR(*dirpt-X8UP);
   } 
   *xp = x; *yp = y; *zp = z; *tp = t;
   switch(dir){

@@ -137,13 +137,10 @@ run_gradient_flow( int region_flag ) {
     if ( region == BOUNDARY ) {
       // link_last_flow = new_last_flow_links();
       // update_last_flow_links( link_last_flow );
-
       link_last_flow = new_field( N_LAST_FLOW );
       update_last_flow_links( link_last_flow );
-      
       fmunu_fmunu_bdry( link_last_flow, Et_C, Es_C, charge );
       gauge_action_w_s_bdry( link_last_flow, Et_WS, Es_WS );
-      
       #ifdef HALF_LATTICE_TEST
         fmunu_fmunu_lwr_bdry( link_last_flow, Et_C_lwr, Es_C_lwr, charge_lwr );
         gauge_action_w_s_lwr_bdry( link_last_flow, &Et_WS_lwr, &Es_WS_lwr );

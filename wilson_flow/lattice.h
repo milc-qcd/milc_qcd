@@ -123,6 +123,7 @@ EXTERN  Real qs_tol;
 #ifdef BLOCKING
 EXTERN  Real block_1to2_time;
 EXTERN  Real block_2to4_time;
+EXTERN  Real block_4to8_time;
 #endif
 
 /* Integrator parameters */

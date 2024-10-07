@@ -57,6 +57,7 @@ typedef struct {
 #ifdef BLOCKING
   Real block_1to2_time;
   Real block_2to4_time;
+  Real block_4to8_time;
 #endif
 
   char flow_description[20]; /* type of flow (wilson, symanzik, zeuthen) */

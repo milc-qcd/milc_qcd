@@ -984,7 +984,7 @@ gauge_action_w_s_bulk( double wlt[2], double wls[2] ) {
 	spatial_gauge_action_w_s_region( ACTIVE, &(wls[0]), &(wls[1]), link );
 	// spatial_gauge_action_w_s_region( LOWER_BULK, wl1x1s, wl1x2s, link );
 
-	double wl2x1t[0];
+	double wl2x1t[1];
   #ifndef DROP_TIME_LINKS
     temporal_gauge_action_w_s_lwr_bulk( &(wlt[0]), &(wlt[1]), wl2x1t, link );
   #else
@@ -1013,7 +1013,7 @@ gauge_action_w_s_full( double wlt[2], double wls[2] ) {
 
   spatial_gauge_action_w_s_region( FULLVOL, &(wls[0]), &(wls[1]), link );
 
-  double wl2x1t[0];
+  double wl2x1t[1];
   temporal_gauge_action_w_s_full( &(wlt[0]), &(wlt[1]), wl2x1t, link );
   wlt[1] = ( wlt[1] + *wl2x1t ) * 0.5;
 
@@ -1913,7 +1913,7 @@ gauge_action_w_s_bdry ( su3_matrix **link_last_flow,
 
   spatial_gauge_action_w_s_region( BOUNDARY, &(wls[0]), &(wls[1]), link_last_flow );
 
-  double wl2x1t[0];
+  double wl2x1t[1];
   dropped_temporal_gauge_action_w_s_bdry( &(wlt[0]), &(wlt[1]), wl2x1t, link, link_last_flow );
   wlt[1] = ( wlt[1] + *wl2x1t ) * 0.5;
 
@@ -1933,7 +1933,7 @@ gauge_action_w_s_lwr_bdry ( su3_matrix **link_last_flow,
 
   spatial_gauge_action_w_s_region( LOWER_BOUNDARY, &(wls[0]), &(wls[1]), link_last_flow );
 
-  double wl2x1t[0];
+  double wl2x1t[1];
   dropped_temporal_gauge_action_w_s_lwr_bdry( &(wlt[0]), &(wlt[1]), wl2x1t, link, link_last_flow );
   wlt[1] = ( wlt[1] + *wl2x1t ) * 0.5;
 

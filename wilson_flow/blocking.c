@@ -22,6 +22,10 @@ void setup_blocked_dirs( int *dir, int *dirb, int *diro ) {
 	      dirb[0] = DIR4(dir[0]); diro[0] = DIR4(OPP_DIR(dir[0]));
 	      dirb[1] = DIR4(dir[1]); diro[1] = DIR4(OPP_DIR(dir[1]));
 	      break;
+	    case (8):
+	      dirb[0] = DIR8(dir[0]); diro[0] = DIR8(OPP_DIR(dir[0]));
+	      dirb[1] = DIR8(dir[1]); diro[1] = DIR8(OPP_DIR(dir[1]));
+	      break;
 	    default:
 	      node0_printf("Not implemented for this BLOCKING level %d\n",block_stride );
 	      terminate(1);
@@ -255,28 +259,29 @@ then block, and use the standard code; compare the untraced loops\n\n");
   double wl1x1s = 0;
   double wl1x2s = 0;
 
-  for( dir[0]=YUP; dir[0]<TUP; dir[0]++ ) {
-    for( dir[1]=XUP; dir[1]<dir[0]; dir[1]++ ) {
+	setup_blocked_dirs( dir, dirb, diro );
+  // for( dir[0]=YUP; dir[0]<TUP; dir[0]++ ) {
+  //   for( dir[1]=XUP; dir[1]<dir[0]; dir[1]++ ) {
 
-   		idx = ( dir[0] == ZUP ? dir[1] : ZUP) ;
-			switch( 2 * block_stride ) {
-				case (1):
-					dirb[0] =      dir[0];  diro[0] = OPP_DIR(dir[0]);
-					dirb[1] =      dir[1];  diro[1] = OPP_DIR(dir[1]);
-					break;
-				case (2):
-					dirb[0] = DIR2(dir[0]); diro[0] = DIR2(OPP_DIR(dir[0]));
-					dirb[1] = DIR2(dir[1]); diro[1] = DIR2(OPP_DIR(dir[1]));
-					break;
-				case (4):
-					dirb[0] = DIR4(dir[0]); diro[0] = DIR4(OPP_DIR(dir[0]));
-					dirb[1] = DIR4(dir[1]); diro[1] = DIR4(OPP_DIR(dir[1]));
-					break;
-				default:
-					node0_printf("Not implemented for this BLOCKING level %d\n",block_stride );
-					terminate(1);
-				break;
-			}
+  //  		idx = ( dir[0] == ZUP ? dir[1] : ZUP) ;
+	// 		switch( 2 * block_stride ) {
+	// 			case (1):
+	// 				dirb[0] =      dir[0];  diro[0] = OPP_DIR(dir[0]);
+	// 				dirb[1] =      dir[1];  diro[1] = OPP_DIR(dir[1]);
+	// 				break;
+	// 			case (2):
+	// 				dirb[0] = DIR2(dir[0]); diro[0] = DIR2(OPP_DIR(dir[0]));
+	// 				dirb[1] = DIR2(dir[1]); diro[1] = DIR2(OPP_DIR(dir[1]));
+	// 				break;
+	// 			case (4):
+	// 				dirb[0] = DIR4(dir[0]); diro[0] = DIR4(OPP_DIR(dir[0]));
+	// 				dirb[1] = DIR4(dir[1]); diro[1] = DIR4(OPP_DIR(dir[1]));
+	// 				break;
+	// 			default:
+	// 				node0_printf("Not implemented for this BLOCKING level %d\n",block_stride );
+	// 				terminate(1);
+	// 			break;
+	// 		}
 			#define LINK0 link[dir[0]]
 			#define LINK1 link[dir[1]]
 
@@ -516,22 +521,23 @@ then block, and use the standard code; compare the untraced loops\n\n");
     for( dir[1]=XUP; dir[1]<dir[0]; dir[1]++ ) {
    		idx = dir[1] + 9;
 
-      dirb[0] =      dir[0];  diro[0] = OPP_DIR(dir[0]);
-      switch( 2 * block_stride ) {
-        case (1):
-          dirb[1] =      dir[1];  diro[1] = OPP_DIR(dir[1]);
-          break;
-        case (2):
-          dirb[1] = DIR2(dir[1]); diro[1] = DIR2(OPP_DIR(dir[1]));
-          break;
-        case (4):
-          dirb[1] = DIR4(dir[1]); diro[1] = DIR4(OPP_DIR(dir[1]));
-          break;
-        default:
-          node0_printf("Not implemented for this BLOCKING level %d\n",block_stride );
-          terminate(1);
-        break;
-      }
+			setup_blocked_dirs( dir, dirb, diro );
+      // dirb[0] =      dir[0];  diro[0] = OPP_DIR(dir[0]);
+      // switch( 2 * block_stride ) {
+      //   case (1):
+      //     dirb[1] =      dir[1];  diro[1] = OPP_DIR(dir[1]);
+      //     break;
+      //   case (2):
+      //     dirb[1] = DIR2(dir[1]); diro[1] = DIR2(OPP_DIR(dir[1]));
+      //     break;
+      //   case (4):
+      //     dirb[1] = DIR4(dir[1]); diro[1] = DIR4(OPP_DIR(dir[1]));
+      //     break;
+      //   default:
+      //     node0_printf("Not implemented for this BLOCKING level %d\n",block_stride );
+      //     terminate(1);
+      //   break;
+      // }
       #define LINK0 link[dir[0]]
       #define LINK1 link[dir[1]]
 
@@ -780,24 +786,25 @@ then block, and use the standard code; compare the untraced loops\n\n");
     for( dir[1]=XUP; dir[1]<dir[0]; dir[1]++ ) {
 
     	idx = ( dir[0] == ZUP ? dir[1] : ZUP) ;
-			switch( block_stride ) {
-				case (1):
-					dirb[0] =      dir[0];  diro[0] = OPP_DIR(dir[0]);
-					dirb[1] =      dir[1];  diro[1] = OPP_DIR(dir[1]);
-					break;
-				case (2):
-					dirb[0] = DIR2(dir[0]); diro[0] = DIR2(OPP_DIR(dir[0]));
-					dirb[1] = DIR2(dir[1]); diro[1] = DIR2(OPP_DIR(dir[1]));
-					break;
-				case (4):
-					dirb[0] = DIR4(dir[0]); diro[0] = DIR4(OPP_DIR(dir[0]));
-					dirb[1] = DIR4(dir[1]); diro[1] = DIR4(OPP_DIR(dir[1]));
-					break;
-				default:
-					node0_printf("Not implemented for this BLOCKING level %d\n",block_stride );
-					terminate(1);
-				break;
-			}
+			setup_blocked_dirs( dir, dirb, diro );
+			// switch( block_stride ) {
+			// 	case (1):
+			// 		dirb[0] =      dir[0];  diro[0] = OPP_DIR(dir[0]);
+			// 		dirb[1] =      dir[1];  diro[1] = OPP_DIR(dir[1]);
+			// 		break;
+			// 	case (2):
+			// 		dirb[0] = DIR2(dir[0]); diro[0] = DIR2(OPP_DIR(dir[0]));
+			// 		dirb[1] = DIR2(dir[1]); diro[1] = DIR2(OPP_DIR(dir[1]));
+			// 		break;
+			// 	case (4):
+			// 		dirb[0] = DIR4(dir[0]); diro[0] = DIR4(OPP_DIR(dir[0]));
+			// 		dirb[1] = DIR4(dir[1]); diro[1] = DIR4(OPP_DIR(dir[1]));
+			// 		break;
+			// 	default:
+			// 		node0_printf("Not implemented for this BLOCKING level %d\n",block_stride );
+			// 		terminate(1);
+			// 	break;
+			// }
 			#define LINK0 link[dir[0]]
 			#define LINK1 link[dir[1]]
 
@@ -976,22 +983,23 @@ then block, and use the standard code; compare the untraced loops\n\n");
 		for( dir[1]=XUP; dir[1]<dir[0]; dir[1]++ ) {
    		idx = dir[1] + 9;
 
-			dirb[0] =      dir[0];  diro[0] = OPP_DIR(dir[0]);
-			switch( block_stride ) {
-				case (1):
-					dirb[1] =      dir[1];  diro[1] = OPP_DIR(dir[1]);
-					break;
-				case (2):
-					dirb[1] = DIR2(dir[1]); diro[1] = DIR2(OPP_DIR(dir[1]));
-					break;
-				case (4):
-					dirb[1] = DIR4(dir[1]); diro[1] = DIR4(OPP_DIR(dir[1]));
-					break;
-				default:
-					node0_printf("Not implemented for this BLOCKING level %d\n",block_stride );
-					terminate(1);
-				break;
-			}
+			setup_blocked_dirs( dir, dirb, diro );
+			// dirb[0] =      dir[0];  diro[0] = OPP_DIR(dir[0]);
+			// switch( block_stride ) {
+			// 	case (1):
+			// 		dirb[1] =      dir[1];  diro[1] = OPP_DIR(dir[1]);
+			// 		break;
+			// 	case (2):
+			// 		dirb[1] = DIR2(dir[1]); diro[1] = DIR2(OPP_DIR(dir[1]));
+			// 		break;
+			// 	case (4):
+			// 		dirb[1] = DIR4(dir[1]); diro[1] = DIR4(OPP_DIR(dir[1]));
+			// 		break;
+			// 	default:
+			// 		node0_printf("Not implemented for this BLOCKING level %d\n",block_stride );
+			// 		terminate(1);
+			// 	break;
+			// }
 			#define LINK0 link[dir[0]]
 			#define LINK1 link[dir[1]]
 

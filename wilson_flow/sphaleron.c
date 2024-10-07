@@ -271,7 +271,8 @@ void bdry_flow( Real *q_bulk ) {
         ibdry++ ) {
     #ifdef BLOCKING
       block_time = ( block_stride == 1 ? block_1to2_time : 
-                     block_stride == 2 ? block_2to4_time : -1.0 );
+                     block_stride == 2 ? block_2to4_time :
+                     block_stride == 4 ? block_4to8_time : -1.0 );
       rest_time = 0.0;
       if ( ( ibdry - 1 ) * stoptime_bdry <= block_time 
         && block_time < ibdry  * stoptime_bdry 

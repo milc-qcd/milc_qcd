@@ -79,8 +79,8 @@
 
 #ifdef BLOCKING
 
-#define MAX_BLOCK_STRIDE 4
-/* defines for 2nd and 4th nearest neighbor (BLOCKING) stuff
+#define MAX_BLOCK_STRIDE 8
+/* defines for 2nd, 4th or 8th nearest neighbor (BLOCKING) stuff
  * NOTE: INCOMPATIBLE with the 3n gathers due to the NAIK term */
 #define X2UP 8
 #define Y2UP 9
@@ -107,6 +107,19 @@
 #define OPP_4_DIR(dir) (39-(dir))
 #define DIR4(dir) ((dir)+16)
 #define FORALL4UPDIR(dir) for(dir=X4UP; dir<=T4UP; dir++)
+
+#define X8UP 24
+#define Y8UP 25
+#define Z8UP 26
+#define T8UP 27
+#define T8DOWN 28
+#define Z8DOWN 29
+#define Y8DOWN 30
+#define X8DOWN 31
+
+#define OPP_8_DIR(dir) (55-(dir))
+#define DIR8(dir) ((dir)+24)
+#define FORALL8UPDIR(dir) for(dir=X8UP; dir<=T8UP; dir++)
 
 // blocked condition in volume for loops
 #define IF_BLOCKED(s, stride) \
