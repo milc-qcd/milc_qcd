@@ -1,0 +1,18 @@
+Yannis Trimis Fall 2024
+
+Changes for aHISQ spectrum made to files:
+
+1. Inside generic_ks:
+
+fermion_links_fn_load_milc.c:
+fermion_links_hisq_load.c
+fermion_links_hisq_load.c
+fermion_links_hisq_load.c
+fermion_links_hisq_load.c
+fn_links_milc.c
+ks_action_coeffs_hisq_qop.c
+ks_action_paths_hisq.c
+
+2. In application ks_spectrum_YT directory:
+
+

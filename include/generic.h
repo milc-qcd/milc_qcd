@@ -381,6 +381,7 @@ int get_s( FILE *fp, int prompt, const char *variable_name_string, char *value )
 int get_sn( FILE *fp, int prompt, const char *variable_name_string, char *value );
 int get_vs( FILE *fp, int prompt, const char *tag, char *value[], int nvalues );
 int get_prompt( FILE *fp, int *value );
+int dirchar2index( char buf, int *status );
 
 /* io_source_cmplx_fm.c */
 void r_source_cmplx_fm_to_site(const char *filename, field_offset dest_site,

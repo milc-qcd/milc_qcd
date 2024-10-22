@@ -583,6 +583,15 @@ load_hisq_fn_links(info_t *info, fn_links_t **fn, fn_links_t *fn_deps,
     // 3rd path table set
     load_X_from_W(info, fn[0], aux, &ap->p3);
     final_flop += info->final_flop;
+
+#ifdef ANISOTROPY
+    scalar_mult_fn_dir( fn[0], ap->ani_xiq, ap->ani_dir, fn[0] );
+    final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+    { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn[0], ap->iso_xiq, dir, fn[0] ); final_flop += 108.*volume/numnodes(); }
+#endif
+#endif
+
     if(want_deps)
       copy_fn(fn[0], fn_deps);
     for( inaik = 1; inaik < n_naiks; inaik++ ){
@@ -593,6 +602,15 @@ load_hisq_fn_links(info_t *info, fn_links_t **fn, fn_links_t *fn_deps,
     // 2nd path table set
     load_X_from_W(info, fn[0], aux, &ap->p2);
     final_flop += info->final_flop;
+
+#ifdef ANISOTROPY
+    scalar_mult_fn_dir( fn[0], ap->ani_xiq, ap->ani_dir, fn[0] );
+    final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+    { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn[0], ap->iso_xiq, dir, fn[0] ); final_flop += 108.*volume/numnodes(); }
+#endif
+#endif
+
     for( inaik = 1; inaik < n_naiks; inaik++ ) {
       add_fn( fn[inaik], fn[0], fn[inaik] );
       final_flop += 18.*volume/numnodes();
@@ -603,9 +621,27 @@ load_hisq_fn_links(info_t *info, fn_links_t **fn, fn_links_t *fn_deps,
     // 2nd path table set only, no other terms with Naik corrections
     load_X_from_W(info, fn[0], aux, &ap->p2);
     final_flop += info->final_flop;
+
+#ifdef ANISOTROPY
+    scalar_mult_fn_dir( fn[0], ap->ani_xiq, ap->ani_dir, fn[0] );
+    final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+    { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn[0], ap->iso_xiq, dir, fn[0] ); final_flop += 108.*volume/numnodes(); }
+#endif
+#endif
+
     if(want_deps){
       load_X_from_W(info, fn_deps, aux, &ap->p3);
       final_flop += info->final_flop;
+
+#ifdef ANISOTROPY
+      scalar_mult_fn_dir( fn_deps, ap->ani_xiq, ap->ani_dir, fn_deps );
+      final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+    { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn_deps, ap->iso_xiq, dir, fn_deps ); final_flop += 108.*volume/numnodes(); }
+#endif
+#endif
+
     }
   }
 

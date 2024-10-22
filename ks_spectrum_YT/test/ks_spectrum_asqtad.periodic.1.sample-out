@@ -1,0 +1,222 @@
+SU3 staggered valence fermions
+MIMD version 7 $Name:  $
+Machine = QMP (portable), with 1 nodes
+start: Mon Sep 28 12:03:17 2009
+
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 1234
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 0.2 MBytes per node for lattice
+
+
+######################################################################
+# source time 0
+######################################################################
+# Gauge field description
+reload_serial ../../binary_samples/lat.sample.l4448.gf
+u0 1
+coulomb_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+boundary_twist 0 0 0 1 
+# Chiral condensate and related measurements
+number_of_pbp_masses 0
+# Description of base sources
+number_of_base_sources 1
+# base source 0
+point
+origin 0 0 0 0 
+source_label d
+# Description of completed sources
+number_of_sources 1
+# source 0
+base_source 0
+identity
+source_label I
+# Description of propagators
+number_of_sets 1
+# Parameters for set 0
+max_cg_iterations 1000
+max_cg_restarts 5
+check yes
+source 0
+number_of_propagators 2
+# propagator 0
+mass 0.05
+error_for_propagator 1e-05
+rel_error_for_propagator 0
+fresh_ksprop 
+save_serial_fm_ksprop ks.test.l4448_m0.05_t0_x0_y0_z0
+# propagator 1
+mass 0.02
+error_for_propagator 1e-05
+rel_error_for_propagator 0
+fresh_ksprop 
+save_serial_fm_ksprop ks.test.l4448_m0.02_t0_x0_y0_z0
+number_of_quarks 4
+# mass 0 PP
+propagator 0
+point
+origin 0 0 0 
+sink_label d
+forget_ksprop 
+# mass 1 PP
+propagator 1
+point
+origin 0 0 0 
+sink_label d
+forget_ksprop 
+# mass 0 PW
+propagator 0
+evenandodd_wall
+sink_label EO
+forget_ksprop 
+# mass 1 PW
+propagator 1
+evenandodd_wall
+sink_label EO
+forget_ksprop 
+# Description of mesons
+number_of_mesons 6
+# pair 0 (masses 0 0 PP)
+pair 0 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_asqtad.periodic.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/(vol3)^2
+correlator POINT_KAON_5 p000   1 * 0.000244  pion5  0  0  0  E  E  E
+# pair 1 (masses 0 0 PW)
+pair 2 2 
+spectrum_request meson
+save_corr_fnal ks_spectrum_asqtad.periodic.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/(vol3)^3
+correlator WALL_KAON_5 p000   1 * 0.000004  pion5  0  0  0  E  E  E
+# pair 2 (masses 0 1 PP)
+pair 0 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_asqtad.periodic.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/(vol3)^2
+correlator POINT_KAON_5 p000   1 * 0.000244  pion5  0  0  0  E  E  E
+# pair 3 (masses 0 1 PW)
+pair 2 3 
+spectrum_request meson
+save_corr_fnal ks_spectrum_asqtad.periodic.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/(vol3)^3
+correlator WALL_KAON_5 p000   1 * 0.000004  pion5  0  0  0  E  E  E
+# pair 4 (masses 1 1 PP)
+pair 1 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_asqtad.periodic.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/(vol3)^2
+correlator POINT_KAON_5 p000   1 * 0.000244  pion5  0  0  0  E  E  E
+# pair 5 (masses 1 1 PW)
+pair 3 3 
+spectrum_request meson
+save_corr_fnal ks_spectrum_asqtad.periodic.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/(vol3)^3
+correlator WALL_KAON_5 p000   1 * 0.000004  pion5  0  0  0  E  E  E
+# Description of baryons
+number_of_baryons 0
+setting twisted boundary phases
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4448.gf
+Time stamp Wed Oct 10 14:39:47 2001
+Checksums 92a1404 1416736 OK
+Time to reload gauge configuration = 1.723051e-03
+CHECK PLAQ: 1.723748e+00 1.690586e+00
+CHECK NERSC LINKTR: 7.514662e-01 CKSUM: 4afa8e09
+Unitarity checked.  Max deviation 1.19e-07
+Time to check unitarity = 1.245022e-03
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -6.250000e-02     48
+Time to APE smear 1.790524e-04 sec
+Fixing to Coulomb gauge
+GFIX: Ended at step 1. Av gf action 8.62915993e-01, delta 0.000e+00
+Time to gauge fix 1.244307e-02
+END OF HEADER
+Mass= 0.05 source point residue= 1e-05 rel= 0
+Mass= 0.02 source point residue= 1e-05 rel= 0
+ks_congrad_parity: CG not converged after 13 iterations and 5 restarts, 
+rsq. = 3.748851e-10 wanted 9.999999e-11 relrsq = 0.000000e+00 wanted 0.000000e+00
+Time to save prop color 0 = 7.200241e-05
+Time to save prop color 0 = 5.793571e-05
+ks_congrad_parity: CG not converged after 12 iterations and 5 restarts, 
+rsq. = 1.129110e-10 wanted 9.999999e-11 relrsq = 0.000000e+00 wanted 0.000000e+00
+Time to save prop color 1 = 2.408028e-05
+Time to save prop color 1 = 2.503395e-05
+ks_congrad_parity: CG not converged after 12 iterations and 5 restarts, 
+rsq. = 1.449394e-10 wanted 9.999999e-11 relrsq = 0.000000e+00 wanted 0.000000e+00
+Time to save prop color 2 = 2.408028e-05
+Time to save prop color 2 = 2.408028e-05
+Wrote KS prop file ks.test.l4448_m0.05_t0_x0_y0_z0 time stamp Mon Sep 28 12:03:17 2009
+Saved propagator to ks.test.l4448_m0.05_t0_x0_y0_z0
+Wrote KS prop file ks.test.l4448_m0.02_t0_x0_y0_z0 time stamp Mon Sep 28 12:03:17 2009
+Saved propagator to ks.test.l4448_m0.02_t0_x0_y0_z0
+Time to compute propagators 5.986211e-01
+Time to generate sink operator 2.908707e-05
+Time to generate sink operator 4.291534e-05
+Time for FFT 6.160975e-03
+Time for build sink field 1.096725e-05
+Time for FFT of chi and multiply 1.438141e-03
+Time for FFT 4.302025e-03
+Time to generate sink operator 1.199794e-02
+Time for FFT 6.256104e-03
+Time for build sink field 1.096725e-05
+Time for FFT of chi and multiply 1.433849e-03
+Time for FFT 4.302979e-03
+Time to generate sink operator 1.206899e-02
+Mesons for quarks 0 and 0
+Time for diagonal mesons 3.681183e-04
+Time for printing correlator 2.579689e-04
+Mesons for quarks 2 and 2
+Time for diagonal mesons 3.519058e-04
+Time for printing correlator 4.100800e-05
+Mesons for quarks 0 and 1
+Time for offdiag mesons 3.700256e-04
+Time for printing correlator 4.315376e-05
+Mesons for quarks 2 and 3
+Time for offdiag mesons 3.499985e-04
+Time for printing correlator 4.005432e-05
+Mesons for quarks 1 and 1
+Time for diagonal mesons 3.550053e-04
+Time for printing correlator 5.102158e-05
+Mesons for quarks 3 and 3
+Time for diagonal mesons 3.499985e-04
+Time for printing correlator 3.910065e-05
+Time to tie meson correlators 2.737045e-03
+Time to tie baryon correlators 2.145767e-06
+RUNNING COMPLETED
+Time = 6.379879e-01 seconds
+total_iters = 1326
+destroy quark[0]
+destroy quark[1]
+destroy quark[2]
+destroy quark[3]
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Mon Sep 28 12:03:18 2009
+

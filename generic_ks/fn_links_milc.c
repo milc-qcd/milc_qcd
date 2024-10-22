@@ -368,6 +368,37 @@ scalar_mult_fn(fn_links_t *fn_src, Real s, fn_links_t *fn_dst){
   END_LOOP_OMP;
 }
 
+
+#ifdef ANISOTROPY
+/* Multipy only one component by scalar: fndst = fnsrc * s.  OK to do this in place. */
+void
+scalar_mult_fn_dir(fn_links_t *fn_src, Real s, int dir, fn_links_t *fn_dst){
+  int i;
+
+  su3_matrix *fatsrc = get_fatlinks(fn_src);
+  su3_matrix *lngsrc = get_lnglinks(fn_src);
+  su3_matrix *fatbacksrc = get_fatbacklinks(fn_src);
+  su3_matrix *lngbacksrc = get_lngbacklinks(fn_src);
+
+  su3_matrix *fatdst = get_fatlinks(fn_dst);
+  su3_matrix *lngdst = get_lnglinks(fn_dst);
+  su3_matrix *fatbackdst = get_fatbacklinks(fn_dst);
+  su3_matrix *lngbackdst = get_lngbacklinks(fn_dst);
+
+  FORALLFIELDSITES_OMP(i,default(shared)) {
+      scalar_mult_su3_matrix( fatsrc + 4*i + dir, s, fatdst + 4*i + dir );
+      scalar_mult_su3_matrix( lngsrc + 4*i + dir, s, lngdst + 4*i + dir );
+      if(fatbacksrc != NULL && fatbackdst != NULL)
+        scalar_mult_su3_matrix( fatbacksrc + 4*i + dir, s, fatbackdst + 4*i + dir );
+      if(lngbacksrc != NULL && lngbackdst != NULL)
+        scalar_mult_su3_matrix( lngbacksrc + 4*i + dir, s, lngbackdst + 4*i + dir );
+  }
+  END_LOOP_OMP;
+}
+#endif
+
+
+
 /* Add fnC = fnA + fnB */
 
 void 
