@@ -137,7 +137,7 @@ number_of_mesons 2
 pair 0 0
 spectrum_request meson
 
-save_corr_fnal ks_spectrum_ani_naive.spectrum2.2.corrfile_t0.test-out
+save_corr_fnal ks_spectrum_ani_naive.spectrum2.2.corrfile_t0.YT20241022-out
 r_offset 0 0 0 0
 
 number_of_correlators 8
@@ -157,7 +157,7 @@ correlator RHO_PV  p000  1 * 3 rhoz0  0 0 0 E E E
 pair 1 1
 spectrum_request meson
 
-save_corr_fnal ks_spectrum_ani_naive.spectrum2.2.corrfile_t0.test-out
+save_corr_fnal ks_spectrum_ani_naive.spectrum2.2.corrfile_t0.YT20241022-out
 r_offset 0 0 0 0
 
 number_of_correlators 8
@@ -182,7 +182,7 @@ number_of_baryons 2
 triplet 0 0 0
 spectrum_request baryon
 
-save_corr_fnal ks_spectrum_ani_naive.spectrum2.2.corrfile_t0.test-out
+save_corr_fnal ks_spectrum_ani_naive.spectrum2.2.corrfile_t0.YT20241022-out
 r_offset 0 0 0 0
 
 number_of_correlators 1
@@ -195,7 +195,7 @@ correlator NUCLEON  1 * 1 nucleon
 triplet 1 1 1
 spectrum_request baryon
 
-save_corr_fnal ks_spectrum_ani_naive.spectrum2.2.corrfile_t0.test-out
+save_corr_fnal ks_spectrum_ani_naive.spectrum2.2.corrfile_t0.YT20241022-out
 r_offset 0 0 0 0
 
 number_of_correlators 1
