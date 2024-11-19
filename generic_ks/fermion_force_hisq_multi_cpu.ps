@@ -1,0 +1,4960 @@
+%!PS-Adobe-3.0
+%%Title: fermion_force_hisq_multi_cpu.c
+%%For: Yannis Trimis
+%%Creator: a2ps version 4.14
+%%CreationDate: Tue Nov 19 15:30:21 2024
+%%BoundingBox: 24 24 588 768
+%%DocumentData: Clean7Bit
+%%Orientation: Portrait
+%%Pages: 36
+%%PageOrder: Ascend
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: font Courier
+%%+ font Courier-Bold
+%%+ font Courier-BoldOblique
+%%+ font Courier-Oblique
+%%+ font Helvetica
+%%+ font Helvetica-Bold
+%%+ font Symbol
+%%+ font Times-Bold
+%%+ font Times-Roman
+%%DocumentProcessColors: Black 
+%%DocumentSuppliedResources: procset a2ps-a2ps-hdr
+%%+ procset a2ps-black+white-Prolog
+%%+ encoding ISO-8859-1Encoding
+%%EndComments
+/a2psdict 200 dict def
+a2psdict begin
+%%BeginProlog
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+
+% EPSF import as in the Red Book
+/BeginInclude {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack 
+  userdict begin
+    0 setgray 0 setlinecap
+    1 setlinewidth 0 setlinejoin
+    10 setmiterlimit [ ] 0 setdash newpath
+    gs_languagelevel 1 ne {
+      false setstrokeadjust false setoverprint 
+    } if
+} bind def
+
+/EndInclude {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+/BeginEPSF {
+  BeginInclude
+  /showpage { } def
+} bind def
+
+/EndEPSF {
+  EndInclude
+} bind def
+
+% Page prefeed
+/page_prefeed {         % bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} bind def
+
+/deffont {
+  findfont exch scalefont def
+} bind def
+
+/reencode_font {
+  findfont reencode 2 copy definefont pop def
+} bind def
+
+% Function c-show (str => -)
+% centers text only according to x axis.
+/c-show { 
+  dup stringwidth pop
+  2 div neg 0 rmoveto
+  show
+} bind def
+
+% Function l-show (str => -)
+% prints texts so that it ends at currentpoint
+/l-show {
+  dup stringwidth pop neg 
+  0 
+  rmoveto show
+} bind def
+
+% center-fit show (str w => -)
+% show centered, and scale currentfont so that the width is less than w
+/cfshow {
+  exch dup stringwidth pop
+  % If the title is too big, try to make it smaller
+  3 2 roll 2 copy
+  gt
+  { % if, i.e. too big
+    exch div
+    currentfont exch scalefont setfont
+  } { % ifelse
+    pop pop 
+  }
+  ifelse
+  c-show			% center title
+} bind def
+
+% Return the y size of the current font
+% - => fontsize
+/currentfontsize {
+  currentfont /FontType get 0 eq {
+    currentfont /FontMatrix get 3 get
+  }{
+    currentfont /FontMatrix get 3 get 1000 mul
+  } ifelse
+} bind def
+
+% reencode the font
+% <encoding-vector> <fontdict> -> <newfontdict>
+/reencode { %def
+  dup length 5 add dict begin
+    { %forall
+      % <vector> <key> <val>
+      1 index /FID ne 
+      { def }{ pop pop } ifelse
+    } forall
+    /Encoding exch def % -
+
+    % Use the font's bounding box to determine the ascent, descent,
+    % and overall height; don't forget that these values have to be
+    % transformed using the font's matrix.
+    % We use `load' because sometimes BBox is executable, sometimes not.
+    % Since we need 4 numbers an not an array avoid BBox from being executed
+    /FontBBox load aload pop
+    FontMatrix transform /Ascent exch def pop
+    FontMatrix transform /Descent exch def pop
+    /FontHeight Ascent Descent sub def
+
+    % Get the underline position and thickness if they're defined.
+    % Use 1 if they are not defined.
+    currentdict /FontInfo 2 copy known
+    { get
+      /UnderlinePosition 2 copy % <FontInfo> /UP <FontInfo> /UP
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+
+      /UnderlineThickness 2 copy % <FontInfo> /UT <FontInfo> /UT
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+      pop % -
+    }{ pop pop
+    } ifelse
+
+    currentdict
+  end 
+} bind def
+
+% composite fonts for ASCII-EUC mixed strings
+% Version 1.2 1/31/1990
+% Original Ken'ichi HANDA (handa@etl.go.jp)
+% Modified Norio Katayama (katayama@rd.nacsis.ac.jp),1998
+% Extend & Fix Koji Nakamaru (maru@on.cs.keio.ac.jp), 1999
+% Anyone can freely copy, modify, distribute this program.
+
+/copyfont {	% font-dic extra-entry-count  copyfont  font-dic
+	1 index maxlength add dict begin
+	{	1 index /FID ne 2 index /UniqueID ne and
+		{def} {pop pop} ifelse
+	} forall
+	currentdict
+	end
+} bind def
+
+/compositefont { % ASCIIFontName EUCFontName RomanScale RomanOffset Rot(T/F) compositefont font
+    /RomanRotation exch def
+    /RomanOffset exch def
+    /RomanScale exch def
+    userdict /fixeucfont_dict known not {
+	userdict begin
+	    /fixeucfont_dict 2 dict begin
+		/UpperByteEncoding [
+		    16#00 1 16#20 { pop 0 } for
+		    16#21 1 16#28 { 16#20 sub } for
+		    16#29 1 16#2F { pop 0 } for
+		    16#30 1 16#74 { 16#27 sub } for
+		    16#75 1 16#FF { pop 0 } for
+		] def
+	        /LowerByteEncoding [
+		    16#00 1 16#A0 { pop /.notdef } for
+		    16#A1 1 16#FE { 16#80 sub 16 2 string cvrs
+				    (cXX) dup 1 4 -1 roll
+				    putinterval cvn } for
+		    /.notdef
+		] def
+		currentdict
+	    end def
+	end
+    } if
+    findfont dup /FontType get 0 eq {
+	14 dict begin
+	    %
+	    % 7+8 bit EUC font
+	    %
+	    12 dict begin
+		/EUCFont exch def
+		/FontInfo (7+8 bit EUC font) readonly def
+		/PaintType 0 def
+		/FontType 0 def
+		/FontMatrix matrix def
+		% /FontName
+		/Encoding fixeucfont_dict /UpperByteEncoding get def
+		/FMapType 2 def
+		EUCFont /WMode known
+		{ EUCFont /WMode get /WMode exch def }
+		{ /WMode 0 def } ifelse
+		/FDepVector [
+		    EUCFont /FDepVector get 0 get
+		    [ 16#21 1 16#28 {} for 16#30 1 16#74 {} for ]
+		    {
+			13 dict begin
+			    /EUCFont EUCFont def
+			    /UpperByte exch 16#80 add def	
+			    % /FontName
+			    /FontInfo (EUC lower byte font) readonly def
+			    /PaintType 0 def
+			    /FontType 3 def
+			    /FontMatrix matrix def
+			    /FontBBox {0 0 0 0} def
+			    /Encoding
+				fixeucfont_dict /LowerByteEncoding get def
+			    % /UniqueID
+			    % /WMode
+			    /BuildChar {
+				gsave
+				exch dup /EUCFont get setfont
+				/UpperByte get
+				2 string
+				dup 0 4 -1 roll put
+				dup 1 4 -1 roll put
+				dup stringwidth setcharwidth
+				0 0 moveto show
+				grestore
+			    } bind def
+			    currentdict
+			end
+			/lowerbytefont exch definefont
+		    } forall
+		] def
+		currentdict
+	    end
+	    /eucfont exch definefont
+	    exch
+	    findfont 1 copyfont dup begin
+		RomanRotation {
+			/FontMatrix FontMatrix
+			[ 0 RomanScale neg RomanScale 0 RomanOffset neg 0 ]
+			matrix concatmatrix def
+		}{
+			/FontMatrix FontMatrix
+			[ RomanScale 0 0 RomanScale 0 RomanOffset ] matrix concatmatrix
+			def
+			/CDevProc
+			    {pop pop pop pop 0 exch -1000 exch 2 div 880} def
+		} ifelse
+	    end
+	    /asciifont exch definefont
+	    exch
+	    /FDepVector [ 4 2 roll ] def
+	    /FontType 0 def
+	    /WMode 0 def
+	    /FMapType 4 def
+	    /FontMatrix matrix def
+	    /Encoding [0 1] def
+	    /FontBBox {0 0 0 0} def
+%	    /FontHeight 1.0 def % XXXX
+	    /FontHeight RomanScale 1.0 ge { RomanScale }{ 1.0 } ifelse def
+	    /Descent -0.3 def   % XXXX
+	    currentdict
+	end
+	/tmpfont exch definefont
+	pop
+	/tmpfont findfont
+    }{
+	pop findfont 0 copyfont
+    } ifelse
+} def	
+
+/slantfont {	% FontName slant-degree  slantfont  font'
+    exch findfont 1 copyfont begin
+    [ 1 0 4 -1 roll 1 0 0 ] FontMatrix exch matrix concatmatrix
+    /FontMatrix exch def
+    currentdict
+    end
+} def
+
+% Function print line number (<string> # -)
+/# {
+  gsave
+    sx cw mul neg 2 div 0 rmoveto
+    f# setfont
+    c-show
+  grestore
+} bind def
+
+% -------- Some routines to enlight plain b/w printings ---------
+
+% Underline
+% width --
+/dounderline {
+  currentpoint
+  gsave
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    0 rlineto
+    stroke
+  grestore
+} bind def
+
+% Underline a string
+% string --
+/dounderlinestring {
+  stringwidth pop
+  dounderline
+} bind def
+
+/UL {
+  /ul exch store
+} bind def
+
+% Draw a box of WIDTH wrt current font
+% width --
+/dobox {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    stroke
+  grestore
+} bind def
+
+/BX {
+  /bx exch store
+} bind def
+
+% Box a string
+% string --
+/doboxstring {
+  stringwidth pop
+  dobox
+} bind def
+
+%
+% ------------- Color routines ---------------
+%
+/FG /setrgbcolor load def
+
+% Draw the background
+% width --
+/dobackground {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    bgcolor aload pop setrgbcolor
+    fill
+  grestore
+} bind def
+
+% Draw bg for a string
+% string --
+/dobackgroundstring {
+  stringwidth pop
+  dobackground
+} bind def
+
+
+/BG {
+  dup /bg exch store
+  { mark 4 1 roll ] /bgcolor exch store } if
+} bind def
+
+
+/Show {
+  bg { dup dobackgroundstring } if
+  ul { dup dounderlinestring } if
+  bx { dup doboxstring } if
+  show
+} bind def
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T {
+  cw mul x0 add
+  bg { dup currentpoint pop sub dobackground } if
+  ul { dup currentpoint pop sub dounderline } if
+  bx { dup currentpoint pop sub dobox } if
+  y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n {
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+/S {
+  Show
+} bind def
+
+%%BeginResource: procset a2ps-a2ps-hdr 2.0 2
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Function title: prints page header.
+% <ct> <rt> <lt> are passed as argument
+/title { 
+  % 1. Draw the background
+  x v get y v get moveto
+  gsave
+    0 th 2 div neg rmoveto 
+    th setlinewidth
+    0.95 setgray
+    pw 0 rlineto stroke
+  grestore
+  % 2. Border it
+  gsave
+    0.7 setlinewidth
+    pw 0 rlineto
+    0 th neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+  % stk: ct rt lt
+  x v get y v get th sub 1 add moveto
+%%IncludeResource: font Helvetica
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  % 3. The left title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    fnfs 0.8 mul hm rmoveto
+    show			% left title
+  grestore
+  exch
+  % stk: ct ltw rt
+  % 4. the right title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    dup
+    pw exch stringwidth pop fnfs 0.8 mul add sub
+    hm
+    rmoveto
+    show			% right title
+  grestore
+  % stk: ct ltw rtw
+  % 5. the center title
+  gsave
+    pw 3 1 roll
+    % stk: ct pw ltw rtw
+    3 copy 
+    % Move to the center of the left room
+    sub add 2 div hm rmoveto
+    % What is the available space in here?
+    add sub fnfs 0.8 mul sub fnfs 0.8 mul sub
+    % stk: ct space_left
+%%IncludeResource: font Helvetica-Bold
+  fHelvetica-Bold fnfs scalefont setfont
+    cfshow
+  grestore
+} bind def
+
+% Function border: prints virtual page border
+/border { %def
+  gsave				% print four sides
+    0 setgray
+    x v get y v get moveto
+    0.7 setlinewidth		% of the square
+    pw 0 rlineto
+    0 ph neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+} bind def
+
+% Function water: prints a water mark in background
+/water { %def
+  gsave
+    scx scy moveto rotate
+%%IncludeResource: font Times-Bold
+  fTimes-Bold 100 scalefont setfont
+    .97 setgray
+    dup stringwidth pop 2 div neg -50 rmoveto
+    show
+  grestore
+} bind def
+
+% Function rhead: prints the right header
+/rhead {  %def
+  lx ly moveto
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  l-show
+} bind def
+
+% Function footer (cf rf lf -> -)
+/footer {
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  dx dy moveto
+  show
+
+  snx sny moveto
+  l-show
+  
+  fnx fny moveto
+  c-show
+} bind def
+%%EndResource
+%%BeginResource: procset a2ps-black+white-Prolog 2.0 1
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T { 
+  cw mul x0 add y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n { %def
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+}  bind def
+
+/S {
+  Show
+} bind def
+
+/p {
+  false UL
+  false BX
+  fCourier bfs scalefont setfont
+  Show
+} bind def
+
+/sy {
+  false UL
+  false BX
+  fSymbol bfs scalefont setfont
+  Show
+} bind def
+
+/k {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/K {
+  false UL
+  false BX
+  fCourier-Bold bfs scalefont setfont
+  Show
+} bind def
+
+/c {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/C {
+  false UL
+  false BX
+  fCourier-BoldOblique bfs scalefont setfont
+  Show 
+} bind def
+
+/l {
+  false UL
+  false BX
+  fHelvetica bfs scalefont setfont
+  Show
+} bind def
+
+/L {
+  false UL
+  false BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show 
+} bind def
+
+/str{
+  false UL
+  false BX
+  fTimes-Roman bfs scalefont setfont
+  Show
+} bind def
+
+/e{
+  false UL
+  true BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show
+} bind def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier
+%%IncludeResource: font Courier-Oblique
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Times-Roman
+%%IncludeResource: font Symbol
+%%IncludeResource: font Courier-BoldOblique
+%%BeginResource: encoding ISO-8859-1Encoding
+/ISO-8859-1Encoding [
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclam /quotedbl /numbersign /dollar /percent /ampersand /quoteright 
+/parenleft /parenright /asterisk /plus /comma /minus /period /slash 
+/zero /one /two /three /four /five /six /seven 
+/eight /nine /colon /semicolon /less /equal /greater /question 
+/at /A /B /C /D /E /F /G 
+/H /I /J /K /L /M /N /O 
+/P /Q /R /S /T /U /V /W 
+/X /Y /Z /bracketleft /backslash /bracketright /asciicircum /underscore 
+/quoteleft /a /b /c /d /e /f /g 
+/h /i /j /k /l /m /n /o 
+/p /q /r /s /t /u /v /w 
+/x /y /z /braceleft /bar /braceright /asciitilde /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclamdown /cent /sterling /currency /yen /brokenbar /section 
+/dieresis /copyright /ordfeminine /guillemotleft /logicalnot /hyphen /registered /macron 
+/degree /plusminus /twosuperior /threesuperior /acute /mu /paragraph /bullet 
+/cedilla /onesuperior /ordmasculine /guillemotright /onequarter /onehalf /threequarters /questiondown 
+/Agrave /Aacute /Acircumflex /Atilde /Adieresis /Aring /AE /Ccedilla 
+/Egrave /Eacute /Ecircumflex /Edieresis /Igrave /Iacute /Icircumflex /Idieresis 
+/Eth /Ntilde /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply 
+/Oslash /Ugrave /Uacute /Ucircumflex /Udieresis /Yacute /Thorn /germandbls 
+/agrave /aacute /acircumflex /atilde /adieresis /aring /ae /ccedilla 
+/egrave /eacute /ecircumflex /edieresis /igrave /iacute /icircumflex /idieresis 
+/eth /ntilde /ograve /oacute /ocircumflex /otilde /odieresis /divide 
+/oslash /ugrave /uacute /ucircumflex /udieresis /yacute /thorn /ydieresis 
+] def
+%%EndResource
+% Initialize page description variables.
+/sh 792 def
+/sw 612 def
+/llx 24 def
+/urx 588 def
+/ury 768 def
+/lly 24 def
+/#copies 1 def
+/th 20.000000 def
+/fnfs 15 def
+/bfs 11.547912 def
+/cw 6.928747 def
+
+% Dictionary for ISO-8859-1 support
+/iso1dict 8 dict begin
+  /fCourier ISO-8859-1Encoding /Courier reencode_font
+  /fCourier-Bold ISO-8859-1Encoding /Courier-Bold reencode_font
+  /fCourier-BoldOblique ISO-8859-1Encoding /Courier-BoldOblique reencode_font
+  /fCourier-Oblique ISO-8859-1Encoding /Courier-Oblique reencode_font
+  /fHelvetica ISO-8859-1Encoding /Helvetica reencode_font
+  /fHelvetica-Bold ISO-8859-1Encoding /Helvetica-Bold reencode_font
+  /fTimes-Bold ISO-8859-1Encoding /Times-Bold reencode_font
+  /fTimes-Roman ISO-8859-1Encoding /Times-Roman reencode_font
+currentdict end def
+/bgcolor [ 0 0 0 ] def
+/bg false def
+/ul false def
+/bx false def
+% The font for line numbering
+/f# /Helvetica findfont bfs .6 mul scalefont def
+/fSymbol /Symbol findfont def
+/hm fnfs 0.25 mul def
+/pw
+   cw 81.400000 mul
+def
+/ph
+   689.410325 th add
+def
+/pmw 0 def
+/pmh 0 def
+/v 0 def
+/x [
+  0
+] def
+/y [
+  pmh ph add 0 mul ph add
+] def
+/scx sw 2 div def
+/scy sh 2 div def
+/snx urx def
+/sny lly 2 add def
+/dx llx def
+/dy sny def
+/fnx scx def
+/fny dy def
+/lx snx def
+/ly ury fnfs 0.8 mul sub def
+/sx 0 def
+/tab 8 def
+/x0 0 def
+/y0 0 def
+%%EndSetup
+
+%%Page: (1) 1
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(/****** fermion_force_hisq_multi_cpu.c  -- ******************/) c n
+(/* MIMD version 7 */) N
+() p n
+(/* Multisource fermion force.  Includes various optimization choices:) c n
+( * ) N
+( * 1. General force for any FN-type action. Based on fermion_force_eo_milc.c) N
+( *    and optimized to transport only one set of SU\(3\) matrices.) N
+( *) N
+( * 2. Same as 1 but with indices on CG solutions reversed) N
+( *    to maybe improve cache hits) N
+( *) N
+( * 3. Generalization of fermion_force_asqtad3.c optimized) N
+( *    for Asqtad.  Transports the full array of source vectors.) N
+( *) N
+( * D.T. 12/05 Version  3. created for Asqtad RHMC.) N
+( * D.T.  6/06 Versions 1. and 2. created.) N
+( * CD   10/06 Collected versions in this file.) N
+( * D.T. 6/07 Two levels of smearing) N
+( * A.B. 10/07 unitarization and its derivatives,) N
+( *            "wrapper" that allows arbitraty levels of smearing) N
+( * A.B. 2/08 combine forces from level 2 smearing and then) N
+( *           calculate force from reunitarization and level 1 smearing) N
+( * A.B. 8/08 Rearrange force to reduce to two Asqtad steps plus) N
+( *           whatever correction to Naik term is present \(for c-quark\)) N
+( * CD   5/5/2024 Split out from fermion_force_hisq_multi.c ) N
+( */) N
+() p n
+(/* External entry point) c n
+() N
+(   fermion_force_multi_hisq_cpu) N
+() N
+(*/) N
+() p n
+(#include) K
+( ") p
+(generic_ks_includes.h) str
+(") p n
+(#define) K
+( SU3_MAT_OP_NO_STORAGE) p n
+(#include) K
+( ") p
+(../include/su3_mat_op.h) str
+(") p n
+(#include) K
+( ") p
+(../include/umethod.h) str
+(") p n
+(#include) K
+( ") p
+(../include/fermion_links.h) str
+(") p n
+(#include) K
+( ") p
+(../include/info.h) str
+(") p n
+(#include) K
+( <string.h>) p n
+() N
+(#include) K
+( ") p
+(../include/openmp_defs.h) str
+(") p n
+() N
+(//AB output for debugging) c n
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(#ifdef) K
+( HISQ_FF_DEBUG) p n
+(static) K
+( ) p
+(void) k
+( dumpt4\( su3_tensor4 dwdv \) {) p n
+(  ) S
+(int) k
+( i,j,k,l;) p n
+(  i=j=k=l=0;) N
+() N
+(  ) S
+(for) K
+(\(i=0;i<3;i++\) {) p n
+(    ) S
+(for) K
+(\(j=0;j<3;j++\) {) p n
+(      ) S
+(for) K
+(\(k=0;k<3;k++\) {) p n
+(        ) S
+(for) K
+(\(l=0;l<3;l++\) {) p n
+(          printf\(") S
+(T4[%d][%d][%d][%d].real=%lf  T4[%d][%d][%d][%d].imag=%lf\\n) str
+(",) p n
+(            i,j,k,l,dwdv.t4[i][j][k][l].real,) N
+(            i,j,k,l,dwdv.t4[i][j][k][l].imag \);) N
+(        }) N
+(      }) N
+(fermion_force_hisq_multi_cpu.c) (Page 1/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (1/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (2) 2
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(    }) p n
+(  }) N
+(}) N
+(#endif) K
+( ) p
+(/* HISQ_FF_DEBUG */) c n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+() p n
+(/* All routines in this file require the FN flag */) c n
+(#ifndef) K
+( FN) p n
+(#error) K
+( ") p
+(Requires FN type actions) str
+(") p n
+(#endif) K n
+() p n
+(#define) K
+( GOES_FORWARDS\(dir\) \(dir<=TUP\)) p n
+(#define) K
+( GOES_BACKWARDS\(dir\) \(dir>TUP\)) p n
+() N
+(#ifdef) K
+( QCDOC) p n
+(#define) K
+( special_alloc qcdoc_alloc) p n
+(#define) K
+( special_free qfree) p n
+(#else) K n
+(#define) S
+( special_alloc malloc) p n
+(#define) K
+( special_free free) p n
+(#endif) K n
+() p n
+() N
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(// dump matrix on this site/link) c n
+(#define) K
+( AB_OUT_ON_SITE 0) p n
+(#define) K
+( AB_OUT_ON_LINK 0) p n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+() p n
+(// In the following routines smearing and reunitarization) c n
+(// are split into separate routines. This allows for arbitrary levels of) N
+(// smearing and/or reunitarization.) N
+() p n
+(// Combine smearing level 2 from different multi_x,) c n
+(//               use globals from lattice.h) N
+(// HISQ wrapper routine: contribution to the force due to) N
+(//    0\) smearing level 0 \(outer product |X><Y|\)) N
+(//    1\) smearing level 2 + smearing level 2 Naik corrected) N
+(//    2\) reunitarization) N
+(//    3\) smearing level 1) N
+() p n
+() N
+(/**********************************************************************/) c n
+(// Contribution to the force from 0 level of smearing, force contains) N
+(// only |X><Y| terms) N
+(// Contribution to the force from 0 level of smearing, force contains only |X><Y) N
+(| terms) N
+(/**********************************************************************/) N
+(static) K
+( ) p
+(void) k
+( ) p n
+(fn_fermion_force_multi_hisq_smearing0\( info_t *info, Real eps, Real *residues, ) N
+(       su3_vector **multi_x, ) S
+(int) k
+( nterms,) p n
+(       su3_matrix *force_accum[4], su3_matrix *force_accum_naik[4] \)) N
+({) N
+(  ) S
+(/* note CG_solution and Dslash * solution are combined in "multi_x" */) c n
+(  ) p
+(/* New version 1/21/99.  Use forward part of Dslash to get force */) c n
+(  ) p
+(/* see long comment at end */) c n
+(  ) p
+(/* For each link we need multi_x transported from both ends of path. */) c n
+(  ) p
+(int) k
+( term;) p n
+(  ) S
+(register) K
+( ) p
+(int) k
+( i,k;) p n
+(fermion_force_hisq_multi_cpu.c) (Page 2/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (2/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3) 3
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(  ) p
+(int) k
+( dir;) p n
+(  su3_matrix tmat;) N
+(  Real coeff;) N
+(  size_t nflops = 0;) N
+() N
+(  msg_tag *mtag[2];) N
+(  su3_matrix *mat_tmp0;) N
+(  ) S
+(// length N path has N+1 sites!!) c n
+(  su3_matrix *oprod_along_path[MAX_PATH_LENGTH+1];) p n
+() N
+() N
+(  ) S
+(if) K
+(\( nterms==0 \)) p
+(return) K
+(;) p n
+() N
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(#ifdef) K
+( HISQ_FF_DEBUG) p n
+(  {) N
+(  printf\(") S
+(WRAPPER FORCE smearing0 pseudofermion vector at site \(0,0,0,0\)\\n) str
+("\);) p n
+(  dumpvec\( &\(multi_x[0][0]\) \);) N
+(  printf\(") S
+(\\n) str
+("\);) p n
+(  su3_vector su3ab;) N
+(  clearvec\( &su3ab \);) N
+(  ) S
+(int) k
+( nnn;) p n
+(  ) S
+(for) K
+(\( nnn=0; nnn<nterms;nnn++\) {) p n
+(    FORALLFIELDSITES_OMP\(i,firstprivate\(su3ab\)\){) N
+(      add_su3_vector\( &su3ab, &\(multi_x[nnn][i]\), &su3ab \);) N
+(    } END_LOOP_OMP) N
+(    nflops += 6;) N
+(  }) N
+(  printf\(") S
+(WRAPPER FORCE smearing0 pseudofermion vector GLOBAL SUM\\n) str
+("\);) p n
+(  dumpvec\( &su3ab \);) N
+(  printf\(") S
+(\\n) str
+("\);) p n
+(  ) S
+(for) K
+(\( nnn=0; nnn<nterms;nnn++\) {) p n
+(      printf\(") S
+(residues[%d]=%lf\\n) str
+(",nnn,residues[nnn]\);) p n
+(    }) N
+(  }) N
+(#endif) K
+( ) p
+(/* HISQ_FF_DEBUG */) c n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+() p n
+() N
+(  ) S
+(for) K
+(\(i=0;i<=MAX_PATH_LENGTH;i++\){) p n
+(     oprod_along_path[i] = ) N
+(       \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(  }) N
+(  mat_tmp0 = \(su3_matrix *\) special_alloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(  ) S
+(if) K
+(\( mat_tmp0 == ) p
+(NULL) K
+( \){printf\(") p
+(Node %d NO ROOM\\n) str
+(",this_node\); exit\(0\); }) p n
+() N
+() N
+() N
+(  ) S
+(// clear force accumulators) c n
+(  ) p
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\)) p n
+(    FORALLFIELDSITES_OMP\(i,  \){clear_su3mat\( &\(force_accum[dir][i]\) \); } END_LOO) N
+(P_OMP) N
+() N
+(  ) S
+(//AB loop on directions, path table is not needed) c n
+(  ) p
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\){) p n
+(    k=0; ) S
+(// which gather we are using) c n
+(    mtag[k] = start_gather_field\( multi_x[0], ) p
+(sizeof) K
+(\(su3_vector\),) p n
+(      OPP_DIR\(dir\), EVENANDODD, gen_pt[k] \);) N
+(    FORALLFIELDSITES_OMP\(i,  \){) N
+(fermion_force_hisq_multi_cpu.c) (Page 3/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (3/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (4) 4
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(      clear_su3mat\(  &\(oprod_along_path[0][i]\) \); ) p
+(// actually last site in path) c n
+(    } END_LOOP_OMP) p n
+(    ) S
+(for) K
+(\(term=0;term<nterms;term++\){) p n
+(      ) S
+(if) K
+(\(term<nterms-1\)mtag[1-k] = start_gather_field\( multi_x[term+1],) p n
+(      ) S
+(sizeof) K
+(\(su3_vector\), OPP_DIR\(dir\), EVENANDODD, gen_pt[1-k] \);) p n
+(      wait_gather\(mtag[k]\);) N
+() N
+(      FORALLFIELDSITES_OMP\(i, private\(tmat\) \){) N
+(        ) S
+(// build projector as usual) c n
+(        su3_projector\( &multi_x[term][i], \(su3_vector *\)gen_pt[k][i], &tmat \);) p n
+(        ) S
+(// multiply by alpha_l in rational function expansion) c n
+(        scalar_mult_add_su3_matrix\( &\(oprod_along_path[0][i]\), &tmat, ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (    residues[term], &\(oprod_along_path[0][i]\) \);) N
+(      } END_LOOP_OMP) N
+(      nflops += 54 + 36;) N
+(      cleanup_gather\(mtag[k]\);) N
+(      k=1-k; ) S
+(// swap 0 and 1) c n
+(    } ) p
+(/* end loop over terms in rational function expansion */) c n
+() p n
+() N
+(    link_gather_connection_hisq\( oprod_along_path[0], oprod_along_path[1], ) N
+() S 8 T () S 16 T () S 24 T () S 32 T ( mat_tmp0, dir \);) N
+() N
+(    coeff = 1; ) S
+(// fermion_eps is outside this routine in "wrapper" routine) c n
+(    FORALLFIELDSITES_OMP\(i,  \){) p n
+(      scalar_mult_add_su3_matrix\( &\(force_accum[dir][i]\), ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (  &\(oprod_along_path[1][i]\),) N
+() S 8 T () S 16 T () S 24 T () S 32 T (  coeff, &\(force_accum[dir][i]\) \);) N
+(    } END_LOOP_OMP) N
+(    nflops += 36;) N
+() N
+(  } ) S
+(/* end of loop on directions */) c n
+() p n
+() N
+(  ) S
+(/* *** Naik part *** */) c n
+(  ) p
+(// clear force accumulators) c n
+(  ) p
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\)) p n
+(    FORALLFIELDSITES_OMP\(i,  \){clear_su3mat\( &\(force_accum_naik[dir][i]\) \); } EN) N
+(D_LOOP_OMP) N
+() N
+(  ) S
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\){ ) p
+(//AB loop on directions, path table is not needed) c n
+(    k=0; ) p
+(// which gather we are using) c n
+(    mtag[k] = start_gather_field\( multi_x[0], ) p
+(sizeof) K
+(\(su3_vector\),) p n
+(      OPP_3_DIR\( DIR3\(dir\) \), EVENANDODD, gen_pt[k] \);) N
+(    FORALLFIELDSITES_OMP\(i,  \){) N
+(      clear_su3mat\(  &\(oprod_along_path[0][i]\) \);) N
+(    } END_LOOP_OMP) N
+(    ) S
+(for) K
+(\(term=0;term<nterms;term++\){) p n
+(      ) S
+(if) K
+(\(term<nterms-1\)mtag[1-k] = start_gather_field\( multi_x[term+1],) p n
+(      ) S
+(sizeof) K
+(\(su3_vector\), OPP_3_DIR\( DIR3\(dir\) \), EVENANDODD, gen_pt[1-k] \);) p n
+(      wait_gather\(mtag[k]\);) N
+() N
+(      FORALLFIELDSITES_OMP\(i,private\(tmat\) \){) N
+(        ) S
+(// build projector as usual) c n
+(        su3_projector\( &multi_x[term][i], \(su3_vector *\)gen_pt[k][i], &tmat \);) p n
+(        ) S
+(// multiply by alpha_l in rational function expansion) c n
+(        scalar_mult_add_su3_matrix\( &\(oprod_along_path[0][i]\), &tmat, ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (    residues[term], &\(oprod_along_path[0][i]\) \);) N
+(      } END_LOOP_OMP) N
+(fermion_force_hisq_multi_cpu.c) (Page 4/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (4/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (5) 5
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(      nflops += 54 + 36;) p n
+(      cleanup_gather\(mtag[k]\);) N
+(      k=1-k; ) S
+(// swap 0 and 1) c n
+(    } ) p
+(/* end loop over terms in rational function expansion */) c n
+() p n
+(    link_gather_connection_hisq\( oprod_along_path[0], oprod_along_path[1], ) N
+() S 8 T () S 16 T () S 24 T () S 32 T ( mat_tmp0, DIR3\(dir\) \);) N
+() N
+(    coeff = 1; ) S
+(// fermion_eps is outside this routine in "wrapper" routine) c n
+(    FORALLFIELDSITES_OMP\(i,  \){) p n
+(      scalar_mult_add_su3_matrix\( &\(force_accum_naik[dir][i]\), ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (  &\(oprod_along_path[1][i]\),) N
+() S 8 T () S 16 T () S 24 T () S 32 T (  coeff, &\(force_accum_naik[dir][i]\) \);) N
+(    } END_LOOP_OMP) N
+(    nflops += 36;) N
+() N
+(  } ) S
+(/* end of loop on directions */) c n
+() p n
+() N
+(  free\( mat_tmp0 \);) N
+(  ) S
+(for) K
+(\(i=0;i<=MAX_PATH_LENGTH;i++\){) p n
+(     free\( oprod_along_path[i] \);) N
+(  }) N
+() N
+(  info->final_flop = \(\() S
+(double) k
+(\)nflops\)*volume/numnodes\(\);) p n
+(} ) S
+(//fn_fermion_force_multi_hisq_smearing0) c n
+() p n
+(/**********************************************************************/) c n
+(// This routine calculates contribution to the force due to i-th level) N
+(// of smearing.) N
+(// As input it uses array of new links and the force from \(i-1\)-th) N
+(// level of smearing) N
+(/**********************************************************************/) N
+() p n
+(static) K
+( ) p
+(void) k
+( ) p n
+(fn_fermion_force_multi_hisq_smearing\( info_t *info,) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      Real eps, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      Real *residues, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      su3_vector **multi_x, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      ) S
+(int) k
+( nterms, ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (      su3_matrix *force_accum[4], ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      su3_matrix *force_accum_old[4], ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      su3_matrix *force_accum_naik_old[4], ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      su3_matrix *internal_U_link,) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      ) S
+(int) k
+( internal_num_q_paths, ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (      Q_path *internal_q_paths_sorted, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      ) S
+(int) k
+( *internal_netbackdir_table\)) p n
+({) N
+(  ) S
+(/* note CG_solution and Dslash * solution are combined in "multi_x" */) c n
+(  ) p
+(/* New version 1/21/99.  Use forward part of Dslash to get force */) c n
+(  ) p
+(/* see long comment at end */) c n
+(  ) p
+(/* For each link we need multi_x transported from both ends of path. */) c n
+(  ) p
+(register) K
+( ) p
+(int) k
+( i,j,k,lastdir=-99,ipath,ilink;) p n
+(  ) S
+(int) k
+( length,dir,odir;) p n
+(  Real coeff;) N
+(  Q_path *this_path;) S 24 T () S
+(// pointer to current path) c n
+(  msg_tag *mtag[2];) p n
+(  su3_matrix *mat_tmp0;) N
+(  su3_matrix *mat_tmp1;) N
+(fermion_force_hisq_multi_cpu.c) (Page 5/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (5/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (6) 6
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(  anti_hermitmat *ahmat_tmp;) p n
+(  su3_matrix *oprod_along_path[MAX_PATH_LENGTH+1]; ) S
+(// length N path has N+1 site) c n
+(s!!) N
+(  su3_matrix *mats_along_path[MAX_PATH_LENGTH+1]; ) p
+(// ) c n
+(  ) p
+(int) k
+( netbackdir;) p 24 T () S
+(// backwards direction for entire path) c n
+(  ) p
+(int) k
+( aux_stride = 4;) p n
+(  size_t nflops = 0;) N
+() N
+(  ) S
+(if) K
+(\( nterms==0 \)) p
+(return) K
+(;) p n
+() N
+(  ) S
+(for) K
+(\(i=0;i<=MAX_PATH_LENGTH;i++\){) p n
+(     oprod_along_path[i] = \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix) p n
+(\) \);) N
+(  }) N
+(  ) S
+(for) K
+(\(i=1;i<=MAX_PATH_LENGTH;i++\){ ) p
+(// 0 element is never used \(it's unit matrix\)) c n
+(     mats_along_path[i] = ) p n
+(       \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(  }) N
+() N
+(  mat_tmp0 = \(su3_matrix *\) special_alloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(  mat_tmp1 = \(su3_matrix *\) special_alloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(  ) S
+(if) K
+(\( mat_tmp0 == ) p
+(NULL) K
+( \){printf\(") p
+(Node %d NO ROOM\\n) str
+(",this_node\); exit\(0\); }) p n
+(  ) S
+(if) K
+(\( mat_tmp1 == ) p
+(NULL) K
+( \){printf\(") p
+(Node %d NO ROOM\\n) str
+(",this_node\); exit\(0\); }) p n
+() N
+(  ahmat_tmp = \(anti_hermitmat *\) ) N
+(    special_alloc\(sites_on_node*) S
+(sizeof) K
+(\(anti_hermitmat\) \);) p n
+() N
+() S 8 T () N
+() N
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(#ifdef) K
+( HISQ_FF_DEBUG) p n
+(  {) N
+(  su3_matrix su3ab, su3ab2;) N
+(  clear_su3mat\( &su3ab \);) N
+(  clear_su3mat\( &su3ab2 \);) N
+(  ) S
+(for) K
+(\(dir=XUP; dir<=TUP; dir++\) {) p n
+(    FORALLFIELDSITES_OMP\(i,firstprivate\(su3ab,su3ab2\) \){) N
+(      add_su3_matrix\( &su3ab, &\(force_accum_old[dir][i]\), &su3ab \);) N
+(      ) S
+(if) K
+(\( ) p
+(NULL) K
+(!=force_accum_naik_old \) {) p n
+() S 8 T (add_su3_matrix\( &su3ab, &\(force_accum_naik_old[dir][i]\), &su3ab \);) N
+(      }) N
+(      add_su3_matrix\( &su3ab2, &\( internal_U_link[4*i+dir] \), &su3ab2 \);) N
+(    } END_LOOP_OMP) N
+(  }) N
+(  nflops += 36*4;) N
+(  ) S
+(if) K
+(\( ) p
+(NULL) K
+(!=force_accum_naik_old \)nflops += 18*4;) p n
+(  printf\(") S
+(WRAPPER FORCE smearing input force GLOBAL SUM\\n) str
+("\);) p n
+(  dumpmat\( &su3ab \);) N
+(  printf\(") S
+(WRAPPER FORCE smearing input links GLOBAL SUM\\n) str
+("\);) p n
+(  dumpmat\( &su3ab2 \);) N
+(  }) N
+(#endif) K
+( ) p
+(/* HISQ_FF_DEBUG */) c n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+() p n
+() N
+(  ) S
+(// clear force accumulators) c n
+(  ) p
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\)) p n
+(    FORALLFIELDSITES_OMP\(i,  \){clear_su3mat\( &\(force_accum[dir][i]\) \);} END_LOOP) N
+(_OMP) N
+(fermion_force_hisq_multi_cpu.c) (Page 6/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (6/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (7) 7
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p n
+(  ) S
+(/* loop over paths, and loop over links in path */) c n
+(  ) p
+(for) K
+(\( ipath=0; ipath<internal_num_q_paths; ipath++ \){) p n
+(    this_path = &\(internal_q_paths_sorted[ipath]\);) N
+(    ) S
+(if) K
+(\(this_path->forwback== -1\)) p
+(continue) K
+(;) p 48 T () S
+(/* skip backwards dslash */) c n
+() p n
+(    length = this_path->length;) N
+(    netbackdir = internal_netbackdir_table[ipath];) N
+() N
+(    ) S
+(/* move f\(i-1\) force from current site in positive direction.  This) c n
+(       corresponds to outer product |X><Y| calculated at the endpoint) N
+(       of the path */) N
+(    ) p
+(if) K
+(\( netbackdir<8\) { ) p
+(// Not a Naik path) c n
+(      link_gather_connection_hisq\( force_accum_old[OPP_DIR\(netbackdir\)], ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (   oprod_along_path[0], ) S
+(NULL) K
+(, netbackdir \);) p n
+(    }) N
+(    ) S
+(else) K
+( { ) p
+(// Naik path) c n
+(      ) p
+(if) K
+(\( ) p
+(NULL) K
+(==force_accum_naik_old \) {) p n
+(        node0_printf\( ") S
+(fn_fermion_force_multi_hisq_smearing:  mismatch:\\n) str
+(" \);) p n
+(        node0_printf\( ") S
+(  force_accum_naik_old is NULL, but path table contains Naik paths\(!\)\\n) str
+(" \);) p n
+(        terminate\(1\);) N
+(      }) N
+(      ) S
+(// CONVERSION FROM 3-LINK DIRECTION TO 1-LINK DIRECTION) c n
+(      link_gather_connection_hisq\( force_accum_naik_old[OPP_DIR\(netbackdir-8\)], ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (   oprod_along_path[0], ) S
+(NULL) K
+(, netbackdir \);) p n
+(    }) N
+() N
+() N
+(    ) S
+(// figure out how much of the outer products along the path must be) c n
+(    ) p
+(// recomputed. j is last one needing recomputation. k is first one.) c n
+(    j=length-1; ) p
+(// default is recompute all) c n
+(    ) p
+(if) K
+(\( GOES_BACKWARDS\(this_path->dir[0]\) \) k=1; ) p
+(else) K
+( k=0;) p n
+() N
+() N
+(    ) S
+(for) K
+(\(ilink=j;ilink>=k;ilink--\){) p n
+(        link_transport_connection_hisq\( oprod_along_path[length-ilink-1], ) N
+() S 8 T () S 16 T (internal_U_link, oprod_along_path[length-ilink], mat_tmp0, ) N
+() S 8 T () S 16 T (this_path->dir[ilink]  \);) N
+() S 8 T (nflops += 198;) N
+(    }) N
+() N
+(   ) S
+(/* maintain an array of transports "to this point" along the path.) c n
+() S 8 T (Don't recompute beginning parts of path if same as last path */) N
+(    ilink=0; ) p
+(// first link where new transport is needed) c n
+(    ) p
+(// Sometimes we don't need the matrix for the last link) c n
+(    ) p
+(if) K
+(\( GOES_FORWARDS\(this_path->dir[length-1]\) \) k=length-1; ) p
+(else) K
+( k=length;) p n
+() N
+(    ) S
+(for) K
+(\( ; ilink<k; ilink++ \){) p n
+(      ) S
+(if) K
+(\( ilink==0 \){) p n
+(        dir = this_path->dir[0];) N
+(          ) S
+(if) K
+(\( GOES_FORWARDS\(dir\) \){) p n
+() S 8 T (    mtag[1] = declare_strided_gather\( internal_U_link + dir,) N
+() S 8 T () S 16 T (      aux_stride*) S
+(sizeof) K
+(\(su3_matrix\), ) p
+(sizeof) K
+(\(su3_matrix\),) p n
+() S 8 T () S 16 T (      OPP_DIR\(dir\), EVENANDODD, gen_pt[1] \);) N
+() S 8 T (    prepare_gather\(mtag[1]\);) N
+() S 8 T (    do_gather\(mtag[1]\);) N
+() S 8 T (    ) S
+(//            mtag[1] = start_gather_field\( internal_U_link[dir], ) c n
+() p 8 T (    ) S
+(//) c 16 T () S 24 T () S 32 T () S 40 T () S 48 T (  sizeof\(su3_matrix\),) N
+() p 8 T (    ) S
+(//) c 16 T () S 24 T () S 32 T () S 40 T () S 48 T (  OPP_DIR\(dir\), EVENANDODD, gen_) N
+(fermion_force_hisq_multi_cpu.c) (Page 7/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (7/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (8) 8
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(pt[1] \);) c n
+(            wait_gather\(mtag[1]\);) p n
+(            FORALLFIELDSITES_OMP\(i,  \){ su3_adjoint\( \(su3_matrix *\)gen_pt[1][i],) N
+( ) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (   &\(mats_along_path[1][i]\) \); } END_LOO) N
+(P_OMP) N
+(            cleanup_gather\(mtag[1]\);) N
+(          }) N
+(          ) S
+(else) K
+({) p n
+(//            FORALLSITES\(i,s\){ mats_along_path[1][i] = s->link[OPP_DIR\(dir\)]; }) c n
+(            FORALLFIELDSITES_OMP\(i,  \){ ) p n
+() S 8 T (      mats_along_path[1][i] = internal_U_link[4*i+OPP_DIR\(dir\)]; ) N
+() S 8 T (    } END_LOOP_OMP) N
+(          }) N
+(      }) N
+(      ) S
+(else) K
+( { ) p
+(// ilink != 0) c n
+(        dir = OPP_DIR\(this_path->dir[ilink]\);) p n
+(        link_transport_connection_hisq\( mats_along_path[ilink], ) N
+() S 8 T () S 16 T (internal_U_link, mats_along_path[ilink+1], mat_tmp0, dir  \);) N
+() S 8 T (nflops += 198;) N
+(      }) N
+(    } ) S
+(// end loop over links) c n
+() p n
+() N
+() N
+(    ) S
+(/* A path has \(length+1\) points, counting the ends.  At first) c n
+() S 8 T ( point, no "down" direction links have their momenta "at this) N
+() S 8 T ( point". At last, no "up" ... */) N
+(    ) p
+(if) K
+(\( GOES_FORWARDS\(this_path->dir[length-1]\) \) k=length-1; ) p
+(else) K
+( k=length;) p n
+(    ) S
+(for) K
+(\( ilink=0; ilink<=k; ilink++ \){) p n
+(      ) S
+(if) K
+(\(ilink<length\)dir = this_path->dir[ilink];) p n
+(      ) S
+(else) K
+( dir=NODIR;) p n
+() N
+(      coeff = this_path->coeff;) N
+(      ) S
+(if) K
+(\( \(ilink%2\)==1 \)coeff = -coeff;) p n
+() N
+(      ) S
+(/* add in contribution to the force */) c n
+(      ) p
+(if) K
+(\( ilink<length && GOES_FORWARDS\(dir\) \){) p n
+() N
+(        link_gather_connection_hisq\( oprod_along_path[length-ilink-1], ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (     mat_tmp1, ) S
+(NULL) K
+(, dir \);) p n
+() N
+(        ) S
+(if) K
+(\(ilink==0\) FORALLFIELDSITES_OMP\(i,  \){) p n
+(          mat_tmp0[i] = mat_tmp1[i]; ) N
+(        } END_LOOP_OMP) N
+(        ) S
+(else) K
+({) p n
+(          FORALLFIELDSITES_OMP\(i,  \){) N
+(            mult_su3_na\( &\( mat_tmp1[i] \),  &\( mats_along_path[ilink][i] \), &\(ma) N
+(t_tmp0[i]\) \);) N
+(          }) N
+(          END_LOOP_OMP) N
+() S 8 T (  nflops += 198;) N
+(        }) N
+(        FORALLFIELDSITES_OMP\(i,  \){) N
+() S 8 T (    scalar_mult_add_su3_matrix\( &\(force_accum[dir][i]\), &\(mat_tmp0[i]\),) N
+(                coeff, &\(force_accum[dir][i]\) \);) N
+() S 8 T (} END_LOOP_OMP) N
+() S 8 T (nflops += 36;) N
+(      }) N
+(fermion_force_hisq_multi_cpu.c) (Page 8/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (8/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (9) 9
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(      ) p
+(if) K
+(\( ilink>0 && GOES_BACKWARDS\(lastdir\) \){) p n
+() S 8 T (odir = OPP_DIR\(lastdir\);) N
+(        ) S
+(if) K
+(\( ilink==1 \)FORALLFIELDSITES_OMP\(i,  \){) p n
+(          mat_tmp0[i]=oprod_along_path[length-ilink][i];) N
+(          su3_adjoint \( &\( mat_tmp0[i] \), &\( mat_tmp1[i] \) \);) N
+(        } END_LOOP_OMP) N
+(        ) S
+(else) K
+({) p n
+(          link_gather_connection_hisq\( mats_along_path[ilink-1], mat_tmp1, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (       ) S
+(NULL) K
+(, odir \);) p n
+(          FORALLFIELDSITES_OMP\(i,  \){) N
+(            mult_su3_na\( &\( oprod_along_path[length-ilink][i] \), ) N
+() S 8 T () S 16 T () S 24 T ( &\( mat_tmp1[i] \), &\( mat_tmp0[i] \) \);) N
+(            su3_adjoint \( &\( mat_tmp0[i] \), &\( mat_tmp1[i] \) \);) N
+(          }) N
+(          END_LOOP_OMP) N
+() S 8 T (  nflops += 198;) N
+(        }) N
+(        FORALLFIELDSITES_OMP\(i,  \){) N
+(          scalar_mult_add_su3_matrix\( &\(force_accum[odir][i]\), &\(mat_tmp1[i]\),) N
+(                +coeff, &\(force_accum[odir][i]\) \);) N
+(        } END_LOOP_OMP) N
+() N
+() S 8 T (nflops += 36;) N
+(      }) N
+(      lastdir = dir;) N
+(    } ) S
+(/* end loop over links in path */) c n
+(  } ) p
+(/* end loop over paths */) c n
+() p n
+(  free\( mat_tmp0 \);) N
+(  free\( mat_tmp1 \);) N
+(  free\( ahmat_tmp \);) N
+(  ) S
+(for) K
+(\(i=0;i<=MAX_PATH_LENGTH;i++\){) p n
+(     free\( oprod_along_path[i] \);) N
+(  }) N
+(  ) S
+(for) K
+(\(i=1;i<=MAX_PATH_LENGTH;i++\){) p n
+(     free\( mats_along_path[i] \);) N
+(  }) N
+() N
+(  info->final_flop = \(\() S
+(double) k
+(\)nflops\)*volume/numnodes\(\);) p n
+(}) S
+(// fn_fermion_force_multi_hisq_smearing) c n
+() p n
+() N
+(/**********************************************************************/) c n
+(// Contribution to the force due to reunitarization of links:) N
+(//   Y=V*\(V^+*V\)^-1/2, W=Y/\(detY\)^1/3) N
+(/**********************************************************************/) N
+(static) K
+( ) p
+(void) k
+( ) p n
+(fn_fermion_force_multi_hisq_reunit\( info_t *info, su3_matrix *force_accum[4], ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (    su3_matrix *force_accum_old[4], ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (    fermion_links_t *fl\)) N
+({) N
+(  ks_action_paths_hisq *ap = get_action_paths_hisq\(fl\);) N
+(  hisq_auxiliary_t *aux = get_hisq_auxiliary\(fl\);) N
+(  su3_matrix *internal_V_link = aux->V_link;) N
+(  su3_matrix *internal_Y_link = aux->Y_unitlink;) N
+(  ) S
+(int) k
+( i, k, l, m, n, dir;) p n
+(  complex ftmp;) N
+(  su3_matrix tmat;) N
+(  su3_tensor4 dwdv, dwdagdv;) N
+(fermion_force_hisq_multi_cpu.c) (Page 9/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (9/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (10) 10
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(  su3_tensor4 dwdvs, dwdagdvs;) p n
+(  ) S
+(/* Assume that for the fermion force calculation the KS phases are never) c n
+(     defined for a nonzero origin */) N
+(  ) p
+(int) k
+( r0[4] = {0, 0, 0, 0};) p n
+(  size_t nflops_all_sites = 0;) N
+() N
+(  info->final_flop = 0.0;) N
+(  ) N
+(  ) S
+(/* phases out */) c n
+(  rephase_field_offset\( internal_V_link, OFF, ) p
+(NULL) K
+( , r0\);) p n
+(  rephase_field_offset\( internal_Y_link, OFF, ) S
+(NULL) K
+( , r0\);) p n
+(  ) N
+(  FORALLFIELDSITES_OMP\(i, private\(dwdv, dwdagdv, dir, tmat, dwdvs, dwdagdvs, m, ) N
+(n, k, l, ftmp\)) N
+( ) S 8 T () S 16 T (       reduction\(+:nflops_all_sites\)\){) N
+(    ) S
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\){) p n
+(      ) S
+(// calculate derivatives) c n
+(      ) p
+(if) K
+(\(ap->umethod == UNITARIZE_ROOT \)) p n
+() S 8 T (u3_unit_der\( &\( internal_V_link[4*i+dir] \), &dwdv, &dwdagdv \);) N
+(      ) S
+(else) K
+( ) p
+(if) K
+(\(ap->umethod == UNITARIZE_RATIONAL \)) p n
+() S 8 T (u3_unit_der_rational\( &\( internal_V_link[4*i+dir] \), &dwdv, &dwdagdv \);) N
+(      ) S
+(else) K
+( ) p
+(if) K
+(\(ap->umethod == UNITARIZE_ANALYTIC \) {) p n
+() S 8 T (u3_unit_der_analytic\( info, &\( internal_V_link[4*i+dir] \), &dwdv, &dwdag) N
+(dv \);) N
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(#ifdef) K
+( HISQ_FF_DEBUG) p n
+(  {) N
+(    ) S
+(if) K
+(\( i==0 \) {) p n
+(      printf\(") S
+(WRAPPER FORCE REUNIT V link at site 0\\n) str
+("\);) p n
+(      dumpmat\( &\(internal_V_link[4*i+dir]\) \);) N
+(      printf\(") S
+(WRAPPER FORCE REUNIT derivative at site 0\\n) str
+("\);) p n
+(      dumpt4\( dwdv \);) N
+(      dumpt4\( dwdagdv \);) N
+(    }) N
+(  }) N
+(#endif) K
+( ) p
+(/* HISQ_FF_DEBUG */) c n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+(      }) p n
+(      ) S
+(else) K
+( ) p
+(if) K
+(\(ap->umethod == UNITARIZE_NONE \) {) p n
+() S 8 T (node0_printf\(") S
+(fn_fermion_force_multi_hisq_reunit should not be called for UNITARIZE_NONE\\n) str
+(") p n
+(\);) N
+() S 8 T (terminate\(1\);) N
+(      }) N
+(      ) S
+(else) K
+({) p n
+() S 8 T (node0_printf\(") S
+(Unknown unitarization method\\n) str
+("\);) p n
+() S 8 T (terminate\(1\);) N
+(      }) N
+() N
+(  ) S
+(switch) K
+(\(ap->ugroup\){) p n
+(  ) S
+(case) K
+( UNITARIZE_SU3:) p n
+(      ) S
+(/* piece of derivative from projecting U\(3\) to SU\(3\) */) c n
+(      su3_adjoint\( &\( internal_Y_link[4*i+dir] \), &tmat \);) p n
+(      su3_unit_der_spec\( &\( internal_V_link[4*i+dir] \), ) N
+() S 8 T () S 16 T () S 24 T ( &\( internal_Y_link[4*i+dir] \), &tmat,) N
+(                         &dwdv, &dwdagdv, &dwdvs, &dwdagdvs \);) N
+() S 8 T (  ) S
+(break) K
+(;) p n
+(  ) S
+(case) K
+( UNITARIZE_U3:) p n
+(      su3t4_copy\( &dwdv, &dwdvs \);) N
+(      su3t4_copy\( &dwdagdv, &dwdagdvs \);) N
+(fermion_force_hisq_multi_cpu.c) (Page 10/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (10/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (11) 11
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T (  ) S
+(break) K
+(;) p n
+() S 8 T () S
+(default) K
+(:) p n
+() S 8 T (  node0_printf\(") S
+(Unknown unitarization group. Set UNITARIZE_U3 or UNITARIZE_SU3\\n) str
+("\);) p n
+() S 8 T (  terminate\(1\);) N
+() S 8 T (}) N
+() N
+(      ) S
+(// adjoint piece of force from the previous level) c n
+(      su3_adjoint\( &\( force_accum_old[dir][i] \), &tmat \);) p n
+() N
+(      ) S
+(// see LONG COMMENT in fermion_force_fn_multi_hisq) c n
+(      clear_su3mat\( &\( force_accum[dir][i] \) \);) p n
+(      ) S
+(for) K
+(\( m=0; m<3; m++\) {) p n
+(        ) S
+(for) K
+(\( n=0; n<3; n++\) {) p n
+(          ) S
+(for) K
+(\( k=0; k<3; k++\) {) p n
+(            ) S
+(for) K
+(\( l=0; l<3; l++\) {) p n
+(              CMUL\( dwdvs.t4[k][m][n][l], ) N
+() S 8 T () S 16 T (    force_accum_old[dir][i].e[l][k], ftmp \);) N
+(              CSUM\( force_accum[dir][i].e[n][m], ftmp \);) N
+(              ) S
+(/* CAREFUL with the adjoint part here! */) c n
+(              CMUL\( dwdagdvs.t4[k][m][n][l], tmat.e[l][k], ftmp \);) p n
+(              CSUM\( force_accum[dir][i].e[n][m], ftmp \);) N
+(            }) N
+(          }) N
+(        }) N
+(      }) N
+(      nflops_all_sites += 81*16;) N
+(      ) N
+() N
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(#ifdef) K
+( HISQ_FF_DEBUG) p n
+(  {) N
+(    ) S
+(if) K
+(\( i==0 \) {) p n
+(      printf\(") S
+(WRAPPER FORCE REUNIT old force\\n) str
+("\);) p n
+(      dumpmat\( &\( force_accum_old[dir][i] \) \);) N
+(      printf\(") S
+(WRAPPER FORCE REUNIT new force\\n) str
+("\);) p n
+(      dumpmat\( &\( force_accum[dir][i] \) \);) N
+(    }) N
+(  }) N
+(#endif) K
+( ) p
+(/* HISQ_FF_DEBUG */) c n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+(    } ) p
+(/* dir */) c n
+(    } END_LOOP_OMP;) p n
+() N
+(    ) S
+(/* Sum over all nodes and update counters */) c n
+() p n
+(  ) S
+(// printf\("nflops_all_sites = %lu\\n", nflops_all_sites\);) c n
+() p n
+(  info->final_flop += nflops_all_sites;) N
+() N
+(  ) S
+(/* phases in */) c n
+(  rephase_field_offset\( internal_V_link, ON, ) p
+(NULL) K
+( , r0\);) p n
+(  rephase_field_offset\( internal_Y_link, ON, ) S
+(NULL) K
+( , r0\);) p n
+(} ) S
+(// fn_fermion_force_multi_hisq_reunit) c n
+() p n
+(/**********************************************************************/) c n
+(/*   General FN Version for "nterms" sources                          */) N
+(/**********************************************************************/) N
+() p n
+(/* update the  momenta with the fermion force */) c n
+(fermion_force_hisq_multi_cpu.c) (Page 11/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (11/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (12) 12
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(/* Assumes that the multimass conjugate gradient has been run, with the answer i) c n
+(n) N
+(   multi_x, and dslash_site\(multi_x,multi_x,ODD\) has been run. \(fills in multi_x) N
+( on odd sites\) */) N
+(/* SEE LONG COMMENTS AT END */) N
+() p n
+(// For smearing 1) c n
+(// Quark paths sorted by net displacement and last directions) N
+(static) K
+( Q_path *q_paths_sorted_1 = ) p
+(NULL) K
+(;) p 40 T () N
+(// table of net path displacements \(backwards from usual convention\)) c n
+(static) K
+( ) p
+(int) k
+( *netbackdir_table_1 = ) p
+(NULL) K
+(; ) p n
+() N
+(// For smearing 2) c n
+(// Quark paths sorted by net displacement and last directions) N
+(static) K
+( Q_path *q_paths_sorted_2 = ) p
+(NULL) K
+(;) p n
+(// table of net path displacements \(backwards from usual convention\)) c 72 T () N
+(static) K
+( ) p
+(int) k
+( *netbackdir_table_2 = ) p
+(NULL) K
+(; ) p n
+(// Quark paths sorted by net displacement and last directions) c n
+(static) K
+( Q_path *q_paths_sorted_3 = ) p
+(NULL) K
+(;) p 40 T () N
+(// table of net path displacements \(backwards from usual convention\)) c n
+(static) K
+( ) p
+(int) k
+( *netbackdir_table_3 = ) p
+(NULL) K
+(; ) p n
+(static) K
+( Q_path *q_paths_sorted_current = ) p
+(NULL) K
+(;) p n
+(static) K
+( ) p
+(int) k
+( *netbackdir_table_current = ) p
+(NULL) K
+(;) p n
+() N
+(static) K
+( ) p
+(int) k
+( first_force=1;) p 32 T () S
+(// 1 if force hasn't been called yet) c n
+() p n
+(// table of gather directions to bring start of path to end, for "FN") c n
+(// = "fat-Naik" actions) N
+(static) K
+( ) p
+(int) k
+( net_back_dirs[16] = ) p n
+(  { XDOWN, YDOWN, ZDOWN, TDOWN, XUP, YUP, ZUP, TUP, ) N
+(    X3DOWN, Y3DOWN, Z3DOWN, T3DOWN, X3UP, Y3UP, Z3UP, T3UP };) N
+() N
+(/**********************************************************************/) c n
+(int) k
+( ) p n
+(find_backwards_gather\( Q_path *path \)) N
+({) N
+(    ) S
+(int) k
+( disp[4], i;) p n
+(    ) S
+(/* compute total displacement of path */) c n
+(    ) p
+(for) K
+(\(i=XUP;i<=TUP;i++\)disp[i]=0;) p n
+(    ) S
+(for) K
+(\( i=0; i<path->length; i++\){) p n
+() S 8 T () S
+(if) K
+(\( GOES_FORWARDS\(path->dir[i]\) \)) p n
+() S 8 T (    disp[        path->dir[i]  ]++;) N
+() S 8 T () S
+(else) K n
+() p 8 T (    disp[OPP_DIR\(path->dir[i]\) ]--;) N
+(    }) N
+() N
+(   ) S
+(// There must be an elegant way??) c n
+(   ) p
+(if) K
+(\( disp[XUP]==+1 && disp[YUP]== 0 && disp[ZUP]== 0 && disp[TUP]== 0 \)) p n
+(     ) S
+(return) K
+(\(XDOWN\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]==-1 && disp[YUP]== 0 && disp[ZUP]== 0 && disp[TUP]== 0 \)) p n
+(     ) S
+(return) K
+(\(XUP\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]== 0 && disp[YUP]==+1 && disp[ZUP]== 0 && disp[TUP]== 0 \)) p n
+(     ) S
+(return) K
+(\(YDOWN\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]== 0 && disp[YUP]==-1 && disp[ZUP]== 0 && disp[TUP]== 0 \)) p n
+(     ) S
+(return) K
+(\(YUP\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]== 0 && disp[YUP]== 0 && disp[ZUP]==+1 && disp[TUP]== 0 \)) p n
+(     ) S
+(return) K
+(\(ZDOWN\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]== 0 && disp[YUP]== 0 && disp[ZUP]==-1 && disp[TUP]== 0 \)) p n
+(     ) S
+(return) K
+(\(ZUP\);) p n
+(fermion_force_hisq_multi_cpu.c) (Page 12/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (12/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (13) 13
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(   ) p
+(if) K
+(\( disp[XUP]== 0 && disp[YUP]== 0 && disp[ZUP]== 0 && disp[TUP]==+1 \)) p n
+(     ) S
+(return) K
+(\(TDOWN\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]== 0 && disp[YUP]== 0 && disp[ZUP]== 0 && disp[TUP]==-1 \)) p n
+(     ) S
+(return) K
+(\(TUP\);) p n
+() N
+(   ) S
+(if) K
+(\( disp[XUP]==+3 && disp[YUP]== 0 && disp[ZUP]== 0 && disp[TUP]== 0 \)) p n
+(     ) S
+(return) K
+(\(X3DOWN\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]==-3 && disp[YUP]== 0 && disp[ZUP]== 0 && disp[TUP]== 0 \)) p n
+(     ) S
+(return) K
+(\(X3UP\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]== 0 && disp[YUP]==+3 && disp[ZUP]== 0 && disp[TUP]== 0 \)) p n
+(     ) S
+(return) K
+(\(Y3DOWN\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]== 0 && disp[YUP]==-3 && disp[ZUP]== 0 && disp[TUP]== 0 \)) p n
+(     ) S
+(return) K
+(\(Y3UP\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]== 0 && disp[YUP]== 0 && disp[ZUP]==+3 && disp[TUP]== 0 \)) p n
+(     ) S
+(return) K
+(\(Z3DOWN\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]== 0 && disp[YUP]== 0 && disp[ZUP]==-3 && disp[TUP]== 0 \)) p n
+(     ) S
+(return) K
+(\(Z3UP\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]== 0 && disp[YUP]== 0 && disp[ZUP]== 0 && disp[TUP]==+3 \)) p n
+(     ) S
+(return) K
+(\(T3DOWN\);) p n
+(   ) S
+(if) K
+(\( disp[XUP]== 0 && disp[YUP]== 0 && disp[ZUP]== 0 && disp[TUP]==-3 \)) p n
+(     ) S
+(return) K
+(\(T3UP\);) p n
+(   node0_printf\(") S
+(OOOPS: NODIR\\n) str
+("\); exit\(0\);) p n
+(   ) S
+(return) K
+(\( NODIR \);) p n
+(} ) S
+(//find_backwards_gather) c n
+() p n
+(/**********************************************************************/) c n
+(// Make a new path table.  Sorted principally by total displacement of path.) N
+(// Below that, sort by direction of first link) N
+(// Below that, sort by direction of second link - note special case of one link ) N
+(paths) N
+(int) k
+( ) p n
+(sort_quark_paths\( Q_path *src_table, Q_path *dest_table, ) S
+(int) k
+( npaths, ) p n
+() S 8 T () S 16 T (  ) S
+(int) k
+( num_back_dirs \)) p n
+({) N
+(    ) S
+(int) k
+( netdir,dir0,dir1,dir1tmp,num_new,i,j;) p n
+() N
+(    num_new=0; ) S
+(// number of paths in sorted table) c n
+(    ) p
+(for) K
+(\( i=0; i<num_back_dirs; i++ \){ ) p
+(// loop over net_back_dirs) c n
+(        netdir = net_back_dirs[i]; ) p
+(// table of possible displacements for Fat-Na) c n
+(ik) N
+() p 8 T () S
+(for) K
+(\( dir0=0; dir0<=7; dir0++\){ ) p
+(// XUP ... TDOWN) c n
+() p 8 T (  ) S
+(for) K
+(\( dir1=-1; dir1<=7; dir1++\){ ) p
+(// NODIR, XUP ... TDOWN) c n
+() p 8 T (    ) S
+(if) K
+(\( dir1==-1 \)dir1tmp=NODIR; ) p
+(else) K
+( dir1tmp=dir1;) p n
+() S 8 T (    ) S
+(for) K
+(\( j=0; j<npaths; j++ \){ ) p
+(// pick out paths with right net displace) c n
+(ment) N
+() p 8 T (        ) S
+(if) K
+(\( find_backwards_gather\( &\(src_table[j]\) \) == netdir && ) p n
+() S 8 T () S 16 T () S 24 T (src_table[j].dir[0]==dir0 &&) N
+() S 8 T () S 16 T () S 24 T (src_table[j].dir[1]==dir1tmp \){) N
+() S 8 T () S 16 T (    dest_table[num_new] = src_table[j];) N
+() S 8 T () S 16 T (    num_new++;) N
+() S 8 T (        }) N
+() S 8 T (    } ) S
+(// loop over paths) c n
+() p 8 T (  } ) S
+(//dir1) c n
+() p 8 T (} ) S
+(//dir0) c n
+(    }) p n
+(    ) S
+(if) K
+(\( num_new!=npaths\){ node0_printf\(") p
+(OOPS: path table error, num_new=%d, npaths=%d\\n) str
+(",nu) p n
+(m_new,npaths\); exit\(0\); }) N
+(    ) S
+(return) K
+( 0;) p n
+(}) N
+(fermion_force_hisq_multi_cpu.c) (Page 13/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (13/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (14) 14
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p n
+(// Fermion force SKETCH:) c n
+(// 1\) loop on different epsilon corrections to Naik term) N
+(//   a\) calculate force from smearing level 2 on full multi_x array) N
+(//      with epsilon correction = 0) N
+(//   b\) calculate all other smearing level 2 contributions on ) N
+(//      corresponding parts of multi_x array) N
+(//   c\) add all contributions from smearing level 2) N
+(// 2\) perform reunitarization) N
+(// 3\) calculate force from smearing level 1) N
+(// This procedure is slightly more than 2 Asqtad smearing steps) N
+(static) K
+( ) p
+(void) k
+( ) p n
+(fn_fermion_force_multi_hisq_mx\( info_t *info, Real eps, Real *residues, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (su3_vector **multi_x, ) S
+(int) k
+( nterms, fermion_links_) p n
+(t *fl\)) N
+({) N
+(  ) S
+(// Get the terms we need from the fermion links structure */) c n
+(  ks_action_paths_hisq *ap = get_action_paths_hisq\(fl\);) p n
+(  hisq_auxiliary_t *aux = get_hisq_auxiliary\(fl\);) N
+(  ) S
+(int) k
+( n_naiks = fermion_links_get_n_naiks\(fl\);) p n
+(  ) S
+(double) k
+( *eps_naik = fermion_links_get_eps_naik\(fl\);) p n
+(  su3_matrix *U_link = aux->U_link;) N
+(  su3_matrix *V_link = aux->V_link;) N
+(  su3_matrix *W_unitlink = aux->W_unitlink;) N
+(  su3_matrix *Y_unitlink = aux->Y_unitlink;) N
+(  ) S
+(// note CG_solution and Dslash * solution are combined in "multi_x" ) c n
+(  ) p
+(// Use forward part of Dslash to get force ) c n
+(  ) p
+(// see long comment at end ) c n
+(  ) p
+(// This version is for two stage smearing, includes unitarization step) c n
+() p n
+(  ) S
+(// ALGORITHM SKETCH:) c n
+(  ) p
+(// For each net displacement) c n
+(    ) p
+(// compute outer product |X><X|) c n
+(    ) p
+(// For each path in smearing 2 with that displacement) c n
+(      ) p
+(// parallel transport outer product to each link in path, accumulate for) c n
+(      ) p
+(// each link) c n
+(    ) p
+(// For each path in smearing 1) c n
+(      ) p
+(// parallel transport accumulated outer product from previous step to) c n
+(      ) p
+(// each link in path, accumulate new one at each link) c n
+(    ) p
+(// add to momentum) c n
+() p n
+(  ) S
+(// We need sorted path tables for both smearings) c n
+() p n
+(  ) S
+(/* note CG_solution and Dslash * solution are combined in "multi_x" */) c n
+(  ) p
+(/* New version 1/21/99.  Use forward part of Dslash to get force */) c n
+(  ) p
+(/* see long comment at end */) c n
+(  ) p
+(/* For each link we need multi_x transported from both ends of path. */) c n
+(  ) p
+(int) k
+( term;) p n
+(  ) S
+(register) K
+( ) p
+(int) k
+( i,j,k,lastdir=-99,ipath,ilink;) p n
+(  ) S
+(register) K
+( site *s;) p n
+(  ) S
+(int) k
+( length,dir,odir;) p n
+(  su3_matrix tmat,tmat2;) N
+(  Real ferm_epsilon_1, ferm_epsilon_2, coeff;) N
+(  ) S
+(int) k
+( num_q_paths_1 = ap->p1.num_q_paths;) p n
+(  Q_path *q_paths_1 = ap->p1.q_paths;) N
+(  ) S
+(int) k
+( num_q_paths_2 = ap->p2.num_q_paths;) p n
+(  Q_path *q_paths_2 = ap->p2.q_paths;) N
+(  ) S
+(int) k
+( num_q_paths_3 = ap->p3.num_q_paths;) p n
+(  Q_path *q_paths_3 = ap->p3.q_paths;) N
+(fermion_force_hisq_multi_cpu.c) (Page 14/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (14/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (15) 15
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(  Q_path *this_path;) p 24 T () S
+(// pointer to current path) c n
+(  Q_path *last_path;) p 24 T () S
+(// pointer to previous path) c n
+(  msg_tag *mtag[2];) p n
+(  su3_matrix *mat_tmp0,*mat_tmp1;) N
+(  su3_matrix *oprod_along_path[MAX_PATH_LENGTH+1]; ) S
+(// length N path has N+1 site) c n
+(s!!) N
+(  su3_matrix *mats_along_path[MAX_PATH_LENGTH+1]; ) p
+(// ) c n
+(  su3_matrix *force_accum_1[4];  ) p
+(// accumulate force through smearing 1) c n
+(  su3_matrix *force_accum_2[4];  ) p
+(// accumulate force through smearing 2 \(done fi) c n
+(rst\)) N
+(  su3_matrix *force_accum_tmp[4];  ) p
+(// to combine contributions at smearing 2) c n
+(  ) p
+(int) k
+( netbackdir, last_netbackdir;) p 40 T () S
+(// backwards direction for entire path) c n
+(  su3_vector **internal_multi_x;) p n
+(  Real *internal_residues;) N
+(  ) S
+(int) k
+( num_q_paths_current,n_orders_naik_current;) p n
+(  Real coeff_mult;) N
+(  su3_tensor4 dydv, dydagdv, dwdv, dwdagdv;) N
+(  su3_matrix force_tmp;) N
+(  ) S
+(int) k
+( m, n, l;) p n
+(  complex ftmp;) N
+(  ) S
+(int) k
+( inaik, n_naik_shift;) p n
+(  ) S
+(int) k
+( aux_stride = 4;) p n
+(  size_t nflops = 0;) N
+(  size_t nflops_all_sites = 0;) N
+() N
+(  ) S
+(/* Assume that for the fermion force calculation the KS phases are never) c n
+(     defined for a nonzero origin */) N
+(  ) p
+(int) k
+( r0[4] = {0, 0, 0, 0};) p n
+(//int tempflops = 0; //TEMP) c n
+() p n
+() N
+(//  int nflop_old = 1847016 + 6264*\(n_naiks-1\) ) c n
+(//    + 720*\(2*n_order_naik_total-n_orders_naik[0]\)) N
+(//    + 10488; // HISQ action 10/30/07 version of code;) N
+() p n
+(// CD 11/23/2011: With unit_der_analytic and without SVD the tally is closer to ) c n
+(// 1877780 + 6264*\(n_naiks-1\) + 720*\(2*n_order_naik_total-n_orders_naik[0]\) + 10) N
+(488) N
+(// ) N
+(  ) p
+(double) k
+( dtime=-dclock\(\);) p n
+(  ) S
+(/* node0_printf\("STARTING fn_fermion_force_multi_hisq\(\) nterms = %d\\n",nterms\)) c n
+(; */) N
+(  ) p
+(if) K
+(\( nterms==0 \)) p
+(return) K
+(;) p n
+() N
+(  ) S
+(for) K
+(\(i=0;i<=MAX_PATH_LENGTH;i++\){) p n
+(     oprod_along_path[i] = \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix) p n
+(\) \);) N
+(  }) N
+(  ) S
+(for) K
+(\(i=1;i<=MAX_PATH_LENGTH;i++\){ ) p
+(// 0 element is never used \(it's unit matrix\)) c n
+(     mats_along_path[i] = \(su3_matrix *\) malloc\(sites_on_node*) p
+(sizeof) K
+(\(su3_matrix\)) p n
+( \);) N
+(  }) N
+(  ) S
+(for) K
+(\(i=XUP;i<=TUP;i++\){) p n
+(     force_accum_1[i] = \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \)) p n
+(;) N
+(     force_accum_2[i] = \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \)) p n
+(;) N
+(     force_accum_tmp[i] = \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\)) p n
+( \);) N
+(fermion_force_hisq_multi_cpu.c) (Page 15/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (15/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (16) 16
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(  }) p n
+(  mat_tmp0 = \(su3_matrix *\) special_alloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(  mat_tmp1 = \(su3_matrix *\) special_alloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(  ) S
+(if) K
+(\( mat_tmp1 == ) p
+(NULL) K
+( \){printf\(") p
+(Node %d NO ROOM\\n) str
+(",this_node\); exit\(0\); }) p n
+() N
+() S 8 T () N
+(  ferm_epsilon_1 = 2.0*eps; ) S
+(// we only do forward paths, gives factor of 2) c n
+(  ferm_epsilon_2 =     1.0; ) p
+(// both forward and backward  CHECK THIS!!) c n
+(  ) p
+(if) K
+(\( first_force==1 \){) p n
+(    ) S
+(if) K
+(\( q_paths_sorted_1==) p
+(NULL) K
+( \) ) p n
+(      q_paths_sorted_1 = \(Q_path *\)malloc\( num_q_paths_1*) S
+(sizeof) K
+(\(Q_path\) \);) p n
+(    ) S
+(if) K
+(\(netbackdir_table_1==) p
+(NULL) K
+( \) ) p n
+(      netbackdir_table_1 = \() S
+(int) k
+( *\)malloc\( num_q_paths_1*) p
+(sizeof) K
+(\() p
+(int) k
+(\) \);) p n
+(    ) S
+(if) K
+(\( q_paths_sorted_2==) p
+(NULL) K
+( \) ) p n
+(      q_paths_sorted_2 = \(Q_path *\)malloc\( num_q_paths_2*) S
+(sizeof) K
+(\(Q_path\) \);) p n
+(    ) S
+(if) K
+(\(netbackdir_table_2==) p
+(NULL) K
+( \) ) p n
+(      netbackdir_table_2 = \() S
+(int) k
+( *\)malloc\( num_q_paths_2*) p
+(sizeof) K
+(\() p
+(int) k
+(\) \);) p n
+(    ) S
+(if) K
+(\( q_paths_sorted_3==) p
+(NULL) K
+( \) ) p n
+(      q_paths_sorted_3 = \(Q_path *\)malloc\( num_q_paths_3*) S
+(sizeof) K
+(\(Q_path\) \);) p n
+(    ) S
+(if) K
+(\(netbackdir_table_3==) p
+(NULL) K
+( \) ) p n
+(      netbackdir_table_3 = \() S
+(int) k
+( *\)malloc\( num_q_paths_3*) p
+(sizeof) K
+(\() p
+(int) k
+(\) \);) p n
+(    ) S
+(else) K
+({ node0_printf\(") p
+(WARNING: remaking sorted path tables\\n) str
+("\); exit\(0\); }) p n
+(    ) S
+(// make sorted tables) c n
+(    sort_quark_paths\( q_paths_1, q_paths_sorted_1, num_q_paths_1, 8 \);) p n
+(    ) S
+(for) K
+(\( ipath=0; ipath<num_q_paths_1; ipath++ \)) p n
+(      netbackdir_table_1[ipath] = ) N
+() S 8 T (find_backwards_gather\( &\(q_paths_sorted_1[ipath]\) \);) N
+(    sort_quark_paths\( q_paths_2, q_paths_sorted_2, num_q_paths_2, 16 \);) N
+(    ) S
+(for) K
+(\( ipath=0; ipath<num_q_paths_2; ipath++ \)) p n
+(      netbackdir_table_2[ipath] = ) N
+() S 8 T (find_backwards_gather\( &\(q_paths_sorted_2[ipath]\) \);) N
+(    sort_quark_paths\( q_paths_3, q_paths_sorted_3, num_q_paths_3, 16 \);) N
+(    ) S
+(for) K
+(\( ipath=0; ipath<num_q_paths_3; ipath++ \)) p n
+(      netbackdir_table_3[ipath] = ) N
+() S 8 T (find_backwards_gather\( &\(q_paths_sorted_3[ipath]\) \);) N
+(    first_force=0;) N
+(  }) N
+() N
+(  ) S
+(// clear force accumulators) c n
+(  ) p
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\)FORALLFIELDSITES\(i\){) p n
+(    clear_su3mat\( &\(force_accum_1[dir][i]\) \);) N
+(    clear_su3mat\( &\(force_accum_2[dir][i]\) \);) N
+(  }) N
+() N
+() N
+() N
+(  ) S
+(// loop on different naik epsilons) c n
+(  n_naik_shift = 0;) p n
+(  ) S
+(for) K
+(\( inaik=0; inaik<n_naiks; inaik++ \) {) p n
+(    ) S
+(// clear temporary force accumulator) c n
+(    ) p
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\)FORALLFIELDSITES_OMP\(i,\){) p n
+(      clear_su3mat\( &\(force_accum_tmp[dir][i]\) \);) N
+(    }) N
+(    END_LOOP_OMP) N
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(    node0_printf\(") S
+(fn_fermion_force_multi_hisq_mx: eps_naik[%d]=%f\\n) str
+(",inaik,eps_naik[inaik]\);) p n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+() p n
+() N
+(fermion_force_hisq_multi_cpu.c) (Page 16/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (16/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (17) 17
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(    {) N
+(    ) S
+(double) k
+( tabletime=-dclock\(\);) p n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(    tabletime+=dclock\(\);) N
+(    node0_printf\(") S
+(fftime: time to load fermion links %e\\n) str
+(",tabletime\);) p n
+(    }) N
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+() p n
+() N
+(    internal_multi_x = multi_x + n_naik_shift;) N
+(    internal_residues = residues + n_naik_shift;) N
+() N
+() N
+(  ) S
+(// BEGIN SMEARING TWO PART) c n
+(  ) p
+(/* loop over paths, and loop over links in path */) c n
+(  last_netbackdir = NODIR;) p n
+(  last_path = ) S
+(NULL) K
+(;) p n
+(  ) S
+(if) K
+(\( 0==inaik \) {) p n
+(    q_paths_sorted_current = q_paths_sorted_2;) N
+(    num_q_paths_current = num_q_paths_2;) N
+(    netbackdir_table_current = netbackdir_table_2;) N
+(  }) N
+(  ) S
+(else) K
+( {) p n
+(    q_paths_sorted_current = q_paths_sorted_3;) N
+(    num_q_paths_current = num_q_paths_3;) N
+(    netbackdir_table_current = netbackdir_table_3;) N
+(  }) N
+(  ) S
+(for) K
+(\( ipath=0; ipath<num_q_paths_current; ipath++ \){) p n
+(    this_path = &\(q_paths_sorted_current[ipath]\);) N
+(    ) S
+(/* skip backwards dslash - only in smearing two*/) c n
+(    ) p
+(if) K
+(\(this_path->forwback== -1\)) p
+(continue) K
+(;) p 48 T () N
+() N
+(    length = this_path->length;) N
+(    ) S
+(// find gather to bring multi_x[term] from "this site" to end of path) c n
+(    netbackdir = netbackdir_table_current[ipath];) p n
+(    ) S
+(// and bring multi_x to end - no gauge transformation !!) c n
+(    ) p
+(// resulting outer product matrix has gauge transformation) c n
+(    ) p
+(// properties of a connection from start to end of path) c n
+(    ) p
+(// Don't need to repeat this if same net disp. as last path) c n
+(    ) p
+(if) K
+(\( netbackdir != last_netbackdir\){ ) p n
+() S 8 T (k=0; ) S
+(// which gather we are using) c n
+(        mtag[k] = start_gather_field\( internal_multi_x[0], ) p
+(sizeof) K
+(\(su3_vector\),) p n
+(           netbackdir, EVENANDODD, gen_pt[k] \);) N
+(        FORALLFIELDSITES_OMP\(i,  \){) N
+() S 8 T (  clear_su3mat\(  &oprod_along_path[0][i] \); ) S
+(// actually last site in pat) c n
+(h) N
+(        }) p n
+(        END_LOOP_OMP) N
+(        ) S
+(if) K
+(\( 0==inaik \) {) p n
+(        ) S 16 T () S
+(// for first set of X links full multi_x is used) c n
+(          n_orders_naik_current = n_order_naik_total;) p n
+(        }) N
+(        ) S
+(else) K
+( {) p n
+(          ) S
+(// for other sets of X links only their part of multi_x is used) c n
+(          n_orders_naik_current = n_orders_naik[inaik];) p n
+(        }) N
+(        ) S
+(for) K
+(\(term=0;term<n_orders_naik_current;term++\){) p n
+(fermion_force_hisq_multi_cpu.c) (Page 17/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (17/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (18) 18
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(          ) p
+(if) K
+(\(term<n_orders_naik_current-1\)) p n
+() S 8 T (    mtag[1-k] = start_gather_field\( internal_multi_x[term+1],) N
+(              ) S
+(sizeof) K
+(\(su3_vector\), netbackdir, EVENANDODD, gen_pt[1-k] \);) p n
+(          wait_gather\(mtag[k]\);) N
+(          FORALLFIELDSITES_OMP\(i,private\(tmat\)\){) N
+() S 8 T (    su3_projector\( &internal_multi_x[term][i], ) N
+() S 8 T () S 16 T () S 24 T (   \(su3_vector *\)gen_pt[k][i], &tmat \);) N
+() S 8 T (    scalar_mult_add_su3_matrix\( &oprod_along_path[0][i], &tmat, ) N
+() S 8 T (         internal_residues[term], &oprod_along_path[0][i] \);) N
+(          }) N
+(          END_LOOP_OMP) N
+() S 8 T (  nflops += 54 + 36;) N
+(          cleanup_gather\(mtag[k]\);) N
+() S 8 T (  k=1-k; ) S
+(// swap 0 and 1) c n
+(        } ) p
+(/* end loop over terms in rational function expansion */) c n
+(//tempflops+=54*n_orders_naik_current;) N
+(//tempflops+=36*n_orders_naik_current;) N
+(    }) p n
+() N
+(    ) S
+(/* path transport the outer product, or projection matrix, of multi_x[term]) c n
+(       \(EVEN sites\)  and Dslash*multi_x[term] \(ODD sites\) from far end.) N
+() N
+(       maintain a matrix of the outer product transported backwards) N
+() S 8 T (along the path to all sites on the path.) N
+() S 8 T (If new "net displacement", need to completely recreate it.) N
+() S 8 T (Otherwise, use as much of the previous path as possible ) N
+() N
+() S 8 T (Note this array is indexed backwards - the outer product transported) N
+() S 8 T (to site number n along the path is in oprod_along_path[length-n].) N
+() S 8 T (This makes reusing it for later paths easier.) N
+() N
+() S 8 T (Sometimes we need this at the start point of the path, and sometimes) N
+() S 8 T (one link into the path, so don't always have to do the last link. */) N
+() p n
+(    ) S
+(// figure out how much of the outer products along the path must be) c n
+(    ) p
+(// recomputed. j is last one needing recomputation. k is first one.) c n
+(    j=length-1; ) p
+(// default is recompute all) c n
+(    ) p
+(if) K
+(\( netbackdir == last_netbackdir \)) p n
+(      ) S
+(while) K
+( \( j>0 && this_path->dir[j] == ) p n
+() S 8 T (      last_path->dir[j+last_path->length-length] \) j--;) N
+(    ) S
+(if) K
+(\( GOES_BACKWARDS\(this_path->dir[0]\) \) k=1; ) p
+(else) K
+( k=0;) p n
+() N
+(    ) S
+(for) K
+(\(ilink=j;ilink>=k;ilink--\){) p n
+() N
+(      link_transport_connection_hisq\( oprod_along_path[length-ilink-1], W_unitli) N
+(nk,) N
+(      oprod_along_path[length-ilink], mat_tmp0, this_path->dir[ilink]  \);) N
+() N
+(      nflops += 198;) N
+(//tempflops+=9*22;) c n
+(    }) p n
+() N
+() N
+(   ) S
+(/* maintain an array of transports "to this point" along the path.) c n
+() S 8 T (Don't recompute beginning parts of path if same as last path */) N
+(    ilink=0; ) p
+(// first link where new transport is needed) c n
+(    ) p
+(if) K
+(\( last_path != ) p
+(NULL) K
+( \)) p n
+(      ) S
+(while) K
+(\( this_path->dir[ilink] == last_path->dir[ilink] \) ilink++ ;) p n
+(    ) S
+(// Sometimes we don't need the matrix for the last link) c n
+(fermion_force_hisq_multi_cpu.c) (Page 18/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (18/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (19) 19
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(    ) p
+(if) K
+(\( GOES_FORWARDS\(this_path->dir[length-1]\) \) k=length-1; ) p
+(else) K
+( k=length;) p n
+() N
+(    ) S
+(for) K
+(\( ; ilink<k; ilink++ \){) p n
+(      ) S
+(if) K
+(\( ilink==0 \){) p n
+(        dir = this_path->dir[0];) N
+(          ) S
+(if) K
+(\( GOES_FORWARDS\(dir\) \){) p n
+() S 8 T (    mtag[1] = declare_strided_gather\( W_unitlink + dir,) N
+() S 8 T () S 16 T (      aux_stride*) S
+(sizeof) K
+(\(su3_matrix\), ) p
+(sizeof) K
+(\(su3_matrix\),) p n
+() S 8 T () S 16 T (      OPP_DIR\(dir\), EVENANDODD, gen_pt[1] \);) N
+() S 8 T (    prepare_gather\(mtag[1]\);) N
+() S 8 T (    do_gather\(mtag[1]\);) N
+() S 8 T (    ) S
+(//            mtag[1] = start_gather_field\( W_unitlink[dir], sizeof\() c n
+(su3_matrix\),) N
+() p 8 T (    ) S
+(//                   OPP_DIR\(dir\), EVENANDODD, gen_pt[1] \);) c n
+(            wait_gather\(mtag[1]\);) p n
+(            FORALLFIELDSITES_OMP\(i,  \){) N
+() S 8 T (      su3_adjoint\( \(su3_matrix *\)gen_pt[1][i], ) N
+() S 8 T () S 16 T () S 24 T (   &\(mats_along_path[1][i]\) \); ) N
+() S 8 T (    }) N
+(            END_LOOP_OMP) N
+(            cleanup_gather\(mtag[1]\);) N
+(          }) N
+(          ) S
+(else) K
+({) p n
+(            FORALLFIELDSITES_OMP\(i,  \){ ) N
+() S 8 T (      mats_along_path[1][i] = W_unitlink[4*i+OPP_DIR\(dir\)]; ) N
+() S 8 T (    }) N
+(            END_LOOP_OMP) N
+(          }) N
+(      }) N
+(      ) S
+(else) K
+( { ) p
+(// ilink != 0) c n
+(        dir = OPP_DIR\(this_path->dir[ilink]\);) p n
+(        link_transport_connection_hisq\( mats_along_path[ilink], W_unitlink,) N
+(        mats_along_path[ilink+1], mat_tmp0, dir  \);) N
+() S 8 T (nflops += 198;) N
+(//tempflops+=9*22;) c n
+(      }) p n
+(    } ) S
+(// end loop over links) c n
+() p n
+(    ) S
+(/* A path has \(length+1\) points, counting the ends.  At first) c n
+() S 8 T ( point, no "down" direction links have their momenta "at this) N
+() S 8 T ( point". At last, no "up" ... */) N
+(    ) p
+(if) K
+(\( GOES_FORWARDS\(this_path->dir[length-1]\) \) k=length-1; ) p
+(else) K
+( k=length;) p n
+(    ) S
+(for) K
+(\( ilink=0; ilink<=k; ilink++ \){) p n
+(      ) S
+(if) K
+(\(ilink<length\)dir = this_path->dir[ilink];) p n
+(      ) S
+(else) K
+( dir=NODIR;) p n
+(      coeff = ferm_epsilon_2*this_path->coeff;) N
+(      ) S
+(if) K
+(\( \(ilink%2\)==1 \)coeff = -coeff;) p n
+() N
+(      ) S
+(/* add in contribution to the force */) c n
+(      ) p
+(if) K
+(\( ilink<length && GOES_FORWARDS\(dir\) \){) p n
+() S 8 T (link_gather_connection_hisq\( oprod_along_path[length-ilink-1], ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (     mat_tmp1, ) S
+(NULL) K
+(, dir \);) p n
+() S 8 T () S
+(if) K
+( \( ilink==0 \){) p n
+() S 8 T (   FORALLFIELDSITES_OMP\(i,  \){ mat_tmp0[i] = mat_tmp1[i]; } END_LOOP_OMP) N
+() S 8 T (}) N
+() S 8 T () S
+(else) K
+( {) p n
+(          FORALLFIELDSITES_OMP\(i,   \){) N
+() S 8 T (     mult_su3_na\( &\(mat_tmp1[i]\),  ) N
+() S 8 T () S 16 T () S 24 T (  &\(mats_along_path[ilink][i]\), &\(mat_tmp0[i]\) \);) N
+(fermion_force_hisq_multi_cpu.c) (Page 19/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (19/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (20) 20
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(          }) p n
+(          END_LOOP_OMP) N
+() S 8 T (  nflops += 198;) N
+(//tempflops+=9*22;) c n
+() p 8 T (}) N
+() N
+(        FORALLFIELDSITES_OMP\(i,  \){) N
+() S 8 T (  ) S
+(// sign fixed AB 9/20/07) c n
+() p 8 T (  scalar_mult_add_su3_matrix\( &\(force_accum_tmp[dir][i]\), ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      &\(mat_tmp0[i]\), coeff, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      &\(force_accum_tmp[dir][i]\) \);) N
+() S 8 T (}) N
+(        END_LOOP_OMP) N
+() S 8 T (nflops += 36;) N
+(//tempflops+=36;) c n
+(      }) p n
+(      ) S
+(if) K
+(\( ilink>0 && GOES_BACKWARDS\(lastdir\) \){) p n
+() S 8 T (odir = OPP_DIR\(lastdir\);) N
+(        ) S
+(if) K
+( \( ilink==1 \){) p n
+() S 8 T (    FORALLFIELDSITES_OMP\(i,  \){ ) N
+() S 8 T (      su3_adjoint\( &\(oprod_along_path[length-ilink][i]\),) N
+() S 8 T () S 16 T (&\( mat_tmp0[i] \) \); ) N
+() S 8 T (    }) N
+(            END_LOOP_OMP) N
+() S 8 T (}) N
+() S 8 T () S
+(else) K
+( {) p n
+() S 8 T (    link_gather_connection_hisq\( mats_along_path[ilink-1], mat_tmp1, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T ( ) S
+(NULL) K
+(, odir \);) p n
+(            FORALLFIELDSITES_OMP\(i,  \){) N
+(              mult_su3_na\( &\(mat_tmp1[i]\), ) N
+() S 8 T () S 16 T () S 24 T (   &\(oprod_along_path[length-ilink][i]\),  ) N
+() S 8 T () S 16 T () S 24 T (   &\(mat_tmp0[i]\) \);) N
+(            }) N
+(            END_LOOP_OMP) N
+() S 8 T (    nflops += 198;) N
+(//tempflops+=9*22;) c n
+() p 8 T (}) N
+(        FORALLFIELDSITES_OMP\(i,  \){) N
+() S 8 T (  ) S
+(// sign fixed AB 9/20/07) c n
+() p 8 T (  scalar_mult_add_su3_matrix\( &\(force_accum_tmp[odir][i]\), ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      &\(mat_tmp0[i]\), +coeff, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T (      &\(force_accum_tmp[odir][i]\) \);) N
+(        }) N
+(        END_LOOP_OMP) N
+() S 8 T (nflops += 36;) N
+(//tempflops+=36;) c n
+(      }) p n
+() N
+(      lastdir = dir;) N
+(    } ) S
+(/* end loop over links in path */) c n
+(    last_netbackdir = netbackdir;) p n
+(    last_path = &\(q_paths_sorted_current[ipath]\);) N
+(  } ) S
+(/* end loop over paths */) c n
+() p n
+(    ) S
+(if) K
+(\( 0==inaik \) {) p n
+(      coeff_mult = 1.0;) N
+(    }) N
+(    ) S
+(else) K
+( {) p n
+(      coeff_mult = eps_naik[inaik];) N
+(fermion_force_hisq_multi_cpu.c) (Page 20/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (20/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (21) 21
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(    }) p n
+(    FORALLFIELDSITES_OMP\(i, private\(dir\) \) {) N
+(      ) S
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\) {) p n
+(//        add_su3_matrix\( &\( force_accum_2[dir][i] \), &\( force_accum_tmp[dir][i]) c n
+( \), &\( force_accum_2[dir][i] \) \);) N
+(        scalar_mult_add_su3_matrix\( &\( force_accum_2[dir][i] \), ) p n
+(            &\( force_accum_tmp[dir][i] \), coeff_mult,) N
+(            &\( force_accum_2[dir][i] \) \);) N
+(      }) N
+(      nflops += 4*36;) N
+(//tempflops+=4*36;) c n
+(    } END_LOOP_OMP) p n
+(    n_naik_shift += n_orders_naik[inaik];) N
+(  } ) S
+(/* end loop over naik epsilons */) c n
+() p n
+(  ) S
+(// END SMEARING TWO PART) c n
+() p n
+(#ifdef) K
+( FFTIME) p n
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(  {) N
+(  ) S
+(double) k
+( tmptime=dtime+dclock\(\);) p n
+(  node0_printf\(") S
+(fftime\(hisq-smearing1\):  time = %e \\n) str
+(",tmptime\);) p n
+(  }) N
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+(#endif) K n
+() p n
+() N
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(#ifdef) K
+( HISQ_FF_DEBUG) p n
+(  {) N
+(  anti_hermitmat ahmat_tmp;) N
+(  su3_matrix ttttmat;) N
+(printf\(") S
+(Dump W_unitlink[%d][%d]\\n) str
+(",AB_OUT_ON_LINK,AB_OUT_ON_SITE\);) p n
+(dumpmat\( &\(W_unitlink[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\) \);) N
+(  printf\(") S
+(HISQ FORCE SMEARING 2\\n) str
+("\);) p n
+(  dumpmat\( &\(force_accum_2[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\) \);) N
+(  printf\(") S
+(HISQ FORCE SMEARING 2 ANTIHERMITIAN\\n) str
+("\);) p n
+(  make_anti_hermitian\( &\(force_accum_2[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\), ) N
+() S 8 T () S 16 T (       &ahmat_tmp \);) N
+(  uncompress_anti_hermitian\( &ahmat_tmp, &\(ttttmat\) \);) N
+(  dumpmat\( &\(ttttmat\) \);) N
+(  }) N
+(#endif) K
+( ) p
+(/* HISQ_FF_DEBUG */) c n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+() p n
+() N
+(  ) S
+(// UNITARIZATION PART) c n
+() p n
+(  ) S
+(switch) K
+(\(ap->umethod\){) p n
+(  ) S
+(case) K
+( UNITARIZE_ROOT:) p n
+(  ) S
+(case) K
+( UNITARIZE_RATIONAL:) p n
+(  ) S
+(case) K
+( UNITARIZE_ANALYTIC:) p n
+() N
+(    ) S
+(// rephase \(out\) V, Y) c n
+(    rephase_field_offset\( V_link, OFF, ) p
+(NULL) K
+(, r0 \);) p n
+(    rephase_field_offset\( Y_unitlink, OFF, ) S
+(NULL) K
+(, r0 \);) p n
+(    ) N
+(    FORALLFIELDSITES_OMP\(i,private\(tmat,dydv,dydagdv,dwdv,dwdagdv,m,n,k,l,force_) N
+(tmp,ftmp\) ) N
+(fermion_force_hisq_multi_cpu.c) (Page 21/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (21/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (22) 22
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S 16 T () S 24 T ( reduction\(+:nflops_all_sites\) \){) N
+(      ) S
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\){) p n
+() S 8 T () S
+(// derivatives: dY/dV, dY^+/dV) c n
+() p 8 T () S
+(switch) K
+( \(ap->umethod\){) p n
+() S 8 T () S
+(case) K
+( UNITARIZE_ROOT:) p n
+() S 8 T (  u3_unit_der\( &\( V_link[4*i+dir] \), &dydv, &dydagdv \);) N
+() S 8 T (  ) S
+(break) K
+(;) p n
+() S 8 T () S
+(case) K
+( UNITARIZE_RATIONAL:) p n
+() S 8 T (  u3_unit_der_rational\( &\( V_link[4*i+dir] \), &dydv, &dydagdv \);) N
+() S 8 T (  ) S
+(break) K
+(;) p n
+() S 8 T () S
+(case) K
+( UNITARIZE_ANALYTIC:) p n
+() S 8 T (  u3_unit_der_analytic\( info, &\( V_link[4*i+dir] \), &dydv, &dydagdv \);) N
+(          ) S
+(// +9192 flops) c n
+() p 8 T (  ) S
+(break) K
+(;) p n
+() S 8 T () S
+(default) K
+(:) p n
+() S 8 T (  node0_printf\(") S
+(Unknown unitarization method\\n) str
+("\);) p n
+() S 8 T (  terminate\(1\);) N
+() S 8 T (}) N
+() S 8 T () N
+(  ) S
+(switch) K
+(\(ap->ugroup\){) p n
+(  ) S
+(case) K
+( UNITARIZE_SU3:) p n
+() S 8 T () S
+(// piece of derivative from projecting U\(3\) to SU\(3\)) c n
+() p 8 T (su3_adjoint\( &\( Y_unitlink[4*i+dir] \), &tmat \);) N
+() S 8 T (su3_unit_der_spec\( &\( V_link[4*i+dir] \), ) N
+() S 8 T () S 16 T () S 24 T (   &\( Y_unitlink[4*i+dir] \), &tmat,) N
+() S 8 T () S 16 T () S 24 T (   &dydv, &dydagdv, &dwdv, &dwdagdv \);) N
+() S 8 T (  ) S
+(break) K
+(;) p n
+(  ) S
+(case) K
+( UNITARIZE_U3:) p n
+() S 8 T (su3t4_copy\( &dydv, &dwdv \);) N
+() S 8 T (su3t4_copy\( &dydagdv, &dwdagdv \);) N
+() S 8 T (  ) S
+(break) K
+(;) p n
+() S 8 T () S
+(default) K
+(:) p n
+() S 8 T (  node0_printf\(") S
+(Unknown unitarization group. Set UNITARIZE_U3 or UNITARIZE_SU3\\n) str
+("\);) p n
+() S 8 T (  terminate\(1\);) N
+() S 8 T (}) N
+() N
+() S 8 T () N
+() S 8 T () S
+(// adjoint piece of the force) c n
+() p 8 T (su3_adjoint\( &\( force_accum_2[dir][i] \), &tmat \);) N
+() N
+() S 8 T () S
+(/* LONG COMMENT ABOUT INDEXING CONVENTION) c n
+() S 8 T (   f - scalar function, U_{ab} - matrix,) N
+() S 8 T (   derivative df/dU_{ab} is a matrix with indeces transposed,) N
+() S 8 T (   i.e. df/dU_{ab}=D_{ba}) N
+() S 8 T (   In \(for example\) Wong/Woloshyn notes indeces are NOT transposed,) N
+() S 8 T (   what is called f_{mn} there should be f_{nm}.) N
+() S 8 T (   This code stores f_{mn} \(as in notes\) because this makes handling) N
+() S 8 T (   smearing part easier \(one has several matrix multiplications\).) N
+() S 8 T (   However, for the unitarization part matrix derivative is) N
+() S 8 T (   constructed as rank 4-tensor, following usual convention:) N
+() S 8 T (   dV_{kl}/dU_{mn}=T_{knml} \(i.e. indeces of the bottom matrix are trans) N
+(posed\).) N
+() S 8 T (   Derivative tensor is then contracted with f_{kl} to get f'_{mn}.) N
+() S 8 T (   Usual convention: f'_{nm}=T_{knml}f_{kl},) N
+() S 8 T (   translates into: f'_{mn}=T_{knml}f_{lk} */) N
+() p 8 T (clear_su3mat\( &force_tmp \);) N
+() S 8 T () S
+(for) K
+(\( m=0; m<3; m++\) {) p n
+() S 8 T (  ) S
+(for) K
+(\( n=0; n<3; n++\) {) p n
+() S 8 T (    ) S
+(for) K
+(\( k=0; k<3; k++\) {) p n
+(fermion_force_hisq_multi_cpu.c) (Page 22/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (22/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (23) 23
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T (      ) S
+(for) K
+(\( l=0; l<3; l++\) {) p n
+() S 8 T () S 16 T (CMUL\( dwdv.t4[k][m][n][l], force_accum_2[dir][i].e[l][k], ) N
+() S 8 T () S 16 T (      ftmp \);) N
+() S 8 T () S 16 T (CSUM\( force_tmp.e[n][m], ftmp \);) N
+() S 8 T () S 16 T () S
+(/* CAREFUL: adjoint part here! */) c n
+() p 8 T () S 16 T (CMUL\( dwdagdv.t4[k][m][n][l], tmat.e[l][k], ftmp \);) N
+() S 8 T () S 16 T (CSUM\( force_tmp.e[n][m], ftmp \);) N
+() S 8 T (      }) N
+() S 8 T (    }) N
+() S 8 T (  }) N
+() S 8 T (}) N
+() S 8 T (nflops_all_sites += 81*16;) N
+() S 8 T () S
+(// PUT THE RESULT INTO force_accum_2, THIS MAY NEED CHANGES) c n
+() p 8 T (su3mat_copy\( &force_tmp, &\( force_accum_2[dir][i] \) \);) N
+(      }) N
+(    }) N
+(    END_LOOP_OMP) N
+() N
+(    nflops += nflops_all_sites*numnodes\(\)/volume;) N
+() N
+(//tempflops+=9192+81*16;) c n
+() p n
+(    ) S
+(// rephase \(in\) V, Y) c n
+(    rephase_field_offset\( V_link, ON, ) p
+(NULL) K
+(, r0 \);) p n
+(    rephase_field_offset\( Y_unitlink, ON, ) S
+(NULL) K
+(, r0 \);) p n
+(    ) S
+(break) K
+(;) p n
+() N
+(  ) S
+(case) K
+( UNITARIZE_NONE:) p n
+(    ) S
+(//  printf\("HISQ: Proceeding with UNITARIZE_NONE\\n"\);) c n
+(    ) p
+(break) K
+(;) p n
+(  ) S
+(default) K
+(:) p n
+(    printf\(") S
+(HISQ: Only UNITARIZE_ROOT and UNITARIZE_RATIONAL supported so far\\n) str
+("\);) p n
+(    printf\(") S
+(HISQ: Proceeding without reunitarization\\n) str
+("\);) p n
+(  } ) S
+(/* ap->umethod */) c n
+() p n
+(#ifdef) K
+( FFTIME) p n
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(  {) N
+(  ) S
+(double) k
+( tmptime=dtime+dclock\(\);) p n
+(  node0_printf\(") S
+(fftime\(hisq-smearing1+reunitarization\):  time = %e \\n) str
+(",tmptime\);) p n
+(  }) N
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+(#endif) K n
+() p n
+() N
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(#ifdef) K
+( HISQ_FF_DEBUG) p n
+(  {) N
+(  anti_hermitmat ahmat_tmp;) N
+(  su3_matrix ttttmat;) N
+(  printf\(") S
+(HISQ FORCE REUNITARIZATION\\n) str
+("\);) p n
+(  dumpmat\( &\(force_accum_2[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\) \);) N
+(  printf\(") S
+(HISQ FORCE REUNITARIZATION ANTIHERMITIAN\\n) str
+("\);) p n
+(  make_anti_hermitian\( &\(force_accum_2[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\), &ahmat_) N
+(tmp \);) N
+(  uncompress_anti_hermitian\( &ahmat_tmp, &\(ttttmat\) \);) N
+(  dumpmat\( &\(ttttmat\) \);) N
+(  }) N
+(#endif) K
+( ) p
+(/* HISQ_FF_DEBUG */) c n
+(fermion_force_hisq_multi_cpu.c) (Page 23/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (23/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (24) 24
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+() p n
+() N
+(  ) S
+(//SMEARING ONE PART) c n
+() p n
+() N
+(  ) S
+(// loop over paths, and loop over links in path ) c n
+(  ) p
+(// Here each path is one "V link" and each V link should already have a corres) c n
+(ponding) N
+(  ) p
+(// force_accum_2 computed) c n
+(  last_netbackdir = NODIR;) p n
+(  last_path = ) S
+(NULL) K
+(;) p n
+(  ) S
+(for) K
+(\( ipath=0; ipath<num_q_paths_1; ipath++ \){) p n
+(    this_path = &\(q_paths_sorted_1[ipath]\);) N
+(if) K
+(\(this_path->forwback== -1\)) p
+(continue) K
+(;) p 40 T () S
+(// CHECK THIS!!!!) c n
+() p n
+(    length = this_path->length;) N
+(    ) S
+(// find gather to bring multi_x[term] from "this site" to end of path) c n
+(    netbackdir = netbackdir_table_1[ipath];) p n
+(    ) S
+(// and bring force_accum_2 to end - gauge transform one index only!) c n
+(    ) p
+(// resulting outer product matrix has gauge transformation properties of a c) c n
+(onnection) N
+(    ) p
+(// from start to end of path) c n
+(// use force_accum_2) N
+(// Note if path goes backwards you may need adjoint.  Have to think about) N
+(// what its gauge transformation properties are) N
+(    ) p
+(if) K
+(\( netbackdir != last_netbackdir\){ ) p
+(// don't need to repeat this if same net) c n
+( disp. as last path) N
+() p 8 T () S
+(if) K
+(\( GOES_BACKWARDS\(netbackdir\) \){) p n
+() S 8 T (   link_gather_connection_hisq\( force_accum_2[OPP_DIR\(netbackdir\)],) N
+() S 8 T () S 16 T (oprod_along_path[0], ) S
+(NULL) K
+(, netbackdir \);) p n
+() S 8 T (}) N
+() S 8 T () S
+(else) K
+( {) p n
+() S 8 T (   link_gather_connection_hisq\( force_accum_2[netbackdir],) N
+() S 8 T () S 16 T (oprod_along_path[0], ) S
+(NULL) K
+(, netbackdir \);) p n
+() S 8 T (}) N
+(    }) N
+() N
+(    ) S
+(/* path transport the outer product force_accum_2\(connection\) from far end.) c n
+() N
+(       maintain a matrix of the "outer product" transported backwards) N
+() S 8 T (along the path to all sites on the path.) N
+() S 8 T (If new "net displacement", need to completely recreate it.) N
+() S 8 T (Otherwise, use as much of the previous path as possible ) N
+() N
+() S 8 T (Note this array is indexed backwards - the outer product transported) N
+() S 8 T (to site number n along the path is in oprod_along_path[length-n].) N
+() S 8 T (This makes reusing it for later paths easier.) N
+() N
+() S 8 T (Sometimes we need this at the start point of the path, and sometimes) N
+() S 8 T (one link into the path, so don't always have to do the last link. */) N
+() p n
+(    ) S
+(// figure out how much of the outer products along the path must be) c n
+(    ) p
+(// recomputed. j is last one needing recomputation. k is first one.) c n
+(    j=length-1; ) p
+(// default is recompute all) c n
+(    ) p
+(if) K
+(\( netbackdir == last_netbackdir \)) p n
+(      ) S
+(while) K
+( \( j>0 && this_path->dir[j] == last_path->dir[j+last_path->length-len) p n
+(gth] \) j--;) N
+(    ) S
+(if) K
+(\( GOES_BACKWARDS\(this_path->dir[0]\) \) k=1; ) p
+(else) K
+( k=0;) p n
+(fermion_force_hisq_multi_cpu.c) (Page 24/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (24/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (25) 25
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p n
+(    ) S
+(for) K
+(\(ilink=j;ilink>=k;ilink--\){) p n
+(      link_transport_connection_hisq\( oprod_along_path[length-ilink-1], U_link,) N
+(          oprod_along_path[length-ilink], mat_tmp0, this_path->dir[ilink]  \);) N
+(      nflops += 198;) N
+(//tempflops+=9*22;) c n
+(    }) p n
+() N
+(   ) S
+(/* maintain an array of transports "to this point" along the path.) c n
+() S 8 T (Don't recompute beginning parts of path if same as last path */) N
+(    ilink=0; ) p
+(// first link where new transport is needed) c n
+(    ) p
+(if) K
+(\( last_path != ) p
+(NULL) K
+( \)) p
+(while) K
+(\( this_path->dir[ilink] == last_path->dir[ilink]) p n
+( \) ilink++ ;) N
+(    ) S
+(// Sometimes we don't need the matrix for the last link) c n
+(    ) p
+(if) K
+(\( GOES_FORWARDS\(this_path->dir[length-1]\) \) k=length-1; ) p
+(else) K
+( k=length;) p n
+() N
+(    ) S
+(for) K
+(\( ; ilink<k; ilink++ \){) p n
+(      ) S
+(if) K
+(\( ilink==0 \){) p n
+(        dir = this_path->dir[0];) N
+(          ) S
+(if) K
+(\( GOES_FORWARDS\(dir\) \){) p n
+() S 8 T (    mtag[1] = declare_strided_gather\( U_link + dir,) N
+() S 8 T () S 16 T (      aux_stride*) S
+(sizeof) K
+(\(su3_matrix\), ) p
+(sizeof) K
+(\(su3_matrix\),) p n
+() S 8 T () S 16 T (      OPP_DIR\(dir\), EVENANDODD, gen_pt[1] \);) N
+() S 8 T (    prepare_gather\(mtag[1]\);) N
+() S 8 T (    do_gather\(mtag[1]\);) N
+() S 8 T (    ) S
+(//            mtag[1] = start_gather_field\( U_link[dir], sizeof\(su3_) c n
+(matrix\),) N
+() p 8 T (    ) S
+(//                   OPP_DIR\(dir\), EVENANDODD, gen_pt[1] \);) c n
+(            wait_gather\(mtag[1]\);) p n
+(            FORALLFIELDSITES_OMP\(i,  \){ ) N
+() S 8 T () S 16 T (su3_adjoint\( \(su3_matrix *\)gen_pt[1][i], &\(mats_along_path[1][i]) N
+(\) \); ) N
+() S 8 T (    }) N
+(            END_LOOP_OMP) N
+(            cleanup_gather\(mtag[1]\);) N
+(          }) N
+(          ) S
+(else) K
+({) p n
+() S 8 T (    ) S
+(//            FORALLFIELDSITES\(i\){ mats_along_path[1][i] = U_link[OP) c n
+(P_DIR\(dir\)][i]; }) N
+(            FORALLFIELDSITES_OMP\(i,  \){ ) p n
+() S 8 T () S 16 T (mats_along_path[1][i] = U_link[4*i+OPP_DIR\(dir\)]; ) N
+() S 8 T (    }) N
+() S 8 T (    END_LOOP_OMP) N
+(          }) N
+(      }) N
+(      ) S
+(else) K
+( { ) p
+(// ilink != 0) c n
+(        dir = OPP_DIR\(this_path->dir[ilink]\);) p n
+(        link_transport_connection_hisq\( mats_along_path[ilink], U_link,) N
+(        mats_along_path[ilink+1], mat_tmp0, dir  \);) N
+() S 8 T (nflops += 198;) N
+(//tempflops+=9*22;) c n
+(      }) p n
+(    } ) S
+(// end loop over links) c n
+() p n
+(    ) S
+(/* A path has \(length+1\) points, counting the ends.  At first) c n
+() S 8 T ( point, no "down" direction links have their momenta "at this) N
+() S 8 T ( point". At last, no "up" ... */) N
+(    ) p
+(if) K
+(\( GOES_FORWARDS\(this_path->dir[length-1]\) \) k=length-1; ) p
+(else) K
+( k=length;) p n
+(    ) S
+(for) K
+(\( ilink=0; ilink<=k; ilink++ \){) p n
+(fermion_force_hisq_multi_cpu.c) (Page 25/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (25/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (26) 26
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(      ) p
+(if) K
+(\(ilink<length\)dir = this_path->dir[ilink];) p n
+(      ) S
+(else) K
+( dir=NODIR;) p n
+(      coeff = ferm_epsilon_1*this_path->coeff;) N
+(      ) S
+(if) K
+(\( \(ilink%2\)==1 \)coeff = -coeff;) p n
+() N
+(      ) S
+(if) K
+(\(ilink==0 && GOES_FORWARDS\(dir\) \) FORALLFIELDSITES_OMP\(i,  \){) p n
+() S 8 T (mat_tmp0[i] = oprod_along_path[length][i]; ) N
+(      } END_LOOP_OMP) N
+(      ) S
+(else) K
+( ) p
+(if) K
+(\( ilink>0\){) p n
+(        FORALLFIELDSITES_OMP\(i,  \){) N
+(        mult_su3_na\( &\(oprod_along_path[length-ilink][i]\),  ) N
+() S 8 T () S 16 T (     &\(mats_along_path[ilink][i]\), &\(mat_tmp0[i]\) \);) N
+() S 8 T (}) N
+(        END_LOOP_OMP) N
+() S 8 T (nflops += 198;) N
+(      }) N
+(//if\(ilink>0\)tempflops+=9*22;) c n
+() p n
+(      ) S
+(/* add in contribution to the force */) c n
+(      ) p
+(if) K
+(\( ilink<length && GOES_FORWARDS\(dir\) \){) p n
+(        FOREVENFIELDSITES_OMP\(i,  \){) N
+() S 8 T (    scalar_mult_add_su3_matrix\( &\(force_accum_1[dir][i]\), ) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (&\(mat_tmp0[i]\),) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (coeff, &\(force_accum_1[dir][i]\) \);) N
+() S 8 T (} END_LOOP_OMP) N
+() S 8 T (FORODDFIELDSITES_OMP\(i,  \){) N
+() S 8 T (    scalar_mult_add_su3_matrix\( &\(force_accum_1[dir][i]\), ) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (&\(mat_tmp0[i]\), -coeff, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (&\(force_accum_1[dir][i]\) \);) N
+(        } END_LOOP_OMP) N
+() S 8 T (nflops += 36;) N
+(//tempflops+=36;) c n
+(      }) p n
+(      ) S
+(if) K
+(\( ilink>0 && GOES_BACKWARDS\(lastdir\) \){) p n
+() S 8 T (odir = OPP_DIR\(lastdir\);) N
+(        FOREVENFIELDSITES_OMP\(i,  \){) N
+() S 8 T (    scalar_mult_add_su3_matrix\( &\(force_accum_1[odir][i]\), ) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (&\(mat_tmp0[i]\), -coeff, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (&\(force_accum_1[odir][i]\) \);) N
+() S 8 T (} END_LOOP_OMP) N
+(        FORODDFIELDSITES_OMP\(i,  \){) N
+() S 8 T (    scalar_mult_add_su3_matrix\( &\(force_accum_1[odir][i]\), ) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (&\(mat_tmp0[i]\), coeff, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (&\(force_accum_1[odir][i]\) \);) N
+() S 8 T (} END_LOOP_OMP) N
+() S 8 T (nflops += 36;) N
+(//tempflops+=36;) c n
+(      }) p n
+() N
+(      lastdir = dir;) N
+(    } ) S
+(/* end loop over links in path */) c n
+(    last_netbackdir = netbackdir;) p n
+(    last_path = &\(q_paths_sorted_1[ipath]\);) N
+(  } ) S
+(/* end loop over paths */) c n
+() p n
+(  ) S
+(// END SMEARING ONE PART) c n
+() p n
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(#ifdef) K
+( HISQ_REUNITARIZATION_DEBUG) p n
+(fermion_force_hisq_multi_cpu.c) (Page 26/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (26/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (27) 27
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(  {) p n
+(  anti_hermitmat ahmat_tmp;) N
+(  su3_matrix ff_interm;) N
+(  ) S
+(double) k
+( icounter=0;) p n
+(  ) S
+(double) k
+( max_force=0;) p n
+(  Real force_interm;) N
+(//FIXXME - need to check if there is a "maximum" reduction in OpenMP) c n
+(  FORALLFIELDSITES\(i\) {) p n
+(    ) S
+(for) K
+(\( dir=XUP; dir<=TUP; dir++ \) {) p n
+(      ) S
+(if) K
+(\( fabs\(s->RoS[dir]\)>1.0 \) icounter+=1;) p n
+() N
+(      ) S
+(/* find maximum force */) c n
+(      make_anti_hermitian\( &\(force_accum_1[dir][i]\), &ahmat_tmp \);) p n
+(      uncompress_anti_hermitian\( &ahmat_tmp, &ff_interm \);) N
+(      force_interm = su3_norm_frob\( &ff_interm \);) N
+(      ) S
+(if) K
+(\( force_interm > max_force \) {) p n
+(        max_force=force_interm;) N
+(      }) N
+(    }) N
+(  }) N
+(  g_doublemax\( &max_force \);) N
+(  g_doublesum\( &icounter \);) N
+(  node0_printf\( ") S
+(REUNITARIZATION: fabs\(RoS\) > 1.0 occured on %lf link\(s\)\\n) str
+(", icounter \);) p n
+(  node0_printf\( ") S
+(HISQ FORCE: maximum norm is %lf\\n) str
+(", max_force \);) p n
+(  }) N
+(#endif) K
+( ) p
+(/* HISQ_REUNITARIZATION_DEBUG */) c n
+(#ifdef) K
+( HISQ_FF_DEBUG) p n
+(  {) N
+(  anti_hermitmat ahmat_tmp;) N
+(  printf\(") S
+(HISQ FORCE\\n) str
+("\);) p n
+(  dumpmat\( &\(force_accum_1[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\) \);) N
+(  printf\(") S
+(HISQ FORCE ANTIHERMITIAN\\n) str
+("\);) p n
+(  ) S
+(for) K
+(\(dir=XUP; dir<=TUP; dir++\) FORALLFIELDSITES\(i\){) p n
+(    make_anti_hermitian\( &\(force_accum_1[dir][i]\), &ahmat_tmp \);) N
+(    uncompress_anti_hermitian\( &ahmat_tmp, &\(force_accum_1[dir][i]\) \);) N
+(  }) N
+(  dumpmat\( &\(force_accum_1[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\) \);) N
+(  }) N
+(#endif) K
+( ) p
+(/* HISQ_FF_DEBUG */) c n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+() p n
+() N
+(  ) S
+(/* Put antihermitian traceless part into momentum */) c n
+(  ) p
+(// add force to momentum) c n
+(  ) p
+(for) K
+(\(dir=XUP; dir<=TUP; dir++\)FORALLSITES_OMP\(i,s,private\(tmat2\) \){) p n
+(     uncompress_anti_hermitian\( &\(s->mom[dir]\), &tmat2 \);) N
+(     add_su3_matrix\( &tmat2, &\(force_accum_1[dir][i]\), &tmat2 \);) N
+(     make_anti_hermitian\( &tmat2, &\(s->mom[dir]\) \);) N
+(  } END_LOOP_OMP) N
+(  nflops += 144;) N
+(//tempflops+=4*18;) c n
+(//tempflops+=4*18;) N
+() p 8 T () N
+(  free\( mat_tmp0 \);) N
+(  free\( mat_tmp1 \);) N
+(  ) S
+(for) K
+(\(i=0;i<=MAX_PATH_LENGTH;i++\){) p n
+(     free\( oprod_along_path[i] \);) N
+(  }) N
+(  ) S
+(for) K
+(\(i=1;i<=MAX_PATH_LENGTH;i++\){) p n
+(fermion_force_hisq_multi_cpu.c) (Page 27/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (27/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (28) 28
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(     free\( mats_along_path[i] \);) p n
+(  }) N
+(  ) S
+(for) K
+(\(i=XUP;i<=TUP;i++\){) p n
+(     free\( force_accum_1[i] \);) N
+(     free\( force_accum_2[i] \);) N
+(     free\( force_accum_tmp[i] \);) N
+(  }) N
+() N
+(  info->final_flop = \(\() S
+(double) k
+(\)nflops\)*volume/numnodes\(\);) p n
+(  dtime += dclock\(\);) N
+(  info->final_sec = dtime;) N
+() N
+(//printf\("FF flops = %d\\n",tempflops\);) c n
+(} ) p
+(//fn_fermion_force_multi_hisq_mx) c n
+() p n
+() N
+(/********************************************************************/) c n
+(// HISQ wrapper routine: contribution to the force due to) N
+(//    0\) smearing level 0 \(outer product |X><Y|\)) N
+(//    1\) smearing level 2 + smearing level 2 Naik corrected) N
+(//    2\) reunitarization) N
+(//    3\) smearing level 1) N
+(/********************************************************************/) N
+() p n
+(static) K
+( ) p
+(void) k
+( ) p n
+(fn_fermion_force_multi_hisq_wrapper_mx\( info_t *info, Real eps, Real *residues, ) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (su3_vector **multi_x, ) S
+(int) k
+( nterms,) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (fermion_links_t *fl\)) N
+({) N
+() N
+(  ) S
+(// Get the terms we need from the fermion links structure */) c n
+(  ks_action_paths_hisq *ap = get_action_paths_hisq\(fl\);) p n
+(  hisq_auxiliary_t *aux = get_hisq_auxiliary\(fl\);) N
+(  ) S
+(int) k
+( n_naiks = fermion_links_get_n_naiks\(fl\);) p n
+(  ) S
+(double) k
+( *eps_naik = fermion_links_get_eps_naik\(fl\);) p n
+(  su3_matrix *U_link = aux->U_link;) N
+(  su3_matrix *W_unitlink = aux->W_unitlink;) N
+(  su3_matrix *force_accum_0[4];  ) S
+(// accumulate force, smearing 0) c n
+(  su3_matrix *force_accum_0_naik[4];  ) p
+(// accumulate force, smearing 0, Naik) c n
+(  su3_matrix *force_accum_1[4];  ) p
+(// accumulate force, smearing 1) c n
+(  su3_matrix *force_accum_1u[4];  ) p
+(// accumulate force, reunitarization) c n
+(  su3_matrix *force_accum_2[4];  ) p
+(// accumulate force, smearing 2) c n
+(  su3_matrix *force_final[4];  ) p
+(// accumulate final force, multiply by time step) c n
+(  su3_matrix tmat2;) p n
+(  anti_hermitmat *ahmat_tmp;) N
+(  ) S
+(register) K
+( site *s;) p n
+(  ) S
+(int) k
+( dir;) p n
+(  ) S
+(int) k
+( i;) p n
+(  ) S
+(int) k
+( ipath;) p n
+(  ) S
+(int) k
+( inaik;) p n
+(  ) S
+(int) k
+( n_naik_shift;) p n
+(  ) S
+(int) k
+( num_q_paths_current,n_orders_naik_current;) p n
+(  Real coeff_mult;) N
+(  size_t nflops = 0;) N
+(  ) S
+(double) k
+( dtime = -dclock\(\);) p n
+(  ) S
+(double) k
+( final_flop = 0;) p n
+() N
+() N
+(//  node0_printf\("Entering fn_fermion_force_multi_hisq_wrapper_mx\(\)\\n"\);) c n
+(fermion_force_hisq_multi_cpu.c) (Page 28/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (28/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (29) 29
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(//  for\(i=0;i<n_naiks;i++\)) c n
+(//    node0_printf\("wrapper_mx: orders[%d]=%d\\n",i,n_orders_naik[i]\);) N
+(//  node0_printf\("wrapper_mx: nterms=%d\\n",nterms\);) N
+() p n
+(  ) S
+(int) k
+( num_q_paths_1 = ap->p1.num_q_paths;) p n
+(  Q_path *q_paths_1 = ap->p1.q_paths;) N
+(  ) S
+(int) k
+( num_q_paths_2 = ap->p2.num_q_paths;) p n
+(  Q_path *q_paths_2 = ap->p2.q_paths;) N
+(  ) S
+(int) k
+( num_q_paths_3 = ap->p3.num_q_paths;) p n
+(  Q_path *q_paths_3 = ap->p3.q_paths;) N
+() N
+() N
+(  ) S
+(if) K
+(\( first_force==1 \){) p n
+(    ) S
+(if) K
+(\( q_paths_sorted_1==) p
+(NULL) K
+( \) ) p n
+(      q_paths_sorted_1 = \(Q_path *\)malloc\( num_q_paths_1*) S
+(sizeof) K
+(\(Q_path\) \);) p n
+(    ) S
+(if) K
+(\(netbackdir_table_1==) p
+(NULL) K
+( \) ) p n
+(      netbackdir_table_1 = \() S
+(int) k
+( *\)malloc\( num_q_paths_1*) p
+(sizeof) K
+(\() p
+(int) k
+(\) \);) p n
+(    ) S
+(if) K
+(\( q_paths_sorted_2==) p
+(NULL) K
+( \) ) p n
+(      q_paths_sorted_2 = \(Q_path *\)malloc\( num_q_paths_2*) S
+(sizeof) K
+(\(Q_path\) \);) p n
+(    ) S
+(if) K
+(\(netbackdir_table_2==) p
+(NULL) K
+( \) ) p n
+(      netbackdir_table_2 = \() S
+(int) k
+( *\)malloc\( num_q_paths_2*) p
+(sizeof) K
+(\() p
+(int) k
+(\) \);) p n
+(    ) S
+(if) K
+(\( q_paths_sorted_3==) p
+(NULL) K
+( \) ) p n
+(      q_paths_sorted_3 = \(Q_path *\)malloc\( num_q_paths_3*) S
+(sizeof) K
+(\(Q_path\) \);) p n
+(    ) S
+(if) K
+(\(netbackdir_table_3==) p
+(NULL) K
+( \) ) p n
+(      netbackdir_table_3 = \() S
+(int) k
+( *\)malloc\( num_q_paths_3*) p
+(sizeof) K
+(\() p
+(int) k
+(\) \);) p n
+(    ) S
+(else) K
+({ node0_printf\(") p
+(WARNING: remaking sorted path tables\\n) str
+("\); exit\(0\); }) p n
+(    ) S
+(// make sorted tables) c n
+(    sort_quark_paths\( q_paths_1, q_paths_sorted_1, num_q_paths_1, 8 \);) p n
+(    ) S
+(for) K
+(\( ipath=0; ipath<num_q_paths_1; ipath++ \)) p n
+(      netbackdir_table_1[ipath] = ) N
+() S 8 T (find_backwards_gather\( &\(q_paths_sorted_1[ipath]\) \);) N
+(    sort_quark_paths\( q_paths_2, q_paths_sorted_2, num_q_paths_2, 16 \);) N
+(    ) S
+(for) K
+(\( ipath=0; ipath<num_q_paths_2; ipath++ \)) p n
+(      netbackdir_table_2[ipath] = ) N
+() S 8 T (find_backwards_gather\( &\(q_paths_sorted_2[ipath]\) \);) N
+(    sort_quark_paths\( q_paths_3, q_paths_sorted_3, num_q_paths_3, 16 \);) N
+(    ) S
+(for) K
+(\( ipath=0; ipath<num_q_paths_3; ipath++ \)) p n
+(      netbackdir_table_3[ipath] = ) N
+() S 8 T (find_backwards_gather\( &\(q_paths_sorted_3[ipath]\) \);) N
+(    first_force=0;) N
+(  }) N
+() N
+() N
+(  ) S
+(for) K
+(\(i=XUP;i<=TUP;i++\){) p n
+(     force_accum_0[i] = ) N
+(       \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(     force_accum_0_naik[i] = ) N
+(       \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(     force_accum_1[i] = ) N
+(       \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(     force_accum_1u[i] = ) N
+(       \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(     force_accum_2[i] = ) N
+(       \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(     force_final[i] = ) N
+(       \(su3_matrix *\) malloc\(sites_on_node*) S
+(sizeof) K
+(\(su3_matrix\) \);) p n
+(  }) N
+(  ahmat_tmp = ) N
+(    \(anti_hermitmat *\) special_alloc\(sites_on_node*) S
+(sizeof) K
+(\(anti_hermitmat\) \);) p n
+(fermion_force_hisq_multi_cpu.c) (Page 29/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (29/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (30) 30
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p n
+(  ) S
+(//  node0_printf\("UNITARIZATION_METHOD=%d\\n",ap->umethod\);) c n
+() p n
+(  ) S
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\) {) p n
+(    FORALLFIELDSITES_OMP\(i,  \){) N
+(      clear_su3mat\( &\( force_accum_2[dir][i] \) \);) N
+(    } END_LOOP_OMP) N
+(  }) N
+() N
+(  ) S
+(// loop on different naik epsilons) c n
+(  n_naik_shift = 0;) p n
+(  ) S
+(for) K
+(\( inaik=0; inaik<n_naiks; inaik++ \) {) p n
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(    node0_printf\(") S
+(wrapper_mx: eps_naik[%d]=%f\\n) str
+(",inaik,eps_naik[inaik]\);) p n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+() p n
+(    ) S
+(// smearing level 0) c n
+(    ) p
+(if) K
+(\( 0==inaik \) {) p n
+(      n_orders_naik_current = n_order_naik_total;) N
+(    }) N
+(    ) S
+(else) K
+( {) p n
+(      n_orders_naik_current = n_orders_naik[inaik];) N
+(    }) N
+(    fn_fermion_force_multi_hisq_smearing0\(info, eps, residues+n_naik_shift, ) N
+() S 8 T ( multi_x+n_naik_shift, n_orders_naik_current, force_accum_0, ) N
+() S 8 T (   force_accum_0_naik \);) N
+(    final_flop += info->final_flop;) N
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(#ifdef) K
+( HISQ_FF_DEBUG) p n
+(  {) N
+(  printf\(") S
+(WRAPPER FORCE EXP level 0\\n) str
+("\);) p n
+(  dumpmat\( &\(force_accum_0[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\) \);) N
+(  printf\(") S
+(WRAPPER FORCE ANTIHERMITIAN EXP level 0\\n) str
+("\);) p n
+(  ) S
+(for) K
+(\(dir=XUP; dir<=TUP; dir++\) FORALLFIELDSITES_OMP\(i,  \){) p n
+(    make_anti_hermitian\( &\(force_accum_0[dir][i]\), &\(ahmat_tmp[i]\) \);) N
+(    uncompress_anti_hermitian\( &\(ahmat_tmp[i]\), &\(force_accum_1u[dir][i]\) \);) N
+(  } END_LOOP_OMP) N
+(  dumpmat\( &\(force_accum_1u[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\) \);) N
+(  su3_matrix su3ab, su3ab2;) N
+(  clear_su3mat\( &su3ab \);) N
+(  clear_su3mat\( &su3ab2 \);) N
+(  ) S
+(for) K
+(\(dir=XUP; dir<=TUP; dir++\) FORALLFIELDSITES_OMP\(i,firstprivate\(su3ab,su3ab2) p n
+(\) \){) N
+(    add_su3_matrix\( &su3ab, &\(force_accum_0[dir][i]\), &su3ab \);) N
+(    add_su3_matrix\( &su3ab, &\(force_accum_0_naik[dir][i]\), &su3ab \);) N
+(    add_su3_matrix\( &su3ab2, &\( W_unitlink[4*i+dir] \), &su3ab2 \);) N
+(  } END_LOOP_OMP) N
+(  printf\(") S
+(WRAPPER FORCE EXP level 0 GLOBAL SUM\\n) str
+("\);) p n
+(  dumpmat\( &su3ab \);) N
+(  printf\(") S
+(WRAPPER FORCE EXP W_unitlink GLOBAL SUM\\n) str
+("\);) p n
+(  dumpmat\( &su3ab2 \);) N
+(  }) N
+(#endif) K
+( ) p
+(/* HISQ_FF_DEBUG */) c n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+(    ) p
+(// smearing level 2) c n
+(    ) p
+(if) K
+(\( 0==inaik \) {) p n
+(      q_paths_sorted_current = q_paths_sorted_2;) N
+(      num_q_paths_current = num_q_paths_2;) N
+(      netbackdir_table_current = netbackdir_table_2;) N
+(fermion_force_hisq_multi_cpu.c) (Page 30/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (30/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (31) 31
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(    }) p n
+(    ) S
+(else) K
+( {) p n
+(      q_paths_sorted_current = q_paths_sorted_3;) N
+(      num_q_paths_current = num_q_paths_3;) N
+(      netbackdir_table_current = netbackdir_table_3;) N
+(    }) N
+(    fn_fermion_force_multi_hisq_smearing\( info, eps, residues+n_naik_shift, ) N
+(        multi_x+n_naik_shift, n_orders_naik_current, force_accum_1, ) N
+(        force_accum_0, force_accum_0_naik, W_unitlink, ) N
+() S 8 T (num_q_paths_current, q_paths_sorted_current, ) N
+(        netbackdir_table_current \);) N
+(    final_flop += info->final_flop;) N
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(#ifdef) K
+( HISQ_FF_DEBUG) p n
+(  {) N
+(  printf\(") S
+(WRAPPER FORCE EXP level 2\\n) str
+("\);) p n
+(  dumpmat\( &\(force_accum_1[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\) \);) N
+(  printf\(") S
+(WRAPPER FORCE ANTIHERMITIAN EXP level 2\\n) str
+("\);) p n
+(  ) S
+(for) K
+(\(dir=XUP; dir<=TUP; dir++\) FORALLFIELDSITES_OMP\(i,  \){) p n
+(    make_anti_hermitian\( &\(force_accum_1[dir][i]\), &\(ahmat_tmp[i]\) \);) N
+(    uncompress_anti_hermitian\( &\(ahmat_tmp[i]\), &\(force_accum_1u[dir][i]\) \);) N
+(  } END_LOOP_OMP) N
+(  dumpmat\( &\(force_accum_1u[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\) \);) N
+(  }) N
+(#endif) K
+( ) p
+(/* HISQ_FF_DEBUG */) c n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+(    ) p
+(if) K
+(\( 0==inaik \) {) p n
+(      coeff_mult = 1.0;) N
+(    }) N
+(    ) S
+(else) K
+( {) p n
+(      coeff_mult = eps_naik[inaik];) N
+(    }) N
+(    ) S
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\) {) p n
+(      FORALLFIELDSITES_OMP\(i,  \){) N
+(//        add_su3_matrix\( &\( force_accum_2[dir][i] \), &\( force_accum_1[dir][i] \)) c n
+(, &\( force_accum_2[dir][i] \) \);) N
+(        scalar_mult_add_su3_matrix\( &\( force_accum_2[dir][i] \), ) p n
+(          &\( force_accum_1[dir][i] \), coeff_mult, &\( force_accum_2[dir][i] \) \);) N
+(      } END_LOOP_OMP) N
+(      nflops += 36;) N
+(    }) N
+(    n_naik_shift += n_orders_naik[inaik];) N
+(  }) N
+() N
+() N
+(  ) S
+(switch) K
+(\(ap->umethod\){) p n
+(  ) S
+(case) K
+( UNITARIZE_NONE:) p n
+(    ) S
+(// smearing level 1) c n
+(    fn_fermion_force_multi_hisq_smearing\( info, eps, residues, multi_x, nterms, ) p n
+(        force_accum_1, force_accum_2, ) S
+(NULL) K
+(,) p n
+(        U_link, num_q_paths_1, q_paths_sorted_1, netbackdir_table_1 \);) N
+(    final_flop += info->final_flop;) N
+(    ) S
+(break) K
+(;) p n
+(  ) S
+(case) K
+( UNITARIZE_ROOT:) p n
+(  ) S
+(case) K
+( UNITARIZE_RATIONAL:) p n
+(  ) S
+(case) K
+( UNITARIZE_ANALYTIC:) p n
+(    ) S
+(// reunitarization) c n
+(    fn_fermion_force_multi_hisq_reunit\(info, force_accum_1u, force_accum_2, fl \)) p n
+(;) N
+(fermion_force_hisq_multi_cpu.c) (Page 31/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (31/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (32) 32
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(    final_flop += info->final_flop;) p n
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(#ifdef) K
+( HISQ_FF_DEBUG) p n
+(  {) N
+(  printf\(") S
+(WRAPPER FORCE EXP REUNIT\\n) str
+("\);) p n
+(  dumpmat\( &\(force_accum_1u[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\) \);) N
+(  }) N
+(#endif) K
+( ) p
+(/* HISQ_FF_DEBUG */) c n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+(    ) p
+(// smearing level 1) c n
+(    fn_fermion_force_multi_hisq_smearing\(info, eps, residues, multi_x, ) p n
+(          nterms, force_accum_1, force_accum_1u, ) S
+(NULL) K
+(, ) p n
+() S 8 T (  U_link, num_q_paths_1, q_paths_sorted_1, netbackdir_table_1 \);) N
+(    final_flop += info->final_flop;) N
+(    ) S
+(break) K
+(;) p n
+(  ) S
+(default) K
+(:) p n
+(    node0_printf\(") S
+(Unknown unitarization method\\n) str
+("\);) p n
+(    terminate\(1\);) N
+(  }) N
+() N
+(  ) S
+(// contraction with the link in question should be done here,) c n
+(  ) p
+(// after contributions from all levels of smearing are taken into account) c n
+(  ) p
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\){) p n
+(    FORALLSITES_OMP\(i,s,  \){) N
+(      mult_su3_nn\( &\( s->link[dir] \), &\( force_accum_1[dir][i] \), ) N
+() S 8 T () S 16 T (   &\( force_final[dir][i] \) \);) N
+(    } END_LOOP_OMP) N
+(    nflops += 198;) N
+(  }) N
+() N
+(  ) S
+(// multiply by the time step "eps" twice \(only forward paths are considered\)) c n
+(  ) p
+(// take into account even/odd parity \(it is NOT done in "smearing" routine\)) c n
+(  ) p
+(for) K
+(\(dir=XUP;dir<=TUP;dir++\){) p n
+(    FOREVENFIELDSITES_OMP\(i,  \){) N
+(      scalar_mult_su3_matrix\( &\(force_final[dir][i]\), 2.0*eps, ) N
+() S 8 T () S 16 T () S 24 T (      &\(force_final[dir][i]\) \);) N
+(    } END_LOOP_OMP) N
+(    FORODDFIELDSITES_OMP\(i,  \){) N
+(      scalar_mult_su3_matrix\( &\(force_final[dir][i]\), -2.0*eps, ) N
+() S 8 T () S 16 T () S 24 T (      &\(force_final[dir][i]\) \);) N
+(    } END_LOOP_OMP) N
+(    nflops += 36;) N
+(  }) N
+() N
+(#ifdef) K
+( MILC_GLOBAL_DEBUG) p n
+(#ifdef) K
+( HISQ_FF_DEBUG) p n
+(  {) N
+(  printf\(") S
+(WRAPPER FORCE\\n) str
+("\);) p n
+(  dumpmat\( &\(force_final[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\) \);) N
+(  printf\(") S
+(WRAPPER FORCE ANTIHERMITIAN\\n) str
+("\);) p n
+(  ) S
+(for) K
+(\(dir=XUP; dir<=TUP; dir++\) FORALLFIELDSITES_OMP\(i,  \){) p n
+(    make_anti_hermitian\( &\(force_final[dir][i]\), &\(ahmat_tmp[i]\) \);) N
+(    uncompress_anti_hermitian\( &\(ahmat_tmp[i]\), &\(force_final[dir][i]\) \);) N
+(  } END_LOOP_OMP) N
+(  dumpmat\( &\(force_final[AB_OUT_ON_LINK][AB_OUT_ON_SITE]\) \);) N
+(  }) N
+(#endif) K
+( ) p
+(/* HISQ_FF_DEBUG */) c n
+(#endif) K
+( ) p
+(/* MILC_GLOBAL_DEBUG */) c n
+() p n
+(fermion_force_hisq_multi_cpu.c) (Page 32/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (32/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (33) 33
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(  ) p
+(/* Put antihermitian traceless part into momentum */) c n
+(  ) p
+(// add force to momentum) c n
+(  ) p
+(for) K
+(\(dir=XUP; dir<=TUP; dir++\)FORALLSITES_OMP\(i,s,private\(tmat2\)\){) p n
+(     uncompress_anti_hermitian\( &\(s->mom[dir]\), &tmat2 \);) N
+(     add_su3_matrix\( &tmat2, &\(force_final[dir][i]\), &tmat2 \);) N
+(     make_anti_hermitian\( &tmat2, &\(s->mom[dir]\) \);) N
+(  } END_LOOP_OMP) N
+() N
+(  nflops += 18;) N
+() N
+() N
+(  ) S
+(for) K
+(\(i=XUP;i<=TUP;i++\){) p n
+(     free\( force_accum_0[i] \);) N
+(     free\( force_accum_0_naik[i] \);) N
+(     free\( force_accum_1[i] \);) N
+(     free\( force_accum_1u[i] \);) N
+(     free\( force_accum_2[i] \);) N
+(     free\( force_final[i] \);) N
+(  }) N
+(  free\(ahmat_tmp\);) N
+() N
+(  dtime += dclock\(\);) N
+(  info->final_sec = dtime;) N
+(  info->final_flop = final_flop + \(\() S
+(double) k
+(\)nflops\)*volume/numnodes\(\);) p n
+() N
+(} ) S
+(//fn_fermion_force_multi_hisq_wrapper_mx) c n
+() p n
+(/**********************************************************************/) c n
+(/* Top entry point) N
+(/**********************************************************************/) N
+() p n
+(void) k
+( fermion_force_multi_hisq_cpu\( info_t *info, ) p
+(int) k
+( prec, Real eps, Real *resid) p n
+(ues,) N
+() S 8 T () S 16 T () S 24 T () S 32 T (   su3_vector **multi_x, ) S
+(int) k
+( nterms,) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (   fermion_links_t *fl\){) N
+(  ) S
+(if) K
+(\(prec != MILC_PRECISION\){) p n
+(    node0_printf\(") S
+(fermion_force_multi_hisq_cpu: WARNING, precision requests not supported. Using %d.\\n) str
+() p n
+(",) N
+() S 8 T () S 16 T ( MILC_PRECISION\);) N
+(  }) N
+() N
+(#if) K
+( ) p
+(defined) K
+(\(HISQ_FF_MULTI_WRAPPER\)) p n
+(  fn_fermion_force_multi_hisq_wrapper_mx\( info, eps, residues, multi_x, nterms, ) N
+(fl\);) N
+(#else) K n
+(  fn_fermion_force_multi_hisq_mx\( info, eps, residues, multi_x, nterms, fl\);) p n
+(#endif) K n
+(}) p n
+() N
+(/**********************************************************************/) c n
+(/* LONG COMMENTS) N
+(   Here we have combined "xxx", \(offset "x_off"\)  which is) N
+(\(M_adjoint M\)^{-1} phi, with Dslash times this vector, which goes in the) N
+(odd sites of xxx.  Recall that phi is defined only on even sites.  In) N
+(computing the fermion force, we are looking at) N
+() N
+(< X |  d/dt \( Dslash_eo Dslash_oe \) | X >) N
+(=) N
+(< X | d/dt Dslash_eo | T > + < T | d/dt Dslash_oe | X >) N
+(fermion_force_hisq_multi_cpu.c) (Page 33/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (33/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (34) 34
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(where T = Dslash X.) c n
+() N
+(The subsequent manipulations to get the coefficent of H, the momentum) N
+(matrix, in the simulation time derivative above look the same for) N
+(the two terms, except for a minus sign at the end, if we simply stick) N
+(T, which lives on odd sites, into the odd sites of X) N
+() N
+( Each path in the action contributes terms when any link of the path) N
+(is the link for which we are computing the force.  We get a minus sign) N
+(for odd numbered links in the path, since they connect sites of the) N
+(opposite parity from what it would be for an even numbered link.) N
+(Minus signs from "going around" plaquette - ie KS phases, are supposed) N
+(to be already encoded in the path coefficients.) N
+(Minus signs from paths that go backwards are supposed to be already) N
+(encoded in the path coefficients.) N
+() N
+(Here, for example, are comments reproduced from the force routine for) N
+(the one-link plus Naik plus single-staple-fat-link action:) N
+() N
+( The three link force has three contributions, where the link that) N
+(was differentiated is the first, second, or third link in the 3-link) N
+(path, respectively.  Diagramatically, where "O" represents the momentum,) N
+(the solid line the link corresponding to the momentum, and the dashed) N
+(lines the other links:) N
+( ) N
+() N
+() S 8 T (O______________ x ............ x ...............) N
+(+) N
+() S 8 T (x..............O______________x.................) N
+(+) N
+() S 8 T (x..............x..............O________________) N
+(Think of this as) N
+() S 8 T (< xxx | O | UUUxxx >) S 32 T () S 40 T (\(  xxx, UUUX_p3 \)) N
+(+) N
+() S 8 T (< xxx U | O | UUxxx >) S 32 T () S 40 T (\( X_m1U , UUX_p2 \)) N
+(+) N
+() S 8 T (< xxx U U | O | Uxxx >) S 32 T () S 40 T (\( X_m2UU , UX_p1 \)) N
+(where "U" indicates parallel transport, "X_p3" is xxx displaced) N
+(by +3, etc.) N
+(Note the second contribution has a relative minus sign) N
+(because it effectively contributes to the <odd|even>, or M_adjoint,) N
+(part of the force when we work on an even site. i.e., for M on) N
+(an even site, this three link path begins on an odd site.) N
+() N
+(The staple force has six contributions from each plane containing the) N
+(link direction:) N
+(Call these diagrams A-F:) N
+() N
+() N
+() S 8 T (x...........x) S 24 T () S 32 T (O____________x) N
+() S 8 T () S 16 T (    .) S 24 T () S 32 T () S 40 T (     .) N
+() S 8 T () S 16 T (    .) S 24 T () S 32 T () S 40 T (     .) N
+() S 8 T () S 16 T (    .) S 24 T () S 32 T () S 40 T (     .) N
+() S 8 T () S 16 T (    .) S 24 T () S 32 T () S 40 T (     .) N
+() S 8 T () S 16 T (    .) S 24 T () S 32 T () S 40 T (     .) N
+() S 8 T (O___________x) S 24 T () S 32 T (x............x) N
+() S 8 T (   \(A\)) S 16 T () S 24 T () S 32 T (    \(B\)) N
+() N
+() N
+(fermion_force_hisq_multi_cpu.c) (Page 34/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (34/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (35) 35
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() c n
+() S 8 T (x) S 16 T (    x) S 24 T () S 32 T (O____________x) N
+() S 8 T (.) S 16 T (    .) S 24 T () S 32 T (.) S 40 T (     .) N
+() S 8 T (.) S 16 T (    .) S 24 T () S 32 T (.) S 40 T (     .) N
+() S 8 T (.) S 16 T (    .) S 24 T () S 32 T (.) S 40 T (     .) N
+() S 8 T (.) S 16 T (    .) S 24 T () S 32 T (.) S 40 T (     .) N
+() S 8 T (.) S 16 T (    .) S 24 T () S 32 T (.) S 40 T (     .) N
+() S 8 T (O___________x) S 24 T () S 32 T (x) S 40 T (     x) N
+() S 8 T (   \(C\)) S 16 T () S 24 T () S 32 T (    \(D\)) N
+() N
+() N
+() N
+() S 8 T (x...........x) S 24 T () S 32 T (O____________x) N
+() S 8 T (.) S 16 T () S 24 T () S 32 T (.) N
+() S 8 T (.) S 16 T () S 24 T () S 32 T (.) N
+() S 8 T (.) S 16 T () S 24 T () S 32 T (.) N
+() S 8 T (.) S 16 T () S 24 T () S 32 T (.) N
+() S 8 T (.) S 16 T () S 24 T () S 32 T (.) N
+() S 8 T (O___________x) S 24 T () S 32 T (x............x) N
+() S 8 T (   \(E\)) S 16 T () S 24 T () S 32 T (    \(F\)) N
+() N
+(As with the Naik term, diagrams C and D have a relative minus) N
+(sign because they connect sites of the other parity.) N
+() N
+(Also note an overall minus sign in the staple terms relative to the) N
+(one link term because, with the KS phase factors included, the fat) N
+(link is  "U - w3 * UUU", or the straight link MINUS w3 times the staples.) N
+() N
+(Finally, diagrams B and E get one more minus sign because the link) N
+(we are differentiating is in the opposite direction from the staple) N
+(as a whole.  You can think of this as this "U" being a correction to) N
+(a "U_adjoint", but the derivative of U is iHU and the derivative) N
+(of U_adjoint is -iHU_adjoint.) N
+() N
+(*/) N
+(/* LONG COMMENT on sign conventions) N
+(In most of the program, the KS phases and antiperiodic boundary) N
+(conditions are absorbed into the link matrices.  This greatly simplfies) N
+(multiplying by the fermion matrix.  However, it requires care in) N
+(specifying the path coefficients.  Remember that each time you) N
+(encircle a plaquette, you pick up a net minus sign from the KS phases.) N
+(Thus, when you have more than one path to the same point, you generally) N
+(have a relative minus sign for each plaquette in a surface bounded by) N
+(this path and the basic path for that displacement.) N
+() N
+(Examples:) N
+(  Fat Link:) N
+(    Positive:) S 16 T (X-------X) N
+() N
+(    Negative     --------) N
+() S 8 T ( ) S 16 T (|) S 24 T (|) N
+() S 8 T () S 16 T (|) S 24 T (|) N
+() S 8 T () S 16 T (X) S 24 T (X) N
+() N
+(  Naik connection, smeared) N
+(    Positive:) S 16 T (X-------x-------x-------X) N
+() N
+(    Negative:) S 16 T (---------) N
+() S 8 T () S 16 T (|) S 24 T (|) N
+(fermion_force_hisq_multi_cpu.c) (Page 35/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (35/36) (Tuesday November 19, 2024) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (36) 36
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.850123 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() c 8 T () S 16 T (|) S 24 T (|) N
+() S 8 T () S 16 T (X) S 24 T (x-------x-------X) N
+() N
+(    Positive:) S 16 T (--------x--------) N
+() S 8 T () S 16 T (|) S 24 T () S 32 T (|) N
+() S 8 T () S 16 T (|) S 24 T () S 32 T (|) N
+() S 8 T () S 16 T (X) S 24 T () S 32 T (x-------X) N
+() N
+(    Negative:) S 16 T (--------x-------x-------x) N
+() S 8 T () S 16 T (|) S 24 T () S 32 T () S 40 T (|) N
+() S 8 T () S 16 T (|) S 24 T () S 32 T () S 40 T (|) N
+() S 8 T () S 16 T (X) S 24 T () S 32 T () S 40 T (X) N
+(*/) N
+() p n
+() N
+() N
+(/* Comment on acceptable actions.) c n
+(   We construct the backwards part of dslash by reversing all the) N
+(   paths in the forwards part.  So, for example, in the p4 action) N
+(   the forwards part includes +X+Y+Y) N
+() N
+() S 8 T () S 16 T (X) N
+() S 8 T () S 16 T (|) N
+() S 8 T () S 16 T (|) N
+() S 8 T () S 16 T (X) N
+() S 8 T () S 16 T (|) N
+() S 8 T () S 16 T (|) N
+() S 8 T (X---->--X) N
+() N
+(  so we put -X-Y-Y in the backwards part.  But this isn't the adjoint) N
+(  of U_x\(0\)U_y\(+x\)U_y\(+x+y\).  Since much of the code assumes that the) N
+(  backwards hop is the adjoint of the forwards \(for example, in) N
+(  preventing going to 8 flavors\), the code only works for actions) N
+(  where this is true.  Roughly, this means that the fat link must) N
+(  be symmetric about reflection around its midpoint.  Equivalently,) N
+(  the paths in the backwards part of Dslash are translations of the) N
+(  paths in the forwards part.  In the case of the "P4" or knight's move) N
+(  action, this means that we have to have both paths) N
+(   +X+Y+Y and +Y+Y+X to the same point, with the same coefficients.) N
+(  Alternatively, we could just use the symmetric path +Y+X+Y.) N
+(*/) N
+(fermion_force_hisq_multi_cpu.c) (Page 36/36) (Oct 22, 24 16:07) title
+border
+grestore
+(Printed by Yannis Trimis) rhead
+() (Tuesday November 19, 2024) (36/36) footer
+end % of iso1dict
+pagesave restore
+showpage
+
+%%Trailer
+end
+%%EOF
