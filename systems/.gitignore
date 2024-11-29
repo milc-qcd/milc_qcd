@@ -1,0 +1,5 @@
+sample.out
+slurm*.out
+ks_spectrum_hisq.fpi.2.corrfile_t0.test-out
+make_ks_spectrum_hisq.log
+cmake_quda.log
