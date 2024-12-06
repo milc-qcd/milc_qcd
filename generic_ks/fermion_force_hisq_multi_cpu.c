@@ -1577,7 +1577,7 @@ fn_fermion_force_multi_hisq_wrapper_mx( info_t *info, Real eps, Real *residues,
 					fermion_links_t *fl)
 {
 
-  node0_printf("INSIDE fn_fermion_force_multi_hisq_wrapper_mx()\n");
+  node0_printf("\n\n INSIDE fn_fermion_force_multi_hisq_wrapper_mx()\n\n"); // YT 20241203
 
   // Get the terms we need from the fermion links structure */
   ks_action_paths_hisq *ap = get_action_paths_hisq(fl);
