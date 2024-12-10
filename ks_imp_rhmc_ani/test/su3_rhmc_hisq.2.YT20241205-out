@@ -1,0 +1,6706 @@
+SU3 with improved KS action
+Microcanonical simulation with refreshing
+Rational function hybrid Monte Carlo algorithm
+MIMD version 01fa5-dirty
+Machine = Scalar processor, with 1 nodes
+Host(0) = ytdevice
+Username = trimis
+start: Thu Dec  5 15:38:59 2024
+
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+KS_MULTIFF=FNMAT
+VECLENGTH=4
+INT_ALG=INT_3G1F
+HISQ_REUNIT_ALLOW_SVD
+HISQ_REUNIT_SVD_REL_ERROR = 1e-08
+HISQ_REUNIT_SVD_ABS_ERROR = 1e-08
+HISQ_FORCE_FILTER = 5e-05
+HISQ_FF_MULTI_WRAPPER is ON
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 6
+ny 6
+nz 6
+nt 6
+iseed 86658
+n_pseudo 4
+load_rhmc_params rationals.sample.su3_rhmc_hisq
+beta 7.4
+n_dyn_masses 2
+dyn_mass 0.0018 0.018 
+dyn_flavors 2 1 
+u0 0.89
+n_pseudo 4
+Loading rational function parameters for phi field 0
+naik_term_epsilon 0
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 75
+# Degree of the approximation is (9,9)
+# Approximating the function (x+4*0.001800^2)^(2/4) (x+4*0.018000^2)^(1/4) (x+4*0.200000^2)^(-3/4) (x+4*1.000000^2)^(0/4)
+# Converged at 2193 iterations, error = 7.142803e-07
+# Rational function for MD
+y_MD -2 -1 3 0 
+z_MD 4 4 4 4 
+m_MD 0.0018 0.018 0.2 1 
+order_MD 9
+Loading order 9 rational function approximation for MD:
+f(x) = (x+4*0.001800^2)^(-2/4) (x+4*0.018000^2)^(-1/4)
+       (x+4*0.200000^2)^(3/4) (x+4*1.000000^2)^(0/4)
+res_MD 1
+res_MD 0.00204485
+res_MD 0.00290467
+res_MD 0.00501695
+res_MD 0.00952897
+res_MD 0.0212092
+res_MD 0.0199943
+res_MD 0.0226512
+res_MD 0.0237042
+res_MD 0.0126097
+pole_MD 99.9
+pole_MD 1.43113e-05
+pole_MD 2.87352e-05
+pole_MD 8.40811e-05
+pole_MD 0.000281161
+pole_MD 0.000954202
+pole_MD 0.0029716
+pole_MD 0.0107592
+pole_MD 0.036199
+pole_MD 0.0989838
+# CHECK: f(1.000000e-15) = 3.703701e+02 = 6.085806e+01?
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 75
+# Degree of the approximation is (11,11)
+# Approximating the function (x+4*0.001800^2)^(2/8) (x+4*0.018000^2)^(1/8) (x+4*0.200000^2)^(-3/8) (x+4*1.000000^2)^(0/8)
+# Converged at 1854 iterations, error = 2.609214e-08
+# Rational function for GR
+y_GR 2 1 -3 0 
+z_GR 8 8 8 8 
+m_GR 0.0018 0.018 0.2 1 
+order_GR 11
+Loading order 11 rational function approximation for GR:
+f(x) = (x+4*0.001800^2)^(2/8) (x+4*0.018000^2)^(1/8)
+       (x+4*0.200000^2)^(-3/8) (x+4*1.000000^2)^(0/8)
+res_GR 1
+res_GR -6.1182e-08
+res_GR -3.19729e-07
+res_GR -1.28897e-06
+res_GR -4.91642e-06
+res_GR -1.78857e-05
+res_GR -8.96491e-05
+res_GR -0.000423832
+res_GR -0.00175458
+res_GR -0.00654152
+res_GR -0.0192293
+res_GR -0.0317711
+pole_GR 99.9
+pole_GR 1.60773e-05
+pole_GR 3.10382e-05
+pole_GR 7.66803e-05
+pole_GR 0.000210211
+pole_GR 0.000600022
+pole_GR 0.00186906
+pole_GR 0.00519622
+pole_GR 0.0143729
+pole_GR 0.0377859
+pole_GR 0.0865726
+pole_GR 0.146356
+# CHECK: f(1.000000e-15) = 5.196153e-02 = 1.281861e-01?
+# Rational function for FA
+y_FA -2 -1 3 0 
+z_FA 8 8 8 8 
+m_FA 0.0018 0.018 0.2 1 
+order_FA 11
+Loading order 11 rational function approximation for FA:
+f(x) = (x+4*0.001800^2)^(-2/8) (x+4*0.018000^2)^(-1/8)
+       (x+4*0.200000^2)^(3/8) (x+4*1.000000^2)^(0/8)
+res_FA 1
+res_FA 3.67927e-05
+res_FA 8.34287e-05
+res_FA 0.000179646
+res_FA 0.000397614
+res_FA 0.000916432
+res_FA 0.00260832
+res_FA 0.00468862
+res_FA 0.00831646
+res_FA 0.0138142
+res_FA 0.0178882
+res_FA 0.0109047
+pole_FA 99.9
+pole_FA 1.45263e-05
+pole_FA 2.55335e-05
+pole_FA 6.03301e-05
+pole_FA 0.000162506
+pole_FA 0.000460594
+pole_FA 0.00131886
+pole_FA 0.00353418
+pole_FA 0.00984542
+pole_FA 0.0265604
+pole_FA 0.0650361
+pole_FA 0.126233
+Loading rational function parameters for phi field 1
+# CHECK: f(1.000000e-15) = 1.924501e+01 = 7.801158e+00?
+naik_term_epsilon 0
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (7,7)
+# Approximating the function (x+4*0.200000^2)^(1/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+# Converged at 327 iterations, error = 2.398230e-07
+# Rational function for MD
+y_MD -1 0 0 0 
+z_MD 4 4 4 4 
+m_MD 0.2 1 1 1 
+order_MD 7
+Loading order 7 rational function approximation for MD:
+f(x) = (x+4*0.200000^2)^(-1/4) (x+4*1.000000^2)^(0/4)
+       (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+res_MD 0.14923
+res_MD 0.046061
+res_MD 0.1138
+res_MD 0.274536
+res_MD 0.687619
+res_MD 1.83201
+res_MD 5.87481
+res_MD 38.0862
+pole_MD 99.9
+pole_MD 0.185283
+pole_MD 0.375399
+pole_MD 1.05812
+pole_MD 3.40313
+pole_MD 11.7405
+pole_MD 45.73
+pole_MD 283.916
+# CHECK: f(1.000000e-15) = 1.581138e+00 = 1.581139e+00?
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (9,9)
+# Approximating the function (x+4*0.200000^2)^(1/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+# Converged at 422 iterations, error = 1.700228e-09
+# Rational function for GR
+y_GR 1 0 0 0 
+z_GR 8 8 8 8 
+m_GR 0.2 1 1 1 
+order_GR 9
+Loading order 9 rational function approximation for GR:
+f(x) = (x+4*0.200000^2)^(1/8) (x+4*1.000000^2)^(0/8)
+       (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+res_GR 2.73277
+res_GR -0.00512886
+res_GR -0.0204789
+res_GR -0.0639514
+res_GR -0.192686
+res_GR -0.585195
+res_GR -1.85803
+res_GR -6.68946
+res_GR -34.4017
+res_GR -617.898
+pole_GR 99.9
+pole_GR 0.186425
+pole_GR 0.315826
+pole_GR 0.679106
+pole_GR 1.64209
+pole_GR 4.20254
+pole_GR 11.2153
+pole_GR 32.0724
+pole_GR 110.326
+pole_GR 764.415
+# CHECK: f(1.000000e-15) = 7.952707e-01 = 7.952707e-01?
+# Rational function for FA
+y_FA -1 0 0 0 
+z_FA 8 8 8 8 
+m_FA 0.2 1 1 1 
+order_FA 9
+Loading order 9 rational function approximation for FA:
+f(x) = (x+4*0.200000^2)^(-1/8) (x+4*1.000000^2)^(0/8)
+       (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+res_FA 0.365929
+res_FA 0.0109316
+res_FA 0.0292903
+res_FA 0.0678756
+res_FA 0.157093
+res_FA 0.370027
+res_FA 0.906451
+res_FA 2.45234
+res_FA 8.71503
+res_FA 75.8971
+pole_FA 99.9
+pole_FA 0.178875
+pole_FA 0.290944
+pole_FA 0.612037
+pole_FA 1.46486
+pole_FA 3.72845
+pole_FA 9.8933
+pole_FA 27.9493
+pole_FA 92.735
+pole_FA 546.062
+Loading rational function parameters for phi field 2
+# CHECK: f(1.000000e-15) = 1.257433e+00 = 1.257433e+00?
+naik_term_epsilon 0
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (7,7)
+# Approximating the function (x+4*0.200000^2)^(1/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+# Converged at 327 iterations, error = 2.398230e-07
+# Rational function for MD
+y_MD -1 0 0 0 
+z_MD 4 4 4 4 
+m_MD 0.2 1 1 1 
+order_MD 7
+Loading order 7 rational function approximation for MD:
+f(x) = (x+4*0.200000^2)^(-1/4) (x+4*1.000000^2)^(0/4)
+       (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+res_MD 0.14923
+res_MD 0.046061
+res_MD 0.1138
+res_MD 0.274536
+res_MD 0.687619
+res_MD 1.83201
+res_MD 5.87481
+res_MD 38.0862
+pole_MD 99.9
+pole_MD 0.185283
+pole_MD 0.375399
+pole_MD 1.05812
+pole_MD 3.40313
+pole_MD 11.7405
+pole_MD 45.73
+pole_MD 283.916
+# CHECK: f(1.000000e-15) = 1.581138e+00 = 1.581139e+00?
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (9,9)
+# Approximating the function (x+4*0.200000^2)^(1/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+# Converged at 422 iterations, error = 1.700228e-09
+# Rational function for GR
+y_GR 1 0 0 0 
+z_GR 8 8 8 8 
+m_GR 0.2 1 1 1 
+order_GR 9
+Loading order 9 rational function approximation for GR:
+f(x) = (x+4*0.200000^2)^(1/8) (x+4*1.000000^2)^(0/8)
+       (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+res_GR 2.73277
+res_GR -0.00512886
+res_GR -0.0204789
+res_GR -0.0639514
+res_GR -0.192686
+res_GR -0.585195
+res_GR -1.85803
+res_GR -6.68946
+res_GR -34.4017
+res_GR -617.898
+pole_GR 99.9
+pole_GR 0.186425
+pole_GR 0.315826
+pole_GR 0.679106
+pole_GR 1.64209
+pole_GR 4.20254
+pole_GR 11.2153
+pole_GR 32.0724
+pole_GR 110.326
+pole_GR 764.415
+# CHECK: f(1.000000e-15) = 7.952707e-01 = 7.952707e-01?
+# Rational function for FA
+y_FA -1 0 0 0 
+z_FA 8 8 8 8 
+m_FA 0.2 1 1 1 
+order_FA 9
+Loading order 9 rational function approximation for FA:
+f(x) = (x+4*0.200000^2)^(-1/8) (x+4*1.000000^2)^(0/8)
+       (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+res_FA 0.365929
+res_FA 0.0109316
+res_FA 0.0292903
+res_FA 0.0678756
+res_FA 0.157093
+res_FA 0.370027
+res_FA 0.906451
+res_FA 2.45234
+res_FA 8.71503
+res_FA 75.8971
+pole_FA 99.9
+pole_FA 0.178875
+pole_FA 0.290944
+pole_FA 0.612037
+pole_FA 1.46486
+pole_FA 3.72845
+pole_FA 9.8933
+pole_FA 27.9493
+pole_FA 92.735
+pole_FA 546.062
+Loading rational function parameters for phi field 3
+# CHECK: f(1.000000e-15) = 1.257433e+00 = 1.257433e+00?
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (7,7)
+# Approximating the function (x+4*0.200000^2)^(1/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+# Converged at 327 iterations, error = 2.398230e-07
+naik_term_epsilon 0
+# Rational function for MD
+y_MD -1 0 0 0 
+z_MD 4 4 4 4 
+m_MD 0.2 1 1 1 
+order_MD 7
+Loading order 7 rational function approximation for MD:
+f(x) = (x+4*0.200000^2)^(-1/4) (x+4*1.000000^2)^(0/4)
+       (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+res_MD 0.14923
+res_MD 0.046061
+res_MD 0.1138
+res_MD 0.274536
+res_MD 0.687619
+res_MD 1.83201
+res_MD 5.87481
+res_MD 38.0862
+pole_MD 99.9
+pole_MD 0.185283
+pole_MD 0.375399
+pole_MD 1.05812
+pole_MD 3.40313
+pole_MD 11.7405
+pole_MD 45.73
+pole_MD 283.916
+# CHECK: f(1.000000e-15) = 1.581138e+00 = 1.581139e+00?
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (9,9)
+# Approximating the function (x+4*0.200000^2)^(1/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+# Converged at 422 iterations, error = 1.700228e-09
+# Rational function for GR
+y_GR 1 0 0 0 
+z_GR 8 8 8 8 
+m_GR 0.2 1 1 1 
+order_GR 9
+Loading order 9 rational function approximation for GR:
+f(x) = (x+4*0.200000^2)^(1/8) (x+4*1.000000^2)^(0/8)
+       (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+res_GR 2.73277
+res_GR -0.00512886
+res_GR -0.0204789
+res_GR -0.0639514
+res_GR -0.192686
+res_GR -0.585195
+res_GR -1.85803
+res_GR -6.68946
+res_GR -34.4017
+res_GR -617.898
+pole_GR 99.9
+pole_GR 0.186425
+pole_GR 0.315826
+pole_GR 0.679106
+pole_GR 1.64209
+pole_GR 4.20254
+pole_GR 11.2153
+pole_GR 32.0724
+pole_GR 110.326
+pole_GR 764.415
+# CHECK: f(1.000000e-15) = 7.952707e-01 = 7.952707e-01?
+# Rational function for FA
+y_FA -1 0 0 0 
+z_FA 8 8 8 8 
+m_FA 0.2 1 1 1 
+order_FA 9
+Loading order 9 rational function approximation for FA:
+f(x) = (x+4*0.200000^2)^(-1/8) (x+4*1.000000^2)^(0/8)
+       (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+res_FA 0.365929
+res_FA 0.0109316
+res_FA 0.0292903
+res_FA 0.0678756
+res_FA 0.157093
+res_FA 0.370027
+res_FA 0.906451
+res_FA 2.45234
+res_FA 8.71503
+res_FA 75.8971
+pole_FA 99.9
+pole_FA 0.178875
+pole_FA 0.290944
+pole_FA 0.612037
+pole_FA 1.46486
+pole_FA 3.72845
+pole_FA 9.8933
+pole_FA 27.9493
+pole_FA 92.735
+pole_FA 546.062
+Maximum rational func order is 11
+Naik term correction structure of multi_x:
+n_naiks 1
+n_pseudo_naik[0]=4
+n_orders_naik[0]=30
+eps_naik[0]=0.000000
+n_order_naik_total 30
+LAYOUT = Hypercubes, options = with fixed input-parameter node_geometry
+ON EACH NODE (RANK) 6 x 6 x 6 x 6
+Mallocing 2.8 MBytes per node for lattice
+Aggregate time to setup 4.556894e-03
+
+
+warms 0
+trajecs 1
+traj_between_meas 1
+microcanonical_time_step 0.02
+steps_per_trajectory 10
+cgresid_md_fa_gr 0.0005 0.0001 0.0001 
+max_multicg_md_fa_gr 2500 2500 2500 
+cgprec_md_fa_gr 2 2 2 
+cgresid_md_fa_gr 5e-06 1e-06 1e-06 
+max_multicg_md_fa_gr 2500 2500 2500 
+cgprec_md_fa_gr 2 2 2 
+cgresid_md_fa_gr 5e-06 1e-06 1e-06 
+max_multicg_md_fa_gr 2500 2500 2500 
+cgprec_md_fa_gr 2 2 2 
+cgresid_md_fa_gr 5e-06 1e-06 1e-06 
+max_multicg_md_fa_gr 2500 2500 2500 
+cgprec_md_fa_gr 2 2 2 
+prec_ff 2
+number_of_pbp_masses 2
+max_cg_prop 500
+max_cg_prop_restarts 5
+npbp_reps 1
+prec_pbp 1
+mass 0.0018
+naik_term_epsilon 0
+error_for_propagator 1e-06
+rel_error_for_propagator 0
+mass 0.018
+naik_term_epsilon 0
+error_for_propagator 1e-06
+rel_error_for_propagator 0
+reload_serial ../../binary_samples/lat.sample.l6666.hisq
+forget 
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666.hisq
+Time stamp Mon Nov 19 18:42:42 2007
+Checksums c9687fe2 b52bd146 OK
+Time to reload gauge configuration = 5.970001e-04
+CHECK PLAQ: 1.8403954419120214e+00 1.8597505785271828e+00
+CHECK NERSC LINKTR: 1.6866463634818848e-01 CKSUM: 8e705331
+Reunitarized for double precision. Max deviation 1.95e-07 changed to 4.44e-16
+Time to check unitarity = 4.911423e-04
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarization group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+Calling load_fatlinks (cpu)
+Combined fattening and long-link calculation time: 0.013331
+Symanzik 1x1 + 1x2 + 1x1x1 action with HISQ quark loops
+gauge_action: total_dyn_flavors = 3
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -4.181006e-02     12
+                    2 0      5.149203e-04     16
+WARMUPS COMPLETED
+Omelyan integration, 3 gauge for one 1 fermion step, steps= 10 eps= 2.000000e-02 alpha= 1.000000e-01 beta= 1.000000e-01
+GRSOURCE: sum = 1.9636750556e+03
+CONGRAD5: time = 9.736061e-03 (multicg_offset D) masses = 11 iters = 40 mflops = 7.294613e+03
+ OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.00200482
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.620220e-04 (fn D) masses = 1 iters = 1 mflops = 5.871079e+03
+ OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0027856
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.200603e-04 (fn D) masses = 1 iters = 1 mflops = 6.990591e+03
+ OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00437836
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.179146e-04 (fn D) masses = 1 iters = 1 mflops = 7.059427e+03
+ OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00724933
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.357960e-04 (fn D) masses = 1 iters = 1 mflops = 6.524081e+03
+ OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0122477
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.419949e-04 (fn D) masses = 1 iters = 1 mflops = 6.356962e+03
+ OK converged final_rsq= 8.5e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0216163
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.720356e-04 (fn D) masses = 1 iters = 1 mflops = 5.654966e+03
+ OK converged final_rsq= 8.1e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0360424
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 3.910065e-04 (fn D) masses = 1 iters = 1 mflops = 3.934339e+03
+ OK converged final_rsq= 7.2e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0599436
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 4.160404e-04 (fn D) masses = 1 iters = 1 mflops = 3.697602e+03
+ OK converged final_rsq= 5.3e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.097193
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 4.320145e-04 (fn D) masses = 1 iters = 1 mflops = 3.560881e+03
+ OK converged final_rsq= 2.4e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.147116
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 3.850460e-04 (fn D) masses = 1 iters = 1 mflops = 3.995242e+03
+ OK converged final_rsq= 5.3e-10 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.191282
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 3.399849e-04 (fn D) masses = 1 iters = 1 mflops = 4.524766e+03
+ OK converged final_rsq= 9.6e-11 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+GRSOURCETIME: time = 2.260208e-04
+GRSOURCE: sum = 1.9027332579e+03
+CONGRAD5: time = 1.044798e-02 (multicg_offset D) masses = 9 iters = 47 mflops = 7.812236e+03
+ OK converged final_rsq= 9.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 47
+Refining solution for mass 0.215885
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.231598e-04 (fn D) masses = 1 iters = 1 mflops = 6.893500e+03
+ OK converged final_rsq= 9.8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.280992
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.131462e-04 (fn D) masses = 1 iters = 1 mflops = 7.217356e+03
+ OK converged final_rsq= 2.2e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.412039
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.300739e-04 (fn D) masses = 1 iters = 1 mflops = 6.686338e+03
+ OK converged final_rsq= 3.6e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.64072
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.3e-25 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.025
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2.3e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.67446
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.2e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.83163
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 8.7e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 5.25182
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.408028e-04 (fn D) masses = 1 iters = 1 mflops = 6.388432e+03
+ OK converged final_rsq= 3e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 13.824
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 2.6e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+GRSOURCETIME: time = 1.239777e-04
+GRSOURCE: sum = 1.9328576806e+03
+CONGRAD5: time = 9.967089e-03 (multicg_offset D) masses = 9 iters = 47 mflops = 8.189160e+03
+ OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 47
+Refining solution for mass 0.215885
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.131462e-04 (fn D) masses = 1 iters = 1 mflops = 7.217356e+03
+ OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.280992
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.129078e-04 (fn D) masses = 1 iters = 1 mflops = 7.225438e+03
+ OK converged final_rsq= 2.1e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.412039
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.410412e-04 (fn D) masses = 1 iters = 1 mflops = 6.382113e+03
+ OK converged final_rsq= 3.5e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.64072
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 2.3e-25 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.025
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.8e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.67446
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.2e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.83163
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.140999e-04 (fn D) masses = 1 iters = 1 mflops = 7.185207e+03
+ OK converged final_rsq= 5.9e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 5.25182
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.229214e-04 (fn D) masses = 1 iters = 1 mflops = 6.900873e+03
+ OK converged final_rsq= 7.2e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 13.824
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 5.3e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+GRSOURCETIME: time = 9.012222e-05
+GRSOURCE: sum = 1.9363357347e+03
+CONGRAD5: time = 9.922028e-03 (multicg_offset D) masses = 9 iters = 47 mflops = 8.226351e+03
+ OK converged final_rsq= 7.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 47
+Refining solution for mass 0.215885
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 7.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.280992
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.8e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.412039
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.419949e-04 (fn D) masses = 1 iters = 1 mflops = 6.356962e+03
+ OK converged final_rsq= 3e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.64072
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2e-25 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.025
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 2.4e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.67446
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.140999e-04 (fn D) masses = 1 iters = 1 mflops = 7.185207e+03
+ OK converged final_rsq= 1.4e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.83163
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.391338e-04 (fn D) masses = 1 iters = 1 mflops = 6.433017e+03
+ OK converged final_rsq= 1.1e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 5.25182
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 4.9e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 13.824
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 2.7e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+GRSOURCETIME: time = 7.891655e-05
+PLAQUETTE ACTION: -3.548588e+04
+CONGRAD5: time = 8.857965e-03 (multicg_offset D) masses = 11 iters = 40 mflops = 8.017733e+03
+ OK converged final_rsq= 6.8e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.00190567
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.160072e-04 (fn D) masses = 1 iters = 1 mflops = 7.121762e+03
+ OK converged final_rsq= 6.8e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00252653
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.131462e-04 (fn D) masses = 1 iters = 1 mflops = 7.217356e+03
+ OK converged final_rsq= 6.8e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00388362
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.419949e-04 (fn D) masses = 1 iters = 1 mflops = 6.356962e+03
+ OK converged final_rsq= 6.8e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00637389
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 6.8e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0107307
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 6.7e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0181581
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 6.5e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0297245
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 6e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.049612
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.398491e-04 (fn D) masses = 1 iters = 1 mflops = 6.413833e+03
+ OK converged final_rsq= 4.9e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0814868
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.8e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.127511
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 8.2e-10 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.177647
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.4e-10 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+CONGRAD5: time = 9.902954e-03 (multicg_offset D) masses = 9 iters = 47 mflops = 8.242195e+03
+ OK converged final_rsq= 7.4e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 47
+Refining solution for mass 0.211468
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.140999e-04 (fn D) masses = 1 iters = 1 mflops = 7.185207e+03
+ OK converged final_rsq= 7.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.269696
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.460480e-04 (fn D) masses = 1 iters = 1 mflops = 6.252244e+03
+ OK converged final_rsq= 2.7e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.391164
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.129078e-04 (fn D) masses = 1 iters = 1 mflops = 7.225438e+03
+ OK converged final_rsq= 9.9e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.605157
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2.2e-24 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.96546
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 2.5e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.57268
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.408028e-04 (fn D) masses = 1 iters = 1 mflops = 6.388432e+03
+ OK converged final_rsq= 1.2e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.64336
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 5.9e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 4.81495
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 9.9e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 11.684
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.6e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+CONGRAD5: time = 1.000214e-02 (multicg_offset D) masses = 9 iters = 47 mflops = 8.160465e+03
+ OK converged final_rsq= 7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 47
+Refining solution for mass 0.211468
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.439022e-04 (fn D) masses = 1 iters = 1 mflops = 6.307249e+03
+ OK converged final_rsq= 7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.269696
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2.6e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.391164
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 9.8e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.605157
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.2e-24 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.96546
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.6e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.57268
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.400875e-04 (fn D) masses = 1 iters = 1 mflops = 6.407464e+03
+ OK converged final_rsq= 1.3e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.64336
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 6.5e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 4.81495
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 3.4e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 11.684
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 2.7e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+CONGRAD5: time = 9.956121e-03 (multicg_offset D) masses = 9 iters = 47 mflops = 8.198180e+03
+ OK converged final_rsq= 6.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 47
+Refining solution for mass 0.211468
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.298355e-04 (fn D) masses = 1 iters = 1 mflops = 6.693274e+03
+ OK converged final_rsq= 6.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.269696
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.231598e-04 (fn D) masses = 1 iters = 1 mflops = 6.893500e+03
+ OK converged final_rsq= 2.2e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.391164
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 8.4e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.605157
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.9e-24 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.96546
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.4e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.57268
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.400875e-04 (fn D) masses = 1 iters = 1 mflops = 6.407464e+03
+ OK converged final_rsq= 1.1e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.64336
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 5.7e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 4.81495
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 3.9e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 11.684
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 3.5e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+ACTION: g,h,f = 1.91689566918234e+04  -8.03775303465063e+01  7.73560172845149e+03  2.68241808899283e+04
+DG = 1.916896e+04, DH = -8.037753e+01, DF = 7.735602e+03, D = 2.682418e+04
+ACTIONTIME: time = 5.430698e-02
+LINK_UPDATE: time = 2.041101e-03  mflops = 3.565886e+03
+GFTIME:   time = 2.970600e-02 (Symanzik1) mflops = 6.675189e+03
+LINK_UPDATE: time = 1.947880e-03  mflops = 3.736543e+03
+Calling load_fatlinks (cpu)
+Combined fattening and long-link calculation time: 0.011535
+FLTIME: time = 2.405310e-02 (HISQ MILC D) mflops = 6.905147e+03
+CONGRAD5: time = 6.928921e-03 (multicg_offset D) masses = 9 iters = 33 mflops = 8.271002e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 33
+Refining solution for mass 0.00189152
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.450943e-04 (fn D) masses = 1 iters = 1 mflops = 6.276572e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00268026
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00458479
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00838393
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0154451
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0272562
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.400875e-04 (fn D) masses = 1 iters = 1 mflops = 6.407464e+03
+ OK converged final_rsq= 1.6e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0518633
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0951302
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 6.4e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.157308
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 1.3e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.332968e-03 (multicg_offset D) masses = 7 iters = 41 mflops = 8.353346e+03
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 41
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.160072e-04 (fn D) masses = 1 iters = 1 mflops = 7.121762e+03
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.7e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 7.5e-19 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 3.8e-30 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.410412e-04 (fn D) masses = 1 iters = 1 mflops = 6.382113e+03
+ OK converged final_rsq= 1.2e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 5.2e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.7e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.229017e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.252553e+03
+ OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.150536e-04 (fn D) masses = 1 iters = 1 mflops = 7.153344e+03
+ OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.408028e-04 (fn D) masses = 1 iters = 1 mflops = 6.388432e+03
+ OK converged final_rsq= 2.6e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.7e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.7e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 4.8e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.429485e-04 (fn D) masses = 1 iters = 1 mflops = 6.332008e+03
+ OK converged final_rsq= 2.7e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.201122e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.280623e+03
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.140999e-04 (fn D) masses = 1 iters = 1 mflops = 7.185207e+03
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.121925e-04 (fn D) masses = 1 iters = 1 mflops = 7.249793e+03
+ OK converged final_rsq= 2.2e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.4e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.410412e-04 (fn D) masses = 1 iters = 1 mflops = 6.382113e+03
+ OK converged final_rsq= 1.5e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 4.9e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.6e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE fn_fermion_force_multi_hisq_wrapper_mx()
+
+FFTIME:  time = 4.506881e-01 (HISQ MILC D) terms = 30 flops/site = 2152598 mflops = 6.190017e+03
+LINK_UPDATE: time = 2.012014e-03  mflops = 3.617437e+03
+GFTIME:   time = 2.968693e-02 (Symanzik1) mflops = 6.679478e+03
+LINK_UPDATE: time = 1.943111e-03  mflops = 3.745712e+03
+GFTIME:   time = 2.963781e-02 (Symanzik1) mflops = 6.690547e+03
+LINK_UPDATE: time = 1.936913e-03  mflops = 3.757700e+03
+GFTIME:   time = 2.974105e-02 (Symanzik1) mflops = 6.667323e+03
+LINK_UPDATE: time = 1.940966e-03  mflops = 3.749853e+03
+GFTIME:   time = 2.961397e-02 (Symanzik1) mflops = 6.695933e+03
+LINK_UPDATE: time = 1.935959e-03  mflops = 3.759551e+03
+Calling load_fatlinks (cpu)
+Combined fattening and long-link calculation time: 0.011556
+FLTIME: time = 2.433300e-02 (HISQ MILC D) mflops = 6.825717e+03
+CONGRAD5: time = 6.871939e-03 (multicg_offset D) masses = 9 iters = 33 mflops = 8.339585e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 33
+Refining solution for mass 0.00189152
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.129078e-04 (fn D) masses = 1 iters = 1 mflops = 7.225438e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00268026
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00458479
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.450943e-04 (fn D) masses = 1 iters = 1 mflops = 6.276572e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00838393
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0154451
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0272562
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 1.6e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0518633
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.379417e-04 (fn D) masses = 1 iters = 1 mflops = 6.465246e+03
+ OK converged final_rsq= 1.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0951302
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 6.5e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.157308
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 1.3e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.172989e-03 (multicg_offset D) masses = 7 iters = 41 mflops = 8.516855e+03
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 41
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.379417e-04 (fn D) masses = 1 iters = 1 mflops = 6.465246e+03
+ OK converged final_rsq= 1.6e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 7.3e-19 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 3.7e-30 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.2e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 4.5e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.758503e-04 (fn D) masses = 1 iters = 1 mflops = 5.576764e+03
+ OK converged final_rsq= 2.6e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.177996e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.304040e+03
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.129078e-04 (fn D) masses = 1 iters = 1 mflops = 7.225438e+03
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.6e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.7e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 1.7e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.391338e-04 (fn D) masses = 1 iters = 1 mflops = 6.433017e+03
+ OK converged final_rsq= 1.4e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 5.1e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 2.4e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 7.988930e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.500563e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.2e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.369881e-04 (fn D) masses = 1 iters = 1 mflops = 6.491264e+03
+ OK converged final_rsq= 1.4e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 1.5e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 5.8e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 5.2e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE fn_fermion_force_multi_hisq_wrapper_mx()
+
+FFTIME:  time = 4.395020e-01 (HISQ MILC D) terms = 30 flops/site = 2152598 mflops = 6.347564e+03
+LINK_UPDATE: time = 2.043962e-03  mflops = 3.560895e+03
+GFTIME:   time = 2.963018e-02 (Symanzik1) mflops = 6.692270e+03
+LINK_UPDATE: time = 1.938105e-03  mflops = 3.755389e+03
+LINK_UPDATE: time = 1.929045e-03  mflops = 3.773026e+03
+GFTIME:   time = 2.959204e-02 (Symanzik1) mflops = 6.700897e+03
+LINK_UPDATE: time = 1.937866e-03  mflops = 3.755851e+03
+Calling load_fatlinks (cpu)
+Combined fattening and long-link calculation time: 0.011543
+FLTIME: time = 2.408695e-02 (HISQ MILC D) mflops = 6.895442e+03
+CONGRAD5: time = 6.879807e-03 (multicg_offset D) masses = 9 iters = 33 mflops = 8.330048e+03
+ OK converged final_rsq= 1.8e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 33
+Refining solution for mass 0.00189152
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.439022e-04 (fn D) masses = 1 iters = 1 mflops = 6.307249e+03
+ OK converged final_rsq= 1.8e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00268026
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.129078e-04 (fn D) masses = 1 iters = 1 mflops = 7.225438e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00458479
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00838393
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0154451
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0272562
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.398491e-04 (fn D) masses = 1 iters = 1 mflops = 6.413833e+03
+ OK converged final_rsq= 1.6e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0518633
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0951302
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 6.5e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.157308
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 1.3e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 7.963896e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.527284e+03
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.279282e-04 (fn D) masses = 1 iters = 1 mflops = 6.749284e+03
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.219677e-04 (fn D) masses = 1 iters = 1 mflops = 6.930522e+03
+ OK converged final_rsq= 2.8e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.8e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 1.7e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.400875e-04 (fn D) masses = 1 iters = 1 mflops = 6.407464e+03
+ OK converged final_rsq= 5.4e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 2.6e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.079052e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.405739e+03
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.6e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 1.7e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.369881e-04 (fn D) masses = 1 iters = 1 mflops = 6.491264e+03
+ OK converged final_rsq= 1.7e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 4.5e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.6e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.078814e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.405987e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.140999e-04 (fn D) masses = 1 iters = 1 mflops = 7.185207e+03
+ OK converged final_rsq= 2.2e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.379417e-04 (fn D) masses = 1 iters = 1 mflops = 6.465246e+03
+ OK converged final_rsq= 1.4e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 1.5e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 5.3e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.369881e-04 (fn D) masses = 1 iters = 1 mflops = 6.491264e+03
+ OK converged final_rsq= 3.1e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE fn_fermion_force_multi_hisq_wrapper_mx()
+
+FFTIME:  time = 4.384861e-01 (HISQ MILC D) terms = 30 flops/site = 2152598 mflops = 6.362270e+03
+LINK_UPDATE: time = 2.015114e-03  mflops = 3.611873e+03
+GFTIME:   time = 2.976704e-02 (Symanzik1) mflops = 6.661502e+03
+LINK_UPDATE: time = 1.957893e-03  mflops = 3.717432e+03
+GFTIME:   time = 2.960014e-02 (Symanzik1) mflops = 6.699062e+03
+LINK_UPDATE: time = 1.937151e-03  mflops = 3.757237e+03
+GFTIME:   time = 2.961397e-02 (Symanzik1) mflops = 6.695933e+03
+LINK_UPDATE: time = 1.932859e-03  mflops = 3.765580e+03
+GFTIME:   time = 2.961516e-02 (Symanzik1) mflops = 6.695664e+03
+LINK_UPDATE: time = 1.936913e-03  mflops = 3.757700e+03
+Calling load_fatlinks (cpu)
+Combined fattening and long-link calculation time: 0.011539
+FLTIME: time = 2.408814e-02 (HISQ MILC D) mflops = 6.895101e+03
+CONGRAD5: time = 6.632090e-03 (multicg_offset D) masses = 9 iters = 32 mflops = 8.379332e+03
+ OK converged final_rsq= 2.5e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 32
+Refining solution for mass 0.00189152
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.439022e-04 (fn D) masses = 1 iters = 1 mflops = 6.307249e+03
+ OK converged final_rsq= 2.5e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00268026
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.5e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00458479
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.138615e-04 (fn D) masses = 1 iters = 1 mflops = 7.193217e+03
+ OK converged final_rsq= 2.5e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00838393
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 2.5e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0154451
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0272562
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.229214e-04 (fn D) masses = 1 iters = 1 mflops = 6.900873e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0518633
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.9e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0951302
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 9.5e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.157308
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 2.1e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.053064e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.432864e+03
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.439022e-04 (fn D) masses = 1 iters = 1 mflops = 6.307249e+03
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.7e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.7e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.7e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 1.2e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.408028e-04 (fn D) masses = 1 iters = 1 mflops = 6.388432e+03
+ OK converged final_rsq= 4.9e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 4.3e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.060932e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.424634e+03
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.169609e-04 (fn D) masses = 1 iters = 1 mflops = 7.090457e+03
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 2.7e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.7e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.391338e-04 (fn D) masses = 1 iters = 1 mflops = 6.433017e+03
+ OK converged final_rsq= 1.7e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 4.7e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 3e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 7.997036e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.491946e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.148151e-04 (fn D) masses = 1 iters = 1 mflops = 7.161283e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 2.3e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.391338e-04 (fn D) masses = 1 iters = 1 mflops = 6.433017e+03
+ OK converged final_rsq= 1.4e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.5e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.129078e-04 (fn D) masses = 1 iters = 1 mflops = 7.225438e+03
+ OK converged final_rsq= 1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 5.4e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.369881e-04 (fn D) masses = 1 iters = 1 mflops = 6.491264e+03
+ OK converged final_rsq= 3.6e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE fn_fermion_force_multi_hisq_wrapper_mx()
+
+FFTIME:  time = 4.388330e-01 (HISQ MILC D) terms = 30 flops/site = 2152598 mflops = 6.357241e+03
+LINK_UPDATE: time = 2.002001e-03  mflops = 3.635531e+03
+GFTIME:   time = 2.982497e-02 (Symanzik1) mflops = 6.648562e+03
+LINK_UPDATE: time = 1.945019e-03  mflops = 3.742039e+03
+LINK_UPDATE: time = 1.926899e-03  mflops = 3.777228e+03
+GFTIME:   time = 2.970290e-02 (Symanzik1) mflops = 6.675886e+03
+LINK_UPDATE: time = 1.940012e-03  mflops = 3.751696e+03
+Calling load_fatlinks (cpu)
+Combined fattening and long-link calculation time: 0.011578
+FLTIME: time = 2.415895e-02 (HISQ MILC D) mflops = 6.874891e+03
+CONGRAD5: time = 6.661892e-03 (multicg_offset D) masses = 9 iters = 32 mflops = 8.341847e+03
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 32
+Refining solution for mass 0.00189152
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.140999e-04 (fn D) masses = 1 iters = 1 mflops = 7.185207e+03
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00268026
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00458479
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.400875e-04 (fn D) masses = 1 iters = 1 mflops = 6.407464e+03
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00838393
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0154451
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0272562
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0518633
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.250671e-04 (fn D) masses = 1 iters = 1 mflops = 6.835080e+03
+ OK converged final_rsq= 1.8e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0951302
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 9.3e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.157308
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 2e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.017063e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.470733e+03
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.198219e-04 (fn D) masses = 1 iters = 1 mflops = 6.998173e+03
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.160072e-04 (fn D) masses = 1 iters = 1 mflops = 7.121762e+03
+ OK converged final_rsq= 2.6e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.281666e-04 (fn D) masses = 1 iters = 1 mflops = 6.742232e+03
+ OK converged final_rsq= 1.7e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.7e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 5.6e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.059937e-04 (fn D) masses = 1 iters = 1 mflops = 7.467958e+03
+ OK converged final_rsq= 3.2e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.100033e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.383966e+03
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.441406e-04 (fn D) masses = 1 iters = 1 mflops = 6.301090e+03
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.7e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.7e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.7e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.2e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.379417e-04 (fn D) masses = 1 iters = 1 mflops = 6.465246e+03
+ OK converged final_rsq= 4.8e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 3.4e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.039951e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.446618e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.138615e-04 (fn D) masses = 1 iters = 1 mflops = 7.193217e+03
+ OK converged final_rsq= 2.3e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 1.4e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.398491e-04 (fn D) masses = 1 iters = 1 mflops = 6.413833e+03
+ OK converged final_rsq= 1.5e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 5.5e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 2.5e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE fn_fermion_force_multi_hisq_wrapper_mx()
+
+FFTIME:  time = 4.383390e-01 (HISQ MILC D) terms = 30 flops/site = 2152598 mflops = 6.364405e+03
+LINK_UPDATE: time = 2.004147e-03  mflops = 3.631639e+03
+GFTIME:   time = 2.965713e-02 (Symanzik1) mflops = 6.686190e+03
+LINK_UPDATE: time = 1.937866e-03  mflops = 3.755851e+03
+GFTIME:   time = 2.962995e-02 (Symanzik1) mflops = 6.692324e+03
+LINK_UPDATE: time = 1.938105e-03  mflops = 3.755389e+03
+GFTIME:   time = 2.970004e-02 (Symanzik1) mflops = 6.676529e+03
+LINK_UPDATE: time = 1.942158e-03  mflops = 3.747551e+03
+GFTIME:   time = 2.966213e-02 (Symanzik1) mflops = 6.685062e+03
+LINK_UPDATE: time = 1.941919e-03  mflops = 3.748012e+03
+Calling load_fatlinks (cpu)
+Combined fattening and long-link calculation time: 0.011620
+FLTIME: time = 2.413392e-02 (HISQ MILC D) mflops = 6.882022e+03
+CONGRAD5: time = 6.639957e-03 (multicg_offset D) masses = 9 iters = 32 mflops = 8.369403e+03
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 32
+Refining solution for mass 0.00189152
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.129078e-04 (fn D) masses = 1 iters = 1 mflops = 7.225438e+03
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00268026
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00458479
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.410412e-04 (fn D) masses = 1 iters = 1 mflops = 6.382113e+03
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00838393
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0154451
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0272562
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0518633
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.381802e-04 (fn D) masses = 1 iters = 1 mflops = 6.458775e+03
+ OK converged final_rsq= 1.8e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0951302
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 9.1e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.157308
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 2e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 7.983923e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.505894e+03
+ OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.150536e-04 (fn D) masses = 1 iters = 1 mflops = 7.153344e+03
+ OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.5e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.379417e-04 (fn D) masses = 1 iters = 1 mflops = 6.465246e+03
+ OK converged final_rsq= 1.6e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.6e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 1.1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 4.7e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 4.2e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.231878e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.249685e+03
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.439022e-04 (fn D) masses = 1 iters = 1 mflops = 6.307249e+03
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2.8e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.7e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.7e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.372265e-04 (fn D) masses = 1 iters = 1 mflops = 6.484740e+03
+ OK converged final_rsq= 1.1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.129078e-04 (fn D) masses = 1 iters = 1 mflops = 7.225438e+03
+ OK converged final_rsq= 5.5e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 3.5e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.026123e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.461171e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 2.3e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 1.5e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.391338e-04 (fn D) masses = 1 iters = 1 mflops = 6.433017e+03
+ OK converged final_rsq= 1.4e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 4.5e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 3e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE fn_fermion_force_multi_hisq_wrapper_mx()
+
+FFTIME:  time = 4.375331e-01 (HISQ MILC D) terms = 30 flops/site = 2152598 mflops = 6.376127e+03
+LINK_UPDATE: time = 1.944065e-03  mflops = 3.743875e+03
+GFTIME:   time = 2.903509e-02 (Symanzik1) mflops = 6.829432e+03
+LINK_UPDATE: time = 1.916885e-03  mflops = 3.796959e+03
+LINK_UPDATE: time = 1.871824e-03  mflops = 3.888365e+03
+GFTIME:   time = 2.896690e-02 (Symanzik1) mflops = 6.845508e+03
+LINK_UPDATE: time = 1.975060e-03  mflops = 3.685122e+03
+Calling load_fatlinks (cpu)
+Combined fattening and long-link calculation time: 0.011573
+FLTIME: time = 2.416706e-02 (HISQ MILC D) mflops = 6.872585e+03
+CONGRAD5: time = 6.631136e-03 (multicg_offset D) masses = 9 iters = 32 mflops = 8.380537e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 32
+Refining solution for mass 0.00189152
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.138615e-04 (fn D) masses = 1 iters = 1 mflops = 7.193217e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00268026
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00458479
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00838393
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.391338e-04 (fn D) masses = 1 iters = 1 mflops = 6.433017e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0154451
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0272562
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.1e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0518633
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0951302
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.388954e-04 (fn D) masses = 1 iters = 1 mflops = 6.439437e+03
+ OK converged final_rsq= 8.9e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.157308
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 1.9e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 7.996082e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.492959e+03
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.131462e-04 (fn D) masses = 1 iters = 1 mflops = 7.217356e+03
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.5e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 1.6e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.379417e-04 (fn D) masses = 1 iters = 1 mflops = 6.465246e+03
+ OK converged final_rsq= 1.6e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.2e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 5.7e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 2.9e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.090019e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.394343e+03
+ OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.160072e-04 (fn D) masses = 1 iters = 1 mflops = 7.121762e+03
+ OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.439022e-04 (fn D) masses = 1 iters = 1 mflops = 6.307249e+03
+ OK converged final_rsq= 2.8e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.8e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 1.7e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.140999e-04 (fn D) masses = 1 iters = 1 mflops = 7.185207e+03
+ OK converged final_rsq= 6.2e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.400875e-04 (fn D) masses = 1 iters = 1 mflops = 6.407464e+03
+ OK converged final_rsq= 2.5e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.039951e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.446618e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.419949e-04 (fn D) masses = 1 iters = 1 mflops = 6.356962e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 2.3e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 1.4e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.4e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.238750e-04 (fn D) masses = 1 iters = 1 mflops = 6.871476e+03
+ OK converged final_rsq= 1.3e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.200603e-04 (fn D) masses = 1 iters = 1 mflops = 6.990591e+03
+ OK converged final_rsq= 4.9e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 2.8e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE fn_fermion_force_multi_hisq_wrapper_mx()
+
+FFTIME:  time = 4.385700e-01 (HISQ MILC D) terms = 30 flops/site = 2152598 mflops = 6.361053e+03
+LINK_UPDATE: time = 2.021074e-03  mflops = 3.601221e+03
+GFTIME:   time = 2.965713e-02 (Symanzik1) mflops = 6.686190e+03
+LINK_UPDATE: time = 1.937866e-03  mflops = 3.755851e+03
+GFTIME:   time = 2.961302e-02 (Symanzik1) mflops = 6.696149e+03
+LINK_UPDATE: time = 1.939058e-03  mflops = 3.753542e+03
+GFTIME:   time = 2.958298e-02 (Symanzik1) mflops = 6.702949e+03
+LINK_UPDATE: time = 1.935005e-03  mflops = 3.761404e+03
+GFTIME:   time = 2.969503e-02 (Symanzik1) mflops = 6.677655e+03
+LINK_UPDATE: time = 1.947165e-03  mflops = 3.737915e+03
+Calling load_fatlinks (cpu)
+Combined fattening and long-link calculation time: 0.011572
+FLTIME: time = 2.408695e-02 (HISQ MILC D) mflops = 6.895442e+03
+CONGRAD5: time = 6.654978e-03 (multicg_offset D) masses = 9 iters = 32 mflops = 8.350513e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 32
+Refining solution for mass 0.00189152
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.150536e-04 (fn D) masses = 1 iters = 1 mflops = 7.153344e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00268026
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00458479
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00838393
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.388954e-04 (fn D) masses = 1 iters = 1 mflops = 6.439437e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0154451
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0272562
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.1e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0518633
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0951302
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.400875e-04 (fn D) masses = 1 iters = 1 mflops = 6.407464e+03
+ OK converged final_rsq= 8.7e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.157308
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.9e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 7.999897e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.488909e+03
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.4e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.6e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.379417e-04 (fn D) masses = 1 iters = 1 mflops = 6.465246e+03
+ OK converged final_rsq= 1.6e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 4.6e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 2.9e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.077145e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.407724e+03
+ OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.419949e-04 (fn D) masses = 1 iters = 1 mflops = 6.356962e+03
+ OK converged final_rsq= 2.8e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.7e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.7e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.3e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 5.5e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.391338e-04 (fn D) masses = 1 iters = 1 mflops = 6.433017e+03
+ OK converged final_rsq= 4.7e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.013010e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.475017e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.450943e-04 (fn D) masses = 1 iters = 1 mflops = 6.276572e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.3e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.4e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.4e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.379417e-04 (fn D) masses = 1 iters = 1 mflops = 6.465246e+03
+ OK converged final_rsq= 1.1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 6.1e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 4.3e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE fn_fermion_force_multi_hisq_wrapper_mx()
+
+FFTIME:  time = 4.350650e-01 (HISQ MILC D) terms = 30 flops/site = 2152598 mflops = 6.412299e+03
+LINK_UPDATE: time = 2.010107e-03  mflops = 3.620870e+03
+GFTIME:   time = 2.964115e-02 (Symanzik1) mflops = 6.689794e+03
+LINK_UPDATE: time = 1.936913e-03  mflops = 3.757700e+03
+LINK_UPDATE: time = 1.929045e-03  mflops = 3.773026e+03
+GFTIME:   time = 2.967906e-02 (Symanzik1) mflops = 6.681249e+03
+LINK_UPDATE: time = 1.940012e-03  mflops = 3.751696e+03
+Calling load_fatlinks (cpu)
+Combined fattening and long-link calculation time: 0.011544
+FLTIME: time = 2.409101e-02 (HISQ MILC D) mflops = 6.894282e+03
+CONGRAD5: time = 6.615162e-03 (multicg_offset D) masses = 9 iters = 32 mflops = 8.400774e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 32
+Refining solution for mass 0.00189152
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.429485e-04 (fn D) masses = 1 iters = 1 mflops = 6.332008e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00268026
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00458479
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00838393
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0154451
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0272562
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.369881e-04 (fn D) masses = 1 iters = 1 mflops = 6.491264e+03
+ OK converged final_rsq= 2.1e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0518633
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0951302
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 8.6e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.157308
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 1.9e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 7.993937e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.495239e+03
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.439022e-04 (fn D) masses = 1 iters = 1 mflops = 6.307249e+03
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 2.4e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.5e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.071857e-04 (fn D) masses = 1 iters = 1 mflops = 7.424990e+03
+ OK converged final_rsq= 1.5e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.369881e-04 (fn D) masses = 1 iters = 1 mflops = 6.491264e+03
+ OK converged final_rsq= 4.2e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 2.7e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.116961e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.366481e+03
+ OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.181530e-04 (fn D) masses = 1 iters = 1 mflops = 7.051711e+03
+ OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.8e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 1.7e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.391338e-04 (fn D) masses = 1 iters = 1 mflops = 6.433017e+03
+ OK converged final_rsq= 1.6e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 1.2e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.138615e-04 (fn D) masses = 1 iters = 1 mflops = 7.193217e+03
+ OK converged final_rsq= 5e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 2.7e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.067846e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.417414e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.3e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.210140e-04 (fn D) masses = 1 iters = 1 mflops = 6.960427e+03
+ OK converged final_rsq= 1.4e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.4e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 1.2e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 4.9e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.388954e-04 (fn D) masses = 1 iters = 1 mflops = 6.439437e+03
+ OK converged final_rsq= 2.7e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE fn_fermion_force_multi_hisq_wrapper_mx()
+
+FFTIME:  time = 4.390888e-01 (HISQ MILC D) terms = 30 flops/site = 2152598 mflops = 6.353537e+03
+LINK_UPDATE: time = 2.013922e-03  mflops = 3.614011e+03
+GFTIME:   time = 2.969885e-02 (Symanzik1) mflops = 6.676797e+03
+LINK_UPDATE: time = 1.940966e-03  mflops = 3.749853e+03
+GFTIME:   time = 2.965689e-02 (Symanzik1) mflops = 6.686244e+03
+LINK_UPDATE: time = 1.939058e-03  mflops = 3.753542e+03
+GFTIME:   time = 2.968907e-02 (Symanzik1) mflops = 6.678995e+03
+LINK_UPDATE: time = 1.942873e-03  mflops = 3.746172e+03
+GFTIME:   time = 2.958798e-02 (Symanzik1) mflops = 6.701815e+03
+LINK_UPDATE: time = 1.937866e-03  mflops = 3.755851e+03
+Calling load_fatlinks (cpu)
+Combined fattening and long-link calculation time: 0.011572
+FLTIME: time = 2.413416e-02 (HISQ MILC D) mflops = 6.881954e+03
+CONGRAD5: time = 6.649971e-03 (multicg_offset D) masses = 9 iters = 32 mflops = 8.356800e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 32
+Refining solution for mass 0.00189152
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.150536e-04 (fn D) masses = 1 iters = 1 mflops = 7.153344e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00268026
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.410412e-04 (fn D) masses = 1 iters = 1 mflops = 6.382113e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00458479
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.150536e-04 (fn D) masses = 1 iters = 1 mflops = 7.153344e+03
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00838393
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0154451
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0272562
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.1e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0518633
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.388954e-04 (fn D) masses = 1 iters = 1 mflops = 6.439437e+03
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0951302
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 8.7e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.157308
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.069473e-04 (fn D) masses = 1 iters = 1 mflops = 7.433544e+03
+ OK converged final_rsq= 1.9e-08 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 7.981777e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.508180e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.260208e-04 (fn D) masses = 1 iters = 1 mflops = 6.806240e+03
+ OK converged final_rsq= 2.3e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.219677e-04 (fn D) masses = 1 iters = 1 mflops = 6.930522e+03
+ OK converged final_rsq= 1.5e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.5e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 1.3e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 6.4e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.391338e-04 (fn D) masses = 1 iters = 1 mflops = 6.433017e+03
+ OK converged final_rsq= 3.4e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.187056e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.294850e+03
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.7e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.7e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 1.6e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.379417e-04 (fn D) masses = 1 iters = 1 mflops = 6.465246e+03
+ OK converged final_rsq= 1.5e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 4.6e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 2.7e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 8.022785e-03 (multicg_offset D) masses = 7 iters = 40 mflops = 8.464691e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 40
+Refining solution for mass 0.215222
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.119541e-04 (fn D) masses = 1 iters = 1 mflops = 7.257948e+03
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.306349
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 2.2e-13 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.514325
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.4e-18 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.922378
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.369881e-04 (fn D) masses = 1 iters = 1 mflops = 6.491264e+03
+ OK converged final_rsq= 1.4e-29 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.71322
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.100468e-04 (fn D) masses = 1 iters = 1 mflops = 7.323855e+03
+ OK converged final_rsq= 1.1e-31 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 3.3812
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 6e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 8.4249
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 2.8e-32 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 1
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE fn_fermion_force_multi_hisq_wrapper_mx()
+
+FFTIME:  time = 4.395909e-01 (HISQ MILC D) terms = 30 flops/site = 2152598 mflops = 6.346280e+03
+LINK_UPDATE: time = 2.012014e-03  mflops = 3.617437e+03
+GFTIME:   time = 2.965403e-02 (Symanzik1) mflops = 6.686889e+03
+LINK_UPDATE: time = 1.922131e-03  mflops = 3.786598e+03
+PLAQUETTE ACTION: -3.570545e+04
+Calling load_fatlinks (cpu)
+Combined fattening and long-link calculation time: 0.011566
+FLTIME: time = 2.406192e-02 (HISQ MILC D) mflops = 6.902616e+03
+CONGRAD5: time = 8.436203e-03 (multicg_offset D) masses = 11 iters = 39 mflops = 8.208110e+03
+ OK converged final_rsq= 8.1e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 39
+Refining solution for mass 0.00190567
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.138615e-04 (fn D) masses = 1 iters = 1 mflops = 7.193217e+03
+ OK converged final_rsq= 8.1e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00252653
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 8e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00388362
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 8e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.00637389
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.400875e-04 (fn D) masses = 1 iters = 1 mflops = 6.407464e+03
+ OK converged final_rsq= 8e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0107307
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 7.9e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0181581
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 7.7e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0297245
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 7.2e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.049612
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.081394e-04 (fn D) masses = 1 iters = 1 mflops = 7.390969e+03
+ OK converged final_rsq= 5.8e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0814868
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.391338e-04 (fn D) masses = 1 iters = 1 mflops = 6.433017e+03
+ OK converged final_rsq= 3.4e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.127511
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.177647
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 1.8e-10 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+CONGRAD5: time = 9.824038e-03 (multicg_offset D) masses = 9 iters = 47 mflops = 8.308405e+03
+ OK converged final_rsq= 6.4e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 47
+Refining solution for mass 0.211468
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.129078e-04 (fn D) masses = 1 iters = 1 mflops = 7.225438e+03
+ OK converged final_rsq= 6.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.269696
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.129078e-04 (fn D) masses = 1 iters = 1 mflops = 7.225438e+03
+ OK converged final_rsq= 2.3e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.391164
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.429485e-04 (fn D) masses = 1 iters = 1 mflops = 6.332008e+03
+ OK converged final_rsq= 8.9e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.605157
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.088547e-04 (fn D) masses = 1 iters = 1 mflops = 7.365657e+03
+ OK converged final_rsq= 2e-24 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.96546
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 2.5e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.57268
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.1e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.64336
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.381802e-04 (fn D) masses = 1 iters = 1 mflops = 6.458775e+03
+ OK converged final_rsq= 6e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 4.81495
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 3.9e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 11.684
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 2.4e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+CONGRAD5: time = 9.894133e-03 (multicg_offset D) masses = 9 iters = 47 mflops = 8.249544e+03
+ OK converged final_rsq= 7.5e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 47
+Refining solution for mass 0.211468
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.129078e-04 (fn D) masses = 1 iters = 1 mflops = 7.225438e+03
+ OK converged final_rsq= 7.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.269696
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.7e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.391164
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.400875e-04 (fn D) masses = 1 iters = 1 mflops = 6.407464e+03
+ OK converged final_rsq= 9.8e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.605157
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.1e-24 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.96546
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 2.5e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.57268
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.8e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.64336
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 8.1e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 4.81495
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.398491e-04 (fn D) masses = 1 iters = 1 mflops = 6.413833e+03
+ OK converged final_rsq= 5.7e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 11.684
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 3.5e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+CONGRAD5: time = 9.891033e-03 (multicg_offset D) masses = 9 iters = 47 mflops = 8.252129e+03
+ OK converged final_rsq= 6.4e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 47
+Refining solution for mass 0.211468
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.129078e-04 (fn D) masses = 1 iters = 1 mflops = 7.225438e+03
+ OK converged final_rsq= 6.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.269696
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.098083e-04 (fn D) masses = 1 iters = 1 mflops = 7.332177e+03
+ OK converged final_rsq= 2.3e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.391164
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.288818e-04 (fn D) masses = 1 iters = 1 mflops = 6.721162e+03
+ OK converged final_rsq= 8.5e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.605157
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.219677e-04 (fn D) masses = 1 iters = 1 mflops = 6.930522e+03
+ OK converged final_rsq= 1.9e-24 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.96546
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.110004e-04 (fn D) masses = 1 iters = 1 mflops = 7.290752e+03
+ OK converged final_rsq= 2.7e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.57268
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.090931e-04 (fn D) masses = 1 iters = 1 mflops = 7.357259e+03
+ OK converged final_rsq= 1.5e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.64336
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 5.6e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 4.81495
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.379417e-04 (fn D) masses = 1 iters = 1 mflops = 6.465246e+03
+ OK converged final_rsq= 3.6e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 11.684
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 2.079010e-04 (fn D) masses = 1 iters = 1 mflops = 7.399445e+03
+ OK converged final_rsq= 4.3e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+ACTION: g,h,f = 1.89814618171498e+04  1.10640260690474e+02  7.73207879686826e+03  2.68241808747085e+04
+DG = -1.874949e+02, DH = 1.910178e+02, DF = -3.522932e+00, D = -1.521986e-05
+ACTIONTIME: time = 7.706881e-02
+ACCEPT: delta S = -1.521986e-05
+Aggregate time to do one trajectory 6.209922e+00
+PLAQ:	1.8590262183356621	1.8640148066269224
+P_LOOP:	3.168290e-01	-1.508247e-02
+G_LOOP:  0  0  4   	1.8723154402539099e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.8558033154202456e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.8761202393250695e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.8489598993328358e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.8401153990489105e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.8758087815067863e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	1.2087259536887918e+00	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	1.1864746025387121e+00	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	1.2024933204552419e+00	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	1.2024695862124535e+00	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	1.1713885073603865e+00	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	1.1631673468116923e+00	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	1.1689753395009970e+00	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	1.1950507138520103e+00	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	1.1912161381864090e+00	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	1.1940835962128016e+00	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	1.1705473160105258e+00	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	1.2274154296804605e+00	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	1.1972840025049658e+00	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	1.1794989925729742e+00	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	1.1889043517718865e+00	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	1.1995231146078396e+00	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	1.2388122937740844e+00	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	1.2054384407417307e+00	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	1.2297017716573362e+00	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	1.2043418983164991e+00	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	1.1991177756553673e+00	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	1.2308028670051478e+00	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	1.1896488141649872e+00	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	1.2117200949351921e+00	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	1.1894013034568558e+00	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	1.2054043232561724e+00	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	1.1973780046417986e+00	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	1.1945466336842188e+00	( 1 5 4 6 2 3  )
+GACTION: 5.937644e+00
+Aggregate time to do gauge measurement 6.685019e-03
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+UML inversion with mass 0.001800
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 1.053214e-02 (fn D) masses = 1 iters = 56 mflops = 8.179506e+03
+ OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 56
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 5.259037e-03 (fn D) masses = 1 iters = 28 mflops = 8.190445e+03
+ OK converged final_rsq= 9.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 28
+PBP: mass 1.800000e-03     1.334656e-02  -1.000056e-02  -4.706674e-02  -4.706668e-02 ( 1 of 1 )
+FACTION: mass = 1.800000e-03,  1.496519e+00 ( 1 of 1 )
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+UML inversion with mass 0.018000
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 1.042795e-02 (fn D) masses = 1 iters = 56 mflops = 8.261230e+03
+ OK converged final_rsq= 8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 56
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+
+
+ INSIDE dslash_fn_field() OF dslash_fn_dblstore.c 
+
+CONGRAD5: time = 3.202915e-03 (fn D) masses = 1 iters = 17 mflops = 8.165057e+03
+ OK converged final_rsq= 8.3e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 17
+PBP: mass 1.800000e-02     1.503084e-02  1.574958e-02  1.291384e-02  1.291377e-02 ( 1 of 1 )
+FACTION: mass = 1.800000e-02,  1.452746e+00 ( 1 of 1 )
+Aggregate time to do pbp measurements 3.093600e-02
+RUNNING COMPLETED
+average cg iters for step= 1.820000e+02
+Time = 6.283646e+00 seconds
+total_iters = 2638
+
+
+get_i(0): EOF on input.
+exit: Thu Dec  5 15:39:05 2024
+

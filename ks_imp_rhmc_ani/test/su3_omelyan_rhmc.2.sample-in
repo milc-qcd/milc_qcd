@@ -1,0 +1,38 @@
+prompt 0
+nx 6
+ny 6
+nz 6
+nt 6
+iseed 3546789
+n_pseudo 1
+load_rhmc_params rationals.sample.su3_omelyan_rhmc
+beta 6.50
+n_dyn_masses 2
+dyn_mass 0.01 0.05
+dyn_flavors 2 1
+u0   0.862
+
+warms 0
+trajecs 2
+traj_between_meas 1
+microcanonical_time_step 0.01
+steps_per_trajectory 12
+cgresid_md_fa_gr .0000002 .0000002 .0000002
+max_multicg_md_fa_gr  1750  1750  1750
+cgprec_md_fa_gr  2 2 2
+prec_ff 2
+# CG tolerance, max iterations, for the chiral condensate
+# and related quantities
+number_of_pbp_masses 2
+max_cg_prop 500
+max_cg_prop_restarts 5
+npbp_reps 1
+prec_pbp 1
+mass 0.01
+error_for_propagator .000001
+rel_error_for_propagator 0
+mass 0.05
+error_for_propagator .000001
+rel_error_for_propagator 0
+reload_serial ../../binary_samples/lat.sample.l6666b650m010m050
+forget

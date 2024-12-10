@@ -1,0 +1,21 @@
+11/04/2006  C DeTar
+
+The target poly4 has been modified so it takes parameters on stdin and
+creates a parameter file in a format suitable for input to the MILC
+RHMC code.
+
+See sample input files in.sample_1 and in.sample_2.
+
+
+Older notes:
+
+Now call it like this.
+
+./test y1 z1 m1 y2 z2 m2 y3 z3 m3 y4 z4 m4 n d lambda_low lambda_high precision
+
+where the function is
+( x + 4 m1 m1 )^( y1/z1 ) ( x + 4 m2 m2 )^( y2/z2 ) ( x + 4 m3 m3 )^( y3/z3 ) ( x + 4 m4 m4 )^( y4/z4 )
+and the rest of the parameters have the same meaning.
+
+I had trouble setting lambda_low to 0, but using 0.00...01 seems to be fine.
+
