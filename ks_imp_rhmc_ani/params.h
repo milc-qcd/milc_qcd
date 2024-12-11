@@ -24,6 +24,12 @@ typedef struct {
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
+
+#ifdef ANISOTROPY
+  short ani_dir; /* direction of anisotropy */
+  Real ani_xiq; /* bare quark anisotropy */
+#endif
+
   uint32_t iseed;	          /* for random numbers */
   Real beta;              /* gauge coupling */
   int n_dyn_masses;       /* number of dynamical masses */

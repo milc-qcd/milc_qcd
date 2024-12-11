@@ -162,6 +162,8 @@ initial_set(void)
   int prompt=0,status,i,tmporder;
   Real current_naik_epsilon;
 
+  char savebuf[128];
+
   /* On node zero, read lattice size, seed, and send to others */
   if(mynode()==0){
     /* print banner */
@@ -231,6 +233,15 @@ initial_set(void)
     IF_OK status += get_vi(stdin, prompt, "dyn_flavors", param.dyn_flavors, param.n_dyn_masses);
 
     IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
+
+#ifdef ANISOTROPY
+    /* Direction of anisotropy */
+    IF_OK status += get_s(stdin, prompt,"ani_dir",savebuf);
+    IF_OK param.ani_dir = dirchar2index( savebuf[0], &status);
+    IF_OK status += ( param.ani_dir*param.ani_dir > TUP*TUP );
+    /* Bare fermion anisotropy */
+    IF_OK status += get_f(stdin, prompt, "ani_xiq", &param.ani_xiq);
+#endif
 
     /* Use antiperiodic boundary conditions */
     for(int k = 0; k < 4; k++)
@@ -360,6 +371,13 @@ initial_set(void)
     dyn_flavors[i] = param.dyn_flavors[i];
   }
   u0 = param.u0;
+
+#ifdef ANISOTROPY
+    /* Direction of anisotropy */
+    ani_dir = param.ani_dir;
+    /* Bare fermion anisotropy */
+    ani_xiq = param.ani_xiq;
+#endif
 
   return(prompt);
 }

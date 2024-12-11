@@ -162,7 +162,6 @@ su3_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${ASQ_OPTIONS_NONNF} \
 	"ADDDEFINES = -DHMC"
 
-
 su3_rhmd_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${ASQ_OPTIONS_NONNF} \
 	"ADDDEFINES = -DDM_DU0"
@@ -222,6 +221,10 @@ su3_rhmd_hisq::
 su3_rhmc_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS} \
 	"DEFINES+= -DHMC"
+
+su3_rhmc_hisq_ani::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS} \
+	"DEFINES+= -DHMC -DANISOTROPY"
 
 #######################################################################
 # Experimental targets

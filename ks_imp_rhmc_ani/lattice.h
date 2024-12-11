@@ -178,6 +178,11 @@ EXTERN char ** gen_pt[N_POINTERS];
 /* Storage for definition of the quark action */
 EXTERN fermion_links_t        *fn_links;
 
+#ifdef ANISOTROPY
+EXTERN short ani_dir; /* direction of anisotropy */
+EXTERN Real ani_xiq; /* bare quark anisotropy */
+#endif
+
 #include "params_rhmc.h"
 EXTERN int n_pseudo;
 EXTERN int max_rat_order;
