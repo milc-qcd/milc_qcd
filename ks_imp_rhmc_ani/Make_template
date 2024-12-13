@@ -222,7 +222,7 @@ su3_rhmc_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS} \
 	"DEFINES+= -DHMC"
 
-su3_rhmc_hisq_ani::
+su3_rhmc_hisq_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS} \
 	"DEFINES+= -DHMC -DANISOTROPY"
 

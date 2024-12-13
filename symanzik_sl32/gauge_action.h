@@ -1,22 +1,20 @@
-/* Symanzik 1-loop gauge action: 1x1 + 1x2 + 1x1x1 */
+/* Tree level Symanzik improved gauge action */
 #ifdef GAUGE_ACTION_PART1
-#define SYMANZIK_1LOOP
 /* defines NREPS NLOOP MAX_LENGTH MAX_NUM */
 #undef MAX_LENGTH
 #undef MAX_NUM
 #define NREPS 1
-#define NLOOP 3
+#define NLOOP 2
 #define MAX_LENGTH 6
-#define MAX_NUM 16
+#define MAX_NUM 12
 #endif
 
 #ifdef GAUGE_ACTION_PART2
     static int loop_ind[NLOOP][MAX_LENGTH] = {
     { XUP, YUP, XDOWN, YDOWN, NODIR, NODIR },
     { XUP, XUP, YUP, XDOWN, XDOWN , YDOWN},
-    { XUP, YUP, ZUP, XDOWN, YDOWN , ZDOWN},
     };
-    static int loop_length_in[NLOOP] = {4,6,6};
+    static int loop_length_in[NLOOP] = {4,6};
 
     for(j=0;j<NLOOP;j++){
 	loop_num[j] = 0;
@@ -26,11 +24,10 @@
 	}
     }
 
+    /* set up the loop coefficients */
     /* Loop coefficients from Urs */
     loop_coeff[0][0]= 1.0;
-    loop_coeff[1][0]=  -1.00/(20.0*u0*u0) * (1.00 - 0.6264*log(u0) ); 
-    loop_coeff[2][0]=  1.00/(u0*u0) * 0.04335 * log(u0); 
-    strcpy(gauge_action_description,"\"Symanzik 1x1 + 1x2 + 1x1x1 action\"");
-    node0_printf("Symanzik 1x1 + 1x2 + 1x1x1 action\n");
-
+    loop_coeff[1][0]=  -1.00/(20.0*u0*u0);
+    strcpy(gauge_action_description,"\"Symanzik 1x1 + 1x2 action\"");
+    node0_printf("Symanzik 1x1 + 1x2 action\n");
 #endif

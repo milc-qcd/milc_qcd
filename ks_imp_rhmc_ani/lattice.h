@@ -68,7 +68,7 @@ typedef struct {
  	su3_vector g_rand;	/* Gaussian random vector*/
 	/* Use trick of combining xxx=D^adj D)^(-1) on even sites with
 	   Dslash times this on odd sites when computing fermion force */
-	
+
 #ifdef MILC_GLOBAL_DEBUG
 #ifdef HISQ_REUNITARIZATION_DEBUG
         /* store information about reunitarization */
@@ -88,6 +88,17 @@ typedef struct {
         double XdetNaik[4]; /* abs of determinant of X matrix before Naik */
 #endif /* HISQ_REUNITARIZATION_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
+
+
+#ifdef ANISOTROPY
+        su3_matrix staple_a[2];
+        /* NOTE: a) staple_a[0] - spatial, staple_a[1] - temporal
+                 b) the "staple" variable below is different from isotropic
+                    case: here staple=beta[0]*staple_a[0]+beta[1]*staple_a[1],
+                    while in the isotropic case it would be simply
+                    staple=staple_a[0]+staple_a[1] */
+#endif
+
 } site;
 
 /* End definition of site structure */
@@ -122,7 +133,13 @@ EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 #endif
 EXTERN  params param;
 EXTERN	uint32_t iseed;		/* random number seed */
+
+#ifndef ANISOTROPY
 EXTERN  Real beta,u0;
+#else
+EXTERN  Real beta[2],u0;
+#endif
+
 EXTERN  int n_dyn_masses; // number of dynamical masses
 EXTERN  Real dyn_mass[MAX_DYN_MASSES]; 
 EXTERN  int dyn_flavors[MAX_DYN_MASSES]; 
