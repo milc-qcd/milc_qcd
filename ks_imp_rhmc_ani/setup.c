@@ -167,7 +167,12 @@ initial_set(void)
   /* On node zero, read lattice size, seed, and send to others */
   if(mynode()==0){
     /* print banner */
+
+#ifndef ANISOTROPY
     printf("SU3 with improved KS action\n");
+#else
+    printf("Anisotropic SU3 with improved KS action\n");
+#endif
     printf("Microcanonical simulation with refreshing\n");
     printf("Rational function hybrid Monte Carlo algorithm\n");
     printf("MIMD version %s\n",MILC_CODE_VERSION);
@@ -225,9 +230,15 @@ initial_set(void)
     /* get name of file containing rational function parameters */
     IF_OK status += get_s(stdin, prompt, "load_rhmc_params", 
 			  param.rparamfile);
-    /* beta, quark masses */
-    IF_OK status += get_f(stdin, prompt,"beta", &param.beta );
+    /* beta */
+#ifndef ANISOTROPY
+    IF_OK status += get_f(stdin, prompt, "beta", &param.beta );
+#else
+    /* beta[0] - space, beta[1] - time */
+    IF_OK status += get_vf(stdin, prompt, "beta", param.beta, 2 );
+#endif
 
+    /* quark masses */
     IF_OK status += get_i(stdin, prompt,"n_dyn_masses", &param.n_dyn_masses );
     IF_OK status += get_vf(stdin, prompt, "dyn_mass", param.dyn_mass, param.n_dyn_masses);
     IF_OK status += get_vi(stdin, prompt, "dyn_flavors", param.dyn_flavors, param.n_dyn_masses);
@@ -363,8 +374,13 @@ initial_set(void)
   }
 #endif /* HISQ */
 
-  beta = param.beta;
-  
+#ifndef ANISOTROPY
+    beta = param.beta;
+#else
+    beta[0] = param.beta[0];
+    beta[1] = param.beta[1];
+#endif
+
   n_dyn_masses = param.n_dyn_masses;
   for(i = 0; i < n_dyn_masses; i++){
     dyn_mass[i] = param.dyn_mass[i];
@@ -614,7 +630,11 @@ readin(int prompt)
     
   /* make table of coefficients and permutations of loops in gauge action */
   make_loop_table();
-  
+#ifdef ANISOTROPY
+  /* figure out which loops are temporal and which are spatial */
+  path_determine_st();
+#endif
+
   return(0);
 }
 

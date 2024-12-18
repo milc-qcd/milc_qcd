@@ -31,7 +31,11 @@ typedef struct {
 #endif
 
   uint32_t iseed;	          /* for random numbers */
-  Real beta;              /* gauge coupling */
+#ifndef ANISOTROPY
+  Real beta;      /* gauge coupling */
+#else
+  Real beta[2];   /* gauge coupling: 0 - space, 1 - time */
+#endif
   int n_dyn_masses;       /* number of dynamical masses */
   Real dyn_mass[MAX_DYN_MASSES];  /* List of dynamical masses */
   int dyn_flavors[MAX_DYN_MASSES]; /* Numbers of dynamical flavors */
