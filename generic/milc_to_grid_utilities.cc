@@ -98,15 +98,15 @@ initialize_grid(void){
 
   char tag_grid[] = "--grid";
   char val_grid[MAXARGSTR];
-  snprintf (val_grid, MAXARGSTR, "%d.%d.%d.%d\0", nx, ny, nz, nt);
+  snprintf (val_grid, MAXARGSTR, "%d.%d.%d.%d", nx, ny, nz, nt);
 
   char tag_mpi[] = "--mpi";
   char val_mpi[MAXARGSTR];
-  snprintf (val_mpi, MAXARGSTR, "%d.%d.%d.%d\0",  mpiX,   mpiY,   mpiZ,   mpiT);
+  snprintf (val_mpi, MAXARGSTR, "%d.%d.%d.%d",  mpiX,   mpiY,   mpiZ,   mpiT);
 
   char val_shm[MAXARGSTR];
 #ifdef GRID_SHMEM_MAX
-  snprintf (val_shm, MAXARGSTR, "%d\0", GRID_SHMEM_MAX);
+  snprintf (val_shm, MAXARGSTR, "%d", GRID_SHMEM_MAX);
   char tag_shm[] = "--shm";
 #else
   snprintf (val_shm, MAXARGSTR, "");
@@ -115,7 +115,7 @@ initialize_grid(void){
 
   char val_shmmpi[MAXARGSTR];
 #ifdef GRID_SHMEM_MPI
-  snprintf (val_shmmpi, MAXARGSTR, "%d\0", GRID_SHMEM_MPI);
+  snprintf (val_shmmpi, MAXARGSTR, "%d", GRID_SHMEM_MPI);
   char tag_shmmpi[] = "--shm-mpi";
 #else
   snprintf (val_shmmpi, MAXARGSTR, "");
@@ -124,7 +124,7 @@ initialize_grid(void){
 
   char val_device_mem[MAXARGSTR];
 #ifdef GRID_DEVICE_MEM_MAX
-  snprintf (val_device_mem, MAXARGSTR, "%d\0", GRID_DEVICE_MEM_MAX);
+  snprintf (val_device_mem, MAXARGSTR, "%d", GRID_DEVICE_MEM_MAX);
   char tag_device_mem[] = "--device-mem";
 #else
   snprintf (val_device_mem, MAXARGSTR, "");
@@ -138,7 +138,7 @@ initialize_grid(void){
 #else
   int at = 8;  /* Default */
 #endif
-  snprintf (val_at, MAXARGSTR, "%d\0", at);
+  snprintf (val_at, MAXARGSTR, "%d", at);
   
 #ifdef GRID_COMMS_OVERLAP
   char tag_co[] = "--comms-overlap";
