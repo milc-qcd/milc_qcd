@@ -995,10 +995,12 @@ static void apply_aslash_v(su3_vector *src,
 }
 
 
+#ifdef GB_BARYON
 static void apply_par_xport_v(su3_vector *src, quark_source_sink_op *qss_op){
   apply_par_xport_src_v(src, src, qss_op, NULL); // gb_baryon_src.c
   apply_momentum_v(src, qss_op, qss_op->t0);
 }
+#endif
 
 static void apply_save_vector_src_v(su3_vector *src, 
 			    quark_source_sink_op *qss_op){
@@ -1713,9 +1715,11 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
   else if(op_type == MOMENTUM)
     apply_momentum_v(src, qss_op, t0);
 
+#ifdef GB_BARYON
   else if(op_type == PAR_XPORT_SRC_KS)
     apply_par_xport_v(src, qss_op);
-
+#endif
+  
   else if (op_type == SAVE_VECTOR_SRC)
     apply_save_vector_src_v(src, qss_op);
 
