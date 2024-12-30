@@ -690,6 +690,7 @@ ifeq ($(strip ${WANTGRID}), true)
 
   GRID_SHMEM_MAX ?= 2048        # Megabytes
   GRID_DEVICE_MEM_MAX ?= 32768  # Megabytes
+  GRID_SHMEM_MPI ?= 1
   GRID_ACCELERATOR_THREADS ?= 8
   GRID_MULTI_CG  ?= GRID_5DCG # GRID_5DCG GRID_BLOCKCG GRID_MRHSCG
 
@@ -1225,6 +1226,10 @@ CXXFLAGS = ${OPT} ${OCXXFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
 	${DEFINES} ${ADDDEFINES} ${IMPI} ${INCADD}
 
 ILIB = ${LIBSCIDAC} ${LMPI} ${LIBADD}
+
+# Loader flag allowing macro substitution
+LDFLAGS_ADD ?=
+LDFLAGS += ${LDFLAGS_ADD}
 
 .PHONY: time check test_clean
 time:
