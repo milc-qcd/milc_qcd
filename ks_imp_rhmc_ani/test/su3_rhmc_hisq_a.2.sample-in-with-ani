@@ -6,13 +6,13 @@
     iseed 86658
     n_pseudo 4
     load_rhmc_params rationals.sample.su3_rhmc_hisq
-    beta 7.4 7.4
+    beta 8.400 5.833
     n_dyn_masses 2
     dyn_mass .0018 .018
     dyn_flavors 2 1
     u0  0.890
     ani_dir t
-    ani_xiq 1.0 
+    ani_xiq 1.2 
 
     warms 0
     trajecs 1

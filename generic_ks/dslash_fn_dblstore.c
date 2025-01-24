@@ -287,7 +287,7 @@ void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
     register int dir;
     msg_tag *tag[16];
 
-    node0_printf("\n\n INSIDE dslash_fn_field() OF dslash_fn_dblstore.c \n\n"); // YT20241205
+//    node0_printf("\n\n INSIDE dslash_fn_field() OF dslash_fn_dblstore.c \n\n"); // YT20241205
 
     dslash_fn_field_special(src, dest, parity, tag, 1, fn );
 
