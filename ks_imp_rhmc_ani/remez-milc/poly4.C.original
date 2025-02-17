@@ -193,5 +193,4 @@ int work(int y1,int z1, double m1,
   delete res;
   delete pole;
 
-  return 0;
 }

@@ -230,6 +230,37 @@ su3_rhmc_hisq_a::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS} \
 	"DEFINES+= -DHMC -DANISOTROPY"
 
+######################################################################
+# HISQ_ONELINK targets
+
+HISQ_ONELINK_OPTIONS = "DEFINES= -DFN -DINT_ALG=INT_3G1F \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
+	-DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_u3_action_onelink.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+# Generic RHMC and RHMD targets -- set options in Makefile
+
+su3_rhmd_hisq_onelink::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_ONELINK_OPTIONS}
+
+su3_rhmd_hisq_onelink_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_ONELINK_OPTIONS} \
+	"DEFINES+= -DANISOTROPY"
+
+su3_rhmc_hisq_onelink::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_ONELINK_OPTIONS} \
+	"DEFINES+= -DHMC"
+
+su3_rhmc_hisq_onelink_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_ONELINK_OPTIONS} \
+	"DEFINES+= -DHMC -DANISOTROPY"
+
 #######################################################################
 # Experimental targets
 
