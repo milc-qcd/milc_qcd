@@ -1,0 +1,41 @@
+# Makefile for testing code by comparing test output with sample output
+# For ks_imp_utilities
+
+#------------------------------------------------------------
+# Examples:
+
+#    make -f Make_test check
+# or, for a specific project or projects
+#    make -f Make_test "PROJS=su3_rmd" check
+
+# Edit the Makefile for the appropriate architecture and the file
+# See ../Make_test_template to select the appropriate LAUNCH.
+
+LAUNCH = 
+LAUNCH2 = 
+
+# Results are in the files out.test.diff.*
+#------------------------------------------------------------
+
+# For comparing test output with sample output
+
+PROJS = \
+  su3_leapfrog \
+  su3_omelyan_rhmc \
+  su3_rhmc_hisq \
+  su3_rhmc_hisq.f211 \
+  su3_rhmc_hisq.f2111 \
+  su3_rhmc_hisq_su3.f2111 \
+  su3_rhmd_hisq \
+  su3_spectrum_hisq
+  
+
+PRECLIST = 1 2
+
+PATTERNS = WARMUPS RUNNING
+
+include ../Make_test_template
+
+check: test
+
+clean: test_clean

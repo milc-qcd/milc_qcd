@@ -1,0 +1,191 @@
+n_pseudo 2
+
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+
+# Degree of the approximation is (4,4)
+# Approximating the function (x+4*0.010000^2)^(2/4) (x+4*0.050000^2)^(-2/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+# Converged at 9507 iterations, error = 1.384796e-06
+
+naik_term_epsilon 0
+
+# Rational function for MD
+y_MD -2 2 0 0
+z_MD 4 4 4 4
+m_MD 0.010000 0.050000 1.000000 1.000000
+order_MD 4
+
+res_MD 1.0000013915642130e+00
+res_MD 8.5971205917646884e-04
+res_MD 1.1750802443453892e-03
+res_MD 1.6111353970887166e-03
+res_MD 1.1534695083134192e-03
+
+pole_MD 99.9
+pole_MD 4.4462619583040468e-04
+pole_MD 9.1988737187440712e-04
+pole_MD 2.6122268196463183e-03
+pole_MD 6.6966517287829659e-03
+
+# CHECK: f(1.000000e-15) = 4.999993e+00 = 5.000000e+00?
+
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+
+# Degree of the approximation is (6,6)
+# Approximating the function (x+4*0.010000^2)^(2/8) (x+4*0.050000^2)^(-2/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+# Converged at 7122 iterations, error = 1.279208e-09
+
+
+# Rational function for GR
+y_GR 2 -2 0 0
+z_GR 8 8 8 8
+m_GR 0.010000 0.050000 1.000000 1.000000
+order_GR 6
+
+res_GR 9.9999999870775846e-01
+res_GR -1.0465703802991746e-05
+res_GR -4.7088487089484707e-05
+res_GR -1.5044863737285111e-04
+res_GR -4.0578764266913043e-04
+res_GR -8.3702518676026147e-04
+res_GR -9.4918316418484588e-04
+
+pole_GR 99.9
+pole_GR 4.6808443256449259e-04
+pole_GR 7.6466958480072352e-04
+pole_GR 1.5165615643089338e-03
+pole_GR 3.1609298697618791e-03
+pole_GR 6.0591633587739170e-03
+pole_GR 9.2041295998850949e-03
+
+# CHECK: f(1.000000e-15) = 4.472136e-01 = 4.472136e-01?
+
+
+# Rational function for FA
+y_FA -2 2 0 0
+z_FA 8 8 8 8
+m_FA 0.010000 0.050000 1.000000 1.000000
+order_FA 6
+
+res_FA 1.0000000012922416e+00
+res_FA 1.0020633119693042e-04
+res_FA 2.0390410350389638e-04
+res_FA 3.6323500936637476e-04
+res_FA 5.8505946932939520e-04
+res_FA 7.2031751800945190e-04
+res_FA 4.2727639667627308e-04
+
+pole_FA 99.9
+pole_FA 4.3458385994507538e-04
+pole_FA 6.6013015248349359e-04
+pole_FA 1.2653664261906257e-03
+pole_FA 2.6373623879382994e-03
+pole_FA 5.2307615518001850e-03
+pole_FA 8.5453352067564187e-03
+
+# CHECK: f(1.000000e-15) = 2.236068e+00 = 2.236068e+00?
+
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+
+# Degree of the approximation is (6,6)
+# Approximating the function (x+4*0.050000^2)^(3/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+# Iteration 0, spread 1.000000e+37 delta 2.500000e-01
+# Converged at 337 iterations, error = 6.040516e-05
+
+naik_term_epsilon 0
+
+# Rational function for MD
+y_MD -3 0 0 0
+z_MD 4 4 4 4
+m_MD 0.050000 1.000000 1.000000 1.000000
+order_MD 6
+
+res_MD 3.8483298363361355e-03
+res_MD 2.6558360892988070e-01
+res_MD 1.9569771859133905e-01
+res_MD 2.7882543496824874e-01
+res_MD 4.3687850968576963e-01
+res_MD 7.2108707456346488e-01
+res_MD 1.5251671480903226e+00
+
+pole_MD 99.9
+pole_MD 1.0978140977078202e-02
+pole_MD 3.5452669733142685e-02
+pole_MD 1.9549894369987475e-01
+pole_MD 1.2064028470198347e+00
+pole_MD 7.8144931675995775e+00
+pole_MD 6.2571222838716828e+01
+
+# CHECK: f(1.000000e-15) = 3.162087e+01 = 3.162278e+01?
+
+
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (8,8)
+# Approximating the function (x+4*0.050000^2)^(3/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+# Iteration 0, spread 1.000000e+37 delta 2.500000e-01
+# Converged at 454 iterations, error = 2.674513e-06
+
+
+# Rational function for GR
+y_GR 3 0 0 0
+z_GR 8 8 8 8
+m_GR 0.050000 1.000000 1.000000 1.000000
+order_GR 8
+
+res_GR 1.6016869138318473e+01
+res_GR -4.8613389840934673e-04
+res_GR -4.2661397572737311e-03
+res_GR -3.0415805410802844e-02
+res_GR -2.1066081719549273e-01
+res_GR -1.4754461005108404e+00
+res_GR -1.1122407266520268e+01
+res_GR -1.1505975008324116e+02
+res_GR -6.0511740559838308e+03
+
+pole_GR 99.9
+pole_GR 1.5007952641723991e-02
+pole_GR 4.2787202777922015e-02
+pole_GR 1.5701948223357723e-01
+pole_GR 6.2040079974468609e-01
+pole_GR 2.5165803503208233e+00
+pole_GR 1.0588849834697589e+01
+pole_GR 5.1215275203934681e+01
+pole_GR 5.3595695231128923e+02
+
+# CHECK: f(1.000000e-15) = 1.778284e-01 = 1.778279e-01?
+
+
+# Rational function for FA
+y_FA -3 0 0 0
+z_FA 8 8 8 8
+m_FA 0.050000 1.000000 1.000000 1.000000
+order_FA 8
+
+res_FA 6.2434174329839394e-02
+res_FA 1.9725488167977902e-02
+res_FA 4.1089016220267456e-02
+res_FA 9.3057978626662180e-02
+res_FA 2.1988308085060029e-01
+res_FA 5.2940166483909268e-01
+res_FA 1.3175929708128824e+00
+res_FA 3.7158491203968147e+00
+res_FA 1.8149606153354981e+01
+
+pole_FA 99.9
+pole_FA 1.1679457259936602e-02
+pole_FA 2.7578267012827722e-02
+pole_FA 9.5084864050896223e-02
+pole_FA 3.6909481213514034e-01
+pole_FA 1.4846048831793428e+00
+pole_FA 6.1323178474404925e+00
+pole_FA 2.7462784127293482e+01
+pole_FA 1.7974412777526393e+02
+
+# CHECK: f(1.000000e-15) = 5.623398e+00 = 5.623413e+00?

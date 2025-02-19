@@ -1,0 +1,48 @@
+PLAQUETTE ACTION: 0.07
+ACTION: g,h,f = 0.04 0.0002 0.02 0.05
+DG = 0.04 DH = 0.0002 DF = 0.02 D = 0.05
+PLAQUETTE ACTION: 0.07
+ACTION: g,h,f = 0.04 0.0002 0.02 0.05
+DG = 0.000000e+00, DH = 0.000000e+00, DF = 0.000000e+00, D = 0.000000e+00
+CHECK: delta S = 0.000000e+00
+PLAQ: 4e-06 4e-06
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+GACTION: 1e-05
+GFIX: Ended at step 7e-05 Av gf action 2e-06 delta 2e-06
+PBP: mass 2e-06 5e-06 2e-06 2e-06 2e-06 ( 0 of 0 )
+FACTION: mass = 2e-06 3e-06 ( 0 of 0 )
+PBP: mass 2e-06 2e-06 2e-06 2e-06 2e-06 ( 0 of 0 )
+FACTION: mass = 2e-06 3e-06 ( 0 of 0 )
