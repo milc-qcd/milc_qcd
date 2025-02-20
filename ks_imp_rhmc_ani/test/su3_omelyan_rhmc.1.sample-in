@@ -1,0 +1,87 @@
+# (Lines beginning with "#" are comments.)
+# Always 0 for redirected stdin
+prompt 0
+
+# Lattice dimensions
+nx 6
+ny 6
+nz 6
+nt 6
+
+# Random number seed
+iseed 3546789
+
+# Number of pseudofermions -- 
+# must agree with the number in the rational function file
+n_pseudo 1
+
+# specification of the rational function file
+# A utility for generating it is provided with the code
+load_rhmc_params rationals.sample.su3_omelyan_rhmc
+
+# gauge coupling
+beta 6.50
+
+# number of dynamical masses and the list of masses
+n_dyn_masses 2
+dyn_mass 0.01 0.05
+
+# degeneracies of flavors
+dyn_flavors 2 1
+
+# tadpole factor
+u0   0.862
+
+# The lines from here to the end can be repeated.  
+# Here we show only one instance
+
+# warmup sweeps (we usually set it to zero)
+warms 0
+
+# trajectories
+trajecs 2
+
+# interval between measurements
+traj_between_meas 1
+
+# molecular dynamics integration time step
+microcanonical_time_step 0.01
+
+# number of steps
+steps_per_trajectory 12
+
+# conjugate gradient (CG) tolerance for 
+#  md = molecular dynamics evolution
+#  fa = fermion action calculation
+#  gr = pseudofermion Gaussian random source setup
+# precision is measured as |A x - b|/|b| where || is the L2 norm
+cgresid_md_fa_gr .000002 .000002 .000002
+
+# maximum number of iterations for the CG in each instance
+max_multicg_md_fa_gr  1750  1750  1750
+
+# precision of the CG solution for each instance
+cgprec_md_fa_gr  1 2 2
+
+# precision of the fermion force calculation
+prec_ff 1
+
+# CG tolerance, max iterations, for the chiral condensate
+# and related quantities
+number_of_pbp_masses 2
+max_cg_prop 500
+max_cg_prop_restarts 5
+npbp_reps 1
+prec_pbp 1
+mass 0.01
+error_for_propagator .000001
+rel_error_for_propagator 0
+mass 0.05
+error_for_propagator .000001
+rel_error_for_propagator 0
+
+# input lattice
+reload_serial ../../binary_samples/lat.sample.l6666b650m010m050
+
+# output lattice
+forget

@@ -1,0 +1,382 @@
+SU3 with improved KS action
+Microcanonical simulation with refreshing
+Rational function hybrid Monte Carlo algorithm
+MIMD version 7.7.13
+Machine = QMP (portable), with 1 nodes
+Host(0) = kepler.physics.utah.edu
+Username = detar
+start: Mon Feb 15 09:20:11 2016
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+KS_MULTIFF=FNMAT
+VECLENGTH=4
+INT_ALG=INT_OMELYAN
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+# (Lines beginning with "#" are comments.)
+# Always 0 for redirected stdin
+# Lattice dimensions
+nx 6
+ny 6
+nz 6
+nt 6
+# Random number seed
+iseed 3546789
+# Number of pseudofermions -- 
+# must agree with the number in the rational function file
+n_pseudo 1
+# specification of the rational function file
+# A utility for generating it is provided with the code
+load_rhmc_params rationals.sample.su3_omelyan_rhmc
+# gauge coupling
+beta 6.5
+# number of dynamical masses and the list of masses
+n_dyn_masses 2
+dyn_mass 0.01 0.05 
+# degeneracies of flavors
+dyn_flavors 2 1 
+# tadpole factor
+u0 0.862
+n_pseudo 1
+Loading rational function parameters for phi field 0
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Generating a rational function
+# Degree of the approximation is (8,8)
+# Approximating the function (x+4*0.010000^2)^(2/4) (x+4*0.050000^2)^(1/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+# Converged at 1074 iterations, error = 4.741443e-05
+naik_term_epsilon 0
+# Rational function for MD
+y_MD -2 -1 0 0 
+z_MD 4 4 4 4 
+m_MD 0.01 0.05 1 1 
+order_MD 8
+Loading order 8 rational function approximation for MD:
+f(x) = (x+4*0.010000^2)^(-2/4) (x+4*0.050000^2)^(-1/4)
+       (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+res_MD 0.00372315
+res_MD 0.0388231
+res_MD 0.0716608
+res_MD 0.181807
+res_MD 0.194145
+res_MD 0.282138
+res_MD 0.440815
+res_MD 0.723559
+res_MD 1.53203
+pole_MD 99.9
+pole_MD 0.000480441
+pole_MD 0.00155923
+pole_MD 0.00744232
+pole_MD 0.0371824
+pole_MD 0.224853
+pole_MD 1.36279
+pole_MD 8.53215
+pole_MD 66.3083
+# CHECK: f(1.000000e-15) = 1.581064e+02 = 1.581139e+02?
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Generating a rational function
+# Degree of the approximation is (12,12)
+# Approximating the function (x+4*0.010000^2)^(2/8) (x+4*0.050000^2)^(1/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+# Converged at 817 iterations, error = 2.683478e-07
+# Rational function for GR
+y_GR 2 1 0 0 
+z_GR 8 8 8 8 
+m_GR 0.01 0.05 1 1 
+order_GR 12
+Loading order 12 rational function approximation for GR:
+f(x) = (x+4*0.010000^2)^(2/8) (x+4*0.050000^2)^(1/8)
+       (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+res_GR 17.9359
+res_GR -4.23463e-06
+res_GR -2.52703e-05
+res_GR -0.000118363
+res_GR -0.000685299
+res_GR -0.00419694
+res_GR -0.022459
+res_GR -0.11834
+res_GR -0.626642
+res_GR -3.42209
+res_GR -20.8232
+res_GR -185.905
+res_GR -9216.96
+pole_GR 99.9
+pole_GR 0.000528998
+pole_GR 0.00120639
+pole_GR 0.00359128
+pole_GR 0.012718
+pole_GR 0.0411836
+pole_GR 0.136033
+pole_GR 0.451958
+pole_GR 1.50969
+pole_GR 5.11395
+pole_GR 18.149
+pole_GR 76.3268
+pole_GR 734.739
+# CHECK: f(1.000000e-15) = 7.952709e-02 = 7.952707e-02?
+# Rational function for FA
+y_FA -2 -1 0 0 
+z_FA 8 8 8 8 
+m_FA 0.01 0.05 1 1 
+order_FA 12
+Loading order 12 rational function approximation for FA:
+f(x) = (x+4*0.010000^2)^(-2/8) (x+4*0.050000^2)^(-1/8)
+       (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+res_FA 0.055754
+res_FA 0.000931715
+res_FA 0.0023278
+res_FA 0.00580158
+res_FA 0.0180829
+res_FA 0.0381888
+res_FA 0.0776369
+res_FA 0.163021
+res_FA 0.346325
+res_FA 0.747674
+res_FA 1.69243
+res_FA 4.49341
+res_FA 21.7208
+pole_FA 99.9
+pole_FA 0.000464115
+pole_FA 0.000948053
+pole_FA 0.0026972
+pole_FA 0.00876563
+pole_FA 0.0263983
+pole_FA 0.0868224
+pole_FA 0.287963
+pole_FA 0.95956
+pole_FA 3.22719
+pole_FA 11.1773
+pole_FA 42.9109
+pole_FA 252.155
+Maximum rational func order is 12
+Naik term correction structure of multi_x:
+n_naiks 1
+n_pseudo_naik[0]=1
+n_orders_naik[0]=8
+n_order_naik_total 8
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 6 x 6 x 6 x 6
+Mallocing 1.5 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+
+
+# The lines from here to the end can be repeated.  
+# Here we show only one instance
+# warmup sweeps (we usually set it to zero)
+warms 0
+# trajectories
+trajecs 2
+# interval between measurements
+traj_between_meas 1
+# molecular dynamics integration time step
+microcanonical_time_step 0.01
+# number of steps
+steps_per_trajectory 12
+# conjugate gradient (CG) tolerance for 
+#  md = molecular dynamics evolution
+#  fa = fermion action calculation
+#  gr = pseudofermion Gaussian random source setup
+# precision is measured as |A x - b|/|b| where || is the L2 norm
+cgresid_md_fa_gr 2e-06 2e-06 2e-06 
+# maximum number of iterations for the CG in each instance
+max_multicg_md_fa_gr 1750 1750 1750 
+# precision of the CG solution for each instance
+cgprec_md_fa_gr 1 2 2 
+# precision of the fermion force calculation
+prec_ff 1
+# CG tolerance, max iterations, for the chiral condensate
+# and related quantities
+number_of_pbp_masses 2
+max_cg_prop 500
+max_cg_prop_restarts 5
+npbp_reps 1
+prec_pbp 1
+mass 0.01
+error_for_propagator 1e-06
+rel_error_for_propagator 0
+mass 0.05
+error_for_propagator 1e-06
+rel_error_for_propagator 0
+# input lattice
+reload_serial ../../binary_samples/lat.sample.l6666b650m010m050
+# output lattice
+forget 
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666b650m010m050
+Time stamp Mon Aug  7 14:22:30 2006
+Checksums a76176b8 5eb657fc OK
+Time to reload gauge configuration = 1.425028e-03
+CHECK PLAQ: 1.658265e+00 1.639891e+00
+CHECK NERSC LINKTR: 7.517749e-02 CKSUM: b59b771d
+Unitarity checked.  Max deviation 1.19e-07
+Time to check unitarity = 3.430843e-04
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -5.607564e-02     8
+                    2      -8.411346e-02     48
+                    3      2.830030e-02     192
+                    4      -6.347829e-03     384
+                    5      -1.132012e-01     48
+Symanzik 1x1 + 1x2 + 1x1x1 action
+gauge_action: total_dyn_flavors = 3
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.355018e-02     12
+                    2 0      -8.663654e-03     16
+WARMUPS COMPLETED
+Omelyan integration, steps= 12 eps= 1.000000e-02 lambda= 8.000000e-01
+GRSOURCE: sum = 1.9073263760e+03
+ OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 124
+PLAQUETTE ACTION: -2.778366e+04
+ OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 113
+ACTION: g,h,f = 1.67770842255353e+04  -9.36446401476860e+01  1.90732694119215e+03  1.85907665265798e+04
+DG = 1.677708e+04, DH = -9.364464e+01, DF = 1.907327e+03, D = 1.859077e+04
+ OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 113
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 113
+ OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 113
+ OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 114
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 114
+ OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 114
+ OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 114
+ OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 115
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 115
+ OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 116
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 117
+ OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 118
+PLAQUETTE ACTION: -2.773692e+04
+ OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 119
+ACTION: g,h,f = 1.68225951988426e+04  -1.32490214347839e+02  1.90066177399457e+03  1.85907667584894e+04
+DG = 4.551097e+01, DH = -3.884557e+01, DF = -6.665167e+00, D = 2.319096e-04
+ACCEPT: delta S = 2.319096e-04
+PLAQ:	1.649426	1.643181
+P_LOOP:	1.968413e-01	-1.672139e-02
+G_LOOP:  0  0  4   	1.638460e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.659869e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.632755e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.649950e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.644629e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.652158e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	9.333249e-01	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	9.061861e-01	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	8.884494e-01	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	8.996951e-01	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	9.258541e-01	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	8.827589e-01	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	9.172679e-01	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	9.414561e-01	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	9.291979e-01	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	8.909708e-01	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	8.934162e-01	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	9.033412e-01	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	9.240762e-01	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	9.781906e-01	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	9.240666e-01	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	9.479909e-01	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	9.111248e-01	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	9.253401e-01	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	9.495756e-01	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	9.325067e-01	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	9.440116e-01	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	9.026756e-01	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	9.236429e-01	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	9.495231e-01	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	9.512936e-01	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	9.439905e-01	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	9.306075e-01	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	9.507285e-01	( 1 5 4 6 2 3  )
+GACTION: 5.990953e+00
+ OK converged final_rsq= 5.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 122
+ OK converged final_rsq= 9.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 33
+PBP: mass 1.000000e-02     2.788213e-02  6.451126e-03  -2.939370e-02  -2.939368e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-02,  1.501869e+00 ( 1 of 1 )
+ OK converged final_rsq= 5.2e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 114
+ OK converged final_rsq= 5.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 20
+PBP: mass 5.000000e-02     1.200794e-01  6.398840e-02  1.839796e-02  1.839745e-02 ( 1 of 1 )
+FACTION: mass = 5.000000e-02,  1.537878e+00 ( 1 of 1 )
+Omelyan integration, steps= 12 eps= 1.000000e-02 lambda= 8.000000e-01
+GRSOURCE: sum = 1.9500440775e+03
+ OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 130
+PLAQUETTE ACTION: -2.773692e+04
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 117
+ACTION: g,h,f = 1.68225951988426e+04  1.06778778791428e+02  1.95004458212852e+03  1.88794185597626e+04
+DG = 0.000000e+00, DH = 2.392690e+02, DF = 4.938281e+01, D = 2.886518e+02
+ OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 117
+ OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 119
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 120
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 121
+ OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 121
+ OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 122
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 122
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 123
+ OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 124
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 124
+ OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 124
+ OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 125
+PLAQUETTE ACTION: -2.769863e+04
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 125
+ACTION: g,h,f = 1.68516248008401e+04  6.60985075682402e+01  1.96169032904506e+03  1.88794136374534e+04
+DG = 2.902960e+01, DH = -4.068027e+01, DF = 1.164575e+01, D = -4.922309e-03
+ACCEPT: delta S = -4.922309e-03
+PLAQ:	1.647700	1.640362
+P_LOOP:	1.777962e-01	-6.012012e-02
+G_LOOP:  0  0  4   	1.621436e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.661614e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.634954e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.660049e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.630200e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.655932e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	9.113489e-01	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	8.978120e-01	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	8.904609e-01	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	9.044423e-01	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	9.320467e-01	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	8.762053e-01	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	9.081703e-01	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	9.442446e-01	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	9.239875e-01	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	8.876984e-01	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	8.960685e-01	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	9.019985e-01	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	9.231983e-01	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	9.793153e-01	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	9.284680e-01	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	9.169677e-01	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	8.943855e-01	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	9.124990e-01	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	9.315422e-01	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	9.351857e-01	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	9.512856e-01	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	9.134487e-01	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	9.163351e-01	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	9.516629e-01	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	9.597638e-01	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	9.402135e-01	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	9.278212e-01	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	9.442240e-01	( 1 5 4 6 2 3  )
+GACTION: 6.001291e+00
+ OK converged final_rsq= 5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 128
+ OK converged final_rsq= 5.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 36
+PBP: mass 1.000000e-02     4.550957e-02  -6.644002e-03  5.304458e-02  5.304470e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-02,  1.558290e+00 ( 1 of 1 )
+ OK converged final_rsq= 5.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 116
+ OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 17
+PBP: mass 5.000000e-02     7.792562e-02  9.555835e-02  -3.265172e-02  -3.265212e-02 ( 1 of 1 )
+FACTION: mass = 5.000000e-02,  1.540508e+00 ( 1 of 1 )
+RUNNING COMPLETED
+average cg iters for step= 1.195000e+02
+Time = 1.888923e+01 seconds
+total_iters = 4494
+
+
+get_i(0): EOF on input.
+exit: Mon Feb 15 09:20:30 2016
+

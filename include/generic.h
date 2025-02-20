@@ -310,6 +310,7 @@ void g_measure(void);
 void make_loop_table(void);
 #ifdef ANISOTROPY
 void path_determine_ani(void);
+void path_determine_st(void);
 #endif
 void dsdu_qhb_subl(int dir, int subl);
 int get_max_length(void);
