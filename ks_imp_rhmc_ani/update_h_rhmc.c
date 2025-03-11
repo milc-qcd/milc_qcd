@@ -21,7 +21,6 @@ int update_h_rhmc( Real eps, su3_vector **multi_x ){
   /* gauge field force */
   imp_gauge_force_ks(eps,F_OFFSET(mom));
   /* fermionic force */
-  
   iters = update_h_fermion( eps,  multi_x );
   return iters;
 } /* update_h_rhmc */

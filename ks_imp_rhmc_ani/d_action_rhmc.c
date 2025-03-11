@@ -54,6 +54,7 @@ double d_action_rhmc( su3_vector **multi_x, su3_vector *sumvec){
   
   dtimec += dclock();
   node0_printf("ACTIONTIME: time = %e\n",dtimec);
+
   return(g_action+h_action+f_action);
 }
 

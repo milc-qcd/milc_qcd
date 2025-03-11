@@ -1,0 +1,838 @@
+Anisotropic SU3 with improved KS action
+Microcanonical simulation with refreshing
+Rational function hybrid Monte Carlo algorithm
+MIMD version 7.8.1
+Machine = Scalar processor, with 1 nodes
+Host(0) = ytdevice
+Username = trimis
+start: Mon Feb 24 17:19:10 2025
+
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+KS_MULTIFF=FNMAT
+VECLENGTH=4
+INT_ALG=INT_LEAPFROG
+HISQ_REUNIT_ALLOW_SVD
+HISQ_REUNIT_SVD_REL_ERROR = 1e-08
+HISQ_REUNIT_SVD_ABS_ERROR = 1e-08
+HISQ_FORCE_FILTER = 5e-05
+HISQ_FF_MULTI_WRAPPER is ON
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 86658
+n_pseudo 4
+load_rhmc_params rationals.m014m070
+beta 3.5 14 
+n_dyn_masses 2
+dyn_mass 0.014 0.07 
+dyn_flavors 2 1 
+u0 1
+ani_dir t
+ani_xiq 1
+n_pseudo 4
+Loading rational function parameters for phi field 0
+naik_term_epsilon 0
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 75
+# Degree of the approximation is (9,9)
+# Approximating the function (x+4*0.014000^2)^(2/4) (x+4*0.070000^2)^(1/4) (x+4*0.200000^2)^(-3/4) (x+4*99.990000^2)^(0/4)
+# Converged at 1207 iterations, error = 2.947037e-10
+# Rational function for MD
+y_MD -2 -1 3 0 
+z_MD 4 4 4 4 
+m_MD 0.014 0.07 0.2 99.99 
+order_MD 9
+Loading order 9 rational function approximation for MD:
+f(x) = (x+4*0.014000^2)^(-2/4) (x+4*0.070000^2)^(-1/4)
+       (x+4*0.200000^2)^(3/4) (x+4*99.990000^2)^(0/4)
+res_MD 1
+res_MD 0.00523899
+res_MD 0.00619566
+res_MD 0.00829442
+res_MD 0.0119778
+res_MD 0.0183247
+res_MD 0.0298124
+res_MD 0.0185143
+res_MD 0.0122925
+res_MD 0.00405718
+pole_MD 99.9
+pole_MD 0.000819481
+pole_MD 0.00114269
+pole_MD 0.00203014
+pole_MD 0.00413034
+pole_MD 0.00889048
+pole_MD 0.018469
+pole_MD 0.0385693
+pole_MD 0.0769738
+pole_MD 0.128502
+# CHECK: f(1.000000e-15) = 2.414726e+01 = 2.414726e+01?
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 75
+# Degree of the approximation is (11,11)
+# Approximating the function (x+4*0.014000^2)^(2/8) (x+4*0.070000^2)^(1/8) (x+4*0.200000^2)^(-3/8) (x+4*99.990000^2)^(0/8)
+# Converged at 1449 iterations, error = 2.004668e-12
+# Rational function for GR
+y_GR 2 1 -3 0 
+z_GR 8 8 8 8 
+m_GR 0.014 0.07 0.2 99.99 
+order_GR 11
+Loading order 11 rational function approximation for GR:
+f(x) = (x+4*0.014000^2)^(2/8) (x+4*0.070000^2)^(1/8)
+       (x+4*0.200000^2)^(-3/8) (x+4*99.990000^2)^(0/8)
+res_GR 1
+res_GR -4.67703e-06
+res_GR -1.85183e-05
+res_GR -5.10432e-05
+res_GR -0.00012747
+res_GR -0.00030293
+res_GR -0.000671667
+res_GR -0.00194019
+res_GR -0.00513761
+res_GR -0.0108651
+res_GR -0.0181476
+res_GR -0.0200872
+pole_GR 99.9
+pole_GR 0.000862855
+pole_GR 0.00118158
+pole_GR 0.00190664
+pole_GR 0.00340605
+pole_GR 0.00642506
+pole_GR 0.0124064
+pole_GR 0.0249948
+pole_GR 0.0456281
+pole_GR 0.0785667
+pole_GR 0.120338
+pole_GR 0.153801
+# CHECK: f(1.000000e-15) = 2.035008e-01 = 2.035008e-01?
+# Rational function for FA
+y_FA -2 -1 3 0 
+z_FA 8 8 8 8 
+m_FA 0.014 0.07 0.2 99.99 
+order_FA 11
+Loading order 11 rational function approximation for FA:
+f(x) = (x+4*0.014000^2)^(-2/8) (x+4*0.070000^2)^(-1/8)
+       (x+4*0.200000^2)^(3/8) (x+4*99.990000^2)^(0/8)
+res_FA 1
+res_FA 0.000294307
+res_FA 0.000557388
+res_FA 0.000924179
+res_FA 0.00152902
+res_FA 0.00256057
+res_FA 0.00439593
+res_FA 0.00905544
+res_FA 0.0112806
+res_FA 0.0123432
+res_FA 0.0102205
+res_FA 0.00419284
+pole_FA 99.9
+pole_FA 0.000824417
+pole_FA 0.00107281
+pole_FA 0.00167186
+pole_FA 0.00292665
+pole_FA 0.00546502
+pole_FA 0.0105145
+pole_FA 0.0201581
+pole_FA 0.0365424
+pole_FA 0.0647543
+pole_FA 0.104396
+pole_FA 0.143837
+Loading rational function parameters for phi field 1
+# CHECK: f(1.000000e-15) = 4.913987e+00 = 4.913987e+00?
+naik_term_epsilon 0
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (7,7)
+# Approximating the function (x+4*0.200000^2)^(1/4) (x+4*99.990000^2)^(0/4) (x+4*99.990000^2)^(0/4) (x+4*99.990000^2)^(0/4)
+# Converged at 327 iterations, error = 2.398230e-07
+# Rational function for MD
+y_MD -1 0 0 0 
+z_MD 4 4 4 4 
+m_MD 0.2 99.99 99.99 99.99 
+order_MD 7
+Loading order 7 rational function approximation for MD:
+f(x) = (x+4*0.200000^2)^(-1/4) (x+4*99.990000^2)^(0/4)
+       (x+4*99.990000^2)^(0/4) (x+4*99.990000^2)^(0/4)
+res_MD 0.14923
+res_MD 0.046061
+res_MD 0.1138
+res_MD 0.274536
+res_MD 0.687619
+res_MD 1.83201
+res_MD 5.87481
+res_MD 38.0862
+pole_MD 99.9
+pole_MD 0.185283
+pole_MD 0.375399
+pole_MD 1.05812
+pole_MD 3.40313
+pole_MD 11.7405
+pole_MD 45.73
+pole_MD 283.916
+# CHECK: f(1.000000e-15) = 1.581138e+00 = 1.581139e+00?
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (9,9)
+# Approximating the function (x+4*0.200000^2)^(1/8) (x+4*99.990000^2)^(0/8) (x+4*99.990000^2)^(0/8) (x+4*99.990000^2)^(0/8)
+# Converged at 422 iterations, error = 1.700228e-09
+# Rational function for GR
+y_GR 1 0 0 0 
+z_GR 8 8 8 8 
+m_GR 0.2 99.99 99.99 99.99 
+order_GR 9
+Loading order 9 rational function approximation for GR:
+f(x) = (x+4*0.200000^2)^(1/8) (x+4*99.990000^2)^(0/8)
+       (x+4*99.990000^2)^(0/8) (x+4*99.990000^2)^(0/8)
+res_GR 2.73277
+res_GR -0.00512886
+res_GR -0.0204789
+res_GR -0.0639514
+res_GR -0.192686
+res_GR -0.585195
+res_GR -1.85803
+res_GR -6.68946
+res_GR -34.4017
+res_GR -617.898
+pole_GR 99.9
+pole_GR 0.186425
+pole_GR 0.315826
+pole_GR 0.679106
+pole_GR 1.64209
+pole_GR 4.20254
+pole_GR 11.2153
+pole_GR 32.0724
+pole_GR 110.326
+pole_GR 764.415
+# CHECK: f(1.000000e-15) = 7.952707e-01 = 7.952707e-01?
+# Rational function for FA
+y_FA -1 0 0 0 
+z_FA 8 8 8 8 
+m_FA 0.2 99.99 99.99 99.99 
+order_FA 9
+Loading order 9 rational function approximation for FA:
+f(x) = (x+4*0.200000^2)^(-1/8) (x+4*99.990000^2)^(0/8)
+       (x+4*99.990000^2)^(0/8) (x+4*99.990000^2)^(0/8)
+res_FA 0.365929
+res_FA 0.0109316
+res_FA 0.0292903
+res_FA 0.0678756
+res_FA 0.157093
+res_FA 0.370027
+res_FA 0.906451
+res_FA 2.45234
+res_FA 8.71503
+res_FA 75.8971
+pole_FA 99.9
+pole_FA 0.178875
+pole_FA 0.290944
+pole_FA 0.612037
+pole_FA 1.46486
+pole_FA 3.72845
+pole_FA 9.8933
+pole_FA 27.9493
+pole_FA 92.735
+pole_FA 546.062
+Loading rational function parameters for phi field 2
+# CHECK: f(1.000000e-15) = 1.257433e+00 = 1.257433e+00?
+naik_term_epsilon 0
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (7,7)
+# Approximating the function (x+4*0.200000^2)^(1/4) (x+4*99.990000^2)^(0/4) (x+4*99.990000^2)^(0/4) (x+4*99.990000^2)^(0/4)
+# Converged at 327 iterations, error = 2.398230e-07
+# Rational function for MD
+y_MD -1 0 0 0 
+z_MD 4 4 4 4 
+m_MD 0.2 99.99 99.99 99.99 
+order_MD 7
+Loading order 7 rational function approximation for MD:
+f(x) = (x+4*0.200000^2)^(-1/4) (x+4*99.990000^2)^(0/4)
+       (x+4*99.990000^2)^(0/4) (x+4*99.990000^2)^(0/4)
+res_MD 0.14923
+res_MD 0.046061
+res_MD 0.1138
+res_MD 0.274536
+res_MD 0.687619
+res_MD 1.83201
+res_MD 5.87481
+res_MD 38.0862
+pole_MD 99.9
+pole_MD 0.185283
+pole_MD 0.375399
+pole_MD 1.05812
+pole_MD 3.40313
+pole_MD 11.7405
+pole_MD 45.73
+pole_MD 283.916
+# CHECK: f(1.000000e-15) = 1.581138e+00 = 1.581139e+00?
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (9,9)
+# Approximating the function (x+4*0.200000^2)^(1/8) (x+4*99.990000^2)^(0/8) (x+4*99.990000^2)^(0/8) (x+4*99.990000^2)^(0/8)
+# Converged at 422 iterations, error = 1.700228e-09
+# Rational function for GR
+y_GR 1 0 0 0 
+z_GR 8 8 8 8 
+m_GR 0.2 99.99 99.99 99.99 
+order_GR 9
+Loading order 9 rational function approximation for GR:
+f(x) = (x+4*0.200000^2)^(1/8) (x+4*99.990000^2)^(0/8)
+       (x+4*99.990000^2)^(0/8) (x+4*99.990000^2)^(0/8)
+res_GR 2.73277
+res_GR -0.00512886
+res_GR -0.0204789
+res_GR -0.0639514
+res_GR -0.192686
+res_GR -0.585195
+res_GR -1.85803
+res_GR -6.68946
+res_GR -34.4017
+res_GR -617.898
+pole_GR 99.9
+pole_GR 0.186425
+pole_GR 0.315826
+pole_GR 0.679106
+pole_GR 1.64209
+pole_GR 4.20254
+pole_GR 11.2153
+pole_GR 32.0724
+pole_GR 110.326
+pole_GR 764.415
+# CHECK: f(1.000000e-15) = 7.952707e-01 = 7.952707e-01?
+# Rational function for FA
+y_FA -1 0 0 0 
+z_FA 8 8 8 8 
+m_FA 0.2 99.99 99.99 99.99 
+order_FA 9
+Loading order 9 rational function approximation for FA:
+f(x) = (x+4*0.200000^2)^(-1/8) (x+4*99.990000^2)^(0/8)
+       (x+4*99.990000^2)^(0/8) (x+4*99.990000^2)^(0/8)
+res_FA 0.365929
+res_FA 0.0109316
+res_FA 0.0292903
+res_FA 0.0678756
+res_FA 0.157093
+res_FA 0.370027
+res_FA 0.906451
+res_FA 2.45234
+res_FA 8.71503
+res_FA 75.8971
+pole_FA 99.9
+pole_FA 0.178875
+pole_FA 0.290944
+pole_FA 0.612037
+pole_FA 1.46486
+pole_FA 3.72845
+pole_FA 9.8933
+pole_FA 27.9493
+pole_FA 92.735
+pole_FA 546.062
+Loading rational function parameters for phi field 3
+# CHECK: f(1.000000e-15) = 1.257433e+00 = 1.257433e+00?
+naik_term_epsilon 0
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (7,7)
+# Approximating the function (x+4*0.200000^2)^(1/4) (x+4*99.990000^2)^(0/4) (x+4*99.990000^2)^(0/4) (x+4*99.990000^2)^(0/4)
+# Converged at 327 iterations, error = 2.398230e-07
+# Rational function for MD
+y_MD -1 0 0 0 
+z_MD 4 4 4 4 
+m_MD 0.2 99.99 99.99 99.99 
+order_MD 7
+Loading order 7 rational function approximation for MD:
+f(x) = (x+4*0.200000^2)^(-1/4) (x+4*99.990000^2)^(0/4)
+       (x+4*99.990000^2)^(0/4) (x+4*99.990000^2)^(0/4)
+res_MD 0.14923
+res_MD 0.046061
+res_MD 0.1138
+res_MD 0.274536
+res_MD 0.687619
+res_MD 1.83201
+res_MD 5.87481
+res_MD 38.0862
+pole_MD 99.9
+pole_MD 0.185283
+pole_MD 0.375399
+pole_MD 1.05812
+pole_MD 3.40313
+pole_MD 11.7405
+pole_MD 45.73
+pole_MD 283.916
+# CHECK: f(1.000000e-15) = 1.581138e+00 = 1.581139e+00?
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (9,9)
+# Approximating the function (x+4*0.200000^2)^(1/8) (x+4*99.990000^2)^(0/8) (x+4*99.990000^2)^(0/8) (x+4*99.990000^2)^(0/8)
+# Converged at 422 iterations, error = 1.700228e-09
+# Rational function for GR
+y_GR 1 0 0 0 
+z_GR 8 8 8 8 
+m_GR 0.2 99.99 99.99 99.99 
+order_GR 9
+Loading order 9 rational function approximation for GR:
+f(x) = (x+4*0.200000^2)^(1/8) (x+4*99.990000^2)^(0/8)
+       (x+4*99.990000^2)^(0/8) (x+4*99.990000^2)^(0/8)
+res_GR 2.73277
+res_GR -0.00512886
+res_GR -0.0204789
+res_GR -0.0639514
+res_GR -0.192686
+res_GR -0.585195
+res_GR -1.85803
+res_GR -6.68946
+res_GR -34.4017
+res_GR -617.898
+pole_GR 99.9
+pole_GR 0.186425
+pole_GR 0.315826
+pole_GR 0.679106
+pole_GR 1.64209
+pole_GR 4.20254
+pole_GR 11.2153
+pole_GR 32.0724
+pole_GR 110.326
+pole_GR 764.415
+# CHECK: f(1.000000e-15) = 7.952707e-01 = 7.952707e-01?
+# Rational function for FA
+y_FA -1 0 0 0 
+z_FA 8 8 8 8 
+m_FA 0.2 99.99 99.99 99.99 
+order_FA 9
+Loading order 9 rational function approximation for FA:
+f(x) = (x+4*0.200000^2)^(-1/8) (x+4*99.990000^2)^(0/8)
+       (x+4*99.990000^2)^(0/8) (x+4*99.990000^2)^(0/8)
+res_FA 0.365929
+res_FA 0.0109316
+res_FA 0.0292903
+res_FA 0.0678756
+res_FA 0.157093
+res_FA 0.370027
+res_FA 0.906451
+res_FA 2.45234
+res_FA 8.71503
+res_FA 75.8971
+pole_FA 99.9
+pole_FA 0.178875
+pole_FA 0.290944
+pole_FA 0.612037
+pole_FA 1.46486
+pole_FA 3.72845
+pole_FA 9.8933
+pole_FA 27.9493
+pole_FA 92.735
+pole_FA 546.062
+Maximum rational func order is 11
+Naik term correction structure of multi_x:
+n_naiks 1
+n_pseudo_naik[0]=4
+n_orders_naik[0]=30
+eps_naik[0]=0.000000
+n_order_naik_total 30
+LAYOUT = Hypercubes, options = with fixed input-parameter node_geometry
+ON EACH NODE (RANK) 8 x 8 x 8 x 8
+Mallocing 10.0 MBytes per node for lattice
+WARNING!!: Resetting random seed
+
+
+warms 0
+trajecs 1
+traj_between_meas 1
+microcanonical_time_step 0.02
+steps_per_trajectory 2
+cgresid_md_fa_gr 0.0005 0.0001 0.0001 
+max_multicg_md_fa_gr 2500 2500 2500 
+cgprec_md_fa_gr 2 2 2 
+cgresid_md_fa_gr 5e-06 1e-06 1e-06 
+max_multicg_md_fa_gr 2500 2500 2500 
+cgprec_md_fa_gr 2 2 2 
+cgresid_md_fa_gr 5e-06 1e-06 1e-06 
+max_multicg_md_fa_gr 2500 2500 2500 
+cgprec_md_fa_gr 2 2 2 
+cgresid_md_fa_gr 5e-06 1e-06 1e-06 
+max_multicg_md_fa_gr 2500 2500 2500 
+cgprec_md_fa_gr 2 2 2 
+prec_ff 2
+number_of_pbp_masses 2
+max_cg_prop 500
+max_cg_prop_restarts 5
+npbp_reps 1
+prec_pbp 1
+mass 0.014
+naik_term_epsilon 0
+error_for_propagator 1e-06
+rel_error_for_propagator 0
+mass 0.07
+naik_term_epsilon 0
+error_for_propagator 1e-06
+rel_error_for_propagator 0
+reload_serial /home/trimis/MILC_versions/milc_qcd_develop_20250219/binary_samples/lat.sample.l8888
+forget 
+Restored binary gauge configuration serially from file /home/trimis/MILC_versions/milc_qcd_develop_20250219/binary_samples/lat.sample.l8888
+Time stamp Tue Mar 13 15:47:22 2012
+Checksums 4f9d000e 8d72f72e OK
+Time to reload gauge configuration = 1.376867e-03
+CHECK PLAQ: 1.7790021544584596e+00 1.7823592881385857e+00
+CHECK NERSC LINKTR: -6.4563862036388919e-04 CKSUM: 4a3bbf43
+Reunitarized for double precision. Max deviation 2.62e-07 changed to 5.55e-16
+Time to check unitarity = 2.006054e-03
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+Anisotropic action with bare quark anisotropy 1.000000 in the t-direction
+MAKING PATH TABLES
+Combined fattening and long-link calculation time: 0.040657
+Symanzik 1x1 + 1x2 + 1x1x1 action with HISQ quark loops
+gauge_action: total_dyn_flavors = 3
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -5.000000e-02     12
+                    2 0      -0.000000e+00     16
+WARMUPS COMPLETED
+Leapfrog integration, steps= 2 eps= 2.000000e-02
+GRSOURCE: sum = 6.0700710496e+03
+ OK converged final_rsq= 9.5e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 52
+Refining solution for mass 0.0146872
+ OK converged final_rsq= 9.5e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.017187
+ OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0218325
+ OK converged final_rsq= 8.9e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0291807
+ OK converged final_rsq= 8.2e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0400782
+ OK converged final_rsq= 6.9e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0556921
+ OK converged final_rsq= 4.9e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0790487
+ OK converged final_rsq= 2.5e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.106804
+ OK converged final_rsq= 8.4e-10 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.140149
+ OK converged final_rsq= 1.7e-10 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.173449
+ OK converged final_rsq= 2.7e-11 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.196087
+ OK converged final_rsq= 6.7e-12 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+GRSOURCETIME: time = 6.008148e-04
+GRSOURCE: sum = 6.0352003870e+03
+ OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 53
+Refining solution for mass 0.215885
+ OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.280992
+ OK converged final_rsq= 1e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.412039
+ OK converged final_rsq= 3.9e-19 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.64072
+ OK converged final_rsq= 2.7e-27 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.025
+ OK converged final_rsq= 2.6e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.67446
+ OK converged final_rsq= 1.2e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.83163
+ OK converged final_rsq= 6.9e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 5.25182
+ OK converged final_rsq= 3.4e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 13.824
+ OK converged final_rsq= 2.3e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+GRSOURCETIME: time = 4.527569e-04
+GRSOURCE: sum = 6.1700772691e+03
+ OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 54
+Refining solution for mass 0.215885
+ OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.280992
+ OK converged final_rsq= 7.8e-15 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.412039
+ OK converged final_rsq= 2.3e-19 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.64072
+ OK converged final_rsq= 1e-27 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.025
+ OK converged final_rsq= 2.7e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.67446
+ OK converged final_rsq= 1.2e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.83163
+ OK converged final_rsq= 7e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 5.25182
+ OK converged final_rsq= 3.4e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 13.824
+ OK converged final_rsq= 2.3e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+GRSOURCETIME: time = 4.799366e-04
+GRSOURCE: sum = 6.0994675541e+03
+ OK converged final_rsq= 6.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 54
+Refining solution for mass 0.215885
+ OK converged final_rsq= 6.2e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.280992
+ OK converged final_rsq= 5.7e-15 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.412039
+ OK converged final_rsq= 1.8e-19 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.64072
+ OK converged final_rsq= 8.2e-28 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.025
+ OK converged final_rsq= 2.4e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.67446
+ OK converged final_rsq= 1.5e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.83163
+ OK converged final_rsq= 1.4e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 5.25182
+ OK converged final_rsq= 6.5e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 13.824
+ OK converged final_rsq= 2.4e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+GRSOURCETIME: time = 4.630089e-04
+PLAQUETTE ACTION: -1.277114e+05
+ OK converged final_rsq= 9.5e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 51
+Refining solution for mass 0.0143563
+ OK converged final_rsq= 9.5e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0163769
+ OK converged final_rsq= 9.4e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0204442
+ OK converged final_rsq= 9.1e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0270493
+ OK converged final_rsq= 8.4e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0369629
+ OK converged final_rsq= 7.3e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0512701
+ OK converged final_rsq= 5.5e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0709897
+ OK converged final_rsq= 3.3e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0955803
+ OK converged final_rsq= 1.4e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.127234
+ OK converged final_rsq= 3.6e-10 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.161551
+ OK converged final_rsq= 6.1e-11 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.189629
+ OK converged final_rsq= 1.2e-11 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+ OK converged final_rsq= 7.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 53
+Refining solution for mass 0.211468
+ OK converged final_rsq= 7.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.269696
+ OK converged final_rsq= 1.3e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.391164
+ OK converged final_rsq= 1.2e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.605157
+ OK converged final_rsq= 3.3e-26 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.96546
+ OK converged final_rsq= 2.5e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.57268
+ OK converged final_rsq= 1.3e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.64336
+ OK converged final_rsq= 1e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 4.81495
+ OK converged final_rsq= 9e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 11.684
+ OK converged final_rsq= 2.6e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+ OK converged final_rsq= 9.6e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 53
+Refining solution for mass 0.211468
+ OK converged final_rsq= 9.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.269696
+ OK converged final_rsq= 1.7e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.391164
+ OK converged final_rsq= 1.6e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.605157
+ OK converged final_rsq= 4e-26 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.96546
+ OK converged final_rsq= 2.6e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.57268
+ OK converged final_rsq= 1.2e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.64336
+ OK converged final_rsq= 8.4e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 4.81495
+ OK converged final_rsq= 3.8e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 11.684
+ OK converged final_rsq= 2.6e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+ OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 53
+Refining solution for mass 0.211468
+ OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.269696
+ OK converged final_rsq= 1.5e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.391164
+ OK converged final_rsq= 1.4e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.605157
+ OK converged final_rsq= 3.6e-26 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.96546
+ OK converged final_rsq= 2.4e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.57268
+ OK converged final_rsq= 1.2e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.64336
+ OK converged final_rsq= 6e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 4.81495
+ OK converged final_rsq= 3.3e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 11.684
+ OK converged final_rsq= 2.6e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+ACTION: g,h,f = 7.40809576852880e+04  -1.42789381311029e+02  2.43748162581026e+04  9.83129845620796e+04
+DG = 7.408096e+04, DH = -1.427894e+02, DF = 2.437482e+04, D = 9.831298e+04
+ACTIONTIME: time = 2.505221e-01
+PLAQUETTE ACTION: -1.282944e+05
+Combined fattening and long-link calculation time: 0.043112
+ OK converged final_rsq= 8.4e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 51
+Refining solution for mass 0.0143563
+ OK converged final_rsq= 8.4e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0163769
+ OK converged final_rsq= 8.3e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0204442
+ OK converged final_rsq= 8e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0270493
+ OK converged final_rsq= 7.4e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0369629
+ OK converged final_rsq= 6.5e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0512701
+ OK converged final_rsq= 4.9e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0709897
+ OK converged final_rsq= 2.9e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.0955803
+ OK converged final_rsq= 1.3e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.127234
+ OK converged final_rsq= 3.2e-10 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.161551
+ OK converged final_rsq= 5.5e-11 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.189629
+ OK converged final_rsq= 1.1e-11 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 1
+ OK converged final_rsq= 7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 53
+Refining solution for mass 0.211468
+ OK converged final_rsq= 7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.269696
+ OK converged final_rsq= 1.2e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.391164
+ OK converged final_rsq= 1.2e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.605157
+ OK converged final_rsq= 3.3e-26 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.96546
+ OK converged final_rsq= 2.5e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.57268
+ OK converged final_rsq= 1.3e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.64336
+ OK converged final_rsq= 6.3e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 4.81495
+ OK converged final_rsq= 5e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 11.684
+ OK converged final_rsq= 2.3e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+ OK converged final_rsq= 9.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 53
+Refining solution for mass 0.211468
+ OK converged final_rsq= 9.2e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.269696
+ OK converged final_rsq= 1.6e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.391164
+ OK converged final_rsq= 1.5e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.605157
+ OK converged final_rsq= 4e-26 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.96546
+ OK converged final_rsq= 2.3e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.57268
+ OK converged final_rsq= 1.2e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.64336
+ OK converged final_rsq= 5.9e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 4.81495
+ OK converged final_rsq= 3.9e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 11.684
+ OK converged final_rsq= 2.7e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+ OK converged final_rsq= 7.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 53
+Refining solution for mass 0.211468
+ OK converged final_rsq= 7.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.269696
+ OK converged final_rsq= 1.4e-14 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.391164
+ OK converged final_rsq= 1.4e-18 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.605157
+ OK converged final_rsq= 3.6e-26 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 0.96546
+ OK converged final_rsq= 2.5e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 1.57268
+ OK converged final_rsq= 1.3e-31 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 2.64336
+ OK converged final_rsq= 6.6e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 4.81495
+ OK converged final_rsq= 4.3e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+Refining solution for mass 11.684
+ OK converged final_rsq= 2.3e-32 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 1
+ACTION: g,h,f = 7.35378386801911e+04  4.01618121627425e+02  2.43748121300741e+04  9.83142689318926e+04
+DG = -5.431190e+02, DH = 5.444075e+02, DF = -4.128029e-03, D = 1.284370e+00
+ACTIONTIME: time = 3.936281e-01
+REJECT: delta S = 1.288498e+00
+PLAQ:	1.7790021005738410	1.7823592304419076
+P_LOOP:	1.585353e-01	-1.773171e-02
+G_LOOP:  0  0  4   	1.7788414510621415e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.7788645616222674e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.7928558833556443e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.7793002890371243e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.7735067493133523e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.7807150586567155e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	1.1599692861619815e+00	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	1.1554769894852768e+00	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	1.1705590604427438e+00	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	1.1377429729775286e+00	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	1.1473731321385183e+00	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	1.1468223253193401e+00	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	1.1407013559548227e+00	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	1.1469950268498814e+00	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	1.1463740938116740e+00	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	1.1677656664096003e+00	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	1.1300872427510420e+00	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	1.1550750121423818e+00	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	1.1108674013167386e+00	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	1.1357294696185207e+00	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	1.1387387424661486e+00	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	1.1233007545513705e+00	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	1.1265362338120544e+00	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	1.1370298540351889e+00	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	1.1196161109209712e+00	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	1.1317828478082848e+00	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	1.1193201147600140e+00	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	1.1451821299769358e+00	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	1.1266094706319494e+00	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	1.1346035016886731e+00	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	1.1469743622700552e+00	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	1.1178948814880523e+00	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	1.1344617658055456e+00	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	1.1254771681356890e+00	( 1 5 4 6 2 3  )
+GACTION: 5.425851e+01
+restore_fermion_links: Warning. Precision request replaced by 2
+Combined fattening and long-link calculation time: 0.044362
+ OK converged final_rsq= 9.2e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 72
+ OK converged final_rsq= 8.7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 23
+PBP: mass 1.400000e-02     2.168987e-02  4.419073e-03  1.573143e-02  1.573163e-02 ( 1 of 1 )
+FACTION: mass = 1.400000e-02,  1.539724e+00 ( 1 of 1 )
+ OK converged final_rsq= 8.7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 69
+ OK converged final_rsq= 8.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 13
+PBP: mass 7.000000e-02     7.842430e-02  4.758589e-02  -2.362705e-03  -2.362593e-03 ( 1 of 1 )
+FACTION: mass = 7.000000e-02,  1.475451e+00 ( 1 of 1 )
+RUNNING COMPLETED
+average cg iters for step= 0.000000e+00
+Time = 1.524239e+00 seconds
+total_iters = 924
+
+
+get_i(0): EOF on input.
+exit: Mon Feb 24 17:19:11 2025
+
