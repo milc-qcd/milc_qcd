@@ -233,7 +233,7 @@ su3_rhmc_hisq_a::
 NAIVE_OPTIONS = "DEFINES= -DFN -DINT_ALG=INT_3G1F -UD_FN_GATHER13 \
 	"GAUGE = symanzik_1loop_hisq_action.h" \
 	"QUARK = onelink_action.h" \
-	"EXTRA_OBJECTS= ${FN_OBJECTS} ${HISQ_FORCE} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQ_FORCE} \
 	${GAUGE_FORCE} control.o"
 
 
