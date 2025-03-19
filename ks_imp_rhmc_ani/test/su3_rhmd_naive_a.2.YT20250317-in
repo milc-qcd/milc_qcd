@@ -6,13 +6,13 @@
     iseed 86658
     n_pseudo 4
     load_rhmc_params rationals.m014m070
-    beta 3.5 14.0
+    beta 7.0 7.0
     n_dyn_masses 2
     dyn_mass 0.014 0.07
     dyn_flavors 2 1
     u0  1.0
     ani_dir t
-    ani_xiq 1.00
+    ani_xiq 2.00
 
     warms 0
     trajecs 1
@@ -38,13 +38,11 @@
     npbp_reps 1
     prec_pbp 1
     mass 0.014
-    naik_term_epsilon 0
     error_for_propagator 1e-6
     rel_error_for_propagator 0
     mass 0.07
-    naik_term_epsilon 0
     error_for_propagator 1e-6
     rel_error_for_propagator 0
-    reload_serial /home/trimis/MILC_versions/milc_qcd_develop_20250219/binary_samples/lat.sample.l8888
+    fresh
     forget
  

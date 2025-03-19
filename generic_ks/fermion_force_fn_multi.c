@@ -290,6 +290,17 @@ fermion_force_fn_multi( Real eps, Real *residues,
      uncompress_anti_hermitian( &(s->mom[dir]), &tmat2 );
      add_su3_matrix( &tmat2, &(force_accum[dir][i]), &tmat2 );
      make_anti_hermitian( &tmat2, &(s->mom[dir]) );
+
+/* YT20250318 TEST START
+   We want to print the force on the (0,0,0,0) link looking in the x-direction. */
+
+//    if( dir==XUP && s->x==0 && s->y==0 && s->z==0 & s->t==0 ){
+//        dumpmat( &(force_accum[dir][i]) );
+//    }
+
+/* YT20250318 TEST END */
+
+
   }
 //tempflops+=4*18;
 //tempflops+=4*18;
