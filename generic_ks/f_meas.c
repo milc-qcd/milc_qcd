@@ -164,7 +164,7 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
   imp_ferm_links_t* fn_du0 = get_fm_du0_links(fl);
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
   imp_ferm_links_t *fn_deps = get_fn_deps_links(fl);
 #endif
 
@@ -187,7 +187,7 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
     su3_vector *dMdu_x = NULL;
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
     double r_pb_dMdeps_p_even, r_pb_dMdeps_p_odd;
     su3_vector *dMdeps_x = NULL;
 #endif
@@ -233,7 +233,7 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
       dslash_fn_field( M_inv_gr, dMdu_x, EVENANDODD, fn_du0 );
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ  && defined(DM_DEPS)
       r_pb_dMdeps_p_even = r_pb_dMdeps_p_odd = (double)0.0;
       /* dMdeps_x = dM/deps0 M^{-1} gr */
       dMdeps_x = create_v_field();
@@ -265,7 +265,7 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
 	r_pb_dMdu_p_even += su3_rdot( gr+i, dMdu_x+i );
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
 	/* r_pb_dMdu_p_even = gr * dM/du0 M^{-1} gr |even*/
 	r_pb_dMdeps_p_even += su3_rdot( gr+i, dMdeps_x+i );
 #endif
@@ -288,7 +288,7 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
 	r_pb_dMdu_p_odd += su3_rdot( gr+i, dMdu_x+i );
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
 	/* r_pb_dMdu_p_odd = gr * dM/du0 M^{-1} gr |odd*/
 	r_pb_dMdeps_p_odd += su3_rdot( gr+i, dMdeps_x+i );
 #endif
@@ -321,7 +321,7 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
 		   r_pb_dMdu_p_even, r_pb_dMdu_p_odd, jpbp_reps+1, npbp_reps);
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
       destroy_v_field( dMdeps_x ); dMdeps_x = NULL;
       g_doublesum( &r_pb_dMdeps_p_even );
       g_doublesum( &r_pb_dMdeps_p_odd );
@@ -429,7 +429,7 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
   su3_vector **dMdu_x = NULL;
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
   imp_ferm_links_t *fn_deps = get_fn_deps_links(fl);
   su3_vector **dMdeps_x = NULL;
 #endif
@@ -478,7 +478,7 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
     }
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
     /* dMdeps_x = dM/deps M^{-1} gr */
     dMdeps_x = create_su3_vector_array(n_masses);
     for(j = 0; j < n_masses; j++){
@@ -503,7 +503,7 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
       double r_pb_dMdu_p_odd = 0.0;
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
       double r_pb_dMdeps_p_even = 0.0;
       double r_pb_dMdeps_p_odd = 0.0;
 #endif
@@ -540,7 +540,7 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
 	r_pb_dMdu_p_even += su3_rdot( gr+i, dMdu_x[j]+i );
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
 	/* r_pb_dMdeps_p_even = gr * dM/deps0 M^{-1} gr |even*/
 	r_pb_dMdeps_p_even += su3_rdot( gr+i, dMdeps_x[j]+i );
 #endif
@@ -563,7 +563,7 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
 	r_pb_dMdu_p_odd += su3_rdot( gr+i, dMdu_x[j]+i );
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
 	/* r_pb_dMdeps_p_odd = gr * dM/deps0 M^{-1} gr |odd*/
 	r_pb_dMdeps_p_odd += su3_rdot( gr+i, dMdeps_x[j]+i );
 #endif
@@ -596,7 +596,7 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
 		   r_pb_dMdu_p_even, r_pb_dMdu_p_odd, jpbp_reps+1, npbp_reps);
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ  && defined(DM_DEPS)
       destroy_v_field(dMdeps_x[j]); dMdeps_x[j] = NULL;
       g_doublesum( &r_pb_dMdeps_p_even );
       g_doublesum( &r_pb_dMdeps_p_odd );
@@ -672,7 +672,7 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
 #ifdef DM_DU0
     destroy_su3_vector_array(dMdu_x,n_masses);
 #endif
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ && defined(DM_DEPS)
     destroy_su3_vector_array(dMdeps_x,n_masses);
 #endif
     destroy_su3_vector_array(M_inv_gr,n_masses);
