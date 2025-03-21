@@ -441,7 +441,7 @@ int main(int argc, char *argv[])
       
       Deriv_O6_field( param.npbp_reps, &param.qic_pbp[i], mass,
       		      fn_links, naik_index, 
-		      param.ksp_pbp[i].naik_term_epsilon);
+		      param.ksp_pbp[i].naik_term_epsilon_index);
 #endif
 #ifdef U1_FIELD
       /* Unapply the U(1) field phases */
