@@ -315,10 +315,10 @@ initial_set(void)
     n_order_naik_total += tmporder;
     n_naiks++;
   }
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if FERM_ACTION == HISQ
   // calculate epsilon corrections for different Naik terms
   if( 0 != eps_naik[0] ) {
-    if(mynode()==0)printf("IN HISQ AND HYPISQ ACTIONS FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");
+    if(mynode()==0)printf("IN THE HISQ ACTION FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");
     fflush(stdout);
     terminate(1);
   }
@@ -335,7 +335,7 @@ initial_set(void)
   fflush(stdout);
 
   if(mynode()==0)printf("n_order_naik_total %d\n",n_order_naik_total);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if FERM_ACTION == HISQ
   if( n_naiks+1 > MAX_NAIK ) {
     if(mynode()==0)printf("MAX_NAIK=%d < n_naiks+1=%d\n", MAX_NAIK, n_naiks+1 );
     if(mynode()==0)printf("Increase MAX_NAIK\n");
@@ -344,7 +344,7 @@ initial_set(void)
   }
 #else /* non HISQ */
   if( n_naiks>1 ) {
-    if(mynode()==0)printf("FOR ACTIONS OTHER THAN HISQ AND HYPISQ EPSILON CORRECTION IS NOT USED.\n");
+    if(mynode()==0)printf("FOR ACTIONS OTHER THAN HISQ EPSILON CORRECTION IS NOT USED.\n");
     if(mynode()==0)printf("ONLY ONE SET OF X LINKS IS USED.\n");
     if(mynode()==0)printf("SET ALL naik_mass TO 0 IN RATIONAL FUNCTION FILE.\n");
     fflush(stdout);
