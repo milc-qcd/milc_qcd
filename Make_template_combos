@@ -230,10 +230,12 @@ endif
 	fermion_links_hisq_load_grid.o fermion_links_hisq_load_grid_D.o fermion_links_hisq_load_grid_F.o \
 	gridHISQLinks.o ${FLINKS} ks_action_paths.o
 
-  FLINKS_HISQ_GRID = fermion_links_hisq_milc.o \
-  	fermion_links_hisq_load.o \
-	fermion_links_hisq_load_grid.o fermion_links_hisq_load_grid_D.o fermion_links_hisq_load_grid_F.o \
-	gridHISQLinks.o ${FLINKS} ks_action_paths_hisq.o su3_mat_op.o stout_smear.o
+  FLINKS_HISQ_GRID = fermion_links.o fermion_links_hisq_load.o \
+	fermion_links_hisq_load_grid.o gridHISQLinks.o fermion_links_hisq_load_grid_D.o fermion_links_hisq_load_grid_F.o \
+        fermion_links_fn_twist_milc.o fn_links_milc.o \
+	ks_action_paths_hisq.o su3_mat_op.o stout_smear.o \
+	fermion_links_hisq_milc.o 
+	
 
 # Standard QOP combinations
 
