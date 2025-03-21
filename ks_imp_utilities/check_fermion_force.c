@@ -27,7 +27,7 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 #if (MILC_PRECISION == 1)
   Real tol = 1e-3;
 #else
-  Real tol = 1e-8;
+  Real tol = 1e-9;
 #endif
   int ff_prec = MILC_PRECISION;  /* Just use prevailing precision for now */
   /* Supports only asqtad at the moment */
@@ -223,10 +223,10 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 	sub_su3_matrix( ansmom + 4*i + dir, &tmat, &diffmat);
 	diff = sqrt(realtrace_su3( &diffmat, &diffmat ));
 	norm = sqrt(realtrace_su3( &tmat, &tmat));
-	// printf("DIFF %g %g\n",norm,diff);
+	//printf("DIFF %g %g\n",norm,diff);
 	if(diff > tol * norm){
-	  printf("Intolerable relative difference %e node %d site %d\n",
-		 diff/norm,this_node,i);
+	  printf("Intolerable relative difference %e node %d site %d dir %d\n",
+		 diff/norm,this_node,i,dir);
 	  dumpmat(ansmom + 4*i + dir);
 	  dumpmat(&tmat);
 	}
