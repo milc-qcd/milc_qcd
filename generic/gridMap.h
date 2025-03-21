@@ -104,6 +104,12 @@ static void milcSU3MatrixToGrid(su3_matrix *in, sobj &out){
 	out._internal[mu]._internal._internal[i][j] = Complex(in[mu].e[i][j].real, in[mu].e[i][j].imag);
 }
 
+template<typename sobj, typename Complex>
+static void milcVectorToGrid(su3_vector *in, sobj &out){
+  for (int i=0; i<Nc; i++)
+    out()()(i) = Complex(in->c[i].real, in->c[i].imag);
+}
+
 // Copy Grid vLorentzColourMatrix to MILC su3_matrix to
 // Precision conversion can happen here
 
@@ -115,6 +121,31 @@ static void gridToMilcSU3Matrix(sobj &in, su3_matrix *out){
 	out[mu].e[i][j].real = in._internal[mu]._internal._internal[i][j].real();
 	out[mu].e[i][j].imag = in._internal[mu]._internal._internal[i][j].imag();
       }
+}
+
+// Map an su3_vector field to a Grid FermionField
+template<typename FermionField, typename Complex>
+void milcVectorFieldToGrid(su3_vector *in, FermionField *out){
+
+  typedef typename FermionField::vector_object vobj;
+  typedef typename vobj::scalar_object sobj;
+
+  GridBase *grid = out->Grid();
+  int lsites = grid->lSites();
+  std::vector<sobj> scalardata(lsites);
+
+  #pragma omp parallel for
+    for (size_t milc_idx = 0; milc_idx < sites_on_node; milc_idx++){
+      Coordinate x(4);
+      indexToCoords(milc_idx, x);
+      int grid_idx;
+      Coordinate lx(4);
+      for (int i = 0; i < 4; i++)lx[i] = x[i];
+      Lexicographic::IndexFromCoor(lx, grid_idx, grid->_ldimensions);
+      milcVectorToGrid<sobj, Complex>(in + milc_idx, scalardata[grid_idx]);
+    }
+  
+  vectorizeFromLexOrdArray(scalardata, *out);
 }
 
 // Map a flattened MILC gauge field (4 matrices per site) to a Grid LatticeGaugeField
@@ -141,6 +172,7 @@ void milcGaugeFieldToGrid(su3_matrix *in, LatticeGaugeField *out){
   
   vectorizeFromLexOrdArray(scalardata, *out);
 }
+
 
 // Map a Grid LatticeGaugeField  to a flattened MILC gauge field (4 matrices per site)
 template<typename LatticeGaugeField, typename Complex>
