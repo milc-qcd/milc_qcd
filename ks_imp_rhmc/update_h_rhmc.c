@@ -96,7 +96,7 @@ int update_h_fermion( Real eps, su3_vector **multi_x ){
   node0_printf("update_h_rhmc: n_distinct_Naik=%d\n",n);
   for(j=0;j<n;j++)
     node0_printf("update_h_rhmc: orders[%d]=%d\n",j,n_orders_naik[j]);
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if FERM_ACTION == HISQ
   for(j=0;j<n;j++)
     node0_printf("update_h_rhmc: masses_Naik[%d]=%f\n",j,fn_links.hl.eps_naik[j]);
 #endif
