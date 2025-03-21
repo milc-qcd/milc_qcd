@@ -1,8 +1,6 @@
 /**************** fermion_links_fn_load_gpu.c **********************/
 /* MILC Version 7 */
 
-/* UNDER CONSTRUCTION */
-
 /* NOTE: This code is actually an include file for fermion_links_fn_load_grid_F.c
    and fermion_links_fn_load_grid_D.c, so any edits should be consistent with this
    purpose. */
