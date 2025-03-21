@@ -83,7 +83,6 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
 }
 
 #if 0
-n
 /**********************************************************************/
 /* These routines are left here for consistency, but unsupported
    until we decide what a HISQ one-term or two-term force means */
