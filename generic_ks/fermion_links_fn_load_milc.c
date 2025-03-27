@@ -216,7 +216,8 @@ printf("\n");**/
    /* Skip the rest of the calculation if the remaining coefficients vanish */
    if( p->act_path_coeff.three_staple == 0.0 &&
        p->act_path_coeff.lepage == 0.0 &&
-       p->act_path_coeff.five_staple == 0.0)continue;
+       p->act_path_coeff.five_staple == 0.0 &&
+       p->act_path_coeff.seven_staple == 0.0 )continue;
 
    for(nu=XUP; nu<=TUP; nu++) if(nu!=dir)
      {
