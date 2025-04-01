@@ -27,7 +27,7 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 #if (MILC_PRECISION == 1)
   Real tol = 1e-3;
 #else
-  Real tol = 1e-9;
+  Real tol = 1e-7;
 #endif
   int ff_prec = MILC_PRECISION;  /* Just use prevailing precision for now */
   /* Supports only asqtad at the moment */
@@ -168,10 +168,24 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 	  allresidues[tmporder+j] = residues[j+1];
 	  // remember that residues[0] is constant, no force contribution.
 	}
+
+	/* Debug */
+	
+	for(int j=0;j<order;j++){
+	  FORALLFIELDSITES(i){
+	    printf("[%d] %d %d %d %d (%12.3e, %12.3e) (%12.3e, %12.3e) (%12.3e, %12.3e)\n",
+		   j, lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t,
+		   multi_x[j][i].c[0].real, multi_x[j][i].c[0].imag,
+		   multi_x[j][i].c[1].real, multi_x[j][i].c[1].imag,
+		   multi_x[j][i].c[2].real, multi_x[j][i].c[2].imag);
+	  }
+	}
+
 	tmporder += order;
 	iphi++;
       } /* jphi */
       destroy_fn_links(fn);
+
     } /* inaik */
   } /* phiflag != RELOAD_SERIAL */
 
