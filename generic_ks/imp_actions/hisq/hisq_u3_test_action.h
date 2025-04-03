@@ -51,10 +51,10 @@
     };
 #endif
 
-//#define UNITARIZATION_METHOD UNITARIZE_NONE
+#define UNITARIZATION_METHOD UNITARIZE_NONE
 //#define UNITARIZATION_METHOD UNITARIZE_ROOT
 //#define UNITARIZATION_METHOD UNITARIZE_RATIONAL
-#define UNITARIZATION_METHOD UNITARIZE_ANALYTIC
+//#define UNITARIZATION_METHOD UNITARIZE_ANALYTIC
 
 //#define UNITARIZATION_GROUP UNITARIZE_SU3
 #define UNITARIZATION_GROUP UNITARIZE_U3
@@ -87,13 +87,13 @@
 //       (-2.0/16 ),                  /* Correct O(a^2) errors, 2X as much as Asqtad  */
 //    };
     static Real path_coeff_2[NUM_BASIC_PATHS_2] = {
-       (1.),        /* one link */
+      (1.),        /* one link */
                     /* One link is 1/8 as in fat7 + 2*3/8 for Lepage + 1/8 for Naik */
-       (0),         /* Naik */
-       (0),         /* simple staple */
-       (0),         /* displace link in two directions */
-       (0),         /* displace link in three directions */
-       (0),         /* Correct O(a^2) errors, 2X as much as Asqtad  */
+      (0.),        /* Naik */
+      (0.),         /* simple staple */
+      (0.),         /* displace link in two directions */
+      (0.),         /* displace link in three directions */
+      (0),         /* Correct O(a^2) errors, 2X as much as Asqtad  */
     };
 #define INDEX_ONELINK 0
 #define INDEX_NAIK 1
