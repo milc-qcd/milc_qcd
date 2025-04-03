@@ -169,8 +169,8 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 	  // remember that residues[0] is constant, no force contribution.
 	}
 
+#if 0	
 	/* Debug */
-	
 	for(int j=0;j<order;j++){
 	  FORALLFIELDSITES(i){
 	    printf("[%d] %d %d %d %d (%12.3e, %12.3e) (%12.3e, %12.3e) (%12.3e, %12.3e)\n",
@@ -180,7 +180,7 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 		   multi_x[j][i].c[2].real, multi_x[j][i].c[2].imag);
 	  }
 	}
-
+#endif
 	tmporder += order;
 	iphi++;
       } /* jphi */
