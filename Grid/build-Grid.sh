@@ -4,13 +4,13 @@ ARCH=$1
 PK_CC=$2
 PK_CXX=$3
 GIT_REPO=https://github.com/milc-qcd/Grid
-GIT_BRANCH=develop
+#GIT_BRANCH=develop
 #GIT_BRANCH=feature/staggered-a2a-ml
 #vGIT_BRANCH=develop
 #GIT_REPO=https://github.com/paboyle/grid
 #GIT_BRANCH=develop
 #GIT_REPO=https://github.com/clarkedavida/Grid
-#GIT_BRANCH=hisq_force
+GIT_BRANCH=hisq_force
 
 if [ -z ${PK_CXX} ]
 then
