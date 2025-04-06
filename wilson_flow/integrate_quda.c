@@ -102,6 +102,10 @@ int pad_size = 0;
   }
   smearParams.restart = QUDA_BOOLEAN_FALSE; // ???
   smearParams.t0 = 0; // ???
+  
+#ifdef ANISOTROPY
+  smearParams.smear_anisotropy = ani;
+#endif
 
   /* Setup QUDA observable parameters */
   int nObsParams = smearParams.n_steps / smearParams.meas_interval + 1;
