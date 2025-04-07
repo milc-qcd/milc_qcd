@@ -174,6 +174,16 @@ fermion_force_fn_multi( Real eps, Real *residues,
           cleanup_gather(mtag[k]);
 	  k=1-k; // swap 0 and 1
         } /* end loop over terms in rational function expansion */
+
+#ifdef ANISOTROPY
+          FORALLSITES(i,s){
+            if( netbackdir==TDOWN ){
+              scalar_mult_su3_matrix( &oprod_along_path[0][i], ap->ani_xiq , &oprod_along_path[0][i] );
+            }
+          }
+#endif
+
+
 //tempflops+=54*nterms;
 //tempflops+=36*nterms;
     }

@@ -16,8 +16,8 @@ ks_imp_rhmc_ani/d_action_rhmc.c
 ks_imp_rhmc_ani/gauge_info.c
 
 
-	ks_imp_rhmc_ani/Make_template
 
+	ks_imp_rhmc_ani/Make_template
 
 su3_rhmd_hisq_a::
         ${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS} \
@@ -31,12 +31,11 @@ su3_rhmc_hisq_a::
 	
 	include/generic.h
 
-
 void path_determine_st(void);
 
 
-	ks_imp_rhmc_ani/lattice.h :
 
+	ks_imp_rhmc_ani/lattice.h :
 
 #ifdef ANISOTROPY
         su3_matrix staple_a[2];
@@ -47,7 +46,6 @@ void path_determine_st(void);
                     staple=staple_a[0]+staple_a[1] */
 #endif
 
-
 #ifndef ANISOTROPY
 EXTERN  Real beta,u0;
 #else
@@ -55,8 +53,8 @@ EXTERN  Real beta[2],u0;
 #endif
 
 
-	ks_imp_rhmc_ani/params.h :
 
+	ks_imp_rhmc_ani/params.h :
 
 #ifndef ANISOTROPY
         Real beta;      /* gauge coupling */
@@ -65,15 +63,14 @@ EXTERN  Real beta[2],u0;
 #endif
 
 
-	ks_imp_rhmc_ani/setup.c :
 
+	ks_imp_rhmc_ani/setup.c :
 
 #ifndef ANISOTROPY
     printf("SU3 with improved KS action\n");
 #else
     printf("Anisotropic SU3 with improved KS action\n");
 #endif
-
 
 #ifndef ANISOTROPY
     IF_OK status += get_f(stdin, prompt,"beta", &param.beta );
@@ -82,7 +79,6 @@ EXTERN  Real beta[2],u0;
     IF_OK status += get_vf(stdin, prompt,"beta", param.beta, 2 );
 #endif
 
-
 #ifndef ANISOTROPY
   beta = param.beta;
 #else
@@ -90,22 +86,20 @@ EXTERN  Real beta[2],u0;
   beta[1] = param.beta[1];
 #endif
 
-
 #ifdef ANISOTROPY
         /* figure out which loops are temporal and which are spatial */
         path_determine_st();
 #endif
 
 
-	ks_imp_rhmc_ani/d_action_rhmc.c :
 
+	ks_imp_rhmc_ani/d_action_rhmc.c :
 
 #ifndef ANISOTROPY
   g_action = -beta*volume*(ssplaq+stplaq);
 #else
   g_action = -(beta[0]*ssplaq+beta[1]*stplaq)*volume;
 #endif
-
 
 #ifndef ANISOTROPY
     g_action = (beta/3.0)*imp_gauge_action();
@@ -114,8 +108,8 @@ EXTERN  Real beta[2],u0;
 #endif
 
 
-	ks_imp_rhmc_ani/gauge_info.c
 
+	ks_imp_rhmc_ani/gauge_info.c
 
 #ifndef ANISOTROPY
   write_gauge_info_item(fp,"gauge.beta11","%f",(char *)&beta,0,0);
@@ -123,7 +117,6 @@ EXTERN  Real beta[2],u0;
   write_gauge_info_item(fp,"gauge.beta_space","%f",(char *)&(beta[0]),0,0);
   write_gauge_info_item(fp,"gauge.beta_time", "%f",(char *)&(beta[1]),0,0);
 #endif
-
 
 #ifndef ANISOTROPY
   bytes = strlen(info);
@@ -139,17 +132,31 @@ EXTERN  Real beta[2],u0;
 #endif
 
 
+
 Now to the quark sector.
 
 Files to be changed :
 
+generic_ks/fermion_force_fn_multi.c
 ks_imp_rhmc_ani/lattice.h
 ks_imp_rhmc_ani/params.h
 ks_imp_rhmc_ani/setup.c
 
 
-	ks_imp_rhmc_ani/lattice.h
 
+	generic_ks/fermion_force_fn_multi.c
+
+#ifdef ANISOTROPY
+          FORALLSITES(i,s){
+            if( netbackdir==TDOWN ){
+              scalar_mult_su3_matrix( &oprod_along_path[0][i], ap->ani_xiq , &oprod_along_path[0][i] );
+            }
+          }
+#endif
+
+
+
+	ks_imp_rhmc_ani/lattice.h
 
 #ifdef ANISOTROPY
 EXTERN short ani_dir; /* direction of anisotropy */
@@ -161,8 +168,8 @@ EXTERN Real iso_xiq; /* bare quark isotropic link factor for debugging */
 #endif
 
 
-	ks_imp_rhmc_ani/params.h
 
+	ks_imp_rhmc_ani/params.h
 
 #ifdef ANISOTROPY
   short ani_dir; /* direction of anisotropy */
@@ -174,16 +181,14 @@ EXTERN Real iso_xiq; /* bare quark isotropic link factor for debugging */
 #endif
 
 
+
 	ks_imp_rhmc_ani/setup.c
 
-
   char savebuf[128];
-
 
 #if ( defined ANISOTROPY && defined ASQ_ACTION && FERM_ACTION == FN_TYPE )
     IF_OK status += get_f(stdin, prompt,"ani_u0", &param.ani_u0 );
 #endif
-
 
 #ifdef ANISOTROPY
     /* Direction of anisotropy */
@@ -198,11 +203,9 @@ EXTERN Real iso_xiq; /* bare quark isotropic link factor for debugging */
 #  endif
 #endif
 
-
 #if ( defined ANISOTROPY && defined ASQ_ACTION && FERM_ACTION == FN_TYPE )
   ani_u0 = param.ani_u0;
 #endif
-
 
 #ifdef ANISOTROPY
     /* Direction of anisotropy */
