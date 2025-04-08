@@ -107,6 +107,15 @@ int pad_size = 0;
   smearParams.smear_anisotropy = ani;
 #endif
 
+#if GF_INTEGRATOR==INTEGRATOR_LUSCHER
+  smearParams.rk_order = 3;
+#elif GF_INTEGRATOR==INTEGRATOR_BBB
+  smearParams.rk_order = 4;
+#else
+  printf( "run_gradient_flow_quda: unsupported integrator for QUDA\n");
+  fflush(stdout); terminate(1);
+#endif
+
   /* Setup QUDA observable parameters */
   int nObsParams = smearParams.n_steps / smearParams.meas_interval + 1;
   QudaGaugeObservableParam *obsParams;
@@ -136,14 +145,7 @@ int pad_size = 0;
   }
 
   /* Do the gauge flow */
-#if GF_INTEGRATOR==INTEGRATOR_LUSCHER
   performWFlowQuda(&smearParams, obsParams);
-#elif GF_INTEGRATOR==INTEGRATOR_BBB
-  performWFlowFourthOrderQuda(&smearParams, obsParams);
-#else
-  printf( "run_gradient_flow_quda: unsupported integrator for QUDA\n");
-  fflush(stdout); terminate(1);
-#endif
 
   /* Clean up */
   destroy_G_quda(links);
