@@ -125,12 +125,12 @@ int pad_size = 0;
   {
     obsParams[i] = newQudaGaugeObservableParam();
     obsParams[i].struct_size = sizeof(QudaGaugeObservableParam);
-    obsParams[i].su_project = QUDA_BOOLEAN_FALSE; // ???
+    obsParams[i].su_project = QUDA_BOOLEAN_FALSE;
     obsParams[i].compute_plaquette = QUDA_BOOLEAN_TRUE;
-    obsParams[i].compute_polyakov_loop = QUDA_BOOLEAN_TRUE;
+    obsParams[i].compute_rectangle = QUDA_BOOLEAN_TRUE;
+    obsParams[i].compute_polyakov_loop = QUDA_BOOLEAN_FALSE;
     obsParams[i].compute_qcharge = QUDA_BOOLEAN_TRUE;
     obsParams[i].compute_qcharge_density = QUDA_BOOLEAN_FALSE;
-    obsParams[i].compute_gauge_loop_trace = QUDA_BOOLEAN_FALSE;
 
     /* Rectangle calculation */
     obsParams[i].compute_gauge_loop_trace = QUDA_BOOLEAN_TRUE;
@@ -141,7 +141,6 @@ int pad_size = 0;
     obsParams[i].num_paths = numPaths;
     obsParams[i].max_length = pathLength;
     obsParams[i].factor = 1.0/volume;
-
   }
 
   /* Do the gauge flow */
