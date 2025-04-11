@@ -386,7 +386,11 @@ ifeq ($(strip ${WANTFFTW}),true)
   FFTW_HEADERS = ${FFTW}/include
   INCFFTW = -I${FFTW_HEADERS}
   LIBFFTW = -L${FFTW}/lib
-  LIBFFTW += -lfftw3 -lfftw3f
+  ifeq ($(strip ${PRECISION}),1)
+    LIBFFTW += -lfftw3f
+  else
+    LIBFFTW += -lfftw3
+  endif
   PACKAGE_HEADERS += ${FFTW_HEADERS}
 endif
 
@@ -473,6 +477,10 @@ ifeq ($(strip ${WANTQUDA}),true)
   WANT_GAUGEFIX_OVR_GPU ?= #true
   WANT_MULTIGRID ?= false
 
+  # If QUDA CG is enabled, then eigensolve/deflation must be enabled
+  ifeq ($(strip ${WANT_FN_CG_GPU}),true)
+    WANT_EIG_GPU = true
+  endif
 endif
 
 ifeq ($(strip ${WANTQUDA}),true)

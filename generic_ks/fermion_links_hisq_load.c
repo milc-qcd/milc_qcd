@@ -751,6 +751,7 @@ create_hisq_links_milc(info_t *info, fn_links_t **fn0, fn_links_t **fn_deps,
   final_flop += info->final_flop;
   
   *fn0 = create_fn_links();
+  (*fn0)->preserve = 1;
 
   if(want_deps || n_naiks > 1)
     *fn_deps = create_fn_links();

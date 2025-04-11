@@ -73,7 +73,6 @@ void ks_dirac_opsq( su3_vector *src, su3_vector *dst, Real mass, int parity,
     register site *s;
     int otherparity = 0;
     Real msq_x4 = 4.0*mass*mass;
-    su3_vector *tmp = create_v_field();;
 
     switch(parity){
     case(EVEN): otherparity=ODD; break;
@@ -81,14 +80,12 @@ void ks_dirac_opsq( su3_vector *src, su3_vector *dst, Real mass, int parity,
     case(EVENANDODD): otherparity=EVENANDODD;
     }
 
-    dslash_field( src, tmp, otherparity, fn);
-    dslash_field( tmp, dst, parity, fn);
-    FORSOMEPARITYDOMAIN_OMP(i,s,parity,){
-      scalar_mult_su3_vector( dst+i, -1.0, dst+i);
-      scalar_mult_sum_su3_vector( dst+i, src+i, msq_x4 );
+    dslash_fn_field( src, dst, otherparity, fn);
+    dslash_fn_field( dst, dst, parity, fn);
+    FORSOMEFIELDPARITY_OMP(i,parity,){
+      scalar_mult_add_su3_vector( dst+i, src+i, -msq_x4, dst+i );
     } END_LOOP_OMP;
 
-    destroy_v_field(tmp);
 }
 
 /*****************************************************************************/
@@ -1187,6 +1184,28 @@ void check_invert( field_offset src, field_offset dest, Real mass,
   destroy_v_field(tsrc);
 }
 
+/* DEBUG */
+static Real 
+my_relative_residue(su3_vector *p, su3_vector *q, int parity)
+{
+  double residue, num, den;
+  int i;
+  
+  residue = 0;
+  FORSOMEFIELDPARITY_OMP(i,parity,private(num,den) reduction(+:residue)){
+    num = (double)magsq_su3vec( &(p[i]) );
+    den = (double)magsq_su3vec( &(q[i]) );
+    residue += (den==0) ? 1.0 : (num/den);
+  } END_LOOP_OMP;
+
+  g_doublesum(&residue);
+
+  if(parity == EVENANDODD)
+    return sqrt(residue/volume);
+  else
+    return sqrt(2*residue/volume);
+}
+
 /*****************************************************************************/
 /* FOR TESTING: multiply src by Madj M and check against dest */
 void check_invert_field2( su3_vector *src, su3_vector *dest, Real mass,
@@ -1195,50 +1214,68 @@ void check_invert_field2( su3_vector *src, su3_vector *dest, Real mass,
     register site *s;
     Real r_diff, i_diff;
     double sum,sum2,dflag,dmaxerr,derr;
-    su3_vector *tmp;
 
-    tmp = (su3_vector *)malloc(sites_on_node * sizeof(su3_vector));
-    if(tmp==NULL){
-      printf("check_invert_field2(%d): no room for tmp\n",this_node);
+    su3_vector *tmp   = create_v_field();
+    su3_vector *resid = create_v_field();
+    if(tmp==NULL || resid==NULL){
+      printf("check_invert_field2(%d): no room for tmp and resid\n",this_node);
       terminate(1);
     }
 
-    /* Compute tmp = (Madj M) src */
-    ks_dirac_opsq( src, tmp, mass, parity, fn);
+    /* Compute tmp = -(Madj M) dest */
+    ks_dirac_opsq( dest, tmp, mass, parity, fn);
 
+    FORSOMEFIELDPARITY(i,parity){
+      add_su3_vector(src+i, tmp+i, resid+i);
+    } END_LOOP;
+
+    node0_printf("check_invert_field2: Checking solution with tolerance %e\n",
+		 tol);
     sum2=sum=0.0;
     dmaxerr=0;
     flag = 0;
+
     FORSOMEFIELDPARITY(i,parity){
-	for(k=0;k<3;k++){
-	    r_diff = dest[i].c[k].real - tmp[i].c[k].real;
-	    i_diff = dest[i].c[k].imag - tmp[i].c[k].imag;
-	    if( fabs(r_diff) > tol || fabs(i_diff) > tol ){
-	      printf("site %d color %d  expected ( %.4e , %.4e ) got ( %.4e , %.4e )\n",
-		     i,k,
-		     dest[i].c[k].real, dest[i].c[k].imag,
-		     tmp[i].c[k].real, tmp[i].c[k].imag);
-	      flag++;
-	    }
-	    derr = r_diff*r_diff + i_diff*i_diff;
-	    if(derr>dmaxerr)dmaxerr=derr;
- 	    sum += derr;
-	}
-	sum2 += magsq_su3vec( dest+i );
+      sum2 += magsq_su3vec( src+i );
     } END_LOOP;
-    g_doublesum( &sum );
+
     g_doublesum( &sum2 );
+    double srcnorm = sqrt(sum2);
+
+    FORSOMEFIELDPARITY(i,parity){
+      for(k=0;k<3;k++){
+	r_diff = resid[i].c[k].real/srcnorm;
+	i_diff = resid[i].c[k].imag/srcnorm;
+	if( fabs(r_diff) > tol || fabs(i_diff) > tol ){
+	  if(flag < 50) /* Don't print too many */
+	    printf("site %d color %d  expected ( %.4e , %.4e ) got ( %.4e , %.4e )\n",
+		   i,k,
+		   src[i].c[k].real, src[i].c[k].imag,
+		   -tmp[i].c[k].real, -tmp[i].c[k].imag);
+	  flag++;
+	}
+	derr = r_diff*r_diff + i_diff*i_diff;
+	if(derr>dmaxerr)dmaxerr=derr;
+	sum += derr;
+      }
+    } END_LOOP;
+
+    g_doublesum( &sum );
     dflag=flag;
     g_doublesum( &dflag );
     g_doublemax( &dmaxerr );
+    double rel_resid = my_relative_residue(resid, dest, parity);
+
     if(this_node==0){
-      printf("Inversion checked, frac. error = %e\n",sqrt(sum/sum2));
+      printf("Inversion checked, resid = %e rel_resid = %g\n",
+	     sqrt(sum), rel_resid);
       printf("Flagged comparisons = %d\n",(int)dflag);
-      printf("Max err. = %e frac. = %e\n",sqrt(dmaxerr),
-	     sqrt(dmaxerr*volume/sum2));
+      printf("Max err. = %e\n",sqrt(dmaxerr));
       fflush(stdout);
     }
-    free(tmp);
+		 
+    destroy_v_field(tmp);
+    destroy_v_field(resid);
 }
 
 #if 0 /* Haven't been using these */

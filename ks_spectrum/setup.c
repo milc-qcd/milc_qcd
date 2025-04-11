@@ -270,8 +270,10 @@ int readin(int prompt) {
       if(param.ks_eigen_startflag == RELOAD_ASCII || 
 		      param.ks_eigen_startflag == RELOAD_SERIAL ||
 		      param.ks_eigen_startflag == RELOAD_PARALLEL ){
-      /* allow file to have more eigenpairs than will be used for deflation */
+        /* allow file to have more eigenpairs than will be used for deflation */
         IF_OK status += get_i(stdin, prompt,"file_number_of_eigenpairs", &param.eigen_param.Nvecs_in);
+        /* eigensolver precision needs to be set for QUDA */ 
+	IF_OK status += get_i(stdin, prompt, "eigensolver_prec", &param.eigen_param.eigPrec );
       }
 #endif
 

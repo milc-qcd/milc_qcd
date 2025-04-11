@@ -59,7 +59,7 @@ gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
 #endif
 
   if(t_links == NULL){
-    printf("%s(%s): NULL t_links\n", __func__, this_node);
+    printf("%s(%d): NULL t_links\n", __func__, this_node);
     terminate(1);
   }
 

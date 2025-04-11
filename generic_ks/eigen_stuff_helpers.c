@@ -566,6 +566,7 @@ void construct_eigen_other_parity(su3_vector *eigVec[], Real eigVal[],
 				  ks_eigen_param *eigen_param, imp_ferm_links_t *fn){
   
   char myname[] = "construct_eigen_other_parity";
+  //node0_printf("Entered %s\n", myname);
   int i,j;
   double *magsq;
   int Nvecs = eigen_param->Nvecs;

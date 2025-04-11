@@ -393,7 +393,7 @@ typedef struct {
   int Restart ; /* Restart  Rayleigh every so many iterations */
   int Kiters ; /* Kalkreuter iterations */
   int parity; 
-  double tol_restart;
+  Real tol_restart;
 } ks_eigen_param;
 #endif
 

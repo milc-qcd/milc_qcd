@@ -40,6 +40,12 @@ eigenval_tolerance 5.0e-13
 Lanczos_max 60
 Lanczos_restart 40
 
+# Precision of the eigensolve; 2=double, 1=single, 0=half
+eigensolver_prec 2
+
+# The number of extra vectors to use for batched rotation
+batched_rotate 20
+
 # Chebyshev polynomial (makes region (alpha,beta) smooth and outside diverge. even order gives even function.)
 # Chebyshev_beta should be greater than the largest eigenvalue of the system. For HISQ, a value of 24 should be sufficient
 # Chebyshev_beta=0 prompts QUDA to estimate the largest eigenvalue and use that

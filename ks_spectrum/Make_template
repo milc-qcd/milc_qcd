@@ -38,7 +38,6 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} \
 # Basic set from current directory
 MY_OBJECTS =         \
   control.o          \
-  crc32.o            \
   gauge_info.o       \
   ks_source_info.o   \
   ksprop_info.o      \

@@ -55,6 +55,8 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   int polyDeg = eigen_param->poly.norder;
   int blockSize = eigen_param->blockSize;
   int parity = eigen_param->parity;
+  int batchedRotate = eigen_param->batchedRotate;
+  int precEigensolver = eigen_param->eigPrec;
   /**************************************************************/
   
   /* QUDA inverter setup *************************/  
@@ -145,7 +147,19 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   qgp.cuda_prec = qgp.cpu_prec;
   qgp.cuda_prec_sloppy = qgp.cuda_prec;
   qgp.cuda_prec_precondition = qgp.cuda_prec;
-  qgp.cuda_prec_eigensolver = qgp.cuda_prec;
+  //qgp.cuda_prec_eigensolver = qgp.cuda_prec;
+
+  if(precEigensolver == 2) {
+    qgp.cuda_prec_eigensolver = QUDA_DOUBLE_PRECISION;
+  } else if(precEigensolver == 1) {
+    qgp.cuda_prec_eigensolver = QUDA_SINGLE_PRECISION;
+  } else if(precEigensolver == 0) {
+    qgp.cuda_prec_eigensolver = QUDA_HALF_PRECISION;
+  } else {
+    printf("%s: Unrecognized eigensolver precision\n",myname);
+    terminate(2);
+  }
+
   qgp.cuda_prec_refinement_sloppy = qgp.cuda_prec;
 
   qgp.reconstruct = QUDA_RECONSTRUCT_NO;
@@ -213,7 +227,7 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   qep.tol = tol;
   qep.qr_tol = qep.tol;
   qep.max_restarts = maxIter;
-  qep.batched_rotate = 0;
+  qep.batched_rotate = batchedRotate;
   qep.require_convergence = QUDA_BOOLEAN_TRUE;
   qep.check_interval = 1;
 

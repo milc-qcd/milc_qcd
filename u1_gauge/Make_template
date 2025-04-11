@@ -178,7 +178,7 @@ u1_g-Coulomb-QED_TL::
 
 u1_g_convert::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"EXTRA_OBJECTS= control_convert.o" \
+	"EXTRA_OBJECTS= control_convert.o momgauge.o" \
 	"DEFINES = -DNO_GAUGE_FIELD"
 	@echo WARNING!!: MPP IS NOT SUPPORTED WITH THIS CODE!!
 

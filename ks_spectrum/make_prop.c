@@ -121,6 +121,14 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
     }
   }
 
+  /* All members of the set must have the same startflag */
+  for(int j = 0; j < num_prop; j++){
+    if(startflag[j] != startflag[0]){
+      node0_printf("ERROR: %s: start flag mismatch within set %d %d\n", myname,startflag[j],startflag[0]);
+      terminate(1);
+    }
+  }
+
   switch(set_type){
 
   case SINGLES_SET:
@@ -257,7 +265,8 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
     if(set_type != SINGLES_SET || my_qic[0].inv_type == CGTYPE)
       node0_printf("Because an initial guess is given, treating as SINGLES and CG\n");
     set_type = SINGLES_SET;
-    my_qic[0].inv_type = CGTYPE;
+    for(int j = 0; j < num_prop; j++)
+      my_qic[j].inv_type = CGTYPE;
   }
     
   imp_ferm_links_t *fn;

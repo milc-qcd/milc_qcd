@@ -242,7 +242,7 @@ endif
   FLINKS_FN_QOP = ${FLINKS_QOP} fn_links_qop.o fermion_links_asqtad_qop.o \
       fermion_links_fn_twist_qop.o ks_action_coeffs_asqtad_qop.o ks_action_paths.o
 
-  FLINKS_HISQ_QOP = ${FLINKS_QOP} hisq_links_qop.o fn_links_qop.o \
+  FLINKS_HISQ_QOP = ${FLINKS_QOP} fn_links_qop.o hisq_links_qop.o \
       fermion_links_hisq_qop.o fermion_links_fn_twist_qop.o \
       ks_action_coeffs_hisq_qop.o ks_action_paths_hisq.o \
       su3_mat_op.o

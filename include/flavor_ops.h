@@ -33,6 +33,7 @@ int is_rhosbfn_index(int index);
 int is_rhosape_index(int index);
 int is_rhosfape_index(int index);
 int is_rhosbape_index(int index);
+int is_fn_index(int index);
 int forward_index(int index);
 int backward_index(int index);
 int is_fn_index(int index);

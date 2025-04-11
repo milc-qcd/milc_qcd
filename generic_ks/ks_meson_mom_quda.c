@@ -114,7 +114,7 @@ void qudaContractFT(int external_precision, // milc_precision
 
 /*******************************************/
 
-void dump_QudaContractArgs(const QudaContractArgs_t const* args)
+void dump_QudaContractArgs(const QudaContractArgs_t * args)
 {
   printf("QudaContractArgs:\n");
   printf("source_position: %3d %3d %3d %3d\n",
@@ -313,7 +313,6 @@ void ks_meson_cont_mom(
       QudaFFTSymmType corr_parity[num_corr_mom[g]*4];
       map_corr_mom_parity(corr_mom, corr_parity, num_corr_mom[g],
 			  corr_table[g], p_index, q_momstore, q_parity);
-
       /* Load the contraction args */
       QudaContractArgs_t cont_args;
       
@@ -365,7 +364,6 @@ void ks_meson_cont_mom(
 	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
 	destroy_v_field(q);
        }
-
       flops += update_props(prop, meson_q, nt, num_corr_mom[g], meson_phase,
 			    meson_factor, corr_table[g], corr_index);
 
@@ -380,7 +378,7 @@ void ks_meson_cont_mom(
 #ifdef WMTIME
   if(dtime > 0)mflops = flops/(dtime*1e6);
   else mflops = 0;
-  
+
   node0_printf("WMTIME: time %.1e sec %g flops %.1f MF\n",
 	       dtime,flops,mflops);fflush(stdout);
 #endif

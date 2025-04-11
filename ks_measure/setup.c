@@ -574,8 +574,13 @@ int readin(int prompt) {
 
   eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
   eigVec = (su3_vector **)malloc(Nvecs_tot*sizeof(su3_vector *));
-  for(int i = 0; i < Nvecs_tot; i++)
+  for(int i = 0; i < Nvecs_tot; i++){
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+    if(eigVec[i] == NULL){
+      printf("No room for eigenvector\n");
+      terminate(1);
+    }
+  }
 
   /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
   imp_ferm_links_t *fn = get_fm_links(fn_links, 0);

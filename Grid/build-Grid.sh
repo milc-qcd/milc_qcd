@@ -3,14 +3,15 @@
 ARCH=$1
 PK_CC=$2
 PK_CXX=$3
-GIT_REPO=https://github.com/milc-qcd/Grid
-GIT_BRANCH=develop
+#GIT_REPO=https://github.com/milc-qcd/Grid
+#GIT_BRANCH=develop
 #GIT_BRANCH=feature/staggered-a2a-ml
 #vGIT_BRANCH=develop
 #GIT_REPO=https://github.com/paboyle/grid
 #GIT_BRANCH=develop
 #GIT_REPO=https://github.com/clarkedavida/Grid
-#GIT_BRANCH=hisq_force
+GIT_REPO=https://github.com/milc-qcd/Grid
+GIT_BRANCH=feature/LMI-master
 
 if [ -z ${PK_CXX} ]
 then
@@ -170,7 +171,7 @@ then
 	     --with-lime=${HOME}/perlmutter/build/usqcd \
              CXX="nvcc"                \
 	     LDFLAGS="-cudart shared " \
-             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_80,code=sm_80 -std=c++14 -cudart shared" \
+             CXXFLAGS="-ccbin ${PK_CXX} -gencode arch=compute_80,code=sm_80 -std=c++17 -cudart shared" \
 
         status=$?
         echo "Configure exit status $status"
@@ -226,8 +227,10 @@ then
          --disable-gparity \
          --disable-fermion-reps \
          --disable-zmobius \
+	 --with-lime=${CLIME} \
 	 --enable-shm=nvlink \
          --enable-accelerator=sycl   \
+ 	 --enable-accelerator-aware-mpi=yes \
 	 --enable-unified=no \
 	 MPICXX=mpicxx \
          CXX="${PK_CXX}" CC="${PK_CC}" \
@@ -236,6 +239,7 @@ then
 
 	# /soft/compilers/oneapi/2023.12.15.001/oneapi/2024.0/include
 	# MPICXX=mpicxx \
+        # --enable-accelerator-cshift \
 
 	       #       TOOLS=$HOME/tools
 #	LDFLAGS="-fiopenmp -fsycl -fsycl-device-code-split=per_kernel -fsycl-device-lib=all -lze_loader -L$TOOLS/lib64/" \

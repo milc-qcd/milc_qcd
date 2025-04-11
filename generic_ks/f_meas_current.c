@@ -226,15 +226,25 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
   double ptime = -dclock();
 
   if(Num == 0)return;
-  
+
+  int nzero = 0;
   for(i=Num-1;i>-1;i--){
     dot_product(vector[i], vec, &cc, parity) ;
+    if(cc.real == 0. && cc.imag == 0.){
+      if(nzero < 100){
+	node0_printf("project_out got zero dot product\n");
+      }
+      nzero++;
+    }
     complex_vec_mult_sub(&cc, vector[i], vec, parity);
   }
 
   ptime += dclock();
 #ifdef CGTIME
-  node0_printf("Time to project out low modes %g sec\n", ptime);
+  if(parity == EVEN)
+    node0_printf("Time to project out low modes from EVEN source %g sec\n", ptime);
+  else
+    node0_printf("Time to project out low modes from ODD source %g sec\n", ptime);
 #endif
 }
 

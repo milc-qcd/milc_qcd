@@ -429,8 +429,8 @@ int main(int argc, char *argv[])
 #ifdef U1_FIELD
       u1phase_on(param.charge_pbp[i], u1_A);
       invalidate_fermion_links(fn_links);
-#endif
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i].prec);
+#endif
 
       naik_index = param.ksp_pbp[i].naik_term_epsilon_index;
       mass = param.ksp_pbp[i].mass;
@@ -447,6 +447,8 @@ int main(int argc, char *argv[])
       /* Unapply the U(1) field phases */
       u1phase_off();
       invalidate_fermion_links(fn_links);
+      restore_fermion_links_from_site(fn_links, param.qic_pbp[i].prec);
+      fn = get_fm_links(fn_links, 0);
 #endif
     }
 
@@ -991,7 +993,6 @@ int main(int argc, char *argv[])
       clear_qs(&param.src_qs[i]);
 
     /* Free links */
-    fn->preserve = 0;
 #if FERM_ACTION == HISQ
     destroy_fermion_links_hisq(fn_links);
 #else
@@ -1037,6 +1038,7 @@ int main(int argc, char *argv[])
             node0_printf(" %d ",iq1);
             if(iq1 == -1) qko1[j] = NULL;
             else qko1[j] = quark[iq1];
+
           }
           node0_printf("\nOctet %d :  ",iqo2);
           for(j = 0; j < 8; j++){
