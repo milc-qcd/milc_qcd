@@ -56,29 +56,6 @@ int pad_size = 0;
   qgp.ga_pad = pad_size; 
   qgp.mom_ga_pad = 0;
 
-  /* Prepare for rectangle calculation */
-  int trace_loop_length[] = {6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6};
-  double trace_loop_coeff_d[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-
-  /* Rectangle paths ordered with spatial ones first */
-  int numPaths = 12;
-  int pathLength = 6;
-  int trace_path[12][6] = {{0, 0, 1, 7, 7, 6},{0, 1, 1, 7, 6, 6},{0, 0, 2, 7, 7, 5},
-	                   {0, 2, 2, 7, 5, 5},{1, 1, 2, 6, 6, 5},{1, 2, 2, 6, 5, 5},
-	                   {0, 0, 3, 7, 7, 4},{0, 3, 3, 7, 4, 4},{1, 1, 3, 6, 6, 4},
-	                   {1, 3, 3, 6, 4, 4},{2, 2, 3, 5, 5, 4},{2, 3, 3, 5, 4, 4}};
-
-  double *trace_loop_coeff_p = &trace_loop_coeff_d[0];
-  int *trace_loop_length_p = &trace_loop_length[0];
-
-  int **trace_path_p = (int **)malloc(numPaths * sizeof(int *));
-  for (int i = 0; i < numPaths; i++) {
-      trace_path_p[i] = (int *)malloc(pathLength * sizeof(int));
-      for(int j = 0; j < pathLength; j++){
-          trace_path_p[i][j] = trace_path[i][j];
-      }
-  }
-
   /* Load gauge field in QUDA */
   loadGaugeQuda( (void*) links, &qgp );
 
@@ -101,7 +78,7 @@ int pad_size = 0;
     terminate(1);
   }
   smearParams.restart = QUDA_BOOLEAN_FALSE; // ???
-  smearParams.t0 = 0; // ???
+  smearParams.t0 = 0;
   
 #ifdef ANISOTROPY
   smearParams.smear_anisotropy = ani;
@@ -120,7 +97,6 @@ int pad_size = 0;
   int nObsParams = smearParams.n_steps / smearParams.meas_interval + 1;
   QudaGaugeObservableParam *obsParams;
   obsParams = (QudaGaugeObservableParam *)malloc(nObsParams*sizeof(QudaGaugeObservableParam));
-  complex *traces = (complex *)malloc(numPaths*sizeof(complex)); /* this space re-used for each observation */
   for( int i=0; i<nObsParams; i++)
   {
     obsParams[i] = newQudaGaugeObservableParam();
@@ -131,16 +107,7 @@ int pad_size = 0;
     obsParams[i].compute_polyakov_loop = QUDA_BOOLEAN_FALSE;
     obsParams[i].compute_qcharge = QUDA_BOOLEAN_TRUE;
     obsParams[i].compute_qcharge_density = QUDA_BOOLEAN_FALSE;
-
-    /* Rectangle calculation */
-    obsParams[i].compute_gauge_loop_trace = QUDA_BOOLEAN_TRUE;
-    obsParams[i].traces = traces;
-    obsParams[i].input_path_buff = trace_path_p;
-    obsParams[i].path_length = trace_loop_length_p;
-    obsParams[i].loop_coeff = trace_loop_coeff_p;
-    obsParams[i].num_paths = numPaths;
-    obsParams[i].max_length = pathLength;
-    obsParams[i].factor = 1.0/volume;
+    obsParams[i].compute_gauge_loop_trace = QUDA_BOOLEAN_FALSE;
   }
 
   /* Do the gauge flow */
@@ -149,11 +116,4 @@ int pad_size = 0;
   /* Clean up */
   destroy_G_quda(links);
   free(obsParams);
-  free(traces);
-
-  for (int i = 0; i < 12; i++) {
-      free(trace_path_p[i]);
-  }
-  free(trace_path_p);
-
 }
