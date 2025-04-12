@@ -52,7 +52,7 @@ initial_set()
   if(mynode()==0){
     /* print banner */
     printf("Wilson/Symanzik Flow application\n");
-    printf("MIMD version 7\n");
+    printf("MIMD version %s\n",MILC_CODE_VERSION);
     printf("Machine = %s, with %d nodes\n", machine_type(), numnodes());
     gethostname(hostname, 128);
     printf("Host(0) = %s\n",hostname);
