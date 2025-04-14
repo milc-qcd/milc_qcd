@@ -266,7 +266,7 @@ int readin(int prompt) {
 					    param.ks_eigen_startfile);
 
       /* Additional parameters for QUDA deflation */
-#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU))
       if(param.ks_eigen_startflag == RELOAD_ASCII || 
 		      param.ks_eigen_startflag == RELOAD_SERIAL ||
 		      param.ks_eigen_startflag == RELOAD_PARALLEL ){
