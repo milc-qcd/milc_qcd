@@ -151,7 +151,7 @@ void r_check(gauge_file *gf, float *max_deviation)
 	gauge_check_size = 0;
       
       if(gf->header->order == NATURAL_ORDER)coord_list_size = 0;
-      else coord_list_size = sizeof(int32type)*volume;
+      else coord_list_size = sizeof(u_int32type)*volume;
       checksum_offset = gf->header->header_bytes + coord_list_size;
       head_size = checksum_offset + gauge_check_size;
       
@@ -260,10 +260,10 @@ void r_check(gauge_file *gf, float *max_deviation)
 	{
 	  if(byterevflag==1)
 	    byterevn((u_int32type *)&work[0],
-		     4*sizeof(su3_matrix)/sizeof(int32type));
+		     4*sizeof(su3_matrix)/sizeof(u_int32type));
 	  /* Accumulate checksums */
 	  for(k = 0, val = (u_int32type *)&work[0]; 
-	      k < 4*(int)sizeof(su3_matrix)/(int)sizeof(int32type); k++, val++)
+	      k < 4*(int)sizeof(su3_matrix)/(int)sizeof(u_int32type); k++, val++)
 	    {
 	      test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
 	      test_gc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
@@ -275,8 +275,8 @@ void r_check(gauge_file *gf, float *max_deviation)
 	}
       else
 	{
-	  rank29 += 4*sizeof(su3_matrix)/sizeof(int32type);
-	  rank31 += 4*sizeof(su3_matrix)/sizeof(int32type);
+	  rank29 += 4*sizeof(su3_matrix)/sizeof(u_int32type);
+	  rank31 += 4*sizeof(su3_matrix)/sizeof(u_int32type);
 	  rank29 %= 29;
 	  rank31 %= 31;
 	}
@@ -489,7 +489,7 @@ void r_check_arch(gauge_file *gf, float *max_deviation)
 	{
 	  /* Accumulate checksums */
 	  for(k = 0, val = (u_int32type *)&work[0]; 
-	      k < 4*(int)sizeof(su3_matrix)/(int)sizeof(int32type); k++, val++)
+	      k < 4*(int)sizeof(su3_matrix)/(int)sizeof(u_int32type); k++, val++)
    	    {
 	      test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
 	      test_gc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
@@ -501,8 +501,8 @@ void r_check_arch(gauge_file *gf, float *max_deviation)
 	}
       else
 	{
-	  rank29 += 4*sizeof(su3_matrix)/sizeof(int32type);
-	  rank31 += 4*sizeof(su3_matrix)/sizeof(int32type);
+	  rank29 += 4*sizeof(su3_matrix)/sizeof(u_int32type);
+	  rank31 += 4*sizeof(su3_matrix)/sizeof(u_int32type);
 	  rank29 %= 29;
 	  rank31 %= 31;
 	}

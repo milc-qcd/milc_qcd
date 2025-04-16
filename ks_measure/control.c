@@ -89,11 +89,8 @@ int main(int argc, char *argv[])
 
       STARTTIME;
       
-      /* The usual case */
-      param.eigen_param.parity = EVEN;
-
       /* First set of fn links is always charge 0 and Naik epsilon 0 */
-      imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
+      imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
 
       /* Move KS phases and apply time boundary condition, based on the
 	 coordinate origin and time_bc */
@@ -141,6 +138,8 @@ int main(int argc, char *argv[])
 	}
       }
 
+      destroy_fn_links(fn);
+
       ENDTIME("calculate/reload Dirac eigenpairs"); fflush(stdout);
       
 #endif
@@ -170,10 +169,15 @@ int main(int argc, char *argv[])
       
       /* Make table of FN links and masses and set boundary phases if
 	 requested */
+      imp_ferm_links_t *fn_pt[MAX_NAIK];
+      for(int naik_index = 0; naik_index < MAX_NAIK; naik_index++)
+	fn_pt[naik_index] = NULL;
+
       for(int j = 0; j < num_pbp_masses; j++){
 	int naik_index = param.ksp_pbp[i0+j].naik_term_epsilon_index;
 	int charge_index = param.ksp_pbp[i0+j].charge_index;
-	imp_ferm_links_t **fn_pt = get_fm_links(fn_links_charge[charge_index]);
+	if(fn_pt[naik_index] == NULL)
+	  fn_pt[naik_index] = get_fm_links(fn_links_charge[charge_index], naik_index);
 	fn_mass[j] = fn_pt[naik_index];
 	masses[j] = param.ksp_pbp[i0+j].mass;
 	charges[j] = param.ksp_pbp[i0+j].charge;
@@ -225,10 +229,16 @@ int main(int argc, char *argv[])
       /* Unapply twisted boundary conditions on the fermion links and
 	 restore conventional KS phases and antiperiodic BC, if
 	 changed. */
+#if 0 /* Not needed because we destroy their parents in the next lines */
       for(int j = 0; j < num_pbp_masses; j++)
 	if(twist_status(fn_mass[j]) == ON)
 	   boundary_twist_fn(fn_mass[j], OFF);
-      
+#endif
+
+      for(int naik_index = 0; naik_index < MAX_NAIK; naik_index++)
+	if(fn_pt[naik_index] != NULL)
+	  destroy_fn_links(fn_pt[naik_index]);
+          
     } /* k num_set */
  
 #ifdef HISQ_SVD_COUNTER
@@ -258,7 +268,7 @@ int main(int argc, char *argv[])
 
     Nvecs_curr = param.eigcgp.Nvecs_curr;
 
-    imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
+    imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
     resid = (double *)malloc(Nvecs_curr*sizeof(double));
 
     if(param.ks_eigen_startflag == FRESH)
@@ -266,6 +276,8 @@ int main(int argc, char *argv[])
 
     check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
 
+    destroy_fn_links(fn);
+    
     if(param.eigcgp.H != NULL) free(param.eigcgp.H);
 
     ENDTIME("compute eigenvectors");

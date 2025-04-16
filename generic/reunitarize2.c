@@ -111,9 +111,9 @@ void reunit_report_problem_matrix(su3_matrix *mat, int i,int dir)
 
 int reunit_su3(su3_matrix *c)
 {
-     register Real bj0r, bj0i, bj1r, bj1i, bj2r, bj2i;
-     register Real c0r, c0i, c1r, c1i, c2r, c2i;
-     register Real ar, ai, tr, ti;
+     Real bj0r, bj0i, bj1r, bj1i, bj2r, bj2i;
+     Real c0r, c0i, c1r, c1i, c2r, c2i;
+     Real ar, ai, tr, ti;
      Real deviation;
      int errors;
 
@@ -229,9 +229,10 @@ void reunitarize_gpu() {
 #endif
 
 void reunitarize_cpu() {
-  register su3_matrix *mat;
-  register int i,dir;
-  register site *s;
+  su3_matrix *mat;
+  size_t i;
+  int dir;
+  site *s;
   int errcount = 0;
   int errors;
 

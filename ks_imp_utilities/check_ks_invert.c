@@ -35,18 +35,8 @@ void check_ks_invert( char *srcfile, int srcflag,
   char ansMrecxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test answer = M^-1 source</title>";
   char ansMdMrecxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test answer = answer = (MdaggerM)^-1 source</title>";
 
-  imp_ferm_links_t **fn = (imp_ferm_links_t **)malloc(nmass*sizeof(imp_ferm_links_t *));
   su3_vector *src = create_v_field();
   su3_vector **ans = (su3_vector **)malloc(nmass*sizeof(su3_vector *));
-
-  /* Set fn links for the inversion (all the same here) */
-  if(fn == NULL){
-    printf("%s(%d): No room for fn\n", myname, this_node);
-    terminate(1);
-  }
-  
-  for(i = 0; i < nmass; i++)
-    fn[i] = get_fm_links(fn_links)[ksp[i].naik_term_epsilon_index];
 
   if(ans == NULL){
     node0_printf("%s(%d)No room for ans\n", myname, this_node);
@@ -55,6 +45,10 @@ void check_ks_invert( char *srcfile, int srcflag,
   
   for(i = 0; i < nmass; i++)
     ans[i] = create_v_field();
+
+  /* Must have the same fn for all massees in this set */
+  imp_ferm_links_t *fn_masses = get_fm_links(fn_links, ksp[0].naik_term_epsilon_index);
+  imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
 
   /* Convert masses to offsets for ks_multicg_mass_field */
   for(i = 0; i < nmass; i++){
@@ -81,8 +75,8 @@ void check_ks_invert( char *srcfile, int srcflag,
   else {
     /* generate g_rand random; phi = Mdagger g_rand */
     /* This is just for testing, so it doesn't matter that we arbitrarily pick fn[0] */
-    grsource_imp_field( src, mass, EVENANDODD, fn[0] );
     node0_printf("Generating a random source\n");
+    grsource_imp_field( src, mass, EVENANDODD, fn );
   }
   
   /* Do the inversion if we aren't reloading the answer */
@@ -110,18 +104,18 @@ void check_ks_invert( char *srcfile, int srcflag,
     node0_printf("Doing the inversion\n");
     if(inverttype == INVERT_M){
       /* Compute M^-1 phi */
-      iters += mat_invert_multi( src, ans, ksp, nmass, qic, fn );
+      iters += mat_invert_multi( src, ans, ksp, nmass, qic, fn_masses );
     } else {
       /* Compute (M^dagger M)^-1 phi */
       if(nmass == 1){
-	iters += ks_congrad_field( src, ans[0], qic+0, ksp[0].mass, fn[0]);
+	iters += ks_congrad_field( src, ans[0], qic+0, ksp[0].mass, fn);
       }
       else{
 	int save_parity = qic->parity;
 	qic->parity = EVEN;
-	iters += ks_multicg_field( src, ans, ksp, nmass, qic, fn );
+	iters += ks_multicg_field( src, ans, ksp, nmass, qic, fn_masses );
 	qic->parity = ODD;
-	iters += ks_multicg_field( src, ans, ksp, nmass, qic, fn );
+	iters += ks_multicg_field( src, ans, ksp, nmass, qic, fn_masses );
 	qic->parity = save_parity;
       }
     }
@@ -139,10 +133,10 @@ void check_ks_invert( char *srcfile, int srcflag,
     node0_printf("Checking inversion %d\n",i);
     if(inverttype == INVERT_M)
       /* Is M xxx = phi ? */
-      check_invert_field( ans[i], src, ksp[i].mass, tol_M, fn[i], EVENANDODD );
+      check_invert_field( ans[i], src, ksp[i].mass, tol_M, fn_masses, EVENANDODD );
     else
       /* Is MdaggerM xxx = phi ? */
-      check_invert2( ans[i], src, ksp[i].mass, tol_MdagM, EVENANDODD, fn[i] );
+      check_invert2( ans[i], src, ksp[i].mass, tol_MdagM, EVENANDODD, fn_masses );
   
     /* Save answer if requested */
 #ifdef HAVE_QIO
@@ -162,7 +156,9 @@ void check_ks_invert( char *srcfile, int srcflag,
   for(i = 0; i < nmass; i++)
     destroy_v_field(ans[i]);
   free(ans);
-  free(fn);
+
+  destroy_fn_links(fn);
+  destroy_fn_links(fn_masses);
 
   destroy_v_field(src);
 }      

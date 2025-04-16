@@ -12,6 +12,7 @@
 #include "generic_ks_includes.h"
 #include "../include/generic_qop.h"
 #include "../include/generic_ks_qop.h"
+#include "../include/fn_links_qop.h"
 
 static int 
 opposite_parity(int parity){
@@ -42,7 +43,7 @@ void qop_to_milc_dslash_normalization(su3_vector *sol, int parity)
 
 static void 
 dslash_fn_field_F( su3_vector *src, su3_vector *dest, 
-		   int parity, fn_links_qop_t *fn){
+		   int parity, imp_ferm_links_t *fn){
 
   QOP_info_t info = {0., 0., 0, 0, 0};
   int otherparity = opposite_parity(parity);
@@ -70,7 +71,7 @@ dslash_fn_field_F( su3_vector *src, su3_vector *dest,
   
 static void 
 dslash_fn_field_D( su3_vector *src, su3_vector *dest, 
-		   int parity, fn_links_qop_t *fn){
+		   int parity, imp_ferm_links_t *fn){
 
   QOP_info_t info = {0., 0., 0, 0, 0};
   int otherparity = opposite_parity(parity);
@@ -97,7 +98,7 @@ dslash_fn_field_D( su3_vector *src, su3_vector *dest,
   
 void 
 dslash_fn_field( su3_vector *src, su3_vector *dest, 
-		 int parity, fn_links_qop_t *fn){
+		 int parity, imp_ferm_links_t *fn){
 
   if(get_D_asqtad_links(fn) != NULL)
     dslash_fn_field_D( src, dest, parity, fn );
@@ -109,7 +110,7 @@ dslash_fn_field( su3_vector *src, su3_vector *dest,
 void 
 dslash_fn_field_special( su3_vector *src, su3_vector *dest, 
 			 int parity, msg_tag **tag, int dslash_start, 
-			 fn_links_qop_t *fn){
+			 imp_ferm_links_t *fn){
   dslash_fn_field(src, dest, parity, fn);
 }
 
@@ -123,7 +124,7 @@ cleanup_dslash_temps(void){
 
 void 
 dslash_fn_site( field_offset src, field_offset dest, int parity,
-		fn_links_qop_t *fn ){
+		imp_ferm_links_t *fn ){
 
   su3_vector *t_src, *t_dest;
 

@@ -1,4 +1,5 @@
 /******************* mu.c *****************************/
+/* OBSOLETE */
 /* MIMD version 7 */
 /* Calculates the derivatives of the Asqtad quark matrix up to 6th order*/
  

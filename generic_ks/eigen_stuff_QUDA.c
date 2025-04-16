@@ -22,7 +22,7 @@
 /* Compute eigenvalues and eigenvectors of the Kogut-Susskind
  * dslash^2. */
 int ks_eigensolve_QUDA( su3_vector ** eigVec,
-                        double * eigVal,
+                        Real * eigVal,
                         ks_eigen_param * eigen_param,
                         int init )
 {
@@ -55,6 +55,8 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   int polyDeg = eigen_param->poly.norder;
   int blockSize = eigen_param->blockSize;
   int parity = eigen_param->parity;
+  int batchedRotate = eigen_param->batchedRotate;
+  int precEigensolver = eigen_param->eigPrec;
   /**************************************************************/
   
   /* QUDA inverter setup *************************/  
@@ -145,7 +147,19 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   qgp.cuda_prec = qgp.cpu_prec;
   qgp.cuda_prec_sloppy = qgp.cuda_prec;
   qgp.cuda_prec_precondition = qgp.cuda_prec;
-  qgp.cuda_prec_eigensolver = qgp.cuda_prec;
+  //qgp.cuda_prec_eigensolver = qgp.cuda_prec;
+
+  if(precEigensolver == 2) {
+    qgp.cuda_prec_eigensolver = QUDA_DOUBLE_PRECISION;
+  } else if(precEigensolver == 1) {
+    qgp.cuda_prec_eigensolver = QUDA_SINGLE_PRECISION;
+  } else if(precEigensolver == 0) {
+    qgp.cuda_prec_eigensolver = QUDA_HALF_PRECISION;
+  } else {
+    printf("%s: Unrecognized eigensolver precision\n",myname);
+    terminate(2);
+  }
+
   qgp.cuda_prec_refinement_sloppy = qgp.cuda_prec;
 
   qgp.reconstruct = QUDA_RECONSTRUCT_NO;
@@ -178,7 +192,7 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   /*****************************************************/
 
   /* load gauge field ********************************/
-  imp_ferm_links_t * fn = get_fm_links( fn_links )[0];
+  imp_ferm_links_t * fn = get_fm_links( fn_links, 0);
   su3_matrix * fatLinks = get_fatlinks(fn);
   su3_matrix * longLinks = get_lnglinks(fn);
 
@@ -193,7 +207,8 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
     qgp.scale = - ( 1.0 + fn->eps_naik ) / ( 24.0 * qgp.tadpole_coeff * qgp.tadpole_coeff );
   
     loadGaugeQuda( (void*) longLinks, &qgp );
-  }  
+  }
+  destroy_fn_links(fn);
   /***************************************************/
   
   /* quda eigensolver setup *************************/  
@@ -212,7 +227,7 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   qep.tol = tol;
   qep.qr_tol = qep.tol;
   qep.max_restarts = maxIter;
-  qep.batched_rotate = 0;
+  qep.batched_rotate = batchedRotate;
   qep.require_convergence = QUDA_BOOLEAN_TRUE;
   qep.check_interval = 1;
 
@@ -314,7 +329,7 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
 
 #else /* #ifdef QUDA_EIG */
 
-int ks_eigensolve_QUDA( su3_vector ** eigeVec, double * eigVal, ks_eigen_param * eigen_param, int init )
+int ks_eigensolve_QUDA( su3_vector ** eigeVec, Real * eigVal, ks_eigen_param * eigen_param, int init )
 {
   char myname[] = "ks_eigensolve_QUDA";
   node0_printf( "%s: Requires compilation with the QUDA library\n", myname );

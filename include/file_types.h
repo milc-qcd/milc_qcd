@@ -76,7 +76,7 @@
 
 typedef struct {
   int type;
-  int32type magic_no;
+  u_int32type magic_no;
 } file_table;
 
 

@@ -41,8 +41,8 @@ start_gather_field_strided(void *field, int stride, int size,
 #if 0
 void path_product_field( const int *dir, const int length, 
 			 su3_matrix *tempmat1, su3_matrix *links) {
-    register int i;
-    register site *s;
+    int i;
+    site *s;
     msg_tag *mtag0 = NULL;
     su3_matrix *tempmat2t, *tempmat3t;
     int j;
@@ -211,9 +211,9 @@ void path_product_field( const int *dir, const int length,
 #endif
 void path_product_fields( su3_matrix *Src, const int *dir, const int length, 
 			  su3_matrix *tempmat1) {
-    register int i;
+    size_t i;
     int idx;
-    register site *s;
+    site *s;
     msg_tag *mtag0 = NULL;
     su3_matrix *tempmat2t, *tempmat3t;
     int j;
@@ -408,8 +408,8 @@ void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
 void path_prod_subl_field(const int *dir, const int length, const int subl, 
 			  su3_matrix *tempmat1, su3_matrix *links)
 {
-register int i;
-register site *s;
+int i;
+site *s;
 msg_tag *mtag0 = NULL;
 su3_matrix *tempmat2t, *tempmat3t;
 int j, nsubl;

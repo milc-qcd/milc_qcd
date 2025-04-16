@@ -7,7 +7,7 @@
 // Modified for general improved action 5/24/97  DT
 //
 // Description: Setup routines for improved fermion lattices
-//              Includes lattice structures for Naik imroved
+//              Includes lattice structures for Naik improved
 //              staggered Dirac operator
 //         Ref: S. Naik, Nucl. Phys. B316 (1989) 238
 //              Includes a parameter prompt for Lepage-Mackenzie
@@ -249,7 +249,7 @@ readin(int prompt)
 	  }
 	} else {
 	  if(param.ksp[i].naik_term_epsilon > param.ksp[i-1].naik_term_epsilon){
-	    node0_printf("Naik term epsilons must be in descending order.");
+	    node0_printf("Naik term epsilons must be in descending order.");  // Why?
 	    status++;
 	  }
 	}

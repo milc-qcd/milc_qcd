@@ -41,7 +41,7 @@ void check_link_fattening( char *lngansfile, int lngansflag, char *fatansfile, i
   /* Get fat and long link pointers for links generated in main by the
      code specified in the Makefile. e.g. WANTGRID=true generates them
      with GRID */
-  imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
+  imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
   su3_matrix *lng = get_lnglinks(fn);
   su3_matrix *fat = get_fatlinks(fn);
   
@@ -204,5 +204,8 @@ void check_link_fattening( char *lngansfile, int lngansflag, char *fatansfile, i
 #else
     printf("ERROR: Can't save the fatlinks.  Recompile with QIO\n");
 #endif
+
   }
+
+  destroy_fn_links(fn);
 }      

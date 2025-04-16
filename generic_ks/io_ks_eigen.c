@@ -275,7 +275,7 @@ ks_eigen_file *create_input_ks_eigen_file_handle(char *filename){
 
   /* Allocate space for the header */
   /* Make sure compilation gave us a 32 bit integer type */
-  assert(sizeof(int32type) == 4);
+  assert(sizeof(u_int32type) == 4);
 
   kseigh = (ks_eigen_header *)malloc(sizeof(ks_eigen_header));
   if(kseigh == NULL){
@@ -315,7 +315,7 @@ ks_eigen_file *create_output_ks_eigen_file_handle(void){
   
   /* Allocate space for a new header structure */
   /* Make sure compilation gave us a 32 bit integer type */
-  assert(sizeof(int32type) == 4);
+  assert(sizeof(u_int32type) == 4);
 
   kseigh = (ks_eigen_header *)malloc(sizeof(ks_eigen_header));
   if(kseigh == NULL){
@@ -424,7 +424,7 @@ ks_eigen_file *w_serial_ks_eigen_i(char *filename, int parity){
 
 /* Here only node 0 writes eigenvectors to a serial file */
 void w_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal, su3_vector **eigVec,
-		       Real *resid){
+		       double *resid){
 
   FILE *fp = NULL;
   u_int32type *val;
@@ -482,8 +482,8 @@ void w_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal, su3_vecto
   kseigf->check.sum29 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here only node 0 uses these values */
-  rank29 = sizeof(su3_vector)/sizeof(int32type)*sites_on_node*this_node % 29;
-  rank31 = sizeof(su3_vector)/sizeof(int32type)*sites_on_node*this_node % 31;
+  rank29 = sizeof(su3_vector)/sizeof(u_int32type)*sites_on_node*this_node % 29;
+  rank31 = sizeof(su3_vector)/sizeof(u_int32type)*sites_on_node*this_node % 31;
 
   currentnode = 0;
 
@@ -517,7 +517,7 @@ void w_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal, su3_vecto
 
 	/* Accumulate checksums - contribution from next site */
 	for(j = 0, val = (u_int32type *)&eigbuf[buf_length]; 
-	    j < (int)sizeof(su3_vector)/(int)sizeof(int32type); j++, val++){
+	    j < (int)sizeof(su3_vector)/(int)sizeof(u_int32type); j++, val++){
 	  kseigf->check.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
 	  kseigf->check.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
 	  rank29++; if(rank29 >= 29) rank29 = 0;
@@ -776,11 +776,11 @@ int r_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal, su3_vector
 	 and idest points to the destination site structure. */
       if(this_node == destnode){
 	if(byterevflag == 1)
-	  byterevn((u_int32type *)(&msg.ksv), sizeof(su3_vector)/sizeof(int32type));
+	  byterevn((u_int32type *)(&msg.ksv), sizeof(su3_vector)/sizeof(u_int32type));
 
 	/* Accumulate checksums */
 	for(k = 0, val = (u_int32type *)(&msg.ksv); 
-	    k < (int)sizeof(su3_vector)/(int)sizeof(int32type); k++, val++){
+	    k < (int)sizeof(su3_vector)/(int)sizeof(u_int32type); k++, val++){
 	  test_kseigc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
 	  test_kseigc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
 	  rank29++; if(rank29 >= 29)rank29 = 0;
@@ -790,8 +790,8 @@ int r_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal, su3_vector
 	if(ivecs < Nvecs) eigVec[ivecs][idest] = msg.ksv;
       }
       else{
-	rank29 += sizeof(su3_vector)/sizeof(int32type);
-	rank31 += sizeof(su3_vector)/sizeof(int32type);
+	rank29 += sizeof(su3_vector)/sizeof(u_int32type);
+	rank31 += sizeof(su3_vector)/sizeof(u_int32type);
 	rank29 %= 29;
 	rank31 %= 31;
       }
@@ -929,7 +929,7 @@ ks_eigen_file *w_ascii_ks_eigen_i(char *filename, int parity){
 
 /* Write ASCII KS eigenvector from field */
 void w_ascii_ks_eigen(ks_eigen_file *kseigf, int  Nvecs, Real *eigVal, su3_vector **eigVec,
-		      Real *resid){
+		      double *resid){
 
   FILE *fp;
   int currentnode, newnode;

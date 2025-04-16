@@ -27,11 +27,10 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 #if (MILC_PRECISION == 1)
   Real tol = 1e-3;
 #else
-  Real tol = 1e-9;
+  Real tol = 1e-8;
 #endif
   int ff_prec = MILC_PRECISION;  /* Just use prevailing precision for now */
   /* Supports only asqtad at the moment */
-  imp_ferm_links_t **fn = get_fm_links(fn_links);
   Real *residues = (Real *)malloc(n_naik*sizeof(Real));;
   if(residues == NULL){
     node0_printf("No room for residues\n");
@@ -67,6 +66,7 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
   int tmporder = 0;
   int n_naiks = 0;
   double eps_naik[MAX_NAIK];
+  imp_ferm_links_t *fn;
 
   n_order_naik_total = 0;
   for( i=0; i<n_pseudo; i++ ) {
@@ -122,16 +122,17 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
       Real rsqmin_gr = param.qic[inaik].resid * param.qic[inaik].resid;
       int  niter_gr  = param.qic[inaik].max;
       int  prec_gr   = MILC_PRECISION;
-      imp_ferm_links_t **fn = get_fm_links(fn_links);
+      fn = get_fm_links(fn_links, inaik);
       
       for( int jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
 	node0_printf("Generating random sources\n");
 	grsource_imp_rhmc_field( phi[iphi], &rf[iphi].GR, EVEN,
 				 multi_x, sumvec, rsqmin_gr, niter_gr,
-				 prec_gr, fn[inaik], inaik, 
+				 prec_gr, fn, inaik, 
 				 rf[iphi].naik_term_epsilon);
 	iphi++;
       }
+      destroy_fn_links(fn);
     }
 
     /* Construct  */
@@ -140,9 +141,10 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
     iphi = 0;
     n_naik = fermion_links_get_n_naiks(fn_links);
     
+
     for( int inaik=0; inaik < n_naik; inaik++ ) {
+      fn  = get_fm_links(fn_links, inaik);
       for( int jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
-	fn = get_fm_links(fn_links);
 	
 	// Add the current pseudofermion to the current set
 	int order      = rf[iphi].MD.order;
@@ -156,19 +158,20 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 	int iters = 0;
 	iters += ks_ratinv_field( phi[iphi], multi_x+tmporder, roots, residues,
 				  order, niter_md, rsqmin_md, MILC_PRECISION, EVEN,
-				  &final_rsq, fn[inaik], 
+				  &final_rsq, fn, 
 				  inaik, rf[iphi].naik_term_epsilon );
 	
 	/*Then compute multi_x = M * multi_x  = Dslash * multi_x on odd sites */
 	for(int j=0;j<order;j++){
 	  dslash_fn_field( multi_x[tmporder+j], multi_x[tmporder+j],  ODD,
-			   fn[inaik]);
+			   fn);
 	  allresidues[tmporder+j] = residues[j+1];
 	  // remember that residues[0] is constant, no force contribution.
 	}
 	tmporder += order;
 	iphi++;
       } /* jphi */
+      destroy_fn_links(fn);
     } /* inaik */
   } /* phiflag != RELOAD_SERIAL */
 

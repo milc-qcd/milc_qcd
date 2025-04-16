@@ -145,8 +145,6 @@ read_grid_eigenvector_data(su3_vector *eigVec, int typesize, char* file, off_t o
     terminate(1);
   }
 
-  printf("%s(%d): Entered\n", myname, this_node); fflush(stdout);
-
   const int latdim[4] = {nx, ny, nz, nt};
   int grid_reduced_dim[4] = {nx/2, ny, nz, nt};
   const int *nsquares = get_logical_dimensions();

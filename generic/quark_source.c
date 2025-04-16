@@ -420,7 +420,7 @@ static void scaled_point_source(complex *src, int x0, int y0, int z0, int t0,
                                 double weight){
   int i;
   
-  /* load 1.0 into source at cooordinates given by source_coord */
+  /* load 1.0 into source at coordinates given by source_coord */
   /* initialize src to be a delta function at point x0,y0,z0,t0 */
   /* Save a copy of the source in qs->c_src */
   
@@ -852,7 +852,7 @@ static int v_base_source(su3_vector *src, quark_source *qs)
   /* Unpack structure */
   int source_type           = qs->type;
   int color                 = qs->color;
-  //  int t0                    = qs->t0;
+  int t0                    = qs->t0;
   int status = 0;
 
   /* zero src to be safe */
@@ -926,6 +926,19 @@ static int v_base_source(su3_vector *src, quark_source *qs)
     node0_printf("%s: Unrecognized source type %d for a color-vector field\n",
 		 myname, source_type);
     terminate(1);
+  }
+
+  /* Rescale the source */
+  /* HACK: Don't rescale if the source was preloaded */
+  /* We need a much better way of handling the scaling! */
+  if(qs->scale_fact != 1.0){
+    if(qs->type != VECTOR_FIELD_STORE && qs->type != VECTOR_FIELD_FILE){
+      int i; site *s;
+      FORALLSITES(i,s){
+	if(t0 == ALL_T_SLICES || s->t == t0)
+	  scalar_mult_su3_vector(src+i, qs->scale_fact, src+i);
+      }
+    }
   }
 
   /* Apply subset mask */
@@ -1035,11 +1048,13 @@ static int wv_base_source(wilson_vector *src, quark_source *qs)
   /* Rescale the source */
   /* HACK: Don't rescale if the source was preloaded */
   /* We need a much better way of handling the scaling! */
-  if(qs->scale_fact != 1.0 && qs->type != DIRAC_FIELD_STORE){
-    int i; site *s;
-    FORALLSITES(i,s){
-      if(t0 == ALL_T_SLICES || s->t == t0)
-	scalar_mult_wvec(src+i, qs->scale_fact, src+i);
+  if(qs->scale_fact != 1.0){
+    if(qs->type != DIRAC_FIELD_STORE && qs->type != DIRAC_FIELD_FILE){
+      int i; site *s;
+      FORALLSITES(i,s){
+	if(t0 == ALL_T_SLICES || s->t == t0)
+	  scalar_mult_wvec(src+i, qs->scale_fact, src+i);
+      }
     }
   }
 
@@ -1571,6 +1586,11 @@ int get_v_quark_source(FILE *fp, int prompt, quark_source *qs){
       status++;
     }
   }
+
+  /* When SCALE_PROP is defined, all Dirac sources must specify a scale_factor */
+#ifdef SCALE_PROP
+  IF_OK status += get_f(fp, prompt, "scale_factor", &qs->scale_fact);
+#endif
   
   IF_OK status += get_s(stdin, prompt, "source_label", source_label);
   /* Source label '(null)' suppresses the label */

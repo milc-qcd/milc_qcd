@@ -14,7 +14,7 @@
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 #include "../include/openmp_defs.h"
 
-#ifdef USE_GF_GPU
+#ifdef HAVE_QUDA
 
 #include "../include/generic_quda.h"
 

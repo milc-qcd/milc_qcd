@@ -22,6 +22,7 @@ create_fn_links_qop(void){
     terminate(1);
   }
   
+  fn->preserve = 0;
   fn->phase = NULL;
   fn->al_F_allocated = 0;
   fn->al_F = NULL;
@@ -70,19 +71,24 @@ load_fn_links_qop(fn_links_qop_t *fn, QOP_asqtad_coeffs_t *coeffs,
 void 
 destroy_fn_links_qop(fn_links_qop_t *fn){
   if(fn == NULL)return;
+  if(fn->preserve == 1)return;
 
   destroy_link_phase_info(fn->phase);
   if(fn->al_F != NULL)QOP_F3_asqtad_destroy_L(fn->al_F);
   if(fn->al_D != NULL)QOP_D3_asqtad_destroy_L(fn->al_D);
   if(fn->fat != NULL)free(fn->fat);
   if(fn->lng != NULL)free(fn->lng);
+  fn->al_F = NULL;
+  fn->al_D = NULL;
+  fn->fat = NULL;
+  fn->lng = NULL;
   free(fn);
 }
 
 /*-------------------------------------------------------------------*/
 
 QOP_F3_FermionLinksAsqtad *
-get_F_asqtad_links(fn_links_qop_t *fn){
+get_F_asqtad_links(imp_ferm_links_t *fn){
   /* If we have only the double-precision links, copy them to single precision */
   if(fn->al_F == NULL && fn->al_D != NULL){
     /* Here we actually allocate space for the al_F links */
@@ -93,7 +99,7 @@ get_F_asqtad_links(fn_links_qop_t *fn){
 }
 
 QOP_D3_FermionLinksAsqtad *
-get_D_asqtad_links(fn_links_qop_t *fn){
+get_D_asqtad_links(imp_ferm_links_t *fn){
   return fn->al_D;
 }
 
@@ -104,6 +110,7 @@ free_fn_links_qop(fn_links_qop_t *fn){
     QOP_F3_asqtad_destroy_L(fn->al_F);
   fn->al_F = NULL;
   fn->al_F_allocated = 0;
+
 }
 
 /*-------------------------------------------------------------------*/

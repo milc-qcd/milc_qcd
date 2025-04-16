@@ -492,7 +492,7 @@ int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, Real *eigVal,
   double dtimec;
 #endif
 
-  imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
+  imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
 
 
   ToleranceG = 10.0*Tolerance ;
@@ -618,6 +618,7 @@ int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, Real *eigVal,
   }
 
   /** Deallocate the arrays **/
+  destroy_fn_links(fn);
   deAllocate(&V) ;
   deAllocate(&Array) ;
   free(err) ;

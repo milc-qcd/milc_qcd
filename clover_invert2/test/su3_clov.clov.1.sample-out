@@ -363,14 +363,18 @@ SINKS: identity identity identity DELTA0
 1 9.264268e-02 4.952886e-05
 2 7.697146e-03 -2.959181e-04
 3 8.369795e-02 -2.115592e-03
+Time for printing correlator 3.728867e-04
 Mesons for quarks 1 and 1
 WMTIME: time 8.6e-03 sec 8.59203e+06 flops 996.8 MF
 WMTIME: time 8.7e-03 sec 8.59203e+06 flops 988.4 MF
 WMTIME: time 8.6e-03 sec 8.59203e+06 flops 1002.1 MF
+Time for diagonal mesons 7.934093e-03
+Time for printing correlator 1.618862e-04
 Mesons for quarks 0 and 2
 WMTIME: time 8.6e-03 sec 8.59203e+06 flops 994.5 MF
 WMTIME: time 8.7e-03 sec 8.59203e+06 flops 990.6 MF
 WMTIME: time 8.6e-03 sec 8.59203e+06 flops 993.5 MF
+Time for offdiag mesons 7.960081e-03
 STARTPROP
 MOMENTUM: p000
 MASSES: kappa[0]=0.1 kappa[0]=0.1 
@@ -551,6 +555,8 @@ SINKS: identity gaussian B
 2 -5.460546e+00 -1.997913e-01
 3 -2.962845e+00 5.584405e-02
 ENDPROP
+Time for printing correlator 8.893013e-05
+Aggregate time to tie hadron correlators 2.262902e-02
 RUNNING COMPLETED
 Time = 1.876627e+00 seconds
 total_iters = 823

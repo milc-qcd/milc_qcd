@@ -63,14 +63,6 @@ create_hadron_prop(int ncor, int ntime){
 }
 
 /*--------------------------------------------------------------------*/
-void clear_wprop(wilson_propagator *p){
-  int c,s;
-  for(c = 0; c < 3; c++)
-    for(s = 0; s < 4; s++)
-      clear_wvec(&p->c[c].d[s]);
-}
-
-/*--------------------------------------------------------------------*/
 
 static void
 destroy_hadron_prop(complex ***prop, int ncor){
@@ -503,20 +495,45 @@ static void spectrum_ks_baryon_nd(int nc, int type[],
 
 /*--------------------------------------------------------------------*/
 
+static int ape_only(int ** corr_table, int n, int spin_taste[]){
+  int fn = 0;
+  for(int g = 0; g < n; g++){
+    int c = corr_table[g][0];
+    fn = fn || is_fn_index(spin_taste[c]);
+  }
+
+  node0_printf("ape_only returns %d\n", !fn);
+
+  return !fn;
+}
+
+/*--------------------------------------------------------------------*/
+
 static void accum_gen_meson(complex **mp, su3_vector *qp0, int naik_index0,
 			    su3_vector *qp1, int naik_index1, int pair){
+  imp_ferm_links_t *fn_index0;
+  imp_ferm_links_t *fn_index1;
 
-  imp_ferm_links_t **fn = get_fm_links(fn_links);
+  if(ape_only(corr_table, num_spin_taste_indices, param.spin_taste_snk[pair])){
+      fn_index0 = NULL;
+      fn_index1 = NULL;
+    } else {
+      fn_index0 = get_fm_links(fn_links, naik_index0);
+      fn_index1 = get_fm_links(fn_links, naik_index1);
+    }
 
   ks_meson_cont_mom(mp, qp0, qp1,
 		    num_mom_parities, momentum, parity,
 		    num_spin_taste_indices, num_corr_mom_parity, corr_table,
-		    mom_parity_index, fn[naik_index0], fn[naik_index1],
+		    mom_parity_index, fn_index0, fn_index1,
 		    param.spin_taste_snk[pair],
 		    param.meson_phase[pair], param.meson_factor[pair],
 		    param.num_corr_report[pair],
 		    //		    param.corr_index[pair], &param.r_offset_m[pair][0]);
 		    param.corr_index[pair], param.coord_origin);
+
+  destroy_fn_links(fn_index0);
+  destroy_fn_links(fn_index1);
 }
 
 /*--------------------------------------------------------------------*/
@@ -656,9 +673,10 @@ static FILE* open_fnal_meson_file(int pair){
 
   fprintf(fp,"antiquark_type:               staggered\n");
 
-  print_source_info(fp, "antiquark_source", &param.src_qs[isrc0]);
+  char aqs[] = "antiquark_source";
+  print_source_info(fp, aqs, &param.src_qs[isrc0]);
   fprintf(fp,"antiquark_source_label:       %s\n",param.src_qs[isrc0].label);
-  print_field_op_info(fp, "antiquark_source", param.src_qs[isrc0].op);
+  print_field_op_info(fp, aqs, param.src_qs[isrc0].op);
   fprintf(fp,"antiquark_sink_label:         %s\n",param.snk_qs_op[iq0].label);
 
   {
@@ -680,9 +698,10 @@ static FILE* open_fnal_meson_file(int pair){
 
   fprintf(fp,"quark_type:                   staggered\n");
 
-  print_source_info(fp, "quark_source", &param.src_qs[isrc1]);
+  char qs[] = "quark_source";
+  print_source_info(fp, qs, &param.src_qs[isrc1]);
   fprintf(fp,"quark_source_label:           %s\n",param.src_qs[isrc1].label);
-  print_field_op_info(fp, "quark_source", param.src_qs[isrc1].op);
+  print_field_op_info(fp, qs, param.src_qs[isrc1].op);
   fprintf(fp,"quark_sink_label:             %s\n",param.snk_qs_op[iq1].label);
   {
     quark_source_sink_op **op_list = (quark_source_sink_op **)
@@ -811,6 +830,22 @@ static int lookup_corr_index(int pair, int m){
   terminate(1);
   return -1;
 }
+
+/*--------------------------------------------------------------------*/
+/* Chase linked list to find the original propagator ancestor and then its source */
+
+int get_eve(int iq){
+  int i, ip;
+
+  for(i = 0; i < MAX_HISTORY-1; i++){
+    ip = param.prop_for_qk[iq];
+    if(param.parent_type[iq] == PROP_TYPE) break;
+    iq = ip;
+  }
+
+  return ip;
+}
+  
 /*--------------------------------------------------------------------*/
 static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
 {
@@ -997,25 +1032,25 @@ static void print_start_baryon_prop(int triplet, int b)
   printf("SINKS: %s\n", param.baryon_label[triplet][b] );
 }
 /*--------------------------------------------------------------------*/
-static void print_meson_prop(int pair, int t, complex c)
+static void print_meson_prop(int pair, int t, dcomplex c)
 {
   if(param.saveflag_m[pair] != FORGET)return;
   node0_printf("%d %e %e\n",t,(double)c.real,(double)c.imag);
 }
 /*--------------------------------------------------------------------*/
-static void print_baryon_prop(int triplet, int t, complex c)
+static void print_baryon_prop(int triplet, int t, dcomplex c)
 {
   if(param.saveflag_b[triplet] != FORGET)return;
   node0_printf("%d %e %e\n",t,(double)c.real,(double)c.imag);
 }
 /*--------------------------------------------------------------------*/
-static void print_fnal_meson_prop(FILE *fp, int pair, int t, complex c)
+static void print_fnal_meson_prop(FILE *fp, int pair, int t, dcomplex c)
 {
   if(this_node != 0 || param.saveflag_m[pair] == FORGET)return;
   fprintf(fp, "%d\t%e\t%e\n", t, (double)c.real, (double)c.imag);
 }
 /*--------------------------------------------------------------------*/
-static void print_fnal_baryon_prop(FILE *fp, int triplet, int t, complex c)
+static void print_fnal_baryon_prop(FILE *fp, int triplet, int t, dcomplex c)
 {
   if(this_node != 0 || param.saveflag_b[triplet] == FORGET)return;
   fprintf(fp, "%d\t%e\t%e\n", t, (double)c.real, (double)c.imag);
@@ -1046,6 +1081,43 @@ static void close_fnal_baryon_file(FILE *fp, int triplet){
   if(fp != NULL)fclose(fp);
 }
 /*--------------------------------------------------------------------*/
+static double get_meson_scale_factor(int iq0, int iq1){
+  int ip0 = get_eve(iq0);
+  int ip1 = get_eve(iq1);
+  int is0 = param.source[ip0];
+  int is1 = param.source[ip1];
+  double scale_factor = 1;
+
+  if(param.prop_type[ip0] == KS_TYPE)
+    scale_factor *= param.src_qs[is0].scale_fact;
+  if(param.prop_type[ip1] == KS_TYPE)
+    scale_factor *= param.src_qs[is1].scale_fact;
+
+  printf("For iq0 %d iq1 %d ip0 %d ip1 %d is0 %d is1 %d sf %g \n", iq0, iq1, ip0, ip1, is0, is1, scale_factor);
+
+  return 1./scale_factor;
+}
+/*--------------------------------------------------------------------*/
+static double get_baryon_scale_factor(int iq0, int iq1, int iq2){
+  int ip0 = get_eve(iq0);
+  int ip1 = get_eve(iq1);
+  int ip2 = get_eve(iq2);
+  int is0 = param.source[ip0];
+  int is1 = param.source[ip1];
+  int is2 = param.source[ip2];
+  double scale_factor = 1;
+
+  if(param.prop_type[ip0] == KS_TYPE)
+    scale_factor *= param.src_qs[is0].scale_fact;
+  if(param.prop_type[ip1] == KS_TYPE)
+    scale_factor *= param.src_qs[is1].scale_fact;
+  if(param.prop_type[ip2] == KS_TYPE)
+    scale_factor *= param.src_qs[is2].scale_fact;
+
+  return 1./scale_factor;
+}
+
+/*--------------------------------------------------------------------*/
 static void spectrum_ks_print_diag(int pair){
 
   //  Real space_vol;
@@ -1059,6 +1131,11 @@ static void spectrum_ks_print_diag(int pair){
   /* Normalization factor */
   //  space_vol = (Real)(nx*ny*nz);
 
+  /* Rescaling */
+  double meson_scale = get_meson_scale_factor(param.qkpair[pair][0],  
+					      param.qkpair[pair][1]);
+
+  printf("meson_scale %d %d %g\n", param.qkpair[pair][0], param.qkpair[pair][1], meson_scale);
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);
@@ -1072,11 +1149,14 @@ static void spectrum_ks_print_diag(int pair){
       print_start_fnal_meson_prop(corr_fp, pair, m);
       //g_veccomplexsum(pmes_prop[m], nt); //TODO: remove. reduction done by quda or contraction_cpu.c
       for(t=0; t<nt; t++){
+	dcomplex dprop;
 	tp = (t + param.r_offset_m[pair][3]) % nt;
 	prop = pmes_prop[m][tp];
 	CMULREAL(prop, norm_fac, prop);
-	print_meson_prop(pair, t, prop);
-	print_fnal_meson_prop(corr_fp, pair, t, prop);
+	dprop.real = prop.real; dprop.imag = prop.imag; /* Change to double if float */
+	CMULREAL(dprop, meson_scale, dprop);
+	print_meson_prop(pair, t, dprop);
+	print_fnal_meson_prop(corr_fp, pair, t, dprop);
       }
       print_end_meson_prop(pair);
       print_end_fnal_meson_prop(corr_fp, pair);
@@ -1095,9 +1175,14 @@ static void spectrum_ks_print_offdiag(int pair){
   int num_report = param.num_corr_report[pair];
   complex prop;
   FILE *corr_fp;
-
+  
   /* Normalization factor */
   //  space_vol = (Real)(nx*ny*nz);
+
+  /* Rescaling */
+  double meson_scale = get_meson_scale_factor(param.qkpair[pair][0],  
+					      param.qkpair[pair][1]);
+  printf("meson_scale %d %d %g\n", param.qkpair[pair][0], param.qkpair[pair][1], meson_scale);
 
   /* Point sink */
   if(param.do_meson_spect[pair]){
@@ -1113,11 +1198,14 @@ static void spectrum_ks_print_offdiag(int pair){
       print_start_fnal_meson_prop(corr_fp, pair, m);
       //g_veccomplexsum(pmes_prop[m], nt); //TODO: remove. reduction done by quda or contraction_cpu.c
       for(t=0; t<nt; t++){
+	dcomplex dprop;
 	tp = (t + param.r_offset_m[pair][3]) % nt;
 	prop = pmes_prop[m][tp];
 	CMULREAL(prop, norm_fac, prop);
-	print_meson_prop(pair, t, prop);
-	print_fnal_meson_prop(corr_fp, pair, t, prop);
+	dprop.real = prop.real; dprop.imag = prop.imag;
+	CMULREAL(dprop, meson_scale, dprop);
+	print_meson_prop(pair, t, dprop);
+	print_fnal_meson_prop(corr_fp, pair, t, dprop);
       }
       print_end_meson_prop(pair);
       print_end_fnal_meson_prop(corr_fp, pair);
@@ -1135,6 +1223,10 @@ static void spectrum_ks_print_baryon(int triplet){
   int b;
   complex prop;
   int num_corr = param.num_corr_b[triplet];
+  double baryon_scale = get_baryon_scale_factor(param.qktriplet[triplet][0], 
+						param.qktriplet[triplet][1], 
+						param.qktriplet[triplet][2]);
+
 
   /* Normalization factor */
   //  space_vol = (Real)(nx*ny*nz);
@@ -1159,8 +1251,10 @@ static void spectrum_ks_print_baryon(int triplet){
               - param.r_offset_b[triplet][3]/nt) %2 ) == 1 ){
           CMULREAL(prop,-1.,prop);
         }
-        print_baryon_prop(triplet, t, prop);
-        print_fnal_baryon_prop(corr_fp, triplet, t, prop);
+	dcomplex dprop = {prop.real, prop.imag};
+	CMULREAL(dprop, baryon_scale, dprop);
+        print_baryon_prop(triplet, t, dprop);
+        print_fnal_baryon_prop(corr_fp, triplet, t, dprop);
       }
       print_end_baryon_prop(triplet);
     }

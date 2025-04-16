@@ -27,6 +27,7 @@
     qop_fm_ac_links_t *fm_ac_du0
        QOP_asqtad_coeffs_t *ac;
        fn_links_qop_t *fm
+         int preserve;
          link_phase_info_t *phase
 	 int al_F_allocated;
          QOP_F3_FermionLinksAsqtad al_F;
@@ -38,14 +39,19 @@
      qop_hisq_ac_links_t *hisq_ac
        QOP_hisq_coeffs_t *ac
        hisq_links_qop_t *hl
-         link_phase_info_t *phase;
-         QOP_F3_FermionLinksHisq hl_F;
-         QOP_D3_FermionLinksHisq hl_D;
+          link_phase_info_t *phase;
+          QOP_F3_FermionLinksHisq *hl_F;
+          QOP_D3_FermionLinksHisq *hl_D;
        fn_links_qop_t *fn[MAX_NAIK]
+         int preserve;
          link_phase_info_t *phase;
+         int al_F_allocated;
          QOP_F3_FermionLinksAsqtad al_F;
          QOP_D3_FermionLinksAsqtad al_D;
+           Derived, read-only values extracted from al_F or al_D if needed:
+         su3_matrix *fat, *lng;
        fn_links_qop_t *fn_deps
+
 
    where (in qopqdp-0.17.0)
 
@@ -67,14 +73,14 @@
      double difference_one_link;
      double difference_naik;
 
-   QOP_FermionLinksHisq
+QOP_FermionLinksHisq   (opaque structure)
      int n_naiks, WeqY;
      QDP_ColorMatrix *U_link[4];
      QDP_ColorMatrix *V_link[4];
      QDP_ColorMatrix *Y_unitlink[4];
      QDP_ColorMatrix *W_unitlink[4];
-     QOP_FermionLinksAsqtad **fn;
-     QOP_FermionLinksAsqtad fn_deps;
+     QOP_FermionLinksHisq **fn;    We keep QOPs multiple storage for now
+     QOP_FermionLinksHisq *fn_deps;
 
 */
 
@@ -155,7 +161,7 @@ link_phase_info_t *create_link_phase_info(void);
 void destroy_link_phase_info(link_phase_info_t *lp);
 void set_boundary_twist_fn(fn_links_qop_t *fn_links, Real bdry_phase[4], int r0[4]);
 void boundary_twist_fn(fn_links_qop_t *fn_links, int flag);
-int twist_status(fn_links_t *fn);
+int twist_status(fn_links_qop_t *fn);
 
 /********************************************************************/
 /* Action coefficient conversion */

@@ -450,7 +450,7 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
   if(refresh_links != NULL)
     refresh = *refresh_links;
   
-  qudaSpinTaste(MILC_PRECISION, quda_precision, links, src, dest, (int)spin, (int)taste, refresh);
+  qudaSpinTaste(MILC_PRECISION, quda_precision, links, (const void *const)src, dest, (int)spin, (int)taste, refresh);
   if(refresh_links != NULL)
     *refresh_links = 0;
 }
@@ -1011,6 +1011,14 @@ is_rhosbape_index(int index){
     index == rhotsbape;
 }
 
+int
+is_fn_index(int index){
+  return
+    is_rhosfn_index(index) ||
+    is_rhosffn_index(index) ||
+    is_rhosbfn_index(index);
+}
+    
 /*------------------------------------------------------------------*/
 
 int

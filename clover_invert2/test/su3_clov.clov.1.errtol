@@ -30,10 +30,13 @@ SINKS: point point point DELTA0
 0 0.0002 0.0002
 0 0.0002 0.0002
 0 0.0002 0.0002
+Time for printing correlator XXX
 Mesons for quarks 0 and 0
 WMTIME: time XXX sec XXX flops XXX MF
 WMTIME: time XXX sec XXX flops XXX MF
 WMTIME: time XXX sec XXX flops XXX MF
+Time for diagonal mesons XXX
+Time for printing correlator XXX
 Mesons for quarks 0 and 0
 WMTIME: time XXX sec XXX flops XXX MF
 WMTIME: time XXX sec XXX flops XXX MF
@@ -218,4 +221,6 @@ SINKS: point gaussian B
 0 0.001 0.0002
 0 0.0006 0.0002
 ENDPROP
+Time for printing correlator XXX
+Aggregate time to tie hadron correlators XXX
 RUNNING COMPLETED

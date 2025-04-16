@@ -91,15 +91,15 @@
 /* 1. Header comes first    */
 
 typedef struct {
-  int32type magic_number;               /* Identifies file format */
+  u_int32type magic_number;               /* Identifies file format */
   char   time_stamp[MAX_TIME_STAMP]; /* Date and time stamp - used to
 					check consistency between the
 					ASCII header file and the
 					lattice file */
-  int32type dims[4];                    /* Full lattice dimensions */
-  int32type header_bytes;               /* NOT WRITTEN TO THE FILE but
+  u_int32type dims[4];                    /* Full lattice dimensions */
+  u_int32type header_bytes;               /* NOT WRITTEN TO THE FILE but
 					 helpful for finding the data */
-  int32type order;                      /* 0 means no coordinate list is
+  u_int32type order;                      /* 0 means no coordinate list is
 				        attached and the values are in
 				        coordinate serial order.
 				        Nonzero means that a
@@ -222,19 +222,19 @@ extern char *gauge_info_keyword[];
 /* 1. Header comes first */
 
 typedef struct {
-  int32type magic_number;          /* Identifies file format */
-  int32type dims[4];               /* Full lattice dimensions */
-  int32type header_bytes;          /* Number of bytes for data belonging to
+  u_int32type magic_number;          /* Identifies file format */
+  u_int32type dims[4];               /* Full lattice dimensions */
+  u_int32type header_bytes;          /* Number of bytes for data belonging to
 				   this structure -- NOT necessarily 
 				   the length of this structure! */
-  int32type order;                 /* 0 means no coordinate list is attached
+  u_int32type order;                 /* 0 means no coordinate list is attached
 				   and the values are in coordinate serial order
 				   Nonzero means that a coordinate list is attached,
 				   specifying the order of values */
   struct {                      /* Gauge field parameters */
-    int32type n_descript;          /* Number of bytes in character string */
+    u_int32type n_descript;          /* Number of bytes in character string */
     char   descript[MAX_GAUGE_FIELD_DESCRIPT];  /* Describes gauge field */
-    int32type n_param;             /* Number of gauge field parameters */
+    u_int32type n_param;             /* Number of gauge field parameters */
     Real  param[MAX_GAUGE_FIELD_PARAM];        /* GF parameters */
   } gauge_field;
 } gauge_header_1996  ;
@@ -250,13 +250,13 @@ typedef struct {  /* Structure to hold header tokens */
 
 /* FNAL generic header */
 typedef struct {
-  int32type magic_number;          /* Identifies file format */
-  int32type gmtime_stamp;             /* Used in FNAL header from call to time*/
-  int32type size_of_element;	  /* bytes per data value, i.e, 4=single 						   precision */
-  int32type elements_per_site;	   /* number of data elements stored at 
+  u_int32type magic_number;          /* Identifies file format */
+  u_int32type gmtime_stamp;             /* Used in FNAL header from call to time*/
+  u_int32type size_of_element;	  /* bytes per data value, i.e, 4=single 						   precision */
+  u_int32type elements_per_site;	   /* number of data elements stored at 
 					each site */
-  int32type dims[4];               /* Full lattice dimensions */
-  int32type order;                 /* 0 means no coordinate list is attached
+  u_int32type dims[4];               /* Full lattice dimensions */
+  u_int32type order;                 /* 0 means no coordinate list is attached
 			   and the values are in coordinate serial order.
 			  Nonzero is not a Fermilab option */
 } FNALheader ;
@@ -407,11 +407,11 @@ void swrite_data(FILE* fp, void *src, size_t size, const char *myname, const cha
 void pwrite_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
 void pswrite_data(int parallel, FILE* fp, void *src, size_t size, 
 		  const char *myname, const char *descrip);
-int sread_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
-int pread_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
+int sread_data(FILE* fp, const void *src, size_t size, const char *myname, const char *descrip);
+int pread_data(FILE* fp, const void *src, size_t size, const char *myname, const char *descrip);
 int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
-int sread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
-int psread_data(int parallel, FILE* fp, void *src, size_t size, 
+int sread_byteorder(int byterevflag, FILE* fp, const void *src, size_t size, const char *myname, const char *descrip);
+int psread_data(int parallel, FILE* fp, const void *src, size_t size, 
 		const char *myname, const char *descrip);
 int psread_byteorder(int byterevflag, int parallel, FILE* fp, 
 		      void *src, size_t size, 

@@ -85,7 +85,7 @@ number_of_propagators 1
 
 mass 0.03
 naik_term_epsilon 0
-error_for_propagator 1e-6
+error_for_propagator 1e-7
 rel_error_for_propagator 0
 
 fresh_ksprop
@@ -110,7 +110,7 @@ number_of_propagators 1
 
 mass 0.03
 naik_term_epsilon 0
-error_for_propagator 1e-6
+error_for_propagator 1e-7
 rel_error_for_propagator 0
 
 fresh_ksprop
@@ -135,7 +135,7 @@ number_of_propagators 1
 
 mass 0.03
 naik_term_epsilon 0
-error_for_propagator 1e-6
+error_for_propagator 1e-7
 rel_error_for_propagator 0
 
 fresh_ksprop

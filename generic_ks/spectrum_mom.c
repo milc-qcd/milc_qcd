@@ -1,4 +1,5 @@
 /******** spectrum_mom.c *************/
+/* OPSOLETe */
 /* MIMD version 7*/
 /* DT 6/97
 * start from ../ks_hybrids2/spectrum_hybrids4.c

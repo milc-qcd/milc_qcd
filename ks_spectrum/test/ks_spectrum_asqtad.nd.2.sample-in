@@ -69,7 +69,7 @@ number_of_propagators 3
 
 mass 0.03
 
-error_for_propagator 1e-8
+error_for_propagator 1e-14
 rel_error_for_propagator 0
 
 fresh_ksprop
@@ -80,7 +80,7 @@ forget_ksprop
 
 mass 0.05
 
-error_for_propagator 1e-8
+error_for_propagator 1e-14
 rel_error_for_propagator 0
 
 fresh_ksprop

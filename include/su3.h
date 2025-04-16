@@ -13,6 +13,7 @@
 /* SU(3) */
 
 #include "../include/milc_datatypes.h"
+#include "../include/int32type.h"
 
 #define GAMMAFIVE -1    /* some integer which is not a direction */
 #define PLUS 1          /* flags for selecting M or M_adjoint */

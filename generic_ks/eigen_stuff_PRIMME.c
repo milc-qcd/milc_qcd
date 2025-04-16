@@ -160,7 +160,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 
   mxv = 0;
   mxv_precond = 0;
-  my_fn = get_fm_links(fn_links)[0];
+  my_fn = get_fm_links(fn_links, 0);
 
   if(parity == EVENANDODD){
     maxn=sites_on_node*3;			/*local size of matrix*/
@@ -295,6 +295,8 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   /* Reset eigenvalues from eigenvectors */
   reset_eigenvalues(eigVec, eigVal, Nvecs, parity, my_fn);
 #endif
+
+  destroy_fn_links(my_fn);
 
 #ifdef EIGTIME
   dtimec += dclock();

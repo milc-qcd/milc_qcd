@@ -9,7 +9,7 @@ for f in $*
 do
   for m in $msglist
   do
-    $HOME/scidac/install/qio-single/bin/lime_extract_record $f $m $rec foo
+    $HOME/scidac/install-single/qio/bin/lime_extract_record $f $m $rec foo
     cat foo
     echo ""
   done

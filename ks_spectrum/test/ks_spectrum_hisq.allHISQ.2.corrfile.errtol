@@ -1,6 +1,6 @@
 ---
 JobID: 0
-date: "Mon Dec 0 19:27:08 0 UTC"
+date: XXX XXX XXX XXX XXX UTC"
 lattice_size: 8,8,8,32
 antiquark_type: staggered
 antiquark_source_type: vector_field
@@ -65,7 +65,7 @@ correlator_key: P5-P5_RW_RW_d_d_m0.000569_m0.000569_p000-fine
 0 2e-06 2e-06
 ---
 JobID: 0
-date: "Mon Dec 0 19:27:08 0 UTC"
+date: XXX XXX XXX XXX XXX UTC"
 lattice_size: 8,8,8,32
 antiquark_type: staggered
 antiquark_source_type: vector_field
@@ -130,7 +130,7 @@ correlator_key: P5-P5_RW_RW_d_d_m0.000569_m0.000569_p100-fine
 0 2e-06 2e-06
 ---
 JobID: 0
-date: "Mon Dec 0 19:27:08 0 UTC"
+date: XXX XXX XXX XXX XXX UTC"
 lattice_size: 8,8,8,32
 antiquark_type: staggered
 antiquark_source_type: vector_field
@@ -195,7 +195,7 @@ correlator_key: P5-P5_RW_RW_d_d_m0.164_m0.000569_p000-fine
 0 2e-06 2e-06
 ---
 JobID: 0
-date: "Mon Dec 0 19:27:08 0 UTC"
+date: XXX XXX XXX XXX XXX UTC"
 lattice_size: 8,8,8,32
 antiquark_type: staggered
 antiquark_source_type: vector_field
@@ -260,8 +260,8 @@ correlator_key: P5-P5_RW_RW_d_d_m0.164_m0.000569_p100-fine
 0 2e-06 2e-06
 ---
 JobID: 0
-date: "Mon Dec 0 19:27:08 0 UTC"
-lattice_size: 8,8,8,32
+date: XXX XXX XXX XXX XXX UTC"l
+attice_size: 8,8,8,32
 antiquark_type: staggered
 antiquark_source_type: vector_field
 antiquark_source_subset: corner
@@ -325,7 +325,7 @@ correlator_key: P5-P5_RW_RW_d_d_m0.1827_m0.000569_p000-fine
 0 2e-06 2e-06
 ---
 JobID: 0
-date: "Mon Dec 0 19:27:08 0 UTC"
+date: XXX XXX XXX XXX XXX UTC"
 lattice_size: 8,8,8,32
 antiquark_type: staggered
 antiquark_source_type: vector_field
@@ -390,7 +390,7 @@ correlator_key: P5-P5_RW_RW_d_d_m0.1827_m0.000569_p100-fine
 0 2e-06 2e-06
 ---
 JobID: 0
-date: "Mon Dec 0 19:27:08 0 UTC"
+date: XXX XXX XXX XXX XXX UTC"
 lattice_size: 8,8,8,32
 antiquark_type: staggered
 antiquark_source_type: vector_field
@@ -455,7 +455,7 @@ correlator_key: A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p000-fine
 0 2e-06 2e-06
 ---
 JobID: 0
-date: "Mon Dec 0 19:27:08 0 UTC"
+date: XXX XXX XXX XXX XXX UTC"
 lattice_size: 8,8,8,32
 antiquark_type: staggered
 antiquark_source_type: vector_field
@@ -558,7 +558,7 @@ correlator_key: A4-A4_T14-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
 0 2e-06 2e-06
 ---
 JobID: 0
-date: "Mon Dec 0 19:27:08 0 UTC"
+date: XXX XXX XXX XXX XXX UTC"
 lattice_size: 8,8,8,32
 antiquark_type: staggered
 antiquark_source_type: vector_field
@@ -623,7 +623,7 @@ correlator_key: A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p000-fine
 0 2e-06 2e-06
 ---
 JobID: 0
-date: "Mon Dec 0 19:27:08 0 UTC"
+date: XXX XXX XXX XXX XXX UTC"
 lattice_size: 8,8,8,32
 antiquark_type: staggered
 antiquark_source_type: vector_field

@@ -190,7 +190,7 @@ static void flush_tbuf_to_lbuf(gauge_file *gf, int *rank29, int *rank31,
     memcpy((void *)&lbuf[4*(*buf_length)], 
 	   (void *)tbuf, 4*tbuf_length*sizeof(fsu3_matrix));
 
-    nword= 4*(int)sizeof(fsu3_matrix)/(int)sizeof(int32type)*tbuf_length;
+    nword= 4*(int)sizeof(fsu3_matrix)/(int)sizeof(u_int32type)*tbuf_length;
     buf = (u_int32type *)&lbuf[4*(*buf_length)];
     accum_cksums(gf, rank29, rank31, buf, nword);
 
@@ -219,7 +219,7 @@ static void w_serial(gauge_file *gf)
   fsu3_matrix *lbuf = NULL;
   fsu3_matrix *tbuf = NULL;
   int buf_length, tbuf_length;
-  register int i,j;
+  int i,j;
   off_t offset;             /* File stream pointer */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
   off_t head_size;          /* Size of header plus coordinate list */
@@ -284,10 +284,10 @@ static void w_serial(gauge_file *gf)
   /* Here only node 0 uses these values -- both start at 0 */ 
   u_int32type r29 = sites_on_node % 29;
   r29 = r29 * this_node % 29;
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(u_int32type) * r29 % 29;
   u_int32type r31 = sites_on_node % 31;
   r31 = r31 * this_node % 31;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(u_int32type) * r31 % 31;
 
   g_sync();
   currentnode=0;  /* The node delivering data */
@@ -418,7 +418,7 @@ static void r_serial(gauge_file *gf)
 	gauge_check_size = 0;
       
       if(gf->header->order == NATURAL_ORDER)coord_list_size = 0;
-      else coord_list_size = sizeof(int32type)*volume;
+      else coord_list_size = sizeof(u_int32type)*volume;
       checksum_offset = gf->header->header_bytes + coord_list_size;
       head_size = checksum_offset + gauge_check_size;
       
@@ -491,7 +491,7 @@ static void r_serial(gauge_file *gf)
 	    if(buf_length > MAX_BUF_LENGTH)buf_length = MAX_BUF_LENGTH;
 	    /* then do read */
 	    
-	    if( (int)g_read(lbuf,4*sizeof(fsu3_matrix),buf_length,fp) 
+	    if( (size_t)g_read(lbuf,4*sizeof(fsu3_matrix),buf_length,fp) 
 		!= buf_length)
 	      {
 		printf("%s: node %d gauge configuration read error %d file %s\n",
@@ -530,10 +530,10 @@ static void r_serial(gauge_file *gf)
 	{
 	  if(byterevflag==1)
 	    byterevn((u_int32type *)tmpsu3,
-		     4*sizeof(fsu3_matrix)/sizeof(int32type));
+		     4*sizeof(fsu3_matrix)/sizeof(u_int32type));
 	  /* Accumulate checksums */
 	  for(k = 0, val = (u_int32type *)tmpsu3; 
-	      k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(int32type); 
+	      k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(u_int32type); 
 	      k++, val++)
 	    {
 	      test_gc.sum29 ^= (*val)<<rank29 | ( rank29 == 0  ? 0 : (*val)>>(32-rank29));
@@ -549,8 +549,8 @@ static void r_serial(gauge_file *gf)
 	}
       else
 	{
-	  rank29 += 4*sizeof(fsu3_matrix)/sizeof(int32type);
-	  rank31 += 4*sizeof(fsu3_matrix)/sizeof(int32type);
+	  rank29 += 4*sizeof(fsu3_matrix)/sizeof(u_int32type);
+	  rank31 += 4*sizeof(fsu3_matrix)/sizeof(u_int32type);
 	  rank29 %= 29;
 	  rank31 %= 31;
 	}
@@ -768,7 +768,7 @@ static void r_serial_arch(gauge_file *gf)
 	{
 	  /* Accumulate checksums */
 	  for(k = 0, val = (u_int32type *)tmpsu3;
-	      k < 4*(int)sizeof(su3_matrix)/(int)sizeof(int32type); k++, val++)
+	      k < 4*(int)sizeof(su3_matrix)/(int)sizeof(u_int32type); k++, val++)
    	    {
 	      test_gc.sum29 ^= (*val)<<rank29 | ( rank29 == 0 ? 0 : (*val)>>(32-rank29));
 	      // test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
@@ -780,8 +780,8 @@ static void r_serial_arch(gauge_file *gf)
 	}
       else
 	{
-	  rank29 += 4*sizeof(su3_matrix)/sizeof(int32type);
-	  rank31 += 4*sizeof(su3_matrix)/sizeof(int32type);
+	  rank29 += 4*sizeof(su3_matrix)/sizeof(u_int32type);
+	  rank31 += 4*sizeof(su3_matrix)/sizeof(u_int32type);
 	  rank29 %= 29;
 	  rank31 %= 31;
 	}
@@ -833,7 +833,7 @@ static void w_parallel(gauge_file *gf)
   u_int32type *val;
   size_t rank29,rank31;
   off_t checksum_offset;
-  register int i;
+  size_t i;
   int j,k;
   int x,y,z,t;
   struct {
@@ -920,9 +920,9 @@ static void w_parallel(gauge_file *gf)
 		where_in_buf = buf_length;
 		d2f_4mat(&lattice[i].link[0],&lbuf[4*where_in_buf]);
 		u_int32type r29 = rcv_rank % 29;
-		rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+		rank29 = 4*sizeof(fsu3_matrix)/sizeof(u_int32type) * r29 % 29;
 		u_int32type r31 = rcv_rank % 31;
-		rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
+		rank31 = 4*sizeof(fsu3_matrix)/sizeof(u_int32type) * r31 % 31;
 	      }
 	      else {
 		/* Receive a message */
@@ -939,16 +939,16 @@ static void w_parallel(gauge_file *gf)
 		memcpy((void *)&lbuf[4*where_in_buf],
 		       (void *)msg.link,4*sizeof(fsu3_matrix));
 		u_int32type r29 = tmp_rank % 29;
-		rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+		rank29 = 4*sizeof(fsu3_matrix)/sizeof(u_int32type) * r29 % 29;
 		u_int32type r31 = tmp_rank % 31;
-		rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
+		rank31 = 4*sizeof(fsu3_matrix)/sizeof(u_int32type) * r31 % 31;
 	      }
 
 	      /* Receiving node accumulates checksums as the values
 		 are inserted into its buffer */
 	      rank29 %= 29; rank31 %= 31;
 	      for(k = 0, val = (u_int32type *)&lbuf[4*where_in_buf]; 
-		  k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(int32type); k++, val++)
+		  k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(u_int32type); k++, val++)
 		{
 		  gf->check.sum29 ^= (*val)<<rank29 | ( rank29 == 0 ? 0 : (*val)>>(32-rank29));
 		  //  gf->check.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
@@ -1030,8 +1030,8 @@ static void w_checkpoint(gauge_file *gf)
   int rank29,rank31;
   off_t checksum_offset;
   int buf_length;
-  register site *s;
-  register int i;
+  site *s;
+  size_t i;
   char myname[] = "w_checkpoint";
 
   fp = gf->fp;
@@ -1047,10 +1047,10 @@ static void w_checkpoint(gauge_file *gf)
   /* Here all nodes use these values */
   u_int32type r29 = sites_on_node % 29;
   r29 = r29 * this_node % 29;
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(u_int32type) * r29 % 29;
   u_int32type r31 = sites_on_node % 31;
   r31 = r31 * this_node % 31;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(u_int32type) * r31 % 31;
 
   buf_length = 0;
 
@@ -1063,7 +1063,7 @@ static void w_checkpoint(gauge_file *gf)
 
     /* Accumulate checksums - contribution from next site moved into buffer*/
     for(k = 0, val = (u_int32type *)&lbuf[4*buf_length]; 
-	k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(int32type); k++, val++)
+	k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(u_int32type); k++, val++)
       {
 	gf->check.sum29 ^= (*val)<<rank29 | ( rank29 == 0 ? 0 : (*val)>>(32-rank29));
 	// gf->check.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
@@ -1198,7 +1198,7 @@ static void r_parallel(gauge_file *gf)
   size_t isite,ksite,site_block;
   int x,y,z,t;
   size_t rcv_rank,rcv_coords;
-  register int i,k;
+  int i,k;
 
   off_t offset ;            /* File stream pointer */
   off_t gauge_node_size;    /* Size of a gauge configuration block for
@@ -1236,7 +1236,7 @@ static void r_parallel(gauge_file *gf)
     gauge_check_size = 0;
 
   if(gf->header->order == NATURAL_ORDER)coord_list_size = 0;
-  else coord_list_size = sizeof(int32type)*volume;
+  else coord_list_size = sizeof(u_int32type)*volume;
   checksum_offset = gf->header->header_bytes + coord_list_size;
   head_size = checksum_offset + gauge_check_size;
 
@@ -1261,10 +1261,10 @@ static void r_parallel(gauge_file *gf)
   /* Here all nodes use these values */
   u_int32type r29 = sites_on_node % 29;
   r29 = r29 * this_node % 29;
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r29 % 29;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(u_int32type) * r29 % 29;
   u_int32type r31 = sites_on_node % 31;
   r31 = r31 * this_node % 31;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type) * r31 % 31;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(u_int32type) * r31 % 31;
 
   /* Read and deal */
 
@@ -1343,11 +1343,11 @@ static void r_parallel(gauge_file *gf)
 	    /* Do byte reversal if needed */
 	    if(gf->byterevflag==1)
 	      byterevn((u_int32type *)&lbuf[4*where_in_buf],
-		       4*sizeof(fsu3_matrix)/sizeof(int32type));
+		       4*sizeof(fsu3_matrix)/sizeof(u_int32type));
 
 	    /* Accumulate checksums - contribution from next site */
 	    for(k = 0, val = (u_int32type *)&lbuf[4*where_in_buf]; 
-		k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(int32type); k++, val++)
+		k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(u_int32type); k++, val++)
 	      {
 		test_gc.sum29 ^= (*val)<<rank29 | ( rank29 == 0 ? 0 : (*val)>>(32-rank29));
 		// test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
@@ -1450,7 +1450,8 @@ gauge_file *restore_ascii(const char *filename) {
   gauge_file *gf;
   FILE *fp = NULL;
   int destnode;
-  int version_number,i,j,x,y,z,t,dir;
+  int version_number,i,j,dir;
+  size_t x,y,z,t;
   fsu3_matrix lbuf[4];
   
   /* Set up a gauge file and guage header structure for reading */
@@ -1489,7 +1490,7 @@ gauge_file *restore_ascii(const char *filename) {
       printf("count %d time_stamp %s\n",i,gh->time_stamp);
       terminate(1);
     }
-    if( (fscanf(fp,"%d%d%d%d",&x,&y,&z,&t))!=4 ){
+    if( (fscanf(fp,"%ld%ld%ld%ld",&x,&y,&z,&t))!=4 ){
       printf("restore_ascii: Error in reading dimensions\n"); terminate(1);
     }
     gh->dims[0] = x; gh->dims[1] = y; gh->dims[2] = z; gh->dims[3] = t;

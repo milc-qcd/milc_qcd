@@ -1,7 +1,7 @@
 .SUFFIXES: .test-param .sample-in
 
-.test-param.sample-in::
-	build_input.$*.sh $*.test-param > $*.sample-in
+#.test-param.sample-in::
+#	build_input.$*.sh $*.test-param > $*.sample-in
 
 TESTIN = \
 	ks_spectrum_asqtad.fpi.1.sample-in \

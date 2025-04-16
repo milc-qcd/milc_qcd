@@ -3,11 +3,13 @@
 ARCH=$1
 PK_CC=$2
 PK_CXX=$3
+
 #GIT_REPO=https://github.com/aportelli/Hadrons
 GIT_REPO=https://github.com/milc-qcd/Hadrons
+
 #GIT_BRANCH=develop
 #GIT_BRANCH=feature/staggered-a2a-ml
-GIT_BRANCh=feature/LMI-develop
+GIT_BRANCH=feature/LMI-master
 
 if [ -z ${PK_CXX} ]
 then

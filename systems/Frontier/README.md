@@ -24,6 +24,8 @@ module load PrgEnv-amd amd/5.3.0 rocm/5.3.0
 
 ##### ROCm 6:
 
+**As of Apr. 15, 2025, this remains an issue with all versions of ROCm 6+ available on Frontier.**
+
 There is a serious bug in the ROCm 6+ tool chains that causes incorrect QUDA results without warning. The workaround is to use the older software stack:
 
 ```

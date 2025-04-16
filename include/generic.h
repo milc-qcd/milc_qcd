@@ -122,7 +122,7 @@ int ask_ending_apelinks(FILE *fp, int prompt, int *flag, char *filename );
 void ax_gauge(void);
 
 /* bsd_sum.c */
-int32type bsd_sum (const char *data,int32type total_bytes);
+u_int32type bsd_sum (const char *data,u_int32type total_bytes);
 
 /* check_unitarity.c */
 Real check_unitarity( void );

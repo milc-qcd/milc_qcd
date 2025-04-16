@@ -32,10 +32,15 @@
 */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
+#ifdef HAVE_QOP
+#include "../include/fn_links_qop.h"
+#else
 #include "../include/fn_links.h"
+#endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DU0)
-BOMB THE COMPILATION No dM_du0 support for HISQ actions
+
+#if ( FERM_ACTION == HISQ && defined(DM_DU0) )
+#error "No dM_du0 support for HISQ actions"
 #endif
 
 static Real *create_real_array(int n){
@@ -153,10 +158,10 @@ static void chem_pot_print2(double MidM_MidM, int jpbp_reps, int npbp_reps,
 void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
 		       int naik_term_epsilon_index, fermion_links_t *fl){
 
-  imp_ferm_links_t* fn = get_fm_links(fl)[naik_term_epsilon_index];
+  imp_ferm_links_t* fn = get_fm_links(fl, naik_term_epsilon_index);
 
 #ifdef DM_DU0
-  imp_ferm_links_t* fn_du0 = get_fm_du0_links(fl)[naik_term_epsilon_index];
+  imp_ferm_links_t* fn_du0 = get_fm_du0_links(fl);
 #endif
 
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
@@ -389,6 +394,8 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
       destroy_v_field(gr); gr = NULL;
 
     } /* jpbp_reps */
+
+    destroy_fn_links(fn);
 }
 
 /* Wrapper for obsolete call */
@@ -416,10 +423,9 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
 		       ks_param *ksp, fermion_links_t *fl){
 
   Real *mass = create_real_array(n_masses);
-  imp_ferm_links_t **fn = get_fm_links(fl);
 
 #ifdef DM_DU0
-  imp_ferm_links_t *fn_du0 = get_fm_du0_links(fl)[0];
+  imp_ferm_links_t *fn_du0 = get_fm_du0_links(fl);
   su3_vector **dMdu_x = NULL;
 #endif
 
@@ -433,16 +439,14 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
   su3_vector *gr = NULL;
   su3_vector **M_gr = NULL;
   su3_vector **M_inv_gr = NULL;
-  imp_ferm_links_t **fn_multi;
 
   /* Load masses from ks_param */
   for(j = 0; j < n_masses; j++)
     mass[j] = ksp[j].mass;
 
   /* Load pointers for fermion links, based on Naik epsilon indices */
-  fn_multi = (imp_ferm_links_t **)malloc(sizeof(imp_ferm_links_t *)*n_masses);
-  for(j = 0; j < n_masses; j++)
-    fn_multi[j] = fn[ksp[j].naik_term_epsilon_index];
+  /* Must be the same Naik epsilon for all masses */
+  imp_ferm_links_t *fn = get_fm_links(fl, ksp[j].naik_term_epsilon_index);
 
   for(jpbp_reps = 0; jpbp_reps < npbp_reps; jpbp_reps++){
       
@@ -457,13 +461,14 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
 
     M_gr = create_su3_vector_array(n_masses);
     for(j = 0; j < n_masses; j++)
-      ks_dirac_adj_op( gr, M_gr[j], mass[j], EVENANDODD, fn_multi[j] );
+
+      ks_dirac_adj_op( gr, M_gr[j], mass[j], EVENANDODD, fn );
 
     /* M_inv_gr = M^{-1} gr */
 
     M_inv_gr = create_su3_vector_array(n_masses);
-    //total_iters += mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic, fn_multi );
-    mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic, fn_multi );
+    //total_iters += mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic, fn );
+    mat_invert_multi( gr, M_inv_gr, ksp, n_masses, qic, fn );
       
 #ifdef DM_DU0
     /* dMdu_x = dM/du0 M^{-1} gr */
@@ -518,8 +523,8 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
       /* d2M_M_inv_gr = d2M/dmu2 * M_inv_gr */
       dM_M_inv_gr = create_v_field();
       d2M_M_inv_gr = create_v_field();
-      chem_pot_tshift(fn_multi[j], dM_M_inv_gr, M_inv_gr[j], 3., -1.);
-      chem_pot_tshift(fn_multi[j], d2M_M_inv_gr, M_inv_gr[j], 9., 1.);
+      chem_pot_tshift(fn, dM_M_inv_gr, M_inv_gr[j], 3., -1.);
+      chem_pot_tshift(fn, d2M_M_inv_gr, M_inv_gr[j], 9., 1.);
 
 #endif
 
@@ -624,7 +629,7 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
 	su3_vector *MM_inv_gr = create_v_field();
 	double pbp_pbp = 0.0;
 	
-	mat_invert_uml_field( M_inv_gr[j], MM_inv_gr, qic, mass[j], fn_multi[j] );
+	mat_invert_uml_field( M_inv_gr[j], MM_inv_gr, qic, mass[j], fn );
 	FORALLFIELDSITES(i){
 	  pbp_pbp += su3_rdot( gr+i, MM_inv_gr+i );
 	}
@@ -641,13 +646,13 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
       /* M_inv_dM_M_inv_gr = M^{-1} dM_M_inv_gr */
       
       M_inv_dM_M_inv_gr = create_v_field();
-      mat_invert_uml_field( dM_M_inv_gr, M_inv_dM_M_inv_gr, qic, mass[j], fn_multi[j] );
+      mat_invert_uml_field( dM_M_inv_gr, M_inv_dM_M_inv_gr, qic, mass[j], fn );
       destroy_v_field(dM_M_inv_gr); dM_M_inv_gr = NULL;
       
       /* dM_M_inv_dM_M_inv_gr = dM/dmu M_inv_dM_M_inv_gr */
       
       dM_M_inv_dM_M_inv_gr = create_v_field();
-      chem_pot_tshift(fn_multi[j], dM_M_inv_dM_M_inv_gr, M_inv_dM_M_inv_gr, 3., -1.);
+      chem_pot_tshift(fn, dM_M_inv_dM_M_inv_gr, M_inv_dM_M_inv_gr, 3., -1.);
       destroy_v_field(M_inv_dM_M_inv_gr); M_inv_dM_M_inv_gr = NULL;
       
       /* Compute MidM_MidM */
@@ -675,7 +680,7 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
     
   } /* jpbp_reps */
 		     
-  free(fn_multi);
   destroy_real_array(mass); mass = NULL;
+  destroy_fn_links(fn);
 }
 

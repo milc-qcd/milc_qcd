@@ -156,7 +156,7 @@ static void sink_smear_ks_src(su3_vector *v, complex *chi_cs,
 
 /*--------------------------------------------------------------------*/
 /* Multiply the sink Wilson vectors by the sink gamma matrix */
-static void mult_sink_gamma_wv(wilson_vector *wv, gammatype snk_gam)
+static void mult_sink_gamma_wv(wilson_vector *wv, enum gammatype snk_gam)
 {
   site *s;
   int i;

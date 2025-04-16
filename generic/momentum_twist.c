@@ -30,7 +30,8 @@ phase_mult_su3_matrix( su3_matrix *a, complex c ){
 void 
 momentum_twist_site(Real bdry_phase[4], int sign) {
   //char myname[] = "momentum_twist_site";
-  int i,dir;
+  size_t i;
+  int dir;
   site *s;
   complex cphase[4];
   int no_twist;
@@ -71,7 +72,8 @@ momentum_twist_site(Real bdry_phase[4], int sign) {
 void 
 momentum_twist_links(Real bdry_phase[4], int sign, su3_matrix *links) {
   //char myname[] = "momentum_twist_site";
-  int i,dir;
+  size_t i;
+  int dir;
   complex cphase[4];
   int no_twist;
   int nmu[4] = {nx, ny, nz, nt};
@@ -109,7 +111,8 @@ momentum_twist_links(Real bdry_phase[4], int sign, su3_matrix *links) {
 void 
 boundary_twist_site(Real bdry_phase[4], int r0[4], int sign) {
   //char myname[] = "boundary_twist_site";
-  int i,dir;
+  size_t i;
+  int dir;
   site *s;
   int bc_coord[4];
   complex cphase[4];
@@ -163,7 +166,8 @@ boundary_twist_site(Real bdry_phase[4], int r0[4], int sign) {
 void 
 boundary_twist_field(Real bdry_phase[4], int r0[4], int sign, su3_matrix *links) {
   //char myname[] = "boundary_twist_site";
-  int i,dir;
+  size_t i;
+  int dir;
   site *s;
   int bc_coord[4];
   complex cphase[4];
@@ -275,7 +279,7 @@ phase_mult_wilson_vector( wilson_vector *a, complex c ){
 void 
 rephase_wv_field(wilson_vector *wv, Real bdry_phase[4], int r0[4], int sign) {
 
-  int i;
+  size_t i;
   site *s;
   complex c;
   Real p;

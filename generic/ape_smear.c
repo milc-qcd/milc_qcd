@@ -101,8 +101,9 @@ void ape_smear_dir(
 			     as a prescribed number of hits. */ 
   )
 {
-  register int i,dir2;
-  register site *s;
+  size_t i;
+  int dir2;
+  site *s;
   su3_matrix tmat1,tmat2;
   msg_tag *mtag0,*mtag1;
   Real w_link, w_staple, norm_factor;
@@ -224,7 +225,7 @@ void ape_smear(
 			     as a prescribed number of hits. */ 
   )
 {
-  register int dir1;
+  int dir1;
   
   for(dir1=XUP;dir1<=TUP;dir1++){
     ape_smear_dir(src,dir1,dest+dir1*sizeof(su3_matrix),
@@ -261,8 +262,9 @@ void ape_smear_field_dir(
 			     as a prescribed number of hits. */ 
   )
 {
-  register int i,dir2;
-  register site *s;
+  size_t i;
+  int dir2;
+  site *s;
   su3_matrix tmat1,tmat2;
   msg_tag *mtag0,*mtag1;
   Real w_link, w_staple, norm_factor;
@@ -384,7 +386,7 @@ void ape_smear_field(
 			     as a prescribed number of hits. */ 
   )
 {
-  register int dir1;
+  int dir1;
   
   for(dir1=XUP;dir1<=TUP;dir1++){
     ape_smear_field_dir(src,dir1,dest,staple_weight,
@@ -395,7 +397,8 @@ void ape_smear_field(
 /* Unit gauge field. See also io_helpers.c:coldlat() */
 static su3_matrix *create_unit_gauge_field(void){
   su3_matrix *ape_links;
-  int i,j,dir;
+  size_t i;
+  int j,dir;
 
   /* Allocate and zero the field */
   ape_links = create_G();

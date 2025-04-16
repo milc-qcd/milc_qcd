@@ -386,7 +386,11 @@ ifeq ($(strip ${WANTFFTW}),true)
   FFTW_HEADERS = ${FFTW}/include
   INCFFTW = -I${FFTW_HEADERS}
   LIBFFTW = -L${FFTW}/lib
-  LIBFFTW += -lfftw3 -lfftw3f
+  ifeq ($(strip ${PRECISION}),1)
+    LIBFFTW += -lfftw3f
+  else
+    LIBFFTW += -lfftw3
+  endif
   PACKAGE_HEADERS += ${FFTW_HEADERS}
 endif
 
@@ -473,6 +477,10 @@ ifeq ($(strip ${WANTQUDA}),true)
   WANT_GAUGEFIX_OVR_GPU ?= #true
   WANT_MULTIGRID ?= false
 
+  # If QUDA CG is enabled, then eigensolve/deflation must be enabled
+  ifeq ($(strip ${WANT_FN_CG_GPU}),true)
+    WANT_EIG_GPU = true
+  endif
 endif
 
 ifeq ($(strip ${WANTQUDA}),true)
@@ -832,7 +840,7 @@ CGITVER = -DMILC_CODE_VERSION=\"$(GIT_VERSION)\"
 
 # REMAP  report remapping time for QDP, QOP in conjunction with above
 
-CTIME ?= -DNERSC_TIME -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
+CTIME ?= -DNERSC_TIME -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME -DWMTIME
 
 #------------------------------
 # Profiling
@@ -1071,9 +1079,9 @@ KSSHIFT = # -DONE_SIDED_SHIFT
 
 # HALF_MIXED  Do double-precision inversion with single, or single with half (if supported)
 # MAX_MIXED   Do double-precision inversion with half-precision (if supported)
-# SCALE_PROP  Do rescaling for the clover propagator
+# SCALE_PROP  Do rescaling for the propagator
 
-CLCG = -DCL_CG=BICG 
+CLCG ?= # -DCL_CG=BICG 
 
 #------------------------------
 # Propagator storage

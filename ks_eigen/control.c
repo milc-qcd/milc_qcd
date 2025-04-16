@@ -93,7 +93,7 @@ int main( int argc, char **argv ){
     /* Eigenpair calculation */
     STARTTIME;
     
-    imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
+    imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
 
     /* Move KS phases and apply time boundary condition, based on the
        coordinate origin and time_bc */
@@ -170,6 +170,8 @@ int main( int argc, char **argv ){
 #endif
     }
     fflush(stdout);
+
+    destroy_fn_links(fn);
   
   } /* readin(prompt) */
 

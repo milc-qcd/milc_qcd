@@ -72,10 +72,11 @@ typedef struct {
 } ks_action_paths;
 
 #else
-  BOMB THE COMPILIATION
+  #error "Unsupported fermion action"
 #endif
 
-/* Structure defining the precomputed links for the FN actions */
+/* OBSOLETE Structure defining the precomputed links for the FN actions */
+/* See fn_links_t, etc */
 
 typedef struct {
   int valid;

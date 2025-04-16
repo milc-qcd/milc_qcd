@@ -31,13 +31,20 @@ int read_ks_eigen_param(ks_eigen_param *eigen_param, int status, int prompt){
   IF_OK status += get_f(stdin, prompt, "Chebyshev_beta", &eigen_param->poly.maxE );
   IF_OK status += get_i(stdin, prompt, "Chebyshev_order", &eigen_param->poly.norder );
   IF_OK status += get_s(stdin, prompt, "diag_algorithm", param.eigen_param.diagAlg );
-  
+
+#elif defined(HAVE_QUDA) && defined(USE_CG_GPU) && !defined(USE_EIG_GPU)
+  node0_printf("ERROR: When using QUDA for CG and wanting FRESH eigenvectors, only the QUDA eigensolver is allowed!\n");
+  node0_printf("ERROR: Recompile with WANT_QUDA=true, WANT_CG_GPU=true, and WANT_EIG_GPU=true\n");
+  terminate(1);
+
 #elif defined(HAVE_QUDA) && defined(USE_EIG_GPU)
   
   IF_OK status += get_i(stdin, prompt, "Max_Lanczos_restart_iters", &eigen_param->MaxIter );    
   IF_OK status += get_f(stdin, prompt, "eigenval_tolerance", &eigen_param->tol );
   IF_OK status += get_i(stdin, prompt, "Lanczos_max", &eigen_param->Nkr );
   IF_OK status += get_i(stdin, prompt, "Lanczos_restart", &eigen_param->Nrestart );
+  IF_OK status += get_i(stdin, prompt, "eigensolver_prec", &eigen_param->eigPrec );
+  IF_OK status += get_i(stdin, prompt, "batched_rotate", &eigen_param->batchedRotate );
   IF_OK status += get_f(stdin, prompt, "Chebyshev_alpha", &eigen_param->poly.minE );
   IF_OK status += get_f(stdin, prompt, "Chebyshev_beta", &eigen_param->poly.maxE );
   IF_OK status += get_i(stdin, prompt, "Chebyshev_order", &eigen_param->poly.norder );

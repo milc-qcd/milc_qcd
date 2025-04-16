@@ -1,4 +1,5 @@
 /*************************** spectrum_fzw.c *********************************/
+/* OBSOLETE */
 /* MIMD version 6                                                           */
 /* This version uses gathers to get the neighbors                           */
 /*                                                                          */

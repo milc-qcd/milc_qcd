@@ -5,6 +5,7 @@
  */
 
 #include "generic_ks_includes.h"
+#include "../include/params_rhmc.h"
 #define IF_OK if(status==0)
 
 static int read_broadcast_ratfunc(FILE *fp, 

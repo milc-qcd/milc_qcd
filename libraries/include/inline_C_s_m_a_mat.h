@@ -3,7 +3,7 @@
 * C <- A + s*B,   A,B and C matrices 					*
 */
 #define _inline_C_scalar_mult_add_su3_matrix(aa,bb,ss,cc) \
-  { register su3_matrix *aaa,*bbb,*ccc; register Real sss; register int iii; \
+  {  su3_matrix *aaa,*bbb,*ccc;  Real sss;  int iii; \
   aaa=(aa); bbb=(bb); ccc=(cc); sss=(ss); \
     for( iii=0; iii<3; iii++ ){ \
   (ccc)->e[iii][0].real = (aaa)->e[iii][0].real + (sss)*(bbb)->e[iii][0].real; \

@@ -6,7 +6,7 @@
 #include "../include/comdefs.h"
 #include "../include/fermion_links.h"
 #include "../include/fermion_links_qop.h"
-#include "../include/fn_links.h"
+#include "../include/fn_links_qop.h"
 #include "../include/ks_action_paths.h"
 #include "../include/ks_action_coeffs_qop.h"
 #include "../include/generic_qop.h"
@@ -33,6 +33,11 @@ create_qop_hisq_ac_links_t(QOP_hisq_coeffs_t *ac, int precision,
   hisq->hl = create_hisq_links_qop(ac, precision, links, options->want_deps,
 				   options->want_aux);
 
+  /* THIS CODE NEEDS UPDATING.  WE NOW KEEP ONLY TWP SETS OF SMEARED
+     LINKS, ONE WITH eps_naik = 0 AND THE OTHER FOR deps.  For now we
+     keep the QOP convention of storing separate sets of links for
+     each naik epsilon. */
+
   /* The fn_links here are needed for MILC wrappers.
      They are structures with only lists of copied pointers. */
 
@@ -54,8 +59,8 @@ create_qop_hisq_ac_links_t(QOP_hisq_coeffs_t *ac, int precision,
 /* Unset copied pointers and free allocated fn link data */
 static void
 unset_qop_hisq_fn_links(qop_hisq_ac_links_t *hisq){
-  int i;
-  for(i = 0; i < hisq->ac->n_naiks; i++){
+
+  for(int i = 0; i < hisq->ac->n_naiks; i++){
     /* (We must first clear copied pointers to prevent double-freeing
        allocated memory) */
     unset_asqtad_links_from_hisq(hisq->fn[i]);
@@ -78,6 +83,7 @@ destroy_qop_hisq_ac_links_t(qop_hisq_ac_links_t *hisq){
        allocated memory) */
     unset_asqtad_links_from_hisq(hisq->fn[i]);
     destroy_fn_links_qop(hisq->fn[i]);
+    hisq->fn[i] = NULL;
   }
 
   unset_asqtad_deps_links_from_hisq(hisq->fn_deps);
@@ -96,18 +102,19 @@ invalidate_qop_hisq_ac_links_t(qop_hisq_ac_links_t *hisq){
 
   if(hisq == NULL)return;
 
+  /* Clear copied pointers */
+
+  for(i = 0; i < hisq->ac->n_naiks; i++){
+    unset_asqtad_links_from_hisq(hisq->fn[i]);
+  }
+
+  unset_asqtad_deps_links_from_hisq(hisq->fn_deps);
+
   /* Destroy the hisq links, but keep the action coefficients */
 
   destroy_hisq_links_qop(hisq->hl);
   hisq->hl = NULL;
 
-  /* Clear copied pointers but don't free the parent structures */
-
-  for(i = 0; i < hisq->ac->n_naiks; i++)
-    unset_asqtad_links_from_hisq(hisq->fn[i]);
-
-  unset_asqtad_deps_links_from_hisq(hisq->fn_deps);
-  
 }
 
 static void
@@ -140,16 +147,23 @@ restore_qop_hisq_ac_links_t(qop_hisq_ac_links_t *hisq, int precision,
 
 }
 
-static fn_links_qop_t **
-get_qop_hisq_ac_links_t_fn(qop_hisq_ac_links_t *hisq){
+static fn_links_qop_t *
+get_qop_hisq_ac_links_t_fn(qop_hisq_ac_links_t *hisq, int i_naik,
+			   ferm_links_options_t *options){
 
   if(hisq == NULL)return NULL;
   if(hisq->hl == NULL)return NULL;
 
-  return hisq->fn;
+  int n_naiks = hisq->ac->n_naiks;
+  if(i_naik >= n_naiks){
+    node0_printf("ERROR: Requested Naik epsilon index %d >= n_naik = %d\n", i_naik, n_naiks);
+    terminate(1);
+  }
+
+  return hisq->fn[i_naik];
 }
 
-static fn_links_qop_t *
+static imp_ferm_links_t *
 get_qop_hisq_ac_links_t_fn_deps(qop_hisq_ac_links_t *hisq){
   if(hisq == NULL)return NULL;
   if(hisq->hl == NULL)return NULL;
@@ -171,9 +185,9 @@ get_D_qop_hisq_ac_links_t_hl(qop_hisq_ac_links_t *hisq){
 }
 
 static QOP_hisq_coeffs_t*
-get_qop_hisq_ac_links_t_ac(qop_hisq_ac_links_t *hisq){
-  if(hisq == NULL)return NULL;
-  return hisq->ac;
+get_qop_hisq_ac_links_t_ac(qop_hisq_ac_links_t *hisq_ac){
+  if(hisq_ac == NULL)return NULL;
+  return hisq_ac->ac;
 }
 
 /* For now we don't distinguish precisions */
@@ -235,13 +249,14 @@ restore_qop_hisq_links_t(qop_hisq_links_t *hisq,
   restore_qop_hisq_ac_links_t(hisq->hisq_ac, precision, links, options);
 }
 
-static fn_links_qop_t **
-get_qop_hisq_links_fn(qop_hisq_links_t *hisq){
+static imp_ferm_links_t *
+get_qop_hisq_links_fn(qop_hisq_links_t *hisq, int i_naik,
+		      ferm_links_options_t *options){
   if(hisq == NULL)return NULL;
-  return get_qop_hisq_ac_links_t_fn(hisq->hisq_ac);
+  return get_qop_hisq_ac_links_t_fn(hisq->hisq_ac, i_naik, options);
 }
 
-static fn_links_qop_t *
+static imp_ferm_links_t *
 get_qop_hisq_links_fn_deps(qop_hisq_links_t *hisq){
   if(hisq == NULL)return NULL;
   return get_qop_hisq_ac_links_t_fn_deps(hisq->hisq_ac);
@@ -398,6 +413,7 @@ destroy_fermion_links_hisq(fermion_links_t *fl){
   if(fl == NULL) return;
 
   destroy_qop_hisq_links_t(fl->flg);
+  fl->flg = NULL;
   destroy_fermion_links_t(fl);
 }
 
@@ -410,6 +426,7 @@ void
 invalidate_fermion_links(fermion_links_t *fl){
   if(fl == NULL)return;
   invalidate_qop_hisq_links_t(fl->flg);
+
 }
 
 /*----------------------------------------*/
@@ -446,15 +463,16 @@ restore_fermion_links_hisq(fermion_links_t *fl, int precision,
 /* Accessors                              */
 /*----------------------------------------*/
 
-/* Return a list of fn_links types, one for each Naik epsilon */
-fn_links_qop_t **
-get_fm_links(fermion_links_t *fl){
+/* Return the specified fn_links for i_naik */
+imp_ferm_links_t *
+get_fm_links(fermion_links_t *fl, int i_naik){
   if(fl == NULL)return NULL;
-  return get_qop_hisq_links_fn(fl->flg);
+  ferm_links_options_t options = fl->options;
+  return get_qop_hisq_links_fn(fl->flg, i_naik, &options);
 }
 
 /* Return an fn_links type */
-fn_links_qop_t *
+imp_ferm_links_t *
 get_fn_deps_links(fermion_links_t *fl){
   if(fl == NULL)return NULL;
   return get_qop_hisq_links_fn_deps(fl->flg);

@@ -878,7 +878,7 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
   double dtimec;
 #endif
   
-  imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
+  imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
   
   if(parity == EVENANDODD){
     maxn=sites_on_node*3;			/*local size of matrix*/
@@ -1211,6 +1211,8 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
       }
     
   }
+
+  destroy_fn_links(fn);
   
   /***  free up memory arpack  *************/
   free(resid); 

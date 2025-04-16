@@ -55,22 +55,24 @@ Real xrandom;
 	/* generate a pseudofermion configuration only at start*/
 	if(step==1){
 	  restore_fermion_links_from_site(fn_links, MILC_PRECISION);
-	  fn = get_fm_links(fn_links);
+	  fn = get_fm_links(fn_links, 0);
 	  clear_latvec( F_OFFSET(phi), EVENANDODD );
-	  grsource_imp( F_OFFSET(phi), mass, EVEN, fn[0]);
+	  grsource_imp( F_OFFSET(phi), mass, EVEN, fn);
 	  clear_latvec( F_OFFSET(xxx), EVENANDODD );
 	  clear_latvec( F_OFFSET(ttt), EVENANDODD );
+	  destroy_fn_links(fn);
 	  //	    grsource(EVEN);
-	    old_cg_time = cg_time = -1.0e6;
+	  old_cg_time = cg_time = -1.0e6;
 
-	    /* do conjugate gradient to get (Madj M)inverse * phi */
-	    /* NOTE: NEED TO UPGRADE TO ASQTAD.  BUILD ks_act_paths, ETC. */
-	    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
-	    fn = get_fm_links(fn_links);
-	    iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				niter, nrestart, rsqmin, MILC_PRECISION, EVEN, 
-				&final_rsq, fn[0]);
-	    cg_time = 0.0;
+	  /* do conjugate gradient to get (Madj M)inverse * phi */
+	  /* NOTE: NEED TO UPGRADE TO ASQTAD.  BUILD ks_act_paths, ETC. */
+	  restore_fermion_links_from_site(fn_links, MILC_PRECISION);
+	  fn = get_fm_links(fn_links, 0);
+	  iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
+			      niter, nrestart, rsqmin, MILC_PRECISION, EVEN, 
+			      &final_rsq, fn);
+	  destroy_fn_links(fn);
+	  cg_time = 0.0;
 	}
 #ifdef HMC_ALGORITHM
 	/* find action */
@@ -87,11 +89,13 @@ Real xrandom;
 	    /* with fermion_force only! */
 	    /* First compute M*xxx in temporary vector ttt */
 	    /* The diagonal term in M doesn't matter */
-	  dslash_fn_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, fn[0] );
-	    fermion_force(0.5*epsilon);
+	  fn = get_fm_links(fn_links);
+	  dslash_fn_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, fn );
+	  fermion_force(0.5*epsilon);
 #else
-	    update_h(0.5*epsilon);
+	  update_h(0.5*epsilon);
 #endif
+	  destroy_fn_links(fn);
 	}
 
 
@@ -129,11 +133,11 @@ Real xrandom;
 	next_cg_time = step*epsilon;
 	predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
 	restore_fermion_links_from_site(fn_links, MILC_PRECISION);
-	fn = get_fm_links(fn_links);
+	fn = get_fm_links(fn_links, 0);
 	clear_latvec( F_OFFSET(xxx), EVENANDODD );
 	iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			    niter, nrestart, rsqmin, MILC_PRECISION, EVEN, 
-			    &final_rsq, fn[0]);
+			    &final_rsq, fn);
 	cg_time = step*epsilon;
 
 	if( step < steps ){
@@ -141,7 +145,7 @@ Real xrandom;
 #ifdef SEXT_WEIN
 	    /* with fermion_force only! */
 	    /* First compute M*xxx in temporary vector ttt */
-	  dslash_fn_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, fn[0] );
+	  dslash_fn_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, fn );
 	  fermion_force(epsilon);
 #else
 	  update_h(epsilon);
@@ -152,12 +156,14 @@ Real xrandom;
 #ifdef SEXT_WEIN
 	    /* with fermion_force only! */
 	    /* First compute M*xxx in temporary vector ttt */
-	  dslash_fn_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, fn[0] );
+	  dslash_fn_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, fn );
 	  fermion_force(0.5*epsilon);
 #else
 	  update_h(0.5*epsilon);
 #endif
 	}
+
+	destroy_fn_links(fn);
 
     }	/* end loop over microcanonical steps */
 

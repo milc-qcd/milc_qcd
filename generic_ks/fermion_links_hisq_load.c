@@ -554,7 +554,7 @@ load_hisq_aux_links_cpu(info_t *info, ks_action_paths_hisq *ap, hisq_auxiliary_t
 /*--------------------------------------------------------------------*/
 
 static void 
-load_hisq_fn_links(info_t *info, fn_links_t **fn, fn_links_t *fn_deps,
+load_hisq_fn_links(info_t *info, fn_links_t *fn0, fn_links_t *fn_deps,
 		   hisq_auxiliary_t *aux, ks_action_paths_hisq *ap, 
 		   su3_matrix *links, int want_deps, int want_back){
 
@@ -579,27 +579,16 @@ load_hisq_fn_links(info_t *info, fn_links_t **fn, fn_links_t *fn_deps,
 
   if(n_naiks > 1 ) {
     // 3rd path table set
-    load_X_from_W(info, fn[0], aux, &ap->p3);
+    load_X_from_W(info, fn_deps, aux, &ap->p3);
     final_flop += info->final_flop;
-    if(want_deps)
-      copy_fn(fn[0], fn_deps);
-    for( inaik = 1; inaik < n_naiks; inaik++ ){
-      scalar_mult_fn( fn[0], eps_naik[inaik], fn[inaik] );
-      final_flop += 18.*volume/numnodes();
-    }
 
     // 2nd path table set
-    load_X_from_W(info, fn[0], aux, &ap->p2);
+    load_X_from_W(info, fn0, aux, &ap->p2);
     final_flop += info->final_flop;
-    for( inaik = 1; inaik < n_naiks; inaik++ ) {
-      add_fn( fn[inaik], fn[0], fn[inaik] );
-      final_flop += 18.*volume/numnodes();
-      fn[inaik]->eps_naik = eps_naik[inaik];
-    }
   }
   else {
     // 2nd path table set only, no other terms with Naik corrections
-    load_X_from_W(info, fn[0], aux, &ap->p2);
+    load_X_from_W(info, fn0, aux, &ap->p2);
     final_flop += info->final_flop;
     if(want_deps){
       load_X_from_W(info, fn_deps, aux, &ap->p3);
@@ -609,10 +598,9 @@ load_hisq_fn_links(info_t *info, fn_links_t **fn, fn_links_t *fn_deps,
 
   /* Move up the back links */
   if(want_back){
-    for( inaik = 0; inaik < n_naiks; inaik++)
-      load_fn_backlinks(fn[inaik]);
-    if(want_deps)
-      load_fn_backlinks(fn_deps);
+      load_fn_backlinks(fn0);
+     if(want_deps || n_naiks > 1)
+       load_fn_backlinks(fn_deps);
   }
 
   info->final_flop = final_flop;
@@ -739,7 +727,6 @@ destroy_hisq_auxiliary_t(hisq_auxiliary_t *aux){
     destroy_m4_special(aux->Y_unitlink);
   destroy_m4_special(aux->V_link);
   destroy_m4_special(aux->U_link);
-
   free(aux);
 }
 
@@ -748,7 +735,7 @@ destroy_hisq_auxiliary_t(hisq_auxiliary_t *aux){
 /*-------------------------------------------------------------------*/
 
 void 
-create_hisq_links_milc(info_t *info, fn_links_t **fn, fn_links_t **fn_deps,
+create_hisq_links_milc(info_t *info, fn_links_t **fn0, fn_links_t **fn_deps,
 		       hisq_auxiliary_t **aux, ks_action_paths_hisq *ap, 
 		       su3_matrix *links, int want_deps, int want_back){
   //char myname[] = "create_hisq_links_milc";
@@ -763,15 +750,15 @@ create_hisq_links_milc(info_t *info, fn_links_t **fn, fn_links_t **fn_deps,
   load_hisq_aux_links(info, ap, *aux, links);
   final_flop += info->final_flop;
   
-  for(i = 0; i < n_naiks; i++)
-    fn[i] = create_fn_links();
+  *fn0 = create_fn_links();
+  (*fn0)->preserve = 1;
 
-  if(want_deps)
+  if(want_deps || n_naiks > 1)
     *fn_deps = create_fn_links();
   else
     *fn_deps = NULL;
 
-  load_hisq_fn_links(info, fn, *fn_deps, *aux, ap, links, 
+  load_hisq_fn_links(info, *fn0, *fn_deps, *aux, ap, links, 
 		     want_deps, want_back);
   final_flop += info->final_flop;
 
@@ -782,22 +769,20 @@ create_hisq_links_milc(info_t *info, fn_links_t **fn, fn_links_t **fn_deps,
 
 void
 destroy_hisq_links_milc(ks_action_paths_hisq *ap, hisq_auxiliary_t *aux, 
-			fn_links_t **fn, fn_links_t *fn_deps){
-
-  //char myname[] = "destroy_hisq_links_milc";
-
-  int n_naiks = ap->n_naiks;
-  int i;
+			fn_links_t *fn0, fn_links_t *fn_deps){
 
   destroy_hisq_auxiliary_t(aux);
-  
-  /* Destroy and free the structures */
-  for(i = 0; i < n_naiks; i++){
-    destroy_fn_links(fn[i]);
-    fn[i] = NULL;
+
+  if(fn0 != NULL){
+    fn0->preserve = 0;
+    destroy_fn_links(fn0);
   }
 
-  destroy_fn_links(fn_deps);
+  if(fn_deps != NULL){
+    fn_deps->preserve = 0;
+    destroy_fn_links(fn_deps);
+  }
+
 }
 
 /* fermion_links_hisq_load.c */

@@ -40,12 +40,14 @@ MY_OBJECTS =         \
   clover_info.o      \
   control.o          \
   gauge_info.o       \
+  io_prop_ks_fm.o    \
+  io_prop_w_fm.o     \
   ksprop_info.o      \
   ks_source_info.o   \
+  w_source_info.o    \
   make_prop.o        \
   setup.o            \
-  spectrum_cl.o      \
-  w_source_info.o
+  spectrum_cl.o
 
 # Objects depending on architecture and software package 
 

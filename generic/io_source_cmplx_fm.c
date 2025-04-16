@@ -16,12 +16,12 @@
 #define IO_UNI_MAGIC 0x71626434 /* "qbd4" */
 
 typedef struct {
-  int32type magic_number;
-  int32type gmtime;
-  int32type size_of_element;
-  int32type elements_per_site;
-  int32type dims[4];
-  int32type site_order;
+  u_int32type magic_number;
+  u_int32type gmtime;
+  u_int32type size_of_element;
+  u_int32type elements_per_site;
+  u_int32type dims[4];
+  u_int32type site_order;
 } cmplx_source_header;
 
 typedef struct {
@@ -40,23 +40,23 @@ static int
 read_cmplx_fm_source_hdr(cmplx_source_file *csf)
 {
   cmplx_source_header *csh = csf->header;
-  int *dims = csh->dims;
+  const u_int32type *dims = csh->dims;
 
-  int32type   t_stamp;
-  int32type   size_of_element;
-  int32type   tmp, elements_per_site; 
-  int32type   order; 
+  u_int32type   t_stamp;
+  u_int32type   size_of_element;
+  u_int32type   tmp, elements_per_site; 
+  u_int32type   order; 
   int byterevflag = 0;
   char myname[] = "read_cmplx_fm_source_hdr";
 
-  if( sizeof(float) != sizeof(int32type)) {
+  if( sizeof(float) != sizeof(u_int32type)) {
     printf("%s: Can't byte reverse\n", csf->filename);
-    printf("requires size of int32type(%d) = size of float(%d)\n",
-	   (int)sizeof(int32type),(int)sizeof(float));
+    printf("requires size of u_int32type(%d) = size of float(%d)\n",
+	   (int)sizeof(u_int32type),(int)sizeof(float));
     terminate(1);
   }
 
-  if(sread_data(csf->fp,&csh->magic_number,sizeof(int32type),
+  if(sread_data(csf->fp,&csh->magic_number,sizeof(u_int32type),
 		myname,"magic_no")) terminate(1);
 
   tmp = csh->magic_number;
@@ -85,11 +85,11 @@ read_cmplx_fm_source_hdr(cmplx_source_file *csf)
   if(sread_byteorder(byterevflag,csf->fp,&t_stamp,
 	     sizeof(t_stamp),myname,"t_stamp"))terminate(1);
   if(sread_byteorder(byterevflag,csf->fp,&size_of_element,
-	     sizeof(int32type),myname,"size_of_element"))terminate(1);
+	     sizeof(u_int32type),myname,"size_of_element"))terminate(1);
   if(sread_byteorder(byterevflag,csf->fp,&elements_per_site,
-	     sizeof(int32type),myname,"elements_per_site"))terminate(1);
+	     sizeof(u_int32type),myname,"elements_per_site"))terminate(1);
   if(sread_byteorder(byterevflag,csf->fp,dims,
-	     4*sizeof(int32type),myname,"dimensions"))terminate(1);
+	     4*sizeof(u_int32type),myname,"dimensions"))terminate(1);
 
   /* Consistency checks */
   
@@ -112,7 +112,7 @@ read_cmplx_fm_source_hdr(cmplx_source_file *csf)
   
   /* The site order parameter is ignored */
   
-  if(sread_byteorder(byterevflag,csf->fp,&order,sizeof(int32type),
+  if(sread_byteorder(byterevflag,csf->fp,&order,sizeof(u_int32type),
 		     myname,"order parameter"))terminate(1);
   
   return byterevflag;
@@ -139,7 +139,7 @@ setup_input_cmplx_source_file(const char *filename)
   /* Allocate space for the header */
 
   /* Make sure compilation gave us a 32 bit integer type */
-  assert(sizeof(int32type) == 4);
+  assert(sizeof(u_int32type) == 4);
 
   cph = (cmplx_source_header *)malloc(sizeof(cmplx_source_header));
   if(cph == NULL)
@@ -298,7 +298,7 @@ r_source_cmplx_fm(cmplx_source_file *csf, field_offset dest_site,
 	    cfix = cmsg.q;
 	    if(byterevflag==1){
 		byterevn((u_int32type *)&cfix, 
-			 sizeof(fcomplex)/sizeof(int32type));
+			 sizeof(fcomplex)/sizeof(u_int32type));
 	    }
 	    
 	    /* Now copy the site data into the destination converting

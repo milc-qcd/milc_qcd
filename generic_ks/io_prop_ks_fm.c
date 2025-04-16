@@ -44,7 +44,7 @@
 
 /*----------------------------------------------------------------------*/
 
-ks_prop_file *create_input_ks_fmprop_file_handle(char *filename)
+ks_prop_file *create_input_ks_fmprop_file_handle(const char *filename)
 {
   ks_prop_file *pf;
   ks_prop_header *ph;
@@ -64,7 +64,7 @@ ks_prop_file *create_input_ks_fmprop_file_handle(char *filename)
   /* Allocate space for the header */
 
   /* Make sure compilation gave us a 32 bit integer type */
-  assert(sizeof(int32type) == 4);
+  assert(sizeof(u_int32type) == 4);
 
   ph = (ks_prop_header *)malloc(sizeof(ks_prop_header));
   if(ph == NULL)
@@ -105,16 +105,16 @@ void destroy_ks_fmprop_file_handle(ks_prop_file *kspf){
 
 void swrite_ks_fm_prop_hdr(FILE *fp, ks_prop_header *ksph)
 {
-  int32type size_of_element = sizeof(float);  /* float */
-  int32type elements_per_site = sizeof(fsu3_matrix)/size_of_element; /* propagator is 3 X 3 complex */
+  u_int32type size_of_element = sizeof(float);  /* float */
+  u_int32type elements_per_site = sizeof(fsu3_matrix)/size_of_element; /* propagator is 3 X 3 complex */
   char myname[] = "swrite_ks_fm_prop_hdr";
 
   swrite_data(fp,(void *)&ksph->magic_number,sizeof(ksph->magic_number),
 	      myname,"magic_number");
 /*NEED GMTIME*/
   swrite_data(fp,&ksph->gmtime_stamp,sizeof(ksph->gmtime_stamp), myname,"gmtime_stamp");    
-  swrite_data(fp,&size_of_element,sizeof(int32type), myname,"size_of_element"); 
-  swrite_data(fp,&elements_per_site,sizeof(int32type), myname,"elements_per_site"); 
+  swrite_data(fp,&size_of_element,sizeof(u_int32type), myname,"size_of_element"); 
+  swrite_data(fp,&elements_per_site,sizeof(u_int32type), myname,"elements_per_site"); 
   swrite_data(fp,(void *)ksph->dims,sizeof(ksph->dims),
 	      myname,"dimensions");
   swrite_data(fp,&ksph->order,sizeof(ksph->order), myname,"site_order");    
@@ -123,7 +123,7 @@ void swrite_ks_fm_prop_hdr(FILE *fp, ks_prop_header *ksph)
 
 /* includes space for size_of_element and elements_per_site */
   ksph->header_bytes = sizeof(ksph->magic_number) + 
-    sizeof(ksph->gmtime_stamp) + 2*sizeof(int32type) +
+    sizeof(ksph->gmtime_stamp) + 2*sizeof(u_int32type) +
     sizeof(ksph->dims) + sizeof(ksph->order);
 
   /*  printf ( "swrite_ks_fmprop_hdr: sizeof(header) = %d\n", ksph->header_bytes ); */
@@ -182,9 +182,9 @@ void write_ks_fmprop_info_file(ks_prop_file *pf)
 {
   FILE *info_fp;
   ks_prop_header *ph;
-  int32type natural_order = NATURAL_ORDER;
-  int32type size_of_element = sizeof(float);  /* float */
-  int32type elements_per_site = sizeof(fsu3_matrix)/size_of_element; /* propagator is 3 X 3 complex */
+  u_int32type natural_order = NATURAL_ORDER;
+  u_int32type size_of_element = sizeof(float);  /* float */
+  u_int32type elements_per_site = sizeof(fsu3_matrix)/size_of_element; /* propagator is 3 X 3 complex */
 
   ph = pf->header;
 
@@ -202,7 +202,7 @@ void write_ks_fmprop_info_file(ks_prop_file *pf)
   /*sprintf(sums,"%x %x",pf->check.sum29,pf->check.sum31);
   write_ksprop_info_item(info_fp,"checksums","\"%s\"",sums,0,0); */
   write_ksprop_info_item(info_fp,"ksprop.dim","%d",(char *)&ph->dims,4,
-	sizeof(int32type));
+	sizeof(u_int32type));
   write_ksprop_info_item(info_fp,"ksprop.magic_number","%d",(char *)&ph->magic_number,0,0);
   write_ksprop_info_item(info_fp,"ksprop.size-of-element","%d",
 		(char *)&size_of_element,0,0);
@@ -295,7 +295,7 @@ ks_prop_file *setup_output_ks_fmprop_file()
 
 /* Open a binary file for serial writing by node 0. Version for FNAL header */
 
-ks_prop_file *w_serial_ks_fm_i(char *filename)
+ks_prop_file *w_serial_ks_fm_i(const char *filename)
 {
   /* Only node 0 opens the file filename */
   /* Returns a file structure describing the opened file */
@@ -475,7 +475,7 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset src_site,
 
 	  /* Accumulate checksums - contribution from next site */
 	  for(k = 0, val = (u_int32type *)&pbuf[buf_length]; 
-	      k < (int)sizeof(fsu3_matrix)/(int)sizeof(int32type); k++, val++)
+	      k < (int)sizeof(fsu3_matrix)/(int)sizeof(u_int32type); k++, val++)
 	    {
 	      kspf->check.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
 	      kspf->check.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
@@ -598,7 +598,7 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
 
   FILE *fp = NULL;
   ks_prop_header *ksph;
-  int32type tmp;
+  u_int32type tmp;
   u_int32type elements_per_site, size_of_element;
   int j;
   int byterevflag = 0;
@@ -623,10 +623,10 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
 	{
 	  byterevflag=1; 
 	  /** printf("Reading with byte reversal\n"); **/
-	  if( sizeof(float) != sizeof(int32type)) {
+	  if( sizeof(float) != sizeof(u_int32type)) {
 	    printf("%s: Can't byte reverse\n",myname);
-	    printf("requires size of int32type(%d) = size of float(%d)\n",
-		   (int)sizeof(int32type),(int)sizeof(float));
+	    printf("requires size of u_int32type(%d) = size of float(%d)\n",
+		   (int)sizeof(u_int32type),(int)sizeof(float));
 	    terminate(1);
 	  }
 	}
@@ -655,11 +655,11 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
   if(byterevflag)  byterevn(&(ksph->gmtime_stamp), 1);
   //printf("hey! time: %s\n", ksph->gmtime_stamp);
   //elements per site, size of element
-  if(psread_data(parallel,fp, &size_of_element, sizeof(int32type),
+  if(psread_data(parallel,fp, &size_of_element, sizeof(u_int32type),
 	      myname,"size of element")!=0) terminate(1);
   if(byterevflag)  byterevn(&size_of_element, 1);
   if(size_of_element != sizeof(float)){printf("wrong size of element. read %d\n", size_of_element);terminate(1);}
-  if(psread_data(parallel,fp, &elements_per_site, sizeof(int32type),
+  if(psread_data(parallel,fp, &elements_per_site, sizeof(u_int32type),
 	      myname,"elements per site")!=0) terminate(1);
   if(byterevflag)  byterevn(&elements_per_site, 1);
   if(elements_per_site != 18){printf("wrong number of elements. read %d\n", elements_per_site);terminate(1);}
@@ -697,7 +697,7 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
   /* Header byte length */
 
   ksph->header_bytes = sizeof(ksph->magic_number) + sizeof(ksph->dims) + 
-    sizeof(ksph->gmtime_stamp) + sizeof(ksph->order)+ 2*sizeof(int32type);
+    sizeof(ksph->gmtime_stamp) + sizeof(ksph->order)+ 2*sizeof(u_int32type);
   
   /* Data order */
   
@@ -710,7 +710,7 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
 } /* read_ks_fmprop_hdr */
 
 
-ks_prop_file *r_serial_ks_fm_i(char *filename)
+ks_prop_file *r_serial_ks_fm_i(const char *filename)
 {
   /* Returns file descriptor for opened file */
 
@@ -772,7 +772,7 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset dest_site,
 
   FILE *fp = NULL;
   ks_prop_header *ksph;
-  char *filename;
+  const char *filename;
   int byterevflag,a,b;
 
   off_t offset ;            /* File stream pointer */
@@ -816,7 +816,7 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset dest_site,
   if(this_node == 0)
     {
       if(ksph->order == NATURAL_ORDER) coord_list_size = 0;
-      else coord_list_size = sizeof(int32type)*volume;
+      else coord_list_size = sizeof(u_int32type)*volume;
       head_size = ksph->header_bytes + coord_list_size;
      
       offset = head_size;
@@ -944,10 +944,10 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset dest_site,
 	{
 	  if(byterevflag==1)
 	    byterevn((u_int32type *)&msg.ksv, 
-		     3*sizeof(fsu3_vector)/sizeof(int32type));
+		     3*sizeof(fsu3_vector)/sizeof(u_int32type));
 	  /* Accumulate checksums */
 	  for(k = 0, val = (u_int32type *)(&msg.ksv); 
-	      k < 3*(int)sizeof(fsu3_vector)/(int)sizeof(int32type); 
+	      k < 3*(int)sizeof(fsu3_vector)/(int)sizeof(u_int32type); 
 	      k++, val++)
 	    {
 	      test_kspc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
@@ -969,8 +969,8 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset dest_site,
 	}
       else
 	{
-	  rank29 += 3*sizeof(fsu3_vector)/sizeof(int32type);
-	  rank31 += 3*sizeof(fsu3_vector)/sizeof(int32type);
+	  rank29 += 3*sizeof(fsu3_vector)/sizeof(u_int32type);
+	  rank31 += 3*sizeof(fsu3_vector)/sizeof(u_int32type);
 	  rank29 %= 29;
 	  rank31 %= 31;
 	}

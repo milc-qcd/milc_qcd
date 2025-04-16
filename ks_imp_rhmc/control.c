@@ -39,14 +39,14 @@ main( int argc, char **argv )
 #endif
   
   initialize_machine(&argc,&argv);
-
+  
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
   g_sync();
-
+  
   starttime = dclock();
-
+  
   /* set up */
   STARTTIME;
   prompt = setup();
@@ -99,7 +99,7 @@ main( int argc, char **argv )
 	g_measure_ks( );
 	ENDTIME("do gauge measurement");
 #ifdef MILC_GLOBAL_DEBUG
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if FERM_ACTION == HISQ
         g_measure_plaq( );
 #endif
 #ifdef MEASURE_AND_TUNE_HISQ
@@ -114,9 +114,10 @@ main( int argc, char **argv )
 	/* Make fermion links if not already done */
 	
 	STARTTIME;
+	invalidate_fermion_links(fn_links);
 	restore_fermion_links_from_site(fn_links, param.prec_pbp);
 	for(i = 0; i < param.num_pbp_masses; i++){
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if FERM_ACTION == HISQ
 	  naik_index = param.ksp_pbp[i].naik_term_epsilon_index;
 #else
 	  naik_index = 0;
@@ -163,25 +164,21 @@ main( int argc, char **argv )
       save_lattice( saveflag, savefile, stringLFN );
       rephase( ON );
     }
-
+    
     /* Destroy fermion links (created in readin() */
-
+    
 #if FERM_ACTION == HISQ
     destroy_fermion_links_hisq(fn_links);
-#elif FERM_ACTION == HYPISQ
-    destroy_fermion_links_hypisq(fn_links);
-#else
-    destroy_fermion_links(fn_links);
 #endif
     fn_links = NULL;
+
   }
-
   free_lattice();
-
+  
 #ifdef HAVE_QUDA
   finalize_quda();
 #endif
-
+  
 #ifdef HAVE_QPHIX
   finalize_qphix();
 #endif

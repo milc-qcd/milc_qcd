@@ -11,28 +11,9 @@
 #ifndef _TYPE32_H
 #define _TYPE32_H
 
-#include "../include/config.h"
+#include <stdint.h>
 
-/* One and only one should be defined */
-#if defined(SHORT_IS_32BIT) && defined(INT_IS_32BIT)
-MAKE UP YOUR MIND!!  SEE config.h
-#endif
-
-#if !defined(SHORT_IS_32BIT) && !defined(INT_IS_32BIT)
-MAKE UP YOUR MIND!!  SEE config.h
-#endif
-
-#ifdef SHORT_IS_32BIT
-typedef short int32type;
-typedef unsigned short u_int32type;
-
-#else
-
-typedef int int32type;
-typedef unsigned int u_int32type;
-
-#endif
-
-typedef unsigned long long u_int64type;
+typedef uint32_t u_int32type;
+typedef uint64_t u_int64type;
 
 #endif /* _TYPE32_H */

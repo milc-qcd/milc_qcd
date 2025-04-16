@@ -67,18 +67,24 @@ class Gauge:
     u0 ${u0}
     ${gFix}
     #echo ' '.join($save)#
+    #echo ' '.join($loadAPE)#
+    #if $fatLink is not None
     staple_weight ${fatLink.weight}
     ape_iter ${fatLink.iter}
+    #end if
+    #echo ' '.join($saveAPE)#
     coordinate_origin #echo ' '.join(map(str,$origin))#
     time_bc ${bc}"""
-    def __init__(self,load,u0,gFix,save,fatLink,origin,bc):
+    def __init__(self,load,u0,gFix,save,loadAPE,fatLink,saveAPE,origin,bc):
         self._classType = self.__class__.__name__
         self._objectID = self._classType+'_'+base36(id(self))
         self.load = load
         self.u0 = u0
         self.gFix = gFix
         self.save = save
+        self.loadAPE = loadAPE
         self.fatLink = fatLink
+        self.saveAPE = saveAPE
         self.origin = origin
         self.bc = bc
         self._template = Template(source=textwrap.dedent(self._Template),searchList=vars(self))
@@ -1117,6 +1123,70 @@ class KSsolveSet:
         return df
     pass
 
+#----
+
+class KSsolveMultiSourceSet:
+    """A set of KS solves that have a common source specification, momentum twist, and precision."""
+    _Template = """
+    #== ${_classType} ==
+    set_type ${set_type}
+    inv_type ${inv_type}
+    max_cg_iterations ${maxCG.iters}
+    max_cg_restarts ${maxCG.restarts}
+    check ${check}
+    momentum_twist #echo ' '.join(map(str,$twist))#
+    precision ${precision}
+    mass ${mass}
+    naik_term_epsilon ${naik_epsilon}"""
+    def __init__(self,mass,naik_epsilon,twist,check,set_type,inv_type,maxCG,precision):
+        self._classType = self.__class__.__name__
+        self._objectID = self._classType+'_'+base36(id(self))
+        self.mass = mass
+        self.naik_epsilon = naik_epsilon
+        self.twist = twist
+        self.check = check
+        self.set_type = set_type
+        self.inv_type = inv_type
+        self.maxCG = maxCG
+        self.precision = precision
+        self.propagator = list()
+        self._template = Template(source=textwrap.dedent(self._Template),searchList=vars(self))
+        return
+    # container behavior
+    def __len__(self):
+        return len(self.propagator)
+    def __iter__(self):
+        return self.propagator.__iter__()
+    def __add__(self,other):
+        return [ x for x in self.propagator+other.propagator ]
+    def addPropagator(self,prop):
+        """Add a KSsolveElement object to the set of solves."""
+        prop.parent = self
+        prop.type = 'propagator'
+        self.propagator.append(prop)
+        return prop
+    def generate(self,ostream):
+        print(self._template, file=ostream)
+        print('number_of_propagators', len(self.propagator), file=ostream)
+        for p in self.propagator:
+            p.generate(ostream)
+            pass
+        return
+    def dataflow(self):
+        df = list()
+        wname = self._objectID
+        depends = list()
+        requires = list()
+        produces = list()
+        depends.append(self.source._objectID)
+        df.append( { 'name': wname, 'depends': depends,
+                     'requires': requires, 'produces': produces } )
+        for p in self.propagator:
+            df.append(p.dataflow())
+            pass
+        return df
+    pass
+
 class KSsolveElement:
     """Specification of a single KS solve in a KSsolveSet."""
     _Template = """
@@ -1140,6 +1210,50 @@ class KSsolveElement:
         self.parent = None # the KSsolveSet
         self.mass = mass
         self.naik = naik
+        self.load = load
+        self.save = save
+        self.deflate = deflate
+        self.residual = residual
+        self._template = Template(source=textwrap.dedent(self._Template),searchList=vars(self))
+        return
+    def generate(self,ostream):
+        print(self._template, file=ostream)
+        return
+    def dataflow(self):
+        wname = self._objectID
+        depends = list()
+        requires = list()
+        produces = list()
+        depends.append(self.parent._objectID)
+        if len(self.load) > 1:
+            requires.append(self.load[1])
+            pass
+        if len(self.save) > 1:
+            produces.append(self.save[1])
+            pass
+        return { 'name': wname, 'depends': depends,
+                 'requires': requires, 'produces': produces }
+    pass
+
+class KSsolveMultiSourceElement:
+    """Specification of a single KS solve in a KSsolveSet."""
+    _Template = """
+    #== propagator ${id}: ${_classType} ==
+    source ${source.id}
+    #if $deflate is not None:
+    deflate ${deflate}
+    #end if
+    error_for_propagator ${residual.L2}
+    rel_error_for_propagator ${residual.R2}
+    #echo ' '.join($load)#
+    #echo ' '.join($save)#
+    """
+    def __init__(self,source,load,save,deflate,residual):
+        self._classType = self.__class__.__name__
+        self._objectID = self._classType+'_'+base36(id(self))
+        self.id = None
+        self.parent = None # the KSsolveSet
+        self.source = source
         self.load = load
         self.save = save
         self.deflate = deflate

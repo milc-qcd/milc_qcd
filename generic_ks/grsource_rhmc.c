@@ -39,7 +39,7 @@ void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
 #endif
     }
     /*TEMP*/ sum += (double)magsq_su3vec( &(s->g_rand) );
-  } END_LOOP_OMP
+  } END_LOOP_OMP;
   /*TEMP*/g_doublesum( &sum);  node0_printf("GRSOURCE: sum = %.10e\n",sum);
   dtimec += dclock();
   ks_ratinv( F_OFFSET(g_rand), multi_x, roots, residues, order, my_niter,

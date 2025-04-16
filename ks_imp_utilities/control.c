@@ -44,11 +44,12 @@ int main( int argc, char **argv ){
   /* loop over input sets */
   while( readin(prompt) == 0){
     
+    imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
+
     if(prompt == 2)continue;
     
     node0_printf("BEGIN\n");
 
-    imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
     /* Initially, the FN links have standard KS phases and
        antiperiodic BC in time.  The next operation allows us to shift
        the KS phases to phases based on a different coordinate origin
@@ -148,7 +149,12 @@ int main( int argc, char **argv ){
 #endif
 
 #endif
+
+    fn->preserve = 0;
+    destroy_fn_links(fn);
+  
   } /* readin(prompt) */
+
 
 #ifdef HAVE_QUDA
   finalize_quda();

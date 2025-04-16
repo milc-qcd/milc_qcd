@@ -242,7 +242,7 @@ ks_prop_file *create_input_ksprop_file_handle(const char *filename)
   /* Allocate space for the header */
 
   /* Make sure compilation gave us a 32 bit integer type */
-  assert(sizeof(int32type) == 4);
+  assert(sizeof(u_int32type) == 4);
 
   ph = (ks_prop_header *)malloc(sizeof(ks_prop_header));
   if(ph == NULL)
@@ -508,8 +508,8 @@ void w_serial_ks(ks_prop_file *kspf, int color, field_offset src_site,
   kspf->check.sum29 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here only node 0 uses these values */
-  rank29 = sizeof(fsu3_vector)/sizeof(int32type)*sites_on_node*this_node % 29;
-  rank31 = sizeof(fsu3_vector)/sizeof(int32type)*sites_on_node*this_node % 31;
+  rank29 = sizeof(fsu3_vector)/sizeof(u_int32type)*sites_on_node*this_node % 29;
+  rank31 = sizeof(fsu3_vector)/sizeof(u_int32type)*sites_on_node*this_node % 31;
 
   g_sync();
   currentnode=0;
@@ -548,7 +548,7 @@ void w_serial_ks(ks_prop_file *kspf, int color, field_offset src_site,
 
 	  /* Accumulate checksums - contribution from next site */
 	  for(k = 0, val = (u_int32type *)&pbuf[buf_length]; 
-	      k < (int)sizeof(fsu3_vector)/(int)sizeof(int32type); k++, val++)
+	      k < (int)sizeof(fsu3_vector)/(int)sizeof(u_int32type); k++, val++)
 	    {
 	      kspf->check.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
 	      kspf->check.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
@@ -673,7 +673,7 @@ int read_ks_prop_hdr(ks_prop_file *kspf, int parallel)
 
   FILE *fp;
   ks_prop_header *ksph;
-  int32type tmp;
+  u_int32type tmp;
   int j;
   int byterevflag = 0;
   char myname[] = "read_ks_prop_hdr";
@@ -697,10 +697,10 @@ int read_ks_prop_hdr(ks_prop_file *kspf, int parallel)
 	{
 	  byterevflag=1;
 	  /** printf("Reading with byte reversal\n"); **/
-	  if( sizeof(Real) != sizeof(int32type)) {
+	  if( sizeof(Real) != sizeof(u_int32type)) {
 	    printf("%s: Can't byte reverse\n",myname);
 	    printf("requires size of int32type(%d) = size of Real(%d)\n",
-		   (int)sizeof(int32type),(int)sizeof(Real));
+		   (int)sizeof(u_int32type),(int)sizeof(Real));
 	    terminate(1);
 	  }
 	}
@@ -890,7 +890,7 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset dest_site,
   if(this_node == 0)
     {
       if(ksph->order == NATURAL_ORDER) coord_list_size = 0;
-      else coord_list_size = sizeof(int32type)*volume;
+      else coord_list_size = sizeof(u_int32type)*volume;
       head_size = ksph->header_bytes + coord_list_size;
      
       offset = head_size + body_size*color;
@@ -1017,10 +1017,10 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset dest_site,
 	{
 	  if(byterevflag==1)
 	    byterevn((u_int32type *)(&msg.ksv),
-		     sizeof(fsu3_vector)/sizeof(int32type));
+		     sizeof(fsu3_vector)/sizeof(u_int32type));
 	  /* Accumulate checksums */
 	  for(k = 0, val = (u_int32type *)(&msg.ksv); 
-	      k < (int)sizeof(fsu3_vector)/(int)sizeof(int32type); k++, val++)
+	      k < (int)sizeof(fsu3_vector)/(int)sizeof(u_int32type); k++, val++)
 	    {
 	      test_kspc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
 	      test_kspc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
@@ -1036,8 +1036,8 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset dest_site,
 	}
       else
 	{
-	  rank29 += sizeof(fsu3_vector)/sizeof(int32type);
-	  rank31 += sizeof(fsu3_vector)/sizeof(int32type);
+	  rank29 += sizeof(fsu3_vector)/sizeof(u_int32type);
+	  rank31 += sizeof(fsu3_vector)/sizeof(u_int32type);
 	  rank29 %= 29;
 	  rank31 %= 31;
 	}

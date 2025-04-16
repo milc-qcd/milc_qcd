@@ -259,6 +259,7 @@ create_fn_links(void){
   }
   
   init_ferm_links(fn);
+  fn->preserve = 0;
   fn->phase = create_link_phase_info();
   fn->fat = create_fatlinks();
   fn->lng = create_lnglinks();
@@ -273,6 +274,7 @@ create_fn_links(void){
 void 
 destroy_fn_links(fn_links_t *fn){
   if(fn == NULL)return;
+  if(fn->preserve == 1)return;
 
   destroy_link_phase_info(fn->phase);
   destroy_fatlinks(fn->fat);
@@ -375,13 +377,6 @@ add_fn(fn_links_t *fn_A, fn_links_t *fn_B, fn_links_t *fn_C){
 
   char myname[] = "add_fn";
 
-  if (fn_A->eps_naik != fn_B->eps_naik) {
-    node0_printf("%s: eps_naik does not match between the two links", myname);
-    exit(0);
-  }
-
-  fn_C->eps_naik = fn_B->eps_naik;
-
   int i, dir;
 
   su3_matrix *fatA = get_fatlinks(fn_A);
@@ -403,9 +398,9 @@ add_fn(fn_links_t *fn_A, fn_links_t *fn_B, fn_links_t *fn_C){
     for(dir=XUP;dir<=TUP;dir++) {
       add_su3_matrix( fatA + 4*i + dir, fatB + 4*i + dir, fatC + 4*i + dir );
       add_su3_matrix( lngA + 4*i + dir, lngB + 4*i + dir, lngC + 4*i + dir );
-      if(fatbackA != NULL && fatbackC != NULL)
+      if(fatbackA != NULL && fatbackB != NULL && fatbackC != NULL)
 	add_su3_matrix( fatbackA + 4*i + dir, fatbackB + 4*i + dir, fatbackC + 4*i + dir );
-      if(lngbackA != NULL && lngbackC != NULL)
+      if(lngbackA != NULL && lngbackB != NULL && lngbackC != NULL)
 	add_su3_matrix( lngbackA + 4*i + dir, lngbackB + 4*i + dir, lngbackC + 4*i + dir );
     }
   }

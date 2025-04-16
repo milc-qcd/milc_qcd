@@ -128,15 +128,9 @@ create_V_from_vec( su3_vector *src, int milc_parity,
 	cVec._internal._internal._internal[col] = 
 	  Complex(src[idx].c[col].real, src[idx].c[col].imag);
       }
-      
-<<<<<<< HEAD
-      //      autoView(Dst_cv, (*(out->cv)), CpuWrite);
-      //      pokeLocalSite(cVec, Dst_cv, x);
-      pokeLocalSite(cVec, *(out->cv), x);
-=======
+
       pokeLocalSite(cVec, Dst_cv, x);
->>>>>>> 4a3bdf88113874ac94151bff8bc1ae60b6ea1496
-      
+
     }
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
@@ -184,13 +178,9 @@ create_nV_from_vecs( su3_vector *src[], int n, int milc_parity,
 	  cVec._internal._internal._internal[col] = 
 	    Complex(src[j][idx].c[col].real, src[j][idx].c[col].imag);
 	}
-<<<<<<< HEAD
-//        autoView(Dst_cv, (*(out->cv)), CpuWrite);
-//        pokeLocalSite(cVec, Dst_cv, x5);
-	pokeLocalSite(cVec, *(out->cv), x5);
-=======
+
         pokeLocalSite(cVec, Dst_cv, x5);
->>>>>>> 4a3bdf88113874ac94151bff8bc1ae60b6ea1496
+
       }
     }
   auto end = std::chrono::system_clock::now();
@@ -215,13 +205,7 @@ static void extract_V_to_vec( su3_vector *dest,
       indexToCoords(idx, x);
       ColourVector cVec;
 
-<<<<<<< HEAD
-      // autoView(Src_cv, (*(src->cv)), CpuRead);
-      // peekLocalSite(cVec, Src_cv, x);
-      peekLocalSite(cVec, *(src->cv), x);
-=======
       peekLocalSite(cVec, Src_cv, x);
->>>>>>> 4a3bdf88113874ac94151bff8bc1ae60b6ea1496
 
       for(int col = 0; col < Nc; col++)
 	{
@@ -247,23 +231,13 @@ static void extract_nV_to_vecs( su3_vector *dest[], int n,
       indexToCoords(idx, x);
       Coordinate x5(5);
       for( int d = 0; d < 4; d++ )
-<<<<<<< HEAD
-	x5.push_back(x[d]);
-=======
 	x5[d+1] = x[d];
->>>>>>> 4a3bdf88113874ac94151bff8bc1ae60b6ea1496
 
       for( int j = 0; j < n; j++ ){
 	x5[0] = j;
 
 	ColourVector cVec;
-<<<<<<< HEAD
-	//        autoView(Src_cv, (*(src->cv)), CpuRead);
-	//        peekLocalSite(cVec, Src_cv, x5);
-	peekLocalSite(cVec, *(src->cv), x5);
-=======
         peekLocalSite(cVec, Src_cv, x5);
->>>>>>> 4a3bdf88113874ac94151bff8bc1ae60b6ea1496
 	
 	for(int col = 0; col < Nc; col++)
 	  {
@@ -276,44 +250,6 @@ static void extract_nV_to_vecs( su3_vector *dest[], int n,
   return;
 }
 
-<<<<<<< HEAD
-// Copy MILC su3_matrix to Grid vLorentzColourMatrix
-// Precision conversion can happen here
-
-template<typename sobj, typename Complex>
-static void milcSU3MatrixToGrid(su3_matrix *in, sobj &out){
-
-  for (int mu=0; mu<4; mu++)
-    for (int i=0; i<Nc; i++)
-      for (int j=0; j<Nc; j++)
-	out._internal[mu]._internal._internal[i][j] = Complex(in[mu].e[i][j].real, in[mu].e[i][j].imag);
-}
-
-// Map a flattened MILC gauge field (4 matrices per site) to a Grid LatticeGaugeField
-template<typename LatticeGaugeField, typename Complex>
-static void milcGaugeFieldToGrid(su3_matrix *in, LatticeGaugeField &out){
-
-  typedef typename LatticeGaugeField::vector_object vobj;
-  typedef typename vobj::scalar_object sobj;
-
-  GridBase *grid = out.Grid();
-  int lsites = grid->lSites();
-  std::vector<sobj> scalardata(lsites);
-
-  #pragma omp parallel for
-    for (size_t milc_idx = 0; milc_idx < sites_on_node; milc_idx++){
-      Coordinate x(4);
-      indexToCoords(milc_idx, x);
-      int grid_idx;
-      Lexicographic::IndexFromCoor(x, grid_idx, grid->LocalDimensions());
-      milcSU3MatrixToGrid<sobj, Complex>(in + 4*milc_idx, scalardata[grid_idx]);
-    }
-  
-  vectorizeFromLexOrdArray(scalardata, out);
-}
-
-=======
->>>>>>> 4a3bdf88113874ac94151bff8bc1ae60b6ea1496
 template<typename ColourMatrix>
 static void dumpGrid(ColourMatrix out){
 

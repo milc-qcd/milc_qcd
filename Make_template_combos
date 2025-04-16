@@ -114,7 +114,8 @@ KS_LINKS_OBJECTS = \
 
 KS_IO_OBJECTS =  \
   io_helpers_ks.o   \
-  io_prop_ks.o
+  io_prop_ks.o  \
+  io_prop_ks_fm.o  # Deprecated
 
 # These are used to compute the hadron correlators
 

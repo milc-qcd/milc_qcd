@@ -38,6 +38,7 @@ subset corner
 t0 1
 ncolor 1
 momentum 0 0 0
+scale_factor 1e10
 source_label RW
 save_serial_scidac_ks_source rnd_source
 
@@ -49,6 +50,7 @@ origin 0 0 0 1
 load_source_serial rnd_source
 ncolor 1
 momentum 0 0 0
+scale_factor 1e10
 source_label RW
 forget_source
 
@@ -60,6 +62,7 @@ origin 0 0 0 1
 load_source_serial rnd_source
 ncolor 1
 momentum 1 0 0
+scale_factor 1e10
 source_label RW
 forget_source
 
@@ -230,7 +233,7 @@ number_of_mesons 10
 #== MesonSpectrum == (pion 000)
 pair 0 0
 spectrum_request meson
-save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
 r_offset 0 0 0 1
 number_of_correlators 1
 correlator P5-P5 p000-fine 1 / 124416.0 G5-G5 0 0 0 EO EO EO
@@ -238,7 +241,7 @@ correlator P5-P5 p000-fine 1 / 124416.0 G5-G5 0 0 0 EO EO EO
 #== MesonSpectrum == (pion 100)
 pair 0 1
 spectrum_request meson
-save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
 r_offset 0 0 0 1
 number_of_correlators 1
 correlator P5-P5 p100-fine 1 / 124416.0 G5-G5 -1 0 0 EO EO EO
@@ -246,7 +249,7 @@ correlator P5-P5 p100-fine 1 / 124416.0 G5-G5 -1 0 0 EO EO EO
 #== MesonSpectrum == (H 0.164 000)
 pair 2 0
 spectrum_request meson
-save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
 r_offset 0 0 0 1
 number_of_correlators 1
 correlator P5-P5 p000-fine 1 / 124416.0 G5-G5 0 0 0 EO EO EO
@@ -254,7 +257,7 @@ correlator P5-P5 p000-fine 1 / 124416.0 G5-G5 0 0 0 EO EO EO
 #== MesonSpectrum == (H 0.164 100)
 pair 2 1
 spectrum_request meson
-save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
 r_offset 0 0 0 1
 number_of_correlators 1
 correlator P5-P5 p100-fine 1 / 124416.0 G5-G5 -1 0 0 EO EO EO
@@ -262,7 +265,7 @@ correlator P5-P5 p100-fine 1 / 124416.0 G5-G5 -1 0 0 EO EO EO
 #== MesonSpectrum == (H 0.1827 000)
 pair 3 0
 spectrum_request meson
-save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
 r_offset 0 0 0 1
 number_of_correlators 1
 correlator P5-P5 p000-fine 1 / 124416.0 G5-G5 0 0 0 EO EO EO
@@ -270,7 +273,7 @@ correlator P5-P5 p000-fine 1 / 124416.0 G5-G5 0 0 0 EO EO EO
 #== MesonSpectrum == (H 0.1827 100)
 pair 3 1
 spectrum_request meson
-save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
 r_offset 0 0 0 1
 number_of_correlators 1
 correlator P5-P5 p100-fine 1 / 124416.0 G5-G5 -1 0 0 EO EO EO
@@ -278,7 +281,7 @@ correlator P5-P5 p100-fine 1 / 124416.0 G5-G5 -1 0 0 EO EO EO
 #== MesonSpectrum == (HV2pi 0.164 000)
 pair 2 0
 spectrum_request meson
-save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
 r_offset 0 0 0 1
 number_of_correlators 1
 correlator A4-A4_V4-V4_T34_m0.164 p000-fine -1 / 124416.0 GT-GT 0 0 0 EO EO EO
@@ -286,7 +289,7 @@ correlator A4-A4_V4-V4_T34_m0.164 p000-fine -1 / 124416.0 GT-GT 0 0 0 EO EO EO
 #== MesonSpectrum == (HV2pi 0.164 100)
 pair 2 1
 spectrum_request meson
-save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
 r_offset 0 0 0 1
 number_of_correlators 2
 correlator A4-A4_V4-V4_T34_m0.164 p100-fine -1 / 124416.0 GT-GT -1 0 0 EO EO EO
@@ -295,7 +298,7 @@ correlator A4-A4_T14-V4_T34_m0.164 p100-fine 1 / 124416.0 GXT-GT -1 0 0 EO EO EO
 #== MesonSpectrum == (HV2pi 0.1827 000)
 pair 3 0
 spectrum_request meson
-save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
 r_offset 0 0 0 1
 number_of_correlators 1
 correlator A4-A4_V4-V4_T34_m0.1827 p000-fine -1 / 124416.0 GT-GT 0 0 0 EO EO EO
@@ -303,7 +306,7 @@ correlator A4-A4_V4-V4_T34_m0.1827 p000-fine -1 / 124416.0 GT-GT 0 0 0 EO EO EO
 #== MesonSpectrum == (HV2pi 0.1827 100)
 pair 3 1
 spectrum_request meson
-save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
 r_offset 0 0 0 1
 number_of_correlators 2
 correlator A4-A4_V4-V4_T34_m0.1827 p100-fine -1 / 124416.0 GT-GT -1 0 0 EO EO EO

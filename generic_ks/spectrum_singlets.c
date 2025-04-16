@@ -1,4 +1,5 @@
 /******** spectrum_singlets.c *************/
+/* OBSOLETE */
 /* MIMD version 7*/
 /* DT 2/04
    point source/sink propagators for eta_prime, sigma

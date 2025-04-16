@@ -40,86 +40,90 @@ void dump_v_site(char *id, field_offset f){
 }
 
 int update()  {
-int step, iters=0;
-Real final_rsq;
-Real cg_time;	/* simulation time for last two CG's */
+  int step, iters=0;
+  Real final_rsq;
+  Real cg_time;	/* simulation time for last two CG's */
 #ifdef PHI_ALGORITHM
-Real old_cg_time,next_cg_time;	/* simulation time for last two CG's */
+  Real old_cg_time,next_cg_time;	/* simulation time for last two CG's */
 #endif
 #ifdef HMC_ALGORITHM
-double startaction,endaction,change;
-Real xrandom;
+  double startaction,endaction,change;
+  Real xrandom;
 #endif
-  imp_ferm_links_t** fn;
-
-    /* refresh the momenta */
-    ranmom();
-
-    /* do "steps" microcanonical steps  */
-    for(step=1; step <= steps; step++){
-
+  imp_ferm_links_t* fn;
+  
+  /* refresh the momenta */
+  ranmom();
+  
+  /* do "steps" microcanonical steps  */
+  for(step=1; step <= steps; step++){
+    
 #ifdef PHI_ALGORITHM
-	/* generate a pseudofermion configuration only at start*/
-	if(step==1){
-	  restore_fermion_links_from_site(fn_links, MILC_PRECISION);
-	  fn = get_fm_links(fn_links);
-	  clear_latvec( F_OFFSET(phi), EVENANDODD );
-	  grsource_imp( F_OFFSET(phi), mass, EVEN, fn[0]);
-	  clear_latvec( F_OFFSET(xxx), EVENANDODD );
-	  clear_latvec( F_OFFSET(ttt), EVENANDODD );
-	  //	  grsource(EVEN); 
-	  old_cg_time = cg_time = -1.0e6;
-	}
-
+    /* generate a pseudofermion configuration only at start*/
+    if(step==1){
+      restore_fermion_links_from_site(fn_links, MILC_PRECISION);
+      fn = get_fm_links(fn_links, 0);
+      clear_latvec( F_OFFSET(phi), EVENANDODD );
+      grsource_imp( F_OFFSET(phi), mass, EVEN, fn);
+      clear_latvec( F_OFFSET(xxx), EVENANDODD );
+      clear_latvec( F_OFFSET(ttt), EVENANDODD );
+      destroy_fn_links(fn);
+      //	  grsource(EVEN); 
+      old_cg_time = cg_time = -1.0e6;
+    }
+    
 #ifdef HMC_ALGORITHM
-	/* find action */
-	/* do conjugate gradient to get (Madj M)inverse * phi */
-	if(step==1){
-	    /* do conjugate gradient to get (Madj M)inverse * phi */
-	  restore_fermion_links_from_site(fn_links, MILC_PRECISION);
-	  fn = get_fm_links(fn_links);
-	  iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			      niter, nrestart, rsqmin, MILC_PRECISION, EVEN,
-			      &final_rsq, fn[0]);
-	    cg_time = 0.0;
-	    startaction=d_action();
-	    /* copy link field to old_link */
-	    gauge_field_copy( F_OFFSET(link[0]), F_OFFSET(old_link[0]));
-}
+    /* find action */
+    /* do conjugate gradient to get (Madj M)inverse * phi */
+    if(step==1){
+      /* do conjugate gradient to get (Madj M)inverse * phi */
+      restore_fermion_links_from_site(fn_links, MILC_PRECISION);
+      fn = get_fm_links(fn_links, 0);
+      iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
+			  niter, nrestart, rsqmin, MILC_PRECISION, EVEN,
+			  &final_rsq, fn);
+      cg_time = 0.0;
+      startaction=d_action();
+      /* copy link field to old_link */
+      gauge_field_copy( F_OFFSET(link[0]), F_OFFSET(old_link[0]));
+      destroy_fn_links(fn);
+    }
 #endif
-
-	/* update U's to middle of interval */
-	update_u(0.5*epsilon);
-
-	/* save conjugate gradient solution, predict next one */
-	next_cg_time = ((Real)step-0.5)*epsilon;
-	predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
-
+    
+    /* update U's to middle of interval */
+    update_u(0.5*epsilon);
+    
+    /* save conjugate gradient solution, predict next one */
+    next_cg_time = ((Real)step-0.5)*epsilon;
+    predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
+    
 #else /* "R" algorithm */
-	/* first update the U's to special time interval */
-	update_u(epsilon*(0.5-nflavors/8.0));
-
-	/* generate a pseudofermion configuration */
-	restore_fermion_links_from_site(fn_links, MILC_PRECISION);
-	fn = get_fm_links(fn_links);
-	clear_latvec( F_OFFSET(phi), EVENANDODD );
-     	grsource_imp( F_OFFSET(phi), mass, EVEN, fn[0]);
-	clear_latvec( F_OFFSET(xxx), EVENANDODD );
-	clear_latvec( F_OFFSET(ttt), EVENANDODD );
-	//	grsource(EVEN); 
-	cg_time = -1.0e6;
-
-	/* update U's to middle of interval */
-	update_u(epsilon*nflavors/8.0);
+    /* first update the U's to special time interval */
+    update_u(epsilon*(0.5-nflavors/8.0));
+    
+    /* generate a pseudofermion configuration */
+    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
+    fn = get_fm_links(fn_links, 0);
+    clear_latvec( F_OFFSET(phi), EVENANDODD );
+    grsource_imp( F_OFFSET(phi), mass, EVEN, fn);
+    clear_latvec( F_OFFSET(xxx), EVENANDODD );
+    clear_latvec( F_OFFSET(ttt), EVENANDODD );
+    destroy_fn_links(fn);
+    //	grsource(EVEN); 
+    cg_time = -1.0e6;
+    
+    /* update U's to middle of interval */
+    update_u(epsilon*nflavors/8.0);
 #endif
-
-	/* do conjugate gradient to get (Madj M)inverse * phi */
-	restore_fermion_links_from_site(fn_links, MILC_PRECISION);
-	fn = get_fm_links(fn_links);
-	iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			    niter, nrestart, rsqmin, MILC_PRECISION, EVEN, 
-			    &final_rsq, fn[0]);
-	cg_time = ((Real)step - 0.5)*epsilon;
+    
+    /* do conjugate gradient to get (Madj M)inverse * phi */
+    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
+    fn = get_fm_links(fn_links, 0);
+    iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
+			niter, nrestart, rsqmin, MILC_PRECISION, EVEN, 
+			&final_rsq, fn);
+    
+    cg_time = ((Real)step - 0.5)*epsilon;
 
 
 	/* now update H by full time interval */
@@ -141,10 +145,11 @@ Real xrandom;
     next_cg_time = steps*epsilon;
     predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
     restore_fermion_links_from_site(fn_links, MILC_PRECISION);
-    fn = get_fm_links(fn_links);
+    fn = get_fm_links(fn_links, 0);
     iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			niter, nrestart, rsqmin, MILC_PRECISION, EVEN, 
-			&final_rsq, fn[0]);
+			&final_rsq, fn);
+    destroy_fn_links(fn)
     cg_time = steps*epsilon;
     endaction=d_action();
     change = endaction-startaction;

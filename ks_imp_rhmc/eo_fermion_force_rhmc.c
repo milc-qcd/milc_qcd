@@ -22,7 +22,7 @@ void eo_fermion_force_rhmc( Real eps, params_ratfunc *rf,
     int order = rf->order;
     Real *residues = rf->res;
     Real *roots = rf->pole;
-    imp_ferm_links_t **fn;
+    imp_ferm_links_t *fn;
 
     // Compute ( M^\dagger M)^{-1} in xxx_even
     // Then compute M*xxx in temporary vector xxx_odd 
@@ -30,15 +30,17 @@ void eo_fermion_force_rhmc( Real eps, params_ratfunc *rf,
 	/* The diagonal term in M doesn't matter */
     //    load_ferm_links(fn);
     restore_fermion_links_from_site(fl, cg_prec);
-    fn = get_fm_links(fl);
+    fn = get_fm_links(fl, 0);
 
     /* Do the inversion for zero Naik term epsilon */
     ks_ratinv( phi_off, multi_x, roots, residues, order, my_niter,
-	       my_rsqmin, cg_prec, EVEN, &final_rsq, fn[0], 0, 0. );
+	       my_rsqmin, cg_prec, EVEN, &final_rsq, fn, 0, 0. );
 
     /* Do dslash for zero Naik term epsilon */
-    for(j=0;j<order;j++){ dslash_field( multi_x[j], multi_x[j], ODD, fn[0] ); }
+    for(j=0;j<order;j++){ dslash_field( multi_x[j], multi_x[j], ODD, fn ); }
 
     eo_fermion_force_multi( eps, &(residues[1]), multi_x, order, ff_prec, fl );
+    invalidate_fermion_links(fl);
+
 }
 

@@ -41,7 +41,7 @@ else ifeq ($(strip ${COMPILER}),amdclang)
 endif
 
 # Override
-CC = cc # ( cc89 gcc xlc gcc pgcc cl g++ )
+CC = gcc # ( cc89 gcc xlc gcc pgcc cl g++ )
 
 #----------------------------------------------------------------------
 # 2. Compiler optimization level

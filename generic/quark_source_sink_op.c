@@ -95,9 +95,9 @@
 #include "../include/openmp_defs.h"
 #include <string.h>
 #ifdef HAVE_QIO
+#include "../include/io_scidac_ks.h"
 #include <qio.h>
 #include "../include/io_scidac.h"
-#include "../include/io_scidac_ks.h"
 #include "../include/io_scidac_w.h"
 #endif
 #ifdef HAVE_DIRAC
@@ -945,7 +945,7 @@ get_spin_taste(void){
   return spin_taste;
 }
 
-
+#if 0 /* Hasn't been used */
 /*------------------------------------------------------------------*/
 /**
     Almost identical to the definitions of sym_shift_field in :    
@@ -989,6 +989,8 @@ one_link_sym_shift_source(int dir, su3_vector *dest, su3_vector *src,
 #endif
   destroy_v_field(tvec0);
 } /* one_link_sym_shift_source */
+
+#endif
 
 /*------------------------------------------------------------------*/
 
@@ -1102,7 +1104,7 @@ static int apply_ks_inverse(su3_vector *v, quark_source_sink_op *qss_op,
   /* Get fn links appropraite to this Naik term epsilon */
   
   restore_fermion_links_from_site(fn_links, my_qic->prec);
-  fn = get_fm_links(fn_links)[inaik];
+  fn = get_fm_links(fn_links, inaik);
 
   /* Apply twist to the boundary links of fn and reset origin of KS
      phases if requested */
@@ -1127,6 +1129,8 @@ static int apply_ks_inverse(su3_vector *v, quark_source_sink_op *qss_op,
   boundary_twist_fn(fn, OFF);
 
   destroy_v_field(src);
+  destroy_fn_links(fn);
+  
   return tot_iters;
 }
 
@@ -1232,7 +1236,7 @@ static void apply_gamma(wilson_vector *src,
 			quark_source_sink_op *qss_op){
   int i;
   site *s;
-  gammatype gam = qss_op->gamma;
+  enum gammatype gam = qss_op->gamma;
   wilson_vector tmp;
 
   FORALLSITES(i,s){
@@ -1696,7 +1700,7 @@ static void hop_vec(su3_vector *src, ks_param *ksp, int dhop, int mu)
   int inaik = 0;
 #endif
   /* Note: we are not restoring the links here and don't set the precision */
-  imp_ferm_links_t *fn = get_fm_links(fn_links)[inaik];
+  imp_ferm_links_t *fn = get_fm_links(fn_links, inaik);
   
   if(src == NULL){
     node0_printf("%s: Error: called with NULL arg\n", myname);
@@ -1722,7 +1726,8 @@ static void hop_vec(su3_vector *src, ks_param *ksp, int dhop, int mu)
   /* result in src */
   copy_v_field(src, v);
 
-  destroy_v_field(v); 
+  destroy_v_field(v);
+  destroy_fn_links(fn);
 
 } /* hop_vec */
 
@@ -1905,7 +1910,8 @@ void ksp_sink_op(quark_source_sink_op *qss_op, ks_prop_field *ksp )
 {
   int color;
   su3_vector *v = create_v_field();
-
+  char *create_ks_XML(void);
+  
   /* Initilize source files if saving as source */
   if (qss_op->type  == SAVE_VECTOR_SRC) {
     if(qss_op->qs_save.saveflag != FORGET){

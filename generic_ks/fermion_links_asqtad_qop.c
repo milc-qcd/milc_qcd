@@ -31,6 +31,7 @@ create_qop_fm_ac_links_t(QOP_asqtad_coeffs_t *ac, int precision,
   
   al->ac = ac;
   al->fm = create_fn_links_qop();
+  al->fm->preserve = 1;
   load_fn_links_qop(al->fm, al->ac, precision, links, options->want_back);
 
   return al;
@@ -40,6 +41,7 @@ static void
 destroy_qop_fm_ac_links_t(qop_fm_ac_links_t *al){
   if(al == NULL)return;
 
+  al->fm->preserve = 0;
   destroy_fn_links_qop(al->fm);
   destroy_asqtad_coeffs_qop(al->ac);
 
@@ -69,14 +71,14 @@ restore_qop_fm_ac_links_t(qop_fm_ac_links_t *al, int precision,
        (precision == 2 && get_D_asqtad_links(al->fm) != NULL) )return;
   }
 
-  destroy_fn_links_qop(al->fm);
   al->fm = create_fn_links_qop();
   load_fn_links_qop(al->fm, al->ac, precision, links, want_back);
+  al->fm->preserve = 1;
 }
 
-static imp_ferm_links_t **
+static imp_ferm_links_t *
 get_qop_fm_ac_links_t_fm(qop_fm_ac_links_t *al){
-  return &al->fm;
+  return al->fm;
 }
 
 static QOP_asqtad_coeffs_t *
@@ -142,20 +144,20 @@ invalidate_qop_asqtad_links_t(qop_asqtad_links_t *al){
 
 static void
 restore_qop_asqtad_links_t(qop_asqtad_links_t *al, int precision,
-			    su3_matrix *links, int want_back){
+			   su3_matrix *links, int want_back){
   if(al == NULL)return;
 
   restore_qop_fm_ac_links_t(al->fm_ac, precision, links, want_back);
   restore_qop_fm_ac_links_t(al->fm_ac_du0, precision, links, want_back);
 }
 
-static imp_ferm_links_t **
+static imp_ferm_links_t *
 get_qop_asqtad_ac_links_fm(qop_asqtad_links_t *al){
   if(al == NULL)return NULL;
   return get_qop_fm_ac_links_t_fm(al->fm_ac);
 }
 
-static imp_ferm_links_t **
+static imp_ferm_links_t *
 get_qop_asqtad_ac_du0_links_fm(qop_asqtad_links_t *al){
   if(al == NULL)return NULL;
   return get_qop_fm_ac_links_t_fm(al->fm_ac_du0);
@@ -294,12 +296,12 @@ restore_fermion_links(fermion_links_t *fl, int precision,
 /* Accessors                              */
 /*----------------------------------------*/
 
-imp_ferm_links_t **
-get_fm_links(fermion_links_t *fl){
+imp_ferm_links_t *
+get_fm_links(fermion_links_t *fl, int i_naik){
   return get_qop_asqtad_ac_links_fm(fl->flg);
 }
 
-imp_ferm_links_t **
+imp_ferm_links_t *
 get_fm_du0_links(fermion_links_t *fl){
   return get_qop_asqtad_ac_du0_links_fm(fl->flg);
 }

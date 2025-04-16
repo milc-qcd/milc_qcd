@@ -171,7 +171,7 @@ int update() {
   su3_vector *sumvec;
   int iphi, int_alg, inaik, jphi, n;
   Real lambda, alpha, beta; // parameters in integration algorithms
-  imp_ferm_links_t** fn;
+  imp_ferm_links_t* fn;
 
   int_alg = INT_ALG;
   switch(int_alg){
@@ -282,21 +282,22 @@ int update() {
   /* generate a pseudofermion configuration only at start*/
   // NOTE used to clear xxx here.  May want to clear all solutions for reversibility
   iphi=0;
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if FERM_ACTION == HISQ
   n = fermion_links_get_n_naiks(fn_links);
 #else
   n = 1;
 #endif
   for( inaik=0; inaik<n; inaik++ ) {
+    restore_fermion_links_from_site(fn_links, prec_gr[0]);
+    fn = get_fm_links(fn_links, inaik);
     for( jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
-      restore_fermion_links_from_site(fn_links, prec_gr[iphi]);
-      fn = get_fm_links(fn_links);
       grsource_imp_rhmc( F_OFFSET(phi[iphi]), &(rparam[iphi].GR), EVEN,
 			 multi_x, sumvec, rsqmin_gr[iphi], niter_gr[iphi],
-			 prec_gr[iphi], fn[inaik], inaik, 
+			 prec_gr[iphi], fn, inaik, 
 			 rparam[iphi].naik_term_epsilon);
       iphi++;
     }
+    destroy_fn_links(fn);
   }
   
   /* find action */
@@ -367,13 +368,12 @@ int update() {
             node0_printf( "Current time step: %d\n", global_current_time_step );
 #endif /* MILC_GLOBAL_DEBUG */
 	    /* update U's and H's - see header comment */
-     	    update_u( epsilon*( (1.0/6.0-alpha/3.0) ) );
+    	    update_u( epsilon*( (1.0/6.0-alpha/3.0) ) );
 	    update_h_gauge( epsilon/3.0);
      	    update_u( epsilon*( (0.5-beta)-(1.0/6.0-alpha/3.0) ) );
 	    iters += update_h_fermion( epsilon, multi_x);
      	    update_u( epsilon*( (3.0/6.0+alpha/3.0)-(0.5-beta) ) );
 	    update_h_gauge( epsilon/3.0);
-
      	    update_u( epsilon*( (5.0/6.0-alpha/3.0)-(3.0/6.0+alpha/3.0) ) );
 	    update_h_gauge( epsilon/3.0);
      	    update_u( epsilon*( (7.0/6.0+alpha/3.0)-(5.0/6.0-alpha/3.0) ) );

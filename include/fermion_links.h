@@ -244,8 +244,6 @@ void load_hisq_aux_links_grid_D(info_t *info, ks_action_paths_hisq *ap,
 
 fermion_links_t *create_fermion_links(int precision, int phases_in, su3_matrix *links);
 void destroy_fermion_links(fermion_links_t *fl);
-imp_ferm_links_t **get_fm_links(fermion_links_t *fl);
-imp_ferm_links_t **get_fm_du0_links(fermion_links_t *fl);
 ks_action_paths *get_action_paths(fermion_links_t *fl);
 void invalidate_fermion_links(fermion_links_t *fl);
 void restore_fermion_links(fermion_links_t *fl, int precision, int phases_in, su3_matrix *links);
@@ -258,7 +256,6 @@ ks_action_paths *get_action_paths_eo(fermion_links_t *fl);
 
 
 /* fermion_links_hisq_milc.c routines dealing with fermion_links_t */
-/* fermion_links_asqtad_qop.c routines dealing with fermion_links_t */
 
 fermion_links_t *create_fermion_links_hisq(int precision, int n_naiks, 
 			   double eps_naik[], int phases_in, su3_matrix *links);
@@ -266,21 +263,25 @@ void destroy_fermion_links_hisq(fermion_links_t *fl);
 void invalidate_fermion_links(fermion_links_t *fl);
 void restore_fermion_links_hisq(fermion_links_t *fl, int precision,
 				int phases_in, su3_matrix *links);
-imp_ferm_links_t **get_fm_links(fermion_links_t *fl);
-imp_ferm_links_t **get_fm_du0_links(fermion_links_t *fl);
-imp_ferm_links_t *get_fn_deps_links(fermion_links_t *fl);
 ks_action_paths_hisq *get_action_paths_hisq(fermion_links_t *fl);
 int get_n_naiks_hisq(fermion_links_t *fl);
 double *get_eps_naik_hisq(fermion_links_t *fl);
 int valid_fermion_links(fermion_links_t *fl, int precision);
 char *get_action_parameter_string(fermion_links_t *fl);
 hisq_auxiliary_t *get_hisq_auxiliary(fermion_links_t *fl);
+
 #ifdef HAVE_QOP
+
 QOP_asqtad_coeffs_t *get_action_coeffs(fermion_links_t *fl);
 QOP_hisq_coeffs_t *get_action_coeffs_hisq(fermion_links_t *fl);
 QOP_F3_FermionLinksHisq *get_F_hisq_links(fermion_links_t *fl);
 QOP_D3_FermionLinksHisq *get_D_hisq_links(fermion_links_t *fl);
+
 #endif
+
+imp_ferm_links_t *get_fm_links(fermion_links_t *fl, int i_naik);
+imp_ferm_links_t *get_fm_du0_links(fermion_links_t *fl);
+imp_ferm_links_t *get_fn_deps_links(fermion_links_t *fl);
 
 /* fermion_links.c */
 

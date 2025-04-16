@@ -158,7 +158,7 @@ void GRID_D3_hisq_force(GRID_info_t *info,
 			double residues[],
 			su3_vector *multi_x[],
 			int n_orders_naik[],
-			su3_matrix *deriv[],
+			su3_matrix *deriv,
 			GRID_4Dgrid *grid_full);
 
 /* implicitly restarted Lanczos */

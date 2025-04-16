@@ -54,7 +54,6 @@ int ks_ratinv(	/* Return value is number of iterations taken */
   su3_vector *in;
   ks_param *ksp;
   int k;
-  imp_ferm_links_t **fn;
   char myname[] = "ks_ratinv";
   int iters;
 
@@ -89,25 +88,14 @@ int ks_ratinv(	/* Return value is number of iterations taken */
   for(k = 0; k < order; k++){
     ksp[k].offset = roots[k+1];
     ksp[k].residue = residues ? residues[k+1] : 0.0;
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if FERM_ACTION == HISQ
     ksp[k].naik_term_epsilon = naik_term_epsilon;
     ksp[k].naik_term_epsilon_index = naik_term_epsilon_index;
 #endif
   }
 
-  /* Set fn links for the inversion (all the same here) */
-  fn = (imp_ferm_links_t **)malloc(order*sizeof(imp_ferm_links_t *));
-  if(fn == NULL){
-    printf("%s(%d): No room\n", myname, this_node);
-    terminate(1);
-  }
-  
-  for(k = 0; k < order; k++)
-    fn[k] = fn_const;
+  iters = ks_multicg_field( in, psim, ksp, order, qic, fn_const );
 
-  iters = ks_multicg_field( in, psim, ksp, order, qic, fn );
-
-  free(fn);
   free(ksp);
 
   destroy_v_field(in);
@@ -161,7 +149,6 @@ int ks_ratinv_field(	/* Return value is number of iterations taken */
   su3_vector *in = src;
   ks_param *ksp;
   int k;
-  imp_ferm_links_t **fn;
   char myname[] = "ks_ratinv_field";
   int iters;
 
@@ -194,25 +181,14 @@ int ks_ratinv_field(	/* Return value is number of iterations taken */
   for(k = 0; k < order; k++){
     ksp[k].offset = roots[k+1];
     ksp[k].residue = residues ? residues[k+1] : 0.0;
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if FERM_ACTION == HISQ
     ksp[k].naik_term_epsilon = naik_term_epsilon;
     ksp[k].naik_term_epsilon_index = naik_term_epsilon_index;
 #endif
   }
 
-  /* Set fn links for the inversion (all the same here) */
-  fn = (imp_ferm_links_t **)malloc(order*sizeof(imp_ferm_links_t *));
-  if(fn == NULL){
-    printf("%s(%d): No room\n", myname, this_node);
-    terminate(1);
-  }
-  
-  for(k = 0; k < order; k++)
-    fn[k] = fn_const;
+  iters = ks_multicg_field( in, psim, ksp, order, qic, fn_const );
 
-  iters = ks_multicg_field( in, psim, ksp, order, qic, fn );
-
-  free(fn);
   free(ksp);
 
   *final_rsq_ptr = qic[0].final_rsq;

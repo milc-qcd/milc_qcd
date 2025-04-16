@@ -40,7 +40,9 @@ save_ksprops(int num_prop, int saveflag[], char savefile[][MAXFILENAME],
 {
   /* Save solutions if requested */
   for(int j = 0; j < num_prop; j++){
-    int status = save_ksprop_from_ksp_field( saveflag[j], savefile[j], "",
+    char recxml[] = "";
+    int status = save_ksprop_from_ksp_field( saveflag[j], savefile[j],
+					     recxml,
 					     my_ksqs[j], source[j], ksprop[j], 1);
     if(status != 0){
       node0_printf("Failed to write propagator\n");
@@ -94,20 +96,14 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 
   for(int j = 1; j < num_prop; j++){
     if(my_qic[j].resid != my_qic[0].resid){
-      if(set_type == MULTIMASS_SET){
-	node0_printf("WARNING: %s: inversion error parameters do not match within the set\n", myname);
-	node0_printf("WARNING: %s: will correct this in the refinement step.\n", myname);
-      } else {
-	node0_printf("ERROR: %s: found a nonmatching inversion error parameter in the set\n", myname);
+      if(set_type != SINGLES_SET){
+	node0_printf("ERROR: %s: inversion error parameters do not match within the set\n", myname);
 	terminate(1);
       }
     }
     if(my_ksp[j].naik_term_epsilon_index != my_ksp[0].naik_term_epsilon_index){
-      if(set_type == MULTIMASS_SET){
-	node0_printf("WARNING: %s: Naik parameters do not match within the set\n", myname);
-	node0_printf("WARNING: %s: will correct for this in the refinement step.\n", myname);
-      } else {
-	node0_printf("ERROR: %s: Naik epsilon  mismatch within set\n", myname);
+      if(set_type != SINGLES_SET){
+	node0_printf("ERROR: %s: Naik parameters do not match within the set\n", myname);
 	terminate(1);
       }
     }
@@ -121,6 +117,14 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
   for(int j = 0; j < num_prop; j++){
     if(my_qic[j].inv_type != inv_type){
       node0_printf("ERROR: %s: inversion type mismatch within set %d %d\n", myname,my_qic[j].inv_type,inv_type);
+      terminate(1);
+    }
+  }
+
+  /* All members of the set must have the same startflag */
+  for(int j = 0; j < num_prop; j++){
+    if(startflag[j] != startflag[0]){
+      node0_printf("ERROR: %s: start flag mismatch within set %d %d\n", myname,startflag[j],startflag[0]);
       terminate(1);
     }
   }
@@ -190,22 +194,6 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 #endif
   
   restore_fermion_links_from_site(fn_links, my_qic[0].prec);
-  imp_ferm_links_t **fn = get_fm_links(fn_links);
-  
-  /* Apply twisted boundary conditions and move KS phases, if
-     requested */
-  /* This operation applies the phase to the boundary FN links */
-  int n_naiks = fermion_links_get_n_naiks(fn_links);
-  for(int j = 0; j < n_naiks; j++){
-    set_boundary_twist_fn(fn[j], mybdry_phase, r0);
-    boundary_twist_fn(fn[j], ON);
-  }
-  
-  /* Copy pointers for fermion links, based on Naik epsilon indices */
-  imp_ferm_links_t **fn_multi = (imp_ferm_links_t **)
-    malloc(sizeof(imp_ferm_links_t *)*num_prop);
-  for(int j = 0; j < num_prop; j++)
-      fn_multi[j] = fn[my_ksp[j].naik_term_epsilon_index];
   
   /* Apply the momentum twist to the sources. */
   
@@ -271,15 +259,18 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 	 always use CGTYPE if we are startin from an initial guess
       */
 
-  int it = inv_type;
-  int st = set_type;
+  enum inv_type it = inv_type;
+  enum set_type st = set_type;
   if(have_initial_guess){
     if(set_type != SINGLES_SET || my_qic[0].inv_type == CGTYPE)
       node0_printf("Because an initial guess is given, treating as SINGLES and CG\n");
     set_type = SINGLES_SET;
-    my_qic[0].inv_type = CGTYPE;
+    for(int j = 0; j < num_prop; j++)
+      my_qic[j].inv_type = CGTYPE;
   }
     
+  imp_ferm_links_t *fn;
+  
   switch(set_type){
 
   case(SINGLES_SET):
@@ -289,32 +280,55 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
       int j = k % num_prop;
       node0_printf("%s: color index = %d; mass = %f\n", myname,
 		   j/num_prop, my_ksp[j].mass);
-      mat_invert_field(src[k], dst[k], my_qic+j, my_ksp[j].mass, fn_multi[j]);
+      fn = get_fm_links(fn_links, my_ksp[j].naik_term_epsilon_index);
+      /* Apply twisted boundary conditions and move KS phases, if
+	 requested */
+      /* This operation applies the phase to the boundary FN links */
+      set_boundary_twist_fn(fn, mybdry_phase, r0);
+      if(fn->phase->twist_in == OFF)
+	boundary_twist_fn(fn, ON);
+      mat_invert_field(src[k], dst[k], my_qic+j, my_ksp[j].mass, fn);
+      destroy_fn_links(fn);
     }
     break;
     
   case(MULTIMASS_SET):
     
+    fn = get_fm_links(fn_links, my_ksp[0].naik_term_epsilon_index);
+    set_boundary_twist_fn(fn, mybdry_phase, r0);
+    if(fn->phase->twist_in == OFF)
+      boundary_twist_fn(fn, ON);
     for(int color = 0; color < nc; color++){
       node0_printf("%s: color index = %d; all masses\n", myname, color);
       mat_invert_multi(src[num_prop*color], &dst[num_prop*color], my_ksp,
-		       num_prop, my_qic, fn_multi);
+		       num_prop, my_qic, fn);
     }
+    destroy_fn_links(fn);
     break;
     
   case(MULTISOURCE_SET):
 
+    fn = get_fm_links(fn_links, my_ksp[0].naik_term_epsilon_index);
+    set_boundary_twist_fn(fn, mybdry_phase, r0); 
+    if(fn->phase->twist_in == OFF)
+      boundary_twist_fn(fn, ON);
     for(int color = 0; color < nc; color++){
       node0_printf("%s: color index = %d; mass = %f\n", myname, color, my_ksp[0].mass);
       mat_invert_block(&src[num_prop*color], &dst[num_prop*color], my_ksp[0].mass,
-		       num_prop, my_qic, fn_multi[0]);
+		       num_prop, my_qic, fn);
     }
+    destroy_fn_links(fn);
     break;
 
   case(MULTICOLORSOURCE_SET):
 
+    fn = get_fm_links(fn_links, my_ksp[0].naik_term_epsilon_index);
+    set_boundary_twist_fn(fn, mybdry_phase, r0);
+    if(fn->phase->twist_in == OFF)
+      boundary_twist_fn(fn, ON);
     node0_printf("%s: all colors; mass = %f\n", myname, my_ksp[0].mass);
-    mat_invert_block(src, dst, my_ksp[0].mass, num_src, my_qic, fn_multi[0]);
+    mat_invert_block(src, dst, my_ksp[0].mass, num_src, my_qic, fn);
+    destroy_fn_links(fn);
     break;
 
     default:
@@ -348,12 +362,6 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
   /* If we are reusing the input propagators and not recomputing, we are done */
   save_ksprops(num_prop, saveflag, savefile, my_ksqs, source, ksprop);
 
-  /* Unapply twisted boundary conditions on the fermion links and
-     restore conventional KS phases and antiperiodic BC, if
-     changed. */
-  for(int j = 0; j < n_naiks; j++)
-    boundary_twist_fn(fn[j], OFF);
-
 #ifdef U1_FIELD
   /* Unapply the U(1) field phases */
   u1phase_off();
@@ -363,7 +371,6 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
   /* Clean up */
   free(dst);
   free(src);
-  if(fn_multi != NULL)free(fn_multi);
   
   return tot_iters;
 }
@@ -387,10 +394,11 @@ void dump_ksprop_from_ksp_field(int saveflag, char savefile[],
 
   /* Set up an empty source */
   ks_prop_field *dummy_src = create_ksp_field(ksprop->nc);
+  char recxml[] = "";
 
   init_qs(&dummy_ksqs);
   ksqstmp = dummy_ksqs;   /* For ksprop_info.c */
-  save_ksprop_from_ksp_field(saveflag, savefile, "", &dummy_ksqs, dummy_src, ksprop, 1);
+  save_ksprop_from_ksp_field(saveflag, savefile, recxml, &dummy_ksqs, dummy_src, ksprop, 1);
   clear_qs(&dummy_ksqs); /* Free any allocations */
 
   destroy_ksp_field(dummy_src);
