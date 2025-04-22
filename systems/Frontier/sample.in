@@ -92,7 +92,7 @@ forget_ksprop
 # propagator 1
 
 mass 0.007
-naik_term_epsilon -0.1
+naik_term_epsilon 0
 error_for_propagator 1e-8
 rel_error_for_propagator 0
 
@@ -128,7 +128,7 @@ forget_ksprop
 # propagator 3
 
 mass 0.007
-naik_term_epsilon -0.1
+naik_term_epsilon 0
 error_for_propagator 1e-8
 rel_error_for_propagator 0
 
