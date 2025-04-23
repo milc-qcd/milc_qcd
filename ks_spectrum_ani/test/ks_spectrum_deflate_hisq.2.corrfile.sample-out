@@ -1,0 +1,150 @@
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Sat Feb 27 23:08:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        point
+antiquark_source_subset:      full
+antiquark_source_origin:      [ 0, 0, 0, 0 ]
+antiquark_source_label:       d
+antiquark_sink_label:         d
+antiquark_mass:               "0.01"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            point
+quark_source_subset:          full
+quark_source_origin:          [ 0, 0, 0, 0 ]
+quark_source_label:           d
+quark_sink_label:             d
+quark_mass:                   "0.01"
+quark_epsilon:                0
+...
+---
+correlator:                   POINT_PION
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               POINT_PION_d_d_d_d_m0.01_m0.01_p000
+...
+0	2.793146e-01	0.000000e+00
+1	6.301089e-02	0.000000e+00
+2	1.830683e-02	0.000000e+00
+3	1.090211e-02	0.000000e+00
+4	3.832617e-03	0.000000e+00
+5	1.024369e-02	0.000000e+00
+6	1.623110e-02	0.000000e+00
+7	6.151892e-02	0.000000e+00
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Sat Feb 27 23:08:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        point
+antiquark_source_subset:      full
+antiquark_source_origin:      [ 0, 0, 0, 0 ]
+antiquark_source_label:       d
+antiquark_sink_label:         d
+antiquark_mass:               "0.01"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            point/spin_taste
+quark_source_subset:          full
+quark_source_origin:          [ 0, 0, 0, 0 ]
+quark_source_label:           p
+quark_source_ops:             [
+{ operation:                  spin_taste,
+  spin_taste:                 rhox
+}
+]
+quark_sink_label:             d
+quark_mass:                   "0.01"
+quark_epsilon:                0
+...
+---
+correlator:                   RHOX
+momentum:                     p000
+spin_taste_sink:              rhox
+correlator_key:               RHOX_d_p_d_d_m0.01_m0.01_p000
+...
+0	7.991677e-02	0.000000e+00
+1	4.503465e-02	0.000000e+00
+2	3.847014e-03	0.000000e+00
+3	5.851660e-03	0.000000e+00
+4	5.985863e-04	0.000000e+00
+5	5.558455e-03	0.000000e+00
+6	3.143286e-03	0.000000e+00
+7	4.436283e-02	0.000000e+00
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Sat Feb 27 23:08:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        point
+antiquark_source_subset:      full
+antiquark_source_origin:      [ 0, 0, 0, 0 ]
+antiquark_source_label:       d
+antiquark_sink_label:         d
+antiquark_mass:               "0.01"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            point
+quark_source_subset:          full
+quark_source_origin:          [ 0, 0, 0, 0 ]
+quark_source_label:           d
+quark_sink_label:             d
+quark_mass:                   "0.01"
+quark_epsilon:                0
+...
+---
+correlator:                   POINT_PION
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               POINT_PION_d_d_d_d_m0.01_m0.01_p000
+...
+0	2.793146e-01	0.000000e+00
+1	6.301089e-02	0.000000e+00
+2	1.830683e-02	0.000000e+00
+3	1.090211e-02	0.000000e+00
+4	3.832617e-03	0.000000e+00
+5	1.024369e-02	0.000000e+00
+6	1.623110e-02	0.000000e+00
+7	6.151892e-02	0.000000e+00
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Sat Feb 27 23:08:02 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        point
+antiquark_source_subset:      full
+antiquark_source_origin:      [ 0, 0, 0, 0 ]
+antiquark_source_label:       d
+antiquark_sink_label:         d
+antiquark_mass:               "0.01"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            point/spin_taste
+quark_source_subset:          full
+quark_source_origin:          [ 0, 0, 0, 0 ]
+quark_source_label:           p
+quark_source_ops:             [
+{ operation:                  spin_taste,
+  spin_taste:                 rhox
+}
+]
+quark_sink_label:             d
+quark_mass:                   "0.01"
+quark_epsilon:                0
+...
+---
+correlator:                   RHOX
+momentum:                     p000
+spin_taste_sink:              rhox
+correlator_key:               RHOX_d_p_d_d_m0.01_m0.01_p000
+...
+0	7.991677e-02	0.000000e+00
+1	4.503465e-02	0.000000e+00
+2	3.847014e-03	0.000000e+00
+3	5.851660e-03	0.000000e+00
+4	5.985862e-04	0.000000e+00
+5	5.558455e-03	0.000000e+00
+6	3.143286e-03	0.000000e+00
+7	4.436283e-02	0.000000e+00

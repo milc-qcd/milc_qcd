@@ -1,0 +1,241 @@
+The following changes enable anisotropic HISQ and one-link staggered
+spectrum measurements.
+
+include/fn_links.h
+include/generic.h 
+include/ks_action_paths.h
+
+generic/generic_includes.h 
+generic/io_helpers.c 
+
+generic_ks/fermion_links_fn_load_milc.c
+generic_ks/fermion_links_hisq_load.c
+generic_ks/fn_links_milc.c
+generic_ks/ks_action_paths.c
+generic_ks/ks_action_paths_hisq.c
+
+ks_spectrum_ani/Make_template
+ks_spectrum_ani/lattice.h 
+ks_spectrum_ani/params.h 
+ks_spectrum_ani/setup.c 
+
+###################################################################
+In include/fn_links.h : Declare function:
+
+#ifdef ANISOTROPY
+void scalar_mult_fn_dir(fn_links_t *fnsrc, Real s, int dir, fn_links_t *fndst);
+#endif
+
+###################################################################
+In include/generic.h : Declare function:
+
+int dirchar2index (char buf, int *status);
+
+###################################################################
+In include/ks_action_paths.h : Modify structs ks_action_paths and ks_action_paths_hisq
+by adding:
+
+#ifdef ANISOTROPY
+  int ani_dir;
+  Real ani_xiq;
+#  ifdef ONEDIM_ANISO_TEST
+  Real iso_xiq;
+#  endif
+#endif
+
+###################################################################
+In generic/generic_includes.h : Add:
+
+#include <ctype.h>
+
+###################################################################
+In generic/io_helpers.c : Define function:
+
+int dirchar2index (char buf, int *status) {
+  short mydir;
+
+  if ( buf >= 'A' && buf <= 'Z' )
+    mydir = tolower(buf);
+  else
+    mydir = buf;
+  switch(mydir) {
+    case XUP:
+    case '0':
+    case 'x': mydir = XUP; break;
+    case YUP:
+    case '1':
+    case 'y': mydir = YUP; break;
+    case ZUP:
+    case '2':
+    case 'z': mydir = ZUP; break;
+    case TUP:
+    case '3':
+    case 't': mydir = TUP; break;
+    default:
+      node0_printf("Expecting direction \
+as x,y,z,t, X,Y,Z,T, or 0,1,2,3;  instead %c\n", mydir);
+     (*status)++;
+  }
+  return mydir;
+}
+
+###################################################################
+In generic_ks/fermion_links_fn_load_milc.c : In function load_fn_links_cpu() add:
+
+#ifdef ANISOTROPY
+  scalar_mult_fn_dir( fn, ap->ani_xiq, ap->ani_dir, fn );
+  final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+  { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn, ap->iso_xiq, dir, fn ); final_flop +=108.*volume/numnodes(); }
+#endif
+#endif
+
+###################################################################
+In generic_ks/fermion_links_hisq_load.c : In function load_hisq_fn_links()
+after each load_X_from_W call outside the if(want_deps) and outside 3rd path table add:
+
+#ifdef ANISOTROPY
+    scalar_mult_fn_dir( fn0, ap->ani_xiq, ap->ani_dir, fn0 );
+    final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+    { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn0, ap->iso_xiq, dir, fn0 ); final_flop += 108.*volume/numnodes(); }
+#endif
+#endif
+
+but inside if(want_deps) and for 3rd path table add:
+
+#ifdef ANISOTROPY
+      scalar_mult_fn_dir( fn_deps, ap->ani_xiq, ap->ani_dir, fn_deps );
+      final_flop += 36.*volume/numnodes();
+#ifdef ONEDIM_ANISO_TEST
+    { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn_deps, ap->iso_xiq, dir, fn_deps ); final_flop += 108.*volume/numnodes(); }
+#endif
+#endif
+
+###################################################################
+In generic_ks/fn_links_milc.c : Define function:
+
+#ifdef ANISOTROPY
+/* Multipy only one component by scalar: fndst = fnsrc * s.  OK to do this in place. */
+void
+scalar_mult_fn_dir(fn_links_t *fn_src, Real s, int dir, fn_links_t *fn_dst){
+  int i;
+
+  su3_matrix *fatsrc = get_fatlinks(fn_src);
+  su3_matrix *lngsrc = get_lnglinks(fn_src);
+  su3_matrix *fatbacksrc = get_fatbacklinks(fn_src);
+  su3_matrix *lngbacksrc = get_lngbacklinks(fn_src);
+
+  su3_matrix *fatdst = get_fatlinks(fn_dst);
+  su3_matrix *lngdst = get_lnglinks(fn_dst);
+  su3_matrix *fatbackdst = get_fatbacklinks(fn_dst);
+  su3_matrix *lngbackdst = get_lngbacklinks(fn_dst);
+
+  FORALLFIELDSITES_OMP(i,default(shared)) {
+      scalar_mult_su3_matrix( fatsrc + 4*i + dir, s, fatdst + 4*i + dir );
+      scalar_mult_su3_matrix( lngsrc + 4*i + dir, s, lngdst + 4*i + dir );
+      if(fatbacksrc != NULL && fatbackdst != NULL)
+        scalar_mult_su3_matrix( fatbacksrc + 4*i + dir, s, fatbackdst + 4*i + dir );
+      if(lngbacksrc != NULL && lngbackdst != NULL)
+        scalar_mult_su3_matrix( lngbacksrc + 4*i + dir, s, lngbackdst + 4*i + dir );
+  }
+  END_LOOP_OMP;
+}
+#endif
+
+###################################################################
+In generic_ks/ks_action_paths.c : Add to function make_path_table() :
+
+#ifdef ANISOTROPY
+  char ani_char[]="xyzt";
+  node0_printf("Anisotropic action with bare quark anisotropy %.6f in the %c-direction\n", ani_xiq, ani_char[ani_dir]);
+  ap->ani_dir = ani_dir; 
+  ap->ani_xiq = ani_xiq; 
+#  ifdef ONEDIM_ANISO_TEST
+  node0_printf("using three isotropic directions with factor %.6f for debugging\n",iso_xiq);
+  ap->iso_xiq = iso_xiq; 
+#  endif
+#endif
+
+###################################################################
+In generic_ks/ks_action_paths_hisq.c : Add to function load_act_path_coeff_hisq() :
+
+#ifdef ANISOTROPY
+  char ani_char[]="xyzt";
+  node0_printf("Anisotropic action with bare quark anisotropy %.6f in the %c-direction\n", ani_xiq, ani_char[ani_dir]);
+  ap->ani_dir = ani_dir; 
+  ap->ani_xiq = ani_xiq; 
+#  ifdef ONEDIM_ANISO_TEST
+  node0_printf("using three isotropic directions with factor %.6f for debugging\n",iso_xiq);
+  ap->iso_xiq = iso_xiq; 
+#  endif
+#endif
+
+###################################################################
+In ks_spectrum_ani/Make_template : Add targets:
+
+# Anisotropic targets
+
+ks_spectrum_ani_naive::
+        ${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        "QUARK = onelink_action.h" \
+        "DEFINES= -DFN -DHAVE_KS -UD_FN_GATHER13 \
+        -DANISOTROPY" \
+        "EXTRA_OBJECTS += ${FN_OBJECTS}"
+
+ks_spectrum_ani_hisq::
+        ${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+        ${HISQ_OPTIONS} "DEFINES += \
+        -DANISOTROPY"
+
+###################################################################
+In ks_spectrum_ani/lattice.h : Add:
+
+#ifdef ANISOTROPY
+EXTERN short ani_dir; /* direction of anisotropy */
+EXTERN Real ani_xiq; /* bare quark anisotropy */
+#  ifdef ONEDIM_ANISO_TEST
+EXTERN Real iso_xiq; /* bare quark isotropic link factor for debugging */
+#  endif
+#endif
+
+###################################################################
+In ks_spectrum_ani/params.h : Add:
+
+#ifdef ANISOTROPY
+  short ani_dir; /* direction of anisotropy */
+  Real ani_xiq; /* bare quark anisotropy */
+#  ifdef ONEDIM_ANISO_TEST
+  Real iso_xiq; /* bare quark isotropic link factor for debugging */
+#  endif
+#endif
+
+###################################################################
+In ks_spectrum_ani/setup.c : Add:
+
+#ifdef ANISOTROPY
+    /* Direction of anisotropy */
+    IF_OK status += get_s(stdin, prompt,"ani_dir",savebuf);
+    IF_OK param.ani_dir = dirchar2index( savebuf[0], &status);
+    IF_OK status += ( param.ani_dir*param.ani_dir > TUP*TUP );
+    /* Bare fermion anisotropy */
+    IF_OK status += get_f(stdin, prompt, "ani_xiq", &param.ani_xiq);
+#  ifdef ONEDIM_ANISO_TEST
+    /* bare quark isotropic link factor for debugging */
+    IF_OK status += get_f(stdin, prompt, "iso_xiq", &param.iso_xiq);
+#  endif
+#endif
+
+Also add:
+
+#ifdef ANISOTROPY
+    /* Direction of anisotropy */
+    ani_dir = param.ani_dir;
+    /* Bare fermion anisotropy */
+    ani_xiq = param.ani_xiq;
+#ifdef ONEDIM_ANISO_TEST
+    /* bare quark isotropic link factor for debugging */
+    iso_xiq = param.iso_xiq;
+#endif
+#endif
+

@@ -1757,7 +1757,7 @@ make_gather(
 */
 msg_tag *
 declare_strided_gather(
-  void *field,	        /* source buffer aligned to desired field */
+  const void * const field,	        /* source buffer aligned to desired field */
   size_t stride,        /* bytes between fields in source buffer */
   size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into

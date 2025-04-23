@@ -1,0 +1,218 @@
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 19:51:39 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        even_and_odd_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_label:       q
+antiquark_sink_label:         d
+antiquark_mass:               "0.03"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            even_and_odd_wall/FUNNYWALL1
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_label:           f1
+quark_source_ops:             [
+{ operation:                  FUNNYWALL1
+}
+]
+quark_sink_label:             d
+quark_mass:                   "0.03"
+quark_epsilon:                0
+...
+---
+correlator:                   PION_5
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               PION_5_q_f1_d_d_m0.03_m0.03_p000
+...
+0	1.316610e+00	5.512203e-03
+1	1.171301e+00	-6.369183e-03
+2	4.845694e-01	2.525133e-03
+3	7.997732e-01	-4.067099e-03
+4	2.427111e-01	-1.475127e-03
+5	7.645992e-01	-5.105921e-03
+6	4.056551e-01	2.347221e-03
+7	1.109866e+00	2.504928e-03
+---
+correlator:                   PION_i5
+momentum:                     p000
+spin_taste_sink:              pioni5
+correlator_key:               PION_i5_q_f1_d_d_m0.03_m0.03_p000
+...
+0	1.059270e+00	3.416778e-03
+1	9.335615e-01	3.342149e-03
+2	3.797071e-01	-7.003767e-04
+3	6.545858e-01	-1.903878e-03
+4	1.808298e-01	1.262389e-05
+5	6.318331e-01	-7.219660e-03
+6	3.168188e-01	8.721936e-04
+7	9.168317e-01	-5.772736e-03
+---
+correlator:                   PION_i
+momentum:                     p000
+spin_taste_sink:              pioni
+correlator_key:               PION_i_q_f1_d_d_m0.03_m0.03_p000
+...
+0	-6.038766e-01	-1.139410e-02
+1	-5.862855e-01	-6.146384e-03
+2	-2.091272e-01	-8.866483e-03
+3	-4.038768e-01	2.661932e-02
+4	-9.886894e-02	1.909099e-02
+5	-3.879331e-01	4.169404e-02
+6	-1.670633e-01	3.143711e-02
+7	-5.346274e-01	2.398177e-02
+---
+correlator:                   PION_s
+momentum:                     p000
+spin_taste_sink:              pions
+correlator_key:               PION_s_q_f1_d_d_m0.03_m0.03_p000
+...
+0	4.674040e-01	5.320310e-03
+1	4.783697e-01	8.980022e-03
+2	1.571726e-01	6.562639e-03
+3	3.282860e-01	-2.351234e-02
+4	7.149045e-02	-1.545236e-02
+5	3.030077e-01	-3.770003e-02
+6	1.275465e-01	-2.036861e-02
+7	4.150442e-01	-2.320013e-02
+---
+correlator:                   RHO_i
+momentum:                     p000
+spin_taste_sink:              rhoi
+correlator_key:               RHO_i_q_f1_d_d_m0.03_m0.03_p000
+...
+0	3.005906e-01	2.040787e-02
+1	8.387887e-01	7.467546e-03
+2	1.011874e-01	7.139898e-03
+3	5.111306e-01	2.041968e-02
+4	5.170266e-02	8.051974e-03
+5	5.297460e-01	3.442067e-02
+6	6.835882e-02	7.775957e-03
+7	8.311768e-01	4.833482e-03
+---
+correlator:                   RHO_s
+momentum:                     p000
+spin_taste_sink:              rhois
+correlator_key:               RHO_s_q_f1_d_d_m0.03_m0.03_p000
+...
+0	2.465907e-01	9.360708e-03
+1	7.091136e-01	1.194935e-02
+2	8.279632e-02	2.385193e-03
+3	4.365540e-01	1.772108e-02
+4	4.198585e-02	5.738576e-03
+5	4.489703e-01	2.979841e-02
+6	5.492429e-02	3.564733e-03
+7	7.035084e-01	-4.504391e-03
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Sep  6 19:51:39 2016 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        even_and_odd_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_label:       q
+antiquark_sink_label:         d
+antiquark_mass:               "0.03"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            even_and_odd_wall/FUNNYWALL2
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_label:           f2
+quark_source_ops:             [
+{ operation:                  FUNNYWALL2
+}
+]
+quark_sink_label:             d
+quark_mass:                   "0.03"
+quark_epsilon:                0
+...
+---
+correlator:                   PION_05
+momentum:                     p000
+spin_taste_sink:              pion05
+correlator_key:               PION_05_q_f2_d_d_m0.03_m0.03_p000
+...
+0	-1.266289e+00	3.163553e-02
+1	-1.157832e+00	-4.105650e-03
+2	-4.593431e-01	1.196386e-02
+3	-7.924312e-01	1.836029e-03
+4	-2.336861e-01	1.244092e-02
+5	-7.601483e-01	1.323883e-02
+6	-3.865724e-01	2.068215e-02
+7	-1.103625e+00	2.377427e-02
+---
+correlator:                   PION_ij
+momentum:                     p000
+spin_taste_sink:              pionij
+correlator_key:               PION_ij_q_f2_d_d_m0.03_m0.03_p000
+...
+0	-1.017538e+00	2.556484e-02
+1	-9.229637e-01	-1.180233e-02
+2	-3.581126e-01	1.269658e-02
+3	-6.492440e-01	-4.169146e-04
+4	-1.743124e-01	8.155297e-03
+5	-6.279091e-01	1.293075e-02
+6	-3.024219e-01	1.640242e-02
+7	-9.100829e-01	2.650419e-02
+---
+correlator:                   PION_i0
+momentum:                     p000
+spin_taste_sink:              pioni0
+correlator_key:               PION_i0_q_f2_d_d_m0.03_m0.03_p000
+...
+0	6.357854e-01	4.274654e-02
+1	-5.935071e-01	-1.765646e-03
+2	2.281766e-01	1.901060e-02
+3	-4.069086e-01	2.742430e-02
+4	1.021439e-01	-9.922195e-03
+5	-3.835374e-01	4.002309e-02
+6	1.748778e-01	-1.380903e-02
+7	-5.376248e-01	1.092708e-02
+---
+correlator:                   PION_0
+momentum:                     p000
+spin_taste_sink:              pion0
+correlator_key:               PION_0_q_f2_d_d_m0.03_m0.03_p000
+...
+0	-4.929443e-01	-3.024916e-02
+1	4.832237e-01	4.549585e-03
+2	-1.713019e-01	-1.383975e-02
+3	3.300334e-01	-2.422998e-02
+4	-7.400076e-02	7.694611e-03
+5	2.987858e-01	-3.595321e-02
+6	-1.344816e-01	4.987267e-03
+7	4.157104e-01	-1.286159e-02
+---
+correlator:                   RHO_i0
+momentum:                     p000
+spin_taste_sink:              rhoi0
+correlator_key:               RHO_i0_q_f2_d_d_m0.03_m0.03_p000
+...
+0	-2.613248e-01	-1.532500e-03
+1	8.386983e-01	1.771200e-02
+2	-8.631795e-02	2.030263e-03
+3	5.078696e-01	2.282630e-02
+4	-4.489359e-02	-5.696505e-03
+5	5.263604e-01	3.008954e-02
+6	-5.733519e-02	-5.146708e-04
+7	8.285040e-01	-4.098325e-03
+---
+correlator:                   RHO_0
+momentum:                     p000
+spin_taste_sink:              rho0
+correlator_key:               RHO_0_q_f2_d_d_m0.03_m0.03_p000
+...
+0	-2.132034e-01	4.894554e-03
+1	7.075556e-01	1.919525e-02
+2	-6.793768e-02	5.701362e-03
+3	4.339449e-01	2.008349e-02
+4	-3.597128e-02	-4.388421e-03
+5	4.454780e-01	2.657917e-02
+6	-4.572673e-02	1.764672e-03
+7	7.004941e-01	-1.191175e-02

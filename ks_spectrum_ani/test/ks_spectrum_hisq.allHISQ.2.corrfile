@@ -1,0 +1,2460 @@
+---
+JobID:                        2767399
+date:                         "Mon Dec 30 21:30:56 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.000569"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   P5-P5
+momentum:                     p000-fine
+spin_taste_sink:              G5-G5
+correlator_key:               P5-P5_RW_RW_d_d_m0.000569_m0.000569_p000-fine
+...
+0	4.405156e-05	0.000000e+00
+1	6.819838e-06	0.000000e+00
+2	1.386743e-06	0.000000e+00
+3	3.495211e-07	0.000000e+00
+4	4.391383e-08	0.000000e+00
+5	1.487266e-07	0.000000e+00
+6	7.979938e-09	0.000000e+00
+7	1.421140e-07	0.000000e+00
+8	7.088968e-09	0.000000e+00
+9	1.420680e-07	0.000000e+00
+10	7.249881e-09	0.000000e+00
+11	1.419622e-07	0.000000e+00
+12	7.313229e-09	0.000000e+00
+13	1.423175e-07	0.000000e+00
+14	7.519863e-09	0.000000e+00
+15	1.422927e-07	0.000000e+00
+16	7.505188e-09	0.000000e+00
+17	1.422955e-07	0.000000e+00
+18	7.398374e-09	0.000000e+00
+19	1.418536e-07	0.000000e+00
+20	6.878088e-09	0.000000e+00
+21	1.418512e-07	0.000000e+00
+22	7.003473e-09	0.000000e+00
+23	1.416837e-07	0.000000e+00
+24	6.728510e-09	0.000000e+00
+25	1.417737e-07	0.000000e+00
+26	7.994807e-09	0.000000e+00
+27	1.490355e-07	0.000000e+00
+28	4.514499e-08	0.000000e+00
+29	3.563864e-07	0.000000e+00
+30	1.410748e-06	0.000000e+00
+31	6.846835e-06	0.000000e+00
+---
+JobID:                        2767399
+date:                         "Mon Dec 30 21:30:56 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.000569"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   P5-P5
+momentum:                     p100-fine
+spin_taste_sink:              G5-G5
+correlator_key:               P5-P5_RW_RW_d_d_m0.000569_m0.000569_p100-fine
+...
+0	3.783073e-05	-4.773228e-09
+1	6.681454e-06	2.196531e-08
+2	9.974248e-07	-1.778544e-09
+3	2.423833e-07	2.671701e-09
+4	1.637802e-08	-1.010922e-10
+5	2.313106e-08	8.077481e-10
+6	4.929737e-10	-3.821622e-10
+7	4.794934e-09	4.846584e-11
+8	1.354740e-10	-9.884827e-11
+9	1.319721e-09	-2.864825e-10
+10	-1.179984e-10	5.347114e-11
+11	2.839914e-10	3.500376e-10
+12	6.677108e-12	1.267698e-10
+13	8.220413e-10	1.945037e-10
+14	-1.643136e-10	-4.069727e-11
+15	3.959407e-10	-3.946605e-10
+16	-7.569762e-11	-3.411092e-10
+17	4.431475e-10	-1.471026e-10
+18	-9.187808e-11	1.417737e-11
+19	5.085820e-11	-1.596998e-10
+20	-2.448164e-12	4.208804e-11
+21	4.974140e-10	1.103110e-10
+22	2.341194e-10	1.378954e-10
+23	5.748276e-10	1.992015e-10
+24	-8.508431e-11	2.113718e-11
+25	4.238380e-09	9.950578e-11
+26	5.826415e-10	3.010133e-10
+27	2.489345e-08	-3.745293e-10
+28	1.767746e-08	3.852750e-10
+29	2.549449e-07	-2.848817e-09
+30	1.016147e-06	2.880411e-09
+31	6.705393e-06	-2.525985e-08
+---
+JobID:                        2767399
+date:                         "Mon Dec 30 21:30:56 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   P5-P5
+momentum:                     p000-fine
+spin_taste_sink:              G5-G5
+correlator_key:               P5-P5_RW_RW_d_d_m0.164_m0.000569_p000-fine
+...
+0	4.345882e-05	-6.500583e-10
+1	6.719400e-06	-3.583430e-09
+2	1.331993e-06	4.903598e-10
+3	2.857944e-07	-2.842859e-09
+4	3.791584e-08	2.010824e-11
+5	6.888523e-08	-2.057012e-09
+6	3.726912e-09	-3.619970e-11
+7	4.599862e-08	-1.415510e-09
+8	1.890800e-09	-3.329170e-11
+9	3.433062e-08	-9.548043e-10
+10	1.400897e-09	-3.414161e-11
+11	2.665880e-08	-6.006044e-10
+12	1.102566e-09	-1.229530e-11
+13	2.206091e-08	-3.162083e-10
+14	9.459443e-10	-1.438543e-11
+15	1.984341e-08	-7.992991e-11
+16	8.846194e-10	-3.369342e-11
+17	1.987139e-08	1.370120e-10
+18	9.431367e-10	-5.254632e-11
+19	2.206334e-08	3.591349e-10
+20	1.055985e-09	-5.410563e-11
+21	2.679534e-08	6.184989e-10
+22	1.414962e-09	-4.783488e-11
+23	3.451709e-08	9.423345e-10
+24	1.922145e-09	-2.011560e-11
+25	4.631455e-08	1.334400e-09
+26	3.880955e-09	4.478830e-11
+27	6.971294e-08	1.951965e-09
+28	3.938708e-08	1.601418e-10
+29	2.930164e-07	2.957661e-09
+30	1.355013e-06	-1.864290e-10
+31	6.745972e-06	3.412643e-09
+---
+JobID:                        2767399
+date:                         "Mon Dec 30 21:30:56 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   P5-P5
+momentum:                     p100-fine
+spin_taste_sink:              G5-G5
+correlator_key:               P5-P5_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0	3.736203e-05	-3.958878e-09
+1	6.598978e-06	1.843543e-08
+2	9.642108e-07	-1.097555e-09
+3	2.287112e-07	1.379374e-09
+4	1.535430e-08	-1.319175e-10
+5	2.019353e-08	-8.221891e-11
+6	4.393460e-10	-2.734514e-10
+7	3.639135e-09	-3.349792e-10
+8	4.256839e-11	-6.409594e-11
+9	6.790806e-10	-1.815537e-10
+10	-1.968349e-11	-1.113580e-13
+11	8.627235e-11	3.786848e-11
+12	-9.038958e-12	7.742595e-13
+13	8.662303e-11	3.354964e-11
+14	-2.838602e-11	-1.601954e-11
+15	2.751587e-11	-4.722747e-11
+16	-1.689970e-11	-4.285975e-11
+17	4.273822e-11	1.574404e-12
+18	-1.053990e-11	1.364217e-11
+19	2.118812e-12	1.055589e-11
+20	4.429597e-13	4.832629e-13
+21	1.922171e-10	2.511547e-11
+22	6.840633e-11	1.220738e-11
+23	6.760836e-10	-7.312381e-12
+24	2.578284e-11	2.050272e-11
+25	3.811495e-09	-1.240859e-10
+26	5.531144e-10	2.072201e-10
+27	2.191217e-08	-1.583551e-10
+28	1.618712e-08	5.103519e-10
+29	2.403526e-07	-1.615851e-09
+30	9.815300e-07	2.719052e-09
+31	6.621566e-06	-2.251596e-08
+---
+JobID:                        2767399
+date:                         "Mon Dec 30 21:30:56 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   P5-P5
+momentum:                     p000-fine
+spin_taste_sink:              G5-G5
+correlator_key:               P5-P5_RW_RW_d_d_m0.1827_m0.000569_p000-fine
+...
+0	4.331868e-05	-8.789731e-10
+1	6.698310e-06	-3.991173e-09
+2	1.319495e-06	5.456988e-10
+3	2.788405e-07	-3.057756e-09
+4	3.698896e-08	4.692417e-11
+5	6.271772e-08	-2.133995e-09
+6	3.404635e-09	-1.453360e-11
+7	3.980284e-08	-1.426533e-09
+8	1.600080e-09	-1.751332e-11
+9	2.838167e-08	-9.377013e-10
+10	1.127445e-09	-2.137693e-11
+11	2.106948e-08	-5.790765e-10
+12	8.479799e-10	-4.442729e-12
+13	1.676317e-08	-3.038359e-10
+14	7.014100e-10	-8.639181e-12
+15	1.471947e-08	-8.105451e-11
+16	6.469267e-10	-2.635935e-11
+17	1.474438e-08	1.223946e-10
+18	7.000834e-10	-4.370066e-11
+19	1.677621e-08	3.331856e-10
+20	8.125342e-10	-4.689032e-11
+21	2.119639e-08	5.857253e-10
+22	1.139580e-09	-4.451662e-11
+23	2.856283e-08	9.149036e-10
+24	1.628044e-09	-2.369941e-11
+25	4.011218e-08	1.336464e-09
+26	3.540074e-09	3.411660e-11
+27	6.352758e-08	2.023958e-09
+28	3.843062e-08	1.456000e-10
+29	2.859931e-07	3.188341e-09
+30	1.342235e-06	-2.707734e-10
+31	6.724698e-06	3.932497e-09
+---
+JobID:                        2767399
+date:                         "Mon Dec 30 21:30:56 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   P5-P5
+momentum:                     p100-fine
+spin_taste_sink:              G5-G5
+correlator_key:               P5-P5_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0	3.725136e-05	-3.888358e-09
+1	6.580477e-06	1.800288e-08
+2	9.565948e-07	-1.017954e-09
+3	2.262302e-07	1.249729e-09
+4	1.511623e-08	-1.260911e-10
+5	1.973160e-08	-1.293968e-10
+6	4.290836e-10	-2.589905e-10
+7	3.506217e-09	-3.376879e-10
+8	3.778991e-11	-6.178109e-11
+9	6.385891e-10	-1.685076e-10
+10	-1.520275e-11	-1.564329e-12
+11	7.952244e-11	2.743913e-11
+12	-7.354107e-12	-5.803049e-13
+13	6.232108e-11	2.826295e-11
+14	-2.166029e-11	-1.254355e-11
+15	1.635582e-11	-3.297249e-11
+16	-1.280197e-11	-3.161565e-11
+17	2.955355e-11	4.051913e-12
+18	-7.543469e-12	1.068844e-11
+19	1.948734e-12	1.296808e-11
+20	7.638965e-13	2.177103e-13
+21	1.733585e-10	2.140469e-11
+22	5.778063e-11	8.698533e-12
+23	6.616018e-10	-1.420370e-11
+24	3.069606e-11	1.954465e-11
+25	3.709155e-09	-1.308952e-10
+26	5.425259e-10	1.976736e-10
+27	2.142275e-08	-1.392725e-10
+28	1.591472e-08	5.127706e-10
+29	2.377090e-07	-1.506597e-09
+30	9.736586e-07	2.668017e-09
+31	6.602725e-06	-2.210972e-08
+---
+JobID:                        2767399
+date:                         "Mon Dec 30 21:30:56 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.164
+momentum:                     p000-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p000-fine
+...
+0	4.345882e-05	-6.500583e-10
+1	-6.719400e-06	3.583430e-09
+2	1.331993e-06	4.903598e-10
+3	-2.857944e-07	2.842859e-09
+4	3.791584e-08	2.010824e-11
+5	-6.888523e-08	2.057012e-09
+6	3.726912e-09	-3.619970e-11
+7	-4.599862e-08	1.415510e-09
+8	1.890800e-09	-3.329170e-11
+9	-3.433062e-08	9.548043e-10
+10	1.400897e-09	-3.414161e-11
+11	-2.665880e-08	6.006044e-10
+12	1.102566e-09	-1.229530e-11
+13	-2.206091e-08	3.162083e-10
+14	9.459443e-10	-1.438543e-11
+15	-1.984341e-08	7.992991e-11
+16	8.846194e-10	-3.369342e-11
+17	-1.987139e-08	-1.370120e-10
+18	9.431367e-10	-5.254632e-11
+19	-2.206334e-08	-3.591349e-10
+20	1.055985e-09	-5.410563e-11
+21	-2.679534e-08	-6.184989e-10
+22	1.414962e-09	-4.783488e-11
+23	-3.451709e-08	-9.423345e-10
+24	1.922145e-09	-2.011560e-11
+25	-4.631455e-08	-1.334400e-09
+26	3.880955e-09	4.478830e-11
+27	-6.971294e-08	-1.951965e-09
+28	3.938708e-08	1.601418e-10
+29	-2.930164e-07	-2.957661e-09
+30	1.355013e-06	-1.864290e-10
+31	-6.745972e-06	-3.412643e-09
+---
+JobID:                        2767399
+date:                         "Mon Dec 30 21:30:56 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.164
+momentum:                     p100-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0	3.736203e-05	-3.958878e-09
+1	-6.598978e-06	-1.843543e-08
+2	9.642108e-07	-1.097555e-09
+3	-2.287112e-07	-1.379374e-09
+4	1.535430e-08	-1.319175e-10
+5	-2.019353e-08	8.221891e-11
+6	4.393460e-10	-2.734514e-10
+7	-3.639135e-09	3.349792e-10
+8	4.256839e-11	-6.409594e-11
+9	-6.790806e-10	1.815537e-10
+10	-1.968349e-11	-1.113580e-13
+11	-8.627235e-11	-3.786848e-11
+12	-9.038958e-12	7.742595e-13
+13	-8.662303e-11	-3.354964e-11
+14	-2.838602e-11	-1.601954e-11
+15	-2.751587e-11	4.722747e-11
+16	-1.689970e-11	-4.285975e-11
+17	-4.273822e-11	-1.574404e-12
+18	-1.053990e-11	1.364217e-11
+19	-2.118812e-12	-1.055589e-11
+20	4.429597e-13	4.832629e-13
+21	-1.922171e-10	-2.511547e-11
+22	6.840633e-11	1.220738e-11
+23	-6.760836e-10	7.312381e-12
+24	2.578284e-11	2.050272e-11
+25	-3.811495e-09	1.240859e-10
+26	5.531144e-10	2.072201e-10
+27	-2.191217e-08	1.583551e-10
+28	1.618712e-08	5.103519e-10
+29	-2.403526e-07	1.615851e-09
+30	9.815300e-07	2.719052e-09
+31	-6.621566e-06	2.251596e-08
+---
+correlator:                   A4-A4_T14-V4_T34_m0.164
+momentum:                     p100-fine
+spin_taste_sink:              GXT-GT
+correlator_key:               A4-A4_T14-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0	2.234383e-08	-1.958259e-06
+1	3.533017e-10	6.836231e-09
+2	3.776424e-09	-8.432726e-08
+3	2.618176e-10	5.823758e-11
+4	8.448303e-10	-4.341546e-09
+5	5.571158e-10	3.436856e-10
+6	1.107720e-09	-2.432280e-10
+7	5.695647e-10	-1.572067e-10
+8	4.298863e-10	-3.361144e-10
+9	1.775108e-10	-1.669193e-10
+10	-7.531554e-11	-2.346729e-10
+11	-2.315158e-11	-8.931482e-11
+12	-9.810660e-11	-7.519157e-11
+13	-2.838828e-11	-4.612328e-11
+14	-3.330086e-11	-1.414981e-10
+15	-3.775193e-11	-6.386930e-11
+16	3.864658e-12	-7.205510e-12
+17	-4.029810e-11	-4.485519e-11
+18	-6.686743e-11	-4.709669e-11
+19	-4.134036e-11	-3.225406e-11
+20	-6.990076e-11	-1.266877e-10
+21	-5.153904e-11	-6.413897e-11
+22	-2.194476e-11	1.147419e-10
+23	1.361907e-10	4.730946e-11
+24	9.559691e-11	-8.182316e-11
+25	6.692217e-11	2.704748e-10
+26	2.381418e-10	2.588267e-10
+27	4.046485e-10	8.092409e-10
+28	-1.703921e-10	-4.156984e-09
+29	-6.544763e-10	9.024612e-10
+30	-3.543883e-09	-8.518244e-08
+31	-4.760162e-09	2.141782e-09
+---
+JobID:                        2767399
+date:                         "Mon Dec 30 21:30:56 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.1827
+momentum:                     p000-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p000-fine
+...
+0	4.331868e-05	-8.789731e-10
+1	-6.698310e-06	3.991173e-09
+2	1.319495e-06	5.456988e-10
+3	-2.788405e-07	3.057756e-09
+4	3.698896e-08	4.692417e-11
+5	-6.271772e-08	2.133995e-09
+6	3.404635e-09	-1.453360e-11
+7	-3.980284e-08	1.426533e-09
+8	1.600080e-09	-1.751332e-11
+9	-2.838167e-08	9.377013e-10
+10	1.127445e-09	-2.137693e-11
+11	-2.106948e-08	5.790765e-10
+12	8.479799e-10	-4.442729e-12
+13	-1.676317e-08	3.038359e-10
+14	7.014100e-10	-8.639181e-12
+15	-1.471947e-08	8.105451e-11
+16	6.469267e-10	-2.635935e-11
+17	-1.474438e-08	-1.223946e-10
+18	7.000834e-10	-4.370066e-11
+19	-1.677621e-08	-3.331856e-10
+20	8.125342e-10	-4.689032e-11
+21	-2.119639e-08	-5.857253e-10
+22	1.139580e-09	-4.451662e-11
+23	-2.856283e-08	-9.149036e-10
+24	1.628044e-09	-2.369941e-11
+25	-4.011218e-08	-1.336464e-09
+26	3.540074e-09	3.411660e-11
+27	-6.352758e-08	-2.023958e-09
+28	3.843062e-08	1.456000e-10
+29	-2.859931e-07	-3.188341e-09
+30	1.342235e-06	-2.707734e-10
+31	-6.724698e-06	-3.932497e-09
+---
+JobID:                        2767399
+date:                         "Mon Dec 30 21:30:56 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.1827
+momentum:                     p100-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0	3.725136e-05	-3.888358e-09
+1	-6.580477e-06	-1.800288e-08
+2	9.565948e-07	-1.017954e-09
+3	-2.262302e-07	-1.249729e-09
+4	1.511623e-08	-1.260911e-10
+5	-1.973160e-08	1.293968e-10
+6	4.290836e-10	-2.589905e-10
+7	-3.506217e-09	3.376879e-10
+8	3.778991e-11	-6.178109e-11
+9	-6.385891e-10	1.685076e-10
+10	-1.520275e-11	-1.564329e-12
+11	-7.952244e-11	-2.743913e-11
+12	-7.354107e-12	-5.803049e-13
+13	-6.232108e-11	-2.826295e-11
+14	-2.166029e-11	-1.254355e-11
+15	-1.635582e-11	3.297249e-11
+16	-1.280197e-11	-3.161565e-11
+17	-2.955355e-11	-4.051913e-12
+18	-7.543469e-12	1.068844e-11
+19	-1.948734e-12	-1.296808e-11
+20	7.638965e-13	2.177103e-13
+21	-1.733585e-10	-2.140469e-11
+22	5.778063e-11	8.698533e-12
+23	-6.616018e-10	1.420370e-11
+24	3.069606e-11	1.954465e-11
+25	-3.709155e-09	1.308952e-10
+26	5.425259e-10	1.976736e-10
+27	-2.142275e-08	1.392725e-10
+28	1.591472e-08	5.127706e-10
+29	-2.377090e-07	1.506597e-09
+30	9.736586e-07	2.668017e-09
+31	-6.602725e-06	2.210972e-08
+---
+correlator:                   A4-A4_T14-V4_T34_m0.1827
+momentum:                     p100-fine
+spin_taste_sink:              GXT-GT
+correlator_key:               A4-A4_T14-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0	2.393035e-08	-2.159430e-06
+1	1.215384e-10	7.607379e-09
+2	3.693514e-09	-9.016240e-08
+3	2.285508e-10	1.552354e-10
+4	8.044582e-10	-4.249529e-09
+5	5.027175e-10	3.223706e-10
+6	1.009208e-09	-2.255903e-10
+7	5.069913e-10	-1.356066e-10
+8	3.778457e-10	-2.960964e-10
+9	1.558067e-10	-1.413522e-10
+10	-6.521220e-11	-2.001735e-10
+11	-1.947514e-11	-7.434249e-11
+12	-8.341679e-11	-6.234291e-11
+13	-2.363683e-11	-3.626557e-11
+14	-2.882097e-11	-1.167664e-10
+15	-3.126261e-11	-5.122003e-11
+16	2.770495e-12	-5.976879e-12
+17	-3.300564e-11	-3.674802e-11
+18	-5.535548e-11	-3.894003e-11
+19	-3.449317e-11	-2.653336e-11
+20	-5.848568e-11	-1.063201e-10
+21	-4.345745e-11	-5.354010e-11
+22	-1.901655e-11	9.786916e-11
+23	1.178822e-10	4.220398e-11
+24	8.308514e-11	-6.968938e-11
+25	5.672699e-11	2.416178e-10
+26	2.133498e-10	2.402779e-10
+27	3.595137e-10	7.221384e-10
+28	-1.697414e-10	-4.062730e-09
+29	-6.443957e-10	7.995463e-10
+30	-3.533440e-09	-9.081021e-08
+31	-4.893810e-09	1.994503e-09
+---
+JobID:                        2767399
+date:                         "Tue Dec 31 23:52:50 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.000569"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   P5-P5
+momentum:                     p000-fine
+spin_taste_sink:              G5-G5
+correlator_key:               P5-P5_RW_RW_d_d_m0.000569_m0.000569_p000-fine
+...
+0	4.405156e-05	0.000000e+00
+1	6.819838e-06	0.000000e+00
+2	1.386743e-06	0.000000e+00
+3	3.495211e-07	0.000000e+00
+4	4.391383e-08	0.000000e+00
+5	1.487266e-07	0.000000e+00
+6	7.979938e-09	0.000000e+00
+7	1.421140e-07	0.000000e+00
+8	7.088968e-09	0.000000e+00
+9	1.420680e-07	0.000000e+00
+10	7.249881e-09	0.000000e+00
+11	1.419622e-07	0.000000e+00
+12	7.313229e-09	0.000000e+00
+13	1.423175e-07	0.000000e+00
+14	7.519863e-09	0.000000e+00
+15	1.422927e-07	0.000000e+00
+16	7.505188e-09	0.000000e+00
+17	1.422955e-07	0.000000e+00
+18	7.398374e-09	0.000000e+00
+19	1.418536e-07	0.000000e+00
+20	6.878088e-09	0.000000e+00
+21	1.418512e-07	0.000000e+00
+22	7.003473e-09	0.000000e+00
+23	1.416837e-07	0.000000e+00
+24	6.728510e-09	0.000000e+00
+25	1.417737e-07	0.000000e+00
+26	7.994807e-09	0.000000e+00
+27	1.490355e-07	0.000000e+00
+28	4.514499e-08	0.000000e+00
+29	3.563864e-07	0.000000e+00
+30	1.410748e-06	0.000000e+00
+31	6.846835e-06	0.000000e+00
+---
+JobID:                        2767399
+date:                         "Tue Dec 31 23:52:50 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.000569"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   P5-P5
+momentum:                     p100-fine
+spin_taste_sink:              G5-G5
+correlator_key:               P5-P5_RW_RW_d_d_m0.000569_m0.000569_p100-fine
+...
+0	3.783073e-05	-4.773228e-09
+1	6.681454e-06	2.196531e-08
+2	9.974248e-07	-1.778544e-09
+3	2.423833e-07	2.671701e-09
+4	1.637802e-08	-1.010922e-10
+5	2.313106e-08	8.077481e-10
+6	4.929737e-10	-3.821622e-10
+7	4.794934e-09	4.846584e-11
+8	1.354740e-10	-9.884827e-11
+9	1.319721e-09	-2.864825e-10
+10	-1.179984e-10	5.347114e-11
+11	2.839914e-10	3.500376e-10
+12	6.677108e-12	1.267698e-10
+13	8.220413e-10	1.945037e-10
+14	-1.643136e-10	-4.069727e-11
+15	3.959407e-10	-3.946605e-10
+16	-7.569762e-11	-3.411092e-10
+17	4.431475e-10	-1.471026e-10
+18	-9.187808e-11	1.417737e-11
+19	5.085820e-11	-1.596998e-10
+20	-2.448164e-12	4.208804e-11
+21	4.974140e-10	1.103110e-10
+22	2.341194e-10	1.378954e-10
+23	5.748276e-10	1.992015e-10
+24	-8.508431e-11	2.113718e-11
+25	4.238380e-09	9.950578e-11
+26	5.826415e-10	3.010133e-10
+27	2.489345e-08	-3.745293e-10
+28	1.767746e-08	3.852750e-10
+29	2.549449e-07	-2.848817e-09
+30	1.016147e-06	2.880411e-09
+31	6.705393e-06	-2.525985e-08
+---
+JobID:                        2767399
+date:                         "Tue Dec 31 23:52:50 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   P5-P5
+momentum:                     p000-fine
+spin_taste_sink:              G5-G5
+correlator_key:               P5-P5_RW_RW_d_d_m0.164_m0.000569_p000-fine
+...
+0	4.345882e-05	-6.500583e-10
+1	6.719400e-06	-3.583430e-09
+2	1.331993e-06	4.903598e-10
+3	2.857944e-07	-2.842859e-09
+4	3.791584e-08	2.010824e-11
+5	6.888523e-08	-2.057012e-09
+6	3.726912e-09	-3.619970e-11
+7	4.599862e-08	-1.415510e-09
+8	1.890800e-09	-3.329170e-11
+9	3.433062e-08	-9.548043e-10
+10	1.400897e-09	-3.414161e-11
+11	2.665880e-08	-6.006044e-10
+12	1.102566e-09	-1.229530e-11
+13	2.206091e-08	-3.162083e-10
+14	9.459443e-10	-1.438543e-11
+15	1.984341e-08	-7.992991e-11
+16	8.846194e-10	-3.369342e-11
+17	1.987139e-08	1.370120e-10
+18	9.431367e-10	-5.254632e-11
+19	2.206334e-08	3.591349e-10
+20	1.055985e-09	-5.410563e-11
+21	2.679534e-08	6.184989e-10
+22	1.414962e-09	-4.783488e-11
+23	3.451709e-08	9.423345e-10
+24	1.922145e-09	-2.011560e-11
+25	4.631455e-08	1.334400e-09
+26	3.880955e-09	4.478830e-11
+27	6.971294e-08	1.951965e-09
+28	3.938708e-08	1.601418e-10
+29	2.930164e-07	2.957661e-09
+30	1.355013e-06	-1.864290e-10
+31	6.745972e-06	3.412643e-09
+---
+JobID:                        2767399
+date:                         "Tue Dec 31 23:52:50 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   P5-P5
+momentum:                     p100-fine
+spin_taste_sink:              G5-G5
+correlator_key:               P5-P5_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0	3.736203e-05	-3.958878e-09
+1	6.598978e-06	1.843543e-08
+2	9.642108e-07	-1.097555e-09
+3	2.287112e-07	1.379374e-09
+4	1.535430e-08	-1.319175e-10
+5	2.019353e-08	-8.221891e-11
+6	4.393460e-10	-2.734514e-10
+7	3.639135e-09	-3.349792e-10
+8	4.256839e-11	-6.409594e-11
+9	6.790806e-10	-1.815537e-10
+10	-1.968349e-11	-1.113580e-13
+11	8.627235e-11	3.786848e-11
+12	-9.038958e-12	7.742595e-13
+13	8.662303e-11	3.354964e-11
+14	-2.838602e-11	-1.601954e-11
+15	2.751587e-11	-4.722747e-11
+16	-1.689970e-11	-4.285975e-11
+17	4.273822e-11	1.574404e-12
+18	-1.053990e-11	1.364217e-11
+19	2.118812e-12	1.055589e-11
+20	4.429597e-13	4.832629e-13
+21	1.922171e-10	2.511547e-11
+22	6.840633e-11	1.220738e-11
+23	6.760836e-10	-7.312381e-12
+24	2.578284e-11	2.050272e-11
+25	3.811495e-09	-1.240859e-10
+26	5.531144e-10	2.072201e-10
+27	2.191217e-08	-1.583551e-10
+28	1.618712e-08	5.103519e-10
+29	2.403526e-07	-1.615851e-09
+30	9.815300e-07	2.719052e-09
+31	6.621566e-06	-2.251596e-08
+---
+JobID:                        2767399
+date:                         "Tue Dec 31 23:52:50 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   P5-P5
+momentum:                     p000-fine
+spin_taste_sink:              G5-G5
+correlator_key:               P5-P5_RW_RW_d_d_m0.1827_m0.000569_p000-fine
+...
+0	4.331868e-05	-8.789731e-10
+1	6.698310e-06	-3.991173e-09
+2	1.319495e-06	5.456988e-10
+3	2.788405e-07	-3.057756e-09
+4	3.698896e-08	4.692417e-11
+5	6.271772e-08	-2.133995e-09
+6	3.404635e-09	-1.453360e-11
+7	3.980284e-08	-1.426533e-09
+8	1.600080e-09	-1.751332e-11
+9	2.838167e-08	-9.377013e-10
+10	1.127445e-09	-2.137693e-11
+11	2.106948e-08	-5.790765e-10
+12	8.479799e-10	-4.442729e-12
+13	1.676317e-08	-3.038359e-10
+14	7.014100e-10	-8.639181e-12
+15	1.471947e-08	-8.105451e-11
+16	6.469267e-10	-2.635935e-11
+17	1.474438e-08	1.223946e-10
+18	7.000834e-10	-4.370066e-11
+19	1.677621e-08	3.331856e-10
+20	8.125342e-10	-4.689032e-11
+21	2.119639e-08	5.857253e-10
+22	1.139580e-09	-4.451662e-11
+23	2.856283e-08	9.149036e-10
+24	1.628044e-09	-2.369941e-11
+25	4.011218e-08	1.336464e-09
+26	3.540074e-09	3.411660e-11
+27	6.352758e-08	2.023958e-09
+28	3.843062e-08	1.456000e-10
+29	2.859931e-07	3.188341e-09
+30	1.342235e-06	-2.707734e-10
+31	6.724698e-06	3.932497e-09
+---
+JobID:                        2767399
+date:                         "Tue Dec 31 23:52:50 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   P5-P5
+momentum:                     p100-fine
+spin_taste_sink:              G5-G5
+correlator_key:               P5-P5_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0	3.725136e-05	-3.888358e-09
+1	6.580477e-06	1.800288e-08
+2	9.565948e-07	-1.017954e-09
+3	2.262302e-07	1.249729e-09
+4	1.511623e-08	-1.260911e-10
+5	1.973160e-08	-1.293968e-10
+6	4.290836e-10	-2.589905e-10
+7	3.506217e-09	-3.376879e-10
+8	3.778991e-11	-6.178109e-11
+9	6.385891e-10	-1.685076e-10
+10	-1.520275e-11	-1.564329e-12
+11	7.952244e-11	2.743913e-11
+12	-7.354107e-12	-5.803049e-13
+13	6.232108e-11	2.826295e-11
+14	-2.166029e-11	-1.254355e-11
+15	1.635582e-11	-3.297249e-11
+16	-1.280197e-11	-3.161565e-11
+17	2.955355e-11	4.051913e-12
+18	-7.543469e-12	1.068844e-11
+19	1.948734e-12	1.296808e-11
+20	7.638965e-13	2.177103e-13
+21	1.733585e-10	2.140469e-11
+22	5.778063e-11	8.698533e-12
+23	6.616018e-10	-1.420370e-11
+24	3.069606e-11	1.954465e-11
+25	3.709155e-09	-1.308952e-10
+26	5.425259e-10	1.976736e-10
+27	2.142275e-08	-1.392725e-10
+28	1.591472e-08	5.127706e-10
+29	2.377090e-07	-1.506597e-09
+30	9.736586e-07	2.668017e-09
+31	6.602725e-06	-2.210972e-08
+---
+JobID:                        2767399
+date:                         "Tue Dec 31 23:52:50 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.164
+momentum:                     p000-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p000-fine
+...
+0	4.345882e-05	-6.500583e-10
+1	-6.719400e-06	3.583430e-09
+2	1.331993e-06	4.903598e-10
+3	-2.857944e-07	2.842859e-09
+4	3.791584e-08	2.010824e-11
+5	-6.888523e-08	2.057012e-09
+6	3.726912e-09	-3.619970e-11
+7	-4.599862e-08	1.415510e-09
+8	1.890800e-09	-3.329170e-11
+9	-3.433062e-08	9.548043e-10
+10	1.400897e-09	-3.414161e-11
+11	-2.665880e-08	6.006044e-10
+12	1.102566e-09	-1.229530e-11
+13	-2.206091e-08	3.162083e-10
+14	9.459443e-10	-1.438543e-11
+15	-1.984341e-08	7.992991e-11
+16	8.846194e-10	-3.369342e-11
+17	-1.987139e-08	-1.370120e-10
+18	9.431367e-10	-5.254632e-11
+19	-2.206334e-08	-3.591349e-10
+20	1.055985e-09	-5.410563e-11
+21	-2.679534e-08	-6.184989e-10
+22	1.414962e-09	-4.783488e-11
+23	-3.451709e-08	-9.423345e-10
+24	1.922145e-09	-2.011560e-11
+25	-4.631455e-08	-1.334400e-09
+26	3.880955e-09	4.478830e-11
+27	-6.971294e-08	-1.951965e-09
+28	3.938708e-08	1.601418e-10
+29	-2.930164e-07	-2.957661e-09
+30	1.355013e-06	-1.864290e-10
+31	-6.745972e-06	-3.412643e-09
+---
+JobID:                        2767399
+date:                         "Tue Dec 31 23:52:50 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.164
+momentum:                     p100-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0	3.736203e-05	-3.958878e-09
+1	-6.598978e-06	-1.843543e-08
+2	9.642108e-07	-1.097555e-09
+3	-2.287112e-07	-1.379374e-09
+4	1.535430e-08	-1.319175e-10
+5	-2.019353e-08	8.221891e-11
+6	4.393460e-10	-2.734514e-10
+7	-3.639135e-09	3.349792e-10
+8	4.256839e-11	-6.409594e-11
+9	-6.790806e-10	1.815537e-10
+10	-1.968349e-11	-1.113580e-13
+11	-8.627235e-11	-3.786848e-11
+12	-9.038958e-12	7.742595e-13
+13	-8.662303e-11	-3.354964e-11
+14	-2.838602e-11	-1.601954e-11
+15	-2.751587e-11	4.722747e-11
+16	-1.689970e-11	-4.285975e-11
+17	-4.273822e-11	-1.574404e-12
+18	-1.053990e-11	1.364217e-11
+19	-2.118812e-12	-1.055589e-11
+20	4.429597e-13	4.832629e-13
+21	-1.922171e-10	-2.511547e-11
+22	6.840633e-11	1.220738e-11
+23	-6.760836e-10	7.312381e-12
+24	2.578284e-11	2.050272e-11
+25	-3.811495e-09	1.240859e-10
+26	5.531144e-10	2.072201e-10
+27	-2.191217e-08	1.583551e-10
+28	1.618712e-08	5.103519e-10
+29	-2.403526e-07	1.615851e-09
+30	9.815300e-07	2.719052e-09
+31	-6.621566e-06	2.251596e-08
+---
+correlator:                   A4-A4_T14-V4_T34_m0.164
+momentum:                     p100-fine
+spin_taste_sink:              GXT-GT
+correlator_key:               A4-A4_T14-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0	2.234383e-08	-1.958259e-06
+1	3.533017e-10	6.836231e-09
+2	3.776424e-09	-8.432726e-08
+3	2.618176e-10	5.823758e-11
+4	8.448303e-10	-4.341546e-09
+5	5.571158e-10	3.436856e-10
+6	1.107720e-09	-2.432280e-10
+7	5.695647e-10	-1.572067e-10
+8	4.298863e-10	-3.361144e-10
+9	1.775108e-10	-1.669193e-10
+10	-7.531554e-11	-2.346729e-10
+11	-2.315158e-11	-8.931482e-11
+12	-9.810660e-11	-7.519157e-11
+13	-2.838828e-11	-4.612328e-11
+14	-3.330086e-11	-1.414981e-10
+15	-3.775193e-11	-6.386930e-11
+16	3.864658e-12	-7.205510e-12
+17	-4.029810e-11	-4.485519e-11
+18	-6.686743e-11	-4.709669e-11
+19	-4.134036e-11	-3.225406e-11
+20	-6.990076e-11	-1.266877e-10
+21	-5.153904e-11	-6.413897e-11
+22	-2.194476e-11	1.147419e-10
+23	1.361907e-10	4.730946e-11
+24	9.559691e-11	-8.182316e-11
+25	6.692217e-11	2.704748e-10
+26	2.381418e-10	2.588267e-10
+27	4.046485e-10	8.092409e-10
+28	-1.703921e-10	-4.156984e-09
+29	-6.544763e-10	9.024612e-10
+30	-3.543883e-09	-8.518244e-08
+31	-4.760162e-09	2.141782e-09
+---
+JobID:                        2767399
+date:                         "Tue Dec 31 23:52:50 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.1827
+momentum:                     p000-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p000-fine
+...
+0	4.331868e-05	-8.789731e-10
+1	-6.698310e-06	3.991173e-09
+2	1.319495e-06	5.456988e-10
+3	-2.788405e-07	3.057756e-09
+4	3.698896e-08	4.692417e-11
+5	-6.271772e-08	2.133995e-09
+6	3.404635e-09	-1.453360e-11
+7	-3.980284e-08	1.426533e-09
+8	1.600080e-09	-1.751332e-11
+9	-2.838167e-08	9.377013e-10
+10	1.127445e-09	-2.137693e-11
+11	-2.106948e-08	5.790765e-10
+12	8.479799e-10	-4.442729e-12
+13	-1.676317e-08	3.038359e-10
+14	7.014100e-10	-8.639181e-12
+15	-1.471947e-08	8.105451e-11
+16	6.469267e-10	-2.635935e-11
+17	-1.474438e-08	-1.223946e-10
+18	7.000834e-10	-4.370066e-11
+19	-1.677621e-08	-3.331856e-10
+20	8.125342e-10	-4.689032e-11
+21	-2.119639e-08	-5.857253e-10
+22	1.139580e-09	-4.451662e-11
+23	-2.856283e-08	-9.149036e-10
+24	1.628044e-09	-2.369941e-11
+25	-4.011218e-08	-1.336464e-09
+26	3.540074e-09	3.411660e-11
+27	-6.352758e-08	-2.023958e-09
+28	3.843062e-08	1.456000e-10
+29	-2.859931e-07	-3.188341e-09
+30	1.342235e-06	-2.707734e-10
+31	-6.724698e-06	-3.932497e-09
+---
+JobID:                        2767399
+date:                         "Tue Dec 31 23:52:50 2024 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.1827
+momentum:                     p100-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0	3.725136e-05	-3.888358e-09
+1	-6.580477e-06	-1.800288e-08
+2	9.565948e-07	-1.017954e-09
+3	-2.262302e-07	-1.249729e-09
+4	1.511623e-08	-1.260911e-10
+5	-1.973160e-08	1.293968e-10
+6	4.290836e-10	-2.589905e-10
+7	-3.506217e-09	3.376879e-10
+8	3.778991e-11	-6.178109e-11
+9	-6.385891e-10	1.685076e-10
+10	-1.520275e-11	-1.564329e-12
+11	-7.952244e-11	-2.743913e-11
+12	-7.354107e-12	-5.803049e-13
+13	-6.232108e-11	-2.826295e-11
+14	-2.166029e-11	-1.254355e-11
+15	-1.635582e-11	3.297249e-11
+16	-1.280197e-11	-3.161565e-11
+17	-2.955355e-11	-4.051913e-12
+18	-7.543469e-12	1.068844e-11
+19	-1.948734e-12	-1.296808e-11
+20	7.638965e-13	2.177103e-13
+21	-1.733585e-10	-2.140469e-11
+22	5.778063e-11	8.698533e-12
+23	-6.616018e-10	1.420370e-11
+24	3.069606e-11	1.954465e-11
+25	-3.709155e-09	1.308952e-10
+26	5.425259e-10	1.976736e-10
+27	-2.142275e-08	1.392725e-10
+28	1.591472e-08	5.127706e-10
+29	-2.377090e-07	1.506597e-09
+30	9.736586e-07	2.668017e-09
+31	-6.602725e-06	2.210972e-08
+---
+correlator:                   A4-A4_T14-V4_T34_m0.1827
+momentum:                     p100-fine
+spin_taste_sink:              GXT-GT
+correlator_key:               A4-A4_T14-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0	2.393035e-08	-2.159430e-06
+1	1.215384e-10	7.607379e-09
+2	3.693514e-09	-9.016240e-08
+3	2.285508e-10	1.552354e-10
+4	8.044582e-10	-4.249529e-09
+5	5.027175e-10	3.223706e-10
+6	1.009208e-09	-2.255903e-10
+7	5.069913e-10	-1.356066e-10
+8	3.778457e-10	-2.960964e-10
+9	1.558067e-10	-1.413522e-10
+10	-6.521220e-11	-2.001735e-10
+11	-1.947514e-11	-7.434249e-11
+12	-8.341679e-11	-6.234291e-11
+13	-2.363683e-11	-3.626557e-11
+14	-2.882097e-11	-1.167664e-10
+15	-3.126261e-11	-5.122003e-11
+16	2.770495e-12	-5.976879e-12
+17	-3.300564e-11	-3.674802e-11
+18	-5.535548e-11	-3.894003e-11
+19	-3.449317e-11	-2.653336e-11
+20	-5.848568e-11	-1.063201e-10
+21	-4.345745e-11	-5.354010e-11
+22	-1.901655e-11	9.786916e-11
+23	1.178822e-10	4.220398e-11
+24	8.308514e-11	-6.968938e-11
+25	5.672699e-11	2.416178e-10
+26	2.133498e-10	2.402779e-10
+27	3.595137e-10	7.221384e-10
+28	-1.697414e-10	-4.062730e-09
+29	-6.443957e-10	7.995463e-10
+30	-3.533440e-09	-9.081021e-08
+31	-4.893810e-09	1.994503e-09
+---
+JobID:                        2767399
+date:                         "Mon Jan  6 03:47:53 2025 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.164
+momentum:                     p000-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p000-fine
+...
+0	4.345882e-05	-6.500583e-10
+1	-6.719400e-06	3.583430e-09
+2	1.331993e-06	4.903598e-10
+3	-2.857944e-07	2.842859e-09
+4	3.791584e-08	2.010824e-11
+5	-6.888523e-08	2.057012e-09
+6	3.726912e-09	-3.619970e-11
+7	-4.599862e-08	1.415510e-09
+8	1.890800e-09	-3.329170e-11
+9	-3.433062e-08	9.548043e-10
+10	1.400897e-09	-3.414161e-11
+11	-2.665880e-08	6.006044e-10
+12	1.102566e-09	-1.229530e-11
+13	-2.206091e-08	3.162083e-10
+14	9.459443e-10	-1.438543e-11
+15	-1.984341e-08	7.992991e-11
+16	8.846194e-10	-3.369342e-11
+17	-1.987139e-08	-1.370120e-10
+18	9.431367e-10	-5.254632e-11
+19	-2.206334e-08	-3.591349e-10
+20	1.055985e-09	-5.410563e-11
+21	-2.679534e-08	-6.184989e-10
+22	1.414962e-09	-4.783488e-11
+23	-3.451709e-08	-9.423345e-10
+24	1.922145e-09	-2.011560e-11
+25	-4.631455e-08	-1.334400e-09
+26	3.880955e-09	4.478830e-11
+27	-6.971294e-08	-1.951965e-09
+28	3.938708e-08	1.601418e-10
+29	-2.930164e-07	-2.957661e-09
+30	1.355013e-06	-1.864290e-10
+31	-6.745972e-06	-3.412643e-09
+---
+JobID:                        2767399
+date:                         "Mon Jan  6 03:47:53 2025 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.164
+momentum:                     p100-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0	3.736203e-05	-3.958878e-09
+1	-6.598978e-06	-1.843543e-08
+2	9.642108e-07	-1.097555e-09
+3	-2.287112e-07	-1.379374e-09
+4	1.535430e-08	-1.319175e-10
+5	-2.019353e-08	8.221891e-11
+6	4.393460e-10	-2.734514e-10
+7	-3.639135e-09	3.349792e-10
+8	4.256839e-11	-6.409594e-11
+9	-6.790806e-10	1.815537e-10
+10	-1.968349e-11	-1.113580e-13
+11	-8.627235e-11	-3.786848e-11
+12	-9.038958e-12	7.742595e-13
+13	-8.662303e-11	-3.354964e-11
+14	-2.838602e-11	-1.601954e-11
+15	-2.751587e-11	4.722747e-11
+16	-1.689970e-11	-4.285975e-11
+17	-4.273822e-11	-1.574404e-12
+18	-1.053990e-11	1.364217e-11
+19	-2.118812e-12	-1.055589e-11
+20	4.429597e-13	4.832629e-13
+21	-1.922171e-10	-2.511547e-11
+22	6.840633e-11	1.220738e-11
+23	-6.760836e-10	7.312381e-12
+24	2.578284e-11	2.050272e-11
+25	-3.811495e-09	1.240859e-10
+26	5.531144e-10	2.072201e-10
+27	-2.191217e-08	1.583551e-10
+28	1.618712e-08	5.103519e-10
+29	-2.403526e-07	1.615851e-09
+30	9.815300e-07	2.719052e-09
+31	-6.621566e-06	2.251596e-08
+---
+correlator:                   A4-A4_T14-V4_T34_m0.164
+momentum:                     p100-fine
+spin_taste_sink:              GXT-GT
+correlator_key:               A4-A4_T14-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0	2.234383e-08	-1.958259e-06
+1	3.533017e-10	6.836231e-09
+2	3.776424e-09	-8.432726e-08
+3	2.618176e-10	5.823758e-11
+4	8.448303e-10	-4.341546e-09
+5	5.571158e-10	3.436856e-10
+6	1.107720e-09	-2.432280e-10
+7	5.695647e-10	-1.572067e-10
+8	4.298863e-10	-3.361144e-10
+9	1.775108e-10	-1.669193e-10
+10	-7.531554e-11	-2.346729e-10
+11	-2.315158e-11	-8.931482e-11
+12	-9.810660e-11	-7.519157e-11
+13	-2.838828e-11	-4.612328e-11
+14	-3.330086e-11	-1.414981e-10
+15	-3.775193e-11	-6.386930e-11
+16	3.864658e-12	-7.205510e-12
+17	-4.029810e-11	-4.485519e-11
+18	-6.686743e-11	-4.709669e-11
+19	-4.134036e-11	-3.225406e-11
+20	-6.990076e-11	-1.266877e-10
+21	-5.153904e-11	-6.413897e-11
+22	-2.194476e-11	1.147419e-10
+23	1.361907e-10	4.730946e-11
+24	9.559691e-11	-8.182316e-11
+25	6.692217e-11	2.704748e-10
+26	2.381418e-10	2.588267e-10
+27	4.046485e-10	8.092409e-10
+28	-1.703921e-10	-4.156984e-09
+29	-6.544763e-10	9.024612e-10
+30	-3.543883e-09	-8.518244e-08
+31	-4.760162e-09	2.141782e-09
+---
+JobID:                        2767399
+date:                         "Mon Jan  6 03:47:53 2025 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.1827
+momentum:                     p000-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p000-fine
+...
+0	4.331868e-05	-8.789731e-10
+1	-6.698310e-06	3.991173e-09
+2	1.319495e-06	5.456988e-10
+3	-2.788405e-07	3.057756e-09
+4	3.698896e-08	4.692417e-11
+5	-6.271772e-08	2.133995e-09
+6	3.404635e-09	-1.453360e-11
+7	-3.980284e-08	1.426533e-09
+8	1.600080e-09	-1.751332e-11
+9	-2.838167e-08	9.377013e-10
+10	1.127445e-09	-2.137693e-11
+11	-2.106948e-08	5.790765e-10
+12	8.479799e-10	-4.442729e-12
+13	-1.676317e-08	3.038359e-10
+14	7.014100e-10	-8.639181e-12
+15	-1.471947e-08	8.105451e-11
+16	6.469267e-10	-2.635935e-11
+17	-1.474438e-08	-1.223946e-10
+18	7.000834e-10	-4.370066e-11
+19	-1.677621e-08	-3.331856e-10
+20	8.125342e-10	-4.689032e-11
+21	-2.119639e-08	-5.857253e-10
+22	1.139580e-09	-4.451662e-11
+23	-2.856283e-08	-9.149036e-10
+24	1.628044e-09	-2.369941e-11
+25	-4.011218e-08	-1.336464e-09
+26	3.540074e-09	3.411660e-11
+27	-6.352758e-08	-2.023958e-09
+28	3.843062e-08	1.456000e-10
+29	-2.859931e-07	-3.188341e-09
+30	1.342235e-06	-2.707734e-10
+31	-6.724698e-06	-3.932497e-09
+---
+JobID:                        2767399
+date:                         "Mon Jan  6 03:47:53 2025 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.1827
+momentum:                     p100-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0	3.725136e-05	-3.888358e-09
+1	-6.580477e-06	-1.800288e-08
+2	9.565948e-07	-1.017954e-09
+3	-2.262302e-07	-1.249729e-09
+4	1.511623e-08	-1.260911e-10
+5	-1.973160e-08	1.293968e-10
+6	4.290836e-10	-2.589905e-10
+7	-3.506217e-09	3.376879e-10
+8	3.778991e-11	-6.178109e-11
+9	-6.385891e-10	1.685076e-10
+10	-1.520275e-11	-1.564329e-12
+11	-7.952244e-11	-2.743913e-11
+12	-7.354107e-12	-5.803049e-13
+13	-6.232108e-11	-2.826295e-11
+14	-2.166029e-11	-1.254355e-11
+15	-1.635582e-11	3.297249e-11
+16	-1.280197e-11	-3.161565e-11
+17	-2.955355e-11	-4.051913e-12
+18	-7.543469e-12	1.068844e-11
+19	-1.948734e-12	-1.296808e-11
+20	7.638965e-13	2.177103e-13
+21	-1.733585e-10	-2.140469e-11
+22	5.778063e-11	8.698533e-12
+23	-6.616018e-10	1.420370e-11
+24	3.069606e-11	1.954465e-11
+25	-3.709155e-09	1.308952e-10
+26	5.425259e-10	1.976736e-10
+27	-2.142275e-08	1.392725e-10
+28	1.591472e-08	5.127706e-10
+29	-2.377090e-07	1.506597e-09
+30	9.736586e-07	2.668017e-09
+31	-6.602725e-06	2.210972e-08
+---
+correlator:                   A4-A4_T14-V4_T34_m0.1827
+momentum:                     p100-fine
+spin_taste_sink:              GXT-GT
+correlator_key:               A4-A4_T14-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0	2.393035e-08	-2.159430e-06
+1	1.215384e-10	7.607379e-09
+2	3.693514e-09	-9.016240e-08
+3	2.285508e-10	1.552354e-10
+4	8.044582e-10	-4.249529e-09
+5	5.027175e-10	3.223706e-10
+6	1.009208e-09	-2.255903e-10
+7	5.069913e-10	-1.356066e-10
+8	3.778457e-10	-2.960964e-10
+9	1.558067e-10	-1.413522e-10
+10	-6.521220e-11	-2.001735e-10
+11	-1.947514e-11	-7.434249e-11
+12	-8.341679e-11	-6.234291e-11
+13	-2.363683e-11	-3.626557e-11
+14	-2.882097e-11	-1.167664e-10
+15	-3.126261e-11	-5.122003e-11
+16	2.770495e-12	-5.976879e-12
+17	-3.300564e-11	-3.674802e-11
+18	-5.535548e-11	-3.894003e-11
+19	-3.449317e-11	-2.653336e-11
+20	-5.848568e-11	-1.063201e-10
+21	-4.345745e-11	-5.354010e-11
+22	-1.901655e-11	9.786916e-11
+23	1.178822e-10	4.220398e-11
+24	8.308514e-11	-6.968938e-11
+25	5.672699e-11	2.416178e-10
+26	2.133498e-10	2.402779e-10
+27	3.595137e-10	7.221384e-10
+28	-1.697414e-10	-4.062730e-09
+29	-6.443957e-10	7.995463e-10
+30	-3.533440e-09	-9.081021e-08
+31	-4.893810e-09	1.994503e-09
+---
+JobID:                        2767399
+date:                         "Mon Jan  6 03:51:22 2025 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.164
+momentum:                     p000-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p000-fine
+...
+0	4.345882e-05	-6.500583e-10
+1	-6.719400e-06	3.583430e-09
+2	1.331993e-06	4.903598e-10
+3	-2.857944e-07	2.842859e-09
+4	3.791584e-08	2.010824e-11
+5	-6.888523e-08	2.057012e-09
+6	3.726912e-09	-3.619970e-11
+7	-4.599862e-08	1.415510e-09
+8	1.890800e-09	-3.329170e-11
+9	-3.433062e-08	9.548043e-10
+10	1.400897e-09	-3.414161e-11
+11	-2.665880e-08	6.006044e-10
+12	1.102566e-09	-1.229530e-11
+13	-2.206091e-08	3.162083e-10
+14	9.459443e-10	-1.438543e-11
+15	-1.984341e-08	7.992991e-11
+16	8.846194e-10	-3.369342e-11
+17	-1.987139e-08	-1.370120e-10
+18	9.431367e-10	-5.254632e-11
+19	-2.206334e-08	-3.591349e-10
+20	1.055985e-09	-5.410563e-11
+21	-2.679534e-08	-6.184989e-10
+22	1.414962e-09	-4.783488e-11
+23	-3.451709e-08	-9.423345e-10
+24	1.922145e-09	-2.011560e-11
+25	-4.631455e-08	-1.334400e-09
+26	3.880955e-09	4.478830e-11
+27	-6.971294e-08	-1.951965e-09
+28	3.938708e-08	1.601418e-10
+29	-2.930164e-07	-2.957661e-09
+30	1.355013e-06	-1.864290e-10
+31	-6.745972e-06	-3.412643e-09
+---
+JobID:                        2767399
+date:                         "Mon Jan  6 03:51:22 2025 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.164
+momentum:                     p100-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0	3.736203e-05	-3.958878e-09
+1	-6.598978e-06	-1.843543e-08
+2	9.642108e-07	-1.097555e-09
+3	-2.287112e-07	-1.379374e-09
+4	1.535430e-08	-1.319175e-10
+5	-2.019353e-08	8.221891e-11
+6	4.393460e-10	-2.734514e-10
+7	-3.639135e-09	3.349792e-10
+8	4.256839e-11	-6.409594e-11
+9	-6.790806e-10	1.815537e-10
+10	-1.968349e-11	-1.113580e-13
+11	-8.627235e-11	-3.786848e-11
+12	-9.038958e-12	7.742595e-13
+13	-8.662303e-11	-3.354964e-11
+14	-2.838602e-11	-1.601954e-11
+15	-2.751587e-11	4.722747e-11
+16	-1.689970e-11	-4.285975e-11
+17	-4.273822e-11	-1.574404e-12
+18	-1.053990e-11	1.364217e-11
+19	-2.118812e-12	-1.055589e-11
+20	4.429597e-13	4.832629e-13
+21	-1.922171e-10	-2.511547e-11
+22	6.840633e-11	1.220738e-11
+23	-6.760836e-10	7.312381e-12
+24	2.578284e-11	2.050272e-11
+25	-3.811495e-09	1.240859e-10
+26	5.531144e-10	2.072201e-10
+27	-2.191217e-08	1.583551e-10
+28	1.618712e-08	5.103519e-10
+29	-2.403526e-07	1.615851e-09
+30	9.815300e-07	2.719052e-09
+31	-6.621566e-06	2.251596e-08
+---
+correlator:                   A4-A4_T14-V4_T34_m0.164
+momentum:                     p100-fine
+spin_taste_sink:              GXT-GT
+correlator_key:               A4-A4_T14-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0	2.234383e-08	-1.958259e-06
+1	3.533017e-10	6.836231e-09
+2	3.776424e-09	-8.432726e-08
+3	2.618176e-10	5.823758e-11
+4	8.448303e-10	-4.341546e-09
+5	5.571158e-10	3.436856e-10
+6	1.107720e-09	-2.432280e-10
+7	5.695647e-10	-1.572067e-10
+8	4.298863e-10	-3.361144e-10
+9	1.775108e-10	-1.669193e-10
+10	-7.531554e-11	-2.346729e-10
+11	-2.315158e-11	-8.931482e-11
+12	-9.810660e-11	-7.519157e-11
+13	-2.838828e-11	-4.612328e-11
+14	-3.330086e-11	-1.414981e-10
+15	-3.775193e-11	-6.386930e-11
+16	3.864658e-12	-7.205510e-12
+17	-4.029810e-11	-4.485519e-11
+18	-6.686743e-11	-4.709669e-11
+19	-4.134036e-11	-3.225406e-11
+20	-6.990076e-11	-1.266877e-10
+21	-5.153904e-11	-6.413897e-11
+22	-2.194476e-11	1.147419e-10
+23	1.361907e-10	4.730946e-11
+24	9.559691e-11	-8.182316e-11
+25	6.692217e-11	2.704748e-10
+26	2.381418e-10	2.588267e-10
+27	4.046485e-10	8.092409e-10
+28	-1.703921e-10	-4.156984e-09
+29	-6.544763e-10	9.024612e-10
+30	-3.543883e-09	-8.518244e-08
+31	-4.760162e-09	2.141782e-09
+---
+JobID:                        2767399
+date:                         "Mon Jan  6 03:51:22 2025 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.1827
+momentum:                     p000-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p000-fine
+...
+0	4.331868e-05	-8.789731e-10
+1	-6.698310e-06	3.991173e-09
+2	1.319495e-06	5.456988e-10
+3	-2.788405e-07	3.057756e-09
+4	3.698896e-08	4.692417e-11
+5	-6.271772e-08	2.133995e-09
+6	3.404635e-09	-1.453360e-11
+7	-3.980284e-08	1.426533e-09
+8	1.600080e-09	-1.751332e-11
+9	-2.838167e-08	9.377013e-10
+10	1.127445e-09	-2.137693e-11
+11	-2.106948e-08	5.790765e-10
+12	8.479799e-10	-4.442729e-12
+13	-1.676317e-08	3.038359e-10
+14	7.014100e-10	-8.639181e-12
+15	-1.471947e-08	8.105451e-11
+16	6.469267e-10	-2.635935e-11
+17	-1.474438e-08	-1.223946e-10
+18	7.000834e-10	-4.370066e-11
+19	-1.677621e-08	-3.331856e-10
+20	8.125342e-10	-4.689032e-11
+21	-2.119639e-08	-5.857253e-10
+22	1.139580e-09	-4.451662e-11
+23	-2.856283e-08	-9.149036e-10
+24	1.628044e-09	-2.369941e-11
+25	-4.011218e-08	-1.336464e-09
+26	3.540074e-09	3.411660e-11
+27	-6.352758e-08	-2.023958e-09
+28	3.843062e-08	1.456000e-10
+29	-2.859931e-07	-3.188341e-09
+30	1.342235e-06	-2.707734e-10
+31	-6.724698e-06	-3.932497e-09
+---
+JobID:                        2767399
+date:                         "Mon Jan  6 03:51:22 2025 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.1827
+momentum:                     p100-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0	3.725136e-05	-3.888358e-09
+1	-6.580477e-06	-1.800288e-08
+2	9.565948e-07	-1.017954e-09
+3	-2.262302e-07	-1.249729e-09
+4	1.511623e-08	-1.260911e-10
+5	-1.973160e-08	1.293968e-10
+6	4.290836e-10	-2.589905e-10
+7	-3.506217e-09	3.376879e-10
+8	3.778991e-11	-6.178109e-11
+9	-6.385891e-10	1.685076e-10
+10	-1.520275e-11	-1.564329e-12
+11	-7.952244e-11	-2.743913e-11
+12	-7.354107e-12	-5.803049e-13
+13	-6.232108e-11	-2.826295e-11
+14	-2.166029e-11	-1.254355e-11
+15	-1.635582e-11	3.297249e-11
+16	-1.280197e-11	-3.161565e-11
+17	-2.955355e-11	-4.051913e-12
+18	-7.543469e-12	1.068844e-11
+19	-1.948734e-12	-1.296808e-11
+20	7.638965e-13	2.177103e-13
+21	-1.733585e-10	-2.140469e-11
+22	5.778063e-11	8.698533e-12
+23	-6.616018e-10	1.420370e-11
+24	3.069606e-11	1.954465e-11
+25	-3.709155e-09	1.308952e-10
+26	5.425259e-10	1.976736e-10
+27	-2.142275e-08	1.392725e-10
+28	1.591472e-08	5.127706e-10
+29	-2.377090e-07	1.506597e-09
+30	9.736586e-07	2.668017e-09
+31	-6.602725e-06	2.210972e-08
+---
+correlator:                   A4-A4_T14-V4_T34_m0.1827
+momentum:                     p100-fine
+spin_taste_sink:              GXT-GT
+correlator_key:               A4-A4_T14-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0	2.393035e-08	-2.159430e-06
+1	1.215384e-10	7.607379e-09
+2	3.693514e-09	-9.016240e-08
+3	2.285508e-10	1.552354e-10
+4	8.044582e-10	-4.249529e-09
+5	5.027175e-10	3.223706e-10
+6	1.009208e-09	-2.255903e-10
+7	5.069913e-10	-1.356066e-10
+8	3.778457e-10	-2.960964e-10
+9	1.558067e-10	-1.413522e-10
+10	-6.521220e-11	-2.001735e-10
+11	-1.947514e-11	-7.434249e-11
+12	-8.341679e-11	-6.234291e-11
+13	-2.363683e-11	-3.626557e-11
+14	-2.882097e-11	-1.167664e-10
+15	-3.126261e-11	-5.122003e-11
+16	2.770495e-12	-5.976879e-12
+17	-3.300564e-11	-3.674802e-11
+18	-5.535548e-11	-3.894003e-11
+19	-3.449317e-11	-2.653336e-11
+20	-5.848568e-11	-1.063201e-10
+21	-4.345745e-11	-5.354010e-11
+22	-1.901655e-11	9.786916e-11
+23	1.178822e-10	4.220398e-11
+24	8.308514e-11	-6.968938e-11
+25	5.672699e-11	2.416178e-10
+26	2.133498e-10	2.402779e-10
+27	3.595137e-10	7.221384e-10
+28	-1.697414e-10	-4.062730e-09
+29	-6.443957e-10	7.995463e-10
+30	-3.533440e-09	-9.081021e-08
+31	-4.893810e-09	1.994503e-09
+---
+JobID:                        2767399
+date:                         "Mon Jan  6 04:05:23 2025 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.164
+momentum:                     p000-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p000-fine
+...
+0	4.345882e-05	-6.500583e-10
+1	-6.719400e-06	3.583430e-09
+2	1.331993e-06	4.903598e-10
+3	-2.857944e-07	2.842859e-09
+4	3.791584e-08	2.010824e-11
+5	-6.888523e-08	2.057012e-09
+6	3.726912e-09	-3.619970e-11
+7	-4.599862e-08	1.415510e-09
+8	1.890800e-09	-3.329170e-11
+9	-3.433062e-08	9.548043e-10
+10	1.400897e-09	-3.414161e-11
+11	-2.665880e-08	6.006044e-10
+12	1.102566e-09	-1.229530e-11
+13	-2.206091e-08	3.162083e-10
+14	9.459443e-10	-1.438543e-11
+15	-1.984341e-08	7.992991e-11
+16	8.846194e-10	-3.369342e-11
+17	-1.987139e-08	-1.370120e-10
+18	9.431367e-10	-5.254632e-11
+19	-2.206334e-08	-3.591349e-10
+20	1.055985e-09	-5.410563e-11
+21	-2.679534e-08	-6.184989e-10
+22	1.414962e-09	-4.783488e-11
+23	-3.451709e-08	-9.423345e-10
+24	1.922145e-09	-2.011560e-11
+25	-4.631455e-08	-1.334400e-09
+26	3.880955e-09	4.478830e-11
+27	-6.971294e-08	-1.951965e-09
+28	3.938708e-08	1.601418e-10
+29	-2.930164e-07	-2.957661e-09
+30	1.355013e-06	-1.864290e-10
+31	-6.745972e-06	-3.412643e-09
+---
+JobID:                        2767399
+date:                         "Mon Jan  6 04:05:23 2025 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.164"
+antiquark_epsilon:            -0.0179
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.164
+momentum:                     p100-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0	3.736203e-05	-3.958878e-09
+1	-6.598978e-06	-1.843543e-08
+2	9.642108e-07	-1.097555e-09
+3	-2.287112e-07	-1.379374e-09
+4	1.535430e-08	-1.319175e-10
+5	-2.019353e-08	8.221891e-11
+6	4.393460e-10	-2.734514e-10
+7	-3.639135e-09	3.349792e-10
+8	4.256839e-11	-6.409594e-11
+9	-6.790806e-10	1.815537e-10
+10	-1.968349e-11	-1.113580e-13
+11	-8.627235e-11	-3.786848e-11
+12	-9.038958e-12	7.742595e-13
+13	-8.662303e-11	-3.354964e-11
+14	-2.838602e-11	-1.601954e-11
+15	-2.751587e-11	4.722747e-11
+16	-1.689970e-11	-4.285975e-11
+17	-4.273822e-11	-1.574404e-12
+18	-1.053990e-11	1.364217e-11
+19	-2.118812e-12	-1.055589e-11
+20	4.429597e-13	4.832629e-13
+21	-1.922171e-10	-2.511547e-11
+22	6.840633e-11	1.220738e-11
+23	-6.760836e-10	7.312381e-12
+24	2.578284e-11	2.050272e-11
+25	-3.811495e-09	1.240859e-10
+26	5.531144e-10	2.072201e-10
+27	-2.191217e-08	1.583551e-10
+28	1.618712e-08	5.103519e-10
+29	-2.403526e-07	1.615851e-09
+30	9.815300e-07	2.719052e-09
+31	-6.621566e-06	2.251596e-08
+---
+correlator:                   A4-A4_T14-V4_T34_m0.164
+momentum:                     p100-fine
+spin_taste_sink:              GXT-GT
+correlator_key:               A4-A4_T14-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0	2.234383e-08	-1.958259e-06
+1	3.533017e-10	6.836231e-09
+2	3.776424e-09	-8.432726e-08
+3	2.618176e-10	5.823758e-11
+4	8.448303e-10	-4.341546e-09
+5	5.571158e-10	3.436856e-10
+6	1.107720e-09	-2.432280e-10
+7	5.695647e-10	-1.572067e-10
+8	4.298863e-10	-3.361144e-10
+9	1.775108e-10	-1.669193e-10
+10	-7.531554e-11	-2.346729e-10
+11	-2.315158e-11	-8.931482e-11
+12	-9.810660e-11	-7.519157e-11
+13	-2.838828e-11	-4.612328e-11
+14	-3.330086e-11	-1.414981e-10
+15	-3.775193e-11	-6.386930e-11
+16	3.864658e-12	-7.205510e-12
+17	-4.029810e-11	-4.485519e-11
+18	-6.686743e-11	-4.709669e-11
+19	-4.134036e-11	-3.225406e-11
+20	-6.990076e-11	-1.266877e-10
+21	-5.153904e-11	-6.413897e-11
+22	-2.194476e-11	1.147419e-10
+23	1.361907e-10	4.730946e-11
+24	9.559691e-11	-8.182316e-11
+25	6.692217e-11	2.704748e-10
+26	2.381418e-10	2.588267e-10
+27	4.046485e-10	8.092409e-10
+28	-1.703921e-10	-4.156984e-09
+29	-6.544763e-10	9.024612e-10
+30	-3.543883e-09	-8.518244e-08
+31	-4.760162e-09	2.141782e-09
+---
+JobID:                        2767399
+date:                         "Mon Jan  6 04:05:23 2025 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 0, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.1827
+momentum:                     p000-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p000-fine
+...
+0	4.331868e-05	-8.789731e-10
+1	-6.698310e-06	3.991173e-09
+2	1.319495e-06	5.456988e-10
+3	-2.788405e-07	3.057756e-09
+4	3.698896e-08	4.692417e-11
+5	-6.271772e-08	2.133995e-09
+6	3.404635e-09	-1.453360e-11
+7	-3.980284e-08	1.426533e-09
+8	1.600080e-09	-1.751332e-11
+9	-2.838167e-08	9.377013e-10
+10	1.127445e-09	-2.137693e-11
+11	-2.106948e-08	5.790765e-10
+12	8.479799e-10	-4.442729e-12
+13	-1.676317e-08	3.038359e-10
+14	7.014100e-10	-8.639181e-12
+15	-1.471947e-08	8.105451e-11
+16	6.469267e-10	-2.635935e-11
+17	-1.474438e-08	-1.223946e-10
+18	7.000834e-10	-4.370066e-11
+19	-1.677621e-08	-3.331856e-10
+20	8.125342e-10	-4.689032e-11
+21	-2.119639e-08	-5.857253e-10
+22	1.139580e-09	-4.451662e-11
+23	-2.856283e-08	-9.149036e-10
+24	1.628044e-09	-2.369941e-11
+25	-4.011218e-08	-1.336464e-09
+26	3.540074e-09	3.411660e-11
+27	-6.352758e-08	-2.023958e-09
+28	3.843062e-08	1.456000e-10
+29	-2.859931e-07	-3.188341e-09
+30	1.342235e-06	-2.707734e-10
+31	-6.724698e-06	-3.932497e-09
+---
+JobID:                        2767399
+date:                         "Mon Jan  6 04:05:23 2025 UTC"
+lattice_size:                 8,8,8,32
+antiquark_type:               staggered
+antiquark_source_type:        vector_field
+antiquark_source_subset:      corner
+antiquark_source_origin:      [ 0, 0, 0, 1 ]
+antiquark_source_file:        rnd_source
+antiquark_source_ncolor:      1
+antiquark_source_mom:         [ 0, 0, 0 ]
+antiquark_source_label:       RW
+antiquark_sink_label:         d
+antiquark_mass:               "0.1827"
+antiquark_epsilon:            -0.0222
+quark_type:                   staggered
+quark_source_type:            vector_field
+quark_source_subset:          corner
+quark_source_origin:          [ 0, 0, 0, 1 ]
+quark_source_file:            rnd_source
+quark_source_ncolor:          1
+quark_source_mom:             [ 1, 0, 0 ]
+quark_source_label:           RW
+quark_sink_label:             d
+quark_mass:                   "0.000569"
+quark_epsilon:                0
+...
+---
+correlator:                   A4-A4_V4-V4_T34_m0.1827
+momentum:                     p100-fine
+spin_taste_sink:              GT-GT
+correlator_key:               A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0	3.725136e-05	-3.888358e-09
+1	-6.580477e-06	-1.800288e-08
+2	9.565948e-07	-1.017954e-09
+3	-2.262302e-07	-1.249729e-09
+4	1.511623e-08	-1.260911e-10
+5	-1.973160e-08	1.293968e-10
+6	4.290836e-10	-2.589905e-10
+7	-3.506217e-09	3.376879e-10
+8	3.778991e-11	-6.178109e-11
+9	-6.385891e-10	1.685076e-10
+10	-1.520275e-11	-1.564329e-12
+11	-7.952244e-11	-2.743913e-11
+12	-7.354107e-12	-5.803049e-13
+13	-6.232108e-11	-2.826295e-11
+14	-2.166029e-11	-1.254355e-11
+15	-1.635582e-11	3.297249e-11
+16	-1.280197e-11	-3.161565e-11
+17	-2.955355e-11	-4.051913e-12
+18	-7.543469e-12	1.068844e-11
+19	-1.948734e-12	-1.296808e-11
+20	7.638965e-13	2.177103e-13
+21	-1.733585e-10	-2.140469e-11
+22	5.778063e-11	8.698533e-12
+23	-6.616018e-10	1.420370e-11
+24	3.069606e-11	1.954465e-11
+25	-3.709155e-09	1.308952e-10
+26	5.425259e-10	1.976736e-10
+27	-2.142275e-08	1.392725e-10
+28	1.591472e-08	5.127706e-10
+29	-2.377090e-07	1.506597e-09
+30	9.736586e-07	2.668017e-09
+31	-6.602725e-06	2.210972e-08
+---
+correlator:                   A4-A4_T14-V4_T34_m0.1827
+momentum:                     p100-fine
+spin_taste_sink:              GXT-GT
+correlator_key:               A4-A4_T14-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0	2.393035e-08	-2.159430e-06
+1	1.215384e-10	7.607379e-09
+2	3.693514e-09	-9.016240e-08
+3	2.285508e-10	1.552354e-10
+4	8.044582e-10	-4.249529e-09
+5	5.027175e-10	3.223706e-10
+6	1.009208e-09	-2.255903e-10
+7	5.069913e-10	-1.356066e-10
+8	3.778457e-10	-2.960964e-10
+9	1.558067e-10	-1.413522e-10
+10	-6.521220e-11	-2.001735e-10
+11	-1.947514e-11	-7.434249e-11
+12	-8.341679e-11	-6.234291e-11
+13	-2.363683e-11	-3.626557e-11
+14	-2.882097e-11	-1.167664e-10
+15	-3.126261e-11	-5.122003e-11
+16	2.770495e-12	-5.976879e-12
+17	-3.300564e-11	-3.674802e-11
+18	-5.535548e-11	-3.894003e-11
+19	-3.449317e-11	-2.653336e-11
+20	-5.848568e-11	-1.063201e-10
+21	-4.345745e-11	-5.354010e-11
+22	-1.901655e-11	9.786916e-11
+23	1.178822e-10	4.220398e-11
+24	8.308514e-11	-6.968938e-11
+25	5.672699e-11	2.416178e-10
+26	2.133498e-10	2.402779e-10
+27	3.595137e-10	7.221384e-10
+28	-1.697414e-10	-4.062730e-09
+29	-6.443957e-10	7.995463e-10
+30	-3.533440e-09	-9.081021e-08
+31	-4.893810e-09	1.994503e-09

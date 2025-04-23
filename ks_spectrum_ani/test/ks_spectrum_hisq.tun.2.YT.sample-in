@@ -1,0 +1,1086 @@
+prompt 0
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 78824
+job_id none
+
+######################################################################
+# source time 8
+######################################################################
+
+# GAUGE FIELD DESCRIPTION
+
+reload_serial ../../binary_samples/lat.sample.l8888
+u0 1
+coulomb_gauge_fix
+forget
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
+
+# EIGENPAIRS
+
+max_number_of_eigenpairs 0
+
+# CHIRAL CONDENSATE AND RELATED MEASUREMENTS
+
+number_of_pbp_masses 0
+
+######################################################################
+
+### DESCRIPTION OF BASE SOURCES
+
+number_of_base_sources 3
+
+# BASE, SOURCE 0
+
+random_color_wall
+field_type KS
+subset full
+t0 0
+ncolor 3
+momentum 0 0 0
+source_label rcw0
+forget_source
+
+# BASE, SOURCE 1
+
+corner_wall
+field_type KS
+subset full
+t0 0
+source_label cw0
+forget_source
+
+# BASE, SOURCE 2
+
+point
+field_type KS
+subset full
+origin 0 0 0 0
+source_label pt
+forget_source
+
+### DESCRIPTION OF MODIFIED SOURCES
+
+number_of_modified_sources 4
+
+# MODIFIED, SOURCE 3
+source 0
+momentum
+momentum 1 0 0
+op_label rcwm1
+forget_source
+
+# MODIFIED, SOURCE 4
+source 1
+momentum
+momentum 1 0 0
+op_label cwm1
+forget_source
+
+
+# MODIFIED, SOURCE 5
+source 0
+momentum
+momentum 1 1 0
+op_label rcwm2
+forget_source
+
+# MODIFIED, SOURCE 6
+source 1
+momentum
+momentum 1 1 0
+op_label cwm2
+forget_source
+
+######################################################################
+
+### PROPAGATORS
+
+# DESCRIPTION OF PROPAGATORS
+
+number_of_sets 7
+
+
+# PARAMETERS FOR SET 0
+set_type multimass
+inv_type UML
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision 2
+source 0
+number_of_propagators 4
+
+
+# PROPAGATOR 0
+mass 0.03
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 1
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 2
+mass 0.07
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 3
+mass 0.09
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PARAMETERS FOR SET 1
+set_type multimass
+inv_type UML
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision 2
+source 1
+number_of_propagators 4
+
+
+# PROPAGATOR 4
+mass 0.03
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 5
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 6
+mass 0.07
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 7
+mass 0.09
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PARAMETERS FOR SET 2
+set_type multimass
+inv_type UML
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision 2
+source 2
+number_of_propagators 4
+
+
+# PROPAGATOR 8
+mass 0.03
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 9
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 10
+mass 0.07
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 11
+mass 0.09
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PARAMETERS FOR SET 3
+set_type multimass
+inv_type UML
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision 2
+source 3
+number_of_propagators 4
+
+
+# PROPAGATOR 12
+mass 0.03
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 13
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 14
+mass 0.07
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 15
+mass 0.09
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PARAMETERS FOR SET 4
+set_type multimass
+inv_type UML
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision 2
+source 4
+number_of_propagators 4
+
+
+# PROPAGATOR 16
+mass 0.03
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 17
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 18
+mass 0.07
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 19
+mass 0.09
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PARAMETERS FOR SET 5
+set_type multimass
+inv_type UML
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision 2
+source 5
+number_of_propagators 4
+
+
+# PROPAGATOR 20
+mass 0.03
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 21
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 22
+mass 0.07
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 23
+mass 0.09
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PARAMETERS FOR SET 6
+set_type multimass
+inv_type UML
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision 2
+source 6
+number_of_propagators 4
+
+
+# PROPAGATOR 24
+mass 0.03
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 25
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 26
+mass 0.07
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PROPAGATOR 27
+mass 0.09
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+######################################################################
+### QUARKS
+
+
+# DESCRIPTION OF QUARKS
+
+number_of_quarks 28
+
+
+# QUARK 0
+propagator 0
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 1
+propagator 1
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 2
+propagator 2
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 3
+propagator 3
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 4
+propagator 4
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 5
+propagator 5
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 6
+propagator 6
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 7
+propagator 7
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 8
+propagator 8
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 9
+propagator 9
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 10
+propagator 10
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 11
+propagator 11
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 12
+propagator 12
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 13
+propagator 13
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 14
+propagator 14
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 15
+propagator 15
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 16
+propagator 16
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 17
+propagator 17
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 18
+propagator 18
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 19
+propagator 19
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 20
+propagator 20
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 21
+propagator 21
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 22
+propagator 22
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 23
+propagator 23
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 24
+propagator 24
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 25
+propagator 25
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 26
+propagator 26
+identity
+op_label id
+forget_ksprop
+
+
+# QUARK 27
+propagator 27
+identity
+op_label id
+forget_ksprop
+
+
+######################################################################
+### MESONS
+
+# DESCRIPTION OF MESONS
+
+number_of_mesons 36
+
+
+pair 0 0
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p000 1 * 1 pion5  0 0 0 EO EO EO
+
+pair 4 4
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p000 1 * 1 pion5  0 0 0 EO EO EO
+
+pair 8 8
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p000 1 * 1 pion5  0 0 0 EO EO EO
+
+
+pair 1 1
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p000 1 * 1 pion5  0 0 0 EO EO EO
+
+pair 5 5
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p000 1 * 1 pion5  0 0 0 EO EO EO
+
+pair 9 9
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p000 1 * 1 pion5  0 0 0 EO EO EO
+
+
+pair 2 2
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p000 1 * 1 pion5  0 0 0 EO EO EO
+
+pair 6 6
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p000 1 * 1 pion5  0 0 0 EO EO EO
+
+pair 10 10
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p000 1 * 1 pion5  0 0 0 EO EO EO
+
+
+pair 3 3
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p000 1 * 1 pion5  0 0 0 EO EO EO
+
+pair 7 7
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p000 1 * 1 pion5  0 0 0 EO EO EO
+
+pair 11 11
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p000 1 * 1 pion5  0 0 0 EO EO EO
+
+
+pair 12 0
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p100 1 * 1 pion5  1 0 0 EO EO EO
+
+pair 16 4
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p100 1 * 1 pion5  1 0 0 EO EO EO
+
+pair 8 8
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 3
+
+correlator PION_5  p100 1 * 1 pion5  1 0 0 EO EO EO
+correlator PION_5  p100 1 * 1 pion5  0 1 0 EO EO EO
+correlator PION_5  p100 1 * 1 pion5  0 0 1 EO EO EO
+
+
+pair 13 1
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p100 1 * 1 pion5  1 0 0 EO EO EO
+
+pair 17 5
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p100 1 * 1 pion5  1 0 0 EO EO EO
+
+pair 9 9
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 3
+
+correlator PION_5  p100 1 * 1 pion5  1 0 0 EO EO EO
+correlator PION_5  p100 1 * 1 pion5  0 1 0 EO EO EO
+correlator PION_5  p100 1 * 1 pion5  0 0 1 EO EO EO
+
+
+pair 14 2
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p100 1 * 1 pion5  1 0 0 EO EO EO
+
+pair 18 6
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p100 1 * 1 pion5  1 0 0 EO EO EO
+
+pair 10 10
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 3
+
+correlator PION_5  p100 1 * 1 pion5  1 0 0 EO EO EO
+correlator PION_5  p100 1 * 1 pion5  0 1 0 EO EO EO
+correlator PION_5  p100 1 * 1 pion5  0 0 1 EO EO EO
+
+
+pair 15 3
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p100 1 * 1 pion5  1 0 0 EO EO EO
+
+pair 19 7
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p100 1 * 1 pion5  1 0 0 EO EO EO
+
+pair 11 11
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 3
+
+correlator PION_5  p100 1 * 1 pion5  1 0 0 EO EO EO
+correlator PION_5  p100 1 * 1 pion5  0 1 0 EO EO EO
+correlator PION_5  p100 1 * 1 pion5  0 0 1 EO EO EO
+
+
+pair 20 0
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p110 1 * 1 pion5  1 1 0 EO EO EO
+
+pair 24 4
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p110 1 * 1 pion5  1 1 0 EO EO EO
+
+pair 8 8
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 3
+
+correlator PION_5  p110 1 * 1 pion5  1 1 0 EO EO EO
+correlator PION_5  p110 1 * 1 pion5  1 0 1 EO EO EO
+correlator PION_5  p110 1 * 1 pion5  0 1 1 EO EO EO
+
+
+pair 21 1
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p110 1 * 1 pion5  1 1 0 EO EO EO
+
+pair 25 5
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p110 1 * 1 pion5  1 1 0 EO EO EO
+
+pair 9 9
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 3
+
+correlator PION_5  p110 1 * 1 pion5  1 1 0 EO EO EO
+correlator PION_5  p110 1 * 1 pion5  1 0 1 EO EO EO
+correlator PION_5  p110 1 * 1 pion5  0 1 1 EO EO EO
+
+
+pair 22 2
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p110 1 * 1 pion5  1 1 0 EO EO EO
+
+pair 26 6
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p110 1 * 1 pion5  1 1 0 EO EO EO
+
+pair 10 10
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 3
+
+correlator PION_5  p110 1 * 1 pion5  1 1 0 EO EO EO
+correlator PION_5  p110 1 * 1 pion5  1 0 1 EO EO EO
+correlator PION_5  p110 1 * 1 pion5  0 1 1 EO EO EO
+
+
+pair 23 3
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p110 1 * 1 pion5  1 1 0 EO EO EO
+
+pair 27 7
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_5  p110 1 * 1 pion5  1 1 0 EO EO EO
+
+pair 11 11
+spectrum_request meson
+
+forget_corr
+
+r_offset 0 0 0 0
+
+number_of_correlators 3
+
+correlator PION_5  p110 1 * 1 pion5  1 1 0 EO EO EO
+correlator PION_5  p110 1 * 1 pion5  1 0 1 EO EO EO
+correlator PION_5  p110 1 * 1 pion5  0 1 1 EO EO EO
+
+
+######################################################################
+# BARYONS
+
+# DESCRIPTION OF BARYONS
+number_of_baryons 0
+

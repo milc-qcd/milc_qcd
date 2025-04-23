@@ -1,0 +1,279 @@
+SU3 staggered valence fermions
+MIMD version 7.8.1
+Machine = QMP (portable), with 1 nodes
+Host(0) = cori09
+Username = detar
+start: Tue Sep  6 13:56:50 2016
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+HISQ_REUNIT_ALLOW_SVD
+HISQ_REUNIT_SVD_REL_ERROR = 1e-08
+HISQ_REUNIT_SVD_ABS_ERROR = 1e-08
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 5682304
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 8 x 8 x 8 x 8
+Mallocing 1.7 MBytes per node for lattice
+WARNING!!: Resetting random seed
+
+
+######################################################################
+# source time 0
+######################################################################
+# Gauge field description
+reload_serial ../../binary_samples/lat.sample.l8888
+u0 0.8696
+coulomb_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0 
+time_bc antiperiodic
+# Chiral condensate and related measurements
+number_of_pbp_masses 0
+# Description of base sources
+number_of_base_sources 3
+# base source 0
+even_wall
+subset full
+t0 0
+source_label E
+forget_source 
+# base source 1
+evenandodd_wall
+subset full
+t0 0
+source_label q
+forget_source 
+# base source 2
+evenminusodd_wall
+subset full
+t0 0
+source_label o
+forget_source 
+# Description of modified sources
+number_of_modified_sources 0
+# Description of propagators
+number_of_sets 3
+# Parameters for set 0
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0 
+precision 1
+source 0
+number_of_propagators 1
+# propagator 0
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 3e-06
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+# Parameters for set 1
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0 
+precision 1
+source 1
+number_of_propagators 1
+# propagator 1
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 3e-06
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0 
+precision 1
+source 2
+number_of_propagators 1
+# propagator 2
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 3e-06
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+number_of_quarks 3
+# mass 0
+propagator 0
+identity
+op_label d
+forget_ksprop 
+# mass 0
+propagator 1
+identity
+op_label d
+forget_ksprop 
+# mass 0
+propagator 2
+identity
+op_label d
+forget_ksprop 
+# Description of mesons
+number_of_mesons 4
+# pair 0 mass 0 even wall / even wall
+pair 0 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.nl.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 2
+correlator PION_PS p000   1 / 16  pion5  0  0  0  E  E  E
+correlator PION_SC p000   1 / 16 pion05  0  0  0  E  E  E
+# pair 1 mass 0 evenandodd wall / evenandodd wall
+pair 1 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.nl.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator PION_PS_a p000   1 / 16  pion5  0  0  0  E  E  E
+# pair 2 mass 0 evenminusodd wall / evenminusodd wall
+pair 2 2 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.nl.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator PION_PS_b p000   1 / 16  pion5  0  0  0  E  E  E
+# pair 3 mass 0 evenandodd wall / evenminusodd wall
+pair 1 2 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.nl.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator PION_SC p000   1 / 16 pion05  0  0  0  E  E  E
+# Description of baryons
+number_of_baryons 2
+# triplet 0 mass 0 even wall
+triplet 0 0 0 
+spectrum_request baryon
+save_corr_fnal ks_spectrum_hisq.nl.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator NUCLEON   1 / 64.000000  nucleon
+# triplet 1 mass 0 evenandodd wall
+triplet 1 1 1 
+spectrum_request baryon
+save_corr_fnal ks_spectrum_hisq.nl.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 2
+correlator NUCLEON   1 / 64.000000  nucleon
+correlator DELTA   1 / 64.000000    delta
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l8888
+Time stamp Tue Mar 13 15:47:22 2012
+Checksums 4f9d000e 8d72f72e OK
+Time to reload gauge configuration = 3.814936e-03
+CHECK PLAQ: 1.779002e+00 1.782359e+00
+CHECK NERSC LINKTR: -6.456386e-04 CKSUM: 4a3bbf43
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 4.930496e-04
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+Combined fattening and long-link calculation time: 0.052687
+Time to APE smear 5.290508e-04 sec
+Fixing to Coulomb gauge
+step 19 av gf action 8.73432130e-01, delta 6.467e-04
+step 39 av gf action 8.76697987e-01, delta 4.321e-05
+step 59 av gf action 8.77135903e-01, delta 1.052e-05
+step 79 av gf action 8.77249718e-01, delta 2.891e-06
+GFIX: Ended at step 85. Av gf action 8.77263725e-01, delta 1.937e-06
+Time to APE smear 4.901886e-04 sec
+END OF HEADER
+Mass= 0.05 source even_wall residue= 3e-06 rel= 0
+Starting solve_ksprop
+Combined fattening and long-link calculation time: 0.052612
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+ OK converged final_rsq= 6.2e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 2 iters= 80
+ OK converged final_rsq= 1.7e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 1 iters= 2
+solve_ksprop: color = 1
+ OK converged final_rsq= 5.5e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 2 iters= 79
+ OK converged final_rsq= 1.5e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 1 iters= 2
+solve_ksprop: color = 2
+ OK converged final_rsq= 5.9e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 2 iters= 80
+ OK converged final_rsq= 1.7e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 1 iters= 2
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Done with solve_ksprop
+Mass= 0.05 source even_and_odd_wall residue= 3e-06 rel= 0
+Starting solve_ksprop
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+ OK converged final_rsq= 4e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 2 iters= 75
+ OK converged final_rsq= 8.2e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 1 iters= 12
+solve_ksprop: color = 1
+ OK converged final_rsq= 8.6e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 1 iters= 73
+ OK converged final_rsq= 8.9e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 1 iters= 12
+solve_ksprop: color = 2
+ OK converged final_rsq= 4.1e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 2 iters= 76
+ OK converged final_rsq= 7.2e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 1 iters= 12
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Done with solve_ksprop
+Mass= 0.05 source even_minus_odd_wall residue= 3e-06 rel= 0
+Starting solve_ksprop
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+ OK converged final_rsq= 4.1e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 2 iters= 75
+ OK converged final_rsq= 4.5e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 2 iters= 14
+solve_ksprop: color = 1
+ OK converged final_rsq= 4e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 2 iters= 75
+ OK converged final_rsq= 7.6e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 1 iters= 12
+solve_ksprop: color = 2
+ OK converged final_rsq= 4.1e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 2 iters= 76
+ OK converged final_rsq= 7.2e-12 (cf 9e-12) rel = 1 (cf 0) restarts = 1 iters= 12
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Done with solve_ksprop
+destroy prop[0]
+destroy prop[1]
+destroy prop[2]
+Mesons for quarks 0 and 0
+Mesons for quarks 1 and 1
+Mesons for quarks 2 and 2
+Mesons for quarks 1 and 2
+Baryons for quarks 0, 0, and 0
+Baryons for quarks 1, 1, and 1
+RUNNING COMPLETED
+Time = 1.416053e+00 seconds
+total_iters = 1574
+destroy quark[0]
+destroy quark[1]
+destroy quark[2]
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Tue Sep  6 13:56:51 2016
+

@@ -1,0 +1,230 @@
+prompt 0
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 80861
+job_id none
+
+######################################################################
+# source time 2
+######################################################################
+
+# GAUGE FIELD DESCRIPTION
+
+reload_serial ../../binary_samples/lat.sample.l8888
+u0 1
+coulomb_gauge_fix
+forget
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
+
+# EIGENPAIRS
+
+max_number_of_eigenpairs 0
+
+# CHIRAL CONDENSATE AND RELATED MEASUREMENTS
+
+number_of_pbp_masses 0
+
+### DESCRIPTION OF BASE SOURCES
+
+number_of_base_sources 1
+
+# BASE, SOURCE 0
+
+evenandodd_wall
+field_type KS
+subset full
+t0 0
+source_label q
+forget_source
+
+# DESCRIPTION OF MODIFIED SOURCES'
+
+number_of_modified_sources 2
+
+# MODIFIED, SOURCE 1
+
+source 0
+
+funnywall1
+op_label f1
+forget_source
+
+# MODIFIED, SOURCE 2
+
+source 0
+
+funnywall2
+op_label f2
+forget_source
+
+######################################################################
+
+### PROPAGATORS
+
+# DESCRIPTION OF PROPAGATORS
+
+number_of_sets 3
+
+# PARAMETERS FOR SET 0
+
+set_type multimass
+inv_type UML
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision 2
+source 0
+number_of_propagators 1
+
+# PROPAGATORS FOR SET 0
+
+
+# PROPAGATOR 0
+
+mass 0.01494
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PARAMETERS FOR SET 1
+
+set_type multimass
+inv_type UML
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision 2
+source 1
+number_of_propagators 1
+
+# PROPAGATORS FOR SET 1
+
+
+# PROPAGATOR 1
+
+mass 0.01494
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+# PARAMETERS FOR SET 2
+
+set_type multimass
+inv_type UML
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision 2
+source 2
+number_of_propagators 1
+
+# PROPAGATORS FOR SET 2
+
+
+# PROPAGATOR 2
+
+mass 0.01494
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+fresh_ksprop
+forget_ksprop
+
+
+######################################################################
+### QUARKS
+
+# DESCRIPTION OF QUARKS
+
+number_of_quarks 3
+
+# QUARKS FOR evenandodd_wall SOURCE
+
+
+# MASS 0
+
+propagator 0
+identity
+op_label d
+forget_ksprop
+
+
+# MASS 0
+
+propagator 1
+identity
+op_label d
+forget_ksprop
+
+
+# MASS 0
+
+propagator 2
+identity
+op_label d
+forget_ksprop
+
+
+######################################################################
+### MESONS
+
+# DESCRIPTION OF MESONS
+
+number_of_mesons 2
+
+
+# evenandodd_wall WITH funnywall1
+
+pair 0 1
+spectrum_request meson
+
+forget_corr
+r_offset 0 0 0 0
+
+number_of_correlators 6
+
+# Normalization is 1/vol3
+correlator PION_5  p000  1 * 0.000244141 pion5  0 0 0 E E E
+correlator PION_i5 p000  1 * 0.000244141 pioni5 0 0 0 E E E
+correlator PION_i  p000  1 * 0.000244141 pioni  0 0 0 E E E
+correlator PION_s  p000  1 * 0.000244141 pions  0 0 0 E E E
+correlator RHO_i   p000  1 * 0.000244141 rhoi   0 0 0 E E E
+correlator RHO_s   p000  1 * 0.000244141 rhois  0 0 0 E E E
+
+# evenandodd_wall WITH funnywall2
+
+pair 0 2
+spectrum_request meson
+
+forget_corr
+r_offset 0 0 0 0
+
+number_of_correlators 6
+
+# Normalization is 1/vol3
+correlator PION_05 p000  1 * 0.000244141 pion05 0 0 0 E E E
+correlator PION_ij p000  1 * 0.000244141 pionij 0 0 0 E E E
+correlator PION_i0 p000  1 * 0.000244141 pioni0 0 0 0 E E E
+correlator PION_0  p000  1 * 0.000244141 pion0  0 0 0 E E E
+correlator RHO_i0  p000  1 * 0.000244141 rhoi0  0 0 0 E E E
+correlator RHO_0   p000  1 * 0.000244141 rho0   0 0 0 E E E
+
+
+######################################################################
+# BARYONS
+
+# DESCRIPTION OF BARYONS
+number_of_baryons 0
+
+

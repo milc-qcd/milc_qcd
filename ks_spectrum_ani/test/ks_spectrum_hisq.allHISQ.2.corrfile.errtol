@@ -1,0 +1,726 @@
+---
+JobID: 0
+date: XXX XXX XXX XXX XXX UTC"
+lattice_size: 8,8,8,32
+antiquark_type: staggered
+antiquark_source_type: vector_field
+antiquark_source_subset: corner
+antiquark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+antiquark_source_file: rnd_source
+antiquark_source_ncolor: 0
+antiquark_source_mom: [ 2e-06 2e-06 0 ]
+antiquark_source_label: RW
+antiquark_sink_label: d
+antiquark_mass: "0.000569"
+antiquark_epsilon: 0
+quark_type: staggered
+quark_source_type: vector_field
+quark_source_subset: corner
+quark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+quark_source_file: rnd_source
+quark_source_ncolor: 0
+quark_source_mom: [ 2e-06 2e-06 0 ]
+quark_source_label: RW
+quark_sink_label: d
+quark_mass: "0.000569"
+quark_epsilon: 0
+...
+---
+correlator: P5-P5
+momentum: p000-fine
+spin_taste_sink: G5-G5
+correlator_key: P5-P5_RW_RW_d_d_m0.000569_m0.000569_p000-fine
+...
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+---
+JobID: 0
+date: XXX XXX XXX XXX XXX UTC"
+lattice_size: 8,8,8,32
+antiquark_type: staggered
+antiquark_source_type: vector_field
+antiquark_source_subset: corner
+antiquark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+antiquark_source_file: rnd_source
+antiquark_source_ncolor: 0
+antiquark_source_mom: [ 2e-06 2e-06 0 ]
+antiquark_source_label: RW
+antiquark_sink_label: d
+antiquark_mass: "0.000569"
+antiquark_epsilon: 0
+quark_type: staggered
+quark_source_type: vector_field
+quark_source_subset: corner
+quark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+quark_source_file: rnd_source
+quark_source_ncolor: 0
+quark_source_mom: [ 2e-06 2e-06 0 ]
+quark_source_label: RW
+quark_sink_label: d
+quark_mass: "0.000569"
+quark_epsilon: 0
+...
+---
+correlator: P5-P5
+momentum: p100-fine
+spin_taste_sink: G5-G5
+correlator_key: P5-P5_RW_RW_d_d_m0.000569_m0.000569_p100-fine
+...
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+---
+JobID: 0
+date: XXX XXX XXX XXX XXX UTC"
+lattice_size: 8,8,8,32
+antiquark_type: staggered
+antiquark_source_type: vector_field
+antiquark_source_subset: corner
+antiquark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+antiquark_source_file: rnd_source
+antiquark_source_ncolor: 0
+antiquark_source_mom: [ 2e-06 2e-06 0 ]
+antiquark_source_label: RW
+antiquark_sink_label: d
+antiquark_mass: "0.164"
+antiquark_epsilon: 2e-06
+quark_type: staggered
+quark_source_type: vector_field
+quark_source_subset: corner
+quark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+quark_source_file: rnd_source
+quark_source_ncolor: 0
+quark_source_mom: [ 2e-06 2e-06 0 ]
+quark_source_label: RW
+quark_sink_label: d
+quark_mass: "0.000569"
+quark_epsilon: 0
+...
+---
+correlator: P5-P5
+momentum: p000-fine
+spin_taste_sink: G5-G5
+correlator_key: P5-P5_RW_RW_d_d_m0.164_m0.000569_p000-fine
+...
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+---
+JobID: 0
+date: XXX XXX XXX XXX XXX UTC"
+lattice_size: 8,8,8,32
+antiquark_type: staggered
+antiquark_source_type: vector_field
+antiquark_source_subset: corner
+antiquark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+antiquark_source_file: rnd_source
+antiquark_source_ncolor: 0
+antiquark_source_mom: [ 2e-06 2e-06 0 ]
+antiquark_source_label: RW
+antiquark_sink_label: d
+antiquark_mass: "0.164"
+antiquark_epsilon: 2e-06
+quark_type: staggered
+quark_source_type: vector_field
+quark_source_subset: corner
+quark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+quark_source_file: rnd_source
+quark_source_ncolor: 0
+quark_source_mom: [ 2e-06 2e-06 0 ]
+quark_source_label: RW
+quark_sink_label: d
+quark_mass: "0.000569"
+quark_epsilon: 0
+...
+---
+correlator: P5-P5
+momentum: p100-fine
+spin_taste_sink: G5-G5
+correlator_key: P5-P5_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+---
+JobID: 0
+date: XXX XXX XXX XXX XXX UTC"l
+attice_size: 8,8,8,32
+antiquark_type: staggered
+antiquark_source_type: vector_field
+antiquark_source_subset: corner
+antiquark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+antiquark_source_file: rnd_source
+antiquark_source_ncolor: 0
+antiquark_source_mom: [ 2e-06 2e-06 0 ]
+antiquark_source_label: RW
+antiquark_sink_label: d
+antiquark_mass: "0.1827"
+antiquark_epsilon: 2e-06
+quark_type: staggered
+quark_source_type: vector_field
+quark_source_subset: corner
+quark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+quark_source_file: rnd_source
+quark_source_ncolor: 0
+quark_source_mom: [ 2e-06 2e-06 0 ]
+quark_source_label: RW
+quark_sink_label: d
+quark_mass: "0.000569"
+quark_epsilon: 0
+...
+---
+correlator: P5-P5
+momentum: p000-fine
+spin_taste_sink: G5-G5
+correlator_key: P5-P5_RW_RW_d_d_m0.1827_m0.000569_p000-fine
+...
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+---
+JobID: 0
+date: XXX XXX XXX XXX XXX UTC"
+lattice_size: 8,8,8,32
+antiquark_type: staggered
+antiquark_source_type: vector_field
+antiquark_source_subset: corner
+antiquark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+antiquark_source_file: rnd_source
+antiquark_source_ncolor: 0
+antiquark_source_mom: [ 2e-06 2e-06 0 ]
+antiquark_source_label: RW
+antiquark_sink_label: d
+antiquark_mass: "0.1827"
+antiquark_epsilon: 2e-06
+quark_type: staggered
+quark_source_type: vector_field
+quark_source_subset: corner
+quark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+quark_source_file: rnd_source
+quark_source_ncolor: 0
+quark_source_mom: [ 2e-06 2e-06 0 ]
+quark_source_label: RW
+quark_sink_label: d
+quark_mass: "0.000569"
+quark_epsilon: 0
+...
+---
+correlator: P5-P5
+momentum: p100-fine
+spin_taste_sink: G5-G5
+correlator_key: P5-P5_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+---
+JobID: 0
+date: XXX XXX XXX XXX XXX UTC"
+lattice_size: 8,8,8,32
+antiquark_type: staggered
+antiquark_source_type: vector_field
+antiquark_source_subset: corner
+antiquark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+antiquark_source_file: rnd_source
+antiquark_source_ncolor: 0
+antiquark_source_mom: [ 2e-06 2e-06 0 ]
+antiquark_source_label: RW
+antiquark_sink_label: d
+antiquark_mass: "0.164"
+antiquark_epsilon: 2e-06
+quark_type: staggered
+quark_source_type: vector_field
+quark_source_subset: corner
+quark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+quark_source_file: rnd_source
+quark_source_ncolor: 0
+quark_source_mom: [ 2e-06 2e-06 0 ]
+quark_source_label: RW
+quark_sink_label: d
+quark_mass: "0.000569"
+quark_epsilon: 0
+...
+---
+correlator: A4-A4_V4-V4_T34_m0.164
+momentum: p000-fine
+spin_taste_sink: GT-GT
+correlator_key: A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p000-fine
+...
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+---
+JobID: 0
+date: XXX XXX XXX XXX XXX UTC"
+lattice_size: 8,8,8,32
+antiquark_type: staggered
+antiquark_source_type: vector_field
+antiquark_source_subset: corner
+antiquark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+antiquark_source_file: rnd_source
+antiquark_source_ncolor: 0
+antiquark_source_mom: [ 2e-06 2e-06 0 ]
+antiquark_source_label: RW
+antiquark_sink_label: d
+antiquark_mass: "0.164"
+antiquark_epsilon: 2e-06
+quark_type: staggered
+quark_source_type: vector_field
+quark_source_subset: corner
+quark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+quark_source_file: rnd_source
+quark_source_ncolor: 0
+quark_source_mom: [ 2e-06 2e-06 0 ]
+quark_source_label: RW
+quark_sink_label: d
+quark_mass: "0.000569"
+quark_epsilon: 0
+...
+---
+correlator: A4-A4_V4-V4_T34_m0.164
+momentum: p100-fine
+spin_taste_sink: GT-GT
+correlator_key: A4-A4_V4-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+---
+correlator: A4-A4_T14-V4_T34_m0.164
+momentum: p100-fine
+spin_taste_sink: GXT-GT
+correlator_key: A4-A4_T14-V4_T34_m0.164_RW_RW_d_d_m0.164_m0.000569_p100-fine
+...
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+---
+JobID: 0
+date: XXX XXX XXX XXX XXX UTC"
+lattice_size: 8,8,8,32
+antiquark_type: staggered
+antiquark_source_type: vector_field
+antiquark_source_subset: corner
+antiquark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+antiquark_source_file: rnd_source
+antiquark_source_ncolor: 0
+antiquark_source_mom: [ 2e-06 2e-06 0 ]
+antiquark_source_label: RW
+antiquark_sink_label: d
+antiquark_mass: "0.1827"
+antiquark_epsilon: 2e-06
+quark_type: staggered
+quark_source_type: vector_field
+quark_source_subset: corner
+quark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+quark_source_file: rnd_source
+quark_source_ncolor: 0
+quark_source_mom: [ 2e-06 2e-06 0 ]
+quark_source_label: RW
+quark_sink_label: d
+quark_mass: "0.000569"
+quark_epsilon: 0
+...
+---
+correlator: A4-A4_V4-V4_T34_m0.1827
+momentum: p000-fine
+spin_taste_sink: GT-GT
+correlator_key: A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p000-fine
+...
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+---
+JobID: 0
+date: XXX XXX XXX XXX XXX UTC"
+lattice_size: 8,8,8,32
+antiquark_type: staggered
+antiquark_source_type: vector_field
+antiquark_source_subset: corner
+antiquark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+antiquark_source_file: rnd_source
+antiquark_source_ncolor: 0
+antiquark_source_mom: [ 2e-06 2e-06 0 ]
+antiquark_source_label: RW
+antiquark_sink_label: d
+antiquark_mass: "0.1827"
+antiquark_epsilon: 2e-06
+quark_type: staggered
+quark_source_type: vector_field
+quark_source_subset: corner
+quark_source_origin: [ 2e-06 2e-06 2e-06 0 ]
+quark_source_file: rnd_source
+quark_source_ncolor: 0
+quark_source_mom: [ 2e-06 2e-06 0 ]
+quark_source_label: RW
+quark_sink_label: d
+quark_mass: "0.000569"
+quark_epsilon: 0
+...
+---
+correlator: A4-A4_V4-V4_T34_m0.1827
+momentum: p100-fine
+spin_taste_sink: GT-GT
+correlator_key: A4-A4_V4-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+---
+correlator: A4-A4_T14-V4_T34_m0.1827
+momentum: p100-fine
+spin_taste_sink: GXT-GT
+correlator_key: A4-A4_T14-V4_T34_m0.1827_RW_RW_d_d_m0.1827_m0.000569_p100-fine
+...
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06

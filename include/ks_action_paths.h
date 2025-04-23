@@ -42,11 +42,25 @@ typedef struct {
   int umethod;
   int ugroup;
   int constructed;       /* Boolean */
+#ifdef ANISOTROPY
+  int ani_dir;
+  Real ani_xiq;
+#  ifdef ONEDIM_ANISO_TEST
+  Real iso_xiq;
+#  endif
+#endif
 } ks_action_paths_hisq;
 
 typedef struct {
   ks_component_paths p;
   int constructed;         /* Boolean */
+#ifdef ANISOTROPY
+  int ani_dir;
+  Real ani_xiq;
+#  ifdef ONEDIM_ANISO_TEST
+  Real iso_xiq;
+#  endif
+#endif
 } ks_action_paths;
 
 

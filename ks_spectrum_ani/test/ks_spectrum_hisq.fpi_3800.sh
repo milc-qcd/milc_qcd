@@ -1,0 +1,20 @@
+nx=24
+ny=24
+nz=24
+nt=64
+iseed=184563608
+jobid=203696.kaon2.fnal.gov
+inlat=/scratch/serial/detar/ks_spectrum/l2464f211b600m0102m0509m635a.3800
+u0=0.86372
+source_start=4
+source_inc=16
+n_sources=4
+nrand_source=3
+fpi_nmasses=10
+fpi_mass=( 0.00509  0.007635  0.01018  0.01527  0.02036  0.03054  0.04072  0.0509  0.57  0.635 )
+naik_term_epsilon=( 0 0 0 0 0 0 0 0 -1.917810e-01 -2.308020e-01 )
+err=1e-8
+error_for_propagator=( ${err} ${err} ${err} ${err} ${err} ${err} ${err} ${err} 1e-14 1e-14 )
+max_cg_iterations=750
+corrfile=out.test.fnal_corr.1
+

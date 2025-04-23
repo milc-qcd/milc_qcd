@@ -192,7 +192,7 @@ printf("\n");**/
           scalar_mult_add_su3_matrix( fat1,
 	    &staple[i], -q_paths[ipath].coeff, fat1 );
 		/* minus sign in coeff. because we used backward path*/
-	  “z,	}
+	}
         END_LOOP_OMP
     } /* ipath */
   } /* loop over directions */
@@ -275,6 +275,16 @@ load_fn_links_cpu(info_t *info, fn_links_t *fn, ks_action_paths *ap,
 
   load_lnglinks(info, fn->lng, p, links);
   final_flop += info->final_flop;
+
+#ifdef ANISOTROPY
+#  ifndef ABSORB_ANI_XIQ
+  scalar_mult_fn_dir( fn, ap->ani_xiq, ap->ani_dir, fn );
+  final_flop += 36.*volume/numnodes();
+#    ifdef ONEDIM_ANISO_TEST
+  { int dir; for ( dir=XUP; dir<=TUP; dir++) if ( dir!=ap->ani_dir ) scalar_mult_fn_dir( fn, ap->iso_xiq, dir, fn ); final_flop +=108.*volume/numnodes(); }
+#    endif
+#  endif
+#endif
 
   if(want_back)
     load_fn_backlinks(fn);

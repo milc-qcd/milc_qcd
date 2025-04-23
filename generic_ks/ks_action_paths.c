@@ -173,6 +173,18 @@ int make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0) {
     ap_dmdu0->constructed = 1;
 #endif
     ap->constructed = 1;
+
+#ifdef ANISOTROPY
+  char ani_char[]="xyzt";
+  node0_printf("Anisotropic action with bare quark anisotropy %.6f in the %c-direction\n", ani_xiq, ani_char[ani_dir]);
+  ap->ani_dir = ani_dir; 
+  ap->ani_xiq = ani_xiq; 
+#  ifdef ONEDIM_ANISO_TEST
+  node0_printf("using three isotropic directions with factor %.6f for debugging\n",iso_xiq);
+  ap->iso_xiq = iso_xiq; 
+#  endif
+#endif
+
     return 1;
 }
 

@@ -1,0 +1,520 @@
+SU3 staggered valence fermions
+MIMD version milc_qcd7_8_1-1047-g17e2-dirty
+Machine = QMP (portable), with 1 nodes
+Host(0) = falco.physics.utah.edu
+Username = detar
+start: Mon Dec 30 12:27:08 2024
+
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+HISQ_REUNIT_ALLOW_SVD
+HISQ_REUNIT_SVD_REL_ERROR = 1e-08
+HISQ_REUNIT_SVD_ABS_ERROR = 1e-08
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+#== Geometry ==
+nx 8
+ny 8
+nz 8
+nt 32
+iseed 1374111
+job_id 2767399
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE (RANK) 8 x 8 x 8 x 32
+Mallocing 11.8 MBytes per node for lattice
+Aggregate time to setup 9.468603e-02
+
+
+#== Gauge ==
+reload_serial ../../binary_samples/lat.sample.l88832.ildg
+u0 1
+no_gauge_fix
+forget 
+fresh_ape 
+staple_weight 0.05
+ape_iter 20
+forget_ape 
+coordinate_origin 0 0 0 0 
+time_bc antiperiodic
+#== Eigen ==
+max_number_of_eigenpairs 0
+#== PBP Masses ==
+number_of_pbp_masses 0
+#== Base Sources ==
+number_of_base_sources 3
+#== source 0: RandomColorWallSource ==
+random_color_wall
+field_type KS
+subset corner
+t0 1
+ncolor 1
+momentum 0 0 0 
+source_label RW
+save_serial_scidac_ks_source rnd_source
+#== source 1: VectorFieldSource ==
+vector_field
+field_type KS
+subset corner
+origin 0 0 0 1 
+load_source_serial rnd_source
+ncolor 1
+momentum 0 0 0 
+source_label RW
+forget_source 
+#== source 2: VectorFieldSource ==
+vector_field
+field_type KS
+subset corner
+origin 0 0 0 1 
+load_source_serial rnd_source
+ncolor 1
+momentum 1 0 0 
+source_label RW
+forget_source 
+#== Modified Sources ==
+number_of_modified_sources 0
+#== KSsolveSets ==
+number_of_sets 4
+#== KSsolveSet ==
+set_type single
+inv_type UML
+max_cg_iterations 4000
+max_cg_restarts 10
+check sourceonly
+momentum_twist 0 0 0 
+precision 1
+WARNING: Compiled precision 2 overrides request
+QOP or CG_GPU or QPHIX compilation is required for mixed precision
+source 0
+number_of_propagators 1
+#== propagator 0: KSsolveElement ==
+mass 1.0
+naik_term_epsilon 0
+error_for_propagator 1e-07
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+#== KSsolveMultiSourceSet ==
+set_type multisource
+inv_type CGZ
+max_cg_iterations 4000
+max_cg_restarts 10
+check yes
+momentum_twist 0 0 0 
+precision 2
+mass 0.000569
+naik_term_epsilon 0
+number_of_propagators 2
+#== propagator 1: KSsolveMultiSourceElement ==
+source 1
+error_for_propagator 1e-07
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+#== propagator 2: KSsolveMultiSourceElement ==
+source 2
+error_for_propagator 1e-07
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+#== KSsolveSet ==
+set_type single
+inv_type CGZ
+max_cg_iterations 400
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0 
+precision 2
+source 1
+number_of_propagators 1
+#== propagator 3: KSsolveElement ==
+mass 0.164
+naik_term_epsilon -0.0179
+error_for_propagator 0
+rel_error_for_propagator 0.0002
+fresh_ksprop 
+forget_ksprop 
+#== KSsolveSet ==
+set_type single
+inv_type CGZ
+max_cg_iterations 400
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0 
+precision 2
+source 1
+number_of_propagators 1
+#== propagator 4: KSsolveElement ==
+mass 0.1827
+naik_term_epsilon -0.0222
+error_for_propagator 0
+rel_error_for_propagator 0.0002
+fresh_ksprop 
+forget_ksprop 
+#== Quarks ==
+number_of_quarks 7
+#== quark 0: QuarkIdentitySink == (light 000)
+propagator 1
+identity
+op_label d
+forget_ksprop 
+#== quark 1: QuarkIdentitySink == (light 100)
+propagator 2
+identity
+op_label d
+forget_ksprop 
+#== quark 2: QuarkIdentitySink ==
+propagator 3
+identity
+op_label d
+forget_ksprop 
+#== quark 3: QuarkIdentitySink ==
+propagator 4
+identity
+op_label d
+forget_ksprop 
+#== quark 4: KSExtSrcSink ==
+quark 0
+ext_src_ks
+spin_taste_extend G5T-G5T
+momentum 0 0 0 
+t0 14
+op_label x
+forget_ksprop 
+#== quark 5: KSInverseSink ==
+quark 4
+ks_inverse
+mass 0.164
+naik_term_epsilon -0.0179
+u0 1
+max_cg_iterations 400
+max_cg_restarts 5
+deflate no
+error_for_propagator 0
+rel_error_for_propagator 0.0002
+precision 2
+momentum_twist 0 0 0 
+op_label x
+forget_ksprop 
+#== quark 6: KSInverseSink ==
+quark 5
+ks_inverse
+mass 0.1827
+naik_term_epsilon -0.0222
+u0 1
+max_cg_iterations 400
+max_cg_restarts 5
+deflate no
+error_for_propagator 0
+rel_error_for_propagator 0.0002
+precision 2
+momentum_twist 0 0 0 
+op_label x
+forget_ksprop 
+#== Mesons ==
+number_of_mesons 10
+#== MesonSpectrum == (pion 000)
+pair 0 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+r_offset 0 0 0 1 
+number_of_correlators 1
+correlator P5-P5 p000-fine   1 / 124416  G5-G5  0  0  0 EO EO EO
+#== MesonSpectrum == (pion 100)
+pair 0 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+r_offset 0 0 0 1 
+number_of_correlators 1
+correlator P5-P5 p100-fine   1 / 124416  G5-G5 -1  0  0 EO EO EO
+#== MesonSpectrum == (H 0.164 000)
+pair 2 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+r_offset 0 0 0 1 
+number_of_correlators 1
+correlator P5-P5 p000-fine   1 / 124416  G5-G5  0  0  0 EO EO EO
+#== MesonSpectrum == (H 0.164 100)
+pair 2 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+r_offset 0 0 0 1 
+number_of_correlators 1
+correlator P5-P5 p100-fine   1 / 124416  G5-G5 -1  0  0 EO EO EO
+#== MesonSpectrum == (H 0.1827 000)
+pair 3 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+r_offset 0 0 0 1 
+number_of_correlators 1
+correlator P5-P5 p000-fine   1 / 124416  G5-G5  0  0  0 EO EO EO
+#== MesonSpectrum == (H 0.1827 100)
+pair 3 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+r_offset 0 0 0 1 
+number_of_correlators 1
+correlator P5-P5 p100-fine   1 / 124416  G5-G5 -1  0  0 EO EO EO
+#== MesonSpectrum == (HV2pi 0.164 000)
+pair 2 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+r_offset 0 0 0 1 
+number_of_correlators 1
+correlator A4-A4_V4-V4_T34_m0.164 p000-fine  -1 / 124416  GT-GT  0  0  0 EO EO EO
+#== MesonSpectrum == (HV2pi 0.164 100)
+pair 2 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+r_offset 0 0 0 1 
+number_of_correlators 2
+correlator A4-A4_V4-V4_T34_m0.164 p100-fine  -1 / 124416  GT-GT -1  0  0 EO EO EO
+correlator A4-A4_T14-V4_T34_m0.164 p100-fine   1 / 124416 GXT-GT -1  0  0 EO EO EO
+#== MesonSpectrum == (HV2pi 0.1827 000)
+pair 3 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+r_offset 0 0 0 1 
+number_of_correlators 1
+correlator A4-A4_V4-V4_T34_m0.1827 p000-fine  -1 / 124416  GT-GT  0  0  0 EO EO EO
+#== MesonSpectrum == (HV2pi 0.1827 100)
+pair 3 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile
+r_offset 0 0 0 1 
+number_of_correlators 2
+correlator A4-A4_V4-V4_T34_m0.1827 p100-fine  -1 / 124416  GT-GT -1  0  0 EO EO EO
+correlator A4-A4_T14-V4_T34_m0.1827 p100-fine   1 / 124416 GXT-GT -1  0  0 EO EO EO
+#== Baryons ==
+number_of_baryons 0
+Aggregate time to read parameters 7.970333e-04
+read_gauge_hdr: Reading as a SciDAC formatted file
+Calling build_qio_layout with volume 16384
+Restoring binary SciDAC file ../../binary_samples/lat.sample.l88832.ildg
+File info 
+"MILC ILDG archival gauge configuration"
+Record info 
+"action.description = "Gauge plus fermion (improved)"
+gauge.description = "Symanzik 1x1 + 1x2 + 1x1x1 action"
+gauge.nloops = 3
+gauge.nreps = 1
+gauge.beta11 = 7.000000
+gauge.tadpole.u0 = 0.844100
+quark.description = "O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+quark.flavors1 = 4
+quark.flavors2 = 4
+quark.mass1 = 0.100000
+quark.mass2 = 0.100000
+"
+Checksums e40390d9 d66a3ce1
+Time to reload gauge configuration = 4.559994e-02
+CHECK PLAQ: 2.5882781533654424e+00 2.5885165257922962e+00
+CHECK NERSC LINKTR: 9.6173924604560546e-01 CKSUM: fd6cbd2b
+Reunitarized for double precision. Max deviation 2.58e-07 changed to 5.55e-16
+Time to check unitarity = 9.109020e-03
+Aggregate time to read lattice 6.249905e-02
+COULOMB GAUGE FIXING SKIPPED.
+Time to APE smear 3.493619e-01 sec
+Aggregate time to save lattice 0.000000e+00
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarization group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+Combined fattening and long-link calculation time: 0.008140
+Combined fattening and long-link calculation time: 0.097010
+Aggregate time to create fermion links 2.541761e-01
+Aggregate time to calculate Dirac eigenpairs 0.000000e+00
+Aggregate time to calculate pbp, etc 0.000000e+00
+END OF HEADER
+Wrote source for color 0 time slice 1
+Time to save source color 0 = 2.432108e-03
+Restoring binary SciDAC file rnd_source
+File info 
+"
+Derived MILC KS field
+gauge.filename ../../binary_samples/lat.sample.l88832.ildg
+propagator.boundary_conditions space: periodic time: antiperiodic
+asqtad.u0 1.00000
+action.hisq.fat7.one_link 1.250000e-01
+action.hisq.fat7.three_staple -6.250000e-02
+action.hisq.fat7.five_staple 1.562500e-02
+action.hisq.fat7.seven_staple -2.604167e-03
+action.hisq.asqtad.one_link 1.000000e+00
+action.hisq.asqtad.three_staple -6.250000e-02
+action.hisq.asqtad.five_staple 1.562500e-02
+action.hisq.asqtad.seven_staple -2.604167e-03
+action.hisq.asqtad.lepage -1.250000e-01
+action.hisq.asqtad.naik -4.166667e-02
+action.hisq.difference.one_link 1.250000e-01
+action.hisq.difference.naik -4.166667e-02
+
+inv_arg.rsqprop 0.000000e+00
+"
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><color>0</color><info></info></usqcdSourceInfo>"
+Checksums 955ad10c 6d6ab3b7
+Restoring binary SciDAC file rnd_source
+File info 
+"
+Derived MILC KS field
+gauge.filename ../../binary_samples/lat.sample.l88832.ildg
+propagator.boundary_conditions space: periodic time: antiperiodic
+asqtad.u0 1.00000
+action.hisq.fat7.one_link 1.250000e-01
+action.hisq.fat7.three_staple -6.250000e-02
+action.hisq.fat7.five_staple 1.562500e-02
+action.hisq.fat7.seven_staple -2.604167e-03
+action.hisq.asqtad.one_link 1.000000e+00
+action.hisq.asqtad.three_staple -6.250000e-02
+action.hisq.asqtad.five_staple 1.562500e-02
+action.hisq.asqtad.seven_staple -2.604167e-03
+action.hisq.asqtad.lepage -1.250000e-01
+action.hisq.asqtad.naik -4.166667e-02
+action.hisq.difference.one_link 1.250000e-01
+action.hisq.difference.naik -4.166667e-02
+
+inv_arg.rsqprop 0.000000e+00
+"
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><color>0</color><info></info></usqcdSourceInfo>"
+Checksums 955ad10c 6d6ab3b7
+Aggregate time to create sources 8.815050e-03
+Mass= 1 source random_color_wall residue= 1e-07 rel= 0
+Copied 1 sources to propagators
+Mass= 0.000569 source vector_field residue= 1e-07 rel= 0
+Mass= 0.000569 source vector_field residue= 1e-07 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color index = 0; mass = 0.000569
+Plain CG inversion from zero initial guess for mass 0.000569
+ OK converged final_rsq= 0 (cf 1e-14) rel = 0 (cf 0) restarts = 0 iters= 0
+CONGRAD5: time = 1.594832e-01 (fn D) masses = 1 iters = 113 mflops = 1.377952e+04
+CONGRAD5: time = 1.768279e-01 (fn D) masses = 1 iters = 127 mflops = 1.396766e+04
+ OK converged final_rsq= 8.1e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 127
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Mass= 0.164 source vector_field residue= 0 rel= 0.0002
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color index = 0; mass = 0.164000
+Plain CG inversion from zero initial guess for mass 0.164000
+ OK converged final_rsq= 0 (cf 0) rel = 0 (cf 4e-08) restarts = 0 iters= 0
+CONGRAD5: time = 1.470191e-01 (fn D) masses = 1 iters = 105 mflops = 1.388948e+04
+ OK converged final_rsq= 4.8e-21 (cf 0) rel = 4e-08 (cf 4e-08) restarts = 1 iters= 105
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Mass= 0.1827 source vector_field residue= 0 rel= 0.0002
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color index = 0; mass = 0.182700
+Plain CG inversion from zero initial guess for mass 0.182700
+ OK converged final_rsq= 0 (cf 0) rel = 0 (cf 4e-08) restarts = 0 iters= 0
+CONGRAD5: time = 1.383412e-01 (fn D) masses = 1 iters = 99 mflops = 1.391728e+04
+ OK converged final_rsq= 1.9e-21 (cf 0) rel = 3.4e-08 (cf 4e-08) restarts = 1 iters= 99
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Aggregate time to compute propagators 6.296020e-01
+destroy prop[0]
+destroy prop[1]
+Aggregate time to generate sink operator 3.459454e-04
+destroy prop[2]
+Aggregate time to generate sink operator 2.298355e-04
+destroy prop[3]
+Aggregate time to generate sink operator 2.250671e-04
+destroy prop[4]
+Aggregate time to generate sink operator 1.900196e-04
+Aggregate time to generate sink operator 7.150173e-04
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+UML inversion with mass 0.164000
+CONGRAD5: time = 1.402640e-01 (fn D) masses = 1 iters = 100 mflops = 1.386514e+04
+ OK converged final_rsq= 2.4e-18 (cf 0) rel = 3.9e-08 (cf 4e-08) restarts = 1 iters= 100
+CONGRAD5: time = 7.877111e-03 (fn D) masses = 1 iters = 5 mflops = 1.234450e+04
+ OK converged final_rsq= 2.7e-19 (cf 0) rel = 3.8e-08 (cf 4e-08) restarts = 1 iters= 5
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Aggregate time to generate sink operator 1.515691e-01
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+UML inversion with mass 0.182700
+CONGRAD5: time = 1.196299e-01 (fn D) masses = 1 iters = 86 mflops = 1.398072e+04
+ OK converged final_rsq= 1.2e-17 (cf 0) rel = 3.8e-08 (cf 4e-08) restarts = 1 iters= 86
+CONGRAD5: time = 6.518126e-03 (fn D) masses = 1 iters = 4 mflops = 1.193460e+04
+ OK converged final_rsq= 7e-17 (cf 0) rel = 3.8e-08 (cf 4e-08) restarts = 1 iters= 4
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Aggregate time to generate sink operator 1.294520e-01
+destroy source[0]
+destroy source[1]
+destroy source[2]
+Mesons for quarks 0 and 0
+Time for diagonal mesons 4.899502e-04
+Time for printing correlator 3.669262e-04
+Mesons for quarks 0 and 1
+Time for offdiag mesons 4.909039e-04
+Time for printing correlator 9.608269e-05
+Mesons for quarks 2 and 0
+Time for offdiag mesons 3.070831e-04
+Time for printing correlator 9.298325e-05
+Mesons for quarks 2 and 1
+Time for offdiag mesons 4.861355e-04
+Time for printing correlator 9.608269e-05
+Mesons for quarks 3 and 0
+Time for offdiag mesons 3.344059e-03
+Time for printing correlator 1.480579e-04
+Mesons for quarks 3 and 1
+Time for offdiag mesons 5.600452e-04
+Time for printing correlator 9.894371e-05
+Mesons for quarks 2 and 0
+Time for offdiag mesons 3.099442e-04
+Time for printing correlator 9.298325e-05
+Mesons for quarks 2 and 1
+Time for offdiag mesons 2.679110e-03
+Time for printing correlator 1.759529e-04
+Mesons for quarks 3 and 0
+Time for offdiag mesons 3.428459e-04
+Time for printing correlator 9.202957e-05
+Mesons for quarks 3 and 1
+Time for offdiag mesons 2.388000e-03
+Time for printing correlator 1.718998e-04
+Aggregate time to tie meson correlators 1.316786e-02
+Aggregate time to tie baryon correlators 0.000000e+00
+RUNNING COMPLETED
+Time = 1.697853e+00 seconds
+total_iters = 639
+destroy quark[0]
+destroy quark[1]
+destroy quark[2]
+destroy quark[3]
+destroy quark[4]
+destroy quark[5]
+destroy quark[6]
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Mon Dec 30 12:27:10 2024
+

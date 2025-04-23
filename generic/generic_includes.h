@@ -18,6 +18,7 @@
 #include <lattice.h>
 #include <time.h>
 #include <string.h>
+#include <ctype.h>
 #ifdef SCHROED_FUN
 #include "../include/generic_schroed.h"
 #endif

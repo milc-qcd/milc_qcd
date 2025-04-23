@@ -1,0 +1,103 @@
+# Makefile for testing code by comparing test output with sample output
+# For clover_invert2
+
+#------------------------------------------------------------
+# Examples for tests:
+
+#    make -f Make_test check
+# or, for a specific project or projects
+#    make -f Make_test "PROJS=su3_clov" check
+
+
+# Edit the Makefile for the appropriate architecture and the file
+# See ../Make_test_template to select the appropriate LAUNCH.
+
+# Results are in the files out.test.diff.* 
+#------------------------------------------------------------
+
+# For comparing test output with sample output
+
+PROJS = su3_clov su3_clov2 su3_clov3
+
+PRECLIST = 1 2
+
+PATTERNS = STARTPROP RUNNING
+TOL = 1e-4
+
+include ../Make_test_template
+
+fnal_corr:
+in.sample.fnal_corr.${PREC}:
+out.test.fnal_corr.${PREC}:
+	touch out.test.fnal_corr.${PREC}
+
+fnal_corr2:
+in.sample.fnal_corr2.${PREC}:
+out.test.fnal_corr2.${PREC}:
+	touch out.test.fnal_corr2.${PREC}
+
+fnal_corr3:
+in.sample.open_meson.${PREC}:
+out.test.open_meson.${PREC}:
+	touch out.test.open_meson.${PREC}
+
+out.test.tie_open_meson.${PREC} out.test.dump_open_meson.${PREC}: out.test.open_meson.${PREC}
+
+test_fnal:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} clean;\
+	   ${MAKE} -f Make_test "PROJ=fnal_corr" "PREC=$$prec" "PATTERNS=--- EOF" out.test.diff.fnal_corr.$$prec;\
+	done
+
+test_fnal2:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} clean;\
+	   ${MAKE} -f Make_test "PROJ=fnal_corr2" "PREC=$$prec" "PATTERNS=--- EOF" out.test.diff.fnal_corr2.$$prec;\
+	done
+
+test_fnal3:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} clean;\
+	   ${MAKE} -f Make_test "PROJ=tie_open_meson" "PREC=$$prec" "PATTERNS=Will EOF" out.test.diff.tie_open_meson.$$prec;\
+	   ${MAKE} -f Make_test "PROJ=dump_open_meson" "PREC=$$prec" "PATTERNS=Will EOF" out.test.diff.dump_open_meson.$$prec;\
+	done
+	
+
+test_fnal_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm out.test.fnal_corr.$$prec.tmp out.sample.fnal_corr.$$prec.tmp;\
+	     /bin/rm out.test.diff.fnal_corr.$$prec out.test.fnal_corr.$$prec; \
+	done
+
+test_fnal_clean2:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm out.test.fnal_corr2.$$prec.tmp out.sample.fnal_corr2.$$prec.tmp;\
+	     /bin/rm out.test.diff.fnal_corr2.$$prec out.test.fnal_corr2.$$prec; \
+	done
+
+test_fnal_clean3:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm out.test.open_meson.$$prec;\
+	     /bin/rm out.test.tie_open_meson.$$prec.tmp out.sample.tie_open_meson.$$prec.tmp;\
+	     /bin/rm out.test.diff.tie_open_meson.$$prec out.test.tie_open_meson.$$prec; \
+	     /bin/rm out.test.dump_open_meson.$$prec.tmp out.sample.dump_open_meson.$$prec.tmp;\
+	     /bin/rm out.test.diff.dump_open_meson.$$prec out.test.dump_open_meson.$$prec; \
+	done
+
+check:
+	/bin/rm -f out.test.fnal_corr.1;\
+	/bin/rm -f out.test.fnal_corr.2;\
+	/bin/rm -f out.test.fnal_corr2.1;\
+	/bin/rm -f out.test.fnal_corr2.2;\
+	/bin/rm -f out.test.open_meson.1;\
+	/bin/rm -f out.test.open_meson.2;\
+	${MAKE} -f Make_test test test_fnal test_fnal2 test_fnal3
+
+clean: test_clean test_fnal_clean test_fnal_clean2 test_fnal_clean3
+

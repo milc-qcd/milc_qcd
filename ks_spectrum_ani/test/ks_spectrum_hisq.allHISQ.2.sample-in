@@ -1,0 +1,317 @@
+
+#== Geometry ==
+prompt 0
+nx 8
+ny 8
+nz 8
+nt 32
+iseed 1374111
+job_id 2767399
+
+#== Gauge ==
+reload_serial ../../binary_samples/lat.sample.l88832.ildg
+u0 1
+no_gauge_fix
+forget
+fresh_ape
+staple_weight 0.05
+ape_iter 20
+forget_ape
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
+
+#== Eigen ==
+max_number_of_eigenpairs 0
+
+#== PBP Masses ==
+
+number_of_pbp_masses 0
+
+#== Base Sources ==
+
+number_of_base_sources 3
+
+#== source 0: RandomColorWallSource ==
+random_color_wall
+field_type KS
+subset corner
+t0 1
+ncolor 1
+momentum 0 0 0
+scale_factor 1e10
+source_label RW
+save_serial_scidac_ks_source rnd_source
+
+#== source 1: VectorFieldSource ==
+vector_field
+field_type KS
+subset corner
+origin 0 0 0 1
+load_source_serial rnd_source
+ncolor 1
+momentum 0 0 0
+scale_factor 1e10
+source_label RW
+forget_source
+
+#== source 2: VectorFieldSource ==
+vector_field
+field_type KS
+subset corner
+origin 0 0 0 1
+load_source_serial rnd_source
+ncolor 1
+momentum 1 0 0
+scale_factor 1e10
+source_label RW
+forget_source
+
+#== Modified Sources ==
+
+number_of_modified_sources 0
+
+#== KSsolveSets ==
+
+number_of_sets 4
+
+#== KSsolveSet ==
+set_type single
+inv_type UML
+max_cg_iterations 4000
+max_cg_restarts 10
+check sourceonly
+momentum_twist 0 0 0
+precision 1
+source 0
+number_of_propagators 1
+
+#== propagator 0: KSsolveElement ==
+mass 1.0
+naik_term_epsilon 0.
+error_for_propagator 1e-7
+rel_error_for_propagator 0.0
+fresh_ksprop
+forget_ksprop
+
+#== KSsolveMultiSourceSet ==
+set_type multisource
+inv_type CGZ
+max_cg_iterations 4000
+max_cg_restarts 10
+check yes
+momentum_twist 0 0 0
+precision 2
+mass 0.000569
+naik_term_epsilon 0.
+number_of_propagators 2
+
+#== propagator 1: KSsolveMultiSourceElement ==
+source 1
+error_for_propagator 1e-7
+rel_error_for_propagator 0.0
+fresh_ksprop
+forget_ksprop
+
+#== propagator 2: KSsolveMultiSourceElement ==
+source 2
+error_for_propagator 1e-7
+rel_error_for_propagator 0.0
+fresh_ksprop
+forget_ksprop
+
+#== KSsolveSet ==
+set_type single
+inv_type CGZ
+max_cg_iterations 400
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision 2
+source 1
+number_of_propagators 1
+
+#== propagator 3: KSsolveElement ==
+mass 0.164
+naik_term_epsilon -0.0179
+error_for_propagator 0
+rel_error_for_propagator 2e-4
+fresh_ksprop
+forget_ksprop
+
+#== KSsolveSet ==
+set_type single
+inv_type CGZ
+max_cg_iterations 400
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision 2
+source 1
+number_of_propagators 1
+
+#== propagator 4: KSsolveElement ==
+mass 0.1827
+naik_term_epsilon -0.0222
+error_for_propagator 0
+rel_error_for_propagator 2e-4
+fresh_ksprop
+forget_ksprop
+
+#== Quarks ==
+
+number_of_quarks 7
+
+#== quark 0: QuarkIdentitySink == (light 000)
+propagator 1
+identity
+op_label d
+forget_ksprop
+
+#== quark 1: QuarkIdentitySink == (light 100)
+propagator 2
+identity
+op_label d
+forget_ksprop
+
+#== quark 2: QuarkIdentitySink ==
+propagator 3
+identity
+op_label d
+forget_ksprop
+
+#== quark 3: QuarkIdentitySink ==
+propagator 4
+identity
+op_label d
+forget_ksprop
+
+#== quark 4: KSExtSrcSink ==
+quark 0
+ext_src_ks
+spin_taste_extend G5T-G5T
+momentum 0 0 0
+t0 14
+op_label x
+forget_ksprop
+
+#== quark 5: KSInverseSink ==
+quark 4
+ks_inverse
+mass 0.164
+naik_term_epsilon -0.0179
+u0 1
+max_cg_iterations 400
+max_cg_restarts 5
+deflate no
+error_for_propagator 0
+rel_error_for_propagator 2e-4
+precision 2
+momentum_twist 0 0 0
+op_label x
+forget_ksprop
+
+#== quark 6: KSInverseSink ==
+quark 5
+ks_inverse
+mass 0.1827
+naik_term_epsilon -0.0222
+u0 1
+max_cg_iterations 400
+max_cg_restarts 5
+deflate no
+error_for_propagator 0
+rel_error_for_propagator 2e-4
+precision 2
+momentum_twist 0 0 0
+op_label x
+forget_ksprop
+
+#== Mesons ==
+
+number_of_mesons 10
+
+#== MesonSpectrum == (pion 000)
+pair 0 0
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
+r_offset 0 0 0 1
+number_of_correlators 1
+correlator P5-P5 p000-fine 1 / 124416.0 G5-G5 0 0 0 EO EO EO
+
+#== MesonSpectrum == (pion 100)
+pair 0 1
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
+r_offset 0 0 0 1
+number_of_correlators 1
+correlator P5-P5 p100-fine 1 / 124416.0 G5-G5 -1 0 0 EO EO EO
+
+#== MesonSpectrum == (H 0.164 000)
+pair 2 0
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
+r_offset 0 0 0 1
+number_of_correlators 1
+correlator P5-P5 p000-fine 1 / 124416.0 G5-G5 0 0 0 EO EO EO
+
+#== MesonSpectrum == (H 0.164 100)
+pair 2 1
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
+r_offset 0 0 0 1
+number_of_correlators 1
+correlator P5-P5 p100-fine 1 / 124416.0 G5-G5 -1 0 0 EO EO EO
+
+#== MesonSpectrum == (H 0.1827 000)
+pair 3 0
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
+r_offset 0 0 0 1
+number_of_correlators 1
+correlator P5-P5 p000-fine 1 / 124416.0 G5-G5 0 0 0 EO EO EO
+
+#== MesonSpectrum == (H 0.1827 100)
+pair 3 1
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
+r_offset 0 0 0 1
+number_of_correlators 1
+correlator P5-P5 p100-fine 1 / 124416.0 G5-G5 -1 0 0 EO EO EO
+
+#== MesonSpectrum == (HV2pi 0.164 000)
+pair 2 0
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
+r_offset 0 0 0 1
+number_of_correlators 1
+correlator A4-A4_V4-V4_T34_m0.164 p000-fine -1 / 124416.0 GT-GT 0 0 0 EO EO EO
+
+#== MesonSpectrum == (HV2pi 0.164 100)
+pair 2 1
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
+r_offset 0 0 0 1
+number_of_correlators 2
+correlator A4-A4_V4-V4_T34_m0.164 p100-fine -1 / 124416.0 GT-GT -1 0 0 EO EO EO
+correlator A4-A4_T14-V4_T34_m0.164 p100-fine 1 / 124416.0 GXT-GT -1 0 0 EO EO EO
+
+#== MesonSpectrum == (HV2pi 0.1827 000)
+pair 3 0
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
+r_offset 0 0 0 1
+number_of_correlators 1
+correlator A4-A4_V4-V4_T34_m0.1827 p000-fine -1 / 124416.0 GT-GT 0 0 0 EO EO EO
+
+#== MesonSpectrum == (HV2pi 0.1827 100)
+pair 3 1
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.allHISQ.2.corrfile.test-out
+r_offset 0 0 0 1
+number_of_correlators 2
+correlator A4-A4_V4-V4_T34_m0.1827 p100-fine -1 / 124416.0 GT-GT -1 0 0 EO EO EO
+correlator A4-A4_T14-V4_T34_m0.1827 p100-fine 1 / 124416.0 GXT-GT -1 0 0 EO EO EO
+
+#== Baryons ==
+
+number_of_baryons 0

@@ -1,0 +1,357 @@
+SU3 staggered valence fermions
+MIMD version 7.8.1
+Machine = QMP (portable), with 1 nodes
+Host(0) = cori09
+Username = detar
+start: Tue Sep  6 12:41:48 2016
+
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 5682304
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 8 x 8 x 8 x 8
+Mallocing 2.9 MBytes per node for lattice
+WARNING!!: Resetting random seed
+
+
+######################################################################
+# source time 0
+######################################################################
+# Gauge field description
+reload_serial ../../binary_samples/lat.sample.l8888
+u0 0.8696
+coulomb_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0 
+time_bc antiperiodic
+# Chiral condensate and related measurements
+number_of_pbp_masses 0
+# Description of base sources
+number_of_base_sources 1
+# base source 0
+corner_wall
+subset full
+t0 0
+source_label c
+forget_source 
+# Description of modified sources
+number_of_modified_sources 0
+# Description of propagators
+number_of_sets 1
+# Parameters for set 0
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0 
+precision 2
+source 0
+number_of_propagators 3
+# propagator 0
+mass 0.03
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+# propagator 1
+mass 0.05
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+# propagator 2
+mass 0.07
+error_for_propagator 1e-14
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+number_of_quarks 3
+# mass 0
+propagator 0
+identity
+op_label d
+forget_ksprop 
+# mass 1
+propagator 1
+identity
+op_label d
+forget_ksprop 
+# mass 2
+propagator 2
+identity
+op_label d
+forget_ksprop 
+# Description of mesons
+number_of_mesons 6
+# pair 0 (masses 0 0)
+pair 0 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 8
+correlator PION_5 p000   1 * 1  pion5  0  0  0  E  E  E
+correlator PION_05 p000   1 * 1 pion05  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhox  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhoy  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhoz  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhox0  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhoy0  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhoz0  0  0  0  E  E  E
+# pair 1 (masses 0 1)
+pair 0 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 8
+correlator PION_5 p000   1 * 1  pion5  0  0  0  E  E  E
+correlator PION_05 p000   1 * 1 pion05  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhox  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhoy  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhoz  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhox0  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhoy0  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhoz0  0  0  0  E  E  E
+# pair 2 (masses 0 2)
+pair 0 2 
+spectrum_request meson
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 8
+correlator PION_5 p000   1 * 1  pion5  0  0  0  E  E  E
+correlator PION_05 p000   1 * 1 pion05  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhox  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhoy  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhoz  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhox0  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhoy0  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhoz0  0  0  0  E  E  E
+# pair 3 (masses 1 1)
+pair 1 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 8
+correlator PION_5 p000   1 * 1  pion5  0  0  0  E  E  E
+correlator PION_05 p000   1 * 1 pion05  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhox  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhoy  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhoz  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhox0  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhoy0  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhoz0  0  0  0  E  E  E
+# pair 4 (masses 1 2)
+pair 1 2 
+spectrum_request meson
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 8
+correlator PION_5 p000   1 * 1  pion5  0  0  0  E  E  E
+correlator PION_05 p000   1 * 1 pion05  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhox  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhoy  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhoz  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhox0  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhoy0  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhoz0  0  0  0  E  E  E
+# pair 5 (masses 2 2)
+pair 2 2 
+spectrum_request meson
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 8
+correlator PION_5 p000   1 * 1  pion5  0  0  0  E  E  E
+correlator PION_05 p000   1 * 1 pion05  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhox  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhoy  0  0  0  E  E  E
+correlator RHO_i p000   1 * 3   rhoz  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhox0  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhoy0  0  0  0  E  E  E
+correlator RHO_i0 p000   1 * 3  rhoz0  0  0  0  E  E  E
+# Description of baryons
+number_of_baryons 10
+# triplet 0 (masses 0 0 0)
+triplet 0 0 0 
+spectrum_request baryon
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator NUCLEON   1 * 1.000000  nucleon
+# triplet 1 (masses 0 0 1)
+triplet 0 0 1 
+spectrum_request baryon
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator NUCLEON   1 * 1.000000  nucleon
+# triplet 2 (masses 0 0 2)
+triplet 0 0 2 
+spectrum_request baryon
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator NUCLEON   1 * 1.000000  nucleon
+# triplet 3 (masses 0 1 1)
+triplet 0 1 1 
+spectrum_request baryon
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator NUCLEON   1 * 1.000000  nucleon
+# triplet 4 (masses 0 1 2)
+triplet 0 1 2 
+spectrum_request baryon
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator NUCLEON   1 * 1.000000  nucleon
+# triplet 5 (masses 0 2 2)
+triplet 0 2 2 
+spectrum_request baryon
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator NUCLEON   1 * 1.000000  nucleon
+# triplet 6 (masses 1 1 1)
+triplet 1 1 1 
+spectrum_request baryon
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator NUCLEON   1 * 1.000000  nucleon
+# triplet 7 (masses 1 1 2)
+triplet 1 1 2 
+spectrum_request baryon
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator NUCLEON   1 * 1.000000  nucleon
+# triplet 8 (masses 1 2 2)
+triplet 1 2 2 
+spectrum_request baryon
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator NUCLEON   1 * 1.000000  nucleon
+# triplet 9 (masses 2 2 2)
+triplet 2 2 2 
+spectrum_request baryon
+save_corr_fnal ks_spectrum_asqtad.nd.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator NUCLEON   1 * 1.000000  nucleon
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l8888
+Time stamp Tue Mar 13 15:47:22 2012
+Checksums 4f9d000e 8d72f72e OK
+Time to reload gauge configuration = 3.909111e-03
+CHECK PLAQ: 1.7790021544584593e+00 1.7823592881385857e+00
+CHECK NERSC LINKTR: -6.4563862036388919e-04 CKSUM: 4a3bbf43
+Reunitarized for double precision. Max deviation 2.62e-07 changed to 5.55e-16
+Time to check unitarity = 1.977921e-03
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -5.509976e-02     8
+                    2      -8.264964e-02     48
+                    3      2.732385e-02     192
+                    4      -6.022150e-03     384
+                    5      -1.092954e-01     48
+Time to APE smear 1.955986e-03 sec
+Fixing to Coulomb gauge
+step 19 av gf action 8.73432119e-01, delta 6.467e-04
+step 39 av gf action 8.76698059e-01, delta 4.322e-05
+step 59 av gf action 8.77135975e-01, delta 1.052e-05
+step 79 av gf action 8.77249813e-01, delta 2.893e-06
+GFIX: Ended at step 85. Av gf action 8.77263803e-01, delta 1.980e-06
+Time to APE smear 2.653122e-03 sec
+END OF HEADER
+Mass= 0.03 source CORNER residue= 1e-08 rel= 0
+Mass= 0.05 source CORNER residue= 1e-08 rel= 0
+Mass= 0.07 source CORNER residue= 1e-14 rel= 0
+Starting solve_ksprop
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+ OK converged final_rsq= 9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 0 iters= 165
+ OK converged final_rsq= 0 (cf 1e-16) rel = 1 (cf 0) restarts = 0 iters= 0
+solve_ksprop: color = 1
+ OK converged final_rsq= 9.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 0 iters= 165
+ OK converged final_rsq= 0 (cf 1e-16) rel = 1 (cf 0) restarts = 0 iters= 0
+solve_ksprop: color = 2
+ OK converged final_rsq= 9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 0 iters= 164
+ OK converged final_rsq= 0 (cf 1e-16) rel = 1 (cf 0) restarts = 0 iters= 0
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Done with solve_ksprop
+destroy prop[0]
+destroy prop[1]
+destroy prop[2]
+Mesons for quarks 0 and 0
+Time for diagonal mesons 1.564503e-02
+Time for printing correlator 2.918005e-03
+Mesons for quarks 0 and 1
+Time for offdiag mesons 3.293800e-02
+Time for printing correlator 6.499290e-04
+Mesons for quarks 0 and 2
+Time for offdiag mesons 2.187085e-02
+Time for printing correlator 1.520872e-03
+Mesons for quarks 1 and 1
+Time for diagonal mesons 1.540208e-02
+Time for printing correlator 4.751682e-04
+Mesons for quarks 1 and 2
+Time for offdiag mesons 1.503110e-02
+Time for printing correlator 4.918575e-04
+Mesons for quarks 2 and 2
+Time for diagonal mesons 1.500392e-02
+Time for printing correlator 4.570484e-04
+Baryons for quarks 0, 0, and 0
+Time for baryons 6.890297e-05
+Time for printing correlator 3.700256e-04
+Baryons for quarks 0, 0, and 1
+Time for baryons 5.698204e-05
+Time for printing correlator 2.989769e-04
+Baryons for quarks 0, 0, and 2
+Time for baryons 3.695488e-05
+Time for printing correlator 2.851486e-04
+Baryons for quarks 0, 1, and 1
+Time for baryons 5.793571e-05
+Time for printing correlator 3.190041e-04
+Baryons for quarks 0, 1, and 2
+Time for baryons 3.790855e-05
+Time for printing correlator 2.918243e-04
+Baryons for quarks 0, 2, and 2
+Time for baryons 4.196167e-05
+Time for printing correlator 2.920628e-04
+Baryons for quarks 1, 1, and 1
+Time for baryons 5.602837e-05
+Time for printing correlator 2.789497e-04
+Baryons for quarks 1, 1, and 2
+Time for baryons 3.814697e-05
+Time for printing correlator 2.920628e-04
+Baryons for quarks 1, 2, and 2
+Time for baryons 3.600121e-05
+Time for printing correlator 2.951622e-04
+Baryons for quarks 2, 2, and 2
+Time for baryons 5.602837e-05
+Time for printing correlator 2.732277e-04
+RUNNING COMPLETED
+Time = 1.797154e+00 seconds
+total_iters = 1030
+destroy quark[0]
+destroy quark[1]
+destroy quark[2]
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Tue Sep  6 12:41:50 2016
+
