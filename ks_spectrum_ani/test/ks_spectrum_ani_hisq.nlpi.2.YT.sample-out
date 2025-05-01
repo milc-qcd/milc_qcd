@@ -1,9 +1,9 @@
 SU3 staggered valence fermions
-MIMD version 5b20
+MIMD version 5b20-dirty
 Machine = Scalar processor, with 1 nodes
 Host(0) = ytdevice
 Username = trimis
-start: Thu Apr 24 18:23:14 2025
+start: Thu Apr 24 18:39:19 2025
 
 Options selected...
 Generic double precision
@@ -25,7 +25,7 @@ job_id none
 LAYOUT = Hypercubes, options = with fixed input-parameter node_geometry
 ON EACH NODE (RANK) 8 x 8 x 8 x 8
 Mallocing 2.9 MBytes per node for lattice
-Aggregate time to setup 6.235123e-03
+Aggregate time to setup 6.036043e-03
 
 
 ######################################################################
@@ -40,6 +40,8 @@ staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0 
 time_bc antiperiodic
+ani_dir t
+ani_xiq 2
 # EIGENPAIRS
 max_number_of_eigenpairs 0
 # CHIRAL CONDENSATE AND RELATED MEASUREMENTS
@@ -177,24 +179,24 @@ correlator RHO_0 p000   1 * 0.000244141   rho0  0  0  0  E  E  E
 # BARYONS
 # DESCRIPTION OF BARYONS
 number_of_baryons 0
-Aggregate time to read parameters 1.640320e-04
+Aggregate time to read parameters 1.471043e-04
 Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l8888
 Time stamp Tue Mar 13 15:47:22 2012
 Checksums 4f9d000e 8d72f72e OK
-Time to reload gauge configuration = 1.677990e-03
+Time to reload gauge configuration = 1.753092e-03
 CHECK PLAQ: 1.7790021544584596e+00 1.7823592881385857e+00
 CHECK NERSC LINKTR: -6.4563862036388919e-04 CKSUM: 4a3bbf43
 Reunitarized for double precision. Max deviation 2.62e-07 changed to 5.55e-16
-Time to check unitarity = 1.504898e-03
-Aggregate time to read lattice 6.432056e-03
+Time to check unitarity = 1.507998e-03
+Aggregate time to read lattice 6.201982e-03
 Fixing to Coulomb gauge
 step 19 av gf action 8.73432119e-01, delta 6.467e-04
 step 39 av gf action 8.76698059e-01, delta 4.322e-05
 step 59 av gf action 8.77135975e-01, delta 1.052e-05
 step 79 av gf action 8.77249813e-01, delta 2.893e-06
 GFIX: Ended at step 85. Av gf action 8.77263803e-01, delta 1.980e-06
-Aggregate time to gauge fix 2.686450e-01
-Time to APE smear 2.593040e-03 sec
+Aggregate time to gauge fix 2.621849e-01
+Time to APE smear 2.449989e-03 sec
 Aggregate time to save lattice 0.000000e+00
 "Fat 7 (level 1)"
 path coefficients: npath  path_coeff
@@ -216,11 +218,12 @@ path coefficients: npath  path_coeff
 path coefficients: npath  path_coeff
                     0      1.250000e-01
                     1      -4.166667e-02
+Anisotropic action with bare quark anisotropy 2.000000 in the t-direction
 MAKING PATH TABLES
-Combined fattening and long-link calculation time: 0.043775
-FLTIME: time = 9.515214e-02 (HISQ MILC D) mflops = 5.516712e+03
-Aggregate time to create fermion links 9.685898e-02
-Aggregate time to calculate Dirac eigenpairs 0.000000e+00
+Combined fattening and long-link calculation time: 0.042265
+FLTIME: time = 9.258604e-02 (HISQ MILC D) mflops = 5.671205e+03
+Aggregate time to create fermion links 9.422588e-02
+Aggregate time to calculate Dirac eigenpairs 9.536743e-07
 Aggregate time to calculate pbp, etc 0.000000e+00
 END OF HEADER
 Creating modified source 1 for color 0 from parent source 0
@@ -229,83 +232,83 @@ Creating modified source 1 for color 2 from parent source 0
 Creating modified source 2 for color 0 from parent source 0
 Creating modified source 2 for color 1 from parent source 0
 Creating modified source 2 for color 2 from parent source 0
-Aggregate time to create sources 5.904913e-03
+Aggregate time to create sources 5.834818e-03
 Mass= 0.01494 source even_and_odd_wall residue= 1e-06 rel= 0
 Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 solve_ksprop: color index = 0; all masses
 UML inversion with mass 0.014940
-CONGRAD5: time = 6.285000e-02 (fn D) masses = 1 iters = 82 mflops = 6.343358e+03
- OK converged final_rsq= 7.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 82
-CONGRAD5: time = 1.790309e-02 (fn D) masses = 1 iters = 23 mflops = 6.246123e+03
- OK converged final_rsq= 7.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 23
+CONGRAD5: time = 5.317688e-02 (fn D) masses = 1 iters = 71 mflops = 6.491516e+03
+ OK converged final_rsq= 6.7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 71
+CONGRAD5: time = 1.614690e-02 (fn D) masses = 1 iters = 21 mflops = 6.323257e+03
+ OK converged final_rsq= 9.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 21
 solve_ksprop: color index = 1; all masses
 UML inversion with mass 0.014940
-CONGRAD5: time = 6.192899e-02 (fn D) masses = 1 iters = 81 mflops = 6.359189e+03
- OK converged final_rsq= 9.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 81
-CONGRAD5: time = 1.784706e-02 (fn D) masses = 1 iters = 23 mflops = 6.265732e+03
- OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 23
+CONGRAD5: time = 5.211806e-02 (fn D) masses = 1 iters = 70 mflops = 6.530109e+03
+ OK converged final_rsq= 8.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 70
+CONGRAD5: time = 1.656389e-02 (fn D) masses = 1 iters = 22 mflops = 6.457597e+03
+ OK converged final_rsq= 7.8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 22
 solve_ksprop: color index = 2; all masses
 UML inversion with mass 0.014940
-CONGRAD5: time = 6.402493e-02 (fn D) masses = 1 iters = 82 mflops = 6.226951e+03
- OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 82
-CONGRAD5: time = 1.725602e-02 (fn D) masses = 1 iters = 22 mflops = 6.198587e+03
- OK converged final_rsq= 8.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 22
+CONGRAD5: time = 5.209184e-02 (fn D) masses = 1 iters = 70 mflops = 6.533397e+03
+ OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 70
+CONGRAD5: time = 1.659703e-02 (fn D) masses = 1 iters = 22 mflops = 6.444703e+03
+ OK converged final_rsq= 9.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 22
 Mass= 0.01494 source even_and_odd_wall/FUNNYWALL1 residue= 1e-06 rel= 0
 solve_ksprop: color index = 0; all masses
 UML inversion with mass 0.014940
-CONGRAD5: time = 6.191802e-02 (fn D) masses = 1 iters = 82 mflops = 6.438837e+03
- OK converged final_rsq= 9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 82
-CONGRAD5: time = 1.736403e-02 (fn D) masses = 1 iters = 23 mflops = 6.440033e+03
- OK converged final_rsq= 8.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 23
+CONGRAD5: time = 5.517507e-02 (fn D) masses = 1 iters = 70 mflops = 6.168305e+03
+ OK converged final_rsq= 7.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 70
+CONGRAD5: time = 1.710296e-02 (fn D) masses = 1 iters = 22 mflops = 6.254062e+03
+ OK converged final_rsq= 8.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 22
 solve_ksprop: color index = 1; all masses
 UML inversion with mass 0.014940
-CONGRAD5: time = 6.106091e-02 (fn D) masses = 1 iters = 82 mflops = 6.529220e+03
- OK converged final_rsq= 8.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 82
-CONGRAD5: time = 1.726103e-02 (fn D) masses = 1 iters = 23 mflops = 6.478461e+03
- OK converged final_rsq= 9.8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 23
+CONGRAD5: time = 5.339313e-02 (fn D) masses = 1 iters = 70 mflops = 6.374166e+03
+ OK converged final_rsq= 7.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 70
+CONGRAD5: time = 1.701999e-02 (fn D) masses = 1 iters = 22 mflops = 6.284549e+03
+ OK converged final_rsq= 8.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 22
 solve_ksprop: color index = 2; all masses
 UML inversion with mass 0.014940
-CONGRAD5: time = 6.091380e-02 (fn D) masses = 1 iters = 82 mflops = 6.544987e+03
- OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 82
-CONGRAD5: time = 1.737785e-02 (fn D) masses = 1 iters = 23 mflops = 6.434908e+03
- OK converged final_rsq= 7.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 23
+CONGRAD5: time = 5.357385e-02 (fn D) masses = 1 iters = 70 mflops = 6.352664e+03
+ OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 70
+CONGRAD5: time = 1.702094e-02 (fn D) masses = 1 iters = 22 mflops = 6.284197e+03
+ OK converged final_rsq= 7.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 22
 Mass= 0.01494 source even_and_odd_wall/FUNNYWALL2 residue= 1e-06 rel= 0
 solve_ksprop: color index = 0; all masses
 UML inversion with mass 0.014940
-CONGRAD5: time = 6.103396e-02 (fn D) masses = 1 iters = 82 mflops = 6.532102e+03
- OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 82
-CONGRAD5: time = 1.730299e-02 (fn D) masses = 1 iters = 23 mflops = 6.462750e+03
- OK converged final_rsq= 7.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 23
+CONGRAD5: time = 5.357003e-02 (fn D) masses = 1 iters = 70 mflops = 6.353116e+03
+ OK converged final_rsq= 7.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 70
+CONGRAD5: time = 1.699901e-02 (fn D) masses = 1 iters = 22 mflops = 6.292306e+03
+ OK converged final_rsq= 8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 22
 solve_ksprop: color index = 1; all masses
 UML inversion with mass 0.014940
-CONGRAD5: time = 6.099582e-02 (fn D) masses = 1 iters = 82 mflops = 6.536187e+03
- OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 82
-CONGRAD5: time = 1.730990e-02 (fn D) masses = 1 iters = 23 mflops = 6.460168e+03
- OK converged final_rsq= 1e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 23
+CONGRAD5: time = 5.359983e-02 (fn D) masses = 1 iters = 70 mflops = 6.349584e+03
+ OK converged final_rsq= 7.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 70
+CONGRAD5: time = 1.719904e-02 (fn D) masses = 1 iters = 22 mflops = 6.219123e+03
+ OK converged final_rsq= 8.7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 22
 solve_ksprop: color index = 2; all masses
 UML inversion with mass 0.014940
-CONGRAD5: time = 6.095505e-02 (fn D) masses = 1 iters = 82 mflops = 6.540559e+03
- OK converged final_rsq= 8.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 82
-CONGRAD5: time = 1.665401e-02 (fn D) masses = 1 iters = 22 mflops = 6.422652e+03
- OK converged final_rsq= 8.7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 22
-Aggregate time to compute propagators 7.241111e-01
+CONGRAD5: time = 5.365276e-02 (fn D) masses = 1 iters = 70 mflops = 6.343320e+03
+ OK converged final_rsq= 8.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 70
+CONGRAD5: time = 1.706100e-02 (fn D) masses = 1 iters = 22 mflops = 6.269443e+03
+ OK converged final_rsq= 7.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 22
+Aggregate time to compute propagators 6.442418e-01
 destroy prop[0]
-Aggregate time to generate sink operator 1.151562e-04
+Aggregate time to generate sink operator 1.108646e-04
 destroy prop[1]
-Aggregate time to generate sink operator 1.041889e-04
+Aggregate time to generate sink operator 1.060963e-04
 destroy prop[2]
-Aggregate time to generate sink operator 9.989738e-05
+Aggregate time to generate sink operator 1.039505e-04
 destroy source[0]
 destroy source[1]
 destroy source[2]
 Mesons for quarks 0 and 1
 ape_only returns 1
-WMTIME: time 5.0e-03 sec 270432 flops 54.5 MF
+WMTIME: time 5.1e-03 sec 270432 flops 53.3 MF
 ape_only returns 1
-WMTIME: time 4.3e-03 sec 270432 flops 63.3 MF
+WMTIME: time 4.4e-03 sec 270432 flops 61.0 MF
 ape_only returns 1
-WMTIME: time 4.3e-03 sec 270432 flops 63.4 MF
-Time for offdiag mesons 1.355886e-02
+WMTIME: time 4.5e-03 sec 270432 flops 59.7 MF
+Time for offdiag mesons 1.409316e-02
 For iq0 0 iq1 1 ip0 0 ip1 1 is0 0 is1 1 sf 1 
 meson_scale 0 1 1
 STARTPROP
@@ -314,14 +317,14 @@ MASSES: 0.01494 0.01494
 SOURCE: even_and_odd_wall even_and_odd_wall/FUNNYWALL1
 SINKOPS: identity identity
 SINKS: PION_5
-0 6.928661e-02 3.063309e-04
-1 6.219115e-02 -3.383898e-04
-2 2.554732e-02 1.374038e-04
-3 4.291548e-02 -2.166508e-04
-4 1.302262e-02 -6.773216e-05
-5 4.110986e-02 -2.915857e-04
-6 2.148870e-02 1.276326e-04
-7 5.911476e-02 1.174476e-04
+0 1.570966e-02 8.449957e-05
+1 2.355044e-02 -4.794520e-05
+2 9.209854e-03 4.085065e-05
+3 2.074048e-02 -4.610089e-05
+4 6.270524e-03 -6.004393e-06
+5 2.049118e-02 -1.027740e-05
+6 8.358852e-03 5.658542e-05
+7 2.308682e-02 6.235371e-05
 ENDPROP
 STARTPROP
 MOMENTUM: p000
@@ -329,14 +332,14 @@ MASSES: 0.01494 0.01494
 SOURCE: even_and_odd_wall even_and_odd_wall/FUNNYWALL1
 SINKOPS: identity identity
 SINKS: PION_i5
-0 5.563983e-02 2.025370e-04
-1 4.957316e-02 1.591512e-04
-2 1.997741e-02 -3.536426e-05
-3 3.512721e-02 -1.017948e-04
-4 9.711026e-03 1.018795e-05
-5 3.398317e-02 -4.011180e-04
-6 1.680081e-02 6.049191e-05
-7 4.880384e-02 -3.287744e-04
+0 1.196538e-02 -3.862815e-05
+1 1.872984e-02 7.397719e-05
+2 6.633132e-03 -4.125025e-05
+3 1.665634e-02 5.154610e-05
+4 4.221071e-03 4.072275e-05
+5 1.642634e-02 -5.688609e-05
+6 5.972656e-03 4.537679e-05
+7 1.845219e-02 -2.416123e-04
 ENDPROP
 STARTPROP
 MOMENTUM: p000
@@ -344,14 +347,14 @@ MASSES: 0.01494 0.01494
 SOURCE: even_and_odd_wall even_and_odd_wall/FUNNYWALL1
 SINKOPS: identity identity
 SINKS: PION_i
-0 -3.278447e-02 -1.468844e-03
-1 -3.141176e-02 -2.387251e-04
-2 -1.147471e-02 -7.594572e-04
-3 -2.178012e-02 1.476040e-03
-4 -5.475944e-03 7.783722e-04
-5 -2.090998e-02 2.223221e-03
-6 -9.217880e-03 1.240887e-03
-7 -2.855315e-02 9.476730e-04
+0 -6.764342e-03 -5.512110e-05
+1 -1.161595e-02 -9.328011e-06
+2 -3.484199e-03 -5.948846e-05
+3 -9.958314e-03 2.034808e-04
+4 -2.209862e-03 2.117995e-04
+5 -9.981811e-03 4.339387e-04
+6 -3.024103e-03 3.855943e-04
+7 -1.080419e-02 2.926565e-04
 ENDPROP
 STARTPROP
 MOMENTUM: p000
@@ -359,14 +362,14 @@ MASSES: 0.01494 0.01494
 SOURCE: even_and_odd_wall even_and_odd_wall/FUNNYWALL1
 SINKOPS: identity identity
 SINKS: PION_s
-0 2.540135e-02 9.768123e-04
-1 2.561988e-02 3.930546e-04
-2 8.646546e-03 5.559187e-04
-3 1.769104e-02 -1.299632e-03
-4 3.967202e-03 -6.265346e-04
-5 1.630792e-02 -2.000291e-03
-6 7.050788e-03 -7.211692e-04
-7 2.213364e-02 -9.811888e-04
+0 5.076676e-03 4.204167e-05
+1 9.352425e-03 7.555993e-05
+2 2.540427e-03 7.915729e-05
+3 8.040273e-03 -2.386494e-04
+4 1.522068e-03 -1.500658e-04
+5 7.893329e-03 -3.771644e-04
+6 2.208624e-03 -2.133132e-04
+7 8.407025e-03 -2.685857e-04
 ENDPROP
 STARTPROP
 MOMENTUM: p000
@@ -374,14 +377,14 @@ MASSES: 0.01494 0.01494
 SOURCE: even_and_odd_wall even_and_odd_wall/FUNNYWALL1
 SINKOPS: identity identity
 SINKS: RHO_i
-0 1.511222e-02 1.090052e-03
-1 4.452000e-02 3.447815e-04
-2 5.047592e-03 3.777937e-04
-3 2.735154e-02 1.077028e-03
-4 2.631867e-03 4.345934e-04
-5 2.840418e-02 1.869038e-03
-6 3.414851e-03 4.178368e-04
-7 4.419634e-02 3.302064e-04
+0 4.108497e-03 7.669463e-05
+1 1.893954e-02 1.385280e-04
+2 2.608357e-03 -9.987844e-07
+3 1.659088e-02 3.237295e-04
+4 1.634746e-03 8.656753e-05
+5 1.682845e-02 3.530867e-04
+6 1.936082e-03 1.915125e-04
+7 1.925798e-02 1.239717e-04
 ENDPROP
 STARTPROP
 MOMENTUM: p000
@@ -389,24 +392,24 @@ MASSES: 0.01494 0.01494
 SOURCE: even_and_odd_wall even_and_odd_wall/FUNNYWALL1
 SINKOPS: identity identity
 SINKS: RHO_s
-0 1.237635e-02 5.732160e-04
-1 3.761827e-02 5.582160e-04
-2 4.101941e-03 1.116997e-04
-3 2.335946e-02 9.377174e-04
-4 2.137214e-03 3.126454e-04
-5 2.406571e-02 1.624804e-03
-6 2.740168e-03 2.179161e-04
-7 3.739055e-02 -1.861940e-04
+0 3.130216e-03 3.773451e-05
+1 1.575677e-02 2.478423e-04
+2 2.016200e-03 -7.204769e-05
+3 1.383346e-02 2.989842e-04
+4 1.297951e-03 9.719708e-05
+5 1.392194e-02 3.524453e-04
+6 1.557110e-03 2.234506e-04
+7 1.575787e-02 -2.026990e-04
 ENDPROP
 Time for printing correlator 3.004074e-05
 Mesons for quarks 0 and 2
 ape_only returns 1
-WMTIME: time 4.3e-03 sec 270432 flops 62.3 MF
+WMTIME: time 4.5e-03 sec 270432 flops 60.6 MF
 ape_only returns 1
-WMTIME: time 4.3e-03 sec 270432 flops 63.0 MF
+WMTIME: time 4.5e-03 sec 270432 flops 60.3 MF
 ape_only returns 1
-WMTIME: time 4.3e-03 sec 270432 flops 62.4 MF
-Time for offdiag mesons 1.302099e-02
+WMTIME: time 4.4e-03 sec 270432 flops 61.0 MF
+Time for offdiag mesons 1.342916e-02
 For iq0 0 iq1 2 ip0 0 ip1 2 is0 0 is1 2 sf 1 
 meson_scale 0 2 1
 STARTPROP
@@ -415,14 +418,14 @@ MASSES: 0.01494 0.01494
 SOURCE: even_and_odd_wall even_and_odd_wall/FUNNYWALL2
 SINKOPS: identity identity
 SINKS: PION_05
-0 -6.867940e-02 6.961583e-04
-1 -6.197867e-02 5.933939e-05
-2 -2.514305e-02 2.594812e-04
-3 -4.277082e-02 1.588235e-04
-4 -1.288074e-02 3.692021e-04
-5 -4.105330e-02 5.169995e-04
-6 -2.124608e-02 4.994232e-04
-7 -5.910511e-02 5.962135e-04
+0 -1.563090e-02 6.483485e-05
+1 -2.352668e-02 5.098753e-05
+2 -9.128047e-03 6.468668e-05
+3 -2.071414e-02 6.283218e-05
+4 -6.226833e-03 9.561213e-05
+5 -2.048816e-02 5.755688e-05
+6 -8.319363e-03 6.277841e-05
+7 -2.310481e-02 2.382453e-05
 ENDPROP
 STARTPROP
 MOMENTUM: p000
@@ -430,14 +433,14 @@ MASSES: 0.01494 0.01494
 SOURCE: even_and_odd_wall even_and_odd_wall/FUNNYWALL2
 SINKOPS: identity identity
 SINKS: PION_ij
-0 -5.513821e-02 5.799876e-04
-1 -4.940129e-02 -3.844522e-04
-2 -1.962541e-02 3.646502e-04
-3 -3.502272e-02 4.144566e-05
-4 -9.614940e-03 2.136901e-04
-5 -3.392430e-02 5.595694e-04
-6 -1.663513e-02 4.084541e-04
-7 -4.874274e-02 8.941699e-04
+0 -1.189735e-02 1.640412e-04
+1 -1.870576e-02 -7.145207e-05
+2 -6.568082e-03 1.217332e-04
+3 -1.663501e-02 -4.261664e-05
+4 -4.199126e-03 2.302726e-05
+5 -1.642841e-02 8.583486e-05
+6 -5.945818e-03 4.529992e-05
+7 -1.845576e-02 3.115852e-04
 ENDPROP
 STARTPROP
 MOMENTUM: p000
@@ -445,14 +448,14 @@ MASSES: 0.01494 0.01494
 SOURCE: even_and_odd_wall even_and_odd_wall/FUNNYWALL2
 SINKOPS: identity identity
 SINKS: PION_i0
-0 3.326862e-02 2.327229e-03
-1 -3.154527e-02 -1.124724e-04
-2 1.185686e-02 1.035044e-03
-3 -2.184013e-02 1.500228e-03
-4 5.517206e-03 -5.266964e-04
-5 -2.076417e-02 2.173038e-03
-6 9.290400e-03 -7.453696e-04
-7 -2.857087e-02 5.877329e-04
+0 6.816871e-03 1.787313e-04
+1 -1.163572e-02 -2.080412e-05
+2 3.538224e-03 1.336078e-04
+3 -9.981878e-03 1.825842e-04
+4 2.224515e-03 -1.521928e-04
+5 -9.968736e-03 4.178705e-04
+6 3.024030e-03 -3.010550e-04
+7 -1.080734e-02 2.600870e-04
 ENDPROP
 STARTPROP
 MOMENTUM: p000
@@ -460,14 +463,14 @@ MASSES: 0.01494 0.01494
 SOURCE: even_and_odd_wall even_and_odd_wall/FUNNYWALL2
 SINKOPS: identity identity
 SINKS: PION_0
-0 -2.579147e-02 -1.661182e-03
-1 2.570607e-02 2.670994e-04
-2 -8.928711e-03 -7.555175e-04
-3 1.772173e-02 -1.321475e-03
-4 -3.999662e-03 4.133661e-04
-5 1.617391e-02 -1.948682e-03
-6 -7.126125e-03 2.870259e-04
-7 2.210598e-02 -6.971263e-04
+0 -5.119545e-03 -1.335583e-04
+1 9.367018e-03 8.150807e-05
+2 -2.581001e-03 -1.334006e-04
+3 8.053228e-03 -2.236363e-04
+4 -1.534499e-03 9.904928e-05
+5 7.880639e-03 -3.649208e-04
+6 -2.211216e-03 1.404358e-04
+7 8.404685e-03 -2.469026e-04
 ENDPROP
 STARTPROP
 MOMENTUM: p000
@@ -475,14 +478,14 @@ MASSES: 0.01494 0.01494
 SOURCE: even_and_odd_wall even_and_odd_wall/FUNNYWALL2
 SINKOPS: identity identity
 SINKS: RHO_i0
-0 -1.461733e-02 -5.944547e-04
-1 4.453259e-02 6.273057e-04
-2 -4.822282e-03 -1.316321e-04
-3 2.726756e-02 1.143805e-03
-4 -2.504580e-03 -3.773119e-04
-5 2.831925e-02 1.748364e-03
-6 -3.294287e-03 -2.467792e-04
-7 4.413800e-02 8.814699e-05
+0 -4.024345e-03 2.012578e-05
+1 1.894590e-02 1.582547e-04
+2 -2.546865e-03 7.800123e-05
+3 1.657344e-02 3.236335e-04
+4 -1.591419e-03 -4.641487e-05
+5 1.681365e-02 3.125072e-04
+6 -1.888763e-03 -1.381175e-04
+7 1.925788e-02 5.731544e-05
 ENDPROP
 STARTPROP
 MOMENTUM: p000
@@ -490,26 +493,26 @@ MASSES: 0.01494 0.01494
 SOURCE: even_and_odd_wall even_and_odd_wall/FUNNYWALL2
 SINKOPS: identity identity
 SINKS: RHO_0
-0 -1.196182e-02 -2.018347e-04
-1 3.758739e-02 7.591318e-04
-2 -3.851454e-03 1.076184e-04
-3 2.329192e-02 1.003059e-03
-4 -2.020668e-03 -2.807732e-04
-5 2.397537e-02 1.534521e-03
-6 -2.642563e-03 -9.680054e-05
-7 3.731448e-02 -3.877711e-04
+0 -3.062093e-03 4.475353e-05
+1 1.574731e-02 2.610704e-04
+2 -1.952251e-03 1.324177e-04
+3 1.381585e-02 3.036854e-04
+4 -1.261749e-03 -7.023200e-05
+5 1.390663e-02 3.249030e-04
+6 -1.521044e-03 -1.810039e-04
+7 1.574848e-02 -2.580650e-04
 ENDPROP
-Time for printing correlator 2.908707e-05
-Aggregate time to tie meson correlators 2.665901e-02
+Time for printing correlator 2.813339e-05
+Aggregate time to tie meson correlators 2.760100e-02
 Aggregate time to tie baryon correlators 0.000000e+00
 RUNNING COMPLETED
-Time = 1.139450e+00 seconds
-total_iters = 942
+Time = 1.050804e+00 seconds
+total_iters = 828
 destroy quark[0]
 destroy quark[1]
 destroy quark[2]
 
 
 ask_starting_lattice(0): EOF on input.
-exit: Thu Apr 24 18:23:15 2025
+exit: Thu Apr 24 18:39:20 2025
 

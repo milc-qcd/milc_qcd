@@ -1,9 +1,9 @@
 SU3 staggered valence fermions
-MIMD version 5b20
+MIMD version 5b20-dirty
 Machine = Scalar processor, with 1 nodes
 Host(0) = ytdevice
 Username = trimis
-start: Thu Apr 24 18:25:14 2025
+start: Thu Apr 24 18:53:41 2025
 
 Options selected...
 Generic double precision
@@ -21,7 +21,7 @@ job_id none
 LAYOUT = Hypercubes, options = with fixed input-parameter node_geometry
 ON EACH NODE (RANK) 8 x 8 x 8 x 8
 Mallocing 2.9 MBytes per node for lattice
-Aggregate time to setup 5.873919e-03
+Aggregate time to setup 6.124973e-03
 
 
 ######################################################################
@@ -36,6 +36,8 @@ staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0 
 time_bc antiperiodic
+ani_dir t
+ani_xiq 1
 # EIGENPAIRS
 max_number_of_eigenpairs 0
 # CHIRAL CONDENSATE AND RELATED MEASUREMENTS
@@ -718,30 +720,31 @@ correlator PION_5 p110   1 * 1  pion5  0  1  1 EO EO EO
 # BARYONS
 # DESCRIPTION OF BARYONS
 number_of_baryons 0
-Aggregate time to read parameters 6.949902e-04
+Aggregate time to read parameters 6.220341e-04
 Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l8888
 Time stamp Tue Mar 13 15:47:22 2012
 Checksums 4f9d000e 8d72f72e OK
-Time to reload gauge configuration = 1.741171e-03
+Time to reload gauge configuration = 1.742125e-03
 CHECK PLAQ: 1.7790021544584596e+00 1.7823592881385857e+00
 CHECK NERSC LINKTR: -6.4563862036388919e-04 CKSUM: 4a3bbf43
 Reunitarized for double precision. Max deviation 2.62e-07 changed to 5.55e-16
-Time to check unitarity = 1.621008e-03
-Aggregate time to read lattice 6.521225e-03
+Time to check unitarity = 1.733065e-03
+Aggregate time to read lattice 6.307125e-03
 Fixing to Coulomb gauge
 step 19 av gf action 8.73432119e-01, delta 6.467e-04
 step 39 av gf action 8.76698059e-01, delta 4.322e-05
 step 59 av gf action 8.77135975e-01, delta 1.052e-05
 step 79 av gf action 8.77249813e-01, delta 2.893e-06
 GFIX: Ended at step 85. Av gf action 8.77263803e-01, delta 1.980e-06
-Aggregate time to gauge fix 2.727029e-01
-Time to APE smear 2.439976e-03 sec
-Aggregate time to save lattice 0.000000e+00
+Aggregate time to gauge fix 2.782381e-01
+Time to APE smear 2.430201e-03 sec
+Aggregate time to save lattice 9.536743e-07
 "Single link action"
 path coefficients: npath  path_coeff  multiplicity
                     0      1.000000e+00     8
-FLTIME: time = 4.231930e-03 (asqtad D) mflops = 1.742184e+03
-Aggregate time to create fermion links 7.336855e-03
+Anisotropic action with bare quark anisotropy 1.000000 in the t-direction
+FLTIME: time = 4.355907e-03 (asqtad D) mflops = 1.726450e+03
+Aggregate time to create fermion links 7.464886e-03
 Aggregate time to calculate Dirac eigenpairs 0.000000e+00
 Aggregate time to calculate pbp, etc 0.000000e+00
 END OF HEADER
@@ -757,7 +760,7 @@ Creating modified source 5 for color 2 from parent source 0
 Creating modified source 6 for color 0 from parent source 1
 Creating modified source 6 for color 1 from parent source 1
 Creating modified source 6 for color 2 from parent source 1
-Aggregate time to create sources 1.459122e-03
+Aggregate time to create sources 1.533031e-03
 Mass= 0.03 source random_color_wall residue= 1e-06 rel= 0
 Mass= 0.05 source random_color_wall residue= 1e-06 rel= 0
 Mass= 0.07 source random_color_wall residue= 1e-06 rel= 0
@@ -765,24 +768,24 @@ Mass= 0.09 source random_color_wall residue= 1e-06 rel= 0
 Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
 solve_ksprop: color index = 0; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.497309e-02 (multicg_offset D) masses = 4 iters = 229 mflops = 1.249354e+04
+CONGRAD5: time = 9.436417e-02 (multicg_offset D) masses = 4 iters = 229 mflops = 1.257416e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 229
 Solving for 4 masses on odd sites
-CONGRAD5: time = 9.796906e-02 (multicg_offset D) masses = 4 iters = 232 mflops = 1.227014e+04
+CONGRAD5: time = 9.327006e-02 (multicg_offset D) masses = 4 iters = 232 mflops = 1.288832e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 232
 solve_ksprop: color index = 1; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.741592e-02 (multicg_offset D) masses = 4 iters = 230 mflops = 1.223343e+04
+CONGRAD5: time = 9.070802e-02 (multicg_offset D) masses = 4 iters = 230 mflops = 1.313810e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 230
 Solving for 4 masses on odd sites
-CONGRAD5: time = 9.894109e-02 (multicg_offset D) masses = 4 iters = 232 mflops = 1.214959e+04
+CONGRAD5: time = 9.651518e-02 (multicg_offset D) masses = 4 iters = 232 mflops = 1.245497e+04
  OK converged final_rsq= 9.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 232
 solve_ksprop: color index = 2; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.850287e-02 (multicg_offset D) masses = 4 iters = 234 mflops = 1.230885e+04
+CONGRAD5: time = 9.340000e-02 (multicg_offset D) masses = 4 iters = 234 mflops = 1.298134e+04
  OK converged final_rsq= 9.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 234
 Solving for 4 masses on odd sites
-CONGRAD5: time = 9.854698e-02 (multicg_offset D) masses = 4 iters = 233 mflops = 1.225076e+04
+CONGRAD5: time = 9.308982e-02 (multicg_offset D) masses = 4 iters = 233 mflops = 1.296893e+04
  OK converged final_rsq= 9.6e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 233
 Mass= 0.03 source CORNER residue= 1e-06 rel= 0
 Mass= 0.05 source CORNER residue= 1e-06 rel= 0
@@ -790,24 +793,24 @@ Mass= 0.07 source CORNER residue= 1e-06 rel= 0
 Mass= 0.09 source CORNER residue= 1e-06 rel= 0
 solve_ksprop: color index = 0; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 1.003609e-01 (multicg_offset D) masses = 4 iters = 240 mflops = 1.239074e+04
+CONGRAD5: time = 9.393382e-02 (multicg_offset D) masses = 4 iters = 240 mflops = 1.323853e+04
  OK converged final_rsq= 9.4e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 240
 Solving for 4 masses on odd sites
-CONGRAD5: time = 2.479553e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
+CONGRAD5: time = 3.859997e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
  OK converged final_rsq= 0 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 0
 solve_ksprop: color index = 1; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 1.040430e-01 (multicg_offset D) masses = 4 iters = 251 mflops = 1.250004e+04
+CONGRAD5: time = 1.008010e-01 (multicg_offset D) masses = 4 iters = 251 mflops = 1.290207e+04
  OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 251
 Solving for 4 masses on odd sites
-CONGRAD5: time = 1.411438e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
+CONGRAD5: time = 1.409054e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
  OK converged final_rsq= 0 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 0
 solve_ksprop: color index = 2; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 1.011870e-01 (multicg_offset D) masses = 4 iters = 249 mflops = 1.275044e+04
+CONGRAD5: time = 9.764814e-02 (multicg_offset D) masses = 4 iters = 249 mflops = 1.321253e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 249
 Solving for 4 masses on odd sites
-CONGRAD5: time = 1.690388e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
+CONGRAD5: time = 1.411438e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
  OK converged final_rsq= 0 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 0
 Mass= 0.03 source point residue= 1e-06 rel= 0
 Mass= 0.05 source point residue= 1e-06 rel= 0
@@ -815,24 +818,24 @@ Mass= 0.07 source point residue= 1e-06 rel= 0
 Mass= 0.09 source point residue= 1e-06 rel= 0
 solve_ksprop: color index = 0; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.724998e-02 (multicg_offset D) masses = 4 iters = 230 mflops = 1.225431e+04
+CONGRAD5: time = 9.339905e-02 (multicg_offset D) masses = 4 iters = 230 mflops = 1.275956e+04
  OK converged final_rsq= 9.4e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 230
 Solving for 4 masses on odd sites
-CONGRAD5: time = 2.779961e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
+CONGRAD5: time = 2.479553e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
  OK converged final_rsq= 0 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 0
 solve_ksprop: color index = 1; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.703803e-02 (multicg_offset D) masses = 4 iters = 233 mflops = 1.244126e+04
+CONGRAD5: time = 9.132791e-02 (multicg_offset D) masses = 4 iters = 233 mflops = 1.321913e+04
  OK converged final_rsq= 9.4e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 233
 Solving for 4 masses on odd sites
-CONGRAD5: time = 1.389980e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
+CONGRAD5: time = 1.380444e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
  OK converged final_rsq= 0 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 0
 solve_ksprop: color index = 2; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.320807e-02 (multicg_offset D) masses = 4 iters = 232 mflops = 1.289689e+04
+CONGRAD5: time = 9.041882e-02 (multicg_offset D) masses = 4 iters = 232 mflops = 1.329473e+04
  OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 232
 Solving for 4 masses on odd sites
-CONGRAD5: time = 1.640320e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
+CONGRAD5: time = 1.399517e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
  OK converged final_rsq= 0 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 0
 Mass= 0.03 source random_color_wall/momentum residue= 1e-06 rel= 0
 Mass= 0.05 source random_color_wall/momentum residue= 1e-06 rel= 0
@@ -840,24 +843,24 @@ Mass= 0.07 source random_color_wall/momentum residue= 1e-06 rel= 0
 Mass= 0.09 source random_color_wall/momentum residue= 1e-06 rel= 0
 solve_ksprop: color index = 0; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.380603e-02 (multicg_offset D) masses = 4 iters = 234 mflops = 1.292515e+04
+CONGRAD5: time = 9.236884e-02 (multicg_offset D) masses = 4 iters = 234 mflops = 1.312625e+04
  OK converged final_rsq= 9.5e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 234
 Solving for 4 masses on odd sites
-CONGRAD5: time = 9.689498e-02 (multicg_offset D) masses = 4 iters = 240 mflops = 1.283395e+04
+CONGRAD5: time = 9.399986e-02 (multicg_offset D) masses = 4 iters = 240 mflops = 1.322923e+04
  OK converged final_rsq= 9.5e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 240
 solve_ksprop: color index = 1; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.179902e-02 (multicg_offset D) masses = 4 iters = 230 mflops = 1.298196e+04
+CONGRAD5: time = 9.052706e-02 (multicg_offset D) masses = 4 iters = 230 mflops = 1.316436e+04
  OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 230
 Solving for 4 masses on odd sites
-CONGRAD5: time = 9.769797e-02 (multicg_offset D) masses = 4 iters = 233 mflops = 1.235722e+04
+CONGRAD5: time = 9.624410e-02 (multicg_offset D) masses = 4 iters = 233 mflops = 1.254389e+04
  OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 233
 solve_ksprop: color index = 2; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.816694e-02 (multicg_offset D) masses = 4 iters = 233 mflops = 1.229819e+04
+CONGRAD5: time = 9.256101e-02 (multicg_offset D) masses = 4 iters = 233 mflops = 1.304302e+04
  OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 233
 Solving for 4 masses on odd sites
-CONGRAD5: time = 9.576106e-02 (multicg_offset D) masses = 4 iters = 230 mflops = 1.244484e+04
+CONGRAD5: time = 9.141898e-02 (multicg_offset D) masses = 4 iters = 230 mflops = 1.303593e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 230
 Mass= 0.03 source CORNER/momentum residue= 1e-06 rel= 0
 Mass= 0.05 source CORNER/momentum residue= 1e-06 rel= 0
@@ -865,24 +868,24 @@ Mass= 0.07 source CORNER/momentum residue= 1e-06 rel= 0
 Mass= 0.09 source CORNER/momentum residue= 1e-06 rel= 0
 solve_ksprop: color index = 0; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.993100e-02 (multicg_offset D) masses = 4 iters = 240 mflops = 1.244404e+04
+CONGRAD5: time = 9.394217e-02 (multicg_offset D) masses = 4 iters = 240 mflops = 1.323735e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 240
 Solving for 4 masses on odd sites
-CONGRAD5: time = 2.460480e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
+CONGRAD5: time = 2.448559e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
  OK converged final_rsq= 0 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 0
 solve_ksprop: color index = 1; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.656882e-02 (multicg_offset D) masses = 4 iters = 240 mflops = 1.287730e+04
+CONGRAD5: time = 9.315991e-02 (multicg_offset D) masses = 4 iters = 240 mflops = 1.334851e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 240
 Solving for 4 masses on odd sites
-CONGRAD5: time = 1.590252e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
+CONGRAD5: time = 1.380444e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
  OK converged final_rsq= 0 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 0
 solve_ksprop: color index = 2; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.633994e-02 (multicg_offset D) masses = 4 iters = 240 mflops = 1.290789e+04
+CONGRAD5: time = 9.343505e-02 (multicg_offset D) masses = 4 iters = 240 mflops = 1.330920e+04
  OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 240
 Solving for 4 masses on odd sites
-CONGRAD5: time = 1.380444e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
+CONGRAD5: time = 1.361370e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
  OK converged final_rsq= 0 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 0
 Mass= 0.03 source random_color_wall/momentum residue= 1e-06 rel= 0
 Mass= 0.05 source random_color_wall/momentum residue= 1e-06 rel= 0
@@ -890,24 +893,24 @@ Mass= 0.07 source random_color_wall/momentum residue= 1e-06 rel= 0
 Mass= 0.09 source random_color_wall/momentum residue= 1e-06 rel= 0
 solve_ksprop: color index = 0; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.610701e-02 (multicg_offset D) masses = 4 iters = 231 mflops = 1.245396e+04
+CONGRAD5: time = 8.921981e-02 (multicg_offset D) masses = 4 iters = 231 mflops = 1.341532e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 231
 Solving for 4 masses on odd sites
-CONGRAD5: time = 9.678388e-02 (multicg_offset D) masses = 4 iters = 232 mflops = 1.242040e+04
+CONGRAD5: time = 9.332609e-02 (multicg_offset D) masses = 4 iters = 232 mflops = 1.288058e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 232
 solve_ksprop: color index = 1; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.685993e-02 (multicg_offset D) masses = 4 iters = 233 mflops = 1.246414e+04
+CONGRAD5: time = 9.305191e-02 (multicg_offset D) masses = 4 iters = 233 mflops = 1.297422e+04
  OK converged final_rsq= 9.5e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 233
 Solving for 4 masses on odd sites
-CONGRAD5: time = 9.638309e-02 (multicg_offset D) masses = 4 iters = 235 mflops = 1.263332e+04
+CONGRAD5: time = 9.363294e-02 (multicg_offset D) masses = 4 iters = 235 mflops = 1.300438e+04
  OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 235
 solve_ksprop: color index = 2; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.266305e-02 (multicg_offset D) masses = 4 iters = 230 mflops = 1.286091e+04
+CONGRAD5: time = 8.878303e-02 (multicg_offset D) masses = 4 iters = 230 mflops = 1.342296e+04
  OK converged final_rsq= 9.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 230
 Solving for 4 masses on odd sites
-CONGRAD5: time = 9.482503e-02 (multicg_offset D) masses = 4 iters = 235 mflops = 1.284090e+04
+CONGRAD5: time = 9.285903e-02 (multicg_offset D) masses = 4 iters = 235 mflops = 1.311276e+04
  OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 235
 Mass= 0.03 source CORNER/momentum residue= 1e-06 rel= 0
 Mass= 0.05 source CORNER/momentum residue= 1e-06 rel= 0
@@ -915,82 +918,82 @@ Mass= 0.07 source CORNER/momentum residue= 1e-06 rel= 0
 Mass= 0.09 source CORNER/momentum residue= 1e-06 rel= 0
 solve_ksprop: color index = 0; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.576201e-02 (multicg_offset D) masses = 4 iters = 231 mflops = 1.249882e+04
+CONGRAD5: time = 8.970189e-02 (multicg_offset D) masses = 4 iters = 231 mflops = 1.334323e+04
  OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 231
 Solving for 4 masses on odd sites
-CONGRAD5: time = 2.450943e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
+CONGRAD5: time = 2.429485e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
  OK converged final_rsq= 0 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 0
 solve_ksprop: color index = 1; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.555387e-02 (multicg_offset D) masses = 4 iters = 235 mflops = 1.274295e+04
+CONGRAD5: time = 9.477901e-02 (multicg_offset D) masses = 4 iters = 235 mflops = 1.284713e+04
  OK converged final_rsq= 9.5e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 235
 Solving for 4 masses on odd sites
-CONGRAD5: time = 1.370907e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
+CONGRAD5: time = 1.530647e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
  OK converged final_rsq= 0 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 0
 solve_ksprop: color index = 2; all masses
 Solving for 4 masses on even sites
-CONGRAD5: time = 9.520888e-02 (multicg_offset D) masses = 4 iters = 231 mflops = 1.257144e+04
+CONGRAD5: time = 9.291196e-02 (multicg_offset D) masses = 4 iters = 231 mflops = 1.288222e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 231
 Solving for 4 masses on odd sites
-CONGRAD5: time = 1.490116e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
+CONGRAD5: time = 1.370907e-04 (multicg_offset D) masses = 4 iters = 0 mflops = 0.000000e+00
  OK converged final_rsq= 0 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 0
-Aggregate time to compute propagators 2.947573e+00
+Aggregate time to compute propagators 2.833683e+00
 destroy prop[0]
 Aggregate time to generate sink operator 1.161098e-04
 destroy prop[1]
-Aggregate time to generate sink operator 1.039505e-04
-destroy prop[2]
-Aggregate time to generate sink operator 1.058578e-04
-destroy prop[3]
-Aggregate time to generate sink operator 1.440048e-04
-destroy prop[4]
-Aggregate time to generate sink operator 1.049042e-04
-destroy prop[5]
-Aggregate time to generate sink operator 1.130104e-04
-destroy prop[6]
-Aggregate time to generate sink operator 1.089573e-04
-destroy prop[7]
 Aggregate time to generate sink operator 1.101494e-04
-destroy prop[8]
+destroy prop[2]
+Aggregate time to generate sink operator 1.080036e-04
+destroy prop[3]
+Aggregate time to generate sink operator 1.060963e-04
+destroy prop[4]
+Aggregate time to generate sink operator 1.080036e-04
+destroy prop[5]
 Aggregate time to generate sink operator 1.111031e-04
+destroy prop[6]
+Aggregate time to generate sink operator 1.111031e-04
+destroy prop[7]
+Aggregate time to generate sink operator 1.339912e-04
+destroy prop[8]
+Aggregate time to generate sink operator 1.289845e-04
 destroy prop[9]
-Aggregate time to generate sink operator 1.180172e-04
+Aggregate time to generate sink operator 1.108646e-04
 destroy prop[10]
-Aggregate time to generate sink operator 1.151562e-04
+Aggregate time to generate sink operator 1.139641e-04
 destroy prop[11]
-Aggregate time to generate sink operator 1.461506e-04
+Aggregate time to generate sink operator 1.230240e-04
 destroy prop[12]
-Aggregate time to generate sink operator 1.208782e-04
+Aggregate time to generate sink operator 1.139641e-04
 destroy prop[13]
-Aggregate time to generate sink operator 1.161098e-04
+Aggregate time to generate sink operator 1.158714e-04
 destroy prop[14]
-Aggregate time to generate sink operator 1.139641e-04
+Aggregate time to generate sink operator 1.180172e-04
 destroy prop[15]
-Aggregate time to generate sink operator 1.170635e-04
+Aggregate time to generate sink operator 1.289845e-04
 destroy prop[16]
-Aggregate time to generate sink operator 1.239777e-04
+Aggregate time to generate sink operator 1.280308e-04
 destroy prop[17]
-Aggregate time to generate sink operator 1.149178e-04
-destroy prop[18]
-Aggregate time to generate sink operator 1.130104e-04
-destroy prop[19]
-Aggregate time to generate sink operator 1.420975e-04
-destroy prop[20]
-Aggregate time to generate sink operator 1.189709e-04
-destroy prop[21]
-Aggregate time to generate sink operator 1.130104e-04
-destroy prop[22]
 Aggregate time to generate sink operator 1.139641e-04
-destroy prop[23]
+destroy prop[18]
+Aggregate time to generate sink operator 1.702309e-04
+destroy prop[19]
+Aggregate time to generate sink operator 1.170635e-04
+destroy prop[20]
+Aggregate time to generate sink operator 1.170635e-04
+destroy prop[21]
+Aggregate time to generate sink operator 1.189709e-04
+destroy prop[22]
 Aggregate time to generate sink operator 1.239777e-04
+destroy prop[23]
+Aggregate time to generate sink operator 1.509190e-04
 destroy prop[24]
 Aggregate time to generate sink operator 1.139641e-04
 destroy prop[25]
-Aggregate time to generate sink operator 1.130104e-04
+Aggregate time to generate sink operator 1.239777e-04
 destroy prop[26]
-Aggregate time to generate sink operator 1.208782e-04
+Aggregate time to generate sink operator 1.151562e-04
 destroy prop[27]
-Aggregate time to generate sink operator 1.428127e-04
+Aggregate time to generate sink operator 1.139641e-04
 destroy source[0]
 destroy source[1]
 destroy source[2]
@@ -1000,12 +1003,12 @@ destroy source[5]
 destroy source[6]
 Mesons for quarks 0 and 0
 ape_only returns 1
-WMTIME: time 3.6e-04 sec 106512 flops 298.2 MF
+WMTIME: time 3.7e-04 sec 106512 flops 284.7 MF
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 510.0 MF
+WMTIME: time 2.4e-04 sec 106512 flops 436.7 MF
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 514.1 MF
-Time for diagonal mesons 8.168221e-04
+WMTIME: time 2.1e-04 sec 106512 flops 511.7 MF
+Time for diagonal mesons 8.819103e-04
 For iq0 0 iq1 0 ip0 0 ip1 0 is0 0 is1 0 sf 1 
 meson_scale 0 0 1
 STARTPROP
@@ -1023,15 +1026,15 @@ SINKS: PION_5
 6 4.774662e+01 0.000000e+00
 7 1.117969e+02 0.000000e+00
 ENDPROP
-Time for printing correlator 8.821487e-06
+Time for printing correlator 9.059906e-06
 Mesons for quarks 4 and 4
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 435.0 MF
-ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 509.4 MF
-ape_only returns 1
 WMTIME: time 2.1e-04 sec 106512 flops 514.7 MF
-Time for diagonal mesons 6.909370e-04
+ape_only returns 1
+WMTIME: time 2.1e-04 sec 106512 flops 517.1 MF
+ape_only returns 1
+WMTIME: time 2.4e-04 sec 106512 flops 453.1 MF
+Time for diagonal mesons 6.821156e-04
 For iq0 4 iq1 4 ip0 4 ip1 4 is0 1 is1 1 sf 1 
 meson_scale 4 4 1
 STARTPROP
@@ -1049,15 +1052,15 @@ SINKS: PION_5
 6 4.840845e+01 0.000000e+00
 7 8.906562e+01 0.000000e+00
 ENDPROP
-Time for printing correlator 8.106232e-06
+Time for printing correlator 6.914139e-06
 Mesons for quarks 8 and 8
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 517.1 MF
+WMTIME: time 2.1e-04 sec 106512 flops 509.4 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 449.4 MF
+WMTIME: time 2.1e-04 sec 106512 flops 514.7 MF
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 517.1 MF
-Time for diagonal mesons 6.780624e-04
+WMTIME: time 2.1e-04 sec 106512 flops 502.5 MF
+Time for diagonal mesons 6.580353e-04
 For iq0 8 iq1 8 ip0 8 ip1 8 is0 2 is1 2 sf 1 
 meson_scale 8 8 1
 STARTPROP
@@ -1075,15 +1078,15 @@ SINKS: PION_5
 6 9.347350e-02 0.000000e+00
 7 2.260264e-01 0.000000e+00
 ENDPROP
-Time for printing correlator 5.006790e-06
+Time for printing correlator 5.960464e-06
 Mesons for quarks 1 and 1
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 517.1 MF
+WMTIME: time 2.4e-04 sec 106512 flops 453.1 MF
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 517.1 MF
+WMTIME: time 2.1e-04 sec 106512 flops 519.5 MF
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 517.1 MF
-Time for diagonal mesons 6.449223e-04
+WMTIME: time 2.0e-04 sec 106512 flops 520.1 MF
+Time for diagonal mesons 6.771088e-04
 For iq0 1 iq1 1 ip0 1 ip1 1 is0 0 is1 0 sf 1 
 meson_scale 1 1 1
 STARTPROP
@@ -1104,12 +1107,12 @@ ENDPROP
 Time for printing correlator 7.152557e-06
 Mesons for quarks 5 and 5
 ape_only returns 1
-WMTIME: time 2.3e-04 sec 106512 flops 453.5 MF
-ape_only returns 1
 WMTIME: time 2.1e-04 sec 106512 flops 519.5 MF
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 519.5 MF
-Time for diagonal mesons 6.730556e-04
+WMTIME: time 2.0e-04 sec 106512 flops 520.1 MF
+ape_only returns 1
+WMTIME: time 2.4e-04 sec 106512 flops 447.2 MF
+Time for diagonal mesons 6.799698e-04
 For iq0 5 iq1 5 ip0 5 ip1 5 is0 1 is1 1 sf 1 
 meson_scale 5 5 1
 STARTPROP
@@ -1127,15 +1130,15 @@ SINKS: PION_5
 6 4.294626e+01 0.000000e+00
 7 8.051318e+01 0.000000e+00
 ENDPROP
-Time for printing correlator 7.152557e-06
+Time for printing correlator 5.960464e-06
 Mesons for quarks 9 and 9
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 519.5 MF
+WMTIME: time 2.0e-04 sec 106512 flops 522.5 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 449.4 MF
+WMTIME: time 2.0e-04 sec 106512 flops 521.9 MF
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 512.3 MF
-Time for diagonal mesons 6.780624e-04
+WMTIME: time 2.0e-04 sec 106512 flops 521.9 MF
+Time for diagonal mesons 6.420612e-04
 For iq0 9 iq1 9 ip0 9 ip1 9 is0 2 is1 2 sf 1 
 meson_scale 9 9 1
 STARTPROP
@@ -1153,15 +1156,15 @@ SINKS: PION_5
 6 8.704107e-02 0.000000e+00
 7 2.182013e-01 0.000000e+00
 ENDPROP
-Time for printing correlator 5.960464e-06
+Time for printing correlator 5.006790e-06
 Mesons for quarks 2 and 2
 ape_only returns 1
-WMTIME: time 2.0e-04 sec 106512 flops 522.5 MF
+WMTIME: time 2.4e-04 sec 106512 flops 453.1 MF
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 519.5 MF
+WMTIME: time 2.1e-04 sec 106512 flops 514.7 MF
 ape_only returns 1
-WMTIME: time 2.0e-04 sec 106512 flops 522.5 MF
-Time for diagonal mesons 6.401539e-04
+WMTIME: time 2.1e-04 sec 106512 flops 514.7 MF
+Time for diagonal mesons 6.811619e-04
 For iq0 2 iq1 2 ip0 2 ip1 2 is0 0 is1 0 sf 1 
 meson_scale 2 2 1
 STARTPROP
@@ -1182,12 +1185,12 @@ ENDPROP
 Time for printing correlator 6.914139e-06
 Mesons for quarks 6 and 6
 ape_only returns 1
-WMTIME: time 2.3e-04 sec 106512 flops 457.3 MF
+WMTIME: time 2.1e-04 sec 106512 flops 514.1 MF
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 514.7 MF
+WMTIME: time 2.0e-04 sec 106512 flops 521.9 MF
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 509.4 MF
-Time for diagonal mesons 6.768703e-04
+WMTIME: time 2.3e-04 sec 106512 flops 461.0 MF
+Time for diagonal mesons 6.740093e-04
 For iq0 6 iq1 6 ip0 6 ip1 6 is0 1 is1 1 sf 1 
 meson_scale 6 6 1
 STARTPROP
@@ -1205,15 +1208,15 @@ SINKS: PION_5
 6 3.720201e+01 0.000000e+00
 7 7.195035e+01 0.000000e+00
 ENDPROP
-Time for printing correlator 7.152557e-06
+Time for printing correlator 6.914139e-06
 Mesons for quarks 10 and 10
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 509.4 MF
+WMTIME: time 2.1e-04 sec 106512 flops 519.5 MF
 ape_only returns 1
-WMTIME: time 2.3e-04 sec 106512 flops 459.1 MF
+WMTIME: time 2.0e-04 sec 106512 flops 521.9 MF
 ape_only returns 1
 WMTIME: time 2.0e-04 sec 106512 flops 522.5 MF
-Time for diagonal mesons 6.730556e-04
+Time for diagonal mesons 6.430149e-04
 For iq0 10 iq1 10 ip0 10 ip1 10 is0 2 is1 2 sf 1 
 meson_scale 10 10 1
 STARTPROP
@@ -1234,12 +1237,12 @@ ENDPROP
 Time for printing correlator 5.006790e-06
 Mesons for quarks 3 and 3
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 519.5 MF
+WMTIME: time 2.4e-04 sec 106512 flops 451.3 MF
 ape_only returns 1
-WMTIME: time 2.0e-04 sec 106512 flops 521.9 MF
+WMTIME: time 2.0e-04 sec 106512 flops 522.5 MF
 ape_only returns 1
-WMTIME: time 2.1e-04 sec 106512 flops 517.1 MF
-Time for diagonal mesons 6.430149e-04
+WMTIME: time 2.0e-04 sec 106512 flops 524.3 MF
+Time for diagonal mesons 6.749630e-04
 For iq0 3 iq1 3 ip0 3 ip1 3 is0 0 is1 0 sf 1 
 meson_scale 3 3 1
 STARTPROP
@@ -1257,15 +1260,15 @@ SINKS: PION_5
 6 3.580179e+01 0.000000e+00
 7 9.725853e+01 0.000000e+00
 ENDPROP
-Time for printing correlator 5.960464e-06
+Time for printing correlator 7.152557e-06
 Mesons for quarks 7 and 7
-ape_only returns 1
-WMTIME: time 2.3e-04 sec 106512 flops 456.8 MF
 ape_only returns 1
 WMTIME: time 2.0e-04 sec 106512 flops 521.9 MF
 ape_only returns 1
-WMTIME: time 2.0e-04 sec 106512 flops 525.0 MF
-Time for diagonal mesons 6.690025e-04
+WMTIME: time 2.0e-04 sec 106512 flops 522.5 MF
+ape_only returns 1
+WMTIME: time 2.2e-04 sec 106512 flops 493.1 MF
+Time for diagonal mesons 6.721020e-04
 For iq0 7 iq1 7 ip0 7 ip1 7 is0 1 is1 1 sf 1 
 meson_scale 7 7 1
 STARTPROP
@@ -1283,15 +1286,15 @@ SINKS: PION_5
 6 3.191244e+01 0.000000e+00
 7 6.421256e+01 0.000000e+00
 ENDPROP
-Time for printing correlator 6.914139e-06
+Time for printing correlator 7.152557e-06
 Mesons for quarks 11 and 11
+ape_only returns 1
+WMTIME: time 2.0e-04 sec 106512 flops 524.3 MF
 ape_only returns 1
 WMTIME: time 2.0e-04 sec 106512 flops 521.9 MF
 ape_only returns 1
-WMTIME: time 2.3e-04 sec 106512 flops 456.8 MF
-ape_only returns 1
-WMTIME: time 2.0e-04 sec 106512 flops 525.0 MF
-Time for diagonal mesons 6.678104e-04
+WMTIME: time 2.0e-04 sec 106512 flops 522.5 MF
+Time for diagonal mesons 6.420612e-04
 For iq0 11 iq1 11 ip0 11 ip1 11 is0 2 is1 2 sf 1 
 meson_scale 11 11 1
 STARTPROP
@@ -1312,12 +1315,12 @@ ENDPROP
 Time for printing correlator 5.006790e-06
 Mesons for quarks 12 and 0
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 445.4 MF
+WMTIME: time 2.7e-04 sec 106512 flops 387.5 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 451.7 MF
+WMTIME: time 2.4e-04 sec 106512 flops 443.6 MF
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 398.9 MF
-Time for offdiag mesons 7.710457e-04
+WMTIME: time 2.4e-04 sec 106512 flops 443.6 MF
+Time for offdiag mesons 7.851124e-04
 For iq0 12 iq1 0 ip0 12 ip1 0 is0 3 is1 0 sf 1 
 meson_scale 12 0 1
 STARTPROP
@@ -1335,15 +1338,15 @@ SINKS: PION_5
 6 1.796712e+01 -4.550313e-01
 7 7.086127e+01 -4.698463e-01
 ENDPROP
-Time for printing correlator 7.152557e-06
+Time for printing correlator 8.106232e-06
 Mesons for quarks 16 and 4
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 445.4 MF
+WMTIME: time 2.5e-04 sec 106512 flops 427.9 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 449.0 MF
+WMTIME: time 2.8e-04 sec 106512 flops 383.1 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 441.9 MF
-Time for offdiag mesons 7.450581e-04
+WMTIME: time 2.5e-04 sec 106512 flops 429.6 MF
+Time for offdiag mesons 8.060932e-04
 For iq0 16 iq1 4 ip0 16 ip1 4 is0 4 is1 1 sf 1 
 meson_scale 16 4 1
 STARTPROP
@@ -1364,12 +1367,12 @@ ENDPROP
 Time for printing correlator 5.960464e-06
 Mesons for quarks 8 and 8
 ape_only returns 1
-WMTIME: time 6.7e-04 sec 319536 flops 478.3 MF
+WMTIME: time 6.7e-04 sec 319536 flops 474.8 MF
 ape_only returns 1
-WMTIME: time 6.6e-04 sec 319536 flops 484.2 MF
+WMTIME: time 6.4e-04 sec 319536 flops 500.1 MF
 ape_only returns 1
-WMTIME: time 6.3e-04 sec 319536 flops 507.3 MF
-Time for diagonal mesons 1.986980e-03
+WMTIME: time 6.7e-04 sec 319536 flops 477.6 MF
+Time for diagonal mesons 2.013922e-03
 For iq0 8 iq1 8 ip0 8 ip1 8 is0 2 is1 2 sf 1 
 meson_scale 8 8 1
 STARTPROP
@@ -1390,12 +1393,12 @@ ENDPROP
 Time for printing correlator 5.960464e-06
 Mesons for quarks 13 and 1
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 398.9 MF
+WMTIME: time 2.5e-04 sec 106512 flops 432.9 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 440.1 MF
+WMTIME: time 2.8e-04 sec 106512 flops 387.1 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 447.6 MF
-Time for offdiag mesons 7.770061e-04
+WMTIME: time 2.5e-04 sec 106512 flops 432.9 MF
+Time for offdiag mesons 8.039474e-04
 For iq0 13 iq1 1 ip0 13 ip1 1 is0 3 is1 0 sf 1 
 meson_scale 13 1 1
 STARTPROP
@@ -1416,12 +1419,12 @@ ENDPROP
 Time for printing correlator 6.914139e-06
 Mesons for quarks 17 and 5
 ape_only returns 1
+WMTIME: time 2.4e-04 sec 106512 flops 447.2 MF
+ape_only returns 1
 WMTIME: time 2.4e-04 sec 106512 flops 447.6 MF
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 400.3 MF
-ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 451.3 MF
-Time for offdiag mesons 7.698536e-04
+WMTIME: time 2.7e-04 sec 106512 flops 400.7 MF
+Time for offdiag mesons 7.739067e-04
 For iq0 17 iq1 5 ip0 17 ip1 5 is0 4 is1 1 sf 1 
 meson_scale 17 5 1
 STARTPROP
@@ -1439,15 +1442,15 @@ SINKS: PION_5
 6 5.618374e+00 4.307171e-01
 7 2.724358e+01 9.130542e-02
 ENDPROP
-Time for printing correlator 5.960464e-06
+Time for printing correlator 6.198883e-06
 Mesons for quarks 9 and 9
 ape_only returns 1
-WMTIME: time 6.6e-04 sec 319536 flops 483.3 MF
+WMTIME: time 6.4e-04 sec 319536 flops 499.3 MF
 ape_only returns 1
-WMTIME: time 6.3e-04 sec 319536 flops 504.8 MF
+WMTIME: time 6.6e-04 sec 319536 flops 480.5 MF
 ape_only returns 1
-WMTIME: time 6.9e-04 sec 319536 flops 462.5 MF
-Time for diagonal mesons 2.015114e-03
+WMTIME: time 6.7e-04 sec 319536 flops 479.7 MF
+Time for diagonal mesons 2.003908e-03
 For iq0 9 iq1 9 ip0 9 ip1 9 is0 2 is1 2 sf 1 
 meson_scale 9 9 1
 STARTPROP
@@ -1468,12 +1471,12 @@ ENDPROP
 Time for printing correlator 5.960464e-06
 Mesons for quarks 14 and 2
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 447.6 MF
+WMTIME: time 2.4e-04 sec 106512 flops 441.9 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 449.4 MF
+WMTIME: time 2.4e-04 sec 106512 flops 445.4 MF
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 400.7 MF
-Time for offdiag mesons 7.700920e-04
+WMTIME: time 2.4e-04 sec 106512 flops 444.1 MF
+Time for offdiag mesons 7.510185e-04
 For iq0 14 iq1 2 ip0 14 ip1 2 is0 3 is1 0 sf 1 
 meson_scale 14 2 1
 STARTPROP
@@ -1494,12 +1497,12 @@ ENDPROP
 Time for printing correlator 7.152557e-06
 Mesons for quarks 18 and 6
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 451.3 MF
+WMTIME: time 2.7e-04 sec 106512 flops 393.3 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 451.3 MF
+WMTIME: time 2.4e-04 sec 106512 flops 442.3 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 449.4 MF
-Time for offdiag mesons 7.369518e-04
+WMTIME: time 2.4e-04 sec 106512 flops 436.7 MF
+Time for offdiag mesons 7.889271e-04
 For iq0 18 iq1 6 ip0 18 ip1 6 is0 4 is1 1 sf 1 
 meson_scale 18 6 1
 STARTPROP
@@ -1517,15 +1520,15 @@ SINKS: PION_5
 6 6.000475e+00 1.613452e-01
 7 2.649617e+01 -7.332881e-02
 ENDPROP
-Time for printing correlator 7.152557e-06
+Time for printing correlator 5.960464e-06
 Mesons for quarks 10 and 10
 ape_only returns 1
-WMTIME: time 6.5e-04 sec 319536 flops 493.3 MF
+WMTIME: time 6.7e-04 sec 319536 flops 479.2 MF
 ape_only returns 1
-WMTIME: time 6.6e-04 sec 319536 flops 484.9 MF
+WMTIME: time 6.8e-04 sec 319536 flops 469.9 MF
 ape_only returns 1
-WMTIME: time 6.3e-04 sec 319536 flops 508.0 MF
-Time for diagonal mesons 1.981974e-03
+WMTIME: time 6.5e-04 sec 319536 flops 490.7 MF
+Time for diagonal mesons 2.031088e-03
 For iq0 10 iq1 10 ip0 10 ip1 10 is0 2 is1 2 sf 1 
 meson_scale 10 10 1
 STARTPROP
@@ -1543,15 +1546,15 @@ SINKS: PION_5
 6 3.856552e-02 -2.147001e-04
 7 1.371324e-01 6.219012e-04
 ENDPROP
-Time for printing correlator 6.198883e-06
+Time for printing correlator 5.960464e-06
 Mesons for quarks 15 and 3
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 400.3 MF
+WMTIME: time 2.6e-04 sec 106512 flops 412.9 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 449.4 MF
+WMTIME: time 2.4e-04 sec 106512 flops 441.9 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 451.3 MF
-Time for offdiag mesons 7.719994e-04
+WMTIME: time 2.4e-04 sec 106512 flops 445.9 MF
+Time for offdiag mesons 7.808208e-04
 For iq0 15 iq1 3 ip0 15 ip1 3 is0 3 is1 0 sf 1 
 meson_scale 15 3 1
 STARTPROP
@@ -1572,12 +1575,12 @@ ENDPROP
 Time for printing correlator 6.914139e-06
 Mesons for quarks 19 and 7
 ape_only returns 1
-WMTIME: time 2.5e-04 sec 106512 flops 419.1 MF
+WMTIME: time 2.4e-04 sec 106512 flops 443.6 MF
 ape_only returns 1
-WMTIME: time 2.4e-04 sec 106512 flops 449.4 MF
+WMTIME: time 2.7e-04 sec 106512 flops 396.0 MF
 ape_only returns 1
 WMTIME: time 2.4e-04 sec 106512 flops 447.6 MF
-Time for offdiag mesons 7.710457e-04
+Time for offdiag mesons 7.779598e-04
 For iq0 19 iq1 7 ip0 19 ip1 7 is0 4 is1 1 sf 1 
 meson_scale 19 7 1
 STARTPROP
@@ -1598,12 +1601,12 @@ ENDPROP
 Time for printing correlator 5.960464e-06
 Mesons for quarks 11 and 11
 ape_only returns 1
-WMTIME: time 6.6e-04 sec 319536 flops 484.2 MF
+WMTIME: time 6.4e-04 sec 319536 flops 500.1 MF
 ape_only returns 1
-WMTIME: time 6.3e-04 sec 319536 flops 507.3 MF
+WMTIME: time 6.7e-04 sec 319536 flops 479.0 MF
 ape_only returns 1
-WMTIME: time 6.5e-04 sec 319536 flops 487.9 MF
-Time for diagonal mesons 1.974106e-03
+WMTIME: time 6.7e-04 sec 319536 flops 479.0 MF
+Time for diagonal mesons 2.007008e-03
 For iq0 11 iq1 11 ip0 11 ip1 11 is0 2 is1 2 sf 1 
 meson_scale 11 11 1
 STARTPROP
@@ -1621,15 +1624,15 @@ SINKS: PION_5
 6 3.712841e-02 -1.319761e-04
 7 1.341156e-01 5.307137e-04
 ENDPROP
-Time for printing correlator 5.006790e-06
+Time for printing correlator 5.960464e-06
 Mesons for quarks 20 and 0
 ape_only returns 1
-WMTIME: time 2.8e-04 sec 106512 flops 380.2 MF
+WMTIME: time 2.8e-04 sec 106512 flops 379.2 MF
 ape_only returns 1
-WMTIME: time 3.0e-04 sec 106512 flops 350.4 MF
+WMTIME: time 2.8e-04 sec 106512 flops 383.1 MF
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 390.2 MF
-Time for offdiag mesons 8.850098e-04
+WMTIME: time 3.1e-04 sec 106512 flops 346.9 MF
+Time for offdiag mesons 8.981228e-04
 For iq0 20 iq1 0 ip0 20 ip1 0 is0 5 is1 0 sf 1 
 meson_scale 20 0 1
 STARTPROP
@@ -1650,12 +1653,12 @@ ENDPROP
 Time for printing correlator 6.914139e-06
 Mesons for quarks 24 and 4
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 388.8 MF
+WMTIME: time 2.8e-04 sec 106512 flops 384.5 MF
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 388.8 MF
+WMTIME: time 2.7e-04 sec 106512 flops 387.5 MF
 ape_only returns 1
-WMTIME: time 3.0e-04 sec 106512 flops 354.8 MF
-Time for offdiag mesons 8.769035e-04
+WMTIME: time 3.1e-04 sec 106512 flops 349.0 MF
+Time for offdiag mesons 8.888245e-04
 For iq0 24 iq1 4 ip0 24 ip1 4 is0 6 is1 1 sf 1 
 meson_scale 24 4 1
 STARTPROP
@@ -1673,15 +1676,15 @@ SINKS: PION_5
 6 2.648897e+00 2.548800e-01
 7 1.664971e+01 1.000200e+00
 ENDPROP
-Time for printing correlator 5.960464e-06
+Time for printing correlator 6.198883e-06
 Mesons for quarks 8 and 8
 ape_only returns 1
-WMTIME: time 8.1e-04 sec 319536 flops 392.1 MF
+WMTIME: time 7.9e-04 sec 319536 flops 402.5 MF
 ape_only returns 1
-WMTIME: time 7.7e-04 sec 319536 flops 413.4 MF
+WMTIME: time 8.1e-04 sec 319536 flops 394.5 MF
 ape_only returns 1
-WMTIME: time 8.0e-04 sec 319536 flops 400.9 MF
-Time for diagonal mesons 2.414942e-03
+WMTIME: time 8.1e-04 sec 319536 flops 394.5 MF
+Time for diagonal mesons 2.447128e-03
 For iq0 8 iq1 8 ip0 8 ip1 8 is0 2 is1 2 sf 1 
 meson_scale 8 8 1
 STARTPROP
@@ -1702,12 +1705,12 @@ ENDPROP
 Time for printing correlator 6.914139e-06
 Mesons for quarks 21 and 1
 ape_only returns 1
-WMTIME: time 3.0e-04 sec 106512 flops 350.4 MF
+WMTIME: time 2.7e-04 sec 106512 flops 387.5 MF
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 390.2 MF
+WMTIME: time 3.1e-04 sec 106512 flops 346.9 MF
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 390.2 MF
-Time for offdiag mesons 8.780956e-04
+WMTIME: time 2.7e-04 sec 106512 flops 388.8 MF
+Time for offdiag mesons 8.881092e-04
 For iq0 21 iq1 1 ip0 21 ip1 1 is0 5 is1 0 sf 1 
 meson_scale 21 1 1
 STARTPROP
@@ -1725,15 +1728,15 @@ SINKS: PION_5
 6 1.070400e+01 -1.024143e-01
 7 5.399259e+01 3.860931e-01
 ENDPROP
-Time for printing correlator 6.914139e-06
+Time for printing correlator 7.152557e-06
 Mesons for quarks 25 and 5
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 390.2 MF
+WMTIME: time 2.8e-04 sec 106512 flops 381.5 MF
 ape_only returns 1
-WMTIME: time 3.1e-04 sec 106512 flops 347.1 MF
+WMTIME: time 3.1e-04 sec 106512 flops 344.7 MF
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 391.5 MF
-Time for offdiag mesons 8.809566e-04
+WMTIME: time 2.8e-04 sec 106512 flops 381.8 MF
+Time for offdiag mesons 9.000301e-04
 For iq0 25 iq1 5 ip0 25 ip1 5 is0 6 is1 1 sf 1 
 meson_scale 25 5 1
 STARTPROP
@@ -1751,15 +1754,15 @@ SINKS: PION_5
 6 2.788782e+00 1.562960e-01
 7 1.636594e+01 7.123195e-01
 ENDPROP
-Time for printing correlator 5.960464e-06
+Time for printing correlator 6.914139e-06
 Mesons for quarks 9 and 9
 ape_only returns 1
-WMTIME: time 8.0e-04 sec 319536 flops 397.5 MF
+WMTIME: time 8.1e-04 sec 319536 flops 395.0 MF
 ape_only returns 1
-WMTIME: time 8.0e-04 sec 319536 flops 400.4 MF
+WMTIME: time 8.0e-04 sec 319536 flops 398.9 MF
 ape_only returns 1
-WMTIME: time 7.7e-04 sec 319536 flops 416.6 MF
-Time for diagonal mesons 2.399921e-03
+WMTIME: time 7.7e-04 sec 319536 flops 414.9 MF
+Time for diagonal mesons 2.410889e-03
 For iq0 9 iq1 9 ip0 9 ip1 9 is0 2 is1 2 sf 1 
 meson_scale 9 9 1
 STARTPROP
@@ -1777,15 +1780,15 @@ SINKS: PION_5
 6 2.437810e-02 4.807225e-04
 7 1.038894e-01 4.403368e-04
 ENDPROP
-Time for printing correlator 6.198883e-06
+Time for printing correlator 5.960464e-06
 Mesons for quarks 22 and 2
 ape_only returns 1
-WMTIME: time 3.1e-04 sec 106512 flops 349.0 MF
+WMTIME: time 3.1e-04 sec 106512 flops 344.7 MF
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 389.8 MF
+WMTIME: time 2.8e-04 sec 106512 flops 384.5 MF
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 388.8 MF
-Time for offdiag mesons 8.800030e-04
+WMTIME: time 2.7e-04 sec 106512 flops 387.5 MF
+Time for offdiag mesons 8.940697e-04
 For iq0 22 iq1 2 ip0 22 ip1 2 is0 5 is1 0 sf 1 
 meson_scale 22 2 1
 STARTPROP
@@ -1803,15 +1806,15 @@ SINKS: PION_5
 6 1.031597e+01 -1.046499e-01
 7 5.292949e+01 3.970017e-01
 ENDPROP
-Time for printing correlator 7.152557e-06
+Time for printing correlator 8.106232e-06
 Mesons for quarks 26 and 6
 ape_only returns 1
-WMTIME: time 3.0e-04 sec 106512 flops 351.5 MF
+WMTIME: time 3.0e-04 sec 106512 flops 349.3 MF
 ape_only returns 1
 WMTIME: time 2.7e-04 sec 106512 flops 388.8 MF
 ape_only returns 1
-WMTIME: time 2.8e-04 sec 106512 flops 387.1 MF
-Time for offdiag mesons 8.809566e-04
+WMTIME: time 2.7e-04 sec 106512 flops 388.8 MF
+Time for offdiag mesons 8.850098e-04
 For iq0 26 iq1 6 ip0 26 ip1 6 is0 6 is1 1 sf 1 
 meson_scale 26 6 1
 STARTPROP
@@ -1829,15 +1832,15 @@ SINKS: PION_5
 6 2.871147e+00 8.765326e-02
 7 1.595661e+01 4.874924e-01
 ENDPROP
-Time for printing correlator 6.198883e-06
+Time for printing correlator 5.960464e-06
 Mesons for quarks 10 and 10
 ape_only returns 1
-WMTIME: time 8.1e-04 sec 319536 flops 396.4 MF
+WMTIME: time 8.1e-04 sec 319536 flops 395.9 MF
 ape_only returns 1
-WMTIME: time 8.0e-04 sec 319536 flops 398.4 MF
+WMTIME: time 8.0e-04 sec 319536 flops 398.9 MF
 ape_only returns 1
-WMTIME: time 8.3e-04 sec 319536 flops 386.5 MF
-Time for diagonal mesons 2.469063e-03
+WMTIME: time 8.0e-04 sec 319536 flops 398.5 MF
+Time for diagonal mesons 2.445936e-03
 For iq0 10 iq1 10 ip0 10 ip1 10 is0 2 is1 2 sf 1 
 meson_scale 10 10 1
 STARTPROP
@@ -1855,15 +1858,15 @@ SINKS: PION_5
 6 2.393248e-02 5.148716e-04
 7 1.028697e-01 1.634075e-04
 ENDPROP
-Time for printing correlator 5.960464e-06
+Time for printing correlator 6.198883e-06
 Mesons for quarks 23 and 3
 ape_only returns 1
 WMTIME: time 2.8e-04 sec 106512 flops 385.8 MF
 ape_only returns 1
-WMTIME: time 2.8e-04 sec 106512 flops 386.1 MF
+WMTIME: time 2.7e-04 sec 106512 flops 387.5 MF
 ape_only returns 1
-WMTIME: time 3.0e-04 sec 106512 flops 349.3 MF
-Time for offdiag mesons 8.869171e-04
+WMTIME: time 2.8e-04 sec 106512 flops 387.1 MF
+Time for offdiag mesons 8.559227e-04
 For iq0 23 iq1 3 ip0 23 ip1 3 is0 5 is1 0 sf 1 
 meson_scale 23 3 1
 STARTPROP
@@ -1884,12 +1887,12 @@ ENDPROP
 Time for printing correlator 7.152557e-06
 Mesons for quarks 27 and 7
 ape_only returns 1
-WMTIME: time 2.8e-04 sec 106512 flops 385.8 MF
+WMTIME: time 3.0e-04 sec 106512 flops 350.4 MF
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 390.2 MF
+WMTIME: time 2.7e-04 sec 106512 flops 388.8 MF
 ape_only returns 1
-WMTIME: time 2.7e-04 sec 106512 flops 390.2 MF
-Time for offdiag mesons 8.499622e-04
+WMTIME: time 2.7e-04 sec 106512 flops 391.5 MF
+Time for offdiag mesons 8.821487e-04
 For iq0 27 iq1 7 ip0 27 ip1 7 is0 6 is1 1 sf 1 
 meson_scale 27 7 1
 STARTPROP
@@ -1907,15 +1910,15 @@ SINKS: PION_5
 6 2.885296e+00 4.672322e-02
 7 1.546038e+01 3.344349e-01
 ENDPROP
-Time for printing correlator 6.198883e-06
+Time for printing correlator 5.960464e-06
 Mesons for quarks 11 and 11
 ape_only returns 1
-WMTIME: time 8.1e-04 sec 319536 flops 395.9 MF
+WMTIME: time 8.0e-04 sec 319536 flops 397.5 MF
 ape_only returns 1
-WMTIME: time 8.0e-04 sec 319536 flops 398.4 MF
+WMTIME: time 8.3e-04 sec 319536 flops 386.5 MF
 ape_only returns 1
-WMTIME: time 8.0e-04 sec 319536 flops 399.9 MF
-Time for diagonal mesons 2.439022e-03
+WMTIME: time 8.2e-04 sec 319536 flops 391.1 MF
+Time for diagonal mesons 2.482176e-03
 For iq0 11 iq1 11 ip0 11 ip1 11 is0 2 is1 2 sf 1 
 meson_scale 11 11 1
 STARTPROP
@@ -1934,10 +1937,10 @@ SINKS: PION_5
 7 1.014578e-01 -7.536476e-05
 ENDPROP
 Time for printing correlator 5.960464e-06
-Aggregate time to tie meson correlators 3.933907e-02
+Aggregate time to tie meson correlators 3.978896e-02
 Aggregate time to tie baryon correlators 0.000000e+00
 RUNNING COMPLETED
-Time = 3.288082e+00 seconds
+Time = 3.180592e+00 seconds
 total_iters = 7038
 destroy quark[0]
 destroy quark[1]
@@ -1970,5 +1973,5 @@ destroy quark[27]
 
 
 ask_starting_lattice(0): EOF on input.
-exit: Thu Apr 24 18:25:17 2025
+exit: Thu Apr 24 18:53:44 2025
 

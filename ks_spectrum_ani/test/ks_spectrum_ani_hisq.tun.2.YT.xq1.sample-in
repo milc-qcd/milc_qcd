@@ -21,6 +21,9 @@ ape_iter 0
 coordinate_origin 0 0 0 0
 time_bc antiperiodic
 
+ani_dir t
+ani_xiq 1.0
+
 # EIGENPAIRS
 
 max_number_of_eigenpairs 0
@@ -120,6 +123,7 @@ number_of_propagators 4
 
 # PROPAGATOR 0
 mass 0.03
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -128,6 +132,7 @@ forget_ksprop
 
 # PROPAGATOR 1
 mass 0.05
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -136,6 +141,7 @@ forget_ksprop
 
 # PROPAGATOR 2
 mass 0.07
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -144,6 +150,7 @@ forget_ksprop
 
 # PROPAGATOR 3
 mass 0.09
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -164,6 +171,7 @@ number_of_propagators 4
 
 # PROPAGATOR 4
 mass 0.03
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -172,6 +180,7 @@ forget_ksprop
 
 # PROPAGATOR 5
 mass 0.05
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -180,6 +189,7 @@ forget_ksprop
 
 # PROPAGATOR 6
 mass 0.07
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -188,6 +198,7 @@ forget_ksprop
 
 # PROPAGATOR 7
 mass 0.09
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -208,6 +219,7 @@ number_of_propagators 4
 
 # PROPAGATOR 8
 mass 0.03
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -216,6 +228,7 @@ forget_ksprop
 
 # PROPAGATOR 9
 mass 0.05
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -224,6 +237,7 @@ forget_ksprop
 
 # PROPAGATOR 10
 mass 0.07
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -232,6 +246,7 @@ forget_ksprop
 
 # PROPAGATOR 11
 mass 0.09
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -252,6 +267,7 @@ number_of_propagators 4
 
 # PROPAGATOR 12
 mass 0.03
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -260,6 +276,7 @@ forget_ksprop
 
 # PROPAGATOR 13
 mass 0.05
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -268,6 +285,7 @@ forget_ksprop
 
 # PROPAGATOR 14
 mass 0.07
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -276,6 +294,7 @@ forget_ksprop
 
 # PROPAGATOR 15
 mass 0.09
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -296,6 +315,7 @@ number_of_propagators 4
 
 # PROPAGATOR 16
 mass 0.03
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -304,6 +324,7 @@ forget_ksprop
 
 # PROPAGATOR 17
 mass 0.05
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -312,6 +333,7 @@ forget_ksprop
 
 # PROPAGATOR 18
 mass 0.07
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -320,6 +342,7 @@ forget_ksprop
 
 # PROPAGATOR 19
 mass 0.09
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -340,6 +363,7 @@ number_of_propagators 4
 
 # PROPAGATOR 20
 mass 0.03
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -348,6 +372,7 @@ forget_ksprop
 
 # PROPAGATOR 21
 mass 0.05
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -356,6 +381,7 @@ forget_ksprop
 
 # PROPAGATOR 22
 mass 0.07
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -364,6 +390,7 @@ forget_ksprop
 
 # PROPAGATOR 23
 mass 0.09
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -384,6 +411,7 @@ number_of_propagators 4
 
 # PROPAGATOR 24
 mass 0.03
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -392,6 +420,7 @@ forget_ksprop
 
 # PROPAGATOR 25
 mass 0.05
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -400,6 +429,7 @@ forget_ksprop
 
 # PROPAGATOR 26
 mass 0.07
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -408,6 +438,7 @@ forget_ksprop
 
 # PROPAGATOR 27
 mass 0.09
+naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop

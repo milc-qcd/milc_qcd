@@ -21,6 +21,9 @@ ape_iter 0
 coordinate_origin 0 0 0 0
 time_bc antiperiodic
 
+ani_dir t
+ani_xiq 2.0
+
 # EIGENPAIRS
 
 max_number_of_eigenpairs 0
@@ -88,7 +91,6 @@ number_of_propagators 1
 # PROPAGATOR 0
 
 mass 0.01494
-naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -113,7 +115,6 @@ number_of_propagators 1
 # PROPAGATOR 1
 
 mass 0.01494
-naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
@@ -138,7 +139,6 @@ number_of_propagators 1
 # PROPAGATOR 2
 
 mass 0.01494
-naik_term_epsilon 0
 error_for_propagator 1e-6
 rel_error_for_propagator 0
 fresh_ksprop
