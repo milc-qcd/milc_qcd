@@ -105,6 +105,13 @@ fermion_force_fn_multi( Real eps, Real *residues,
   int netbackdir, last_netbackdir;	// backwards direction for entire path
 //int tempflops = 0; //TEMP
 
+#ifdef YTTEST
+  su3_matrix ytsu3_1, ytsu3_2, ytsu3_3;
+  complex ytcomp_1, ytcomp_2;
+  double ytdoub_1;
+#endif
+
+
 #ifdef FFTIME
   int nflop = 966456 + 1440*nterms; // Asqtad action 11/3/06 version of code;
   double dtime;
@@ -176,6 +183,15 @@ fermion_force_fn_multi( Real eps, Real *residues,
         } /* end loop over terms in rational function expansion */
 //tempflops+=54*nterms;
 //tempflops+=36*nterms;
+
+#ifdef ANISOTROPY
+          FORALLSITES(i,s){
+            if( netbackdir==TDOWN ){
+              scalar_mult_su3_matrix( &oprod_along_path[0][i], ap->ani_xiq , &oprod_along_path[0][i] );
+            }
+          }
+#endif
+
     }
 
     /* path transport the outer product, or projection matrix, of multi_x[term]
@@ -290,7 +306,43 @@ fermion_force_fn_multi( Real eps, Real *residues,
      uncompress_anti_hermitian( &(s->mom[dir]), &tmat2 );
      add_su3_matrix( &tmat2, &(force_accum[dir][i]), &tmat2 );
      make_anti_hermitian( &tmat2, &(s->mom[dir]) );
-  }
+
+/* YT20250318 anisotropic force calculation test:
+   We want to print the force on the (1,0,0,0) link looking in the TUP-direction. */
+
+#ifdef YTTEST
+    if( dir==TUP && s->x==1 && s->y==0 && s->z==0 && s->t==0 ){
+
+        node0_printf("\n\nforce from code:\n", ferm_epsilon);
+        su3mat_copy( &(force_accum[dir][i]), &ytsu3_1 );
+        ytdoub_1 = 1.0 / coeff ;
+        scalar_mult_su3_matrix( &ytsu3_1, ytdoub_1, &ytsu3_1);
+
+/* The following part does the projection onto antihermitian traceless. */
+        su3_adjoint( &ytsu3_1, &ytsu3_2 );
+        sub_su3_matrix( &ytsu3_1, &ytsu3_2, &ytsu3_2 );
+        scalar_mult_su3_matrix( &ytsu3_2, 0.5, &ytsu3_1 );
+        ytcomp_1 = trace_su3( &ytsu3_2 );
+        clear_su3mat( &ytsu3_3 );
+        ytsu3_3.e[0][0].real = 1.0;
+        ytsu3_3.e[1][1].real = 1.0;
+        ytsu3_3.e[2][2].real = 1.0;
+        ytdoub_1 = 1.0/6.0 ;
+        c_scalar_mult_su3mat( &ytsu3_3, &ytcomp_1, &ytsu3_3 );
+        scalar_mult_su3_matrix( &ytsu3_3, ytdoub_1, &ytsu3_3);
+        sub_su3_matrix( &ytsu3_1, &ytsu3_3, &ytsu3_1 );
+/* End of projection part. */
+
+        ytcomp_2.real = 0.0 ;
+        ytcomp_2.imag = 1.0 ;
+        c_scalar_mult_su3mat( &ytsu3_1, &ytcomp_2, &ytsu3_1 );
+
+        dumpmat( &ytsu3_1 );
+    }
+#endif /* YTTEST */
+
+  } /* dir, FORALLSITES */
+
 //tempflops+=4*18;
 //tempflops+=4*18;
 	

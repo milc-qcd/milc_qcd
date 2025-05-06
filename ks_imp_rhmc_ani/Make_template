@@ -1,0 +1,492 @@
+#  Kogut-Susskind fermions with improved actions
+#  MIMD version 7
+#
+#  Generic make-include file for ks_imp_rhmc codes
+#
+#  This template file defines rules and macros common to all architectures
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#	"make su3_rhmc" used the rational function hybrid MC algorithm
+#		for the Symanzik 1 loop gauge action and Asqtad quark action
+#
+#       See examples below for naming and building targets for
+#               other actions
+
+MYINCLUDEDIR = .
+INCLUDEDIR = ../include
+#Where the complex and su3 libraries are
+LIBDIR = ../libraries
+
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
+
+INLINE_HEADERS = \
+  ../sse/include/ \
+  ../sse2/include/ \
+  ../libraries/include/
+
+MY_HEADERS = \
+  lattice.h \
+  params.h \
+  ../include/params_rhmc.h \
+  defines.h \
+  gauge_action.h \
+  ks_imp_includes.h \
+  quark_action.h
+
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} \
+  ${QUDA_HEADERS} ${QPHIX_HEADERS} ${SCIDAC_HEADERS}
+
+MY_OBJECTS = \
+  d_action_rhmc.o \
+  eo_fermion_force_rhmc.o \
+  gauge_action_imp_ks.o \
+  gauge_info.o \
+  gauge_force_imp_ks.o \
+  gauge_measure_ks.o \
+  grsource_rhmc.o \
+  ks_ratinv.o  \
+  load_rhmc_params.o \
+  reunitarize_ks.o \
+  ploop3_ks.o \
+  setup.o \
+  update_h_rhmc.o \
+  update_rhmc.o \
+  update_u.o \
+
+LAYOUT = layout_hyper_prime.o
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ploop3.o show_generic_ks_md_opts.o
+
+
+OBJECTS = \
+  ${MY_OBJECTS} \
+  ${GAUGE_OBJECTS} \
+  ${LAYOUT} \
+  ${STANDARD_OBJECTS} \
+  ${ADD_OBJECTS} \
+  ${EXTRA_OBJECTS}
+
+#Libraries for complex numbers and su3 functions
+P = $(strip ${PRECISION})
+QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
+
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES} ${QPHIX_LIBRARIES}
+
+# Default rule for C compilation
+.c.o: ; ${CC} -c ${CFLAGS} $<
+
+# To force a full remake when changing targets
+LASTMAKE = .lastmake.${MAKEFILE}.${P}.${MYTARGET}
+
+${LASTMAKE}:
+	-/bin/rm -f .lastmake.* quark_action.h gauge_action.h
+	${MAKE} -f ${MAKEFILE} clean
+	touch ${LASTMAKE}
+
+# All make files used in this compilation
+ALL_MAKES = \
+   Make_template \
+   ${MAKEFILE} \
+   ../Make_template_combos \
+   ../Make_template_scidac \
+   ../generic/Make_template \
+   ../generic_ks/Make_template
+
+# To force a remake when changing any make file, header, or target
+${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
+
+# control_test_su3_mat_op.o: ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+
+# Directories where we store the improved action headers
+QUARKIMP = ../generic_ks/imp_actions
+GAUGEIMP = ../generic/imp_actions
+
+quark_action.h: ${QUARKIMP}/${QUARK}
+	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
+
+gauge_action.h: ${GAUGEIMP}/${GAUGE}
+	/bin/cp ${GAUGEIMP}/${GAUGE} gauge_action.h
+
+
+########################################################
+# Optional DEFINES for targets
+
+# -DFN          identifies fat-Naik-like actions with only next and 3rd
+#               next neighbor linkage
+
+# -DDM_DU0      (for EOS) calculate quantities involving the deriv of
+#               action wrto u0
+
+# -DCHEM_POT    compute quantities needed for quark number susceptibility
+
+# -DD_CHEM_POT  compute quantities needed for nonzero chemical potential
+
+##### Targets:
+######################################################################
+# Named Asqtad RHMC and RHMD targets -- sample files provided
+
+su3_leapfrog::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DINT_ALG=INT_LEAPFROG" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+su3_omelyan_rhmc::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DHMC -DINT_ALG=INT_OMELYAN" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+######################################################################
+# Asqtad targets WITHOUT the quark-loop correction to the gauge action
+
+ASQ_OPTIONS_NONNF = "DEFINES= -DFN" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+
+# Generic RHMD and RHMC targets -- set options in Makefile
+
+su3_rhmd::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${ASQ_OPTIONS_NONNF}
+
+
+su3_rhmc::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${ASQ_OPTIONS_NONNF} \
+	"ADDDEFINES = -DHMC"
+
+
+su3_rhmd_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${ASQ_OPTIONS_NONNF} \
+	"ADDDEFINES = -DDM_DU0"
+
+su3_rhmc_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${ASQ_OPTIONS_NONNF} \
+	"ADDDEFINES = -DHMC -DDM_DU0"
+
+
+su3_rhmc_susc::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${ASQ_OPTIONS_NONNF} \
+	"ADDDEFINES= -DHMC -DCHEM_POT" \
+
+
+#	Note, also -DZ2RSOURCE
+su3_rhmc_susc_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${ASQ_OPTIONS_NONNF} \
+	"ADDDEFINES= -DHMC -DCHEM_POT -DDM_DU0"
+
+
+######################################################################
+# Asqtad targets WITH the quark-loop correction to the gauge action
+
+ASQ_OPTIONS_NF = "DEFINES= -DFN" \
+	"GAUGE = symanzik_1loop_nf_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+su3_rhmc_Nf::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${ASQ_OPTIONS_NF} \
+	"ADDDEFINES = -DHMC"
+
+
+######################################################################
+# HISQ targets - always with the quark-loop correction
+
+# Other HISQ optsions
+# 	-DHISQ_REUNIT_SVD_ONLY
+
+HISQ_OPTIONS = "DEFINES= -DFN -DINT_ALG=INT_3G1F \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
+        -DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+# Generic RHMC and RHMD targets -- set options in Makefile
+
+su3_rhmd_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS}
+
+su3_rhmc_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS} \
+	"DEFINES+= -DHMC"
+
+su3_rhmd_hisq_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS} \
+	"DEFINES+= -DANISOTROPY"
+
+su3_rhmc_hisq_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS} \
+	"DEFINES+= -DHMC -DANISOTROPY"
+
+# Naive targets
+
+NAIVE_OPTIONS = "DEFINES= -DFN -DINT_ALG=INT_3G1F -UD_FN_GATHER13" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = onelink_action.h" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+su3_rhmd_naive::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${NAIVE_OPTIONS}
+
+su3_rhmc_naive::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${NAIVE_OPTIONS} \
+	"DEFINES+= -DHMC"
+
+su3_rhmd_naive_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${NAIVE_OPTIONS} \
+	"DEFINES+= -DANISOTROPY"
+
+su3_rhmc_naive_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${NAIVE_OPTIONS} \
+	"DEFINES+= -DHMC -DANISOTROPY"
+
+su3_rhmd_naive_a_yttest::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${NAIVE_OPTIONS} \
+	"DEFINES+= -DANISOTROPY -DYTTEST"
+
+HISQ_ONELINK_OPTIONS = "DEFINES= -DFN -DINT_ALG=INT_3G1F \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
+	-DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_u3_action_onelink.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+# Generic RHMC and RHMD targets -- set options in Makefile
+
+su3_rhmd_hisq_onelink::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_ONELINK_OPTIONS}
+
+su3_rhmc_hisq_onelink::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_ONELINK_OPTIONS} \
+	"DEFINES+= -DHMC"
+
+su3_rhmd_hisq_onelink_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_ONELINK_OPTIONS} \
+	"DEFINES+= -DANISOTROPY"
+
+su3_rhmc_hisq_onelink_a::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_ONELINK_OPTIONS} \
+	"DEFINES+= -DHMC -DANISOTROPY"
+
+su3_rhmd_hisq_onelink_a_yttest::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_ONELINK_OPTIONS} \
+	"DEFINES+= -DANISOTROPY -DYTTEST"
+
+
+#######################################################################
+# Experimental targets
+
+su3_rhmd_hisq_su3::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN  -DINT_ALG=INT_3G1F" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_su3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+su3_rhmc_hisq_5G1F::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT} " \
+	"DEFINES= -DFN -DHMC -DINT_ALG=INT_5G1F \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
+        -DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+su3_rhmc_hisq_6G1F::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT} " \
+	"DEFINES= -DFN -DHMC -DINT_ALG=INT_6G1F \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
+        -DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+su3_rhmc_hisq_plaq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN  -DHMC -DINT_ALG=INT_3G1F\
+	 -DHISQ_REUNIT_ALLOW_SVD -DHISQ_REUNIT_SVD_ONLY" \
+	"GAUGE = symanzik_1loop_nf0_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+su3_rhmc_hisq_su3::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN  -DHMC -DINT_ALG=INT_3G1F" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_su3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o"
+
+su3_rhmc_hisq_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES+= -DHMC -DDM_DEPS0"
+
+
+su3_rhmd_hisq_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES+= -DDM_DEPS"
+
+su3_rhmc_hisq_susc::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES+= -DHMC -DCHEM_POT"
+
+su3_rhmc_hisq_susc_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES+= -DHMC -DCHEM_POT -DDM_DEPS"
+
+
+###################################################
+# DEBUGGING targets
+###################################################
+su3_mat_op.o: ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+control_test_su3_mat_op.o: ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+
+# ASQ related ####################################
+
+su3_rhmc_asq_debug::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DHMC -DINT_ALG=INT_3G1F -DMILC_GLOBAL_DEBUG" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asq_action.h" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQ_FORCE} \
+	${GAUGE_FORCE} control.o debug.o"
+
+
+# HISQ related ####################################
+
+# Generic RHMC target -- set options in Makefile
+su3_rhmc_hisq_debug::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN  -DHMC -DINT_ALG=INT_3G1F \
+	-DMILC_GLOBAL_DEBUG -DHISQ_REUNITARIZATION_DEBUG \
+	-DHISQ_FF_MULTI_WRAPPERRR -DHISQ_FF_DEBUGGG" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o debug.o"
+
+su3_rhmc_hisq_su3_debug::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN  -DHMC -DINT_ALG=INT_3G1F \
+	-DMILC_GLOBAL_DEBUG -DHISQ_REUNITARIZATION_DEBUG \
+	-DHISQ_FF_MULTI_WRAPPER -DHISQ_FF_DEBUG" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_su3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o debug.o"
+
+# test Asqtad action through HISQ machinery with "wrapper" force
+su3_rhmc_hisq_wrap_asq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN  -DHMC -DINT_ALG=INT_3G1F \
+	-DMILC_GLOBAL_DEBUG -DHISQ_FF_MULTI_WRAPPER" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = hisq/1Xasqtad_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o debug.o"
+
+# for tuning smearing level 1
+su3_rhmc_hisq_tune::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN  -DHMC \
+	-DMILC_GLOBAL_DEBUG -DMEASURE_AND_TUNE_HISQ" \
+	"GAUGE = symanzik_1loop_nf_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} control.o debug.o"
+
+# testing inversion
+test_su3_mat_op_inverse::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"GAUGE = symanzik_1loop_nf_action.h" \
+	"QUARK = hisq/hisq_action.h" \
+        "DEFINES= -DFN  -DTEST_SU3_INVERSION" \
+        "EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+        ${GAUGE_FORCE}  control_test_su3_mat_op.o"
+
+# testing reunitarization
+test_su3_mat_op_unit::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"GAUGE = symanzik_1loop_nf_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+        "DEFINES= -DFN  -DHISQ_REUNIT_ALLOW_SVD -DHISQ_REUNIT_SVD_ONLY -DTEST_SU3_UNITARIZATION" \
+        "EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+        ${GAUGE_FORCE} control_test_su3_mat_op.o"
+
+# testing reunitarization (derivative)
+test_su3_mat_op_unit_der::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"GAUGE = symanzik_1loop_nf_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+        "DEFINES= -DFN  -DTEST_SU3_UNITARIZATION_DERIVATIVE" \
+        "EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+        ${GAUGE_FORCE} control_test_su3_mat_op.o"
+
+# paranoid test reunitarization
+test_su3_paranoid::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"GAUGE = symanzik_1loop_nf_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+        "DEFINES= -DFN  -DHISQ_REUNIT_ALLOW_SVD -DTEST_SU3_UNITARIZATION" \
+        "EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+        ${GAUGE_FORCE} control_test_su3_paranoid.o"
+
+# paranoid test reunitarization derivative
+test_su3_paranoid_der::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"GAUGE = symanzik_1loop_nf_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+        "DEFINES= -DFN  -DHISQ_REUNIT_ALLOW_SVD -DTEST_SU3_UNITARIZATION_DERIVATIVE" \
+        "EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+        ${GAUGE_FORCE} control_test_su3_paranoid.o"
+
+clean:
+	-/bin/rm -f *.o quark_action.h gauge_action.h
+
+# Rules for generic routines
+include ../generic/Make_template
+
+# Rules for generic_ks routines
+include ../generic_ks/Make_template
+
+libmake:
+	@echo Building libraries with ${MAKELIBRARIES}
+	cd ${LIBDIR} ;\
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" \
+        "ARCH=${ARCH}" "COMPILER=${COMPILER}" all
+
+localmake: ${OBJECTS} ${LIBRARIES}
+	${LD} -o ${MYTARGET} ${LDFLAGS} \
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	touch localmake
+
+target: libmake localmake 
+

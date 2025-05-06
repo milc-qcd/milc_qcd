@@ -1,0 +1,66 @@
+YT, spring 2025
+
+The following files have been changed to accommodate
+dynamical simulations with the RHMC algorithm of anisotropic
+HISQ or of naive staggered quarks. Bear in mind that these changes
+are additional to the changes listed in the ks_spectrum_ani directory.
+
+generic_ks/fermion_force_fn_multi.c
+
+ks_imp_rhmc_ani/Make_template
+ks_imp_rhmc_ani/lattice.h
+ks_imp_rhmc_ani/params.h
+ks_imp_rhmc_ani/setup.c
+ks_imp_rhmc_ani/d_action_rhmc.c
+ks_imp_rhmc_ani/gauge_info.c
+
+
+#####################################################################
+generic_ks/fermion_force_fn_multi.c :
+
+Changes triggered by ANISOTROPY and YTTEST
+
+#####################################################################
+ks_imp_rhmc_ani/Make_template :
+
+Add naive targets, hisq_onelink targets, yttest targets and anisotropic
+targets ("_a")
+
+#####################################################################
+ks_imp_rhmc_ani/lattice.h :
+
+Changes triggered by ANISOTROPY and YTTEST
+
+#####################################################################
+ks_imp_rhmc_ani/params :
+
+Changes triggered by ANISOTROPY and YTTEST
+
+#####################################################################
+ks_imp_rhmc_ani/setup.c :
+
+Changes triggered by ANISOTROPY and YTTEST
+Also declaration of variable savebuf
+
+#####################################################################
+ks_imp_rhmc_ani/d_action_rhmc.c :
+
+Changes triggered by ANISOTROPY and YTTEST
+
+To be investigated what's up with the rephase(OFF) and rephase(ON)
+that was present in the old version
+
+Also, inside YTTEST, definition of force test function.
+
+#####################################################################
+ks_imp_rhmc_ani/gauge_info.c :
+
+Changes triggered by ANISOTROPY
+
+#####################################################################
+ks_imp_rhmc_ani/update_rhmc.c :
+
+Changes triggered by YTTEST: Test function is called before each
+fermion force calculation inside 3G1F case.
+
+#####################################################################

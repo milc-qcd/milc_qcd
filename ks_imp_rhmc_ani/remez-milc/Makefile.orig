@@ -1,0 +1,37 @@
+CC = gcc
+CXX = g++
+LDFLAGS =  -L$(HOME)/gmp/lib -lmpfr -lgmp 
+
+BIN = test
+
+INCLIST = -I$(HOME)/gmp/include
+
+CFLAGS=  -O3
+CXXFLAGS=  -O3 -g
+DFLAGS +=  -DGMP
+
+#  targets
+all:$(BIN)
+
+.SUFFIXES:
+.SUFFIXES:  .o .C .c
+
+CSRC :=$(wildcard *.c)
+CCSRC :=$(wildcard *.C)
+
+COBJ=$(CSRC:.c=.o)
+CCOBJ=$(CCSRC:.C=.o)
+
+OBJS_SRC = $(SOBJ) $(CCOBJ) $(COBJ)
+OBJS := $(notdir $(OBJS_SRC))
+
+$(BIN):  $(OBJS) 
+	$(CXX) $(OBJS) $(LDFLAGS) -o $(BIN)
+
+.c.o:
+	$(CC) -o $@ $(CFLAGS) $(DFLAGS) -c $(INCLIST) $<
+.C.o:
+	$(CXX) -o $@ $(CXXFLAGS) $(DFLAGS) -c $(INCLIST) $<
+
+clean:
+	rm -f *.dat *.o  *~ *\#* *.stackdump $(BIN)
