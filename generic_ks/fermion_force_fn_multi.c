@@ -313,7 +313,7 @@ fermion_force_fn_multi( Real eps, Real *residues,
 #ifdef YTTEST
     if( dir==TUP && s->x==1 && s->y==0 && s->z==0 && s->t==0 ){
 
-        node0_printf("\n\nforce from code:\n", ferm_epsilon);
+        node0_printf("\n\nforce from code:\n");
         su3mat_copy( &(force_accum[dir][i]), &ytsu3_1 );
         ytdoub_1 = 1.0 / coeff ;
         scalar_mult_su3_matrix( &ytsu3_1, ytdoub_1, &ytsu3_1);

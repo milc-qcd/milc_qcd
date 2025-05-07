@@ -13,7 +13,7 @@ ks_imp_rhmc_ani/params.h
 ks_imp_rhmc_ani/setup.c
 ks_imp_rhmc_ani/d_action_rhmc.c
 ks_imp_rhmc_ani/gauge_info.c
-
+ks_imp_rhmc_ani/ks_imp_includes.h
 
 #####################################################################
 generic_ks/fermion_force_fn_multi.c :
@@ -62,5 +62,10 @@ ks_imp_rhmc_ani/update_rhmc.c :
 
 Changes triggered by YTTEST: Test function is called before each
 fermion force calculation inside 3G1F case.
+
+#####################################################################
+ks_imp_rhmc_ani/ks_imp_includes.h :
+
+Changes triggered by YTTEST: Test function is declared
 
 #####################################################################

@@ -81,6 +81,10 @@ void gauge_field_copy(field_offset src,field_offset dest);
 double fermion_action( su3_vector **multi_x, su3_vector *sumvec );
 double hmom_action(void);
 void plaquette_action(double *ss_plaq, double *st_plaq);
+#ifdef YTTEST
+void force_test( Real sigma, su3_vector **multi_x, su3_vector *sumvec );
+#endif
 
 #endif /* KS_IMP_INCLUDES_H_ */
+
 

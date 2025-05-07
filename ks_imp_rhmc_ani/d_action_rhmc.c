@@ -28,11 +28,11 @@ double d_action_rhmc( su3_vector **multi_x, su3_vector *sumvec){
 #endif
 
   node0_printf("PLAQUETTE ACTION: %e\n",g_action);
-  
+
 #ifndef ANISOTROPY
-    g_action = (beta/3.0)*imp_gauge_action();
+    g_action = (beta/3.0)*imp_gauge_action_ks();
 #else
-    g_action = imp_gauge_action()/3.0;
+    g_action = imp_gauge_action_ks()/3.0;
 #endif
 
   h_action = hmom_action();

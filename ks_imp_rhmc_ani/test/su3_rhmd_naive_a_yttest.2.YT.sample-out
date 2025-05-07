@@ -1,11 +1,11 @@
 Anisotropic SU3 with improved KS action
 Microcanonical simulation with refreshing
 Rational function hybrid Monte Carlo algorithm
-MIMD version 004dd-dirty
+MIMD version 1d2cb-dirty
 Machine = Scalar processor, with 1 nodes
 Host(0) = ytdevice
 Username = trimis
-start: Tue May  6 19:48:25 2025
+start: Wed May  7 12:17:25 2025
 
 Options selected...
 Generic double precision
@@ -440,7 +440,7 @@ n_order_naik_total 30
 LAYOUT = Hypercubes, options = with fixed input-parameter node_geometry
 ON EACH NODE (RANK) 6 x 6 x 6 x 6
 Mallocing 2.4 MBytes per node for lattice
-Aggregate time to setup 4.065990e-03
+Aggregate time to setup 1.221409e-01
 
 
 warms 0
@@ -478,16 +478,16 @@ forget
 Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666.hisq
 Time stamp Mon Nov 19 18:42:42 2007
 Checksums c9687fe2 b52bd146 OK
-Time to reload gauge configuration = 5.769730e-04
+Time to reload gauge configuration = 3.670096e-02
 CHECK PLAQ: 1.8403954419120214e+00 1.8597505785271828e+00
 CHECK NERSC LINKTR: 1.6866463634818848e-01 CKSUM: 8e705331
 Reunitarized for double precision. Max deviation 1.95e-07 changed to 4.44e-16
-Time to check unitarity = 5.149841e-04
+Time to check unitarity = 1.855135e-03
 "Single link action"
 path coefficients: npath  path_coeff  multiplicity
                     0      1.000000e+00     8
 Anisotropic action with bare quark anisotropy 5.000000 in the t-direction
-FLTIME: time = 1.120090e-03 (asqtad D) mflops = 2.124343e+03
+FLTIME: time = 3.225803e-03 (asqtad D) mflops = 7.376321e+02
 Symanzik 1x1 + 1x2 + 1x1x1 action with HISQ quark loops
 gauge_action: total_dyn_flavors = 3
 loop coefficients: nloop rep loop_coeff  multiplicity
@@ -497,116 +497,116 @@ loop coefficients: nloop rep loop_coeff  multiplicity
 WARMUPS COMPLETED
 Omelyan integration, 3 gauge for one 1 fermion step, steps= 4 eps= 2.000000e-02 alpha= 1.000000e-01 beta= 1.000000e-01
 GRSOURCE: sum = 1.9636750556e+03
-CONGRAD5: time = 3.010702e-02 (multicg_offset D) masses = 11 iters = 200 mflops = 1.179472e+04
+CONGRAD5: time = 4.415011e-02 (multicg_offset D) masses = 11 iters = 200 mflops = 8.043105e+03
  OK converged final_rsq= 9.4e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 200
-GRSOURCETIME: time = 1.916885e-04
+GRSOURCETIME: time = 2.369881e-04
 GRSOURCE: sum = 1.9027332579e+03
-CONGRAD5: time = 2.017307e-02 (multicg_offset D) masses = 9 iters = 156 mflops = 1.342958e+04
+CONGRAD5: time = 1.864386e-02 (multicg_offset D) masses = 9 iters = 156 mflops = 1.453111e+04
  OK converged final_rsq= 9.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 156
-GRSOURCETIME: time = 1.320839e-04
+GRSOURCETIME: time = 8.106232e-05
 GRSOURCE: sum = 1.9328576806e+03
-CONGRAD5: time = 1.875496e-02 (multicg_offset D) masses = 9 iters = 156 mflops = 1.444502e+04
+CONGRAD5: time = 1.856709e-02 (multicg_offset D) masses = 9 iters = 156 mflops = 1.459119e+04
  OK converged final_rsq= 8.5e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 156
-GRSOURCETIME: time = 1.080036e-04
+GRSOURCETIME: time = 7.200241e-05
 GRSOURCE: sum = 1.9363357347e+03
-CONGRAD5: time = 1.897001e-02 (multicg_offset D) masses = 9 iters = 158 mflops = 1.446436e+04
+CONGRAD5: time = 1.887488e-02 (multicg_offset D) masses = 9 iters = 158 mflops = 1.453726e+04
  OK converged final_rsq= 8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 158
-GRSOURCETIME: time = 9.608269e-05
+GRSOURCETIME: time = 7.605553e-05
 PLAQUETTE ACTION: -3.356773e+04
-CONGRAD5: time = 2.524996e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.399323e+04
+CONGRAD5: time = 2.559900e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.380243e+04
  OK converged final_rsq= 8.9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 199
-CONGRAD5: time = 1.837397e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.455552e+04
+CONGRAD5: time = 1.845217e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.449383e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 154
-CONGRAD5: time = 1.839590e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.444376e+04
+CONGRAD5: time = 1.827407e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.454005e+04
  OK converged final_rsq= 9.5e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 153
-CONGRAD5: time = 1.848006e-02 (multicg_offset D) masses = 9 iters = 155 mflops = 1.456592e+04
+CONGRAD5: time = 1.849794e-02 (multicg_offset D) masses = 9 iters = 155 mflops = 1.455184e+04
  OK converged final_rsq= 9.4e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 155
-ACTION: g,h,f = 8.46794118679636e+04  -8.03775303465063e+01  7.73560172881159e+03  9.23346360664286e+04
-DG = 8.467941e+04, DH = -8.037753e+01, DF = 7.735602e+03, D = 9.233464e+04
-ACTIONTIME: time = 8.766794e-02
-LINK_UPDATE: time = 2.151012e-03  mflops = 3.383679e+03
-GFTIME:   time = 3.070998e-02 (Symanzik1) mflops = 6.456962e+03
-LINK_UPDATE: time = 2.056837e-03  mflops = 3.538606e+03
-FLTIME: time = 1.018047e-03 (asqtad D) mflops = 4.674549e+03
-CONGRAD5: time = 2.526999e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.398214e+04
+ACTION: g,h,f = 1.75439611962600e+04  -8.03775303465063e+01  7.73560172881159e+03  2.51991853947251e+04
+DG = 1.754396e+04, DH = -8.037753e+01, DF = 7.735602e+03, D = 2.519919e+04
+ACTIONTIME: time = 8.808112e-02
+LINK_UPDATE: time = 2.043962e-03  mflops = 3.560895e+03
+GFTIME:   time = 3.047180e-02 (Symanzik1) mflops = 6.507432e+03
+LINK_UPDATE: time = 1.976967e-03  mflops = 3.681567e+03
+FLTIME: time = 1.026154e-03 (asqtad D) mflops = 4.637622e+03
+CONGRAD5: time = 2.525997e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.398768e+04
  OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 199
-CONGRAD5: time = 1.832604e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.449881e+04
+CONGRAD5: time = 1.824594e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.456247e+04
  OK converged final_rsq= 1e-12 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 153
-CONGRAD5: time = 1.827407e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.444502e+04
+CONGRAD5: time = 1.817203e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.452613e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-CONGRAD5: time = 1.852822e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.443433e+04
+CONGRAD5: time = 1.829910e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.461506e+04
  OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 154
-FLTIME: time = 1.034975e-03 (asqtad D) mflops = 4.598093e+03
-CONGRAD5: time = 2.519894e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.402156e+04
+FLTIME: time = 1.021862e-03 (asqtad D) mflops = 4.657098e+03
+CONGRAD5: time = 2.516317e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.404149e+04
  OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 199
-CONGRAD5: time = 1.830482e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.451562e+04
+CONGRAD5: time = 1.818419e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.461192e+04
  OK converged final_rsq= 1e-12 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 153
-CONGRAD5: time = 1.814008e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.455172e+04
+CONGRAD5: time = 1.813817e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.455325e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-CONGRAD5: time = 1.845789e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.448934e+04
+CONGRAD5: time = 1.829910e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.461506e+04
  OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 154
-FLTIME: time = 1.025200e-03 (asqtad D) mflops = 4.641936e+03
-CONGRAD5: time = 2.540016e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.391048e+04
+FLTIME: time = 1.092911e-03 (asqtad D) mflops = 4.354346e+03
+CONGRAD5: time = 2.524590e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.399548e+04
  OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 199
-CONGRAD5: time = 1.834989e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.447998e+04
+CONGRAD5: time = 1.842189e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.442338e+04
  OK converged final_rsq= 1e-12 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 153
-CONGRAD5: time = 1.821303e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.449343e+04
+CONGRAD5: time = 1.922512e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.373044e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-CONGRAD5: time = 1.836109e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.456572e+04
+CONGRAD5: time = 1.831198e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.460479e+04
  OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 154
-FLTIME: time = 1.085997e-03 (asqtad D) mflops = 4.382069e+03
-CONGRAD5: time = 2.520704e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.401705e+04
+FLTIME: time = 1.127005e-03 (asqtad D) mflops = 4.222620e+03
+CONGRAD5: time = 2.521801e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.401096e+04
  OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 199
-CONGRAD5: time = 1.845312e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.439897e+04
+CONGRAD5: time = 1.817989e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.461537e+04
  OK converged final_rsq= 1e-12 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 153
-CONGRAD5: time = 1.822686e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.448243e+04
+CONGRAD5: time = 1.811504e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.457183e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-CONGRAD5: time = 1.864195e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.434628e+04
- OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 154
-FLTIME: time = 1.024008e-03 (asqtad D) mflops = 4.647340e+03
-CONGRAD5: time = 2.524710e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.399482e+04
- OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 199
-CONGRAD5: time = 1.821613e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.458630e+04
- OK converged final_rsq= 1e-12 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 153
-CONGRAD5: time = 1.878715e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.405053e+04
- OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-CONGRAD5: time = 1.860905e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.437164e+04
- OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 154
-FLTIME: time = 1.013041e-03 (asqtad D) mflops = 4.697652e+03
-CONGRAD5: time = 2.522397e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.400765e+04
- OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 199
-CONGRAD5: time = 1.830196e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.451789e+04
- OK converged final_rsq= 1e-12 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 153
-CONGRAD5: time = 1.812410e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.456454e+04
- OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-CONGRAD5: time = 1.832604e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.459358e+04
+CONGRAD5: time = 1.842403e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.451596e+04
  OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 154
 FLTIME: time = 1.018047e-03 (asqtad D) mflops = 4.674549e+03
-CONGRAD5: time = 2.527690e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.397832e+04
+CONGRAD5: time = 2.513885e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.405507e+04
  OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 199
-CONGRAD5: time = 1.836491e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.446813e+04
+CONGRAD5: time = 1.823592e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.457047e+04
  OK converged final_rsq= 1e-12 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 153
-CONGRAD5: time = 1.818013e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.451966e+04
+CONGRAD5: time = 1.812911e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.456052e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-CONGRAD5: time = 1.841021e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.452686e+04
+CONGRAD5: time = 1.833200e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.458883e+04
  OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 154
-FLTIME: time = 1.020908e-03 (asqtad D) mflops = 4.661449e+03
-CONGRAD5: time = 2.515316e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.404708e+04
+FLTIME: time = 1.015186e-03 (asqtad D) mflops = 4.687723e+03
+CONGRAD5: time = 2.524590e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.399548e+04
  OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 199
-CONGRAD5: time = 1.826501e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.454726e+04
+CONGRAD5: time = 1.818395e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.461212e+04
  OK converged final_rsq= 1e-12 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 153
-CONGRAD5: time = 1.817894e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.452061e+04
+CONGRAD5: time = 1.809692e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.458642e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-CONGRAD5: time = 1.836801e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.456024e+04
+CONGRAD5: time = 1.836991e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.455873e+04
  OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 154
-FLTIME: time = 1.017094e-03 (asqtad D) mflops = 4.678932e+03
-CONGRAD5: time = 2.523184e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.400328e+04
+FLTIME: time = 1.095057e-03 (asqtad D) mflops = 4.345814e+03
+CONGRAD5: time = 2.530408e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.396330e+04
  OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 199
-CONGRAD5: time = 1.835108e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.447904e+04
+CONGRAD5: time = 1.825380e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.455620e+04
  OK converged final_rsq= 1e-12 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 153
-CONGRAD5: time = 1.823115e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.447902e+04
+CONGRAD5: time = 1.813507e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.455573e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-CONGRAD5: time = 1.835513e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.457045e+04
+CONGRAD5: time = 1.829481e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.461849e+04
+ OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 154
+FLTIME: time = 1.014948e-03 (asqtad D) mflops = 4.688824e+03
+CONGRAD5: time = 2.515101e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.404828e+04
+ OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 199
+CONGRAD5: time = 1.830411e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.451619e+04
+ OK converged final_rsq= 1e-12 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 153
+CONGRAD5: time = 1.808500e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.459603e+04
+ OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
+CONGRAD5: time = 1.835108e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.457367e+04
+ OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 154
+FLTIME: time = 1.013994e-03 (asqtad D) mflops = 4.693234e+03
+CONGRAD5: time = 2.522111e-02 (multicg_offset D) masses = 11 iters = 199 mflops = 1.400924e+04
+ OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 199
+CONGRAD5: time = 1.819301e-02 (multicg_offset D) masses = 9 iters = 153 mflops = 1.460484e+04
+ OK converged final_rsq= 1e-12 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 153
+CONGRAD5: time = 1.813889e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.455267e+04
+ OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
+CONGRAD5: time = 1.830101e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.461354e+04
  OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 154
 
 
@@ -615,14 +615,14 @@ force from definition with s = 1.000000e-04 :
 (-9.63e-02,-2.97e-01)	(2.56e-02,0.00e+00)	(-9.90e-02,1.76e-01)	
 (-6.59e-01,-1.97e-02)	(-9.90e-02,-1.76e-01)	(6.25e-01,0.00e+00)	
 
-FLTIME: time = 1.014948e-03 (asqtad D) mflops = 4.688824e+03
-CONGRAD5: time = 2.153301e-02 (multicg_offset D) masses = 9 iters = 179 mflops = 1.443637e+04
+FLTIME: time = 1.015902e-03 (asqtad D) mflops = 4.684422e+03
+CONGRAD5: time = 2.156496e-02 (multicg_offset D) masses = 9 iters = 179 mflops = 1.441498e+04
  OK converged final_rsq= 2.1e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 179
-CONGRAD5: time = 1.531696e-02 (multicg_offset D) masses = 7 iters = 135 mflops = 1.496365e+04
+CONGRAD5: time = 1.521778e-02 (multicg_offset D) masses = 7 iters = 135 mflops = 1.506117e+04
  OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 135
-CONGRAD5: time = 1.533914e-02 (multicg_offset D) masses = 7 iters = 135 mflops = 1.494201e+04
+CONGRAD5: time = 1.530004e-02 (multicg_offset D) masses = 7 iters = 135 mflops = 1.498020e+04
  OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 135
-CONGRAD5: time = 1.554418e-02 (multicg_offset D) masses = 7 iters = 137 mflops = 1.496336e+04
+CONGRAD5: time = 1.569891e-02 (multicg_offset D) masses = 7 iters = 137 mflops = 1.481588e+04
  OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 137
 
 
@@ -631,96 +631,96 @@ force from code:
 (-9.62e-02,-2.97e-01)	(2.55e-02,0.00e+00)	(-9.89e-02,1.76e-01)	
 (-6.59e-01,-1.95e-02)	(-9.89e-02,-1.76e-01)	(6.25e-01,0.00e+00)	
 
-FFTIME:  time = 2.678156e-03 (FNMAT) terms = 30 mflops = 4.885878e+05
-LINK_UPDATE: time = 2.146006e-03  mflops = 3.391574e+03
-GFTIME:   time = 3.090501e-02 (Symanzik1) mflops = 6.416215e+03
-LINK_UPDATE: time = 2.058029e-03  mflops = 3.536556e+03
-GFTIME:   time = 3.065419e-02 (Symanzik1) mflops = 6.468713e+03
-LINK_UPDATE: time = 2.068996e-03  mflops = 3.517810e+03
-GFTIME:   time = 3.057814e-02 (Symanzik1) mflops = 6.484803e+03
-LINK_UPDATE: time = 2.084017e-03  mflops = 3.492456e+03
-GFTIME:   time = 3.060913e-02 (Symanzik1) mflops = 6.478236e+03
-LINK_UPDATE: time = 2.071857e-03  mflops = 3.512952e+03
-FLTIME: time = 1.016140e-03 (asqtad D) mflops = 4.683323e+03
-CONGRAD5: time = 2.421498e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.400473e+04
+FFTIME:  time = 2.774000e-03 (FNMAT) terms = 30 mflops = 4.717066e+05
+LINK_UPDATE: time = 2.367973e-03  mflops = 3.073656e+03
+GFTIME:   time = 3.110814e-02 (Symanzik1) mflops = 6.374318e+03
+LINK_UPDATE: time = 1.914024e-03  mflops = 3.802635e+03
+GFTIME:   time = 3.039598e-02 (Symanzik1) mflops = 6.523664e+03
+LINK_UPDATE: time = 1.919031e-03  mflops = 3.792714e+03
+GFTIME:   time = 3.038192e-02 (Symanzik1) mflops = 6.526684e+03
+LINK_UPDATE: time = 1.920938e-03  mflops = 3.788948e+03
+GFTIME:   time = 3.038907e-02 (Symanzik1) mflops = 6.525148e+03
+LINK_UPDATE: time = 1.916885e-03  mflops = 3.796959e+03
+FLTIME: time = 1.013041e-03 (asqtad D) mflops = 4.697652e+03
+CONGRAD5: time = 2.411914e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.406038e+04
  OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
-CONGRAD5: time = 1.801491e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.446002e+04
+CONGRAD5: time = 1.785898e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.458627e+04
  OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
-CONGRAD5: time = 1.829123e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.405169e+04
+CONGRAD5: time = 1.767612e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.454068e+04
  OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.815510e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.453968e+04
+CONGRAD5: time = 1.816583e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.453109e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-FLTIME: time = 1.014948e-03 (asqtad D) mflops = 4.688824e+03
-CONGRAD5: time = 2.417111e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.403015e+04
+FLTIME: time = 1.030207e-03 (asqtad D) mflops = 4.619376e+03
+CONGRAD5: time = 2.415109e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.404178e+04
  OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
-CONGRAD5: time = 1.788902e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.456178e+04
+CONGRAD5: time = 1.785016e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.459348e+04
  OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
-CONGRAD5: time = 1.772094e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.450390e+04
+CONGRAD5: time = 1.761293e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.459284e+04
  OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.823688e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.447448e+04
+CONGRAD5: time = 1.813412e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.455650e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-FLTIME: time = 1.039028e-03 (asqtad D) mflops = 4.580157e+03
-CONGRAD5: time = 2.430606e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.395225e+04
+FLTIME: time = 1.017809e-03 (asqtad D) mflops = 4.675644e+03
+CONGRAD5: time = 2.411699e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.406163e+04
  OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
-CONGRAD5: time = 1.801014e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.446385e+04
+CONGRAD5: time = 1.740885e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.496343e+04
  OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
-CONGRAD5: time = 1.775408e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.447683e+04
+CONGRAD5: time = 1.722598e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.492064e+04
  OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.830983e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.441681e+04
+CONGRAD5: time = 1.764703e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.495829e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-FLTIME: time = 1.012087e-03 (asqtad D) mflops = 4.702079e+03
-CONGRAD5: time = 2.428889e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.396212e+04
- OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
-CONGRAD5: time = 1.800513e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.446787e+04
- OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
-CONGRAD5: time = 1.769280e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.452696e+04
- OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.816297e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.453338e+04
- OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-FLTIME: time = 1.012087e-03 (asqtad D) mflops = 4.702079e+03
-CONGRAD5: time = 2.418685e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.402102e+04
- OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
-CONGRAD5: time = 1.786613e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.458043e+04
- OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
-CONGRAD5: time = 1.773906e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.448909e+04
- OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.820111e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.450292e+04
- OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-FLTIME: time = 1.020908e-03 (asqtad D) mflops = 4.661449e+03
-CONGRAD5: time = 2.414012e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.404816e+04
- OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
-CONGRAD5: time = 1.788306e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.456663e+04
- OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
-CONGRAD5: time = 1.768899e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.453010e+04
- OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.818991e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.451185e+04
- OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-FLTIME: time = 1.012087e-03 (asqtad D) mflops = 4.702079e+03
-CONGRAD5: time = 2.389216e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.419396e+04
- OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
-CONGRAD5: time = 1.769090e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.472486e+04
- OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
-CONGRAD5: time = 1.729894e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.485772e+04
- OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.765800e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.494899e+04
- OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-FLTIME: time = 9.851456e-04 (asqtad D) mflops = 4.830669e+03
+FLTIME: time = 1.001120e-03 (asqtad D) mflops = 4.753590e+03
 CONGRAD5: time = 2.354407e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.440381e+04
  OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
-CONGRAD5: time = 1.741505e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.495810e+04
+CONGRAD5: time = 1.763010e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.477564e+04
  OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
-CONGRAD5: time = 1.722503e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.492147e+04
+CONGRAD5: time = 1.724505e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.490414e+04
  OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.787710e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.476578e+04
+CONGRAD5: time = 1.766896e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.493972e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
-FLTIME: time = 9.799004e-04 (asqtad D) mflops = 4.856526e+03
-CONGRAD5: time = 2.462006e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.377431e+04
+FLTIME: time = 9.920597e-04 (asqtad D) mflops = 4.797002e+03
+CONGRAD5: time = 2.357411e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.438545e+04
  OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
-CONGRAD5: time = 1.793003e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.452847e+04
+CONGRAD5: time = 1.741600e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.495728e+04
  OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
-CONGRAD5: time = 1.767206e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.454401e+04
+CONGRAD5: time = 1.741695e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.475704e+04
  OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.815605e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.453891e+04
+CONGRAD5: time = 1.815891e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.453662e+04
+ OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
+FLTIME: time = 1.019955e-03 (asqtad D) mflops = 4.665807e+03
+CONGRAD5: time = 2.421904e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.400239e+04
+ OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
+CONGRAD5: time = 1.787806e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.457071e+04
+ OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
+CONGRAD5: time = 1.768398e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.453421e+04
+ OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
+CONGRAD5: time = 1.864386e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.415851e+04
+ OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
+FLTIME: time = 9.818077e-04 (asqtad D) mflops = 4.847092e+03
+CONGRAD5: time = 2.361989e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.435757e+04
+ OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
+CONGRAD5: time = 1.746297e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.491705e+04
+ OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
+CONGRAD5: time = 1.722002e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.492581e+04
+ OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
+CONGRAD5: time = 1.764011e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.496415e+04
+ OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
+FLTIME: time = 1.000166e-03 (asqtad D) mflops = 4.758122e+03
+CONGRAD5: time = 2.362990e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.435149e+04
+ OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
+CONGRAD5: time = 1.742816e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.494684e+04
+ OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
+CONGRAD5: time = 1.717496e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.496497e+04
+ OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
+CONGRAD5: time = 1.764202e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.496253e+04
+ OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
+FLTIME: time = 9.839535e-04 (asqtad D) mflops = 4.836521e+03
+CONGRAD5: time = 2.348185e-02 (multicg_offset D) masses = 11 iters = 191 mflops = 1.444198e+04
+ OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 191
+CONGRAD5: time = 1.741099e-02 (multicg_offset D) masses = 9 iters = 150 mflops = 1.496158e+04
+ OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 150
+CONGRAD5: time = 1.741600e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.475785e+04
+ OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
+CONGRAD5: time = 1.769209e-02 (multicg_offset D) masses = 9 iters = 152 mflops = 1.492019e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 152
 
 
@@ -729,14 +729,14 @@ force from definition with s = 1.000000e-04 :
 (-1.09e-01,-3.14e-01)	(2.60e-02,0.00e+00)	(-1.37e-01,2.11e-01)	
 (-6.17e-01,4.17e-04)	(-1.37e-01,-2.11e-01)	(6.26e-01,0.00e+00)	
 
-FLTIME: time = 1.042128e-03 (asqtad D) mflops = 4.566535e+03
-CONGRAD5: time = 2.004886e-02 (multicg_offset D) masses = 9 iters = 167 mflops = 1.446561e+04
+FLTIME: time = 1.028061e-03 (asqtad D) mflops = 4.629018e+03
+CONGRAD5: time = 1.964092e-02 (multicg_offset D) masses = 9 iters = 167 mflops = 1.476605e+04
  OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 167
-CONGRAD5: time = 1.505089e-02 (multicg_offset D) masses = 7 iters = 133 mflops = 1.500258e+04
+CONGRAD5: time = 1.483202e-02 (multicg_offset D) masses = 7 iters = 133 mflops = 1.522396e+04
  OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 133
-CONGRAD5: time = 1.481009e-02 (multicg_offset D) masses = 7 iters = 131 mflops = 1.501724e+04
+CONGRAD5: time = 1.447988e-02 (multicg_offset D) masses = 7 iters = 131 mflops = 1.535970e+04
  OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 131
-CONGRAD5: time = 1.504493e-02 (multicg_offset D) masses = 7 iters = 133 mflops = 1.500852e+04
+CONGRAD5: time = 1.488495e-02 (multicg_offset D) masses = 7 iters = 133 mflops = 1.516983e+04
  OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 133
 
 
@@ -745,93 +745,93 @@ force from code:
 (-1.09e-01,-3.14e-01)	(2.60e-02,0.00e+00)	(-1.37e-01,2.11e-01)	
 (-6.17e-01,4.12e-04)	(-1.37e-01,-2.11e-01)	(6.26e-01,0.00e+00)	
 
-FFTIME:  time = 2.712965e-03 (FNMAT) terms = 30 mflops = 4.823189e+05
-LINK_UPDATE: time = 2.062082e-03  mflops = 3.529605e+03
-GFTIME:   time = 3.084612e-02 (Symanzik1) mflops = 6.428465e+03
-LINK_UPDATE: time = 2.027988e-03  mflops = 3.588944e+03
-LINK_UPDATE: time = 2.044916e-03  mflops = 3.559234e+03
-GFTIME:   time = 3.065705e-02 (Symanzik1) mflops = 6.468110e+03
-LINK_UPDATE: time = 2.052069e-03  mflops = 3.546829e+03
+FFTIME:  time = 2.673864e-03 (FNMAT) terms = 30 mflops = 4.893719e+05
+LINK_UPDATE: time = 1.955032e-03  mflops = 3.722872e+03
+GFTIME:   time = 3.064084e-02 (Symanzik1) mflops = 6.471532e+03
+LINK_UPDATE: time = 1.915932e-03  mflops = 3.798849e+03
+LINK_UPDATE: time = 1.940966e-03  mflops = 3.749853e+03
+GFTIME:   time = 3.032589e-02 (Symanzik1) mflops = 6.538743e+03
+LINK_UPDATE: time = 1.914978e-03  mflops = 3.800741e+03
 FLTIME: time = 1.010895e-03 (asqtad D) mflops = 4.707623e+03
-CONGRAD5: time = 2.275777e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.396526e+04
+CONGRAD5: time = 2.271318e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.399267e+04
  OK converged final_rsq= 8.9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 179
-CONGRAD5: time = 1.740813e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.446524e+04
+CONGRAD5: time = 1.735997e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.450537e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-CONGRAD5: time = 1.728201e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.447032e+04
+CONGRAD5: time = 1.722503e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.451819e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 144
-CONGRAD5: time = 1.743984e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.443894e+04
+CONGRAD5: time = 1.731896e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.453971e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-FLTIME: time = 1.008987e-03 (asqtad D) mflops = 4.716523e+03
-CONGRAD5: time = 2.266502e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.402240e+04
+FLTIME: time = 1.026869e-03 (asqtad D) mflops = 4.634391e+03
+CONGRAD5: time = 2.267218e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.401798e+04
  OK converged final_rsq= 8.9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 179
-CONGRAD5: time = 1.732492e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.453471e+04
+CONGRAD5: time = 1.727009e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.458086e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-CONGRAD5: time = 1.730084e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.445456e+04
+CONGRAD5: time = 1.719618e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.454254e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 144
-CONGRAD5: time = 1.728988e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.456418e+04
+CONGRAD5: time = 1.727486e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.457684e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-FLTIME: time = 1.015902e-03 (asqtad D) mflops = 4.684422e+03
-CONGRAD5: time = 2.256799e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.408269e+04
+FLTIME: time = 1.020908e-03 (asqtad D) mflops = 4.661449e+03
+CONGRAD5: time = 2.263117e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.404338e+04
  OK converged final_rsq= 8.9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 179
-CONGRAD5: time = 1.732802e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.453211e+04
+CONGRAD5: time = 1.730013e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.455554e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-CONGRAD5: time = 1.718187e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.455465e+04
+CONGRAD5: time = 1.715589e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.457670e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 144
-CONGRAD5: time = 1.735187e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.451215e+04
+CONGRAD5: time = 1.762581e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.428660e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-FLTIME: time = 1.023054e-03 (asqtad D) mflops = 4.651672e+03
-CONGRAD5: time = 2.266502e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.402240e+04
+FLTIME: time = 1.028061e-03 (asqtad D) mflops = 4.629018e+03
+CONGRAD5: time = 2.282500e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.392412e+04
  OK converged final_rsq= 8.9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 179
-CONGRAD5: time = 1.725793e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.459114e+04
+CONGRAD5: time = 1.730990e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.454732e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-CONGRAD5: time = 1.716685e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.456739e+04
+CONGRAD5: time = 1.714396e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.458683e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 144
-CONGRAD5: time = 1.741481e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.445969e+04
+CONGRAD5: time = 1.734996e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.451374e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-FLTIME: time = 1.008987e-03 (asqtad D) mflops = 4.716523e+03
-CONGRAD5: time = 2.277493e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.395473e+04
+FLTIME: time = 1.012087e-03 (asqtad D) mflops = 4.702079e+03
+CONGRAD5: time = 2.261996e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.405034e+04
  OK converged final_rsq= 8.9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 179
-CONGRAD5: time = 1.737309e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.449442e+04
+CONGRAD5: time = 1.688099e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.491695e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-CONGRAD5: time = 1.726413e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.448531e+04
+CONGRAD5: time = 1.669502e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.497908e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 144
-CONGRAD5: time = 1.746202e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.442060e+04
+CONGRAD5: time = 1.687503e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.492221e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-FLTIME: time = 1.024961e-03 (asqtad D) mflops = 4.643016e+03
-CONGRAD5: time = 2.301884e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.380687e+04
+FLTIME: time = 9.810925e-04 (asqtad D) mflops = 4.850625e+03
+CONGRAD5: time = 2.202606e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.442918e+04
  OK converged final_rsq= 8.9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 179
-CONGRAD5: time = 1.742196e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.445376e+04
+CONGRAD5: time = 1.679015e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.499765e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-CONGRAD5: time = 1.722121e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.452140e+04
+CONGRAD5: time = 1.676393e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.491752e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 144
-CONGRAD5: time = 1.739097e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.447952e+04
+CONGRAD5: time = 1.685190e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.494269e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-FLTIME: time = 1.024008e-03 (asqtad D) mflops = 4.647340e+03
-CONGRAD5: time = 2.273488e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.397932e+04
+FLTIME: time = 9.992123e-04 (asqtad D) mflops = 4.762664e+03
+CONGRAD5: time = 2.214694e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.435043e+04
  OK converged final_rsq= 8.9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 179
-CONGRAD5: time = 1.740384e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.446881e+04
+CONGRAD5: time = 1.688004e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.491779e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-CONGRAD5: time = 1.731706e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.444103e+04
+CONGRAD5: time = 1.678300e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.490056e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 144
-CONGRAD5: time = 1.735592e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.450876e+04
+CONGRAD5: time = 1.680779e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.498191e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-FLTIME: time = 1.049995e-03 (asqtad D) mflops = 4.532317e+03
-CONGRAD5: time = 2.267313e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.401739e+04
+FLTIME: time = 9.820461e-04 (asqtad D) mflops = 4.845915e+03
+CONGRAD5: time = 2.229714e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.425376e+04
  OK converged final_rsq= 8.9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 179
-CONGRAD5: time = 1.736093e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.450457e+04
+CONGRAD5: time = 1.686811e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.492833e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-CONGRAD5: time = 1.719308e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.454516e+04
+CONGRAD5: time = 1.669693e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.497737e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 144
-CONGRAD5: time = 1.736307e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.450278e+04
+CONGRAD5: time = 1.689219e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.490705e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-FLTIME: time = 1.025915e-03 (asqtad D) mflops = 4.638699e+03
-CONGRAD5: time = 2.265096e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.403111e+04
+FLTIME: time = 9.770393e-04 (asqtad D) mflops = 4.870748e+03
+CONGRAD5: time = 2.216482e-02 (multicg_offset D) masses = 11 iters = 179 mflops = 1.433885e+04
  OK converged final_rsq= 8.9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 179
-CONGRAD5: time = 1.730514e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.455133e+04
+CONGRAD5: time = 1.733303e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.452792e+04
  OK converged final_rsq= 9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
-CONGRAD5: time = 1.719189e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.454617e+04
+CONGRAD5: time = 1.723003e-02 (multicg_offset D) masses = 9 iters = 144 mflops = 1.451397e+04
  OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 144
-CONGRAD5: time = 1.737404e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.449362e+04
+CONGRAD5: time = 1.731706e-02 (multicg_offset D) masses = 9 iters = 145 mflops = 1.454132e+04
  OK converged final_rsq= 8.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 145
 
 
@@ -840,14 +840,14 @@ force from definition with s = 1.000000e-04 :
 (-1.21e-01,-3.30e-01)	(2.53e-02,0.00e+00)	(-1.62e-01,2.33e-01)	
 (-5.90e-01,2.05e-02)	(-1.62e-01,-2.33e-01)	(6.23e-01,0.00e+00)	
 
-FLTIME: time = 1.013994e-03 (asqtad D) mflops = 4.693234e+03
-CONGRAD5: time = 1.841092e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.452630e+04
+FLTIME: time = 1.005888e-03 (asqtad D) mflops = 4.731056e+03
+CONGRAD5: time = 1.838899e-02 (multicg_offset D) masses = 9 iters = 154 mflops = 1.454363e+04
  OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 154
-CONGRAD5: time = 1.462293e-02 (multicg_offset D) masses = 7 iters = 130 mflops = 1.509334e+04
+CONGRAD5: time = 1.465487e-02 (multicg_offset D) masses = 7 iters = 130 mflops = 1.506044e+04
  OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 130
-CONGRAD5: time = 1.441479e-02 (multicg_offset D) masses = 7 iters = 128 mflops = 1.507572e+04
+CONGRAD5: time = 1.437807e-02 (multicg_offset D) masses = 7 iters = 128 mflops = 1.511422e+04
  OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 128
-CONGRAD5: time = 1.458907e-02 (multicg_offset D) masses = 7 iters = 129 mflops = 1.501199e+04
+CONGRAD5: time = 1.456404e-02 (multicg_offset D) masses = 7 iters = 129 mflops = 1.503780e+04
  OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 129
 
 
@@ -856,96 +856,96 @@ force from code:
 (-1.21e-01,-3.30e-01)	(2.53e-02,0.00e+00)	(-1.62e-01,2.33e-01)	
 (-5.90e-01,2.05e-02)	(-1.62e-01,-2.33e-01)	(6.23e-01,0.00e+00)	
 
-FFTIME:  time = 2.677917e-03 (FNMAT) terms = 30 mflops = 4.886313e+05
-LINK_UPDATE: time = 2.074003e-03  mflops = 3.509318e+03
-GFTIME:   time = 3.087902e-02 (Symanzik1) mflops = 6.421615e+03
-LINK_UPDATE: time = 2.051830e-03  mflops = 3.547241e+03
-GFTIME:   time = 3.066492e-02 (Symanzik1) mflops = 6.466450e+03
-LINK_UPDATE: time = 2.051115e-03  mflops = 3.548478e+03
-GFTIME:   time = 3.058815e-02 (Symanzik1) mflops = 6.482680e+03
-LINK_UPDATE: time = 2.051115e-03  mflops = 3.548478e+03
-GFTIME:   time = 3.061700e-02 (Symanzik1) mflops = 6.476572e+03
-LINK_UPDATE: time = 2.012014e-03  mflops = 3.617437e+03
-FLTIME: time = 1.020908e-03 (asqtad D) mflops = 4.661449e+03
-CONGRAD5: time = 2.175593e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.403706e+04
+FFTIME:  time = 2.620935e-03 (FNMAT) terms = 30 mflops = 4.992546e+05
+LINK_UPDATE: time = 1.948833e-03  mflops = 3.734714e+03
+GFTIME:   time = 2.989101e-02 (Symanzik1) mflops = 6.633873e+03
+LINK_UPDATE: time = 1.860142e-03  mflops = 3.912786e+03
+GFTIME:   time = 2.941918e-02 (Symanzik1) mflops = 6.740268e+03
+LINK_UPDATE: time = 1.919031e-03  mflops = 3.792714e+03
+GFTIME:   time = 3.064299e-02 (Symanzik1) mflops = 6.471079e+03
+LINK_UPDATE: time = 1.939058e-03  mflops = 3.753542e+03
+GFTIME:   time = 3.032184e-02 (Symanzik1) mflops = 6.539617e+03
+LINK_UPDATE: time = 1.917124e-03  mflops = 3.796487e+03
+FLTIME: time = 1.003981e-03 (asqtad D) mflops = 4.740044e+03
+CONGRAD5: time = 2.171206e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.406543e+04
  OK converged final_rsq= 9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 172
-CONGRAD5: time = 1.774406e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.458287e+04
+CONGRAD5: time = 1.774192e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.458463e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-CONGRAD5: time = 1.772499e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.450058e+04
+CONGRAD5: time = 1.764798e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.456386e+04
  OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.776981e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.456174e+04
+CONGRAD5: time = 1.791310e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.444526e+04
  OK converged final_rsq= 8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-FLTIME: time = 1.024008e-03 (asqtad D) mflops = 4.647340e+03
-CONGRAD5: time = 2.217197e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.377367e+04
+FLTIME: time = 1.006842e-03 (asqtad D) mflops = 4.726574e+03
+CONGRAD5: time = 2.172995e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.405385e+04
  OK converged final_rsq= 9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 172
-CONGRAD5: time = 1.790786e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.444949e+04
+CONGRAD5: time = 1.749587e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.478974e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-CONGRAD5: time = 1.777697e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.445819e+04
+CONGRAD5: time = 1.727509e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.487822e+04
  OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.786304e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.448574e+04
+CONGRAD5: time = 1.757693e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.472153e+04
  OK converged final_rsq= 8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-FLTIME: time = 1.013994e-03 (asqtad D) mflops = 4.693234e+03
-CONGRAD5: time = 2.182412e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.399321e+04
+FLTIME: time = 1.028061e-03 (asqtad D) mflops = 4.629018e+03
+CONGRAD5: time = 2.113485e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.444957e+04
  OK converged final_rsq= 9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 172
-CONGRAD5: time = 1.792598e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.443488e+04
+CONGRAD5: time = 1.730704e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.495110e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-CONGRAD5: time = 1.766181e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.455246e+04
+CONGRAD5: time = 1.721096e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.493367e+04
  OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.789093e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.446316e+04
+CONGRAD5: time = 1.729298e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.496326e+04
  OK converged final_rsq= 8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-FLTIME: time = 1.010895e-03 (asqtad D) mflops = 4.707623e+03
-CONGRAD5: time = 2.183914e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.398358e+04
+FLTIME: time = 1.019955e-03 (asqtad D) mflops = 4.665807e+03
+CONGRAD5: time = 2.122402e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.438886e+04
  OK converged final_rsq= 9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 172
-CONGRAD5: time = 1.779294e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.454281e+04
+CONGRAD5: time = 1.767397e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.464070e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-CONGRAD5: time = 1.767087e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.454500e+04
+CONGRAD5: time = 1.758909e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.461262e+04
  OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.780510e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.453288e+04
+CONGRAD5: time = 1.787806e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.447357e+04
  OK converged final_rsq= 8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-FLTIME: time = 1.019001e-03 (asqtad D) mflops = 4.670174e+03
-CONGRAD5: time = 2.174091e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.404676e+04
+FLTIME: time = 1.057148e-03 (asqtad D) mflops = 4.501652e+03
+CONGRAD5: time = 2.177215e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.402661e+04
  OK converged final_rsq= 9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 172
-CONGRAD5: time = 1.776600e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.456486e+04
+CONGRAD5: time = 1.776314e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.456721e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-CONGRAD5: time = 1.765108e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.456130e+04
+CONGRAD5: time = 1.763916e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.457114e+04
  OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.784301e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.450200e+04
+CONGRAD5: time = 1.773810e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.458777e+04
  OK converged final_rsq= 8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-FLTIME: time = 1.035929e-03 (asqtad D) mflops = 4.593860e+03
-CONGRAD5: time = 2.188301e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.395555e+04
+FLTIME: time = 1.006842e-03 (asqtad D) mflops = 4.726574e+03
+CONGRAD5: time = 2.172089e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.405971e+04
  OK converged final_rsq= 9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 172
-CONGRAD5: time = 1.783395e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.450937e+04
+CONGRAD5: time = 1.784110e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.450355e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-CONGRAD5: time = 1.766920e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.454637e+04
+CONGRAD5: time = 1.722503e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.492147e+04
  OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.777005e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.456154e+04
+CONGRAD5: time = 1.736307e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.490286e+04
  OK converged final_rsq= 8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-FLTIME: time = 1.102924e-03 (asqtad D) mflops = 4.314813e+03
-CONGRAD5: time = 2.183390e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.398694e+04
+FLTIME: time = 9.829998e-04 (asqtad D) mflops = 4.841214e+03
+CONGRAD5: time = 2.120304e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.440310e+04
  OK converged final_rsq= 9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 172
-CONGRAD5: time = 1.788998e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.446393e+04
+CONGRAD5: time = 1.728511e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.497007e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-CONGRAD5: time = 1.774001e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.448831e+04
+CONGRAD5: time = 1.756716e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.463087e+04
  OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.783109e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.451170e+04
+CONGRAD5: time = 1.777887e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.455432e+04
  OK converged final_rsq= 8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-FLTIME: time = 1.037121e-03 (asqtad D) mflops = 4.588580e+03
-CONGRAD5: time = 2.178502e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.401832e+04
+FLTIME: time = 1.026154e-03 (asqtad D) mflops = 4.637622e+03
+CONGRAD5: time = 2.237391e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.364935e+04
  OK converged final_rsq= 9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 172
-CONGRAD5: time = 1.784897e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.449716e+04
+CONGRAD5: time = 1.770496e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.461507e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-CONGRAD5: time = 1.777792e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.445741e+04
+CONGRAD5: time = 1.767397e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.454244e+04
  OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.785898e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.448903e+04
+CONGRAD5: time = 1.770902e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.461173e+04
  OK converged final_rsq= 8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-FLTIME: time = 1.031876e-03 (asqtad D) mflops = 4.611905e+03
-CONGRAD5: time = 2.173591e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.405000e+04
+FLTIME: time = 1.013041e-03 (asqtad D) mflops = 4.697652e+03
+CONGRAD5: time = 2.167797e-02 (multicg_offset D) masses = 11 iters = 172 mflops = 1.408755e+04
  OK converged final_rsq= 9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 172
-CONGRAD5: time = 1.773691e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.458875e+04
+CONGRAD5: time = 1.784110e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.450355e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-CONGRAD5: time = 1.765990e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.455403e+04
+CONGRAD5: time = 1.762700e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.458119e+04
  OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.791096e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.444699e+04
+CONGRAD5: time = 1.768208e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.463399e+04
  OK converged final_rsq= 8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
 
 
@@ -954,14 +954,14 @@ force from definition with s = 1.000000e-04 :
 (-1.40e-01,-3.60e-01)	(2.21e-02,0.00e+00)	(-1.98e-01,2.67e-01)	
 (-5.52e-01,5.84e-02)	(-1.98e-01,-2.67e-01)	(6.14e-01,0.00e+00)	
 
-FLTIME: time = 1.005173e-03 (asqtad D) mflops = 4.734422e+03
-CONGRAD5: time = 1.804090e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.424667e+04
+FLTIME: time = 1.037836e-03 (asqtad D) mflops = 4.585418e+03
+CONGRAD5: time = 1.768017e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.453735e+04
  OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.491094e-02 (multicg_offset D) masses = 7 iters = 131 mflops = 1.491567e+04
+CONGRAD5: time = 1.471210e-02 (multicg_offset D) masses = 7 iters = 131 mflops = 1.511726e+04
  OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 131
-CONGRAD5: time = 1.486397e-02 (multicg_offset D) masses = 7 iters = 131 mflops = 1.496280e+04
+CONGRAD5: time = 1.475811e-02 (multicg_offset D) masses = 7 iters = 131 mflops = 1.507012e+04
  OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 131
-CONGRAD5: time = 1.488900e-02 (multicg_offset D) masses = 7 iters = 132 mflops = 1.505167e+04
+CONGRAD5: time = 1.486993e-02 (multicg_offset D) masses = 7 iters = 132 mflops = 1.507098e+04
  OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 0 iters= 132
 
 
@@ -970,25 +970,25 @@ force from code:
 (-1.40e-01,-3.60e-01)	(2.21e-02,0.00e+00)	(-1.98e-01,2.67e-01)	
 (-5.52e-01,5.84e-02)	(-1.98e-01,-2.67e-01)	(6.14e-01,0.00e+00)	
 
-FFTIME:  time = 2.664804e-03 (FNMAT) terms = 30 mflops = 4.910357e+05
-LINK_UPDATE: time = 2.057076e-03  mflops = 3.538196e+03
-GFTIME:   time = 3.084612e-02 (Symanzik1) mflops = 6.428465e+03
-LINK_UPDATE: time = 2.017975e-03  mflops = 3.606753e+03
+FFTIME:  time = 2.597094e-03 (FNMAT) terms = 30 mflops = 5.038379e+05
+LINK_UPDATE: time = 1.955986e-03  mflops = 3.721057e+03
+GFTIME:   time = 3.066802e-02 (Symanzik1) mflops = 6.465797e+03
+LINK_UPDATE: time = 1.917124e-03  mflops = 3.796487e+03
 PLAQUETTE ACTION: -3.353763e+04
-FLTIME: time = 9.770393e-04 (asqtad D) mflops = 4.870748e+03
-CONGRAD5: time = 2.116489e-02 (multicg_offset D) masses = 11 iters = 171 mflops = 1.434517e+04
+FLTIME: time = 1.001120e-03 (asqtad D) mflops = 4.753590e+03
+CONGRAD5: time = 2.167988e-02 (multicg_offset D) masses = 11 iters = 171 mflops = 1.400441e+04
  OK converged final_rsq= 9.8e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 0 iters= 171
-CONGRAD5: time = 1.757407e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.472393e+04
+CONGRAD5: time = 1.778603e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.454846e+04
  OK converged final_rsq= 8.6e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-CONGRAD5: time = 1.724696e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.490249e+04
+CONGRAD5: time = 1.766205e-02 (multicg_offset D) masses = 9 iters = 148 mflops = 1.455226e+04
  OK converged final_rsq= 8.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 148
-CONGRAD5: time = 1.738405e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.488487e+04
+CONGRAD5: time = 1.775312e-02 (multicg_offset D) masses = 9 iters = 149 mflops = 1.457543e+04
  OK converged final_rsq= 8.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 149
-ACTION: g,h,f = 8.46490029235770e+04  -1.00850438099990e+02  7.72629592957180e+03  9.22744484150488e+04
-DG = -3.040894e+01, DH = -2.047291e+01, DF = -9.305799e+00, D = -6.018765e+01
-ACTIONTIME: time = 8.141398e-02
-CHECK: delta S = -6.018765e+01
-Aggregate time to do one trajectory 3.786704e+00
+ACTION: g,h,f = 1.75737472230477e+04  -1.00850438099990e+02  7.72629592957180e+03  2.51991927145195e+04
+DG = 2.978603e+01, DH = -2.047291e+01, DF = -9.305799e+00, D = 7.319794e-03
+ACTIONTIME: time = 8.292389e-02
+CHECK: delta S = 7.319794e-03
+Aggregate time to do one trajectory 3.766605e+00
 PLAQ:	1.8410644652334973	1.8557640015064263
 P_LOOP:	3.288696e-01	-3.667432e-02
 G_LOOP:  0  0  4   	1.8700214419258534e+00	( 0 1 7 6  )
@@ -1026,30 +1026,30 @@ G_LOOP:  2  13  6   	1.1921299971515342e+00	( 1 2 4 6 5 3  )
 G_LOOP:  2  14  6   	1.1903445955024290e+00	( 1 5 3 6 2 4  )
 G_LOOP:  2  15  6   	1.1780236357042748e+00	( 1 5 4 6 2 3  )
 GACTION: 4.067997e+01
-Aggregate time to do gauge measurement 6.623983e-03
+Aggregate time to do gauge measurement 6.692886e-03
 restore_fermion_links: Warning. Precision request replaced by 2
-FLTIME: time = 9.469986e-04 (asqtad D) mflops = 5.025258e+03
+FLTIME: time = 9.710789e-04 (asqtad D) mflops = 4.900644e+03
 UML inversion with mass 0.014000
-CONGRAD5: time = 1.881909e-02 (fn D) masses = 1 iters = 204 mflops = 1.667582e+04
+CONGRAD5: time = 1.935005e-02 (fn D) masses = 1 iters = 204 mflops = 1.621824e+04
  OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 204
-CONGRAD5: time = 4.337072e-03 (fn D) masses = 1 iters = 47 mflops = 1.667082e+04
+CONGRAD5: time = 4.497051e-03 (fn D) masses = 1 iters = 47 mflops = 1.607777e+04
  OK converged final_rsq= 9.3e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 47
 PBP: mass 1.400000e-02     7.519692e-03  1.204930e-02  4.516937e-03  4.517170e-03 ( 1 of 1 )
 FACTION: mass = 1.400000e-02,  1.496414e+00 ( 1 of 1 )
 UML inversion with mass 0.070000
-CONGRAD5: time = 1.650596e-02 (fn D) masses = 1 iters = 179 mflops = 1.668277e+04
+CONGRAD5: time = 1.697993e-02 (fn D) masses = 1 iters = 179 mflops = 1.621708e+04
  OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 179
-CONGRAD5: time = 3.145933e-03 (fn D) masses = 1 iters = 34 mflops = 1.662590e+04
+CONGRAD5: time = 3.226042e-03 (fn D) masses = 1 iters = 34 mflops = 1.621305e+04
  OK converged final_rsq= 9.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 34
 PBP: mass 7.000000e-02     6.215045e-02  1.927281e-02  1.419236e-02  1.419194e-02 ( 1 of 1 )
 FACTION: mass = 7.000000e-02,  1.455761e+00 ( 1 of 1 )
-Aggregate time to do pbp measurements 4.498482e-02
+Aggregate time to do pbp measurements 4.624319e-02
 RUNNING COMPLETED
 average cg iters for step= 5.580000e+02
-Time = 3.846355e+00 seconds
+Time = 3.989205e+00 seconds
 total_iters = 27415
 
 
 get_i(0): EOF on input.
-exit: Tue May  6 19:48:29 2025
+exit: Wed May  7 12:17:29 2025
 
