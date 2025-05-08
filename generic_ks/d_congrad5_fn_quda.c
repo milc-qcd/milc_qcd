@@ -130,7 +130,28 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   inv_args.tadpole = u0;
 #endif
 
-  // Setup for deflation (and eigensolve) on GPU
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
+
+  // Inversion without deflation and eigensolve on GPU
+
+  qudaInvert(MILC_PRECISION,
+	     quda_precision, 
+	     mass,
+	     inv_args,
+	     qic->resid,
+	     qic->relresid,
+	     fatlink, 
+	     longlink,
+	     t_src, 
+	     t_dest,
+	     &residual,
+	     &relative_residual, 
+	     &num_iters);
+  
+#else
+  
+  // Inversion with deflation and eigensolve on GPU
+
   int parity = qic->parity;
   int blockSize = param.eigen_param.blockSize;
   static Real previous_mass = -1.0;
@@ -202,6 +223,8 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 	     &relative_residual, 
 	     &num_iters);
 
+#endif
+
   qic->final_rsq = residual*residual;
   qic->final_relrsq = relative_residual*relative_residual;
   qic->final_iters = num_iters;
@@ -223,8 +246,10 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
     fflush(stdout);}
 #endif
 
+#if 0
     node0_printf("Calling check_invert_field2\n"); fflush(stdout);
     check_invert_field2(t_src, t_dest, mass, 2e-5, fn, qic->parity);
+#endif
   
   return num_iters;
 }
@@ -303,10 +328,8 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   if(qic->parity == EVEN){
     inv_args.evenodd = QUDA_EVEN_PARITY;
-    node0_printf("%s: Using QUDA's block solver with EVEN parity %x\n", myname);
   }else if(qic->parity == ODD){
     inv_args.evenodd = QUDA_ODD_PARITY;
-    node0_printf("%s: Using QUDA's block solver with ODD parity %x\n", myname);
   }else{
     printf("%s: Unrecognised parity\n",myname);
     terminate(2);
@@ -342,7 +365,29 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   inv_args.tadpole = u0;
 #endif
 
-  // Setup for deflation (and eigensolve) on GPU
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
+
+  // Inversion without deflation and eigensolve on GPU
+
+  qudaInvertMsrc(MILC_PRECISION,
+     quda_precision,
+     mass,
+     inv_args,
+     qic->resid,
+     qic->relresid,
+     fatlink,
+     longlink,
+     (void**)t_src,
+     (void**)t_dest,
+     &residual,
+     &relative_residual,
+     &num_iters,
+     nsrc);
+
+#else
+
+  // Inversion with deflation (and eigensolve) on GPU
+
   int parity = qic->parity;
   int blockSize = param.eigen_param.blockSize;
   static Real previous_mass = -1.0;
@@ -414,7 +459,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
      &relative_residual,
      &num_iters,
      nsrc);
-
+#endif
 
   // MILC's convention impled from d_congrad5_fn_milc.c is that final_rsq, final_relrsq, and final_iters
   // are based on the values from the last solve, which qudaInvertMsrc respects.
@@ -439,11 +484,13 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
     fflush(stdout);}
 #endif
 
+#if 0
   for(int j = 0; j < nsrc; j++){
     node0_printf("Calling check_invert_field2 for case %d\n", j); fflush(stdout);
     check_invert_field2(t_src[j], t_dest[j], mass, 2e-5, fn, qic->parity);
   }
-
+#endif
+  
   // On the other hand, MILC expects the returned value to be the aggregate number of iterations
   // performed by each solve if it was performed sequentially. This can be approximated by
   // the number of iterations for a single solve times the number of sources.
