@@ -192,7 +192,6 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
       k=1-k; // swap 0 and 1
     } /* end loop over terms in rational function expansion */
 
-
     link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], 
 				 mat_tmp0, dir );
 
@@ -201,6 +200,13 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
       scalar_mult_add_su3_matrix( &(force_accum[dir][i]), 
 				  &(oprod_along_path[1][i]),
 				  coeff, &(force_accum[dir][i]) );
+
+#ifdef ANISOTROPY
+      if( dir==TDOWN || dir==TUP ){
+        scalar_mult_su3_matrix( &(force_accum[dir][i]) , ani_xiq ,  &(force_accum[dir][i]) );
+      }
+#endif
+
     } END_LOOP_OMP
     nflops += 36;
 
@@ -244,6 +250,13 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
       scalar_mult_add_su3_matrix( &(force_accum_naik[dir][i]), 
 				  &(oprod_along_path[1][i]),
 				  coeff, &(force_accum_naik[dir][i]) );
+
+#ifdef ANISOTROPY
+      if( dir==TDOWN || dir==TUP ){
+        scalar_mult_su3_matrix( &(force_accum_naik[dir][i]) , ani_xiq ,  &(force_accum_naik[dir][i]) );
+      }
+#endif
+
     } END_LOOP_OMP
     nflops += 36;
 
@@ -1604,6 +1617,12 @@ fn_fermion_force_multi_hisq_wrapper_mx( info_t *info, Real eps, Real *residues,
   double dtime = -dclock();
   double final_flop = 0;
 
+#ifdef YTTEST
+  su3_matrix ytsu3_1, ytsu3_2, ytsu3_3;
+  complex ytcomp_1, ytcomp_2;
+  double ytdoub_1;
+#endif
+
 
 //  node0_printf("Entering fn_fermion_force_multi_hisq_wrapper_mx()\n");
 //  for(i=0;i<n_naiks;i++)
@@ -1845,6 +1864,39 @@ fn_fermion_force_multi_hisq_wrapper_mx( info_t *info, Real eps, Real *residues,
      uncompress_anti_hermitian( &(s->mom[dir]), &tmat2 );
      add_su3_matrix( &tmat2, &(force_final[dir][i]), &tmat2 );
      make_anti_hermitian( &tmat2, &(s->mom[dir]) );
+
+#ifdef YTTEST
+    if( dir==TUP && s->x==1 && s->y==0 && s->z==0 && s->t==0 ){
+
+        node0_printf("\n\nForce from code at (1,0,0,0), TUP:\n");
+        su3mat_copy( &(force_final[dir][i]), &ytsu3_1 );
+        ytdoub_1 = 1.0 / ( 2.0 * eps ) ;
+        scalar_mult_su3_matrix( &ytsu3_1, ytdoub_1, &ytsu3_1);
+
+/* The following part does the projection onto antihermitian traceless. */
+        su3_adjoint( &ytsu3_1, &ytsu3_2 );
+        sub_su3_matrix( &ytsu3_1, &ytsu3_2, &ytsu3_2 );
+        scalar_mult_su3_matrix( &ytsu3_2, 0.5, &ytsu3_1 );
+        ytcomp_1 = trace_su3( &ytsu3_2 );
+        clear_su3mat( &ytsu3_3 );
+        ytsu3_3.e[0][0].real = 1.0;
+        ytsu3_3.e[1][1].real = 1.0;
+        ytsu3_3.e[2][2].real = 1.0;
+        ytdoub_1 = 1.0/6.0 ;
+        c_scalar_mult_su3mat( &ytsu3_3, &ytcomp_1, &ytsu3_3 );
+        scalar_mult_su3_matrix( &ytsu3_3, ytdoub_1, &ytsu3_3);
+        sub_su3_matrix( &ytsu3_1, &ytsu3_3, &ytsu3_1 );
+/* End of projection part. */
+
+        ytcomp_2.real = 0.0 ;
+        ytcomp_2.imag = 1.0 ;
+        c_scalar_mult_su3mat( &ytsu3_1, &ytcomp_2, &ytsu3_1 );
+
+        dumpmat( &ytsu3_1 );
+    }
+#endif /* YTTEST */
+
+
   } END_LOOP_OMP
 
   nflops += 18;

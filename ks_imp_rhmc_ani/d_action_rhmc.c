@@ -265,7 +265,7 @@ void force_test( Real sigma , su3_vector **multi_x, su3_vector *sumvec ){
       }
 
 
-        node0_printf( "\n\nforce from definition with s = %e :\n", sigma );
+        node0_printf( "\n\nForce from definition at (1,0,0,0), TUP with s = %e :\n", sigma );
         dumpmat( &force );
 
     } /* if( dir==XUP && s->x==0 && s->y==0 && s->z==0 && s->t==0 ) */
