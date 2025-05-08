@@ -11,6 +11,10 @@ extern int gethostname (char *__name, size_t __len); // Should get this from uni
 #include "../include/generic_u1.h"
 #include "../include/io_u1lat.h"
 #endif
+#include "../include/io_scidac.h"
+#ifdef HAVE_QIO
+#include <qio.h>
+#endif
 
 /* Forward declarations */
 
@@ -179,6 +183,14 @@ int readin(int prompt) {
 			  &param.staple_weight);
     IF_OK status += get_i(stdin, prompt, "ape_iter",
 			  &param.ape_iter);
+
+    /* Fat and long link files, if given.  Requires QIO */
+#ifdef HAVE_QIO
+    IF_OK status += ask_starting_fat_link_file(stdin, prompt, &param.startfatflag,
+	param.inputfatfile );
+    IF_OK status += ask_starting_lng_link_file(stdin, prompt, &param.startlngflag,
+	param.inputlngfile );
+#endif
 
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
     IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
@@ -551,6 +563,43 @@ int readin(int prompt) {
   }
   /* For compatibility. The first charge is always zero */
   fn_links = fn_links_charge[0];
+
+#ifdef HAVE_QIO
+
+  /* Load the fat and long links, if requested.  This is supported
+     only for Naik epsilon 0 and charge 0. Requires QIO */
+  /* Up to here the fat and long links have been generated from the
+     "thin-link" gauge field but we just overwrite them.
+
+     TODO: skip generating them if we are going to read them
+  */
+  imp_ferm_links_t *my_fn = get_fm_links(fn_links, 0);
+  su3_matrix *fat = get_fatlinks(my_fn);
+  su3_matrix *lng = get_lnglinks(my_fn);
+  if(param.startfatflag != FRESH && param.startfatflag != CONTINUE){
+
+    if(param.startfatflag == RELOAD_PARALLEL)
+      restore_color_matrix_scidac_to_field(param.inputfatfile, fat, 4,
+					   MILC_PRECISION, QIO_PARALLEL);
+    else
+      restore_color_matrix_scidac_to_field(param.inputfatfile, fat, 4,
+					   MILC_PRECISION, QIO_SERIAL);
+  }
+  if(param.startlngflag != FRESH && param.startlngflag != CONTINUE){
+
+    if(param.startlngflag == RELOAD_PARALLEL)
+      restore_color_matrix_scidac_to_field(param.inputlngfile, lng, 4,
+					   MILC_PRECISION, QIO_PARALLEL);
+    else
+      restore_color_matrix_scidac_to_field(param.inputfatfile, fat, 4,
+					   MILC_PRECISION, QIO_SERIAL);
+  }
+
+#ifdef DBLSTORE_FN
+  load_fn_backlinks(fn_links_t *my_fn){
+#endif
+
+#endif  
 
   /* Construct APE smeared links, but without KS phases */
   rephase( OFF );
