@@ -306,8 +306,8 @@ void restore_eigVec(int Nvecs, Real *eigVal, su3_vector **eigVec, int parity,
 typedef struct {
   int norder ; /* Order of the preconditioning polynomial */
   int which_poly; /* Polynomial selection */
-  double minE ; /* Lower end of eigenvalue exclusion window */
-  double maxE ; /* Upper end of eigenvalue exclusion window */
+  Real minE ; /* Lower end of eigenvalue exclusion window */
+  Real maxE ; /* Upper end of eigenvalue exclusion window */
   double poly_param_1;
   double poly_param_2;
   double eigmax;

@@ -256,7 +256,7 @@ int readin(int prompt) {
     IF_OK if(param.eigen_param.Nvecs > 0){
 
       /* Additional parameters for QUDA deflation */
-#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU))
       /* controls how often redeflation occurs during deflated inversions */
       IF_OK status += get_f(stdin, prompt,"tol_restart", &param.eigen_param.tol_restart);
 #endif
@@ -266,7 +266,7 @@ int readin(int prompt) {
 					    param.ks_eigen_startfile);
 
       /* Additional parameters for QUDA deflation */
-#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU))
       if(param.ks_eigen_startflag == RELOAD_ASCII || 
 		      param.ks_eigen_startflag == RELOAD_SERIAL ||
 		      param.ks_eigen_startflag == RELOAD_PARALLEL ){
@@ -281,7 +281,7 @@ int readin(int prompt) {
       IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
 					  param.ks_eigen_savefile);
 
-#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU))
       if(param.ks_eigen_saveflag == SAVE_PARTFILE_SCIDAC){
         param.eigen_param.partfile = 1;
       } else {
