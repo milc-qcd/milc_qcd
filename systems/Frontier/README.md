@@ -31,6 +31,14 @@ There is a serious bug in the ROCm 6+ tool chains that causes incorrect QUDA res
 ```
 module load PrgEnv-amd amd/5.3.0 rocm/5.3.0
 ```
+##### QUDA Performance Regression with Large Kernel Argument:
+
+We have seen a significant QUDA performance regression in certain cases (e.g. eigensolve) related to large kernel arguments. See [QUDA Issue 1568](https://github.com/lattice/quda/issues/1568) and [QUDA PR 1569](https://github.com/lattice/quda/pull/1569) for details.
+
+The performance regression can be avoided by compiling QUDA with:
+```
+-DQUDA_MAX_KERNEL_ARG_SIZE=0
+```
 
 ## Building and Running the Sample Code
 
