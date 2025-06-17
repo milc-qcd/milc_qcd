@@ -140,7 +140,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   eig_args.struct_size = 1192; // Could also use sizeof(QudaEigensolverArgs_t) to automagically update, but using a static number will catch the case when the struct is updated by QUDA but MILC is not updated
   eig_args.block_size = blockSize;
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
-  eig_args.n_ev_deflate = ( parity == EVEN && qic->deflate ) ? param.eigen_param.Nvecs : 0; // Only deflate even solves for now
+  eig_args.n_ev_deflate = ( qic->deflate ) ? param.eigen_param.Nvecs : 0;
   eig_args.n_ev = eig_args.n_conv;
   eig_args.n_kr = (param.eigen_param.Nkr < eig_args.n_ev ) ? 2*eig_args.n_ev : param.eigen_param.Nkr;
   eig_args.tol = param.eigen_param.tol;
@@ -150,12 +150,12 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   eig_args.a_max = param.eigen_param.poly.maxE;
   strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
   strcpy( eig_args.vec_outfile, param.ks_eigen_savefile );
-  eig_args.vec_in_parity = QUDA_EVEN_PARITY; // TODO: Update when we add support for odd parity eigenvector files
+//  eig_args.vec_in_parity = QUDA_EVEN_PARITY; // TODO: Update when we add support for odd parity eigenvector files
   eig_args.preserve_evals = ( first_solve || fabs(mass - previous_mass) < 1e-6 ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.batched_rotate = param.eigen_param.batchedRotate;
   eig_args.save_prec = QUDA_SINGLE_PRECISION; // add to input parameters?
   eig_args.partfile = param.eigen_param.partfile ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  eig_args.io_parity_inflate = QUDA_BOOLEAN_FALSE;
+  eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
   eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.tol_restart = param.eigen_param.tol_restart;
@@ -352,7 +352,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   eig_args.struct_size = 1192; // Could also use sizeof(QudaEigensolverArgs_t) to automagically update, but using a static number will catch the case when the struct is updated by QUDA but MILC is not updated
   eig_args.block_size = blockSize;
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
-  eig_args.n_ev_deflate = ( parity == EVEN && qic->deflate ) ? param.eigen_param.Nvecs : 0; // Only deflate even solves for now
+  eig_args.n_ev_deflate = ( qic->deflate ) ? param.eigen_param.Nvecs : 0;
   eig_args.n_ev = eig_args.n_conv;
   eig_args.n_kr = (param.eigen_param.Nkr < eig_args.n_ev ) ? 2*eig_args.n_ev : param.eigen_param.Nkr;
   eig_args.tol = param.eigen_param.tol;
@@ -362,12 +362,12 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   eig_args.a_max = param.eigen_param.poly.maxE;
   strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
   strcpy( eig_args.vec_outfile, param.ks_eigen_savefile );
-  eig_args.vec_in_parity = QUDA_EVEN_PARITY; // TODO: Update when we add support for odd parity eigenvector files
+//  eig_args.vec_in_parity = QUDA_EVEN_PARITY; // TODO: Update when we add support for odd parity eigenvector files
   eig_args.preserve_evals = ( first_solve || fabs(mass - previous_mass) < 1e-6 ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.batched_rotate = param.eigen_param.batchedRotate;
   eig_args.save_prec = QUDA_SINGLE_PRECISION; // add to input parameters?
   eig_args.partfile = param.eigen_param.partfile ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  eig_args.io_parity_inflate = QUDA_BOOLEAN_FALSE;
+  eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
   eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.tol_restart = param.eigen_param.tol_restart;
