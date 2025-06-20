@@ -155,7 +155,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   eig_args.batched_rotate = param.eigen_param.batchedRotate;
   eig_args.save_prec = QUDA_SINGLE_PRECISION; // add to input parameters?
   eig_args.partfile = param.eigen_param.partfile ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
+  eig_args.io_parity_inflate = QUDA_BOOLEAN_FALSE;
   eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.tol_restart = param.eigen_param.tol_restart;
@@ -367,7 +367,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   eig_args.batched_rotate = param.eigen_param.batchedRotate;
   eig_args.save_prec = QUDA_SINGLE_PRECISION; // add to input parameters?
   eig_args.partfile = param.eigen_param.partfile ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
+  eig_args.io_parity_inflate = QUDA_BOOLEAN_FALSE;
   eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.tol_restart = param.eigen_param.tol_restart;
