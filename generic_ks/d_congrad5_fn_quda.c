@@ -133,8 +133,6 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   // Setup for deflation (and eigensolve) on GPU
   int parity = qic->parity;
   int blockSize = param.eigen_param.blockSize;
-  static Real previous_mass = -1.0;
-  static bool first_solve=true;
 
   QudaEigensolverArgs_t eig_args;
   eig_args.struct_size = 1192; // Could also use sizeof(QudaEigensolverArgs_t) to automagically update, but using a static number will catch the case when the struct is updated by QUDA but MILC is not updated
@@ -151,7 +149,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
   strcpy( eig_args.vec_outfile, param.ks_eigen_savefile );
 //  eig_args.vec_in_parity = QUDA_EVEN_PARITY; // TODO: Update when we add support for odd parity eigenvector files
-  eig_args.preserve_evals = ( first_solve || fabs(mass - previous_mass) < 1e-6 ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
+  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE; // Default to preserving the eigenvalues
   eig_args.batched_rotate = param.eigen_param.batchedRotate;
   eig_args.save_prec = QUDA_SINGLE_PRECISION; // add to input parameters?
   eig_args.partfile = param.eigen_param.partfile ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
@@ -183,9 +181,6 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
     printf("%s: Unrecognized eigensolver precision\n",myname);
     terminate(2);
   }
-
-  previous_mass = mass;
-  first_solve = false;
 
   qudaInvertDeflatable(MILC_PRECISION,
 	     quda_precision, 
@@ -345,8 +340,6 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   // Setup for deflation (and eigensolve) on GPU
   int parity = qic->parity;
   int blockSize = param.eigen_param.blockSize;
-  static Real previous_mass = -1.0;
-  static bool first_solve=true;
 
   QudaEigensolverArgs_t eig_args;
   eig_args.struct_size = 1192; // Could also use sizeof(QudaEigensolverArgs_t) to automagically update, but using a static number will catch the case when the struct is updated by QUDA but MILC is not updated
@@ -363,7 +356,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
   strcpy( eig_args.vec_outfile, param.ks_eigen_savefile );
 //  eig_args.vec_in_parity = QUDA_EVEN_PARITY; // TODO: Update when we add support for odd parity eigenvector files
-  eig_args.preserve_evals = ( first_solve || fabs(mass - previous_mass) < 1e-6 ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
+  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE; // Default to preserving the eigenvalues
   eig_args.batched_rotate = param.eigen_param.batchedRotate;
   eig_args.save_prec = QUDA_SINGLE_PRECISION; // add to input parameters?
   eig_args.partfile = param.eigen_param.partfile ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
@@ -395,9 +388,6 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
     printf("%s: Unrecognized eigensolver precision\n",myname);
     terminate(2);
   }
-
-  previous_mass = mass;
-  first_solve = false;
 
   qudaInvertMsrcDeflatable(MILC_PRECISION,
      quda_precision,
