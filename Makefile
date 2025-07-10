@@ -20,7 +20,7 @@ ARCH ?= # epyc hsw skx clx icx spr knl pow8 pow9
 #----------------------------------------------------------------------
 # 2. Compiler family
 
-COMPILER ?= gnu # intel, ibm, cray-intel, rocm
+COMPILER ?= gnu # intel, ibm, cray-intel, rocm, nvhpc
 OFFLOAD ?= # cuda hip sycl openmp
 
 #----------------------------------------------------------------------
@@ -87,6 +87,16 @@ else ifeq ($(strip ${COMPILER}),amdclang)
   else
     MY_CC ?= amdclang
     MY_CXX ?= amdclang++
+  endif
+
+else ifeq ($(strip ${COMPILER}),nvhpc)
+
+  ifeq ($(strip ${MPP}),true)
+    MY_CC ?= mpicc
+    MY_CXX ?= mpicxx
+  else
+    MY_CC ?= nvc
+    MY_CXX ?= nvc++
   endif
 
 endif
@@ -249,6 +259,26 @@ endif
 #-------------- Portland Group ----------------------------
 #OCFLAGS = -tp p6 -Munroll=c:4,n:4
 #OCFLAGS= -mpentiumpro -march=pentiumpro -funroll-all-loops -malign-double -D_REENTRANT  # Pentium pro
+
+#-------------- NVHPC ----------------------------
+ifeq ($(strip ${COMPILER}),nvhpc)
+
+  OCFLAGS += -std=c99
+  OCXXFLAGS += --c++17
+
+  ARCH_FLAG = -tp host
+
+  OCFLAGS += ${ARCH_FLAG}
+  OCXXFLAGS += ${ARCH_FLAG}
+  LDFLAGS += ${ARCH_FLAG}
+
+  ifeq ($(strip ${OMP}),true)
+    OCFLAGS += -mp
+    OCXXFLAGS += -mp
+    LDFLAGS += -mp
+  endif
+
+endif
 
 #-------------- AMD Clang ----------------------------
 ifeq ($(strip ${COMPILER}),amdclang)
@@ -498,13 +528,18 @@ ifeq ($(strip ${WANTQUDA}),true)
   QUDA_HEADERS = ${QUDA_HOME}/include
 
   ifeq ($(strip ${OFFLOAD}),cuda)
-    CUDA_HOME ?= /usr/local/cuda
-    CUDA_MATH ?= /usr/local/cuda
-    CUDA_COMP ?= /usr/local/cuda
-    CUDA_NVML ?= /usr/local/cuda
-    INCQUDA += -I${CUDA_HOME}/include
-    PACKAGE_HEADERS += ${CUDA_HOME}/include
-    LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -L${CUDA_COMP} -lcuda  -L${CUDA_MATH}/lib -lcublas -lcufft -ldl -L${CUDA_NVML} -lnvidia-ml
+    ifneq ($(strip ${COMPILER}),nvhpc)
+      CUDA_HOME ?= /usr/local/cuda
+      CUDA_MATH ?= /usr/local/cuda
+      CUDA_COMP ?= /usr/local/cuda
+      CUDA_NVML ?= /usr/local/cuda
+      INCQUDA += -I${CUDA_HOME}/include
+      PACKAGE_HEADERS += ${CUDA_HOME}/include
+      LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -L${CUDA_COMP} -lcuda  -L${CUDA_MATH}/lib -lcublas -lcufft -ldl -L${CUDA_NVML} -lnvidia-ml
+    else
+      INCQUDA += -cuda
+      LIBQUDA += -cuda -cudalib=cublas,cufft
+    endif
   endif
 
 # Verbosity choices:
