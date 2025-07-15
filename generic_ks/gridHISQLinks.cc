@@ -122,7 +122,8 @@ hisqForce (GRID_info_t *info,
   // Make vecdt
   std::vector<Real> vecdt(nterms);
   for(int i = 0; i < nterms; i++)
-    vecdt[i] = residues[i];
+    // Need a factor of 2 to match the MILC-code force.
+    vecdt[i] = 2.*residues[i];
   
   // Make vecx
   std::vector<FermionField> vecx(nterms,CGrid);
