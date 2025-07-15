@@ -84,7 +84,7 @@ initial_set()
     printf("Fermion-force checking\n");
 #elif defined(LINK_FATTENING)
     printf("Creating FN link files\n");
-#elif defined(CHECK_LINK_FATTENING)
+#elif defined(CHECK_FATTENING)
     printf("Checking FN link fattening files\n");
 #elif defined(REUNIT)
     printf("Reunitarization checking\n");
@@ -280,7 +280,7 @@ readin(int prompt)
 	status++;
       }
 #endif
-    }
+    } /* param.nass */
 #endif // CHECK_INVERT or FERMION_FORCE
 #if defined(FERMION_FORCE) || defined(CHECK_FATTENING)
     /* Optional answer for fat links or fermion force */
