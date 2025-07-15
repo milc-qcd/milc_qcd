@@ -134,7 +134,7 @@ void GRID_F3_reunit_deriv(GRID_info_t *info, su3_matrix *V, su3_matrix *dW,
 void GRID_F3_hisq_force(GRID_info_t *info,
 			void *fl,
 			float residues[],
-			su3_vector *multi_x,
+			su3_vector *multi_x[],
 			int n_orders_naik[],
 			su3_matrix *deriv,
 			GRID_4Dgrid *grid_full);
