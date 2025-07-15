@@ -14,7 +14,7 @@ BOMB THE COMPILE
 
 
 void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
-			  char *ansfile, int ansflag, int n_naik, ks_param *ksp)
+			  char *ansfile, int ansflag, int n_mass, ks_param *ksp)
 {
   Real diff, maxdiff, norm, maxnorm, reldiff;
   int i, dir;
@@ -30,12 +30,12 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
   Real tol = 1e-7;
 #endif
   int ff_prec = MILC_PRECISION;  /* Just use prevailing precision for now */
-  /* Supports only asqtad at the moment */
-  Real *residues = (Real *)malloc(n_naik*sizeof(Real));;
-  if(residues == NULL){
-    node0_printf("No room for residues\n");
-    terminate(1);
-  }
+//  /* Supports only asqtad at the moment */
+//  Real *residues = (Real *)malloc(n_naik*sizeof(Real));;
+//  if(residues == NULL){
+//    node0_printf("No room for residues\n");
+//    terminate(1);
+//  }
 
   su3_matrix *ansmom = (su3_matrix *)malloc(4*sites_on_node*sizeof(su3_matrix));
   if(ansmom == NULL){
@@ -45,8 +45,8 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 
   /* Get test rational function parameters from file */
   params_rhmc *rf;
-  char filename[] = "rat.2flavor";
-  int n_pseudo = 1;
+  char filename[] = "rat.4flavor";
+  int n_pseudo = 6;
   rf = load_rhmc_params(filename, n_pseudo);
   if(rf == NULL)terminate(1);
 			 
@@ -57,7 +57,7 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
     if(rf[i].GR.order > max_rat_order)max_rat_order = rf[i].GR.order;
     if(rf[i].FA.order > max_rat_order)max_rat_order = rf[i].FA.order;
   }
-  if(mynode()==0)printf("Maximum rational func order is %d\n",max_rat_order);
+  node0_printf("Maximum rational func order is %d\n",max_rat_order);
   fflush(stdout);
 
   /* Determine the number of different Naik masses
@@ -89,12 +89,53 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
     n_order_naik_total += tmporder;
     n_naiks++;
   }
+#if FERM_ACTION == HISQ
+  if( 0 != eps_naik[0] ) {
+    node0_printf("IN THE HISQ ACTION FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");
+    fflush(stdout);
+    terminate(1);
+  }
+#endif
+  node0_printf("Naik term correction structure of multi_x:\n");
+  node0_printf("n_naiks %d\n",n_naiks);
+  for( i=0; i<n_naiks; i++ ) {
+    node0_printf("n_pseudo_naik[%d]=%d\n", i, n_pseudo_naik[i]);
+    node0_printf("n_orders_naik[%d]=%d\n", i, n_orders_naik[i]);
+#if FERM_ACTION == HISQ
+    node0_printf("eps_naik[%d]=%f\n", i, eps_naik[i]);
+#endif
+  }
+  fflush(stdout);
+
+  node0_printf("n_order_naik_total %d\n",n_order_naik_total);
+#if FERM_ACTION == HISQ
+  if( n_naiks+1 > MAX_NAIK ) {
+    node0_printf("MAX_NAIK=%d < n_naiks+1=%d\n", MAX_NAIK, n_naiks+1 );
+    node0_printf("Increase MAX_NAIK\n");
+    fflush(stdout);
+    terminate(1);
+  }
+#else /* non HISQ */
+  if( n_naiks>1 ) {
+    node0_printf("FOR ACTIONS OTHER THAN HISQ EPSILON CORRECTION IS NOT USED.\n");
+    node0_printf("ONLY ONE SET OF X LINKS IS USED.\n");
+    node0_printf("SET ALL naik_mass TO 0 IN RATIONAL FUNCTION FILE.\n");
+    fflush(stdout);
+    terminate(1);
+  }
+#endif /* HISQ */
 
   su3_vector **phi = (su3_vector **)malloc(MAX_N_PSEUDO*sizeof(su3_vector *));
   for(i = 0; i < MAX_N_PSEUDO; i++)
     phi[i] = create_v_field();
 
   int n_multi_x = max_rat_order;
+  n_multi_x = max_rat_order;
+  int j_order;
+  for(j_order = 0, i = 0; i < n_pseudo; i++)
+    j_order += rf[i].MD.order;
+  if(j_order > n_multi_x) n_multi_x = j_order; // Fermion force needs all multi_x at once in this algorithm
+  
   su3_vector **multi_x = (su3_vector **)malloc(n_multi_x*sizeof(su3_vector *));
   for(i=0;i<n_multi_x;i++)
     multi_x[i] = create_v_field();
@@ -106,14 +147,14 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
   /* Make a random source in phi if we don't reload it */
 
   if(phiflag == RELOAD_SERIAL){
-    for(int inaik = 0; inaik < n_naik; inaik++){
+    for(int inaik = 0; inaik < n_naiks; inaik++){
       restore_ks_vector_scidac_to_field(phifile[inaik], QIO_SERIAL, phi[inaik], 1);
       fflush(stdout);
     }
   }  else {
     
     int iphi = 0;
-    for(int inaik = 0; inaik < n_naik; inaik++){
+    for(int inaik = 0; inaik < n_naiks; inaik++){
       
       /* For each pseudofermion belonging to this Naik epsilon
 	 Generate g_rand random. Compute  phi =  (GR rat func) * g_rand
@@ -139,10 +180,10 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
     
     tmporder = 0;
     iphi = 0;
-    n_naik = fermion_links_get_n_naiks(fn_links);
+    n_naiks = fermion_links_get_n_naiks(fn_links);
     
 
-    for( int inaik=0; inaik < n_naik; inaik++ ) {
+    for( int inaik=0; inaik < n_naiks; inaik++ ) {
       fn  = get_fm_links(fn_links, inaik);
       for( int jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
 	
@@ -219,7 +260,7 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 
   /* Clean up */
 
-  free(residues);
+  //  free(residues);
 
   for(i=0;i<n_multi_x;i++)
     destroy_v_field(multi_x[i]);
@@ -265,7 +306,7 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 
   /* Save source and answer if requested */
   if(phiflag == SAVE_SERIAL || phiflag == SAVE_PARTFILE_SCIDAC)
-    for(i = 0; i < n_naik; i++){
+    for(i = 0; i < n_naiks; i++){
 #ifdef HAVE_QIO
       if(phiflag == SAVE_SERIAL)
 	save_ks_vector_scidac_from_field(phifile[i], "check fermion force",
