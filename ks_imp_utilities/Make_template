@@ -151,18 +151,19 @@ make_links_hisq::
 	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
 	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8" \
 	"GAUGE = symanzik_1loop_action.h" \
-	"QUARK = hisq/hisq_u3_action.h" \
-	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} check_link_fattening.o"
+	"QUARK = hisq/hisq_u3_test_action.h" \
+	"EXTRA_OBJECTS=  ${HISQ_OBJECTS}"
 
 check_link_fattening::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DHAVE_KS -DCHECK_FATTENING \
 	-DHISQ_REUNIT_ALLOW_SVD \
 	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
-	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8" \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = hisq/hisq_u3_test_action.h" \
-	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE}"
+	"EXTRA_OBJECTS=  ${HISQ_OBJECTS}  check_link_fattening.o"
 
 check_fermion_force_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -183,7 +184,7 @@ check_fermion_force_hisq::
 	-DHISQ_FORCE_FILTER=5.0e-5 \
 	-DHISQ_FORCE_FILTER_COUNTER" \
 	"GAUGE = symanzik_1loop_action.h" \
-	"QUARK = hisq/hisq_u3_test_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} \
 	check_fermion_force.o load_rhmc_params.o grsource_rhmc.o \
 	ks_ratinv.o"
