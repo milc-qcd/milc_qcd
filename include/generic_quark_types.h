@@ -82,7 +82,8 @@ enum source_type {
   VECTOR_FIELD_FILE, 
   VECTOR_FIELD_FM_FILE, 
   VECTOR_FIELD_STORE,
-  VECTOR_PROPAGATOR_FILE
+  VECTOR_PROPAGATOR_FILE,
+  FERMION_FLOW
 } ;
 
 enum subset_type {
@@ -300,6 +301,9 @@ struct qss_op_struct {
   int t0;             /* For time slice projection */
   quark_source qs_save; /* for SAVE_QUARK_SRC */
   struct qss_op_struct *op;   /* Next operation in the chain */
+  char flow_type[MAXDESCRP]; /* wilson or symanzik for fermion flow */
+  Real step_size; /* stepsize for fermion flow */
+  Real stop_time; /* stoptime for fermion flow */
 };
 
 #endif /* _GENERIC_QUARK_TYPES_H */
