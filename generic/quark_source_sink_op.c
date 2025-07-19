@@ -1740,6 +1740,8 @@ static void hop_vec(su3_vector *src, ks_param *ksp, int dhop, int mu)
 #ifdef HAVE_QUDA
 void apply_fermion_flow_v(su3_vector *src, quark_source_sink_op *qss_op){
 
+  double dtimec = -dclock();
+
   /* Initialize QUDA */
   initialize_quda();
 
@@ -1841,6 +1843,12 @@ int pad_size = 0;
   /* Clean up */
   destroy_G_quda(links);
   free(obsParams);
+
+  dtimec += dclock();
+  if(this_node==0) {
+    printf("Time to flow = %e\n", dtimec);
+    fflush(stdout);
+  }
 }
 #else
 void apply_fermion_flow_v(su3_vector *src, quark_source_sink_op *qss_op){
