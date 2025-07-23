@@ -303,7 +303,9 @@ struct qss_op_struct {
   struct qss_op_struct *op;   /* Next operation in the chain */
   char flow_type[MAXDESCRP]; /* wilson or symanzik for fermion flow */
   Real step_size; /* stepsize for fermion flow */
-  Real stop_time; /* stoptime for fermion flow */
+  Real start_time; /* start time t0 for fermion flow */
+  int flow_steps; /* number of fermion flow steps to apply */
+  int restart; /* whether to restart the flow, 0=false */
 };
 
 #endif /* _GENERIC_QUARK_TYPES_H */

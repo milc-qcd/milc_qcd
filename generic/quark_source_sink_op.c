@@ -1738,60 +1738,70 @@ static void hop_vec(su3_vector *src, ks_param *ksp, int dhop, int mu)
 
 
 #ifdef HAVE_QUDA
-void apply_fermion_flow_v(su3_vector *src, quark_source_sink_op *qss_op){
+void apply_fermion_flow_v(su3_vector **srcs, quark_source_sink_op *qss_op, int nsrcs){
 
   double dtimec = -dclock();
 
   /* Initialize QUDA */
   initialize_quda();
 
-  /* Get gauge field */
-  su3_matrix *links = create_G_from_site_quda();
+  /* Load gauge field if not restarting from existing device-resident flowed field */
+  if(qss_op->restart) {
+    node0_printf("apply_fermion_flow_v: Using existing flowed gauge field\n");
+  } else {
+    node0_printf("apply_fermion_flow_v: Loading gauge field for fermion flow\n");
 
-  /* Setup QUDA gauge parameters */
-  QudaGaugeParam qgp = newQudaGaugeParam();
-  const int * nsquares = get_logical_dimensions();
-  qgp.struct_size = sizeof(QudaGaugeParam);
-  qgp.type = QUDA_SU3_LINKS;
-  qgp.X[0] = nx / nsquares[0];
-  qgp.X[1] = ny / nsquares[1];
-  qgp.X[2] = nz / nsquares[2];
-  qgp.X[3] = nt / nsquares[3];
-  qgp.cpu_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-  qgp.cuda_prec = qgp.cpu_prec;
-  qgp.cuda_prec_sloppy = qgp.cuda_prec;
-  qgp.cuda_prec_precondition = qgp.cuda_prec;
-  qgp.cuda_prec_eigensolver = qgp.cuda_prec;
-  qgp.cuda_prec_refinement_sloppy = qgp.cuda_prec;
-  qgp.reconstruct = QUDA_RECONSTRUCT_NO;
-  qgp.reconstruct_sloppy = QUDA_RECONSTRUCT_NO;
-  qgp.reconstruct_precondition = QUDA_RECONSTRUCT_NO;
-  qgp.reconstruct_eigensolver = QUDA_RECONSTRUCT_NO;
-  qgp.reconstruct_refinement_sloppy = QUDA_RECONSTRUCT_NO;
-  qgp.gauge_order = QUDA_MILC_GAUGE_ORDER;
-  qgp.anisotropy = 1.0;
-  qgp.t_boundary = QUDA_PERIODIC_T;
-  qgp.gauge_fix = QUDA_GAUGE_FIXED_NO;
-  qgp.staggered_phase_type = QUDA_STAGGERED_PHASE_NO; // ???i
-int pad_size = 0;
-  int x_face_size = qgp.X[1] * qgp.X[2] * qgp.X[3] / 2;
-  int y_face_size = qgp.X[0] * qgp.X[2] * qgp.X[3] / 2;
-  int z_face_size = qgp.X[0] * qgp.X[1] * qgp.X[3] / 2;
-  int t_face_size = qgp.X[0] * qgp.X[1] * qgp.X[2] / 2;
+    /* Get gauge field */
+    su3_matrix *links = create_G_from_site_quda();
+
+    /* Setup QUDA gauge parameters */
+    QudaGaugeParam qgp = newQudaGaugeParam();
+    const int * nsquares = get_logical_dimensions();
+    qgp.struct_size = sizeof(QudaGaugeParam);
+    qgp.type = QUDA_SU3_LINKS;
+    qgp.X[0] = nx / nsquares[0];
+    qgp.X[1] = ny / nsquares[1];
+    qgp.X[2] = nz / nsquares[2];
+    qgp.X[3] = nt / nsquares[3];
+    qgp.cpu_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+    qgp.cuda_prec = qgp.cpu_prec;
+    qgp.cuda_prec_sloppy = qgp.cuda_prec;
+    qgp.cuda_prec_precondition = qgp.cuda_prec;
+    qgp.cuda_prec_eigensolver = qgp.cuda_prec;
+    qgp.cuda_prec_refinement_sloppy = qgp.cuda_prec;
+    qgp.reconstruct = QUDA_RECONSTRUCT_NO;
+    qgp.reconstruct_sloppy = QUDA_RECONSTRUCT_NO;
+    qgp.reconstruct_precondition = QUDA_RECONSTRUCT_NO;
+    qgp.reconstruct_eigensolver = QUDA_RECONSTRUCT_NO;
+    qgp.reconstruct_refinement_sloppy = QUDA_RECONSTRUCT_NO;
+    qgp.gauge_order = QUDA_MILC_GAUGE_ORDER;
+    qgp.anisotropy = 1.0;
+    qgp.t_boundary = QUDA_PERIODIC_T;
+    qgp.gauge_fix = QUDA_GAUGE_FIXED_NO;
+    qgp.staggered_phase_type = QUDA_STAGGERED_PHASE_NO; // ???i
+    int pad_size = 0;
+    int x_face_size = qgp.X[1] * qgp.X[2] * qgp.X[3] / 2;
+    int y_face_size = qgp.X[0] * qgp.X[2] * qgp.X[3] / 2;
+    int z_face_size = qgp.X[0] * qgp.X[1] * qgp.X[3] / 2;
+    int t_face_size = qgp.X[0] * qgp.X[1] * qgp.X[2] / 2;
 #define MAX(a,b) ( (a)>(b) ? (a) : (b) )
-  pad_size = MAX(x_face_size, y_face_size);
-  pad_size = MAX(pad_size, z_face_size);
-  pad_size = MAX(pad_size, t_face_size);
-  qgp.ga_pad = pad_size;
-  qgp.mom_ga_pad = 0;
+    pad_size = MAX(x_face_size, y_face_size);
+    pad_size = MAX(pad_size, z_face_size);
+    pad_size = MAX(pad_size, t_face_size);
+    qgp.ga_pad = pad_size;
+    qgp.mom_ga_pad = 0;
 
-  /* Load gauge field in QUDA */
-  loadGaugeQuda( (void*) links, &qgp );
+    /* Load gauge field in QUDA */
+    loadGaugeQuda( (void*) links, &qgp );
+
+    /* Clean up */
+    destroy_G_quda(links);
+  }
 
   /* Setup QUDA smearing parameters */
   QudaGaugeSmearParam smearParams = newQudaGaugeSmearParam();
   smearParams.struct_size = sizeof(QudaGaugeSmearParam);
-  smearParams.n_steps = qss_op->stop_time / qss_op->step_size;
+  smearParams.n_steps = qss_op->flow_steps;
   smearParams.epsilon = qss_op->step_size;
   smearParams.meas_interval = 1;
   if( strcmp("wilson", qss_op->flow_type) == 0 ) {
@@ -1805,8 +1815,8 @@ int pad_size = 0;
            qss_op->flow_type);
     terminate(1);
   }
-  smearParams.restart = QUDA_BOOLEAN_FALSE;
-  smearParams.t0 = 0;
+  smearParams.restart = (qss_op->restart) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
+  smearParams.t0 = qss_op->start_time;
   smearParams.rk_order = 3;
 
   /* Setup QUDA observable parameters */
@@ -1835,13 +1845,9 @@ int pad_size = 0;
   invParams.cuda_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
 
   /* Perform fermion flow */
-  int n_srcs = 1;
-  void *src_array[n_srcs];
-  src_array[0] = src;
-  performGFlowQuda(src_array, src_array, &invParams, &smearParams, obsParams, n_srcs);
+  performGFlowQuda(srcs, srcs, &invParams, &smearParams, obsParams, nsrcs);
 
   /* Clean up */
-  destroy_G_quda(links);
   free(obsParams);
 
   dtimec += dclock();
@@ -1851,7 +1857,7 @@ int pad_size = 0;
   }
 }
 #else
-void apply_fermion_flow_v(su3_vector *src, quark_source_sink_op *qss_op){
+void apply_fermion_flow_v(su3_vector **srcs, quark_source_sink_op *qss_op, int nsrcs){
   node0_printf("ERROR: Fermion flow requires QUDA!\n");
   terminate(1);
 }
@@ -1930,9 +1936,6 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
 
   else if(op_type == HOPPING)
     hop_vec(src, &qss_op->ksp, qss_op->dhop, qss_op->dir1);
-
-  else if(op_type == FERMION_FLOW)
-    apply_fermion_flow_v(src, qss_op);
 
 #endif
 
@@ -2040,7 +2043,6 @@ void wv_field_op(wilson_vector *src, quark_source_sink_op *qss_op,
 void ksp_sink_op(quark_source_sink_op *qss_op, ks_prop_field *ksp )
 {
   int color;
-  su3_vector *v = create_v_field();
   char *create_ks_XML(void);
   
   /* Initilize source files if saving as source */
@@ -2053,20 +2055,36 @@ void ksp_sink_op(quark_source_sink_op *qss_op, ks_prop_field *ksp )
   }
 
   /* Actual work here */
-  for(color = 0; color < ksp->nc; color++){
-    if (qss_op->type == SAVE_VECTOR_SRC) {
-      /* Important to keep track of internal color counter */
-      qss_op->qs_save.color = color; 
+  if (qss_op->type  == FERMION_FLOW) {
+    // If FERMION_FLOW then do all colors in one batch
+    su3_vector **v = (su3_vector **)malloc(ksp->nc*sizeof(su3_vector *));
+    for(color = 0; color < ksp->nc; color++) {
+      v[color] = create_v_field();
+      copy_v_from_ksp(v[color], ksp, color);
     }
-      copy_v_from_ksp(v, ksp, color);
-      v_field_op(v, qss_op, FULL, ALL_T_SLICES);
-      insert_ksp_from_v(ksp, v, color);
-  }
+    apply_fermion_flow_v(v, qss_op, ksp->nc);
+    for(color = 0; color < ksp->nc; color++) {
+      insert_ksp_from_v(ksp, v[color], color);
+      destroy_v_field(v[color]);
+    }
+    free(v);
+  } else { // if not FERMION_FLOW
+    su3_vector *v = create_v_field();
+    for(color = 0; color < ksp->nc; color++){
+      if (qss_op->type == SAVE_VECTOR_SRC) {
+        /* Important to keep track of internal color counter */
+        qss_op->qs_save.color = color; 
+      }
+        copy_v_from_ksp(v, ksp, color);
+        v_field_op(v, qss_op, FULL, ALL_T_SLICES);
+        insert_ksp_from_v(ksp, v, color);
+    }
   
-  if (qss_op->type  == SAVE_VECTOR_SRC) {
-    if(qss_op->qs_save.saveflag != FORGET) w_source_close(&qss_op->qs_save);
+    if (qss_op->type  == SAVE_VECTOR_SRC) {
+      if(qss_op->qs_save.saveflag != FORGET) w_source_close(&qss_op->qs_save);
+    }
+    destroy_v_field(v);
   }
-  destroy_v_field(v);
 } /* ksp_sink_op */
 
 #endif
@@ -2640,7 +2658,9 @@ static int get_field_op(int *status_p, FILE *fp,
   else if( op_type == FERMION_FLOW){
     IF_OK status += get_s(fp, prompt, "flow_type", &qss_op->flow_type);
     IF_OK status += get_f(stdin, prompt,"step_size", &qss_op->step_size );
-    IF_OK status += get_f(stdin, prompt,"stop_time", &qss_op->stop_time );
+    IF_OK status += get_i(stdin, prompt,"restart", &qss_op->restart );
+    IF_OK status += get_f(stdin, prompt,"start_time", &qss_op->start_time );
+    IF_OK status += get_i(stdin, prompt,"flow_steps", &qss_op->flow_steps );
   }
   else {
     return 0;
