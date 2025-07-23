@@ -616,7 +616,7 @@ spectrum_ks_gb_baryon_init(int triplet){
    is returned in in reverse order, as is the number of generations.
    The ancestral propagator is the return value */
 
-#define MAX_HISTORY 16
+#define MAX_HISTORY 100
 
 int get_ancestors(int h[], int *n, int iq){
   int i;
