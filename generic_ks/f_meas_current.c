@@ -1357,6 +1357,88 @@ block_currents_deltam( int n_masses, Real **j_mu[], Real masses[],
 
 /*********************************************************************/
 
+#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+#include <quda_milc_interface.h>
+
+static void
+exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
+
+  node0_printf("Computing exact current with QUDA\n");
+
+  /* Initialize QUDA parameters */
+  initialize_quda();
+  
+  QudaInvertArgs_t inv_args;
+  inv_args.max_iter = 1;
+  inv_args.naik_epsilon = 0.0;
+  inv_args.tadpole = 1.0;
+  inv_args.mixed_precision = 0;
+
+  QudaEigensolverArgs_t eig_args;
+  eig_args.struct_size = 1192;
+  eig_args.block_size = 8;
+  eig_args.n_conv = param.eigen_param.Nvecs;
+  eig_args.n_ev_deflate = param.eigen_param.Nvecs;
+  eig_args.n_ev = param.eigen_param.Nvecs;
+  eig_args.n_kr = 2*param.eigen_param.Nvecs;
+  eig_args.tol = 1e-12;
+  eig_args.max_restarts = 20;
+  eig_args.poly_deg = 100;
+  eig_args.a_min = 0.01;
+  eig_args.a_max = 0.0;
+  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE;
+  eig_args.batched_rotate = 20;
+  eig_args.save_prec = QUDA_SINGLE_PRECISION;
+  eig_args.partfile = QUDA_BOOLEAN_TRUE;
+  eig_args.io_parity_inflate = QUDA_BOOLEAN_FALSE;
+  eig_args.use_norm_op = QUDA_BOOLEAN_FALSE;
+  eig_args.use_pc = QUDA_BOOLEAN_TRUE;
+  eig_args.tol_restart = 1e-2;
+  eig_args.eig_type = QUDA_EIG_BLK_TR_LANCZOS;
+  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG;
+  eig_args.qr_tol = eig_args.tol;
+  eig_args.require_convergence = QUDA_BOOLEAN_TRUE;
+  eig_args.check_interval = 10;
+  eig_args.use_dagger = QUDA_BOOLEAN_FALSE;
+  eig_args.compute_gamma5 = QUDA_BOOLEAN_FALSE;
+  eig_args.compute_svd = QUDA_BOOLEAN_FALSE;
+  eig_args.use_eigen_qr = QUDA_BOOLEAN_TRUE;
+  eig_args.use_poly_acc = QUDA_BOOLEAN_TRUE;
+  eig_args.arpack_check = QUDA_BOOLEAN_FALSE;
+  eig_args.compute_evals_batch_size = 16;
+  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
+  eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
+  strcpy( eig_args.vec_infile, "" );
+  strcpy( eig_args.vec_outfile, "" );
+  
+  su3_matrix* fatlink = get_fatlinks(fn_mass);
+  su3_matrix* longlink = get_lnglinks(fn_mass);
+
+  int quda_precision = MILC_PRECISION;
+
+  // Load ODD eigenvectors from MILC into QUDA
+  // FIXME: Here I am assuming ODD eigenvectors are already loaded by MILC.
+  // Here, we are passing them to QUDA. This should be generalized and based
+  // on the input parameters file. For example, if we want FRESH eigenvectors
+  // then a slightly different call is made to qudaLoadDeflationSpace
+  inv_args.evenodd = QUDA_ODD_PARITY;
+  qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, eigVec, QUDA_MILC_EIG_LOAD);
+
+  // Compute EVENs from ODDs
+  // FIXME: Needs to be generalized similar to above
+  inv_args.evenodd = QUDA_EVEN_PARITY;
+  qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
+
+  // Compute exact current via QUDA
+  // FIXME(?): Here I am just passing jlow_mu to QUDA and filling it there in the
+  // same way that MILC's exact_current fills it. This approach may not be ideal, especially
+  // once we have the two and three mass versions of qudaExactCurrent
+  qudaExactCurrent(MILC_PRECISION, quda_precision, mass, inv_args, ape_links, eig_args, jlow_mu);
+
+}
+
+#else
+
 static void
 exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
 
@@ -1368,35 +1450,32 @@ exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
   su3_vector *gr_mu = create_v_field();
   int Nvecs = param.eigen_param.Nvecs;
   int i;
-
+  register site *s;
+  
   for(int n = 0; n < Nvecs; n++){
     dslash_fn_field(eigVec[n], gr0, ODD, fn_mass);
     for(int mu = 0; mu < NMU; mu++){
-      
       spin_taste_op_ape_fn(fn_mass, spin_taste[mu], r_offset, gr_mu, gr0);
       spin_taste_op_ape_fn(fn_mass, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
-      
       FOREVENFIELDSITES(i){
-	complex z;
-	z = su3_dot( eigVec[n] + i, gr_mu + i);
-	jlow_mu[NMU*i + mu] += -z.imag/(eigVal[n]+4.0*mass*mass);
+	      complex z;
+	      z = su3_dot( eigVec[n] + i, gr_mu + i);
+	      jlow_mu[NMU*i + mu] += -z.imag/(eigVal[n]+4.0*mass*mass);
       } /* i */
-      
       spin_taste_op_ape_fn(fn_mass, spin_taste[mu], r_offset, gr_mu, eigVec[n]);
       spin_taste_op_ape_fn(fn_mass, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
-      
       FORODDFIELDSITES(i){
-	complex z;
-	z = su3_dot( gr0 + i, gr_mu + i);
-	jlow_mu[NMU*i + mu] += z.imag/(eigVal[n]+4.0*mass*mass);
+	      complex z;
+	      z = su3_dot( gr0 + i, gr_mu + i);
+	      jlow_mu[NMU*i + mu] += z.imag/(eigVal[n]+4.0*mass*mass);
       } /* i */
-      
     } /* mu */
   } /* n */
 
   destroy_v_field(gr_mu); gr_mu = NULL;
   destroy_v_field(gr0); gr0 = NULL;
 }
+#endif
 
 /*********************************************************************/
 

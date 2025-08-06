@@ -1259,6 +1259,11 @@ ifeq ($(strip ${GAUSS_SMEAR_KS_TWOLINK}),true)
   OCFLAGS += -DGAUSS_SMEAR_KS_TWOLINK
 endif
 
+ifeq ($(strip ${WANT_CURRENT_GPU}),true)
+  USE_CURRENT_GPU = true
+  OCFLAGS += -DUSE_CURRENT_GPU
+endif
+
 # Make_template_combos defines convenience macros for interdependent
 # groups of compilation units.  They are used to specify build lists.
 
