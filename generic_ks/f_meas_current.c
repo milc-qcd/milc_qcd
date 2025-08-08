@@ -38,6 +38,10 @@
 #include <qio.h>
 #include <string.h>
 
+#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+#include <quda_milc_interface.h>
+#endif
+
 #define NMU 4
 #define NRECINFO 128
 
@@ -1356,14 +1360,22 @@ block_currents_deltam( int n_masses, Real **j_mu[], Real masses[],
 }
 
 /*********************************************************************/
-
-#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
-#include <quda_milc_interface.h>
-
+/* Calculate exact low-mode current densities using QUDA.
+ *
+ * For nmass=1, this function emulates MILC's exact_current()
+ * For nmass=2, this function emulates MILC's exact_current_delta_ls()
+ * For nmass=3, this function emulates MILC's exact_current_delta_udus
+ */
 static void
-exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
+exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp_ferm_links_t *fn_mass){
 
+  char myname[] = "exact_current_quda";
   node0_printf("Computing exact current with QUDA\n");
+
+  if( nmass<1 || nmass>3 ) {
+    node0_printf("%s: wrong number of masses %d\n", myname, nmass);
+    terminate(1);
+  }
 
   /* Initialize QUDA parameters */
   initialize_quda();
@@ -1431,13 +1443,10 @@ exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
 
   // Compute exact current via QUDA
   // FIXME(?): Here I am just passing jlow_mu to QUDA and filling it there in the
-  // same way that MILC's exact_current fills it. This approach may not be ideal, especially
-  // once we have the two and three mass versions of qudaExactCurrent
-  qudaExactCurrent(MILC_PRECISION, quda_precision, mass, inv_args, ape_links, eig_args, jlow_mu);
+  // same way that MILC's exact_current fills it. I'm not sure if this is the ideal approach or not.
+  qudaExactCurrent(MILC_PRECISION, quda_precision, nmass, masses, inv_args, ape_links, eig_args, jlow_mu1, jlow_mu2);
 
 }
-
-#else
 
 static void
 exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
@@ -1450,7 +1459,6 @@ exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
   su3_vector *gr_mu = create_v_field();
   int Nvecs = param.eigen_param.Nvecs;
   int i;
-  register site *s;
   
   for(int n = 0; n < Nvecs; n++){
     dslash_fn_field(eigVec[n], gr0, ODD, fn_mass);
@@ -1475,7 +1483,6 @@ exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
   destroy_v_field(gr_mu); gr_mu = NULL;
   destroy_v_field(gr0); gr0 = NULL;
 }
-#endif
 
 /*********************************************************************/
 
@@ -1610,7 +1617,12 @@ exact_currents(int n_masses, Real *jlow_mu[], Real masses[],
   double dtime = -dclock();
 
   for(int j = 0; j < n_masses; j++){
+#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+    Real qmasses[1] = {masses[j]};
+    exact_current_quda(jlow_mu[j], NULL, 1, qmasses, fn_mass[j]);
+#else
     exact_current(jlow_mu[j], masses[j], fn_mass[j]);
+#endif
   } /* j */
 
 #if 0
@@ -1650,8 +1662,35 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
   char myname[] = "exact_currents_deltam";
   double dtime = -dclock();
 
+#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+  Real quda_m[3] = {masses[0], masses[1], masses[3]};
+  Real quda_m1[1] = {masses[0]};
+  switch(n_masses){
+  case(1):
+    exact_current_quda(jlow_mu[0], NULL, 1, quda_m1, fn_mass[0]);
+    break;
+  case(2):
+    exact_current_quda(jlow_mu[0], NULL, 2, quda_m, fn_mass[0]);
+    break;
+  case(3):
+    quda_m1[0] = masses[2];
+    exact_current_quda(jlow_mu[0], NULL, 2, quda_m, fn_mass[0]);
+    exact_current_quda(jlow_mu[2], NULL, 1, quda_m1, fn_mass[2]);
+    break;
+  case(4):
+    exact_current_quda(jlow_mu[0], jlow_mu[2], 3, quda_m, fn_mass[0]);
+    break;
+  case(5):
+    quda_m1[0] = masses[4];
+    exact_current_quda(jlow_mu[0], jlow_mu[2], 3, quda_m, fn_mass[0]);
+    exact_current_quda(jlow_mu[4], NULL, 1, quda_m1, fn_mass[4]);
+    break;
+  default:
+    node0_printf("%s: wrong number of masses %d\n", myname, n_masses);
+    terminate(1);
+  }
+#else
   Real m[5] = {masses[0], masses[1], 0., masses[2], masses[3]};
-  
   switch(n_masses){
   case(1):
     exact_current(jlow_mu[0], masses[0], fn_mass[0]);
@@ -1674,6 +1713,7 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
     node0_printf("%s: wrong number of masses %d\n", myname, n_masses);
     terminate(1);
   }
+#endif
   
 #if 0
   for(int mu = 0; mu < NMU; mu++){
