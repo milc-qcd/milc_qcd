@@ -1381,10 +1381,13 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   initialize_quda();
   
   QudaInvertArgs_t inv_args;
-  inv_args.max_iter = 1;
-  inv_args.naik_epsilon = 0.0;
-  inv_args.tadpole = 1.0;
   inv_args.mixed_precision = 0;
+  inv_args.naik_epsilon = fn_mass->eps_naik;
+#if (FERM_ACTION==HISQ)
+  inv_args.tadpole = 1.0;
+#else
+  inv_args.tadpole = u0;
+#endif
 
   QudaEigensolverArgs_t eig_args;
   eig_args.struct_size = 1192;
@@ -1422,31 +1425,37 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
   strcpy( eig_args.vec_infile, "" );
   strcpy( eig_args.vec_outfile, "" );
-  
-  su3_matrix* fatlink = get_fatlinks(fn_mass);
-  su3_matrix* longlink = get_lnglinks(fn_mass);
-
   int quda_precision = MILC_PRECISION;
 
-  // Load ODD eigenvectors from MILC into QUDA
-  // FIXME: Here I am assuming ODD eigenvectors are already loaded by MILC.
-  // Here, we are passing them to QUDA. This should be generalized and based
-  // on the input parameters file. For example, if we want FRESH eigenvectors
-  // then a slightly different call is made to qudaLoadDeflationSpace
-  inv_args.evenodd = QUDA_ODD_PARITY;
-  qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, eigVec, QUDA_MILC_EIG_LOAD);
+  // Deflation spaces should only be loaded once
+  static int deflation_spaces_loaded = 0;
+  if(!deflation_spaces_loaded) {
 
-  // Compute EVENs from ODDs
-  // FIXME: Needs to be generalized similar to above
-  inv_args.evenodd = QUDA_EVEN_PARITY;
-  qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
+    su3_matrix* fatlink = get_fatlinks(fn_mass);
+    su3_matrix* longlink = get_lnglinks(fn_mass);
+
+    // Load ODD eigenvectors from MILC into QUDA
+    // FIXME: Here I am assuming ODD eigenvectors are already loaded by MILC.
+    // Here, we are passing them to QUDA. This should be generalized and based
+    // on the input parameters file. For example, if we want FRESH eigenvectors
+    // then a slightly different call is made to qudaLoadDeflationSpace
+    inv_args.evenodd = QUDA_ODD_PARITY;
+    qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, eigVec, QUDA_MILC_EIG_LOAD);
+
+    // Compute EVENs from ODDs
+    // FIXME: Needs to be generalized similar to above
+    inv_args.evenodd = QUDA_EVEN_PARITY;
+    qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
+
+    deflation_spaces_loaded = 1;
+  } // if(!deflation_spaces_loaded)
 
   // Compute exact current via QUDA
   // FIXME(?): Here I am just passing jlow_mu to QUDA and filling it there in the
   // same way that MILC's exact_current fills it. I'm not sure if this is the ideal approach or not.
   qudaExactCurrent(MILC_PRECISION, quda_precision, nmass, masses, inv_args, ape_links, eig_args, jlow_mu1, jlow_mu2);
 
-}
+} // exact_current_quda
 
 static void
 exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
