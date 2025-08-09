@@ -112,14 +112,17 @@ int main(int argc, char *argv[])
 
       /* Check the eigenvectors */
 
-      /* Calculate and print the residues and norms of the eigenvectors */
+      /* Calculate and print the residues and norms of the eigenvectors
+       * (if not using QUDA for the current calculation) */
       resid = (double *)malloc(Nvecs_curr*sizeof(double));
+#if !(defined(HAVE_QUDA) && defined(USE_CURRENT_GPU))
       construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
       node0_printf("Even site residuals\n");
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
       node0_printf("Odd site residuals\n");
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
-      
+#endif
+
       /* Unapply twisted boundary conditions on the fermion links and
 	 restore conventional KS phases and antiperiodic BC, if
 	 changed. */
