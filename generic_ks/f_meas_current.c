@@ -1427,12 +1427,20 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   strcpy( eig_args.vec_outfile, "" );
   int quda_precision = MILC_PRECISION;
 
+  su3_matrix* fatlink = get_fatlinks(fn_mass);
+  su3_matrix* longlink = get_lnglinks(fn_mass);
+
+  int refresh  = 0;
+  if (fn_mass != get_fn_last() || fresh_fn_links(fn_mass)){
+    cancel_quda_notification(fn_mass);
+    set_fn_last(fn_mass);
+    refresh = 1;
+    node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", __func__);
+  }
+
   // Deflation spaces should only be loaded once
   static int deflation_spaces_loaded = 0;
   if(!deflation_spaces_loaded) {
-
-    su3_matrix* fatlink = get_fatlinks(fn_mass);
-    su3_matrix* longlink = get_lnglinks(fn_mass);
 
     // Load ODD eigenvectors from MILC into QUDA
     // FIXME: Here I am assuming ODD eigenvectors are already loaded by MILC.
@@ -1453,7 +1461,7 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   // Compute exact current via QUDA
   // FIXME(?): Here I am just passing jlow_mu to QUDA and filling it there in the
   // same way that MILC's exact_current fills it. I'm not sure if this is the ideal approach or not.
-  qudaExactCurrent(MILC_PRECISION, quda_precision, nmass, masses, inv_args, ape_links, eig_args, jlow_mu1, jlow_mu2);
+  qudaExactCurrent(MILC_PRECISION, quda_precision, fatlink, longlink, ape_links, nmass, masses, inv_args, eig_args, jlow_mu1, jlow_mu2, refresh);
 
 } // exact_current_quda
 
