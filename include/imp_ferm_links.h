@@ -144,6 +144,8 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity,
 
 void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
 		      imp_ferm_links_t *fn);
+void dslash_fn_field_cpu( su3_vector *src, su3_vector *dest, int parity,
+			  imp_ferm_links_t *fn);
 void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 			     int parity, msg_tag **tag, int start,
 			     imp_ferm_links_t *fn);
