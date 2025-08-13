@@ -45,7 +45,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   double nflop = 1187;
 #endif
 
-  // node0_printf("Entered %s\n", myname);
+  //  node0_printf("Entered %s\n", myname);
 
   /* Initialize qic */
   qic->size_r = 0;
@@ -266,11 +266,14 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   char myname[] = "ks_congrad_block_parity_gpu";
 
+  //  node0_printf("Entered %s\n", myname);
+
 #if 0
   /* Debug: Solve separately, rather than batch */
   int num_iters = 0;
   for(int i = 0; i < nsrc; i++){
     num_iters += ks_congrad_parity_gpu(t_src[i], t_dest[i], qic, mass, fn);
+    report_status(qic);
   }
   return num_iters;
 #else
