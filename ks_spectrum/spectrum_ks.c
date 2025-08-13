@@ -1093,7 +1093,7 @@ static double get_meson_scale_factor(int iq0, int iq1){
   if(param.prop_type[ip1] == KS_TYPE)
     scale_factor *= param.src_qs[is1].scale_fact;
 
-  printf("For iq0 %d iq1 %d ip0 %d ip1 %d is0 %d is1 %d sf %g \n", iq0, iq1, ip0, ip1, is0, is1, scale_factor);
+  //  printf("For iq0 %d iq1 %d ip0 %d ip1 %d is0 %d is1 %d sf %g \n", iq0, iq1, ip0, ip1, is0, is1, scale_factor);
 
   return 1./scale_factor;
 }
@@ -1135,7 +1135,7 @@ static void spectrum_ks_print_diag(int pair){
   double meson_scale = get_meson_scale_factor(param.qkpair[pair][0],  
 					      param.qkpair[pair][1]);
 
-  printf("meson_scale %d %d %g\n", param.qkpair[pair][0], param.qkpair[pair][1], meson_scale);
+  //  printf("meson_scale %d %d %g\n", param.qkpair[pair][0], param.qkpair[pair][1], meson_scale);
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);
@@ -1182,7 +1182,7 @@ static void spectrum_ks_print_offdiag(int pair){
   /* Rescaling */
   double meson_scale = get_meson_scale_factor(param.qkpair[pair][0],  
 					      param.qkpair[pair][1]);
-  printf("meson_scale %d %d %g\n", param.qkpair[pair][0], param.qkpair[pair][1], meson_scale);
+  //  printf("meson_scale %d %d %g\n", param.qkpair[pair][0], param.qkpair[pair][1], meson_scale);
 
   /* Point sink */
   if(param.do_meson_spect[pair]){
