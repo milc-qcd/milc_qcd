@@ -596,7 +596,8 @@ void construct_eigen_other_parity(su3_vector *eigVec[], Real eigVal[],
     FORSOMEPARITY_OMP(i,s,otherparity,){
       clearvec(eigVec[j]+i);
     } END_LOOP_OMP;
-    dslash_fn_field(eigVec[j], eigVec[j], otherparity, fn);
+    /* Use MILC dslash */
+    dslash_fn_field_cpu(eigVec[j], eigVec[j], otherparity, fn);
   }
 
   /* If we calculate the 2-norms all at once we do only one large
