@@ -235,6 +235,14 @@ int readin(int prompt) {
       IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
 					  param.ks_eigen_savefile);
       
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU))
+      if(param.ks_eigen_saveflag == SAVE_PARTFILE_SCIDAC){
+        param.eigen_param.partfile = 1;
+      } else {
+	param.eigen_param.partfile = 0;
+      }
+#endif
+
       /* If we are reading in eigenpairs, we don't regenerate them */
 
 #if EIGMODE == EIGCG
@@ -593,21 +601,27 @@ int readin(int prompt) {
   su3_matrix *lng = get_lnglinks(my_fn);
   if(param.startfatflag != FRESH && param.startfatflag != CONTINUE){
 
+    double rtime = -dclock();
     if(param.startfatflag == RELOAD_PARALLEL)
       restore_color_matrix_scidac_to_field(param.inputfatfile, fat, 4,
 					   MILC_PRECISION, QIO_PARALLEL);
     else
       restore_color_matrix_scidac_to_field(param.inputfatfile, fat, 4,
 					   MILC_PRECISION, QIO_SERIAL);
+    rtime += dclock();
+    node0_printf("Time to restore fat %e\n",rtime); fflush(stdout);
   }
   if(param.startlngflag != FRESH && param.startlngflag != CONTINUE){
 
+    double rtime = -dclock();
     if(param.startlngflag == RELOAD_PARALLEL)
       restore_color_matrix_scidac_to_field(param.inputlngfile, lng, 4,
 					   MILC_PRECISION, QIO_PARALLEL);
     else
       restore_color_matrix_scidac_to_field(param.inputfatfile, fat, 4,
 					   MILC_PRECISION, QIO_SERIAL);
+    rtime += dclock();
+    node0_printf("Time to restore lng %e\n",rtime); fflush(stdout);
   }
 
 #ifdef DBLSTORE_FN
@@ -650,6 +664,8 @@ int readin(int prompt) {
   imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &Nvecs_tot, eigVal, eigVec, fn, 1);
+  // DEBUG
+  //reset_eigenvalues( eigVec, eigVal, Nvecs_tot, ODD, fn)
   destroy_fn_links(fn);
   if(status != 0) terminate(1);
   //  if(param.fixflag != NO_GAUGE_FIX){
@@ -670,6 +686,8 @@ int readin(int prompt) {
 #endif
   
 #if EIGMODE != EIGCG
+    /* If using QUDA for deflation, then eigenvectors are loaded directly by QUDA and not MILC */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
   if(param.eigen_param.Nvecs > 0){
     /* malloc for eigenpairs */
     eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
@@ -695,6 +713,7 @@ int readin(int prompt) {
     destroy_m_field(G);
 #endif
   }
+#endif
 #endif
 
   ENDTIME("readin");
