@@ -73,7 +73,10 @@ int remap_stdio_from_args(int argc, char *argv[]){
   if(argc > 2){
     char *newfile = (char *)malloc(strlen(argv[2])+16);
     if(num_jobs == 1){
-      sprintf(newfile,"%s.rank%06d",argv[2],mynode());
+      if(mynode() == 0)
+	sprintf(newfile,"%s",argv[2],mynode());
+      else
+	sprintf(newfile,"%s.rank%06d",argv[2],mynode());
     } else {
       if(mynode() == 0)
         sprintf(newfile,"%s.j%02d",argv[2],jobid);

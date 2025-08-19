@@ -24,10 +24,31 @@ module load PrgEnv-amd amd/5.3.0 rocm/5.3.0
 
 ##### ROCm 6:
 
-There is a serious bug in the ROCm 6+ tool chains that causes incorrect QUDA results without warning. The workaround is to use the older software stack:
+**As of July 16, 2025, this remains an issue with all versions of ROCm 6+ available on Frontier.**
+
+There is a serious bug in the ROCm 6+ tool chains that can cause incorrect QUDA results without warning when using P2P. 
+
+```
+ROCm 5.3.0: Works
+ROCm 6.0.0: Works, but only if QUDA P2P disabled
+ROCm 6.2.0: Works, but only if QUDA P2P disabled
+ROCm 6.2.4: Works, but only if QUDA P2P disabled
+ROCm 6.3.1: Works, but only if QUDA P2P disabled
+ROCm 6.4.1: Works, but only if QUDA P2P disabled
+```
+The workaround is to disable QUDA P2P (`export QUDA_ENABLE_P2P=0`) or to use the older software stack:
 
 ```
 module load PrgEnv-amd amd/5.3.0 rocm/5.3.0
+```
+
+##### QUDA Performance Regression with Large Kernel Argument:
+
+We have seen a significant QUDA performance regression in certain cases (e.g. eigensolve) related to large kernel arguments. See [QUDA Issue 1568](https://github.com/lattice/quda/issues/1568) and [QUDA PR 1569](https://github.com/lattice/quda/pull/1569) for details.
+
+The performance regression can be avoided by compiling QUDA with:
+```
+-DQUDA_MAX_KERNEL_ARG_SIZE=0
 ```
 
 ## Building and Running the Sample Code
