@@ -57,7 +57,7 @@ static su3_matrix* create_G_from_site_quda(void) {
 
   FORALLSITES_OMP(i,s,){
     fast_copy(links+4*i, s->link, 4*sizeof(su3_matrix));
-  } END_LOOP_OMP
+  } END_LOOP_OMP;
 
   return links;
 }
@@ -71,7 +71,7 @@ static void copy_to_site_from_G_quda(su3_matrix *links) {
 
   FORALLSITES_OMP(i,s,){
     fast_copy(s->link, links+4*i, 4*sizeof(su3_matrix));
-  } END_LOOP_OMP
+  } END_LOOP_OMP;
 }
 
 /*
@@ -99,7 +99,7 @@ static anti_hermitmat* create_M_from_site_quda(void) {
 
   FORALLSITES_OMP(i,s,){
     fast_copy(momentum+4*i, s->mom, 4*sizeof(anti_hermitmat));
-  } END_LOOP_OMP
+  } END_LOOP_OMP;
 
   return momentum;
 }
@@ -113,10 +113,9 @@ static void copy_to_site_from_M_quda(anti_hermitmat *momentum) {
 
   FORALLSITES_OMP(i,s,){
     fast_copy(s->mom, momentum+4*i, 4*sizeof(anti_hermitmat));
-  } END_LOOP_OMP
+  } END_LOOP_OMP;
 }
 #endif
-
 /*
   Free the pinned gauge-field array
  */
