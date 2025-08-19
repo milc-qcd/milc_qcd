@@ -475,6 +475,7 @@ ifeq ($(strip ${WANTQUDA}),true)
   WANT_SHIFT_GPU ?= #true
   WANT_SPIN_TASTE_GPU ?= #true
   WANT_GAUGEFIX_OVR_GPU ?= #true
+  WANT_CURRENT_GPU ?= #true
   WANT_MULTIGRID ?= false
 
   # If QUDA CG is enabled, then eigensolve/deflation must be enabled
