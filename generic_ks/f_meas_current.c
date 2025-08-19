@@ -37,10 +37,7 @@
 #include "../include/imp_ferm_links.h"
 #include <qio.h>
 #include <string.h>
-
-#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
-#include <quda_milc_interface.h>
-#endif
+#include "../include/generic_quda.h"
 
 #define NMU 4
 #define NRECINFO 128
@@ -180,7 +177,7 @@ write_jdotA_value(char *tag, int jr, Real mass1, Real charge1,
   }
   g_doublesum(&jdotA);
   node0_printf("%.10g\n", jdotA);
-}
+} 
 
 /*****************************************************************************/
 /* Returns the dot product of two fermion vectors */
@@ -196,7 +193,7 @@ dot_product(su3_vector *vec1, su3_vector *vec2,
     cc = su3_dot( &(vec1[i]), &(vec2[i]) );
     re += cc.real ;
     im += cc.imag ;
-  }
+  } END_LOOP;
   dot->real = re ; 
   dot->imag = im ;
   g_dcomplexsum(dot);
@@ -216,13 +213,62 @@ complex_vec_mult_sub(double_complex *cc, su3_vector *vec1,
 
   FORSOMEFIELDPARITY(i,parity){
     c_scalar_mult_sub_su3vec(&(vec2[i]), (&sc), &(vec1[i])) ;
-  }
+  } END_LOOP;
 }
 
 /************************************************************************/
-/*  Projects out the *vectors from the  vec. Num is the Number of vectors  *
+/*  Projects out the set of *vector from the  vec. Num is the number of vectors  *
  * and parity is the parity on which we work on.                           *
  * The vectors are assumed to be orthonormal.                              */
+   
+#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+
+/* This QUDA version uses the previously computed eigenvectors kept by QUDA */
+/* "vector" is ignored */
+
+static void
+project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
+  register int i ;
+  double_complex cc ;
+  double ptime = -dclock();
+
+  if(Num == 0)return;
+
+  QudaParity qparity;
+
+  switch(parity){
+  case EVEN: qparity = QUDA_EVEN_PARITY; break;
+  case ODD:  qparity = QUDA_ODD_PARITY; break;
+  default:
+    node0_printf("%s: ERROR. Bad parity value\n");
+    terminat(1);
+  }
+
+  int nvec = 1;
+
+  su3_vector *invecs[1], *outvecs[1];
+  invecs[0] = vec;
+  outvecs[0] = create_V_field();
+  
+  qudaProject(MILC_PRECISION, (void **)invecs, (void **)outvecs, nvec, Num, QudaParity parity);
+
+  copy_V_field(vec, outvecs[0]);
+  destroy_V_field(outvecs[0]);
+  
+  ptime += dclock();
+#ifdef CGTIME
+  if(parity == EVEN){
+    node0_printf("Time to project out low modes from EVEN source %g sec\n", ptime);
+  } else {
+    node0_printf("Time to project out low modes from ODD source %g sec\n", ptime);
+  }
+#endif
+}
+
+#else
+
+/* This is the original CPU version, which requires vector to be supplied  */
+
 static void
 project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
   register int i ;
@@ -245,12 +291,15 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
 
   ptime += dclock();
 #ifdef CGTIME
-  if(parity == EVEN)
+  if(parity == EVEN){
     node0_printf("Time to project out low modes from EVEN source %g sec\n", ptime);
-  else
+  } else {
     node0_printf("Time to project out low modes from ODD source %g sec\n", ptime);
+  }
 #endif
 }
+
+#endif
 
 /************************************************************************/
 static void
@@ -379,7 +428,7 @@ block_current_stochastic( int nr, Real *j_mu_mass[], Real mass, int nsrc, int si
 	       lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu,
 	       j_mu_mass[ir][NMU*i + mu]);
 #endif
-      }
+      } END_LOOP;
     } /* is, mu */
   destroy_v_field(gr_mu);
 
@@ -462,7 +511,7 @@ block_current_stochastic_deltam( Real *j_mu01[], Real mass0, Real mass1,
 	       lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu,
 	       j_mu01[ir][NMU*i + mu]);
 #endif
-      }
+      } END_LOOP;
     } /* is, mu */
   destroy_v_field(gr_mu);
 
@@ -570,7 +619,7 @@ block_current_stochastic_delta_udus( Real **j_mu[], Real masses[],
 	       lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu,
 	       j_mu_us[ir][NMU*i + mu], j_mu_ud[ir][NMU*i + mu]);
 #endif
-      }
+      } END_LOOP;
     } /* is, mu */
   destroy_v_field(gr_ud_mu);
   destroy_v_field(gr_us_mu);
@@ -683,7 +732,7 @@ block_current_stochastic_delta_udls( Real **j_mu[], Real masses[],
 	       lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu,
 	       j_mu_ls[ir][NMU*i + mu], j_mu_ud[ir][NMU*i + mu]);
 #endif
-      }
+      } END_LOOP;
     } /* is, mu */
   destroy_v_field(gr_ud_mu);
   destroy_v_field(gr_ls_mu);
@@ -1448,7 +1497,7 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
     // on the input parameters file. For example, if we want FRESH eigenvectors
     // then a slightly different call is made to qudaLoadDeflationSpace
     inv_args.evenodd = QUDA_ODD_PARITY;
-    qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, eigVec, QUDA_MILC_EIG_LOAD);
+    qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, (void **)eigVec, QUDA_MILC_EIG_LOAD);
 
     // Compute EVENs from ODDs
     // FIXME: Needs to be generalized similar to above
@@ -1649,7 +1698,7 @@ exact_currents(int n_masses, Real *jlow_mu[], Real masses[],
       node0_printf("Exact low modes For mass %g\n", mass);
       FORALLFIELDSITES(i){
 	node0_printf("j_mu_low  %d %d %d %d %d %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, jlow_mu[j][NMU*i+mu]);
-      }
+      } 
     }
   }
 #endif
@@ -1740,14 +1789,14 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
       node0_printf("j_mu_low  %d %d %d %d %d %g\n",
 		   lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t,
 		   mu, jlow_mu[0][NMU*i+mu]);
-    }
+    } 
     node0_printf("Exact low modes For mass %g minus mass %g\n", masses[0],
 		 masses[2]);
     FORALLFIELDSITES(i){
       node0_printf("j_mu_low  %d %d %d %d %d %g\n",
 		   lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t,
 		   mu, jlow_mu[2][NMU*i+mu]);
-    }
+    } 
   }
 #endif
 
