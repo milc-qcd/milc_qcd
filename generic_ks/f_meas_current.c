@@ -221,7 +221,8 @@ complex_vec_mult_sub(double_complex *cc, su3_vector *vec1,
  * and parity is the parity on which we work on.                           *
  * The vectors are assumed to be orthonormal.                              */
    
-#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+//#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+#if 0
 
 /* This QUDA version uses the previously computed eigenvectors kept by QUDA */
 /* "vector" is ignored */
@@ -240,20 +241,20 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
   case EVEN: qparity = QUDA_EVEN_PARITY; break;
   case ODD:  qparity = QUDA_ODD_PARITY; break;
   default:
-    node0_printf("%s: ERROR. Bad parity value\n");
-    terminat(1);
+    node0_printf("%s: ERROR. Bad parity value\n", __func__);
+    terminate(1);
   }
 
   int nvec = 1;
 
   su3_vector *invecs[1], *outvecs[1];
   invecs[0] = vec;
-  outvecs[0] = create_V_field();
+  outvecs[0] = create_v_field();
   
-  qudaProject(MILC_PRECISION, (void **)invecs, (void **)outvecs, nvec, Num, QudaParity parity);
+  qudaProject(MILC_PRECISION, (void **)invecs, (void **)outvecs, nvec, Num, qparity);
 
-  copy_V_field(vec, outvecs[0]);
-  destroy_V_field(outvecs[0]);
+  copy_v_field(vec, outvecs[0]);
+  destroy_v_field(outvecs[0]);
   
   ptime += dclock();
 #ifdef CGTIME
@@ -1502,7 +1503,9 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
     // Compute EVENs from ODDs
     // FIXME: Needs to be generalized similar to above
     inv_args.evenodd = QUDA_EVEN_PARITY;
+    node0_printf("Calling qudaLoadDeflationSpace\n"); fflush(stdout);
     qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
+    node0_printf("Done with qudaLoadDeflationSpace\n"); fflush(stdout);
 
     deflation_spaces_loaded = 1;
   } // if(!deflation_spaces_loaded)
@@ -1510,7 +1513,9 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   // Compute exact current via QUDA
   // FIXME(?): Here I am just passing jlow_mu to QUDA and filling it there in the
   // same way that MILC's exact_current fills it. I'm not sure if this is the ideal approach or not.
+  node0_printf("Calling qudaExactCurrent\n"); fflush(stdout);
   qudaExactCurrent(MILC_PRECISION, quda_precision, fatlink, longlink, ape_links, nmass, masses, inv_args, eig_args, jlow_mu1, jlow_mu2, refresh);
+  node0_printf("Done with qudaExactCurrent\n"); fflush(stdout);
 
 } // exact_current_quda
 
