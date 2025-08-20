@@ -26,6 +26,8 @@ static const char *prec_label[2] = {"F", "D"};
 #define HALF_MIXED
 #endif
 
+#define CG_DEBUG = 1
+
 /********************************************************************/
 /* Solution of the normal equations for a single site parity        */
 /********************************************************************/
