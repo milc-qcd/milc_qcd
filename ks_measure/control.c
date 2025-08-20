@@ -110,12 +110,13 @@ int main(int argc, char *argv[])
 	construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
       }
 
-      /* Check the eigenvectors */
+#if !(defined(HAVE_QUDA) && defined(USE_CURRENT_GPU))
+
+      /* Check the eigenvectors. (Not done when QUDA keeps them for itself)  */
 
       /* Calculate and print the residues and norms of the eigenvectors
        * (if not using QUDA for the current calculation) */
       resid = (double *)malloc(Nvecs_curr*sizeof(double));
-#if !(defined(HAVE_QUDA) && defined(USE_CURRENT_GPU))
       construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
       node0_printf("Even site residuals\n");
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
