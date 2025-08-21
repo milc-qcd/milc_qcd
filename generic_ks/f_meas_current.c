@@ -1492,20 +1492,43 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   static int deflation_spaces_loaded = 0;
   if(!deflation_spaces_loaded) {
 
-    // Load ODD eigenvectors from MILC into QUDA
-    // FIXME: Here I am assuming ODD eigenvectors are already loaded by MILC.
-    // Here, we are passing them to QUDA. This should be generalized and based
-    // on the input parameters file. For example, if we want FRESH eigenvectors
-    // then a slightly different call is made to qudaLoadDeflationSpace
-    inv_args.evenodd = QUDA_ODD_PARITY;
-    qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, (void **)eigVec, QUDA_MILC_EIG_LOAD);
+    if(eigenvectors_offloaded){
 
-    // Compute EVENs from ODDs
-    // FIXME: Needs to be generalized similar to above
-    inv_args.evenodd = QUDA_EVEN_PARITY;
-    node0_printf("Calling qudaLoadDeflationSpace\n"); fflush(stdout);
-    qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
-    node0_printf("Done with qudaLoadDeflationSpace\n"); fflush(stdout);
+      // QUDA already has the eigenvectors on even sites
+      // FIXME: Needs to be generalized
+
+      // Set up EVEN deflation space
+
+      inv_args.evenodd = QUDA_EVEN_PARITY;
+      node0_printf("Calling qudaLoadDeflationSpace\n"); fflush(stdout);
+      qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_COMPUTE);
+      node0_printf("Done with qudaLoadDeflationSpace\n"); fflush(stdout);
+
+      // Compute ODDs from EVENs
+
+      inv_args.evenodd = QUDA_ODD_PARITY;
+      node0_printf("Calling qudaLoadDeflationSpace\n"); fflush(stdout);
+      qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
+      node0_printf("Done with qudaLoadDeflationSpace\n"); fflush(stdout);
+
+    } else {
+
+      // Load ODD eigenvectors from MILC into QUDA
+      // Here, we are passing them to QUDA.
+
+      inv_args.evenodd = QUDA_ODD_PARITY;
+      node0_printf("Calling qudaLoadDeflationSpace\n"); fflush(stdout);
+      qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, (void **)eigVec, QUDA_MILC_EIG_LOAD);
+      node0_printf("Done with qudaLoadDeflationSpace\n"); fflush(stdout);
+      eigenvectors_offloaded = 1;
+      
+      // Compute EVENs from ODDs
+      // FIXME: Needs to be generalized similar to above
+      inv_args.evenodd = QUDA_EVEN_PARITY;
+      node0_printf("Calling qudaLoadDeflationSpace\n"); fflush(stdout);
+      qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
+      node0_printf("Done with qudaLoadDeflationSpace\n"); fflush(stdout);
+    }
 
     deflation_spaces_loaded = 1;
   } // if(!deflation_spaces_loaded)
