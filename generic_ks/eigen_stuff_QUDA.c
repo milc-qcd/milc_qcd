@@ -284,6 +284,9 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
   /* QUDA's eigensolver using Thick Restarted (Block) Lanczos algorithm */
   eigensolveQuda( eigVec_QUDA, eigVal_QUDA, &qep );
 
+  /* Eigenvectors are kept by QUDA */
+  eigenvectors_offloaded = 1;
+
 #ifdef EIG_DEBUG
   node0_printf( "%s: Eigensolver ended.\n", myname );  
 #endif
