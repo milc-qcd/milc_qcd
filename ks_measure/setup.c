@@ -197,6 +197,7 @@ int readin(int prompt) {
     IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
     /* The usual case. May be changed by I/O routines */
     param.eigen_param.parity = EVEN;
+    eigenvectors_offloaded = 0;
 
 
     IF_OK if(param.eigen_param.Nvecs > 0){
