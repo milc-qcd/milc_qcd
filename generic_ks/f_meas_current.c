@@ -221,8 +221,7 @@ complex_vec_mult_sub(double_complex *cc, su3_vector *vec1,
  * and parity is the parity on which we work on.                           *
  * The vectors are assumed to be orthonormal.                              */
    
-//#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
-#if 0
+#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
 
 /* This QUDA version uses the previously computed eigenvectors kept by QUDA */
 /* "vector" is ignored */
