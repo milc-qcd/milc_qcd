@@ -65,8 +65,8 @@ else ifeq ($(strip ${COMPILER}),gnu)
     MY_CC ?= mpicc
     MY_CXX ?= mpiCC
   else
-    MY_CC  ?= gcc-8
-    MY_CXX ?= g++-8
+    MY_CC  ?= gcc
+    MY_CXX ?= g++
   endif
 
 else ifeq ($(strip ${COMPILER}),ibm)
