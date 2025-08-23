@@ -1535,7 +1535,7 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   // Compute exact current via QUDA
   // FIXME(?): Here I am just passing jlow_mu to QUDA and filling it there in the
   // same way that MILC's exact_current fills it. I'm not sure if this is the ideal approach or not.
-  node0_printf("Calling qudaExactCurrent\n"); fflush(stdout);
+  node0_printf("Calling qudaExactCurrent with fatlink %x and longlink %x, jlow_mu1 %x jlow_mu2 %x\n", fatlink, longlink, jlow_mu1, jlow_mu2); fflush(stdout);
   qudaExactCurrent(MILC_PRECISION, quda_precision, fatlink, longlink, ape_links, nmass, masses, inv_args, eig_args, jlow_mu1, jlow_mu2, refresh);
   node0_printf("Done with qudaExactCurrent\n"); fflush(stdout);
 
