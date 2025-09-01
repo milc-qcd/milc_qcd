@@ -37,7 +37,11 @@
 #include "../include/imp_ferm_links.h"
 #include <qio.h>
 #include <string.h>
+#ifdef HAVE_QUDA
 #include "../include/generic_quda.h"
+#else
+#include "../include/openmp_defs.h"
+#endif
 
 #define NMU 4
 #define NRECINFO 128
@@ -301,6 +305,19 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
 
 #endif
 
+/******************************************************************
+*									*
+*  void dumpvec( su3_vector *vec )					*
+*  print out a 3 element complex vector					*
+*/
+
+static void
+my_dumpvec( su3_vector *v ){
+  int j;
+  for(j=0;j<3;j++)printf("(%.12e,%.12e)\n",
+			 v->c[j].real,v->c[j].imag);
+}
+
 /************************************************************************/
 static void
 collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
@@ -326,8 +343,13 @@ collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
 	
 	/* Project out (remove) the low mode part, based on the given eigenvectors */
 	int Nvecs = param.eigen_param.Nvecs;
-	if(Nvecs > 0)
+	if(Nvecs > 0){
+	  node0_printf("Before project_out gr[%d][0] is\n",is);
+	  my_dumpvec(gr[is]);
 	  project_out(gr[is], eigVec, Nvecs, parity);
+	  node0_printf("After project_out gr[%d][0] is\n",is);
+	  my_dumpvec(gr[is]);
+	}
 #if 0
 	/* DEBUG */
 	/* Check the norm of the reduced source */
@@ -1408,6 +1430,8 @@ block_currents_deltam( int n_masses, Real **j_mu[], Real masses[],
   }      
 }
 
+#ifdef HAVE_QUDA
+
 /*********************************************************************/
 /* Calculate exact low-mode current densities using QUDA.
  *
@@ -1540,6 +1564,8 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   node0_printf("Done with qudaExactCurrent\n"); fflush(stdout);
 
 } // exact_current_quda
+
+#endif
 
 static void
 exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
