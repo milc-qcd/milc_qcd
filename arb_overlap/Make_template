@@ -148,7 +148,7 @@ else
 endif
 
 # Always use PRIMME if it is provided
-ifeq ($(strip ${HAVEPRIMME}),true)
+ifeq ($(strip ${HAVE_PRIMME}),true)
   DEFINES += -DPRIMME
 endif
 

@@ -2,7 +2,7 @@
 * C <- A + B,   A,B and C matrices 					*
 */
 #define _inline_C_add_su3_matrix(aa,bb,cc) \
-  { register su3_matrix *aaa,*bbb,*ccc; register int iii; \
+  { su3_matrix *aaa,*bbb,*ccc; int iii; \
   aaa=(aa); bbb=(bb); ccc=(cc); \
     for( iii=0; iii<3; iii++ ){ \
   (ccc)->e[iii][0].real = (aaa)->e[iii][0].real + (bbb)->e[iii][0].real; \

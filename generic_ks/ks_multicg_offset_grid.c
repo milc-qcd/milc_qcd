@@ -16,7 +16,7 @@
 
 /* Offsets are 4 * mass * mass and must be positive */
 int 
-ks_multicg_offset_field_grid(	/* Return value is number of iterations taken */
+ks_multicg_offset_field_gpu(	/* Return value is number of iterations taken */
    su3_vector *src,	/* source vector (type su3_vector) */
    su3_vector **psim,	/* solution vectors */
    ks_param *ksp,	/* the offsets */

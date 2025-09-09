@@ -11,7 +11,7 @@
 int
 ks_congrad_parity_cpu( su3_vector *src, su3_vector *sol, 
 		       quark_invert_control *qic, Real mass,
-		       fn_links_qop_t *fn){
+		       imp_ferm_links_t *fn){
 
   int iterations_used;
 

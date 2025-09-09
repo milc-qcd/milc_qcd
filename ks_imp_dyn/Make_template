@@ -302,7 +302,7 @@ su3_hmc_hisq::
 su3_hmc1_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
 	"DEFINES += -DONEMASS -DPHI_ALGORITHM -DHMC_ALGORITHM" \
-	"EXTRA_OBJECTS += d_action.o update_onemass.o"
+	"EXTRA_OBJECTS += reunitarize_ks.o d_action.o update_onemass.o"
 
 clean:
 	-/bin/rm -f *.o

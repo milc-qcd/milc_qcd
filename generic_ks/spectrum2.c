@@ -1,4 +1,5 @@
 /******** spectrum2.c *************/
+/* OBSOLETE */
 /* MIMD version 7 */
 /* Spectrum for Kogut-Susskind pointlike hadrons, wall source 
 * MIMD version 7 with SG additions

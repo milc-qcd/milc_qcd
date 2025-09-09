@@ -156,13 +156,13 @@ r_open_wprop(int flag, char *filename)
   wilson_propagator *wp;
   char myname[] = "r_open_wprop";
 
+  /* No file */
+  if(flag == FRESH)return NULL;
+
   if(flag == RELOAD_ASCII){
     wpf = r_ascii_w_i(filename);
     return wpf;
   }
-
-  /* No file */
-  if(flag == FRESH)return NULL;
 
   /* Interpret non-ASCII file type */
   file_type = get_file_type(filename);
@@ -180,6 +180,7 @@ r_open_wprop(int flag, char *filename)
      vector.  The other has the full propagator on each site. */
 
   if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
+
 #ifdef HAVE_QIO
     /* Create a wpf structure. (No file movement here.) */
     int serpar = interpret_usqcd_w_reload_flag(flag);
@@ -191,11 +192,18 @@ r_open_wprop(int flag, char *filename)
       terminate(1);
     }
 #else
-    node0_printf("%s: This looks like a QIO file, but to read it requires QIO compilation\n");
+    node0_printf("%s: %s looks like a QIO file, but to read it requires QIO compilation\n",
+		 myname, filename);
 #endif
-  }
-  else {
-    node0_printf("%s: File %s is not a supported Dirac propagator file\n", myname, filename);
+  } else {
+
+    if(file_type == FILE_TYPE_FM){ /* Old MILC format */
+      wpf = r_serial_w_fm_i(filename);
+      wpf->file_type = file_type;
+      wpf->rank2rcv = NULL;
+    } else {
+      node0_printf("%s: File %s with file_type %d is not a supported Dirac propagator file (see include/file_types.h)\n", myname, filename, file_type);
+    }
   }
 
   return wpf;
@@ -269,6 +277,14 @@ r_close_wprop(int flag, w_prop_file *wpf)
     r_ascii_w_f(wpf);
     break;
   case RELOAD_SERIAL:
+    if(wpf->file_type == FILE_TYPE_W_USQCD_DD_PAIRS)
+      clear_input_w_prop_file(wpf);
+    else if(wpf->file_type == FILE_TYPE_FM)
+      r_serial_w_fm_f(wpf);
+    else
+      node0_printf("r_close_wprop: ERROR: Can't close the file %s. Don't recognize the file_type %d\n",
+		   wpf->filename,wpf->file_type);
+    break;
   case RELOAD_PARALLEL:
     clear_input_w_prop_file(wpf);
     break;
@@ -343,20 +359,34 @@ reload_wprop_sc_to_field( int flag, w_prop_file *wpf,
     node0_printf("Reloading ASCII to wprop field not supported\n");
     terminate(1);
     break;
-#ifdef HAVE_QIO
   case RELOAD_SERIAL:
-    wp = wpf->prop;
+
+#ifdef HAVE_QIO
     file_type = wpf->file_type;
     if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
       /* Read the propagator record */
       status = read_usqcd_wprop_record(wpf, spin, color, src, dest, wqs);
     }
     else {
-      node0_printf("%s: File type not supported\n",myname);
+      node0_printf("%s: File type %d not supported\n",myname, file_type);
       status = 1; /*Error status */
     }
+#else
+
+    file_type = wpf->file_type;
+    if(file_type == FILE_TYPE_FM){
+      status = r_serial_w_to_field(wpf, spin, color, dest);
+    } else {
+      node0_printf("%s: File type %d not supported\n",myname, file_type);
+    }
+
+#endif    
+
     break;
+
   case RELOAD_PARALLEL:
+
+#ifdef HAVE_QIO
     file_type = wpf->file_type;
     if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
       status = read_usqcd_wprop_record(wpf, spin, color, src, dest, wqs);
@@ -364,16 +394,17 @@ reload_wprop_sc_to_field( int flag, w_prop_file *wpf,
       node0_printf("%s: Unsupported file type %d\n", myname, file_type);
       status = 1;
     }
-    break;
 #else
+
     /* No QIO */
-    {
-      node0_printf("%s: Parallel reading with this file type not supported\n",
-		   myname);
-      status = 1;
-    }
-    break;
+    node0_printf("%s: Parallel reading with this file type not supported\n",
+      myname);
+    status = 1;
+
 #endif
+
+    break;
+
   default:
     node0_printf("%s: Unrecognized reload flag.\n", myname);
     terminate(1);
@@ -904,7 +935,7 @@ convert_outflag_to_inflag_wprop(int outflag){
 int 
 ask_starting_wprop( FILE *fp, int prompt, int *flag, char *filename )
 {
-  char *savebuf;
+  const char *savebuf;
   int status;
   char myname[] = "ask_starting_wprop";
   
@@ -970,7 +1001,7 @@ static void print_output_wprop_choices(void){
 }
 
 static int
-parse_output_wprop_choices(int *flag, char *savebuf){
+parse_output_wprop_choices(int *flag, const char *savebuf){
 
   if(strcmp("save_ascii_wprop",savebuf) == 0 )  {
     *flag=SAVE_ASCII;
@@ -1005,7 +1036,7 @@ parse_output_wprop_choices(int *flag, char *savebuf){
 
 int 
 ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
-  char *savebuf;
+  const char *savebuf;
   int status;
   char myname[] = "ask_ending_wprop";
   
@@ -1045,7 +1076,7 @@ ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
 int
 ask_ending_wprop_or_wsource(FILE *fp, int prompt, int *flag, int *type, 
 			    int *t0, char *descrp, char *filename){
-  char *savebuf;
+  const char *savebuf;
   int status;
   char myname[] = "ask_ending_wprop_or_wsource";
   

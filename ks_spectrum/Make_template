@@ -58,26 +58,6 @@ LAYOUT = layout_hyper_prime.o # Choices possible here
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG}
 
-# Always use PRIMME if it is provided
-ifeq ($(strip ${HAVEPRIMME}),true)
-  ADDDEFINES += -DPRIMME
-# Always use ARPACK if it is provided
-else ifeq ($(strip ${HAVEARPACK}),true)
-  ADDDEFINES += -DARPACK
-else
-  ADDDEFINES += -DKalkreuter_Ritz
-endif
-
-DEFLATE_OBJECTS = \
- eigen_stuff_helpers.o \
- io_helpers_ks_eigen.o \
- io_ks_eigen.o \
- jacobi.o
-
-ifeq ($(strip ${HAVEQIO}),true)
-  DEFLATE_OBJECTS += io_scidac_ks_eigen.o
-endif
-
 OBJECTS = \
   ${MY_OBJECTS} \
   ${GAUGE_OBJECTS} \
@@ -87,24 +67,12 @@ OBJECTS = \
   ${FERMION_OBJECTS} \
   ${KS_SPECTRUM_OBJECTS} \
   ${STANDARD_OBJECTS} \
-  ${DEFLATE_OBJECTS} \
+  ${EIGEN_OBJECTS} \
   ${ADD_OBJECTS} \
   ${EXTRA_OBJECTS}
 
 EIGCG_OBJECTS = \
  inc_eigcg.o
-
-# Selection of eigensolver program
-ifeq ($(strip ${HAVEQOP}),true)
-# Interface to access QOP (not supported, so use default)
-  DEFLATE_OBJECTS += eigen_stuff_Ritz.o
-  DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
-else ifeq ($(strip ${HAVEQDP}),true)
-  DEFLATE_OBJECTS += eigen_stuff_qdp.o
-else
-  DEFLATE_OBJECTS += eigen_stuff_Ritz.o
-  DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
-endif
 
 #Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
@@ -172,6 +140,7 @@ ks_spectrum_asqtad::
 	"EXTRA_OBJECTS += ${FN_OBJECTS}"
 
 ks_spectrum_eigcg_asqtad::
+	@echo "Builds without OMP and Grid"
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
 	"DEFINES= -DFN -DHAVE_KS" \
@@ -250,25 +219,36 @@ ks_spectrum_hisq_u1::
 # GB baryon with memory map and NO blinding
 ks_spectrum_hisq_gb_baryon_no_sink_links::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
-	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DNO_SINK_LINKS"
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DNO_SINK_LINKS" \
+	"EXTRA_OBJECTS += ${GB_BARYON_OBJECTS}"
 
 # GB baryon with memory map and blinding (blinding applied for 3pt baryon correlators only)
 ks_spectrum_hisq_gb_baryon_blind_no_sink_links::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
-	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS"
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS" \
+	"EXTRA_OBJECTS += ${GB_BARYON_OBJECTS}"
+
+# GB baryon with memory map and blinding with U(1)
+ks_spectrum_hisq_u1_gb_baryon_blind_no_sink_links::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS -DU1_FIELD" \
+	"EXTRA_OBJECTS += ${GB_BARYON_OBJECTS} ${G_U1_OBJECTS}"
 
 ks_spectrum_hisq_gb_baryon_blind_no_sink_links_no_gauss_links::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
-        "DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS -DNO_GAUSS_SMEAR_LINKS"
+        "DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS -DNO_GAUSS_SMEAR_LINKS" \
+	"EXTRA_OBJECTS += ${GB_BARYON_OBJECTS}"
 
 ks_spectrum_hisq_gb_baryon_blind_one_sided_shift::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
-	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS -DONE_SIDED_SHIFT_GB"
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DGB_BARYON_MMAP -DBLIND -DNO_SINK_LINKS -DONE_SIDED_SHIFT_GB" \
+	"EXTRA_OBJECTS += ${GB_BARYON_OBJECTS}"
 
 # Extremly slow implementation. Use for debug only
 ks_spectrum_hisq_gb_baryon_blind_no_mmap::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
-	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DBLIND -DNO_SINK_LINKS"
+	"DEFINES += -DEIGEN_QIO -DGB_BARYON -DBLIND -DNO_SINK_LINKS" \
+	"EXTRA_OBJECTS += ${GB_BARYON_OBJECTS}"
 
 clean:
 	-/bin/rm -f *.o quark_action.h

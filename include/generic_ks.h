@@ -13,6 +13,8 @@
 #include "../include/su3.h"
 #include "../include/comdefs.h"
 #include "../include/info.h"
+#include "../include/params_rhmc.h"
+#include "../include/imp_ferm_links.h"
 #include <stdint.h>
 
 void copy_latvec(field_offset src, field_offset dest, int parity);
@@ -96,6 +98,71 @@ void gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
 void gauss_smear_reuse_2link_QUDA( int flag );
 void gauss_smear_delete_2link_QUDA();
 
+/* grsource_rhmc.c */
+void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
+			int parity, su3_vector **multi_x, su3_vector *sumvec,
+			Real my_rsqmin, int my_niter, int my_prec,
+			imp_ferm_links_t *fn, int naik_term_epsilon_index,
+			Real naik_term_epsilon);
+
+/* This version takes dest to be a field */
+void grsource_imp_rhmc_field( su3_vector *dest, params_ratfunc *rf,
+			      int parity, su3_vector **multi_x, su3_vector *sumvec,
+			      Real my_rsqmin, int my_niter, int my_prec,
+			      imp_ferm_links_t *fn, int naik_term_epsilon_index,
+			      Real naik_term_epsilon);
+
+/* ks_ratinv.c */
+int ks_rateval(
+    su3_vector *dest,   /* answer vector */
+    field_offset src,   /* source vector (for a_0 term) */
+    su3_vector **psim,  /* solution vectors  from multiroot CG */
+    Real *residues,     /* the residues */
+    int order,          /* order of approximation */
+    int parity          /* parity to be worked on */
+    );
+
+int ks_rateval_field(	
+    su3_vector *dest,	/* answer vector */
+    su3_vector *src,	/* source vector (for a_0 term) */
+    su3_vector **psim,	/* solution vectors  from multiroot CG */
+    Real *residues,	/* the residues */
+    int order,		/* order of approximation */
+    int parity		/* parity to be worked on */
+			);
+
+int ks_ratinv(	/* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *roots,	/* the roots */
+    Real *residues,	/* the residues (if not zero, there are used to scale the shifted target residual) */
+    int order,		/* order of rational function approx */
+    int my_niter,	/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precicion */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr,/* final residue squared */
+    imp_ferm_links_t *fn,     /* Fermion links */
+    int naik_term_epsilon_index, /* Index of naik term common to this set */
+    Real naik_term_epsilon /* Epsilon common to this set */
+		);
+
+int ks_ratinv_field(	/* Return value is number of iterations taken */
+    su3_vector * src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *roots,	/* the roots */
+    Real *residues,     /* residues */
+    int order,		/* order of rational function approx */
+    int my_niter,	/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precicion */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr,/* final residue squared */
+    imp_ferm_links_t *fn_const, /* Fermion links */
+    int naik_term_epsilon_index, /* Index of naik term common to this set */
+    Real naik_term_epsilon /* Epsilon common to this set */
+			);
+
 /* naik_epsilon_utilities.c */
 int fill_eps_naik(double eps_naik_table[], int *n, double next_eps_naik);
 int index_eps_naik(double eps_naik_table[], int n, double find_eps_naik);
@@ -121,6 +188,10 @@ void path_transport_connection_hisq( su3_matrix * src, su3_matrix **links,
     su3_matrix * dest, int parity, int *dir, int length );
 void link_transport_connection_hisq( su3_matrix * src, su3_matrix *links,
     su3_matrix * dest, su3_matrix * work, int dir );
+
+/* load_rhmc_params.c */
+
+params_rhmc *load_rhmc_params(char filename[], int n_pseudo);
 
 /* ploop3_ks.c */
 complex ploop_ks(void);

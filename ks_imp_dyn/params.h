@@ -45,7 +45,6 @@ typedef struct {
 	Real u0; /* tadpole parameter */
 	int niter; 	/* maximum number of c.g. iterations */
         int nrestart;   /* maximum number of c.g. restarts */
-        ks_eigen_param eigen_param; /* Parameters for eigensolver. Not used for HMC */
         int npbp_reps_in;   /* Number of random sources */
         int prec_pbp;       /* Precision of pbp measurements */
 	Real rsqmin,rsqprop;  /* for deciding on convergence */
@@ -61,6 +60,10 @@ typedef struct {
 	int saveflag;   /* what to do with lattice at end */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
+	/* Eigenparameters (not used for HMC) */
+        ks_eigen_param eigen_param; /* Parameters for eigensolver */
+        char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
+        char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
 }  params;
 
 #endif /* _PARAMS_H */

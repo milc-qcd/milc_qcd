@@ -44,6 +44,7 @@ void d2f_4cmplx(complex *a,fcomplex *b);
 void cold_u1lat(void);
 gauge_file *setup_u1_output_gauge_file(void);
 gauge_file *r_u1_serial_i(char *filename);
+gauge_file *r_u1_parallel_i(char *filename);
 int read_u1_gauge_hdr(gauge_file *gf, int parallel);
 
 #endif /* _IO_U1LAT_H */

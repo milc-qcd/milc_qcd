@@ -44,7 +44,8 @@ void update_u(Real eps){
     } // dir
   }
 
-  qudaUpdateU(MILC_PRECISION, eps, momentum, gauge);
+  QudaMILCSiteArg_t arg = newQudaMILCSiteArg();
+  qudaUpdateU(MILC_PRECISION, eps, *arg);
 
   // Copy updated gauge field back to site structure
   FORALLSITES(i,s){

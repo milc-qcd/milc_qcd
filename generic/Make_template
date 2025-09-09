@@ -45,6 +45,7 @@ G_ALL = \
  gridMap.o \
  hvy_pot.o \
  io_ansi.o \
+ io_ape_links.o \
  io_dcap.o \
  io_detect.o \
  io_helpers.o \
@@ -205,6 +206,8 @@ glueball_op.o: ../generic/glueball_op.c
 gridMap.o: ../generic/gridMap.cc ../generic/gridMap.h
 	${CXX} -c ${CXXFLAGS} $<
 hvy_pot.o: ../generic/hvy_pot.c
+	${CC} -c ${CFLAGS} $<
+io_ape_links.o: ../generic/io_ape_links.c
 	${CC} -c ${CFLAGS} $<
 io_ansi.o: ../generic/io_ansi.c
 	${CC} -c ${CFLAGS} $<

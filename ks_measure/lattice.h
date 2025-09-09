@@ -137,7 +137,7 @@ EXTERN Real g_splaq,g_tplaq;	/* global U(1) plaquette measures */
 
 /* For eigenpair calculation */
 EXTERN int Nvecs_tot;
-EXTERN double *eigVal; /* eigenvalues of M^adj M */
+EXTERN Real *eigVal; /* eigenvalues of M^adj M */
 EXTERN su3_vector **eigVec; /* eigenvectors */
 
 #endif /* _LATTICE_H */

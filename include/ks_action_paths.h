@@ -45,15 +45,6 @@ typedef struct {
 } ks_action_paths_hisq;
 
 typedef struct {
-  int n_naiks;
-  double eps_naik[MAX_NAIK];
-  ks_component_paths p1, p2, p3;  // TO BE DECIDED
-  int umethod;
-  int ugroup;
-  int constructed;       /* Boolean */
-} ks_action_paths_hypisq;
-
-typedef struct {
   ks_component_paths p;
   int constructed;         /* Boolean */
 } ks_action_paths;

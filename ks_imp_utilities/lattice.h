@@ -61,28 +61,9 @@ typedef struct {
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */
  	Real phase[4];
-#if 0
-	/* 3 element complex vectors */
- 	su3_vector phi;	        /* Gaussian random source vector */
- 	su3_vector resid;	/* conjugate gradient residual vector */
- 	su3_vector cg_p;	/* conjugate gradient change vector */
- 	su3_vector xxx;	        /* solution vector = Kinverse * phi */
- 	su3_vector xxx1;        /* solution vector = Kinverse * phi */
- 	su3_vector xxx2;        /* solution vector = Kinverse * phi */
- 	su3_vector ttt;		/* temporary vector, for K*ppp */
  	su3_vector g_rand;	/* Gaussian random vector*/
 	/* Use trick of combining xxx=D^adj D)^(-1) on even sites with
 	   Dslash times this on odd sites when computing fermion force */
-
-	/* temporary vectors and matrices */
-	su3_vector tempvec[4];	/* One for each direction */
-#ifdef FN
-	su3_vector templongvec[4];	/* One for each direction */
-        su3_vector templongv1;
-#endif
-	su3_matrix tempmat1,staple;
-#endif
-
 } site;
 
 /* End definition of site structure */
@@ -177,11 +158,16 @@ EXTERN fermion_links_t        *fn_links;
 
 /* Naik terms */
 EXTERN int n_order_naik_total;
-EXTERN int n_orders_naik[MAX_MASS];
 
 /* For eigenpair calculation */
 EXTERN int Nvecs_tot;
-EXTERN double *eigVal; /* eigenvalues of D^dag D */
+EXTERN Real *eigVal; /* eigenvalues of D^dag D */
 EXTERN su3_vector **eigVec; /* eigenvectors */
 
+EXTERN int n_pseudo;
+EXTERN int max_rat_order;
+
+EXTERN int n_order_naik_total;
+EXTERN int n_pseudo_naik[MAX_N_PSEUDO];
+EXTERN int n_orders_naik[MAX_N_PSEUDO];
 #endif /* _LATTICE_H */

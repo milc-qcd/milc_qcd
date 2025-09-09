@@ -60,6 +60,8 @@ exec ks_spectrum_hisq     2      -         spectrum2  PBP: FACTION: PBP: FACTION
      extra-output      ks_spectrum_hisq.spectrum2.2.corrfile_t0  --- EOF
 exec ks_spectrum_hisq     2      -         periodic  PLAQ: NERSC     
      extra-output      ks_spectrum_hisq.periodic.2.corrfile_t0  --- EOF
+exec ks_spectrum_hisq     2      "WANT_APE_IO=true","CLCG=-DSCALE_PROP"  allHISQ   PLAQ: NERSC     
+     extra-output      ks_spectrum_hisq.allHISQ.2.corrfile  --- EOF
 exec ks_spectrum_hisq_mu_eos     2      -         -    PB_DMDEPS_P RUNNING 'SELECT=PB|FACTION|TR|trM|trlnM|trMi|trdM'
 
 #exec ks_spectrum_deflate_hisq   2      -          -    Checking End  Checking End Checking End  Checking End

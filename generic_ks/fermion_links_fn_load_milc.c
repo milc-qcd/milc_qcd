@@ -3,6 +3,7 @@
 
 /* Methods for the fn_links_t structure  */
 /* Compute and load the fat and long links. */
+/* CPU version only */
 
 #include "generic_ks_includes.h"
 #define IMP_QUARK_ACTION_DEFINE_PATH_TABLES
@@ -13,13 +14,9 @@
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
 
-#ifdef QCDOC
-#define special_alloc qcdoc_alloc
-#define special_free qfree
-#else
+/* Stub in case we want special ones */
 #define special_alloc malloc
 #define special_free free
-#endif
 
 /*-------------------------------------------------------------------*/
 /* Special memory allocations for field with one su3_matrix per site */
@@ -93,8 +90,6 @@ load_lnglinks(info_t *info, su3_matrix *lng, ks_component_paths *p,
 for(j=0;j<q_paths[ipath].length;j++)printf("\t%d", q_paths[ipath].dir[j]);
 printf("\n");**/
 
-//	path_product_field( q_paths[ipath].dir, q_paths[ipath].length, 
-//			    tempmat1, links );
 	path_product_fields( links, q_paths[ipath].dir, q_paths[ipath].length, 
 			     tempmat1 );
 	FORALLFIELDSITES_OMP(i,private(long1)){
@@ -189,9 +184,6 @@ load_fatlinks_cpu(info_t *info, su3_matrix *fat, ks_component_paths *p,
 for(j=0;j<q_paths.[ipath].length;j++)printf("\t%d", q_paths[ipath].dir[j]);
 printf("\n");**/
 
-//	path_product( q_paths[ipath].dir, q_paths[ipath].length, tempmat1 );
-//	path_product_field( q_paths[ipath].dir, q_paths[ipath].length, 
-//			    tempmat1, links );
 	path_product_fields( links, q_paths[ipath].dir, q_paths[ipath].length, 
 			     tempmat1 );
 	FORALLFIELDSITES_OMP(i,private(fat1)){
@@ -200,7 +192,7 @@ printf("\n");**/
           scalar_mult_add_su3_matrix( fat1,
 	    &staple[i], -q_paths[ipath].coeff, fat1 );
 		/* minus sign in coeff. because we used backward path*/
-	}
+	  “z,	}
         END_LOOP_OMP
     } /* ipath */
   } /* loop over directions */
@@ -228,8 +220,6 @@ printf("\n");**/
 
    for(nu=XUP; nu<=TUP; nu++) if(nu!=dir)
      {
-//       compute_gen_staple_site(staple,dir,nu,F_OFFSET(link[dir]),
-//			       *t_fl, act_path_coeff.three_staple);
 
        compute_gen_staple_field(staple, dir, nu, links + dir, 4,
 				fat, p->act_path_coeff.three_staple, links);
@@ -280,11 +270,9 @@ load_fn_links_cpu(info_t *info, fn_links_t *fn, ks_action_paths *ap,
   double final_flop = 0;
   double dtime = -dclock();
 
-  //  fn->fat = create_fatlinks();
   load_fatlinks(info, fn->fat, p, links);
   final_flop += info->final_flop;
 
-  //  fn->lng = create_lnglinks();
   load_lnglinks(info, fn->lng, p, links);
   final_flop += info->final_flop;
 
@@ -297,23 +285,4 @@ load_fn_links_cpu(info_t *info, fn_links_t *fn, ks_action_paths *ap,
   info->final_sec = dtime;
   info->final_flop = final_flop;
 }
-
-#ifdef USE_FL_GPU
-void load_fn_links_gpu(info_t *info, fn_links_t *fn, ks_action_paths *ap,
-		       su3_matrix *links, int want_back)
-{
-  ks_component_paths *p = &ap->p;
-  double dtime = -dclock();
-
-  load_fatlonglinks_gpu(info, fn->fat, fn->lng, p, links);
-
-  if(want_back)
-    load_fn_backlinks(fn);
-  else
-    destroy_fn_backlinks(fn);
-
-  dtime += dclock();
-  info->final_sec = dtime;
-}
-#endif
 

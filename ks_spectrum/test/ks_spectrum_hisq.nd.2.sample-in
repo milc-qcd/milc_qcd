@@ -53,7 +53,7 @@ number_of_sets 1
 
 # Parameters for set 0
 
-set_type multimass
+set_type single
 inv_type UML
 max_cg_iterations 300
 max_cg_restarts 5

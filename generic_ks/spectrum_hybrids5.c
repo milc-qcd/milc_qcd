@@ -1,4 +1,5 @@
 /******** spectrum_hybrids5.c *************/
+/* OBSOLETE */
 /* MIMD version 7*/
 /* DT 11/21/95 started */
 /* DT 2/21/96 version2.  Make it easy to add operators.  Keep collection

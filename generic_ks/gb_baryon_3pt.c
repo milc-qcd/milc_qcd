@@ -237,7 +237,6 @@ apply_par_xport_3pt(ks_prop_field *dest, ks_prop_field *src,
   destroy_ksp_field(tvec0);
   #endif
   double end = dclock();
-  printf("Time spent in apply_par_xport_3pt with n = %d, dir = (%d, %d, %d): %f sec\n", n, dir[0], dir[1], dir[2], end-start);
   }
 
 #endif // GB_BARYON

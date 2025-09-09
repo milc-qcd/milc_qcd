@@ -1,4 +1,5 @@
 /******************** dslash_fn_qdp_P.c ****************************/
+/* OBSOLETE */
 /* MILC Version 7 */
 
 /* Note: This is an include file for dslash_fn_qdp_F.c and

@@ -1,9 +1,9 @@
 SU3 staggered valence fermions
-MIMD version 7.7.5
+MIMD version milc_qcd7_8_1-1027-g095c-dirty
 Machine = QMP (portable), with 1 nodes
-Host(0) = aquila.physics.utah.edu
+Host(0) = falco.physics.utah.edu
 Username = detar
-start: Tue Mar 13 16:20:34 2012
+start: Tue Nov 26 12:38:57 2024
 
 Options selected...
 Generic single precision
@@ -21,8 +21,9 @@ iseed 5682304
 job_id 203696.kaon2.fnal.gov
 LAYOUT = Hypercubes, options = hyper_prime,
 QMP with automatic hyper_prime layout
-ON EACH NODE 8 x 8 x 8 x 8
+ON EACH NODE (RANK) 8 x 8 x 8 x 8
 Mallocing 1.7 MBytes per node for lattice
+Aggregate time to setup 2.149987e-02
 
 
 ######################################################################
@@ -37,6 +38,8 @@ staple_weight 0
 ape_iter 0
 coordinate_origin 0 0 0 0 
 time_bc antiperiodic
+# Eigenpairs
+max_number_of_eigenpairs 0
 # Chiral condensate and related measurements
 number_of_pbp_masses 2
 max_cg_iterations 300
@@ -53,6 +56,7 @@ rel_error_for_propagator 0
 number_of_base_sources 1
 # base source 0
 corner_wall
+field_type KS
 subset full
 t0 0
 source_label C
@@ -67,6 +71,8 @@ forget_source
 # Description of propagators
 number_of_sets 1
 # Parameters common to all members of this set
+set_type multimass
+inv_type UML
 max_cg_iterations 300
 max_cg_restarts 5
 check yes
@@ -105,7 +111,7 @@ number_of_mesons 2
 # pair 0
 pair 0 0 
 spectrum_request meson
-save_corr_fnal ks_spectrum_hisq.spectrum2.1.corrfile_t0.test-out
+save_corr_fnal ks_spectrum_asqtad.spectrum2.1.corrfile_t0.test-out
 r_offset 0 0 0 0 
 number_of_correlators 8
 correlator PION_PS p000   1 * 1  pion5  0  0  0  E  E  E
@@ -119,7 +125,7 @@ correlator RHO_PV p000   1 * 3  rhoz0  0  0  0  E  E  E
 # pair 1
 pair 1 1 
 spectrum_request meson
-save_corr_fnal ks_spectrum_hisq.spectrum2.1.corrfile_t0.test-out
+save_corr_fnal ks_spectrum_asqtad.spectrum2.1.corrfile_t0.test-out
 r_offset 0 0 0 0 
 number_of_correlators 8
 correlator PION_PS p000   1 * 1  pion5  0  0  0  E  E  E
@@ -135,29 +141,36 @@ number_of_baryons 2
 # mass 0
 triplet 0 0 0 
 spectrum_request baryon
-save_corr_fnal ks_spectrum_hisq.spectrum2.1.corrfile_t0.test-out
+save_corr_fnal ks_spectrum_asqtad.spectrum2.1.corrfile_t0.test-out
 r_offset 0 0 0 0 
 number_of_correlators 1
 correlator NUCLEON   1 * 1.000000  nucleon
 # mass 1
 triplet 1 1 1 
 spectrum_request baryon
-save_corr_fnal ks_spectrum_hisq.spectrum2.1.corrfile_t0.test-out
+save_corr_fnal ks_spectrum_asqtad.spectrum2.1.corrfile_t0.test-out
 r_offset 0 0 0 0 
 number_of_correlators 1
 correlator NUCLEON   1 * 1.000000  nucleon
-Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l8888
+Aggregate time to read parameters 2.970695e-04
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l8888
 Time stamp Tue Mar 13 15:47:22 2012
 Checksums 4f9d000e 8d72f72e OK
-Time to reload gauge configuration = 2.185202e-02
+Time to reload gauge configuration = 1.900911e-03
 CHECK PLAQ: 1.779002e+00 1.782359e+00
 CHECK NERSC LINKTR: -6.456386e-04 CKSUM: 4a3bbf43
 Unitarity checked.  Max deviation 2.98e-07
-Time to check unitarity = 1.939201e-02
-ndim = 4
-numsites = 4096
-len = 8 8 8 8
-nsquares = 1 1 1 1
+Time to check unitarity = 6.451607e-04
+Aggregate time to read lattice 3.316879e-03
+Fixing to Coulomb gauge
+step 19 av gf action 8.73432130e-01, delta 6.467e-04
+step 39 av gf action 8.76698077e-01, delta 4.321e-05
+step 59 av gf action 8.77135962e-01, delta 1.049e-05
+step 79 av gf action 8.77249777e-01, delta 2.891e-06
+GFIX: Ended at step 85. Av gf action 8.77263784e-01, delta 1.937e-06
+Aggregate time to gauge fix 7.873297e-02
+Time to APE smear 7.331371e-04 sec
+Aggregate time to save lattice 0.000000e+00
 "O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
 path coefficients: npath  path_coeff  multiplicity
                     0      6.250000e-01     8
@@ -166,41 +179,91 @@ path coefficients: npath  path_coeff  multiplicity
                     3      2.732385e-02     192
                     4      -6.022150e-03     384
                     5      -1.092954e-01     48
-Time to APE smear 1.978874e-03 sec
-PBP: mass 3.000000e-02     3.388520e-02  4.275022e-02  1.594010e-04  1.593493e-04 ( 1 of 1 )
-FACTION: mass = 3.000000e-02,  1.479099e+00 ( 1 of 1 )
-PBP: mass 5.000000e-02     5.301158e-02  7.507282e-02  -1.216142e-03  -1.216095e-03 ( 1 of 1 )
-FACTION: mass = 5.000000e-02,  1.481182e+00 ( 1 of 1 )
-Fixing to Coulomb gauge
-GFIX: Ended at step 85. Av gf action 8.77263784e-01, delta 1.937e-06
-Time to APE smear 2.039909e-03 sec
+FLTIME: time = 1.044393e-02 (asqtad F) mflops = 2.484914e+04
+Aggregate time to create fermion links 1.197410e-02
+Aggregate time to calculate Dirac eigenpairs 0.000000e+00
+UML inversion with mass 0.030000
+CONGRAD5: time = 1.782489e-02 (fn F) masses = 1 iters = 106 mflops = 2.891277e+04
+ OK converged final_rsq= 5.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 106
+CONGRAD5: time = 4.020929e-03 (fn F) masses = 1 iters = 23 mflops = 2.781071e+04
+ OK converged final_rsq= 9.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 23
+PBP: mass 3.000000e-02     2.931736e-02  5.159879e-02  -5.314715e-03  -5.314726e-03 ( 1 of 1 )
+FACTION: mass = 3.000000e-02,  1.478696e+00 ( 1 of 1 )
+UML inversion with mass 0.050000
+CONGRAD5: time = 1.627588e-02 (fn F) masses = 1 iters = 102 mflops = 3.046957e+04
+ OK converged final_rsq= 5.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 102
+CONGRAD5: time = 2.892971e-03 (fn F) masses = 1 iters = 17 mflops = 2.857035e+04
+ OK converged final_rsq= 9.8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 17
+PBP: mass 5.000000e-02     5.324116e-02  7.980878e-02  1.540608e-02  1.540601e-02 ( 1 of 1 )
+FACTION: mass = 5.000000e-02,  1.480957e+00 ( 1 of 1 )
+Aggregate time to calculate pbp, etc 4.448700e-02
 END OF HEADER
+Aggregate time to create sources 1.208782e-04
 Mass= 0.03 source CORNER residue= 1e-06 rel= 0
 Mass= 0.05 source CORNER residue= 1e-06 rel= 0
 Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
-solve_ksprop: color = 0
-solve_ksprop: color = 1
-solve_ksprop: color = 2
+solve_ksprop: color index = 0; all masses
+UML inversion with mass 0.030000
+CONGRAD5: time = 2.213812e-02 (fn F) masses = 1 iters = 142 mflops = 3.118590e+04
+ NOT converged final_rsq= 6.4e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 142 
+CONGRAD5: time = 9.131432e-04 (fn F) masses = 1 iters = 4 mflops = 2.129766e+04
+ OK converged final_rsq= 7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 4
+UML inversion with mass 0.050000
+CONGRAD5: time = 2.021694e-02 (fn F) masses = 1 iters = 136 mflops = 3.270650e+04
+ NOT converged final_rsq= 5.1e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 136 
+CONGRAD5: time = 8.749962e-04 (fn F) masses = 1 iters = 4 mflops = 2.222616e+04
+ OK converged final_rsq= 6.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 4
+solve_ksprop: color index = 1; all masses
+UML inversion with mass 0.030000
+CONGRAD5: time = 2.115393e-02 (fn F) masses = 1 iters = 144 mflops = 3.309651e+04
+ NOT converged final_rsq= 6.8e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 144 
+CONGRAD5: time = 8.740425e-04 (fn F) masses = 1 iters = 4 mflops = 2.225041e+04
+ OK converged final_rsq= 7.3e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 4
+UML inversion with mass 0.050000
+CONGRAD5: time = 2.022290e-02 (fn F) masses = 1 iters = 138 mflops = 3.317770e+04
+ NOT converged final_rsq= 5.5e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 138 
+CONGRAD5: time = 8.838177e-04 (fn F) masses = 1 iters = 4 mflops = 2.200432e+04
+ OK converged final_rsq= 6.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 4
+solve_ksprop: color index = 2; all masses
+UML inversion with mass 0.030000
+CONGRAD5: time = 2.077603e-02 (fn F) masses = 1 iters = 142 mflops = 3.323046e+04
+ NOT converged final_rsq= 7.6e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 142 
+CONGRAD5: time = 8.721352e-04 (fn F) masses = 1 iters = 4 mflops = 2.229908e+04
+ OK converged final_rsq= 8.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 4
+UML inversion with mass 0.050000
+CONGRAD5: time = 1.989794e-02 (fn F) masses = 1 iters = 136 mflops = 3.323085e+04
+ NOT converged final_rsq= 5.5e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 136 
+CONGRAD5: time = 8.730888e-04 (fn F) masses = 1 iters = 4 mflops = 2.227472e+04
+ OK converged final_rsq= 6.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 4
 Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Aggregate time to compute propagators 1.318960e-01
+destroy prop[0]
+Aggregate time to generate sink operator 8.010864e-05
+destroy prop[1]
+Aggregate time to generate sink operator 7.820129e-05
+destroy source[0]
+destroy source[1]
 Mesons for quarks 0 and 0
-Time for diagonal mesons 1.584315e-02
-Time for printing correlator 3.340244e-04
+Time for diagonal mesons 1.886129e-03
+Time for printing correlator 3.089905e-04
 Mesons for quarks 1 and 1
-Time for diagonal mesons 1.598001e-02
-Time for printing correlator 1.277924e-04
+Time for diagonal mesons 1.850843e-03
+Time for printing correlator 9.894371e-05
+Aggregate time to tie meson correlators 4.198074e-03
 Baryons for quarks 0, 0, and 0
-Time for baryons 2.059937e-04
-Time for printing correlator 4.816055e-05
+Time for baryons 3.695488e-05
+Time for printing correlator 6.294250e-05
 Baryons for quarks 1, 1, and 1
-Time for baryons 1.990795e-04
-Time for printing correlator 4.005432e-05
+Time for baryons 3.504753e-05
+Time for printing correlator 5.698204e-05
+Aggregate time to tie baryon correlators 2.350807e-04
 RUNNING COMPLETED
-Time = 1.975518e+01 seconds
-total_iters = 1382
+Time = 2.979219e-01 seconds
+total_iters = 1110
 destroy quark[0]
 destroy quark[1]
 
 
 ask_starting_lattice(0): EOF on input.
-exit: Tue Mar 13 16:20:54 2012
+exit: Tue Nov 26 12:38:57 2024
 

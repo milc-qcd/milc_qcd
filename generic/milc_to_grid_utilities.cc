@@ -17,7 +17,7 @@
 #include "../include/mGrid/mGrid_assert.h"
 
 extern "C" {
-#include "generic_includes.h"
+  extern	int nx,ny,nz,nt;	/* lattice dimensions defined in lattice.h */
 #include "../include/generic_grid.h"
   void check_create(void);
 }

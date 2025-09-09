@@ -7,7 +7,7 @@
 // Modified for general improved action 5/24/97  DT
 //
 // Description: Setup routines for improved fermion lattices
-//              Includes lattice structures for Naik imroved
+//              Includes lattice structures for Naik improved
 //              staggered Dirac operator
 //         Ref: S. Naik, Nucl. Phys. B316 (1989) 238
 //              Includes a parameter prompt for Lepage-Mackenzie
@@ -18,7 +18,7 @@
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
-#include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "ks_imp_utilities_includes.h"	/* definitions files and prototypes */
 #include <lattice_qdp.h>
 
 EXTERN gauge_header start_lat_hdr;
@@ -74,22 +74,24 @@ int
 initial_set()
 {
   int prompt=0,status;
-#ifdef FIX_NODE_GEOM
-  int i;
-#endif
   /* On node zero, read lattice size, seed and send to others */
   if(mynode()==0){
     /* print banner */
     printf("SU3 with improved KS action\n");
-#ifdef CHECK_INVERT
+#if defined(CHECK_INVERT)
     printf("Inversion checking\n");
-#else
-#ifdef FERMION_FORCE
+#elif defined(FERMION_FORCE)
     printf("Fermion-force checking\n");
-#else
+#elif defined(LINK_FATTENING)
     printf("Creating FN link files\n");
+#elif defined(CHECK_LINK_FATTENING)
+    printf("Checking FN link fattening files\n");
+#elif defined(REUNIT)
+    printf("Reunitarization checking\n");
+#else
+#error "Must specify what is being checked"
 #endif
-#endif
+
     printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 
@@ -106,8 +108,11 @@ initial_set()
 			   param.ionode_geometry, 4);
 #endif
 #endif
-    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
-
+    IF_OK {
+      int iseed_in;
+      status += get_i(stdin, prompt,"iseed", &iseed_in);
+      param.iseed = iseed_in;
+    }
     if(status>0) param.stopflag=1; else param.stopflag=0;
   } /* end if(mynode()==0) */
 
@@ -126,10 +131,10 @@ initial_set()
   iseed=param.iseed;
 
 #ifdef FIX_NODE_GEOM
-  for(i = 0; i < 4; i++)
+  for(int i = 0; i < 4; i++)
     node_geometry[i] = param.node_geometry[i];
 #ifdef FIX_IONODE_GEOM
-  for(i = 0; i < 4; i++)
+  for(int i = 0; i < 4; i++)
     ionode_geometry[i] = param.ionode_geometry[i];
 #endif
 #endif
@@ -244,7 +249,7 @@ readin(int prompt)
 	  }
 	} else {
 	  if(param.ksp[i].naik_term_epsilon > param.ksp[i-1].naik_term_epsilon){
-	    node0_printf("Naik term epsilons must be in descending order.");
+	    node0_printf("Naik term epsilons must be in descending order.");  // Why?
 	    status++;
 	  }
 	}
@@ -276,11 +281,16 @@ readin(int prompt)
       }
 #endif
     }
-#endif
-#ifdef FERMION_FORCE
-    /* find out what kind of color matrix momentum to use */
+#endif // CHECK_INVERT or FERMION_FORCE
+#if defined(FERMION_FORCE) || defined(CHECK_FATTENING)
+    /* Optional answer for fat links or fermion force */
     IF_OK status += ask_color_matrix( prompt, &(param.ansflag[0]),
 				      param.ansfile[0] );
+#ifdef CHECK_FATTENING
+    /* Optional answer for fat links or long links */
+    IF_OK status += ask_color_matrix( prompt, &(param.ansflag[1]),
+				      param.ansfile[1] );
+#endif
 #endif
 
 
@@ -305,8 +315,9 @@ readin(int prompt)
   /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));
 
-  if( param.stopflag != 0 )
+  if( param.stopflag != 0 ){
     return param.stopflag;
+  }
 
   if(prompt==2)return 0;
 

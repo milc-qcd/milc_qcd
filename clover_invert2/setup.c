@@ -146,7 +146,11 @@ static int initial_set(){
 			   param.ionode_geometry, 4);
 #endif
 #endif
-    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
+    IF_OK {
+      int iseed_in;
+      status += get_i(stdin, prompt,"iseed", &iseed_in);
+      param.iseed = iseed_in;
+    }
     IF_OK status += get_s(stdin, prompt,"job_id",param.job_id);
     
     if(status>0) param.stopflag=1; else param.stopflag=0;
@@ -501,7 +505,7 @@ int readin(int prompt) {
 #if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU)
       if(param.qic[i].prec != MILC_PRECISION){
 	node0_printf("WARNING: Compiled precision %d overrides request\n",MILC_PRECISION);
-	node0_printf("QOP or CG_GPU compilation is required for mixed precision\n");
+	node0_printf("NOTE: QOP or CG_GPU compilation is required for mixed precision\n");
 	param.qic[i].prec = MILC_PRECISION;
       }
 #endif
@@ -633,7 +637,7 @@ int readin(int prompt) {
     }
 
     IF_OK for(i = 0; i < param.num_qk; i++){
-      char *check_tag;
+      const char *check_tag;
 
       /* Initialize dependency */
       param.quark_dep_qkno[i] = 0;

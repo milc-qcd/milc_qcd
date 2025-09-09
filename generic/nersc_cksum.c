@@ -56,7 +56,8 @@ nersc_cksum( void ) {
 
 
 void d_linktrsum(double_complex *linktrsum) {
-  int i,dir;
+  size_t i;
+  int dir;
   site *s;
   su3_matrix *a;
 

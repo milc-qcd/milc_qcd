@@ -8,7 +8,7 @@
 #include "../include/complex.h"
 #include "../include/su3.h"
 
-void uncompress_anti_hermitian( anti_hermitmat *mat_antihermit,
+void uncompress_anti_hermitian( const anti_hermitmat * const mat_antihermit,
 	su3_matrix *mat_su3 ) {
 /* uncompresses an anti_hermitian su3 matrix */
         Real temp1;

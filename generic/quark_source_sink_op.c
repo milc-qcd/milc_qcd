@@ -95,9 +95,9 @@
 #include "../include/openmp_defs.h"
 #include <string.h>
 #ifdef HAVE_QIO
+#include "../include/io_scidac_ks.h"
 #include <qio.h>
 #include "../include/io_scidac.h"
-#include "../include/io_scidac_ks.h"
 #include "../include/io_scidac_w.h"
 #endif
 #ifdef HAVE_DIRAC
@@ -105,7 +105,6 @@
 #endif
 #ifdef HAVE_KS
 #include "../include/generic_ks.h"
-#include "../ks_spectrum/ks_spectrum_includes.h"
 #endif
 
 /*-------------------------------------------------------------*/
@@ -946,6 +945,55 @@ get_spin_taste(void){
   return spin_taste;
 }
 
+#if 0 /* Hasn't been used */
+/*------------------------------------------------------------------*/
+/**
+    Almost identical to the definitions of sym_shift_field in :    
+    flavor_ops2.c, spin_taste_ops.c                     
+    Modify source by symmetric shifting in both directions.
+    Rephases new source such that it has same phase on each color
+    as initial source.
+ */
+static void
+one_link_sym_shift_source(int dir, su3_vector *dest, su3_vector *src,
+                          su3_matrix *links, int use_links){
+  register int i;
+  register site *s;
+  msg_tag *tag[2];
+  su3_vector *tvec0 = create_v_field();
+
+  tag[0] = start_gather_field(src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0]);
+  /* With ONE_SIDED_SHIFT_GB defined, the shift is asymmetric */
+#ifndef ONE_SIDED_SHIFT_GB
+  
+  tag[1] = start_gather_field(src, sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1]);
+#endif
+  wait_gather(tag[0]);
+
+  FORALLSITES(i,s){
+     /* gen_pt -> dest */
+    su3vec_copy((su3_vector *)gen_pt[0][i], dest+i );
+  }
+  //}
+  cleanup_gather(tag[0]);
+#ifndef ONE_SIDED_SHIFT_GB
+  wait_gather(tag[1]);
+  FORALLSITES(i,s){
+    add_su3_vector(dest+i, (su3_vector*)gen_pt[1][i], dest+i) ;
+  }
+  /* Now divide by 2 eq. (4.2b) of Golterman's Meson paper*/
+  FORALLSITES(i,s){
+    scalar_mult_su3_vector(dest+i, .5, dest+i);
+  }
+  cleanup_gather(tag[1]);
+#endif
+  destroy_v_field(tvec0);
+} /* one_link_sym_shift_source */
+
+#endif
+
+/*------------------------------------------------------------------*/
+
 static void apply_aslash_v(su3_vector *src, 
 			   quark_source_sink_op *qss_op,
 			   int t0){
@@ -994,11 +1042,12 @@ static void apply_aslash_v(su3_vector *src,
   destroy_c_array_field(chi_cs, NMU);
 }
 
-
+#ifdef GB_BARYON
 static void apply_par_xport_v(su3_vector *src, quark_source_sink_op *qss_op){
   apply_par_xport_src_v(src, src, qss_op, NULL); // gb_baryon_src.c
   apply_momentum_v(src, qss_op, qss_op->t0);
 }
+#endif
 
 static void apply_save_vector_src_v(su3_vector *src, 
 			    quark_source_sink_op *qss_op){
@@ -1055,7 +1104,7 @@ static int apply_ks_inverse(su3_vector *v, quark_source_sink_op *qss_op,
   /* Get fn links appropraite to this Naik term epsilon */
   
   restore_fermion_links_from_site(fn_links, my_qic->prec);
-  fn = get_fm_links(fn_links)[inaik];
+  fn = get_fm_links(fn_links, inaik);
 
   /* Apply twist to the boundary links of fn and reset origin of KS
      phases if requested */
@@ -1080,6 +1129,8 @@ static int apply_ks_inverse(su3_vector *v, quark_source_sink_op *qss_op,
   boundary_twist_fn(fn, OFF);
 
   destroy_v_field(src);
+  destroy_fn_links(fn);
+  
   return tot_iters;
 }
 
@@ -1185,7 +1236,7 @@ static void apply_gamma(wilson_vector *src,
 			quark_source_sink_op *qss_op){
   int i;
   site *s;
-  gammatype gam = qss_op->gamma;
+  enum gammatype gam = qss_op->gamma;
   wilson_vector tmp;
 
   FORALLSITES(i,s){
@@ -1493,7 +1544,6 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
 			     int t0){
 
   /* Smearing is done with coordinate stride 2 to preserve taste */
-  printf("Applying covariant smearing with t0 = %d\n", t0);
   double dtime = start_timing();
 
   int op_type       = qss_op->type;
@@ -1650,7 +1700,7 @@ static void hop_vec(su3_vector *src, ks_param *ksp, int dhop, int mu)
   int inaik = 0;
 #endif
   /* Note: we are not restoring the links here and don't set the precision */
-  imp_ferm_links_t *fn = get_fm_links(fn_links)[inaik];
+  imp_ferm_links_t *fn = get_fm_links(fn_links, inaik);
   
   if(src == NULL){
     node0_printf("%s: Error: called with NULL arg\n", myname);
@@ -1676,7 +1726,8 @@ static void hop_vec(su3_vector *src, ks_param *ksp, int dhop, int mu)
   /* result in src */
   copy_v_field(src, v);
 
-  destroy_v_field(v); 
+  destroy_v_field(v);
+  destroy_fn_links(fn);
 
 } /* hop_vec */
 
@@ -1713,8 +1764,10 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
   else if(op_type == MOMENTUM)
     apply_momentum_v(src, qss_op, t0);
 
+#ifdef GB_BARYON
   else if(op_type == PAR_XPORT_SRC_KS)
     apply_par_xport_v(src, qss_op);
+#endif
 
   else if (op_type == SAVE_VECTOR_SRC)
     apply_save_vector_src_v(src, qss_op);
@@ -1857,7 +1910,8 @@ void ksp_sink_op(quark_source_sink_op *qss_op, ks_prop_field *ksp )
 {
   int color;
   su3_vector *v = create_v_field();
-
+  char *create_ks_XML(void);
+  
   /* Initilize source files if saving as source */
   if (qss_op->type  == SAVE_VECTOR_SRC) {
     if(qss_op->qs_save.saveflag != FORGET){

@@ -1,6 +1,6 @@
 /************************* check_invert2.c *******************************/
 /* MIMD version 7 */
-#include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "ks_imp_utilities_includes.h"	/* definitions files and prototypes */
 
 
 /* FOR TESTING: multiply src by Mdagger M and check against dest */

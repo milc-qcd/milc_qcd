@@ -66,14 +66,14 @@ destroy_raw_##P##_##T (MILCTYPE *raw){ \
 #define copy_milc_to_D_G(d,s) p2d_mat(d,s);
 
 static void
-copy_milc_to_F_F(fsu3_matrix *dest, anti_hermitmat *src){
+copy_milc_to_F_F(fsu3_matrix *dest, const anti_hermitmat * const src){
   su3_matrix t;
   uncompress_anti_hermitian( src, &t );
   p2f_mat( dest, &t );
 }
 
 static void
-copy_milc_to_D_F(dsu3_matrix *dest, anti_hermitmat *src){
+copy_milc_to_D_F(dsu3_matrix *dest, const anti_hermitmat *src){
   su3_matrix t;
   uncompress_anti_hermitian( src, &t );
   p2d_mat( dest, &t );
@@ -148,12 +148,12 @@ create_raw4_##P##_##T##_from_site(field_offset src, int milc_parity){ \
 
 #define make_create_raw4_from_field(P, T, RAWTYPE, MILC_SRCTYPE) \
 RAWTYPE ** \
-create_raw4_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
+create_raw4_##P##_##T##_from_field(const MILC_SRCTYPE * const src, int milc_parity){ \
   int coords[4]; \
   int i,j,dir; \
   site *s; \
   RAWTYPE **raw = NULL; \
-  MILC_SRCTYPE *tmp; \
+  const MILC_SRCTYPE *tmp; \
   raw = create_raw4_##P##_##T (); \
   if(raw == NULL)return NULL; \
   FORSOMEPARITY(i,s,milc_parity){ \
@@ -200,7 +200,7 @@ create_raw_##P##_##T##_from_site(field_offset src, int milc_parity){ \
 
 #define make_create_raw_from_field(P, T, RAWTYPE, MILC_SRCTYPE) \
 RAWTYPE * \
-create_raw_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
+create_raw_##P##_##T##_from_field(const MILC_SRCTYPE * const src, int milc_parity){ \
   int coords[4]; \
   int i,j; \
   site *s; \
@@ -238,7 +238,7 @@ create_##P##_##T##_from_site4(field_offset src, int milc_parity){ \
 
 #define make_create_from_field4(P, T, QOPTYPE, RAWTYPE, MILC_SRCTYPE, MILCFLOAT) \
 QOPTYPE * \
-create_##P##_##T##_from_field4(MILC_SRCTYPE *src, int milc_parity){ \
+create_##P##_##T##_from_field4(const MILC_SRCTYPE * const src, int milc_parity){ \
   RAWTYPE **raw; \
   QOPTYPE *qop; \
   raw = create_raw4_##P##_##T##_from_field(src, milc_parity); \
@@ -268,7 +268,7 @@ create_##P##_##T##_from_site(field_offset src, int milc_parity){ \
 
 #define make_create_from_field(P, T, QOPTYPE, RAWTYPE, MILC_SRCTYPE, MILCFLOAT) \
 QOPTYPE * \
-create_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
+create_##P##_##T##_from_field(const MILC_SRCTYPE * const src, int milc_parity){ \
   RAWTYPE *raw; \
   QOPTYPE *qop; \
   raw = create_raw_##P##_##T##_from_field(src, milc_parity); \

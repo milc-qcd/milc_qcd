@@ -115,7 +115,7 @@ poly( double am, double aM, int p, double x) {
 
 /* Use Chebyshev preconditioned operator p(DdagD) vec */
 
-#if defined(PRIMME) || defined(ARPACK)
+#if defined(HAVE_PRIMME) || defined(HAVE_ARPACK)
 static void 
 PDdagD( su3_vector *res, su3_vector *src, ks_eigen_param *eigen_param, imp_ferm_links_t *fn )
 
@@ -218,7 +218,7 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res,
 }
 
 /*****************************************************************************/
-#if defined(PRIMME) || defined(ARPACK)
+#if defined(HAVE_PRIMME) || defined(HAVE_ARPACK)
 
 /* The Matrix_Vec_mult and cleanup_Matrix() */
 
@@ -316,10 +316,33 @@ void print_densities(su3_vector *src, char *tag, int y,int z,int t,
 }
 
 /*****************************************************************************/
+/* Restore the ODD (EVEN) part of KS eigenvectors from the EVEN (ODD) part */
+/* Here we don't normalize the result */
+
+void restore_eigVec(int Nvecs, Real *eigVal, su3_vector **eigVec, int parity,
+		    imp_ferm_links_t *fn)
+{
+  char myname[] = "restore_eigVec";
+  
+  su3_vector *ttt = create_v_field();
+  
+  for(int i=0; i < Nvecs; i++){
+    dslash_fn_field(eigVec[i], ttt, parity, fn);
+    int j;
+    FORSOMEFIELDPARITY(j, parity){
+      complex c = cmplx(0.0,1.0/sqrt(eigVal[i]));
+      c_scalar_mult_su3vec(ttt + j, &c, eigVec[i] + j) ;
+    } END_LOOP;
+  }
+  
+  destroy_v_field(ttt);
+}
+
+/*****************************************************************************/
 /* Reset the eigenvalues from the eigenvectors using the Rayleigh quotient   */
 /* (Needed when the eigenvalues are from a preconditioned operator)          */
 
-void reset_eigenvalues(su3_vector *eigVec[], double *eigVal,
+void reset_eigenvalues(su3_vector *eigVec[], Real *eigVal,
 		       int Nvecs, int parity, imp_ferm_links_t *fn)
 {
   int i,j;
@@ -398,8 +421,8 @@ static void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1,
 /* Use first-order perturbation theory to shift eigenvalues and eigenvectorsa
    from an old to a new Dslash^2 operator */
 
-void perturb_eigpair(su3_vector *eigVec_new[], double *eigVal_new,
-		     su3_vector *eigVec_old[], double *eigVal_old,
+void perturb_eigpair(su3_vector *eigVec_new[], Real *eigVal_new,
+		     su3_vector *eigVec_old[], Real *eigVal_old,
 		     int Nvecs, int parity, imp_ferm_links_t *fn_new,
 		     imp_ferm_links_t *fn_old){
 
@@ -434,7 +457,7 @@ void perturb_eigpair(su3_vector *eigVec_new[], double *eigVal_new,
 /* Check the residues and norms of the eigenvectors                          */
 /* Hiroshi Ono */
 
-void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
+void check_eigres(double *resid, su3_vector *eigVec[], Real *eigVal,
 		  int Nvecs, int parity, imp_ferm_links_t *fn){
 
   su3_vector *ttt;
@@ -461,6 +484,32 @@ void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
   g_vecdoublesum(resid, Nvecs);
   g_vecdoublesum(norm, Nvecs);
 
+  /* Fix the normalization if needed */
+  double tol = 1e-9;
+  int count_renorm = 0;
+  int count_zero = 0;
+  double maxdev = 0;
+  for(i = 0; i < Nvecs; i++){
+    if(norm[i] == 0.){
+      count_zero++;
+    } else {
+      double dev = fabs(sqrt(norm[i])-1.);
+      maxdev = fmax(maxdev, dev);
+      if(dev > tol){
+	count_renorm++;
+	double fact = 1./sqrt(norm[i]);
+	FORSOMEFIELDPARITY_OMP(j,parity,){
+	  scalar_mult_su3_vector( eigVec[i]+j, fact, eigVec[i]+j );
+	} END_LOOP_OMP;
+      }
+    }
+  }
+
+  if(count_zero > 0){
+    node0_printf("check_eigres: %d eigVecs have zero norm\n", count_zero);
+    terminate(1);
+  }
+
   node0_printf("Checking eigensolutions\n");
   for(i = 0; i < Nvecs; i++){
     resid[i] = sqrt(resid[i]/norm[i]);
@@ -468,6 +517,12 @@ void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
     node0_printf("eigVal[%d] = %e ( resid = %e , |eigVec[%d]|-1 = %e )\n",
 		 i, eigVal[i], resid[i], i, norm[i]-1);
   }
+  if(count_renorm > 0){
+    node0_printf("check_eigres: NOTE: %d eigVec norms deviated from 1 by more than %g with max deviation %g.\n",
+		 count_renorm, tol, maxdev);
+    node0_printf("They were renormalized to 1\n");
+  }
+  
   node0_printf("End of eigensolutions\n");
   free(norm);
 }
@@ -504,27 +559,32 @@ static void double_vec_mult(double *a, su3_vector *vec1,
 }
 
 /*****************************************************************************/
-/* Construct odd-site eigenvectors from even                                 */
+/* Construct odd-site (even-site)  eigenvectors from even (odd)              */
 /* (Simply multiply even-site vectors by dslash and normalize                */
 
-void construct_eigen_odd(su3_vector *eigVec[], double eigVal[], 
-			 ks_eigen_param *eigen_param, imp_ferm_links_t *fn){
+void construct_eigen_other_parity(su3_vector *eigVec[], Real eigVal[], 
+				  ks_eigen_param *eigen_param, imp_ferm_links_t *fn){
   
-  char myname[] = "construct_eigen_odd";
+  char myname[] = "construct_eigen_other_parity";
+  //node0_printf("Entered %s\n", myname);
   int i,j;
   double *magsq;
   int Nvecs = eigen_param->Nvecs;
+  int otherparity = 0;
+  /* If parity = ODD we assume we have EVEN eigenvectors and vice-versa */
+  int parity = eigen_param->parity;
+  site *s;
 
-  if(eigen_param->parity != EVEN){
-    node0_printf("%s: ERROR. active_parity must be EVEN\n", myname);
-    terminate(1);
+  switch(parity){
+  case(EVEN): otherparity=ODD; break;
+  case(ODD):  otherparity=EVEN; break;
   }
 
   for(j = 0; j < Nvecs; j++){
-    FORODDFIELDSITES_OMP(i,){
+    FORSOMEPARITY_OMP(i,s,otherparity,){
       clearvec(eigVec[j]+i);
     } END_LOOP_OMP;
-    dslash_field(eigVec[j], eigVec[j], ODD, fn);
+    dslash_field(eigVec[j], eigVec[j], otherparity, fn);
   }
 
   /* If we calculate the 2-norms all at once we do only one large
@@ -535,7 +595,7 @@ void construct_eigen_odd(su3_vector *eigVec[], double eigVal[],
     terminate(1);
   }
 
-  dvecmagsq(magsq, eigVec, ODD, Nvecs);
+  dvecmagsq(magsq, eigVec, otherparity, Nvecs);
 
   /* Normalize the odd-site vectors */
   for(j = 0; j < Nvecs; j++){
@@ -546,7 +606,7 @@ void construct_eigen_odd(su3_vector *eigVec[], double eigVal[],
       node0_printf("%s: ERROR. zero norm for eigenvector %d.", myname, j);
       fact = 0.;
     }
-    double_vec_mult(&fact, eigVec[j], eigVec[j], ODD);
+    double_vec_mult(&fact, eigVec[j], eigVec[j], otherparity);
   }
   
   free(magsq);

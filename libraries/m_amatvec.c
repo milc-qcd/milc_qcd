@@ -9,7 +9,7 @@
 
 #ifndef FAST
 /* adjoint matrix times vector multiply */
-void mult_adj_su3_mat_vec( su3_matrix *a, su3_vector *b, su3_vector *c ){
+void mult_adj_su3_mat_vec( const su3_matrix * const a, const su3_vector * const b, su3_vector *c ){
 register int i,j;
 register complex x,y,z;
     for(i=0;i<3;i++){
@@ -25,7 +25,7 @@ register complex x,y,z;
 
 #else
 #ifdef NATIVEDOUBLE /* IBM RS6000 version */
-void mult_adj_su3_mat_vec( su3_matrix *a, su3_vector *b, su3_vector *c ){
+void mult_adj_su3_mat_vec( const su3_matrix * const a, const su3_vector * const b, su3_vector *c ){
 
   register double c0r,c0i,c1r,c1i,c2r,c2i;
   register double br,bi,a0,a1,a2;
@@ -108,7 +108,7 @@ void mult_adj_su3_mat_vec( su3_matrix *a, su3_vector *b, su3_vector *c ){
   
 }
 #else
-void mult_adj_su3_mat_vec( su3_matrix *a, su3_vector *b, su3_vector *c ){
+void mult_adj_su3_mat_vec( const su3_matrix * const a, const su3_vector * const b, su3_vector *c ){
 int i;
 register Real t,ar,ai,br,bi,cr,ci;
     for(i=0;i<3;i++){

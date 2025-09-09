@@ -195,6 +195,9 @@ int readin(int prompt) {
     
     /* number of eigenpairs */
     IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
+    /* The usual case. May be changed by I/O routines */
+    param.eigen_param.parity = EVEN;
+
 
     IF_OK if(param.eigen_param.Nvecs > 0){
 
@@ -243,45 +246,12 @@ int readin(int prompt) {
       
       if(param.ks_eigen_startflag == FRESH){
 	
-	/* max  Rayleigh iterations */
-	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
-	
-	/* Restart  Rayleigh every so many iterations */
-	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
-	
-	/* Kalkreuter iterations */
-	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
-	
-	/* Tolerance for the eigenvalue computation */
-	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
-	
-	/* error decrease per Rayleigh minimization */
-	IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
-	
-#ifdef POLY_EIGEN
-	/* Chebyshev preconditioner */
-#ifdef ARPACK
-	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
-#endif
-	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
-	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
-	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
-	
-#ifdef ARPACK
-	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
-	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
-	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
-#endif
-#endif
-      } else {
-	param.eigen_param.MaxIter = 0;
-	param.eigen_param.Restart = 0;
-	param.eigen_param.Kiters = 0;
-	param.eigen_param.tol = 0;
-	param.eigen_param.error_decr = 0.0;
+	status += read_ks_eigen_param(&param.eigen_param, status, prompt);
+
       }
 
 #endif
+
     }
 
     /*------------------------------------------------------------*/
@@ -604,14 +574,19 @@ int readin(int prompt) {
 
   eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
   eigVec = (su3_vector **)malloc(Nvecs_tot*sizeof(su3_vector *));
-  node0_printf("Allocating space for %d eigenvectors\n", Nvecs_tot);
-  for(int i = 0; i < Nvecs_tot; i++)
+  for(int i = 0; i < Nvecs_tot; i++){
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+    if(eigVec[i] == NULL){
+      printf("No room for eigenvector\n");
+      terminate(1);
+    }
+  }
 
   /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
-  imp_ferm_links_t **fn = get_fm_links(fn_links);
+  imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
+			   &Nvecs_tot, eigVal, eigVec, fn, 1);
+  destroy_fn_links(fn);
   if(status != 0) terminate(1);
   //  if(param.fixflag != NO_GAUGE_FIX){
   //    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
@@ -644,9 +619,10 @@ int readin(int prompt) {
     }
     
     /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
-    imp_ferm_links_t **fn = get_fm_links(fn_links);
+    imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
     status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
+			     &param.eigen_param.Nvecs, eigVal, eigVec, fn, 1);
+    destroy_fn_links(fn);
     if(status != 0)terminate(1);
 #if 0
     for(int j = 0; j < param.eigen_param.Nvecs; j++){

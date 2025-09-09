@@ -1,6 +1,6 @@
 exec su3_eigen_asqtad   2 "WANTARPACK=false","WANTPRIMME=true","WANTGRID=false","WANTQUDA=false"  PRIMME  BEGIN RUNNING
 exec su3_eigen_asqtad   2 "WANTARPACK=false","WANTPRIMME=false","WANTGRID=false","WANTQUDA=false" Ritz    BEGIN RUNNING
-exec su3_eigen_asqtad   2 "WANTARPACK=true","WANTPRIMME=false"m"WANTGRID=false","WANTQUDA=false" ARPACK  BEGIN RUNNING
+exec su3_eigen_asqtad   2 "WANTARPACK=true","WANTPRIMME=false","WANTGRID=false","WANTQUDA=false" ARPACK  BEGIN RUNNING
 exec su3_eigen_asqtad   2 "WANTARPACK=false","WANTPRIMME=false","WANTGRID=true","WANTQUDA=false" Grid BEGIN RUNNING
 exec su3_eigen_asqtad   2 "WANTARPACK=false","WANTPRIMME=false","WANTGRID=false","WANTQUDA=true","WANT_EIG_GPU=true" QUDA BEGIN RUNNING
 exec su3_eigen_hisq     2 "WANTARPACK=false","WANTPRIMME=true","WANTGRID=false","WANTQUDA=false" PRIMME  BEGIN RUNNING

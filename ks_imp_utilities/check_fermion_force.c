@@ -5,15 +5,16 @@
 
 /* This code performs and/or checks the fermion force calculation */
 
-#include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "ks_imp_utilities_includes.h"	/* definitions files and prototypes */
 #ifdef HAVE_QIO
 #include <qio.h>
 #else
 BOMB THE COMPILE
 #endif
 
-void check_fermion_force( char srcfile[MAX_MASS][MAXFILENAME], int srcflag,
-			  char *ansfile, int ansflag, int nmass, ks_param *ksp)
+
+void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
+			  char *ansfile, int ansflag, int n_naik, ks_param *ksp)
 {
   Real diff, maxdiff, norm, maxnorm, reldiff;
   int i, dir;
@@ -26,50 +27,156 @@ void check_fermion_force( char srcfile[MAX_MASS][MAXFILENAME], int srcflag,
 #if (MILC_PRECISION == 1)
   Real tol = 1e-3;
 #else
-  Real tol = 1e-5;
+  Real tol = 1e-8;
 #endif
   int ff_prec = MILC_PRECISION;  /* Just use prevailing precision for now */
   /* Supports only asqtad at the moment */
-  imp_ferm_links_t **fn = get_fm_links(fn_links);
-  Real *residues = (Real *)malloc(nmass*sizeof(Real));;
-  su3_vector **src = (su3_vector **)malloc(nmass*sizeof(su3_vector *));
-  su3_matrix *ansmom = (su3_matrix *)malloc(4*sites_on_node*sizeof(su3_matrix));
-
+  Real *residues = (Real *)malloc(n_naik*sizeof(Real));;
   if(residues == NULL){
     node0_printf("No room for residues\n");
     terminate(1);
   }
 
-  /* For testing, we just set them to a constant */
-  for(i = 0; i < nmass; i++)
-    residues[i] = ((Real)nflavors)/4.;
-  
-  if(src == NULL){
-    node0_printf("No room for src\n");
-    terminate(1);
-  }
-  
+  su3_matrix *ansmom = (su3_matrix *)malloc(4*sites_on_node*sizeof(su3_matrix));
   if(ansmom == NULL){
     node0_printf("No room for ansmom\n");
     terminate(1);
   }
 
-  for(i = 0; i < nmass; i++)
-    src[i] = create_v_field();
-
-  /* Make a random source in src if we don't reload it */
-
-  for(i = 0; i < nmass; i++){
-    if(srcflag == RELOAD_SERIAL){
-      restore_ks_vector_scidac_to_field(srcfile[i], QIO_SERIAL, src[i], 1);
-      fflush(stdout);
-    }  else {
-      /* generate g_rand random; phi = Mdagger g_rand */
-      node0_printf("Generating random sources\n");
-      grsource_imp_field( src[i], mass, EVENANDODD, fn[i]);
-    }
+  /* Get test rational function parameters from file */
+  params_rhmc *rf;
+  char filename[] = "rat.2flavor";
+  int n_pseudo = 1;
+  rf = load_rhmc_params(filename, n_pseudo);
+  if(rf == NULL)terminate(1);
+			 
+  /* Determine the maximum rational fcn order */
+  max_rat_order = 0;
+  for(i = 0; i < n_pseudo; i++){
+    if(rf[i].MD.order > max_rat_order)max_rat_order = rf[i].MD.order;
+    if(rf[i].GR.order > max_rat_order)max_rat_order = rf[i].GR.order;
+    if(rf[i].FA.order > max_rat_order)max_rat_order = rf[i].FA.order;
   }
+  if(mynode()==0)printf("Maximum rational func order is %d\n",max_rat_order);
+  fflush(stdout);
+
+  /* Determine the number of different Naik masses
+     and fill in n_orders_naik and n_pseudo_naik        */
+  Real current_naik_epsilon = rf[0].naik_term_epsilon;
+  int tmporder = 0;
+  int n_naiks = 0;
+  double eps_naik[MAX_NAIK];
+  imp_ferm_links_t *fn;
+
+  n_order_naik_total = 0;
+  for( i=0; i<n_pseudo; i++ ) {
+    if( rf[i].naik_term_epsilon != current_naik_epsilon ) {
+      if( tmporder > 0 ) {
+        n_orders_naik[n_naiks] = tmporder;
+	eps_naik[n_naiks] = current_naik_epsilon;
+        current_naik_epsilon = rf[i].naik_term_epsilon;
+        n_naiks++;
+        n_order_naik_total += tmporder;
+        tmporder = 0;
+      }
+    }
+    tmporder += rf[i].MD.order;
+    n_pseudo_naik[n_naiks]++;
+  }
+  if( tmporder > 0 ) {
+    n_orders_naik[n_naiks] = tmporder;
+    eps_naik[n_naiks] = current_naik_epsilon;
+    n_order_naik_total += tmporder;
+    n_naiks++;
+  }
+
+  su3_vector **phi = (su3_vector **)malloc(MAX_N_PSEUDO*sizeof(su3_vector *));
+  for(i = 0; i < MAX_N_PSEUDO; i++)
+    phi[i] = create_v_field();
+
+  int n_multi_x = max_rat_order;
+  su3_vector **multi_x = (su3_vector **)malloc(n_multi_x*sizeof(su3_vector *));
+  for(i=0;i<n_multi_x;i++)
+    multi_x[i] = create_v_field();
+
+  Real *allresidues = (Real *)malloc(n_order_naik_total*sizeof(Real));
+
+  su3_vector *sumvec = create_v_field();
+  
+  /* Make a random source in phi if we don't reload it */
+
+  if(phiflag == RELOAD_SERIAL){
+    for(int inaik = 0; inaik < n_naik; inaik++){
+      restore_ks_vector_scidac_to_field(phifile[inaik], QIO_SERIAL, phi[inaik], 1);
+      fflush(stdout);
+    }
+  }  else {
+    
+    int iphi = 0;
+    for(int inaik = 0; inaik < n_naik; inaik++){
       
+      /* For each pseudofermion belonging to this Naik epsilon
+	 Generate g_rand random. Compute  phi =  (GR rat func) * g_rand
+	 Compute multi_x = (Mdag M + beta_jphi)^{-1} g_rand */
+      
+      Real rsqmin_gr = param.qic[inaik].resid * param.qic[inaik].resid;
+      int  niter_gr  = param.qic[inaik].max;
+      int  prec_gr   = MILC_PRECISION;
+      fn = get_fm_links(fn_links, inaik);
+      
+      for( int jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
+	node0_printf("Generating random sources\n");
+	grsource_imp_rhmc_field( phi[iphi], &rf[iphi].GR, EVEN,
+				 multi_x, sumvec, rsqmin_gr, niter_gr,
+				 prec_gr, fn, inaik, 
+				 rf[iphi].naik_term_epsilon);
+	iphi++;
+      }
+      destroy_fn_links(fn);
+    }
+
+    /* Construct  */
+    
+    tmporder = 0;
+    iphi = 0;
+    n_naik = fermion_links_get_n_naiks(fn_links);
+    
+
+    for( int inaik=0; inaik < n_naik; inaik++ ) {
+      fn  = get_fm_links(fn_links, inaik);
+      for( int jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
+	
+	// Add the current pseudofermion to the current set
+	int order      = rf[iphi].MD.order;
+	Real *residues = rf[iphi].MD.res;
+	Real *roots    = rf[iphi].MD.pole;
+	Real rsqmin_md = param.qic[inaik].resid * param.qic[inaik].resid;
+	int  niter_md  = param.qic[inaik].max;
+	
+	/* Compute multi_x = M^\dagger M)^{-1} phi on even sites */
+	Real final_rsq;
+	int iters = 0;
+	iters += ks_ratinv_field( phi[iphi], multi_x+tmporder, roots, residues,
+				  order, niter_md, rsqmin_md, MILC_PRECISION, EVEN,
+				  &final_rsq, fn, 
+				  inaik, rf[iphi].naik_term_epsilon );
+	
+	/*Then compute multi_x = M * multi_x  = Dslash * multi_x on odd sites */
+	for(int j=0;j<order;j++){
+	  dslash_fn_field( multi_x[tmporder+j], multi_x[tmporder+j],  ODD,
+			   fn);
+	  allresidues[tmporder+j] = residues[j+1];
+	  // remember that residues[0] is constant, no force contribution.
+	}
+	tmporder += order;
+	iphi++;
+      } /* jphi */
+      destroy_fn_links(fn);
+    } /* inaik */
+  } /* phiflag != RELOAD_SERIAL */
+
+  /* Compute the fermion force */
+
   node0_printf("Computing the fermion force\n"); fflush(stdout);
   
   /* Just to be safe, clear the answer */
@@ -87,13 +194,22 @@ void check_fermion_force( char srcfile[MAX_MASS][MAXFILENAME], int srcflag,
     }
   }
 
-  eo_fermion_force_multi( eps, residues, src, nmass, ff_prec, fn_links );
+  eo_fermion_force_multi( 0.02, allresidues, multi_x,
+			  n_order_naik_total, ff_prec, fn_links );
 
   /* If the answer file is given, read it for comparison */
   if(ansflag == RELOAD_SERIAL){
     restore_color_matrix_scidac_to_field(ansfile, ansmom, 4, MILC_PRECISION);
     node0_printf("Checking the answer\n"); fflush(stdout);
   }
+
+  /* Clean up */
+
+  free(residues);
+
+  for(i=0;i<n_multi_x;i++)
+    destroy_v_field(multi_x[i]);
+  free(multi_x);
 
   /* Unpack the answer and compare if possible */
   maxdiff = 0;
@@ -107,7 +223,7 @@ void check_fermion_force( char srcfile[MAX_MASS][MAXFILENAME], int srcflag,
 	sub_su3_matrix( ansmom + 4*i + dir, &tmat, &diffmat);
 	diff = sqrt(realtrace_su3( &diffmat, &diffmat ));
 	norm = sqrt(realtrace_su3( &tmat, &tmat));
-	printf("DIFF %g %g\n",norm,diff);
+	// printf("DIFF %g %g\n",norm,diff);
 	if(diff > tol * norm){
 	  printf("Intolerable relative difference %e node %d site %d\n",
 		 diff/norm,this_node,i);
@@ -134,17 +250,17 @@ void check_fermion_force( char srcfile[MAX_MASS][MAXFILENAME], int srcflag,
   }      
 
   /* Save source and answer if requested */
-  if(srcflag == SAVE_SERIAL || srcflag == SAVE_PARTFILE_SCIDAC)
-    for(i = 0; i < nmass; i++){
+  if(phiflag == SAVE_SERIAL || phiflag == SAVE_PARTFILE_SCIDAC)
+    for(i = 0; i < n_naik; i++){
 #ifdef HAVE_QIO
-      if(srcflag == SAVE_SERIAL)
-	save_ks_vector_scidac_from_field(srcfile[i], "check fermion force",
+      if(phiflag == SAVE_SERIAL)
+	save_ks_vector_scidac_from_field(phifile[i], "check fermion force",
 					"source color vector field", 
-					QIO_SINGLEFILE, QIO_SERIAL, src[i], 1, MILC_PRECISION);
-      else if(srcflag == SAVE_PARTFILE_SCIDAC)
-	save_ks_vector_scidac_from_field(srcfile[i], "check fermion force",
+					QIO_SINGLEFILE, QIO_SERIAL, phi[i], 1, MILC_PRECISION);
+      else if(phiflag == SAVE_PARTFILE_SCIDAC)
+	save_ks_vector_scidac_from_field(phifile[i], "check fermion force",
 					"source color vector field",
-					QIO_PARTFILE, QIO_SERIAL, src[i], 1, MILC_PRECISION);
+					QIO_PARTFILE, QIO_SERIAL, phi[i], 1, MILC_PRECISION);
     }
 
   if(ansflag == SAVE_SERIAL){
@@ -162,4 +278,8 @@ void check_fermion_force( char srcfile[MAX_MASS][MAXFILENAME], int srcflag,
   }
 #endif
 
+  free(ansmom);
+  for(i = 0; i < MAX_N_PSEUDO; i++)
+    destroy_v_field(phi[i]);
+  free(phi);
 }      

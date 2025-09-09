@@ -92,12 +92,12 @@ enum subset_type {
 
 /* Header structure for a KS source in FNAL format */
 typedef struct {
-  int32type magic_number;
-  int32type gmtime;
-  int32type size_of_element;
-  int32type elements_per_site;
-  int32type dims[4];
-  int32type site_order;
+  u_int32type magic_number;
+  u_int32type gmtime;
+  u_int32type size_of_element;
+  u_int32type elements_per_site;
+  u_int32type dims[4];
+  u_int32type site_order;
 } ks_source_header;
 
 
@@ -287,7 +287,7 @@ struct qss_op_struct {
   int stride;         /* Subset flag for gaussian source */
   int r_offset[4];    /* Coordinate offset for phases for some operators */
   int spin_taste;     /* For staggered fermions for some operators */
-  int gamma;          /* For Dirac fermions for some operators */
+  enum gammatype gamma; /* For Dirac fermions for some operators */
   int mom[3];         /* insertion momentum for some operators */
   char source_file[MAXFILENAME]; /* file name for some sources */
   dirac_clover_param dcp; /* For Dirac solver */

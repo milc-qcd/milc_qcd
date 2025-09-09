@@ -36,11 +36,11 @@ prec_pbp 1
 
 mass 0.03
 
-error_for_propagator 1e-6
+error_for_propagator 1e-9
 rel_error_for_propagator 0
 mass 0.05
 
-error_for_propagator 1e-6
+error_for_propagator 1e-9
 rel_error_for_propagator 0
 # Description of base sources
 
@@ -91,7 +91,7 @@ number_of_propagators 2
 
 mass 0.03
 
-error_for_propagator 1e-6
+error_for_propagator 1e-9
 rel_error_for_propagator 0
 
 fresh_ksprop
@@ -103,7 +103,7 @@ forget_ksprop
 
 mass 0.05
 
-error_for_propagator 1e-6
+error_for_propagator 1e-9
 rel_error_for_propagator 0
 
 fresh_ksprop

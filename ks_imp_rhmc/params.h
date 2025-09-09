@@ -53,6 +53,8 @@ typedef struct {
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
   /* Eigenparameters (not used for RHMC) */
   ks_eigen_param eigen_param; /* Parameters for eigensolver */
+  char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
+  char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
   /* PBP and related quantities */
   int num_pbp_masses;   /* Number of masses for pbp calculation */
   quark_invert_control qic_pbp[MAX_MASS_PBP];

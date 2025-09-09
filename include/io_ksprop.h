@@ -45,16 +45,16 @@
 /* Begin definition of stuctures */
 
 typedef struct {
-  int32type magic_number;               /* Identifies file format */
-  int32type gmtime_stamp;             /* Used in FNAL header from call to time*/
+  u_int32type magic_number;               /* Identifies file format */
+  u_int32type gmtime_stamp;             /* Used in FNAL header from call to time*/
   char   time_stamp[MAX_TIME_STAMP]; /* Date and time stamp - used to
 					check consistency between the
 					ASCII header file and the
 					lattice file */
-  int32type dims[4];                    /* Full lattice dimensions */
-  int32type header_bytes;               /* NOT WRITTEN TO THE FILE but
+  u_int32type dims[4];                    /* Full lattice dimensions */
+  u_int32type header_bytes;               /* NOT WRITTEN TO THE FILE but
 					 helpful for finding the data */
-  int32type order;                      /* 0 means no coordinate list is
+  u_int32type order;                      /* 0 means no coordinate list is
 				        attached and the values are in
 				        coordinate serial order.
 				        Nonzero means that a
@@ -63,7 +63,7 @@ typedef struct {
 } ks_prop_header;
 
 typedef struct {
-  int32type color;
+  u_int32type color;
   u_int32type sum31;
   u_int32type sum29;
 } ks_prop_check;

@@ -576,7 +576,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 }
 
 void 
-dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
+dslash_fn_dir(const su3_vector * const src, su3_vector *dest, int parity,
 	      fn_links_t *fn, int dir, int fb, 
 	      Real wtfat, Real wtlong)
 {

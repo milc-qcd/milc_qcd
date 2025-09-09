@@ -58,7 +58,7 @@ typedef int field_offset;
 
 /* ---------------------------------------------------------- */
 /* printf on node zero only */
-#define node0_printf if(this_node==0)printf
+#define node0_printf if(mynode()==0)printf
 
 /* ---------------------------------------------------------- */
 #define ON 1

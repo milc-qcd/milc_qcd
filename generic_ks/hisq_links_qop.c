@@ -5,7 +5,6 @@
 
 #include "generic_ks_includes.h"
 #include "../include/hisq_links_qop.h"
-#include "../include/fn_links.h"
 #include "../include/ks_action_coeffs_qop.h"
 #include "../include/generic_qop.h"
 #include "../include/generic_qopqdp.h"
@@ -84,6 +83,8 @@ destroy_hisq_links_qop(hisq_links_qop_t *hl){
   destroy_link_phase_info(hl->phase);
   if(hl->hl_F != NULL)QOP_F3_hisq_destroy_L(hl->hl_F);
   if(hl->hl_D != NULL)QOP_D3_hisq_destroy_L(hl->hl_D);
+  hl->hl_F = NULL;
+  hl->hl_D = NULL;
   free(hl);
 }
 
@@ -117,6 +118,8 @@ set_asqtad_links_from_hisq(fn_links_qop_t *fn, hisq_links_qop_t *hl, int i){
   if(hl->hl_D != NULL)
     fn->al_D = QOP_D3_get_asqtad_links_from_hisq(hl->hl_D)[i];
 
+  fn->preserve = 1;  /* Don't destroy until the links are invalidated */
+
   /* The global hl phase information has to be copied into fn, because
      there are multiple, independent fn links. */
 
@@ -131,11 +134,12 @@ unset_asqtad_links_from_hisq(fn_links_qop_t *fn){
 
   if(fn == NULL)return;
 
-  free_fn_links_qop(fn);
+  free_fn_links_qop(fn);  /* In case we copied */
   fn->al_D = NULL;
   fn->al_F = NULL;
   destroy_link_phase_info(fn->phase);
   fn->phase = NULL;
+  fn->preserve = 0;
 }
 
 void
@@ -152,6 +156,8 @@ set_asqtad_deps_links_from_hisq(fn_links_qop_t *fn, hisq_links_qop_t *hl){
     fn->al_D = QOP_D3_get_asqtad_deps_links_from_hisq(hl->hl_D);
   else
     fn->al_D = NULL;
+
+  fn->preserve = 1;  /* Do'nt destroy until the links are invalidated */
 
   fn->phase = create_link_phase_info();
   copy_link_phase_info(fn->phase, hl->phase);

@@ -14,9 +14,10 @@
 void d_plaquette(double *ss_plaq,double *st_plaq) {
 /* su3mat is scratch space of size su3_matrix */
 su3_matrix *su3mat;
-register int i,dir1,dir2;
-register site *s;
-register su3_matrix *m1,*m4;
+ size_t i;
+ int dir1,dir2;
+site *s;
+su3_matrix *m1,*m4;
 su3_matrix mtmp;
 double ss_sum,st_sum;
 msg_tag *mtag0,*mtag1;

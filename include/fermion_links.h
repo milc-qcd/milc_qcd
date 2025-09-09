@@ -10,6 +10,7 @@
 #include <quark_action.h>
 #include "../include/imp_ferm_links.h"
 #include "../include/ks_action_paths.h"
+#include "../include/info.h"
 
 #ifdef HAVE_QOP
 #include "../include/ks_action_coeffs_qop.h"
@@ -70,10 +71,6 @@ typedef qop_hisq_links_t ferm_links_generic_t;
 #else
 typedef milc_hisq_links_t ferm_links_generic_t;
 #endif
-
-#elif FERM_ACTION == HYPISQ
-
-typedef milc_hypisq_links_t ferm_links_generic_t;
 
 #else 
 
@@ -185,19 +182,44 @@ void fermion_force_multi_hisq_D( Real eps, Real *residues,
 /* fermion_force_fn_multi.c */
 
 enum ks_multiff_opt_t {ASVEC, FNMAT, FNMATREV};
-  
-const char *ks_multiff_opt_chr( void );
-
-void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
-			     int nterms, int prec, fermion_links_t *fn);
 void fermion_force_fn_multi( Real eps, Real *residues, su3_vector **multi_x, 
 			     int nterms, int prec, fermion_links_t *fn);
+const char *ks_multiff_opt_chr( void );
+
 void fermion_force_fn_multi_reverse( Real eps, Real *residues, 
 				     su3_vector **multi_x, int nterms,
 				     fermion_links_t *fn);
+/* fermion_force_hisq_multi.c */
+
+void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
+			     int nterms, int prec, fermion_links_t *fn);
 void show_hisq_force_opts( void );
 void show_su3_mat_opts( void );
 void show_hisq_links_opts( void );
+
+/* fermion_force_hisq_multi.c */
+
+void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
+			     int nterms, int prec, fermion_links_t *fl);
+const char *ks_multiff_opt_chr( void );
+
+/* fermion_force_hisq_multi_cpu.c */
+
+void fermion_force_multi_hisq_cpu( info_t *info, int prec, Real eps, Real *residues,
+				   su3_vector **multi_x, int nterms,
+				   fermion_links_t *fl);
+
+/* fermion_force_hisq_multi_grid.c */
+
+void fermion_force_multi_hisq_grid(info_t* info, int prec, Real eps, Real *residues, 
+				   su3_vector **multi_x, int nterms,
+				   fermion_links_t *fl);
+
+/* fermion_force_hisq_multi_quda.c */
+
+void fermion_force_multi_hisq_quda(info_t* info, int prec, Real eps, Real *residues, 
+				   su3_vector **multi_x, int nterms,
+				   fermion_links_t *fl);
 
 /* Temporary, until we move completely to field-based gauge links */
 /* fermion_links_from_site.c */
@@ -205,12 +227,23 @@ void show_hisq_links_opts( void );
 fermion_links_t *create_fermion_links_from_site(int prec, int n_naiks, double *eps_naik);
 void restore_fermion_links_from_site(fermion_links_t *fl, int prec);
 
+/* fermion_links_hisq_load_grid_P.c */
+void load_fatlinks_grid_F(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matrix *thin_links);
+void load_fatlonglinks_grid_F(info_t *info, su3_matrix *fat, su3_matrix *lng, ks_component_paths *p,
+			      su3_matrix *thin_links);
+void load_hisq_aux_links_grid_F(info_t *info, ks_action_paths_hisq *ap,
+				hisq_auxiliary_t *aux, su3_matrix *links);
+
+void load_fatlinks_grid_D(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matrix *thin_links);
+void load_fatlonglinks_grid_D(info_t *info, su3_matrix *fat, su3_matrix *lng, ks_component_paths *p,
+			      su3_matrix *thin_links);
+void load_hisq_aux_links_grid_D(info_t *info, ks_action_paths_hisq *ap,
+				hisq_auxiliary_t *aux, su3_matrix *links);
+
 /* fermion_links_milc.c routines dealing with fermion_links_t */
 
 fermion_links_t *create_fermion_links(int precision, int phases_in, su3_matrix *links);
 void destroy_fermion_links(fermion_links_t *fl);
-imp_ferm_links_t **get_fm_links(fermion_links_t *fl);
-imp_ferm_links_t **get_fm_du0_links(fermion_links_t *fl);
 ks_action_paths *get_action_paths(fermion_links_t *fl);
 void invalidate_fermion_links(fermion_links_t *fl);
 void restore_fermion_links(fermion_links_t *fl, int precision, int phases_in, su3_matrix *links);
@@ -223,7 +256,6 @@ ks_action_paths *get_action_paths_eo(fermion_links_t *fl);
 
 
 /* fermion_links_hisq_milc.c routines dealing with fermion_links_t */
-/* fermion_links_asqtad_qop.c routines dealing with fermion_links_t */
 
 fermion_links_t *create_fermion_links_hisq(int precision, int n_naiks, 
 			   double eps_naik[], int phases_in, su3_matrix *links);
@@ -231,21 +263,25 @@ void destroy_fermion_links_hisq(fermion_links_t *fl);
 void invalidate_fermion_links(fermion_links_t *fl);
 void restore_fermion_links_hisq(fermion_links_t *fl, int precision,
 				int phases_in, su3_matrix *links);
-imp_ferm_links_t **get_fm_links(fermion_links_t *fl);
-imp_ferm_links_t **get_fm_du0_links(fermion_links_t *fl);
-imp_ferm_links_t *get_fn_deps_links(fermion_links_t *fl);
 ks_action_paths_hisq *get_action_paths_hisq(fermion_links_t *fl);
 int get_n_naiks_hisq(fermion_links_t *fl);
 double *get_eps_naik_hisq(fermion_links_t *fl);
 int valid_fermion_links(fermion_links_t *fl, int precision);
 char *get_action_parameter_string(fermion_links_t *fl);
 hisq_auxiliary_t *get_hisq_auxiliary(fermion_links_t *fl);
+
 #ifdef HAVE_QOP
+
 QOP_asqtad_coeffs_t *get_action_coeffs(fermion_links_t *fl);
 QOP_hisq_coeffs_t *get_action_coeffs_hisq(fermion_links_t *fl);
 QOP_F3_FermionLinksHisq *get_F_hisq_links(fermion_links_t *fl);
 QOP_D3_FermionLinksHisq *get_D_hisq_links(fermion_links_t *fl);
+
 #endif
+
+imp_ferm_links_t *get_fm_links(fermion_links_t *fl, int i_naik);
+imp_ferm_links_t *get_fm_du0_links(fermion_links_t *fl);
+imp_ferm_links_t *get_fn_deps_links(fermion_links_t *fl);
 
 /* fermion_links.c */
 

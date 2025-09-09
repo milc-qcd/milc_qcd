@@ -1,4 +1,5 @@
 /******** spectrum_nd.c *************/
+/* OBSOLETE */
 /* MILC version 7 */
 /* DT 9/20/00 started, from spectrum_nlpi2.c
    KS hadron masses with nondegenerate quarks ("nd")

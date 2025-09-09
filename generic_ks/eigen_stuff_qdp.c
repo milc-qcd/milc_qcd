@@ -1,3 +1,4 @@
+/*** NEEDS UPDATING **/
 /*************************** eigen_stuff_qdp.c  ***************************/
 /* Eigenvalue and Eigevector computation routines.  QDP version.
  * K.O. 8/99 Started.
@@ -9,13 +10,15 @@
 
 //#define DEBUG
 
-
 #include <float.h> /* To control the tolerance of the JACOBI iteration */
 #include <lattice_qdp.h>
 #include "generic_ks_includes.h"
 #include "../include/generic_qdp.h"
-#include "../include/generic_ks_qdp.h"
 #include "../include/jacobi.h"
+
+#if 0
+
+#include "../include/generic_ks_qdp.h"
 
 #if ( QDP_Precision == 'F' )
 
@@ -67,7 +70,7 @@ static QDP_ColorVector *temp0=NULL, *temp1[16], *temp2[16];
  * we want to compute, to a vector. For this specific application it is the  *
  * -D_slash^2 of the KS fermions. We only compute on the "subset" sites.     *
  * Where subset can be EVEN, ODD, or ENENANDODD                              */
-void
+static void
 Matrix_Vec_mult_qdp(QDP_ColorVector *src, QDP_ColorVector *res,
 		    QDP_Subset subset)
 {
@@ -92,7 +95,7 @@ Matrix_Vec_mult_qdp(QDP_ColorVector *src, QDP_ColorVector *res,
 }
 
 /* allocates the tags and the temporaries the Matrix_Vec_mult needs */
-void
+static void
 prepare_Matrix()
 {
   int i;
@@ -106,7 +109,7 @@ prepare_Matrix()
 }
 
 /* deallocates the tags and the temporaries the Matrix_Vec_mult needs */
-void
+static void
 cleanup_Matrix()
 {
   int i;
@@ -121,7 +124,7 @@ cleanup_Matrix()
 /* Projects out the *vectors from the vec. Num is the Number of vectors *
  * and subset is the subset on which we work on.                        *
  * The vectors are assumed to be orthonormal.                           */
-void
+static void
 project_out_qdp(QDP_ColorVector *vec, QDP_ColorVector *vector[], int Num,
 		QDP_Subset subset)
 {
@@ -147,7 +150,7 @@ project_out_qdp(QDP_ColorVector *vec, QDP_ColorVector *vector[], int Num,
 }
 
 /* normalizes the vecror vec. Work only on subset. */
-void
+static void
 normalize_qdp(QDP_ColorVector *vec, QDP_Subset subset)
 {
   QLA_Real norm;
@@ -156,7 +159,7 @@ normalize_qdp(QDP_ColorVector *vec, QDP_Subset subset)
   QDP_V_eq_r_times_V(vec, &norm, vec, subset);
 }
 
-int
+static int
 Rayleigh_min_qdp(QDP_ColorVector *vec, QDP_ColorVector **eigVec,
 		 Real Tolerance,  Real RelTol, int Nvecs, int MaxIter,
 		 int Restart, QDP_Subset subset)
@@ -314,7 +317,7 @@ Rayleigh_min_qdp(QDP_ColorVector *vec, QDP_ColorVector **eigVec,
 }
 
 /* Returns the projected matrix A and the error of each eigenvector */
-void
+static void
 constructArray_qdp(QDP_ColorVector **eigVec, Matrix *A, QLA_Real *err,
 		   QDP_Subset subset)
 {
@@ -349,7 +352,7 @@ constructArray_qdp(QDP_ColorVector **eigVec, Matrix *A, QLA_Real *err,
   QDP_destroy_V(res);
 }
 
-void
+static void
 RotateBasis_qdp(QDP_ColorVector **eigVec, Matrix *V, QDP_Subset subset)
 {
   QLA_Complex z;
@@ -379,7 +382,7 @@ RotateBasis_qdp(QDP_ColorVector **eigVec, Matrix *V, QDP_Subset subset)
   free(Tmp);
 }
 
-int
+static int
 Kalkreuter_qdp(QDP_ColorVector **eigVec, double *eigVal, Real Tolerance, 
 	       Real RelTol, int Nvecs, int MaxIter, int Restart, int Kiters,
 	       QDP_Subset subset)
@@ -593,7 +596,7 @@ Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 /* measures the chirality of a normalized fermion state */
 /* DOESN'T APPEAR TO BE USED - CD */
 
-void
+static void
 measure_chirality_qdp(QDP_ColorVector *src, double *chirality,
 		      QDP_Subset subset)
 {
@@ -619,7 +622,7 @@ measure_chirality_qdp(QDP_ColorVector *src, double *chirality,
 }
 
 /* prints the density and chiral density of a normalized fermion state */
-void
+static void
 print_densities_qdp(QDP_ColorVector *src, char *tag, int y, int z, int t,
 		    QDP_Subset subset)
 {
@@ -646,7 +649,8 @@ print_densities_qdp(QDP_ColorVector *src, char *tag, int y, int z, int t,
 }
 
 /* measures the chiraliry of a normalized fermion state */
-void measure_chirality(su3_vector *src, double *chirality, int parity)
+static void
+measure_chirality(su3_vector *src, double *chirality, int parity)
 {
   register int i;
   register site *s;
@@ -668,3 +672,16 @@ void measure_chirality(su3_vector *src, double *chirality, int parity)
   g_doublesum(chirality);
 
 } /* chirality.c */
+
+#else
+
+/* Required interface.  Need eigen_param definition in imp_ferm_links.h */
+int
+Kalkreuter(su3_vector **eigVec, double *eigVal, ks_eigen_param *eigen_param, int init)
+{
+  node0_printf("The Kalkreuter QDP eigensolver has not been updated\n");
+  terminate(1);
+  return 0;
+}
+
+#endif

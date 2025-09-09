@@ -9,12 +9,19 @@
 #
 #  Targets
 #
-#	ks_measure_asqtad         Basic measurements (asqtad)
-#	ks_measure_hisq		  Basic measurements (HISQ)
-#	ks_measure_asqtad_eos     " plus DM_DU0 (asqtad)
-#	ks_measure_asqtad_susc    " plus quark number susceptibilities (asqtad)
-#	ks_measure_asqtad_mu_eos  " plus nonzero chemical potential
-
+#	ks_measure_asqtad              Basic measurements (asqtad)
+#	ks_measure_asqtad_eos           " plus DM_DU0 (asqtad)
+#	ks_measure_asqtad_susc          " plus quark number susceptibilities (asqtad)
+#	ks_measure_asqtad_mu_eos        " plus nonzero chemical potential
+#	ks_measure_hisq		        Basic measurements (HISQ)
+#	ks_measure_hisq_eos	        " plus DM_DU0 (HISQ)
+#	ks_measure_hisq_susc            " plus quark number susceptibilities (HISQ)
+#	ks_measure_hisq_mu_eos	        " plus nonzero chemical potential (HISQ)
+#       ks_measure_eigcg_hisq	        Measurements with eigcg-generated eigenpairs
+#	ks_measure_current_hisq         Disconnected vector current measurements
+#	ks_measure_current_hisq_u1      Disconn with photon (experimental)
+#	ks_measure_current_hisq_u1_loop Disconn with photon (experimental)
+#	ks_measure_current_eigcg_hisq   Disconn but with eigcg eigenvectors (experimental)
 
 MYINCLUDEDIR = .
 INCLUDEDIR = ../include
@@ -61,15 +68,10 @@ ifeq ($(strip ${HAVEQOP}),true)
   ADD_OBJECTS += ${GENERICQOP}
 endif
 
-DEFLATE_OBJECTS = \
- eigen_stuff_helpers.o \
- gammas.o \
- io_helpers_ks_eigen.o \
- io_ks_eigen.o \
- io_scidac_ks_eigen.o \
- jacobi.o \
- spin_taste_ops.o \
- shift_field.o
+ADD_OBJECTS += \
+  gammas.o \
+  spin_taste_ops.o \
+  shift_field.o
 
 OBJECTS = \
   ${MY_OBJECTS} \
@@ -77,7 +79,7 @@ OBJECTS = \
   ${LAYOUT} \
   ${FFT_OBJECTS} \
   ${STANDARD_OBJECTS} \
-  ${DEFLATE_OBJECTS} \
+  ${EIGEN_OBJECTS} \
   ${ADD_OBJECTS} \
   ${EXTRA_OBJECTS}
 
@@ -87,12 +89,10 @@ EIGCG_OBJECTS = \
 # Selection of eigensolver program
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP (not supported, so same as below)
-  ifeq ($(strip ${HAVEPRIMME}),true)
+  ifeq ($(strip ${HAVE_PRIMME}),true)
      DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
-     ADDDEFINES += -DPRIMME
-  else ifeq ($(strip ${HAVEARPACK}),true)
+  else ifeq ($(strip ${HAVE_ARPACK}),true)
      DEFLATE_OBJECTS += eigen_stuff_ARPACK.o
-     ADDDEFINES += -DARPACK
   else
      DEFLATE_OBJECTS += eigen_stuff_Ritz.o
      ADDDEFINES += -DKalkreuter_Ritz
@@ -101,12 +101,10 @@ else
   ifeq ($(strip ${HAVEQDP}),true)
     DEFLATE_OBJECTS += eigen_stuff_qdp.o
   else
-    ifeq ($(strip ${HAVEPRIMME}),true)
+    ifeq ($(strip ${HAVE_PRIMME}),true)
        DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
-       ADDDEFINES += -DPRIMME
-    else ifeq ($(strip ${HAVEARPACK}),true)
+    else ifeq ($(strip ${HAVE_ARPACK}),true)
        DEFLATE_OBJECTS += eigen_stuff_ARPACK.o
-       ADDDEFINES += -DARPACK
     else
        DEFLATE_OBJECTS += eigen_stuff_Ritz.o
        ADDDEFINES += -DKalkreuter_Ritz

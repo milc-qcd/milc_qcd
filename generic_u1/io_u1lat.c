@@ -60,7 +60,7 @@
 #define NATURAL_ORDER 0
 
 #undef MAX_BUF_LENGTH
-#define MAX_BUF_LENGTH 4096
+#define MAX_BUF_LENGTH 32768
 
 /* Forward declarations */
 static gauge_file *w_u1_serial_i(char *filename);
@@ -71,6 +71,7 @@ static void flush_u1_tbuf_to_lbuf(gauge_file *gf, int *rank29, int *rank31,
                                float *tbuf, int tbuf_length);
 static void send_u1_buf_to_node0(float *tbuf, int tbuf_length, int currentnode);
 static void r_u1_serial(gauge_file *gf);
+static void r_u1_parallel(gauge_file *gf);
 static void accum_cksums(gauge_file *gf, int *rank29, int *rank31,
                          u_int32type *buf, int n);
 static void flush_u1_lbuf_to_file(gauge_file *gf, float *lbuf,
@@ -351,7 +352,7 @@ gauge_file *setup_output_u1gauge_file(void)
   char myname[]="setup_output_u1gauge_file";
 
   /* Allocate space for a new file structure */
-  assert(sizeof(int32type)==4);
+  assert(sizeof(u_int32type)==4);
   gf=(gauge_file *)malloc(sizeof(gauge_file));
   if(gf==NULL)
     {
@@ -678,10 +679,22 @@ gauge_file *restore_u1_serial(char *filename)
 gauge_file *restore_u1_parallel(char *filename)
 {
 
-  printf("Can't handle parallel restoring presently!!\n");
-  terminate(1);
+  gauge_file *gf;
 
-  return(NULL);
+  gf = r_u1_parallel_i(filename);
+  if(gf->header->magic_number == LIME_MAGIC_NO)
+    {
+      r_parallel_f(gf);
+      node0_printf("SciDAC support for U(1) parallel not included yet.\n");
+      terminate(1);
+    }
+  else
+    {
+      r_u1_parallel(gf);
+      r_parallel_f(gf);
+    }
+
+  return gf;
 
 } /* end of restore_u1_parallel() */
 
@@ -700,7 +713,7 @@ gauge_file *setup_input_u1gauge_file(char *filename)
     }
   gf->filename = filename;
 
-  assert(sizeof(int32type)==4);
+  assert(sizeof(u_int32type)==4);
   gh=(gauge_header *)malloc(sizeof(gauge_header));
   if(gh==NULL)
     {
@@ -908,8 +921,8 @@ static void w_u1_serial(gauge_file *gf)
   gf->check.sum29 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here only node 0 uses these values -- both start at 0 */
-  rank29 = 4*sizeof(float)/sizeof(int32type)*sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(float)/sizeof(int32type)*sites_on_node*this_node % 31;
+  rank29 = 4*sizeof(float)/sizeof(u_int32type)*sites_on_node*this_node % 29;
+  rank31 = 4*sizeof(float)/sizeof(u_int32type)*sites_on_node*this_node % 31;
 
   g_sync();
   currentnode=0;  /* The node delivering data */
@@ -1036,7 +1049,7 @@ gauge_file *setup_u1_output_gauge_file()
   /* Allocate space for a new header structure */
 
   /* Make sure compilation gave us a 32 bit integer type */
-  assert(sizeof(int32type) == 4);
+  assert(sizeof(u_int32type) == 4);
 
   gh = (gauge_header *)malloc(sizeof(gauge_header));
   if(gh == NULL)
@@ -1117,7 +1130,7 @@ static void flush_u1_tbuf_to_lbuf(gauge_file *gf, int *rank29, int *rank31,
     memcpy((void *)&lbuf[4*(*buf_length)],
            (void *)tbuf, 4*tbuf_length*sizeof(float));
 
-    nword= 4*(int)sizeof(float)/(int)sizeof(int32type)*tbuf_length;
+    nword= 4*(int)sizeof(float)/(int)sizeof(u_int32type)*tbuf_length;
     buf = (u_int32type *)&lbuf[4*(*buf_length)];
     accum_cksums(gf, rank29, rank31, buf, nword);
 
@@ -1181,7 +1194,7 @@ static void r_u1_serial(gauge_file *gf)
           sizeof(gf->check.sum31);
 
       if(gf->header->order == NATURAL_ORDER)coord_list_size = 0;
-      else coord_list_size = sizeof(int32type)*volume;
+      else coord_list_size = sizeof(u_int32type)*volume;
       checksum_offset = gf->header->header_bytes + coord_list_size;
       head_size = checksum_offset + gauge_check_size;
       /* Allocate space for read buffer */
@@ -1295,10 +1308,10 @@ static void r_u1_serial(gauge_file *gf)
         {
           if(byterevflag==1)
             byterevn((u_int32type *)tmpu1,
-                     4*sizeof(float)/sizeof(int32type));
+                     4*sizeof(float)/sizeof(u_int32type));
           /* Accumulate checksums */
           for(k = 0, val = (u_int32type *)tmpu1;
-              k < 4*(int)sizeof(float)/(int)sizeof(int32type);
+              k < 4*(int)sizeof(float)/(int)sizeof(u_int32type);
               k++, val++)
             {
               test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
@@ -1314,8 +1327,8 @@ static void r_u1_serial(gauge_file *gf)
         }
       else
         {
-          rank29 += 4*sizeof(float)/sizeof(int32type);
-          rank31 += 4*sizeof(float)/sizeof(int32type);
+          rank29 += 4*sizeof(float)/sizeof(u_int32type);
+          rank31 += 4*sizeof(float)/sizeof(u_int32type);
           rank29 %= 29;
           rank31 %= 31;
         }
@@ -1347,6 +1360,258 @@ static void r_u1_serial(gauge_file *gf)
     }
 
 } /* r_u1_serial */
+
+
+/* Read U(1) gauge configuration in parallel from a single file */
+static void r_u1_parallel(gauge_file *gf)
+{
+  /* gf  = gauge configuration file structure */
+
+  FILE *fp;
+  gauge_header *gh;
+  const char *filename;
+  float *lbuf;
+  struct {
+    short x,y,z,t;
+    float link[4];
+  } msg;
+  float tmpu1[4];
+
+  int buf_length,where_in_buf;
+  gauge_check test_gc;
+  u_int32type *val;
+  size_t rank29,rank31;
+  int destnode,sendnode;
+  size_t isite,ksite,site_block;
+  int x,y,z,t;
+  int dir;
+  size_t rcv_rank,rcv_coords;
+  register int i,k;
+
+  off_t offset ;            /* File stream pointer */
+  off_t gauge_node_size;    /* Size of a gauge configuration block for
+                              all sites on one node */
+  off_t gauge_check_size;   /* Size of gauge configuration checksum record */
+  off_t coord_list_size;    /* Size of coordinate list in bytes */
+  off_t head_size;          /* Size of header plus coordinate list */
+  off_t checksum_offset;    /* Where we put the checksum */
+  char myname[] = "r_u1_parallel";
+
+  fp = gf->fp;
+  gh = gf->header;
+
+  filename = gf->filename;
+
+  if(!gf->parallel)
+    printf("%s: Attempting parallel read from serial file.\n",myname);
+
+  /* Allocate single precision read buffer */
+  lbuf = (float *)malloc(MAX_BUF_LENGTH*4*sizeof(float));
+  if(lbuf == NULL)
+    {
+      printf("%s: Node %d can't malloc lbuf\n",myname,this_node); 
+      fflush(stdout);terminate(1);
+    }
+
+  gauge_node_size = sites_on_node*4*sizeof(float) ;
+
+  /* binary U1 files have a check sum */
+  gauge_check_size = sizeof(gf->check.sum29) +
+          sizeof(gf->check.sum31);
+
+  if(gf->header->order == NATURAL_ORDER)coord_list_size = 0;
+  else coord_list_size = sizeof(u_int32type)*volume;
+  checksum_offset = gf->header->header_bytes + coord_list_size;
+  head_size = checksum_offset + gauge_check_size;
+
+  offset = head_size;
+
+  /* Position file for reading gauge configuration */
+  /* Each node reads */
+
+  offset += gauge_node_size*this_node;
+  
+  if( g_seek(fp,offset,SEEK_SET) < 0 ) 
+    {
+      printf("%s: Node %d g_seek %ld failed error %d file %s\n",
+	     myname,this_node,(long)offset,errno,filename);
+      fflush(stdout);terminate(1);   
+    }
+
+  /* initialize checksums */
+  test_gc.sum29 = 0;
+  test_gc.sum31 = 0;
+  /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
+  /* Here all nodes use these values */
+  u_int32type r29 = sites_on_node % 29;
+  r29 = r29 * this_node % 29;
+  rank29 = 4*sizeof(float)/sizeof(u_int32type) * r29 % 29;
+  u_int32type r31 = sites_on_node % 31;
+  r31 = r31 * this_node % 31;
+  rank31 = 4*sizeof(float)/sizeof(u_int32type) * r31 % 31;
+
+  /* Read and deal */
+
+  g_sync();
+  buf_length = 0;
+  where_in_buf = 0;
+  
+  /* Cycle through nodes, dealing 128 values from each node in sequence.
+     (We don't know if this pattern is generally optimal.)
+
+     It is possible that messages arrive at a node in an order
+     different from the order of dealing so we include the site
+     coordinates in the message to specify where it goes */
+  
+  site_block = 128;
+  for(ksite=0; ksite<sites_on_node; ksite += site_block)
+    {
+    for(sendnode=0; sendnode<number_of_nodes; sendnode++)
+      for(isite=ksite; 
+	  isite<sites_on_node && isite<ksite+site_block; isite++)
+	{
+	  /* Compute destination coordinate for the next field 
+	     
+	     In coordinate natural order (typewriter order)
+	     the rank order of data for site (x,y,z,t) on the 
+	     file is given by
+	     
+	     rcv_coords = x+nx*(y+ny*(z+nz*t))
+	     
+	     For purposes of reading, the data is divided
+	     equally among the nodes with node 0 taking the 1st block,
+	     node 1 the second, etc.  */
+	  
+	  rcv_rank = sendnode*sites_on_node + isite;
+	  
+	  /* If sites are not in natural order, use the
+	     site list */
+	  
+	  if(gf->header->order == NATURAL_ORDER)
+	    rcv_coords = rcv_rank;
+	  else
+	    rcv_coords = gf->rank2rcv[rcv_rank];
+	  
+	  x = rcv_coords % nx; rcv_coords /= nx;
+	  y = rcv_coords % ny; rcv_coords /= ny;
+	  z = rcv_coords % nz; rcv_coords /= nz;
+	  t = rcv_coords % nt;
+	  
+	  
+	  /* Destination node for this value */
+	  destnode=node_number(x,y,z,t);
+	  
+	  /* Node sendnode reads, and sends site to correct node */
+	  if(this_node==sendnode){
+	    
+	    if(where_in_buf == buf_length)
+	      
+	      {  /* get new buffer */
+		
+		/* new buffer length  = remaining sites, but never bigger 
+		   than MAX_BUF_LENGTH */
+		buf_length = sites_on_node - isite;
+		if(buf_length > MAX_BUF_LENGTH) buf_length = MAX_BUF_LENGTH; 
+		/* then do read */
+		/* each node reads its sites */
+		
+		if( g_read(lbuf,buf_length*4*sizeof(float),1,fp) != 1)
+		  {
+		    printf("%s: node %d gauge configuration read error %d file %s\n",
+			   myname,this_node,errno,filename); 
+		    fflush(stdout); terminate(1);
+		  }
+		where_in_buf = 0;  /* reset counter */
+	      }  /*** end of the buffer read ****/
+	    
+	    /* Do byte reversal if needed */
+	    if(gf->byterevflag==1)
+	      byterevn((u_int32type *)&lbuf[4*where_in_buf],
+		       4*sizeof(float)/sizeof(u_int32type));
+
+	    /* Accumulate checksums - contribution from next site */
+	    for(k = 0, val = (u_int32type *)&lbuf[4*where_in_buf]; 
+		k < 4*(int)sizeof(float)/(int)sizeof(u_int32type); k++, val++)
+	      {
+		test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
+		test_gc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
+		rank29++; if(rank29 >= 29)rank29 = 0;
+		rank31++; if(rank31 >= 31)rank31 = 0;
+	      }
+
+            if(destnode==sendnode){	
+	      /* just copy links, converting to generic precision */
+	      i = node_index(x,y,z,t);
+	      memcpy(tmpu1,&lbuf[4*where_in_buf],4*sizeof(float));
+	      FORALLUPDIR(dir){
+                  u1_A[4*i+dir] = tmpu1[dir];
+              }
+	    }
+	    else {		
+	      /* send to correct node */
+	      /* Message consists of site coordinates and 4 link matrices */
+	      msg.x = x; msg.y = y; msg.z = z; msg.t = t;
+	      memcpy((void *)msg.link,
+		     (void *)&lbuf[4*where_in_buf],4*sizeof(float));
+	      
+	      send_field((char *)&msg,sizeof(msg),destnode);
+	    }
+	    where_in_buf++;
+	  }
+	  /* The node which contains this site reads a message */
+	  else {	/* for all nodes other than node sendnode */
+	    if(this_node==destnode){
+	      get_field((char *)&msg,sizeof(msg),sendnode);
+	      i = node_index(msg.x,msg.y,msg.z,msg.t);
+	      if(this_node!= node_number(msg.x,msg.y,msg.z,msg.t))
+		{
+		  printf("BOTCH. Node %d received %d %d %d %d\n",
+			 this_node,msg.x,msg.y,msg.z,msg.t);
+		  fflush(stdout); terminate(1);
+		}
+	      /* Store in the proper location, converting to generic
+		 precision */
+	      FORALLUPDIR(dir){
+                  u1_A[4*i+dir] = msg.link[dir];
+              }
+	    }
+	  }
+	} /** end over the lattice sites in block on all nodes ***/
+
+    g_sync(); /* To prevent incoming message pileups */
+  }  /** end over blocks **/
+
+
+  free(lbuf);
+
+  /* Combine node checksum contributions with global exclusive or */
+  g_xor32(&test_gc.sum29);
+  g_xor32(&test_gc.sum31);
+
+  /* Read and verify checksum */
+  
+  if(this_node == 0)
+    {
+      /* Node 0 positions file for reading checksum */
+      
+      printf("Restored binary gauge configuration in parallel from file %s\n",
+	       filename);
+      if(gh->magic_number == U1GAUGE_VERSION_NUMBER_BINARY)
+	{
+	  printf("Time stamp %s\n",gh->time_stamp);
+	  if( g_seek(fp,checksum_offset,SEEK_SET) < 0 ) 
+	    {
+	      printf("%s: Node 0 g_seek %ld for checksum failed error %d file %s\n",
+		     myname,(long)offset,errno,filename);
+	      fflush(stdout);terminate(1);   
+	    }
+	  
+	  read_checksum(PARALLEL,gf,&test_gc);
+	}
+      fflush(stdout);
+    }  
+  
+} /* r_u1_parallel */
 
 
 gauge_file *r_u1_serial_i(char *filename)
@@ -1403,6 +1668,58 @@ gauge_file *r_u1_serial_i(char *filename)
 
 }/* r_u1_serial_i */
 
+
+gauge_file *r_u1_parallel_i(char *filename)
+{
+  /* Returns file descriptor for opened file */
+
+  gauge_header *gh;
+  gauge_file *gf;
+  FILE *fp;
+  int byterevflag;
+
+  /* All nodes set up a gauge file and gauge header structure for reading */
+
+  gf = setup_input_gauge_file(filename);
+  gh = gf->header;
+
+  gf->parallel = 1;   /* File was opened for parallel access */
+
+  /* All nodes open a file */
+
+  fp = g_open(filename, "rb");
+  if(fp == NULL)
+    {
+      printf("r_u1_parallel_i: Node %d can't open file %s, error %d\n",
+	     this_node,filename,errno);fflush(stdout);terminate(1);
+    }
+
+  gf->fp = fp;
+
+  /* Node 0 reads header */
+
+  if(this_node==0)
+    byterevflag = read_u1_gauge_hdr(gf,PARALLEL);
+  
+  /* Broadcast the byterevflag from node 0 to all nodes */
+
+  broadcast_bytes((char *)&byterevflag,sizeof(byterevflag));
+
+  gf->byterevflag = byterevflag;
+
+  /* Broadcasts the header structure from node 0 to all nodes */
+  
+  broadcast_bytes((char *)gh,sizeof(gauge_header));
+
+  /* Read site list and broadcast to all nodes */
+
+  read_site_list(PARALLEL,gf);
+
+  return gf;
+
+} /* r_u1_parallel_i */
+
+
 /* Accumulate checksums (copied from io_lat4.c) */
 static void accum_cksums(gauge_file *gf, int *rank29, int *rank31,
                          u_int32type *buf, int n){
@@ -1425,7 +1742,7 @@ int read_u1_gauge_hdr(gauge_file *gf, int parallel)
 
   FILE *fp;
   gauge_header *gh;
-  int32type tmp, btmp;
+  u_int32type tmp, btmp;
   int j;
   int byterevflag = 0;
   char myname[] = "read_gauge_hdr";
@@ -1456,10 +1773,10 @@ int read_u1_gauge_hdr(gauge_file *gf, int parallel)
       gh->magic_number = btmp;
       node0_printf("Reloading U1 gauge field\n");
       /**      printf("Reading with byte reversal\n"); **/
-      if( sizeof(float) != sizeof(int32type)) {
+      if( sizeof(float) != sizeof(u_int32type)) {
 	printf("%s: Can't byte reverse\n",myname);
-	printf("requires size of int32type(%d) = size of float(%d)\n",
-	       (int)sizeof(int32type),(int)sizeof(float));
+	printf("requires size of u_int32type(%d) = size of float(%d)\n",
+	       (int)sizeof(u_int32type),(int)sizeof(float));
 	terminate(1);
       }
     }

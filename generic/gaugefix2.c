@@ -91,10 +91,10 @@ void accum_gauge_hit(int gauge_dir,int parity)
 /* Differences are kept in diffmat and the diagonal elements of the sums */
 /* in sumvec  */
 
-  register int j;
-  register su3_matrix *m1,*m2;
-  register int dir,i;
-  register site *s;
+  int j;
+  su3_matrix *m1,*m2;
+  int dir,i;
+  site *s;
 
   /* Clear sumvec and diffmat */
 
@@ -148,8 +148,8 @@ void do_hit(int gauge_dir, int parity, int p, int q, Real relax_boost,
   /* Do optimum SU(2) gauge hit for p, q subspace */
 
   Real a0,a1,a2,a3,asq,a0sq,x,r,xdr;
-  register int dir,i,j;
-  register site *s;
+  int dir,i,j;
+  site *s;
   su2_matrix u;
   su3_matrix htemp;
 
@@ -255,9 +255,9 @@ double get_gauge_fix_action(int gauge_dir,int parity)
   /* The average is normalized to a maximum of 1 when all */
   /* links are unit matrices */
 
-  register int dir,i,ndir;
-  register site *s;
-  register su3_matrix *m1, *m2;
+  int dir,i,ndir;
+  site *s;
+  su3_matrix *m1, *m2;
   double gauge_fix_action;
   // complex trace;
 
@@ -302,8 +302,8 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
   int parity;
   msg_tag *mtag[8];
   Real gauge_fix_action;
-  register int dir,i;
-  register site *s;
+  int dir,i;
+  site *s;
 
   /* Alternate parity to prevent interactions during gauge transformation */
   *av_gauge_fix_action = 0.;

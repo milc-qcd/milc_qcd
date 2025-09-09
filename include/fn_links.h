@@ -10,6 +10,7 @@
 /* The fn_links_t "class" */
 
 typedef struct {
+  int preserve;
   link_phase_info_t *phase;
   su3_matrix *fat;
   su3_matrix *lng;

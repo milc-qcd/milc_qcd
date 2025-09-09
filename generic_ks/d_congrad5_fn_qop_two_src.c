@@ -28,9 +28,9 @@ ks_congrad_two_src_F(	/* Return value is number of iterations taken */
     )
 {
   int iterations_used;
-  static float t_mass1;
-  static float t_mass2;
-  float *masses[2];
+  static Real t_mass1;
+  static Real t_mass2;
+  Real *masses[2];
   int nmass[2], nsrc;
   su3_vector *srcs[2], *sols0[1], *sols1[1], **sols[2];
 
@@ -53,10 +53,15 @@ ks_congrad_two_src_F(	/* Return value is number of iterations taken */
   sols[0] = sols0;
   sols[1] = sols1;
 
-  iterations_used = 
-    ks_congrad_qop_F_field2field( qic, masses, nmass, srcs,
-				  sols, nsrc, fn );
-
+#if(MILC_PRECISION==1)
+    iterations_used = 
+      ks_congrad_qop_F_field2field( qic, masses, nmass, srcs,
+				    sols, nsrc, fn );
+#else
+      ks_congrad_qop_D_field2field( qic, masses, nmass, srcs,
+				    sols, nsrc, fn );
+#endif
+      
   /* Copy solutions to site structure */
 
   copy_site_member_from_v_field(sol1, sols0[0]);

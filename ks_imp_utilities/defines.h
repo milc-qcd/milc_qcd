@@ -7,5 +7,6 @@
 
 #define INVERT_M 0
 #define INVERT_MdaggerM 1
+#define MAX_N_PSEUDO 10
 
 #endif /* _DEFINES_H */

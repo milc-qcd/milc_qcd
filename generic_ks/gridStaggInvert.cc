@@ -35,6 +35,7 @@ restartCG (int nrestart, GRID_resid_arg_t *res_arg,
     CG(LinOp, in, out);
     res_arg->final_iter += CG.IterationsToComplete;
     res_arg->final_rsq = CG.TrueResidual*CG.TrueResidual;
+    std::cout << "Comparing true residual " << CG.TrueResidual << " with desired residual" <<  res_arg->resid << std::endl;
     if(CG.TrueResidual < res_arg->resid)break;
     std::cout << "Restart " << i << " after iteration " 
 	      << res_arg->final_iter << ", true residual is "

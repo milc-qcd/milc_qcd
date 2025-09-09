@@ -1,7 +1,7 @@
 /********************** io_helpers_ks_utils.c ***************************/
 /* MIMD version 7 */
 
-#include "ks_imp_includes.h"
+#include "ks_imp_utilities_includes.h"
 #include "../include/io_lat.h"
 
 /* find out the name of the input or output color vector source
@@ -11,10 +11,15 @@
 int ask_color_vector( int prompt, int *flag, char *filename ){
   char savebuf[256];
   int status;
+  char myname[] = "ask_color_vector";
   
   if (prompt==1) 
     printf("enter 'fresh', 'reload_serial_ks_vector' 'save_serial_ks_vector' 'save_partfile_scidac_ks_vector'\n");
   status=scanf("%s",savebuf);
+  if (status == EOF){
+    printf("%s(%d): EOF on input.\n",myname,this_node);
+    return 1;
+  }
   if(status !=1) {
     printf("\nask_color_vector: ERROR IN INPUT: command \"%s\" is invalid\n",savebuf);
     return(1);
@@ -57,10 +62,15 @@ int ask_color_vector( int prompt, int *flag, char *filename ){
 int ask_color_matrix( int prompt, int *flag, char *filename ){
   char savebuf[256];
   int status;
+  char myname[] = "ask_color_matrix";
   
   if (prompt==1) 
     printf("enter 'fresh', 'reload_serial_color_matrix' 'save_serial_color_matrix' 'save_partfile_scidac_color_matrix'\n");
   status=scanf("%s",savebuf);
+  if (status == EOF){
+    printf("%s(%d): EOF on input.\n",myname,this_node);
+    return 1;
+  }
   if(status !=1) {
     printf("\nask_color_matrix: ERROR IN INPUT: command \"%s\" is invalid\n",savebuf);
     return(1);

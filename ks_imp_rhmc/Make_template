@@ -28,7 +28,7 @@ INLINE_HEADERS = \
 MY_HEADERS = \
   lattice.h \
   params.h \
-  params_rhmc.h \
+  ../include/params_rhmc.h \
   defines.h \
   gauge_action.h \
   ks_imp_includes.h \
@@ -263,7 +263,7 @@ su3_rhmc_hisq_6G1F::
 su3_rhmc_hisq_plaq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN  -DHMC -DINT_ALG=INT_3G1F\
-	 -DHISQ_REUNIT_ALLOW_SVD -DHISQ_REUNIT_SVD_ONLYYYYY" \
+	 -DHISQ_REUNIT_ALLOW_SVD -DHISQ_REUNIT_SVD_ONLY" \
 	"GAUGE = symanzik_1loop_nf0_action.h" \
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \

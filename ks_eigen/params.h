@@ -2,6 +2,7 @@
 #define _PARAMS_H
 
 #include "../include/imp_ferm_links.h"
+#include <stdint.h>
 
 /* structure for passing simulation parameters to each node */
 typedef struct {

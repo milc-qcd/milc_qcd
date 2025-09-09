@@ -53,7 +53,7 @@ get_spin_taste(void){
   
   /* Decode spin-taste label */
   for(mu = 0; mu < NMU; mu++){
-    char dummy[32];
+    char dummy[33];
     strncpy(dummy, spin_taste_list[mu], 32);
     spin_taste[mu] = spin_taste_index(dummy);
   }
@@ -226,15 +226,25 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
   double ptime = -dclock();
 
   if(Num == 0)return;
-  
+
+  int nzero = 0;
   for(i=Num-1;i>-1;i--){
     dot_product(vector[i], vec, &cc, parity) ;
+    if(cc.real == 0. && cc.imag == 0.){
+      if(nzero < 100){
+	node0_printf("project_out got zero dot product\n");
+      }
+      nzero++;
+    }
     complex_vec_mult_sub(&cc, vector[i], vec, parity);
   }
 
   ptime += dclock();
 #ifdef CGTIME
-  node0_printf("Time to project out low modes %g sec\n", ptime);
+  if(parity == EVEN)
+    node0_printf("Time to project out low modes from EVEN source %g sec\n", ptime);
+  else
+    node0_printf("Time to project out low modes from ODD source %g sec\n", ptime);
 #endif
 }
 
@@ -1663,18 +1673,6 @@ destroy_jhi(int n_masses, int nr, Real **j_mu[]){
     for(int ir = 0; ir < nr; ir++)
       destroy_r_array_field(j_mu[j][ir], NMU);
     free(j_mu[j]);
-  }
-}
-
-/*********************************************************************/
-/* Load arrays with masses and the HISQ link structure for each */
-static void
-load_inv_params(fermion_links_t *fl, imp_ferm_links_t *fn_mass[],
-		int n_masses, Real masses[], ks_param *ksp){
-  imp_ferm_links_t **fn = get_fm_links(fl);
-  for(int j = 0; j < n_masses; j++){
-    masses[j] = ksp[j].mass;
-    fn_mass[j] = fn[ksp[j].naik_term_epsilon_index];
   }
 }
 

@@ -14,7 +14,7 @@ job_id 203696.kaon2.fnal.gov
 
 reload_serial ../../binary_samples/lat.sample.l8888
 u0 0.8696
-coulomb_gauge_fix
+no_gauge_fix
 forget
 staple_weight 0
 ape_iter 0

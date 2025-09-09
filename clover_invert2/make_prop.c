@@ -222,7 +222,6 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
   int tot_iters = 0;
   int status;
   char *fileinfo;
-  imp_ferm_links_t *fn = NULL;
   Real mybdry_phase[4];
 #ifdef IOTIME
   int io_timing = 1;
@@ -242,6 +241,9 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
   ksptmp  = *my_ksp;
 
   /* Need FN links if we will call the inverter */
+  int naik_epsilon_index;
+  imp_ferm_links_t *fn_naik = NULL;
+
   if(check == CHECK_YES || startflag == FRESH){
 
     rephase( ON );
@@ -252,15 +254,14 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
     else
       restore_fermion_links_from_site(fn_links, my_qic->prec);
 
-    int naik_epsilon_index = my_ksp->naik_term_epsilon_index;
-    fn = get_fm_links(fn_links)[naik_epsilon_index];
+    naik_epsilon_index = my_ksp->naik_term_epsilon_index;
+    fn_naik = get_fm_links(fn_links, naik_epsilon_index);
     
     /* Apply twisted boundary conditions and move KS phases, if
        requested */
     /* This operation applies the phase to the boundary FN links */
-    set_boundary_twist_fn(fn, mybdry_phase, r0);
-    boundary_twist_fn(fn, ON);
-
+    set_boundary_twist_fn(fn_naik, mybdry_phase, r0);
+    boundary_twist_fn(fn_naik, ON);
   } /* check != CHECK_NO || startflag[0] == FRESH */
 
   /* Check (or produce) the solution if requested */
@@ -336,7 +337,7 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 	
 	enum inv_type it = my_qic[0].inv_type;
 	if(startflag != FRESH)my_qic[0].inv_type = CGTYPE;
-	avs_iters += mat_invert_field(src, dst, my_qic, my_ksp->mass, fn);
+	avs_iters += mat_invert_field(src, dst, my_qic, my_ksp->mass, fn_naik);
 	my_qic[0].inv_type = it;
 
 	/* Transform solution, completing the U(1) gauge transformation */
@@ -401,7 +402,8 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 
     /* Unapply twisted boundary conditions on the fermion links and
        restore conventional KS phases and BC, if changed. */
-    boundary_twist_fn(fn, OFF);
+    boundary_twist_fn(fn_naik, OFF);
+    destroy_fn_links(fn_naik);
 
     /* Turn off staggered phases in the gauge links */
     rephase( OFF );
@@ -457,9 +459,8 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
   int avs_iters = 0;
   int tot_iters = 0;
   int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
-  su3_vector *dst;
+  su3_vector *dst = NULL;
   spin_wilson_vector *swv;
-  imp_ferm_links_t *fn = NULL;
   Real mybdry_phase[4];
 #ifdef IOTIME
   int io_timing = 1;
@@ -482,6 +483,8 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
   ksptmp  = *my_ksp;
 
   /* If we will call the inverter, we need the FN links */
+  int naik_epsilon_index;
+  imp_ferm_links_t *fn_naik = NULL;
   if(check == CHECK_YES || startflag == FRESH){
     /* Phases must be in before constructing the fermion links */
     rephase( ON );
@@ -492,14 +495,14 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
     else
       restore_fermion_links_from_site(fn_links, my_qic->prec);
   
-    int naik_epsilon_index = my_ksp->naik_term_epsilon_index;
-    fn = get_fm_links(fn_links)[naik_epsilon_index];
+    naik_epsilon_index = my_ksp->naik_term_epsilon_index;
+    fn_naik = get_fm_links(fn_links, naik_epsilon_index);
 
     /* Apply twisted boundary conditions and move KS phases, if
        requested */
     /* This operation applies the phase to the boundary FN links */
-    set_boundary_twist_fn(fn, mybdry_phase, r0);
-    boundary_twist_fn(fn, ON);
+    set_boundary_twist_fn(fn_naik, mybdry_phase, r0);
+    boundary_twist_fn(fn_naik, ON);
   }
 	
   /* We do not load a precomputed propagator here.  We don't have an
@@ -556,7 +559,7 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
 	
 	enum inv_type it = my_qic[0].inv_type;
 	if(startflag != FRESH)my_qic[0].inv_type = CGTYPE;
-	avs_iters += mat_invert_field(src, dst, my_qic, my_ksp->mass, fn);
+	avs_iters += mat_invert_field(src, dst, my_qic, my_ksp->mass, fn_naik);
 	my_qic[0].inv_type = it;
 
 	/* Transform solution, completing the U(1) gauge transformation */
@@ -589,9 +592,9 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
   save_wprop_from_wp_field( saveflag, savefile, "", my_qs, NULL, wp, 
 			    io_timing);
 
-  /* Unapply twisted boundary conditions on the fermion links */
+  /* Free memory */
   if(check == CHECK_YES || startflag == FRESH){
-    boundary_twist_fn(fn, OFF);
+    destroy_fn_links(fn_naik);
     
     /* Turn off staggered phases in the gauge links */
     rephase( OFF );

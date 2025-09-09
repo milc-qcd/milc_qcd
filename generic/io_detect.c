@@ -21,7 +21,7 @@
 int io_detect(const char *filename, file_table ft[], int ntypes){
   FILE *fp;
   int i, status, words;
-  int32type magic_no;
+  u_int32type magic_no;
   u_int32type revmagic_no;
   char editfilename[513];
 
@@ -40,7 +40,7 @@ int io_detect(const char *filename, file_table ft[], int ntypes){
     if(fp == NULL)status = -2;
     else
       {
-	words = g_read(&magic_no, sizeof(int32type), 1, fp);
+	words = g_read(&magic_no, sizeof(u_int32type), 1, fp);
 	g_close(fp);
 
 	if(words != 1)status = -3;
@@ -181,7 +181,7 @@ int io_detect_fm(const char *filename){
     if(fp == NULL)status = -2;
     else
       {
-	words = g_read(&magic_no, sizeof(int32type), 1, fp);
+	words = g_read(&magic_no, sizeof(u_int32type), 1, fp);
 
 	if(words != 1)status = -3;
 	else
@@ -193,8 +193,8 @@ int io_detect_fm(const char *filename){
 	    if(revmagic_no == IO_UNI_MAGIC)byterevflag = 1;
 	    if(magic_no == IO_UNI_MAGIC || revmagic_no == IO_UNI_MAGIC){
 	      g_read(&gmtime_stamp, sizeof(gmtime_stamp), 1, fp);
-	      g_read(&size_of_element, sizeof(int32type), 1, fp);
-	      g_read(&elem_per_site, sizeof(int32type), 1, fp);
+	      g_read(&size_of_element, sizeof(u_int32type), 1, fp);
+	      g_read(&elem_per_site, sizeof(u_int32type), 1, fp);
 
 	      if(byterevflag){
 		byterevn(&size_of_element, 1);

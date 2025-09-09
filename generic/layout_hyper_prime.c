@@ -447,6 +447,8 @@ void setup_layout(){
   /* Reassign my rank with the communicator */
   reset_machine_rank(peRank);
 
+  set_topology();
+
 #endif
 
   /* Initialize I/O node function */
@@ -535,6 +537,29 @@ const int *get_logical_dimensions(){
 const int *get_logical_coordinate(){
   return machine_coordinates;
 }
+
+/*------------------------------------------------------------------*/
+size_t get_even_sites_on_node(int node){
+  int mc[4];
+  size_t ir;
+  size_t meo, neven;
+  int k = node;
+  
+  /* mc = the machine coordinates for node k */
+#ifdef HAVE_QMP
+  QMP_comm_get_logical_coordinates_from2(QMP_comm_get_default(), mc, k);
+#else
+  lex_coords(mc, 4, nsquares, k);
+#endif
+
+  /* meo = the parity of the machine coordinate */
+  meo = coord_parity(mc);
+
+  /* neven = the number of even sites on node k */
+  neven = (sites_on_node + 1 - meo)/2;
+
+  return neven;
+}  
 
 /*------------------------------------------------------------------*/
 /* Map PE rank number and serialize site index to coordinates */

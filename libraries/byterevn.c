@@ -10,10 +10,10 @@
 
 void byterevn(u_int32type w[], int n)
 {
-  register int32type old,newv;
+  register u_int32type old,newv;
   int j;
 
-  assert(sizeof(int32type) == 4);
+  assert(sizeof(u_int32type) == 4);
   
   for(j=0; j<n; j++)
     {
@@ -29,10 +29,10 @@ void byterevn(u_int32type w[], int n)
 /* Do byte reversal on n contiguous 64-bit words */
 void byterevn64(u_int32type w[], int n)
 {
-  int32type tmp;
+  u_int32type tmp;
   int j;
 
-  assert(sizeof(int32type) == 4);
+  assert(sizeof(u_int32type) == 4);
   
   /* First swap pairs of 32-bit words */
   for(j=0; j<n; j++){

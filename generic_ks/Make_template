@@ -15,7 +15,7 @@ G_KS_ALL = \
   d_congrad5.o \
   d_congrad5_eo.o \
   d_congrad5_fn.o \
-  d_congrad5_fn_gpu.o \
+  d_congrad5_fn_quda.o \
   d_congrad5_fn_grid.o \
   d_congrad5_fn_grid_D.o \
   d_congrad5_fn_grid_F.o \
@@ -51,10 +51,12 @@ G_KS_ALL = \
   eigen_stuff_Ritz.o \
   eigen_stuff_PRIMME.o \
   eigen_stuff_Grid.o \
+  eigen_stuff_qdp.o \
   eigen_stuff_QUDA.o \
   f_meas.o \
   f_meas_current.o \
   fermion_force_asqtad.o \
+  fermion_force_asqtad_gpu.o \
   fermion_force_asqtad_qop.o \
   fermion_force_asqtad_qop_D.o \
   fermion_force_asqtad_qop_F.o \
@@ -64,12 +66,15 @@ G_KS_ALL = \
   fermion_force_fn_multi.o \
   fermion_force_eo_milc.o \
   fermion_force_hisq_multi.o \
-  fermion_force_hypisq_multi.o \
+  fermion_force_hisq_multi_cpu.o \
+  fermion_force_hisq_multi_grid.o \
+  fermion_force_hisq_multi_quda.o \
+  fermion_force_hisq_qop.o \
+  fermion_force_hisq_qop_D.o \
+  fermion_force_hisq_qop_F.o \
   fermion_force_multi.o \
   fermion_links.o \
   fermion_links_asqtad_qop.o \
-  fermion_links_asqtad_qop_D.o \
-  fermion_links_asqtad_qop_F.o \
   fermion_links_eo.o \
   fermion_links_fn_qop_milc_D.o \
   fermion_links_fn_qop_milc_F.o \
@@ -78,15 +83,15 @@ G_KS_ALL = \
   fermion_links_fn_twist_qop.o \
   fermion_links_from_site.o \
   fermion_links_eo_load_milc.o \
-  fermion_links_fn_load_gpu.o \
   fermion_links_fn_load_milc.o \
-  fermion_links_fn_utilities_gpu.o \
+  fermion_links_fn_load_quda.o \
   fermion_links_hisq_milc.o \
-  fermion_links_hisq_load_milc.o \
+  fermion_links_hisq_load.o \
+  fermion_links_hisq_load_grid.o \
+  fermion_links_hisq_load_grid_D.o \
+  fermion_links_hisq_load_grid_F.o \
   fermion_links_hisq_qop.o \
   fermion_links_hyp.o \
-  fermion_links_hypisq_load_milc.o \
-  fermion_links_hypisq_milc.o \
   fermion_links_milc.o \
   ff_opt.o \
   flavor_ops.o \
@@ -100,6 +105,8 @@ G_KS_ALL = \
   gauss_smear_ks.o \
   gauss_smear_ks_cpu.o \
   gauss_smear_ks_QUDA.o \
+  gridHISQLinks.o \
+  grsource_rhmc.o \
   gb_baryon_mmap.o \
   gb_baryon_snk.o \
   gb_baryon_3pt.o \
@@ -109,8 +116,8 @@ G_KS_ALL = \
   gridStaggInvert.o \
   grsource.o \
   hisq_links_qop.o \
-  hypisq_links_qop.o \
   inc_eigcg.o \
+  io_grid_ks_eigen.o \
   io_helpers_ks.o \
   io_helpers_ks_eigen.o \
   io_ks_eigen.o \
@@ -124,14 +131,13 @@ G_KS_ALL = \
   ks_action_coeffs_hisq_qop.o \
   ks_action_paths.o \
   ks_action_paths_hisq.o \
-  ks_action_paths_hypisq.o \
   ks_baryon.o \
   ks_invert.o \
   ks_meson_mom.o \
-  ks_meson_mom_gpu.o \
+  ks_meson_mom_quda.o \
   ks_multicg.o \
   ks_multicg_offset.o \
-  ks_multicg_offset_gpu.o \
+  ks_multicg_offset_quda.o \
   ks_multicg_offset_qop.o \
   ks_multicg_offset_qop_D.o \
   ks_multicg_offset_qop_F.o \
@@ -141,25 +147,26 @@ G_KS_ALL = \
   ks_multicg_offset_qphix.o \
   ks_multicg_qop_milc_D.o \
   ks_multicg_qop_milc_F.o \
+  ks_ratinv.o \
   ks_utilities.o \
   load_qop_asqtad_coeffs_D.o \
   load_qop_asqtad_coeffs_F.o \
+  load_rhmc_params.o \
   mat_invert.o \
   mu.o \
   mu_fast.o \
   multimass_inverter.o \
   naik_eps_utilities.o \
+  nl_spectrum.o \
   path_transport.o \
   ploop3_ks.o \
-  nl_spectrum.o \
+  read_eigen_param.o \
   reunitarize_ks.o \
   shift_field.o \
   show_generic_ks_md_opts.o \
   show_generic_ks_opts.o \
   show_hisq_force_opts.o \
   show_hisq_links_opts.o \
-  show_hypisq_force_opts.o \
-  show_hypisq_links_opts.o \
   spectrum.o \
   spectrum2.o \
   spectrum_fzw.o \
@@ -208,7 +215,7 @@ d_congrad5_eo.o: ../generic_ks/d_congrad5_eo.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn.o: ../generic_ks/d_congrad5_fn.c
 	${CC} -c ${CFLAGS} $<
-d_congrad5_fn_gpu.o: ../generic_ks/d_congrad5_fn_gpu.c
+d_congrad5_fn_quda.o: ../generic_ks/d_congrad5_fn_quda.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_grid.o: ../generic_ks/d_congrad5_fn_grid.c
 	${CC} -c ${CFLAGS} $<
@@ -280,9 +287,13 @@ eigen_stuff_PRIMME.o: ../generic_ks/eigen_stuff_PRIMME.c
 	${CC} -c ${CFLAGS} $<
 eigen_stuff_Grid.o: ../generic_ks/eigen_stuff_Grid.c
 	${CC} -c ${CFLAGS} $<
+eigen_stuff_qdp.o: ../generic_ks/eigen_stuff_qdp.c
+	${CC} -c ${CFLAGS} $<
 eigen_stuff_QUDA.o: ../generic_ks/eigen_stuff_QUDA.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad.o: ../generic_ks/fermion_force_asqtad.c
+	${CC} -c ${CFLAGS} $<
+fermion_force_asqtad_gpu.o: ../generic_ks/fermion_force_asqtad_gpu.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qop.o: ../generic_ks/fermion_force_asqtad_qop.c
 	${CC} -c ${CFLAGS} $<
@@ -304,6 +315,12 @@ fermion_force_eo_milc.o: ../generic_ks/fermion_force_eo_milc.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_hisq_multi.o: ../generic_ks/fermion_force_hisq_multi.c
 	${CC} -c ${CFLAGS} $<
+fermion_force_hisq_multi_cpu.o: ../generic_ks/fermion_force_hisq_multi_cpu.c
+	${CC} -c ${CFLAGS} $<
+fermion_force_hisq_multi_grid.o: ../generic_ks/fermion_force_hisq_multi_grid.c
+	${CC} -c ${CFLAGS} $<
+fermion_force_hisq_multi_quda.o: ../generic_ks/fermion_force_hisq_multi_quda.c
+	${CC} -c ${CFLAGS} $<
 fermion_force_hisq_qop.o: ../generic_ks/fermion_force_hisq_qop.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_hisq_qop_F.o: ../generic_ks/fermion_force_hisq_qop_F.c ../generic_ks/fermion_force_hisq_qop_P.c
@@ -311,8 +328,6 @@ fermion_force_hisq_qop_F.o: ../generic_ks/fermion_force_hisq_qop_F.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_hisq_qop_D.o: ../generic_ks/fermion_force_hisq_qop_D.c ../generic_ks/fermion_force_hisq_qop_P.c
 fermion_force_hisq_qop_D.o: ../generic_ks/fermion_force_hisq_qop_D.c
-	${CC} -c ${CFLAGS} $<
-fermion_force_hypisq_multi.o: ../generic_ks/fermion_force_hypisq_multi.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_multi.o: ../generic_ks/fermion_force_multi.c
 	${CC} -c ${CFLAGS} $<
@@ -338,10 +353,6 @@ fermion_links_milc.o: ../generic_ks/fermion_links_milc.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_asqtad_qop.o: ../generic_ks/fermion_links_asqtad_qop.c
 	${CC} -c ${CFLAGS} $<
-fermion_links_asqtad_qop_D.o: ../generic_ks/fermion_links_asqtad_qop_D.c  ../generic_ks/fermion_links_asqtad_qop_P.c
-	${CC} -c ${CFLAGS} $<
-fermion_links_asqtad_qop_F.o: ../generic_ks/fermion_links_asqtad_qop_F.c  ../generic_ks/fermion_links_asqtad_qop_P.c
-	${CC} -c ${CFLAGS} $<
 fermion_links_eo.o: ../generic_ks/fermion_links_eo.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_fn_qop_milc_D.o: ../generic_ks/fermion_links_fn_qop_milc_D.c ../generic_ks/fermion_links_fn_qop_milc_P.c
@@ -354,27 +365,27 @@ fermion_links_fn_twist_milc.o: ../generic_ks/fermion_links_fn_twist_milc.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_fn_twist_qop.o: ../generic_ks/fermion_links_fn_twist_qop.c
 	${CC} -c ${CFLAGS} $<
-fermion_links_fn_utilities_gpu.o: ../generic_ks/fermion_links_fn_utilities_gpu.c
-	${CC} -c ${CFLAGS} $<
 fermion_links_from_site.o: ../generic_ks/fermion_links_from_site.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_eo_load_milc.o: ../generic_ks/fermion_links_eo_load_milc.c
 	${CC} -c ${CFLAGS} $<
-fermion_links_fn_load_gpu.o: ../generic_ks/fermion_links_fn_load_gpu.c
-	${CC} -c ${CFLAGS} $<
 fermion_links_fn_load_milc.o: ../generic_ks/fermion_links_fn_load_milc.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_fn_load_quda.o: ../generic_ks/fermion_links_fn_load_quda.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_hisq_milc.o: ../generic_ks/fermion_links_hisq_milc.c
 	${CC} -c ${CFLAGS} $<
-fermion_links_hisq_load_milc.o: ../generic_ks/fermion_links_hisq_load_milc.c
+fermion_links_hisq_load_grid.o: ../generic_ks/fermion_links_hisq_load_grid.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_hisq_load_grid_D.o: ../generic_ks/fermion_links_hisq_load_grid_D.c ../generic_ks/fermion_links_hisq_load_grid_P.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_hisq_load_grid_F.o: ../generic_ks/fermion_links_hisq_load_grid_F.c ../generic_ks/fermion_links_hisq_load_grid_P.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_hisq_load.o: ../generic_ks/fermion_links_hisq_load.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_hisq_qdp.o: ../generic_ks/fermion_links_hisq_qdp.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_hisq_qop.o: ../generic_ks/fermion_links_hisq_qop.c
-	${CC} -c ${CFLAGS} $<
-fermion_links_hypisq_milc.o: ../generic_ks/fermion_links_hypisq_milc.c
-	${CC} -c ${CFLAGS} $<
-fermion_links_hypisq_load_milc.o: ../generic_ks/fermion_links_hypisq_load_milc.c
 	${CC} -c ${CFLAGS} $<
 ff_opt.o: ../generic_ks/ff_opt.c
 	${CC} -c ${CFLAGS} $<
@@ -400,6 +411,8 @@ gb_baryon_src.o: ../generic_ks/gb_baryon_src.c
 	${CC} -c ${CFLAGS} $<
 gb_ops.o: ../generic_ks/gb_ops.c
 	${CC} -c ${CFLAGS} $<
+gridHISQLinks.o: ../generic_ks/gridHISQLinks.cc
+	${CXX} -c ${CXXFLAGS} $<
 gridStaggEigen.o: ../generic_ks/gridStaggEigen.cc
 	${CXX} -c ${CXXFLAGS} $<
 gridStaggInvert.o: ../generic_ks/gridStaggInvert.cc
@@ -408,11 +421,13 @@ grsource.o: ../generic_ks/grsource.c
 	${CC} -c ${CFLAGS} $<
 grsource_imp.o: ../generic_ks/grsource_imp.c
 	${CC} -c ${CFLAGS} $<
+grsource_rhmc.o: ../generic_ks/grsource_rhmc.c
+	${CC} -c ${CFLAGS} $<
 hisq_links_qop.o: ../generic_ks/hisq_links_qop.c
 	${CC} -c ${CFLAGS} $<
-hypisq_links_qop.o: ../generic_ks/hypisq_links_qop.c
-	${CC} -c ${CFLAGS} $<
 inc_eigcg.o: ../generic_ks/inc_eigcg.c
+	${CC} -c ${CFLAGS} $<
+io_grid_ks_eigen.o: ../generic_ks/io_grid_ks_eigen.c
 	${CC} -c ${CFLAGS} $<
 io_helpers_ks.o: ../generic_ks/io_helpers_ks.c
 	${CC} -c ${CFLAGS} $<
@@ -440,21 +455,19 @@ ks_action_paths.o: ../generic_ks/ks_action_paths.c
 	${CC} -c ${CFLAGS} $<
 ks_action_paths_hisq.o: ../generic_ks/ks_action_paths_hisq.c
 	${CC} -c ${CFLAGS} $<
-ks_action_paths_hypisq.o: ../generic_ks/ks_action_paths_hypisq.c
-	${CC} -c ${CFLAGS} $<
 ks_baryon.o: ../generic_ks/ks_baryon.c
 	${CC} -c ${CFLAGS} $<
 ks_invert.o: ../generic_ks/ks_invert.c
 	${CC} -c ${CFLAGS} $<
 ks_meson_mom.o: ../generic_ks/ks_meson_mom.c
 	${CC} -c ${CFLAGS} $<
-ks_meson_mom_gpu.o: ../generic_ks/ks_meson_mom_gpu.c
+ks_meson_mom_quda.o: ../generic_ks/ks_meson_mom_quda.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg.o: ../generic_ks/ks_multicg.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_offset.o: ../generic_ks/ks_multicg_offset.c
 	${CC} -c ${CFLAGS} $<
-ks_multicg_offset_gpu.o: ../generic_ks/ks_multicg_offset_gpu.c
+ks_multicg_offset_quda.o: ../generic_ks/ks_multicg_offset_quda.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_offset_grid.o: ../generic_ks/ks_multicg_offset_grid.c
 	${CC} -c ${CFLAGS} $<
@@ -478,6 +491,8 @@ ks_multicg_qop_milc_D.o: ../generic_ks/ks_multicg_qop_milc_D.c ../generic_ks/ks_
 	${CC} -c ${CFLAGS} $<
 ks_multicg_qop_milc_F.o: ../generic_ks/ks_multicg_qop_milc_F.c ../generic_ks/ks_multicg_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<
+ks_ratinv.o: ../generic_ks/ks_ratinv.c
+	${CC} -c ${CFLAGS} $<
 ks_utilities.o: ../generic_ks/ks_utilities.c
 	${CC} -c ${CFLAGS} $<
 load_qop_asqtad_coeffs_D.o: ../generic_ks/load_qop_asqtad_coeffs_D.c ../generic_ks/load_qop_asqtad_coeffs_P.c
@@ -487,6 +502,8 @@ load_qop_asqtad_coeffs_F.o: ../generic_ks/load_qop_asqtad_coeffs_F.c ../generic_
 load_qop_hisq_coeffs_D.o: ../generic_ks/load_qop_hisq_coeffs_D.c ../generic_ks/load_qop_hisq_coeffs_P.c
 	${CC} -c ${CFLAGS} $<
 load_qop_hisq_coeffs_F.o: ../generic_ks/load_qop_hisq_coeffs_F.c ../generic_ks/load_qop_hisq_coeffs_P.c
+	${CC} -c ${CFLAGS} $<
+load_rhmc_params.o: ../generic_ks/load_rhmc_params.c
 	${CC} -c ${CFLAGS} $<
 mat_invert.o: ../generic_ks/mat_invert.c
 	${CC} -c ${CFLAGS} $<
@@ -504,6 +521,8 @@ path_transport.o: ../generic_ks/path_transport.c
 	${CC} -c ${CFLAGS} $<
 ploop3_ks.o: ../generic_ks/ploop3_ks.c
 	${CC} -c ${CFLAGS} $<
+read_eigen_param.o: ../generic_ks/read_eigen_param.c
+	${CC} -c ${CFLAGS} $<
 rephase.o: ../generic_ks/rephase.c
 	${CC} -c ${CFLAGS} $<
 reunitarize_ks.o: ../generic_ks/reunitarize_ks.c
@@ -517,10 +536,6 @@ show_generic_ks_opts.o: ../generic_ks/show_generic_ks_opts.c
 show_hisq_force_opts.o: ../generic_ks/show_hisq_force_opts.c
 	${CC} -c ${CFLAGS} $<
 show_hisq_links_opts.o: ../generic_ks/show_hisq_links_opts.c
-	${CC} -c ${CFLAGS} $<
-show_hypisq_force_opts.o: ../generic_ks/show_hypisq_force_opts.c
-	${CC} -c ${CFLAGS} $<
-show_hypisq_links_opts.o: ../generic_ks/show_hypisq_links_opts.c
 	${CC} -c ${CFLAGS} $<
 spectrum.o: ../generic_ks/spectrum.c
 	${CC} -c ${CFLAGS} $<

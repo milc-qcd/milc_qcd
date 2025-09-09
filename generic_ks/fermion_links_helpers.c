@@ -1,4 +1,6 @@
 /**************** fermion_links_helpers.c *****************************/
+/* OBSOLETE */
+
 /* MILC Version 7 */
 /* Routines used by all of the fermion_links*.c files */
 

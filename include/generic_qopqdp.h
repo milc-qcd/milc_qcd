@@ -77,11 +77,11 @@ fsu3_matrix ** create_raw4_F_F_from_site(field_offset src, int milc_parity);
 fsu3_vector * create_raw_F_V_from_site(field_offset src, int milc_parity);
 QOPRAW_F3_DiracFermion * create_raw_F_D_from_site(field_offset src, int milc_parity);
 
-fsu3_matrix ** create_raw4_F_G_from_field(su3_matrix *src, int milc_parity);
-fsu3_matrix ** create_raw4_F_F_from_field(anti_hermitmat *src, 
+fsu3_matrix ** create_raw4_F_G_from_field(const su3_matrix * const src, int milc_parity);
+fsu3_matrix ** create_raw4_F_F_from_field(const anti_hermitmat * const src, 
 					  int milc_parity);
-fsu3_vector * create_raw_F_V_from_field(su3_vector *src, int milc_parity);
-QOPRAW_F3_DiracFermion * create_raw_F_D_from_field(wilson_vector *src, int milc_parity);
+fsu3_vector * create_raw_F_V_from_field(const su3_vector * const src, int milc_parity);
+QOPRAW_F3_DiracFermion * create_raw_F_D_from_field(const wilson_vector * const src, int milc_parity);
 
 void unload_raw4_F_G_to_site(field_offset dest, fsu3_matrix *raw[], 
 			     int milc_parity);
@@ -109,14 +109,14 @@ dsu3_vector * create_raw_D_V(void);
 void destroy_raw_D_V (dsu3_vector *raw);
 void destroy_raw_D_D (QOPRAW_D3_DiracFermion *raw);
 dsu3_matrix ** create_raw4_D_G_from_site(field_offset src, int milc_parity);
-dsu3_matrix ** create_raw4_D_G_from_field(su3_matrix *src, int milc_parity);
+dsu3_matrix ** create_raw4_D_G_from_field(const su3_matrix * const src, int milc_parity);
 dsu3_matrix ** create_raw4_D_F_from_site(field_offset src, int milc_parity);
-dsu3_matrix ** create_raw4_D_F_from_field(anti_hermitmat *src, 
+dsu3_matrix ** create_raw4_D_F_from_field(const anti_hermitmat * const src, 
 					  int milc_parity);
 dsu3_vector * create_raw_D_V_from_site(field_offset src, int milc_parity);
-dsu3_vector * create_raw_D_V_from_field(su3_vector *src, int milc_parity);
+dsu3_vector * create_raw_D_V_from_field(const su3_vector * const src, int milc_parity);
 QOPRAW_D3_DiracFermion * create_raw_D_D_from_site(field_offset src, int milc_parity);
-QOPRAW_D3_DiracFermion * create_raw_D_D_from_field(wilson_vector *src, int milc_parity);
+QOPRAW_D3_DiracFermion * create_raw_D_D_from_field(const wilson_vector * const src, int milc_parity);
 void unload_raw4_D_G_to_site(field_offset dest, dsu3_matrix *raw[], 
 			     int milc_parity);
 void unload_raw4_D_G_to_field(su3_matrix *dest, dsu3_matrix *raw[], 

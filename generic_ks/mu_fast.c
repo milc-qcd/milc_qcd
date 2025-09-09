@@ -1335,22 +1335,22 @@ static void derivatives (su3_vector *phi_off, su3_vector *xxx_off,
 void 
 Deriv_O6_field( int npbp_reps, quark_invert_control *qic, 
 		Real mass, fermion_links_t *fl, int naik_term_epsilon_index, Real eps){
-
-   imp_ferm_links_t *fn = get_fm_links(fl)[naik_term_epsilon_index];
-
+  
+  imp_ferm_links_t *fn = get_fm_links(fl, naik_term_epsilon_index);
+  
 #ifdef DM_DU0
-   imp_ferm_links_t *fn_dmdu0 = get_fm_du0_links(fl)[naik_term_epsilon_index];
+  imp_ferm_links_t *fn_dmdu0 = get_fm_du0_links(fl);
 #else
-   imp_ferm_links_t *fn_dmdu0 = NULL;
+  imp_ferm_links_t *fn_dmdu0 = NULL;
 #endif
-
+  
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
-   imp_ferm_links_t *fn_deps = get_fn_deps_links(fl);
+  imp_ferm_links_t *fn_deps = get_fn_deps_links(fl);
 #else 
-   imp_ferm_links_t *fn_deps = NULL;
+  imp_ferm_links_t *fn_deps = NULL;
 #endif
-
-
+  
+  
   su3_vector *phi_off, *xxx_off, *xxx1_off;
   phi_off = create_v_field();
   xxx_off = create_v_field();
@@ -1378,6 +1378,8 @@ Deriv_O6_field( int npbp_reps, quark_invert_control *qic,
   for(i=0;i<6;i++){
     destroy_v_field(deriv[i]);
   }
+
+  destroy_fn_links(fn);
   destroy_v_field(tfat);
   destroy_v_field(tlong);
   destroy_v_field(tfat0);
@@ -1421,22 +1423,21 @@ void Deriv_O6(int npbp_reps, int prec, field_offset phi_off, field_offset xxx_of
 
 void Deriv_O6_multi(int num_masses, int npbp_reps, quark_invert_control *qic,
 		            ks_param *ksp, fermion_links_t *fl){
-
-   int m;
-   imp_ferm_links_t **fn = get_fm_links(fl);
-
+  
+  int m;
+  
 #ifdef DM_DU0
-   imp_ferm_links_t **Fn_dmdu0 = get_fm_du0_links(fl);
+  imp_ferm_links_t *Fn_dmdu0 = get_fm_du0_links(fl);
 #else
-  imp_ferm_links_t **Fn_dmdu0 = NULL; 
+  imp_ferm_links_t *Fn_dmdu0 = NULL; 
 #endif
-
+  
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
-   imp_ferm_links_t *fn_deps = get_fn_deps_links(fl);
+  imp_ferm_links_t *fn_deps = get_fn_deps_links(fl);
 #else 
-   imp_ferm_links_t *fn_deps = NULL;
+  imp_ferm_links_t *fn_deps = NULL;
 #endif
-   imp_ferm_links_t *fn_dmdu0;
+  imp_ferm_links_t *fn_dmdu0;
   
   su3_vector *phi_off, *xxx_off, *xxx1_off;
   phi_off = create_v_field();
@@ -1458,17 +1459,21 @@ void Deriv_O6_multi(int num_masses, int npbp_reps, quark_invert_control *qic,
   for(i=0;i<6;i++){
     deriv[i] = create_v_field();
   }
+  /* Must be the same for all masses */
+  imp_ferm_links_t *fn = get_fm_links(fl, ksp[0].naik_term_epsilon_index);
   for(m=0;m<num_masses;m++){
-    if(Fn_dmdu0==NULL) fn_dmdu0=NULL;
-    else fn_dmdu0 = Fn_dmdu0[(ksp+m)->naik_term_epsilon_index]; 
+    if(fn_dmdu0==NULL) fn_dmdu0=NULL;
+    else fn_dmdu0 = Fn_dmdu0;
  
     for(jpbp_reps = 0; jpbp_reps < npbp_reps; jpbp_reps++){
      
       derivatives (phi_off, xxx_off, xxx1_off, qic+m, (ksp+m)->mass,
-	            	 jpbp_reps, npbp_reps, fn[(ksp+m)->naik_term_epsilon_index], 
+	            	 jpbp_reps, npbp_reps, fn, 
                      fn_dmdu0, fn_deps, (ksp+m)->naik_term_epsilon);
     }
   }
+
+  destroy_fn_links(fn);
 
 
   for(i=0;i<6;i++){

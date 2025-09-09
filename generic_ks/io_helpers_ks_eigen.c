@@ -17,38 +17,15 @@
 
 #include "generic_ks_includes.h"
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 /* Non-SciDAC file formats are deprecated. These non-QIO procedures are kept temporarily */
 
 #ifndef HAVE_QIO
 
 #include "../include/io_ks_eigen.h"
-
-/* Restore the ODD (EVEN) part of KS eigenvectors from the EVEN (ODD) part */
-void restore_eigVec(int Nvecs, double *eigVal, su3_vector **eigVec, int parity,
-		    imp_ferm_links_t *fn){
-
-  register int i, j;
-  complex c;
-  su3_vector *ttt = NULL;
-  char myname[] = "restore_eigVec";
-
-  ttt = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-  if(ttt == NULL){
-    printf("%s: Can't malloc ttt\n", myname);
-    terminate(1);
-  }
-
-  for(i=0; i < Nvecs; i++){
-    dslash_fn_field(eigVec[i], ttt, parity, fn);
-    FORSOMEFIELDPARITY(j, parity){
-      c = cmplx(0.0,1.0/sqrt(eigVal[i]));
-      c_scalar_mult_su3vec(ttt + j, &c, eigVec[i] + j) ;
-    }
-  }
-
-  free(ttt);
-}
 
 /*----------------------------------------------------------------*/
 
@@ -154,93 +131,152 @@ void w_close_ks_eigen(int flag, ks_eigen_file *kseigf){
 
 /*---------------------------------------------------------------*/
 
-/* Reload the lowest Nvecs KS eigenvectors:
-   FRESH, RELOAD_ASCII, RELOAD_SERIAL
-   0 is normal exit code
-   >1 for seek, read error, or missing data error 
-*/
-int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
-		    su3_vector **eigVec, imp_ferm_links_t *fn, int timing){
-  
-  register int i, j;
+static int
+reload_ks_eigen_file(char *eigfile, int serpar, int *Nvecs, Real *eigVal,
+		     su3_vector **eigVec, imp_ferm_links_t *fn, int parity){
   int status = 0;
-  int serpar;
   int qio_status;
   int packed = 0, file_type = 0;
-  QIO_Reader *infile;
-  double dtime = (double)0.0;
-  char myname[] = "reload_ks_eigen";
-  
-  if(timing && flag != FRESH) dtime = -dclock();
-  
-  switch(flag){
-  case FRESH:
-    for(i = 0; i < *Nvecs; i++){
-      FORALLFIELDSITES(j){
-	clearvec(eigVec[i]+j);
-      }
-    }
-    break;
-  case RELOAD_SERIAL:
-  case RELOAD_PARALLEL:
-    if(flag == RELOAD_SERIAL)serpar = QIO_SERIAL;
-    else serpar = QIO_PARALLEL;
-    
-    infile = open_ks_eigen_infile(eigfile, Nvecs, &packed, &file_type, serpar);
-    if(infile == NULL){
-      node0_printf("ERROR: Can't open %s for reading\n", eigfile);
-      status = 1;
-      break;
-    }
+
+  QIO_Reader *infile = open_ks_eigen_infile(eigfile, Nvecs, &packed, &file_type, serpar);
+  if(infile == NULL){
+    node0_printf("ERROR: Can't open %s for reading\n", eigfile); fflush(stdout);
+    status = 1;
+    return status;
+  }
+
+  if(file_type == 0){
     /* Read using MILC format */
-    if(file_type == 0){
-      for(int i = 0; i < *Nvecs; i++){
-	qio_status = read_ks_eigenvector(infile, packed, eigVec[i], &eigVal[i]);
-	if(qio_status != QIO_SUCCESS){
-	  if(qio_status == QIO_EOF){
-	    node0_printf("WARNING: Premature EOF at %d eigenvectors\n", i);
-	    *Nvecs = i;
-	  } else {
-	    node0_printf("ERROR: Can't read an eigenvector. Error %d\n", qio_status);
-	    status = 1;
-	  }
-	  break;
-	}
-      }
-    } else {
-      /* Read using QUDA format */
-      qio_status = read_quda_ks_eigenvectors(infile, eigVec, eigVal, Nvecs, EVEN);
+    for(int i = 0; i < *Nvecs; i++){
+      qio_status = read_ks_eigenvector(infile, packed, eigVec[i], &eigVal[i], parity);
       if(qio_status != QIO_SUCCESS){
 	if(qio_status == QIO_EOF){
-	  node0_printf("WARNING: Premature EOF at eigenvectors\n");
-	  terminate(1);
+	  node0_printf("WARNING: Premature EOF at %d eigenvectors\n", i);
+	  *Nvecs = i;
+	  break;
 	} else {
-	  node0_printf("ERROR: Can't read eigenvectors. Error %d\n", qio_status);
+	  node0_printf("ERROR: Can't read an eigenvector. Error %d\n", qio_status);
 	  status = 1;
 	}
 	break;
       }
     }
-    close_ks_eigen_infile(infile);
+  } else {
+    /* Read using QUDA format */
+    qio_status = read_quda_ks_eigenvectors(infile, eigVec, eigVal, Nvecs, parity);
+    if(qio_status != QIO_SUCCESS){
+      if(qio_status == QIO_EOF){
+	node0_printf("WARNING: Premature EOF at eigenvectors\n");
+	terminate(1);
+      } else {
+	node0_printf("ERROR: Can't read eigenvectors. Error %d\n", qio_status);
+	status = 1;
+      }
+    }
+  }
+  close_ks_eigen_infile(infile);
+  
+  /* Reconstruct eigenvalues */
+  //  if(status == 0)
+  //  reset_eigenvalues( eigVec, eigVal, *Nvecs, parity, fn);
 
-    /* Reconstruct eigenvalues */
-    reset_eigenvalues( eigVec, eigVal, *Nvecs, EVEN, fn);
+  return status;
 
+} /* reload_ks_eigen_file */
+
+/*---------------------------------------------------------------*/
+/* Read a grid eigenpack in multifile format */
+
+static int
+reload_grid_ks_eigenpack_dir(char *eigfile, int serpar, int *Nvecs, Real *eigVal,
+			     su3_vector **eigVec, imp_ferm_links_t *fn){
+  char path[256];
+  int status = 0;
+
+  /* Load files one by one */
+  for(int i = 0; i < *Nvecs; i++){
+    /* Create path to file with the ith eigenvector and eigenvalue.  Format <eigfile>/vnnn.bin */
+    snprintf(path, 255, "%s/v%d.bin", eigfile, i);
+    int Nvecfile = 1;  /* Only one eigenvector per file */
+    /* The Grid convention is to save the odd-site eigenvectors, so we
+       need to reconstruct the even-site vectors after reading them */
+    status = read_grid_ks_eigenvector(path, &Nvecfile, eigVec[i], &eigVal[i]);
+    if(status != 0)break;
+  }
+
+  /* Might be helpful */
+  //reset_eigenvalues( eigVec, eigVal, *Nvecs, ODD, fn);
+
+  return status;
+}
+
+/*---------------------------------------------------------------*/
+
+/* Reload the lowest Nvecs KS eigenvectors:
+   FRESH, RELOAD_ASCII, RELOAD_SERIAL
+   0 is normal exit code
+   >1 for seek, read error, or missing data error 
+*/
+int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, Real *eigVal,
+		    su3_vector **eigVec, imp_ferm_links_t *fn, int timing){
+  
+  int status = 0;
+  int serpar;
+  double dtime = (double)0.0;
+  char myname[] = "reload_ks_eigen";
+  
+  if(timing && (flag != FRESH)) dtime = -dclock();
+  
+  switch(flag){
+
+  case FRESH:
+
+    for(int i = 0; i < *Nvecs; i++){
+      int j;
+      FORALLFIELDSITES(j){
+	clearvec(eigVec[i]+j);
+      }
+    }
     break;
+
+  case RELOAD_SERIAL:
+  case RELOAD_PARALLEL:
+
+    if(flag == RELOAD_SERIAL)serpar = QIO_SERIAL;
+    else serpar = QIO_PARALLEL;
+    
+    /* GRID has two eigenpack formats.  One is a single file containing
+     all the eigenvectors.  The other is a directory containing
+     separate files for each eigenvector. For now, we support only
+     the latter format. The eigenvectors are odd-site */
+
+    /* Is "eigenfile" a directory? If so, treat it as a Grid directory */
+    struct stat sb;
+    stat(eigfile, &sb);
+    if (S_ISDIR(sb.st_mode)) {
+      param.eigen_param.parity = ODD;
+      status = reload_grid_ks_eigenpack_dir(eigfile, serpar, Nvecs, eigVal, eigVec, fn);
+    } else {
+      status = reload_ks_eigen_file(eigfile, serpar, Nvecs, eigVal, eigVec, fn, EVEN);
+    }
+    break;
+
   default:
     node0_printf("%s: Unrecognized reload flag.\n", myname);
     terminate(1);
   }
   
-  if(timing && flag != FRESH){
+  if(timing && (flag != FRESH)){
     dtime += dclock();
     node0_printf("Time to reload %d eigenvectors = %e\n", *Nvecs, dtime);
   }
 
   return status;
-} /* reload_ks_eigen */
+}
 
 #else
+
+/* Without QIO:  DEPRECATED !! */
 
 /* Custom version */
 /*---------------------------------------------------------------*/
@@ -250,7 +286,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
    0 is normal exit code
    >1 for seek, read error, or missing data error 
 */
-int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
+int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, Real *eigVal,
 		    su3_vector **eigVec, imp_ferm_links_t *fn, int timing){
 
   register int i, j;
@@ -308,7 +344,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
    FORGET, SAVE_ASCII, SAVE_SERIAL
 */
  
-int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
+int save_ks_eigen(int flag, char *savefile, int Nvecs, Real *eigVal,
 		  su3_vector **eigVec, double *resid, int timing){
 
   QIO_Writer *outfile;
@@ -387,6 +423,8 @@ int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
 } /* save_ks_eigen */
 
 #else
+/* Without QIO:  DEPRECATED !! */
+
 /* Custom version */
 
 /*---------------------------------------------------------------*/
@@ -394,7 +432,7 @@ int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
 /* Save the lowest Nvecs KS eigenvectors:
    FORGET, SAVE_ASCII, SAVE_SERIAL
 */
-int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
+int save_ks_eigen(int flag, char *savefile, int Nvecs, Real *eigVal,
 		   su3_vector **eigVec, double *resid, int timing){
 
   int status = 0;
@@ -440,18 +478,18 @@ int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal,
    lattice */
 
 /*------------------------------------------------------------------*/
-/* Convert rank to coordinates */
+/* Convert rank to coordinates  */
 static void lex_coords(int coords[], const int dim, const int size[], 
-	   const size_t rank)
-{
-  int d;
+		       const size_t rank) 
+{ 
+  int d; 
   size_t r = rank;
-
-  for(d = 0; d < dim; d++){
-    coords[d] = r % size[d];
-    r /= size[d];
-  }
-}
+  
+  for(d = 0; d < dim; d++){ 
+    coords[d] = r % size[d]; 
+    r /= size[d]; 
+  } 
+} 
 
 /*------------------------------------------------------------------*/
 /* Parity of the coordinate */
@@ -463,31 +501,31 @@ static int coord_parity(int r[]){
 /* Convert coordinate to linear lexicographic rank (inverse of
    lex_coords) */
 
-static size_t lex_rank(const int coords[], int dim, int size[])
-{
-  int d;
-  size_t rank = coords[dim-1];
+static size_t lex_rank(const int coords[], int dim, int size[]) 
+{ 
+  int d; 
+  size_t rank = coords[dim-1]; 
 
-  for(d = dim-2; d >= 0; d--){
-    rank = rank * size[d] + coords[d];
-  }
-  return rank;
-}
+  for(d = dim-2; d >= 0; d--){ 
+    rank = rank * size[d] + coords[d]; 
+  } 
+  return rank; 
+} 
 
+#if 0
 /*------------------------------------------------------------------*/
 /* Map coordinate to index, even sites first */
 static size_t my_index(int x, int y, int z, int t, int *latdim) {
-    int i = x + latdim[0]*( y + latdim[1]*( z + latdim[2]*t ));
-    if( (x+y+z+t)%2==0 ){	/* even site */
-	return( i/2 );
-    }
-    else {
-	return( (i + volume)/2 );
-    }
+  int i = x + latdim[0]*( y + latdim[1]*( z + latdim[2]*t ));
+  if( (x+y+z+t)%2==0 ){	/* even site */ 
+    return( i/2 );
+  }  else {
+    return( (i + volume)/2 );
+  }
 }
 
 /*------------------------------------------------------------------*/
-/* Map index to coordinates  */
+/* Map index to coordinates */
 /* (The inverse of my_index) */
 /* Assumes even sites come first */
 static void my_coords(int coords[], size_t index, int *latdim){
@@ -526,6 +564,7 @@ static void my_coords(int coords[], size_t index, int *latdim){
     }
   }
 }
+#endif
 
 /* Define map for packing even sites into half the lattice */
 static void pack_map_layouts(int x, int y, int z, int t, int *args, int fb,
@@ -577,37 +616,49 @@ static void pack_map_layouts(int x, int y, int z, int t, int *args, int fb,
   }
 }
 
+/* Define map between Grid odd checkerboard and MILC full lattice */
+/* The grid eigenpack saves only the odd-site values.  We read them
+   without regard to parity, so treating them as even and odd values
+   in the usual lexicographic order, but filling only half the
+   eigenvector components, The unpacking backward map takes them in
+   rank order and puts them in their proper odd-site location in a
+   full eigenvector.  The forward map is the inverse.
+*/
+
+static void pack_grid_map_layouts(int x, int y, int z, int t, int *args, int fb,
+				  int *xp, int *yp, int *zp, int *tp){
+
+  int latdim[4] = {nx, ny, nz, nt};
+  int coords[4] = {x, y, z, t};
+  size_t rank_grid, rank;
+
+  if(fb == FORWARDS){
+    /* Takes the coordinate for the grid checkerboard order and maps
+       to the coordinate of the desired odd site on the full lattice */
+    rank_grid = lex_rank(coords, 4, latdim);
+    rank = 2*rank_grid;
+    lex_coords(coords, 4, latdim, rank);
+    /* If the MILC rank is an even site, use the next rank */
+    if(coord_parity(coords) == 0)
+      lex_coords(coords, 4, latdim, rank+1);
+    
+    *xp = coords[0]; *yp = coords[1]; *zp = coords[2]; *tp = coords[3];
+
+  } else {  /* BACKWARDS */
+    /* Takes the coordinate on the odd site and maps to the
+       grid checkerboard order */
+    rank = lex_rank(coords, 4, latdim);
+    rank_grid = rank/2;
+    lex_coords(coords, 4, latdim, rank_grid);
+
+    *xp = coords[0]; *yp = coords[1]; *zp = coords[2]; *tp = coords[3];
+
+  }
+}
+
 int pack_dir;
 int unpack_dir;
 static int pack_unpack_initialized = 0;
-
-/* Make the packing map */
-static void pack_make_gather(void){
-  pack_dir =  make_gather(pack_map_layouts, NULL, WANT_INVERSE,
-			  ALLOW_EVEN_ODD, SCRAMBLE_PARITY);
-  unpack_dir = pack_dir + 1;  /* Convention for the inverse map */
-  pack_unpack_initialized = 1;
-
-#if 0
-  /* Debug */
-  int i;
-  FORALLFIELDSITES(i){
-    int x = lattice[i].x;
-    int y = lattice[i].y;
-    int z = lattice[i].z;
-    int t = lattice[i].t;
-    int xp, yp, zp ,tp;
-    pack_map_layouts(x,y,z,t,NULL,FORWARDS,&xp,&yp,&zp,&tp);
-    int xpp, ypp, zpp ,tpp;
-    pack_map_layouts(xp,yp,zp,tp,NULL,BACKWARDS,&xpp,&ypp,&zpp,&tpp);
-    if(xpp != x || ypp != y || zpp != z || tpp != t){
-      printf("ERROR ");
-      printf("%d %d %d %d -> %d %d %d %d -> %d %d %d %d\n",
-	     x, y, z, t, xp, yp, zp, tp, xpp, ypp, zpp, tpp);
-    }
-  }
-#endif
-}
 
 /* Packing and unpacking routines -- done in place */
 static void pack_unpack_field(void *data, int size, int dir){
@@ -633,11 +684,18 @@ static void pack_unpack_field(void *data, int size, int dir){
   free(temp);
 }
 
-void pack_field(void *data, int size){
+/* Make the packing map */
+static void pack_make_gather(void){
+  pack_dir =  make_gather(pack_map_layouts, NULL, WANT_INVERSE,
+			  ALLOW_EVEN_ODD, SCRAMBLE_PARITY);
+  unpack_dir = pack_dir + 1;  /* Convention for the inverse map */
+  pack_unpack_initialized = 1;
+}
+
+ void pack_field(void *data, int size){
 
   if(!pack_unpack_initialized)
     pack_make_gather();
-  
   pack_unpack_field(data, size, pack_dir);
 }
 
@@ -767,7 +825,7 @@ int ask_ending_ks_eigen(FILE *fp, int prompt, int *flag, char *filename){
   else if(strcmp("save_partfile_ks_eigen",savebuf) == 0)
     *flag = SAVE_PARTFILE_SCIDAC;
   else{
-    printf("ERROR IN INPUT: ks_eigen output command %s is invalid.\n", savebuf);
+    printf("ERROR IN OUTPUT: ks_eigen output command %s is invalid.\n", savebuf);
     printf("Choices are ");
     print_save_options();
     printf("\n");

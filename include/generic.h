@@ -113,11 +113,16 @@ su3_matrix *ape_smear_4D(Real staple_weight, int iters);
 void destroy_ape_links_3D(su3_matrix *ape_links);
 void destroy_ape_links_4D(su3_matrix *ape_links);
 
+#ifdef APE_LINKS_FILE
+int ask_starting_apelinks( FILE *fp, int prompt, int *flag, char *filename );
+int ask_ending_apelinks(FILE *fp, int prompt, int *flag, char *filename );
+#endif
+
 /* ax_gauge.c */
 void ax_gauge(void);
 
 /* bsd_sum.c */
-int32type bsd_sum (const char *data,int32type total_bytes);
+u_int32type bsd_sum (const char *data,u_int32type total_bytes);
 
 /* check_unitarity.c */
 Real check_unitarity( void );
@@ -154,33 +159,33 @@ void print_timing(double dtime, const char *str);
 
 Real* create_r_field(void);
 void clear_r_field(Real *r);
-void copy_r_field(Real *dest, Real *src);
+void copy_r_field(Real *dest, const Real * const src);
 void destroy_r_field(Real *r);
 
 complex* create_c_field(void);
 void clear_c_field(complex *c);
-void copy_c_field(complex *dest, complex *src);
+void copy_c_field(complex *dest, const complex * const src);
 void destroy_c_field(complex *c);
 
 su3_matrix *create_m_field(void);
 void clear_m_field(su3_matrix *m);
-void copy_m_field(su3_matrix *dest, su3_matrix *src);
+void copy_m_field(su3_matrix *dest, const su3_matrix * const src);
 void destroy_m_field(su3_matrix *m);
 
 spin_wilson_vector *create_swv_field(void);
 void clear_swv_field(spin_wilson_vector *swv);
-void copy_swv_field(spin_wilson_vector *dest, spin_wilson_vector *src);
+void copy_swv_field(spin_wilson_vector *dest, const spin_wilson_vector * const src);
 void destroy_swv_field(spin_wilson_vector *swv);
 
 wilson_vector *create_wv_field(void);
 void clear_wv_field(wilson_vector *wv);
-void copy_wv_field(wilson_vector *dst, wilson_vector *src);
+void copy_wv_field(wilson_vector *dst, const wilson_vector * const src);
 void destroy_wv_field(wilson_vector *wv);
 
 su3_vector *create_v_field(void);
 su3_vector *create_v_field_from_site_member(field_offset sv);
 void clear_v_field(su3_vector *v);
-void copy_v_field(su3_vector *dst, su3_vector *src);
+void copy_v_field(su3_vector *dst, const su3_vector * const src);
 void copy_site_member_from_v_field(field_offset sv, su3_vector *v);
 void add_v_fields(su3_vector *vsum, su3_vector *v1, su3_vector *v2);
 void destroy_v_field(su3_vector *v);
@@ -391,6 +396,7 @@ size_t node_index(int x,int y,int z,int t);
 size_t num_sites(int node);
 const int *get_logical_dimensions(void);
 const int *get_logical_coordinate(void);
+size_t get_even_sites_on_node(int node);
 void get_coords(int coords[], int node, size_t index);
 
 /* make_lattice.c */

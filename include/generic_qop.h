@@ -129,9 +129,9 @@ QOP_status_t initialize_qop(void);
 #endif
 
 QOP_F3_ColorVector* create_F_V_from_site(field_offset src, int parity);
-QOP_F3_ColorVector* create_F_V_from_field(su3_vector *src, int parity);
+QOP_F3_ColorVector* create_F_V_from_field(const su3_vector * const src, int parity);
 QOP_F3_DiracFermion* create_F_D_from_site(field_offset src,	int parity);
-QOP_F3_DiracFermion* create_F_D_from_field(wilson_vector *src, 
+QOP_F3_DiracFermion* create_F_D_from_field(const wilson_vector * const src, 
 					       int parity);
 QOP_F3_GaugeField *create_F_G_from_site4(field_offset link, int parity);
 QOP_F3_Force *create_F_F_from_site4(field_offset mom, int parity);
@@ -163,9 +163,9 @@ void unload_F_hisq_L_to_fields( su3_matrix *fat, su3_matrix *lng,
 
 
 QOP_D3_ColorVector* create_D_V_from_site(field_offset src, int parity);
-QOP_D3_ColorVector* create_D_V_from_field(su3_vector *src, int parity);
+QOP_D3_ColorVector* create_D_V_from_field(const su3_vector * constsrc, int parity);
 QOP_D3_DiracFermion* create_D_D_from_site(field_offset src,	int parity);
-QOP_D3_DiracFermion* create_D_D_from_field(wilson_vector *src, 
+QOP_D3_DiracFermion* create_D_D_from_field(const wilson_vector * const src, 
 					       int parity);
 QOP_D3_GaugeField *create_D_G_from_site4(field_offset link, int parity);
 QOP_D3_Force *create_D_F_from_site4(field_offset mom, int parity);

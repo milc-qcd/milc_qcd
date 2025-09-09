@@ -1,6 +1,8 @@
 /****** fermion_force_multi.c  -- ******************/
 /* MIMD version 7 */
 
+/* For RHMC with a general FN action */
+
 /* External entry points 
 
     eo_fermion_force_multi

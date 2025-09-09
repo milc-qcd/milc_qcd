@@ -215,7 +215,9 @@ initial_set()
 			   param.ionode_geometry, 4);
 #endif
 #endif
-    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
+      int iseed_in;
+      status += get_i(stdin, prompt,"iseed", &iseed_in);
+      param.iseed = iseed_in;
     
     if(status>0) param.stopflag=1; else param.stopflag=0;
   } /* end if(mynode()==0) */
@@ -426,7 +428,7 @@ readin(int prompt)
 #endif
   u0 = param.u0;
 
-#ifdef ONE_MASS
+#ifdef ONEMASS
   n_order_naik_total = 1;
   eps_naik[0] = 0.0;
   n_naiks = 1;

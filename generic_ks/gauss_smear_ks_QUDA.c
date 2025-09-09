@@ -6,7 +6,7 @@
 
 #include "generic_ks_includes.h"
 
-#if defined(HAVE_QUDA) && defined(USE_GSMEAR_QUDA)
+#if defined(HAVE_QUDA) && defined(USE_GSMEAR_GPU)
 
 #include <string.h>
 #include <assert.h>
@@ -59,7 +59,7 @@ gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
 #endif
 
   if(t_links == NULL){
-    printf("%s(%s): NULL t_links\n", __func__, this_node);
+    printf("%s(%d): NULL t_links\n", __func__, this_node);
     terminate(1);
   }
 
@@ -132,7 +132,7 @@ gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,
   return ;
 }
 
-#else /* #ifdef USE_GSMEAR_QUDA */
+#else /* #ifdef USE_GSMEAR_GPU */
 
 void
 gauss_smear_v_field_QUDA(su3_vector *src, su3_matrix *t_links,

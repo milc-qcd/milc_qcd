@@ -3,8 +3,6 @@
 
 #include "arb_ov_includes.h"
 
-#ifdef PRIMME
-
 /* NOTE: The PRIMME release version has clashing definitions for complex functions, so we provide
    a stripped-down version.  This must be checked against future releases. 
    Also, watch out for the definition of PRIMME_INT = long? */
@@ -237,19 +235,3 @@ void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme_params
     g_vecdoublesum((double*)recvBuf,*count);
 
 }
-
-#else
-
-/* Stub to allow compilation (but not execution) in case PRIMME is not available */
-
-int ks_eigensolve_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
-			 Real RelTol, int Nvecs, int MaxIter, 
-			 int Restart, int Kiters, int parity)
-{
-  node0_printf("ks_eigensolve_PRIMME: Requires compilation with the PRIMME package\n");
-  terminate(1);
-
-  return 0;
-}
-
-#endif

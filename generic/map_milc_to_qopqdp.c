@@ -15,17 +15,17 @@
 #if (MILC_PRECISION==1)
 
 static void 
-f2p_mat(su3_matrix *dest, fsu3_matrix *src){
+f2p_mat(su3_matrix *dest, const fsu3_matrix * const src){
   memcpy((void *)dest, (void *)src, sizeof(fsu3_matrix));
 }
 
 static void 
-p2f_mat(fsu3_matrix *dest, su3_matrix *src){
+p2f_mat(fsu3_matrix *dest, const su3_matrix * const src){
   memcpy((void *)dest, (void *)src, sizeof(fsu3_matrix));
 }
 
 static void 
-d2p_mat(su3_matrix *dest, dsu3_matrix *src){
+d2p_mat(su3_matrix *dest, const dsu3_matrix * const src){
   int i,j;
   
   for(i = 0; i < 3; i++)for(j = 0; j < 3; j++){
@@ -35,7 +35,7 @@ d2p_mat(su3_matrix *dest, dsu3_matrix *src){
 }
 
 static void 
-p2d_mat(dsu3_matrix *dest, su3_matrix *src){
+p2d_mat(dsu3_matrix *dest, const su3_matrix * const src){
   int i,j;
   
   for(i = 0; i < 3; i++)for(j = 0; j < 3; j++){
@@ -45,17 +45,17 @@ p2d_mat(dsu3_matrix *dest, su3_matrix *src){
 }
 
 static void 
-f2p_vec(su3_vector *dest, fsu3_vector *src){
+f2p_vec(su3_vector *dest, const fsu3_vector * const src){
   memcpy((void *)dest, (void *)src, sizeof(fsu3_vector));
 }
 
 static void 
-p2f_vec(fsu3_vector *dest, su3_vector *src){
+p2f_vec(fsu3_vector *dest, const su3_vector *const src){
   memcpy((void *)dest, (void *)src, sizeof(fsu3_vector));
 }
 
 static void 
-d2p_vec(su3_vector *dest, dsu3_vector *src){
+d2p_vec(su3_vector *dest, const dsu3_vector * const src){
   int i;
   
   for(i = 0; i < 3; i++){
@@ -65,7 +65,7 @@ d2p_vec(su3_vector *dest, dsu3_vector *src){
 }
 
 static void 
-p2d_vec(dsu3_vector *dest, su3_vector *src){
+p2d_vec(dsu3_vector *dest, const  su3_vector * const src){
   int i;
   
   for(i = 0; i < 3; i++){
@@ -77,7 +77,7 @@ p2d_vec(dsu3_vector *dest, su3_vector *src){
 #else
 
 static void 
-f2p_mat(su3_matrix *dest, fsu3_matrix *src){
+f2p_mat(su3_matrix *dest, const fsu3_matrix * const src){
   int i,j;
   
   for(i = 0; i < 3; i++)for(j = 0; j < 3; j++){
@@ -88,7 +88,7 @@ f2p_mat(su3_matrix *dest, fsu3_matrix *src){
 
 /* Convert (or copy) su3_matrix from prevailing to single precision */
 static void 
-p2f_mat(fsu3_matrix *dest, su3_matrix *src){
+p2f_mat(fsu3_matrix *dest, const su3_matrix * const src){
   int i,j;
   
   for(i = 0; i < 3; i++)for(j = 0; j < 3; j++){
@@ -98,17 +98,17 @@ p2f_mat(fsu3_matrix *dest, su3_matrix *src){
 }
 
 static void 
-d2p_mat(su3_matrix *dest, dsu3_matrix *src){
+d2p_mat(su3_matrix *dest, const dsu3_matrix * const src){
   memcpy((void *)dest, (void *)src, sizeof(dsu3_matrix));
 }
 
 static void 
-p2d_mat(dsu3_matrix *dest, su3_matrix *src){
+p2d_mat(dsu3_matrix *dest, const su3_matrix * const src){
   memcpy((void *)dest, (void *)src, sizeof(dsu3_matrix));
 }
 
 static void 
-f2p_vec(su3_vector *dest, fsu3_vector *src){
+f2p_vec(su3_vector *dest, const fsu3_vector * const src){
   int i;
   
   for(i = 0; i < 3; i++){
@@ -119,7 +119,7 @@ f2p_vec(su3_vector *dest, fsu3_vector *src){
 
 /* Convert (or copy) su3_vector from prevailing to single precision */
 static void 
-p2f_vec(fsu3_vector *dest, su3_vector *src){
+p2f_vec(fsu3_vector *dest, const su3_vector * const src){
   int i;
   
   for(i = 0; i < 3; i++){
@@ -129,19 +129,19 @@ p2f_vec(fsu3_vector *dest, su3_vector *src){
 }
 
 static void 
-d2p_vec(su3_vector *dest, dsu3_vector *src){
+d2p_vec(su3_vector *dest, const dsu3_vector * const src){
   memcpy((void *)dest, (void *)src, sizeof(dsu3_vector));
 }
 
 static void 
-p2d_vec(dsu3_vector *dest, su3_vector *src){
+p2d_vec(dsu3_vector *dest, const su3_vector * const src){
   memcpy((void *)dest, (void *)src, sizeof(dsu3_vector));
 }
 
 #endif
 
 static void 
-f2p_wvec(wilson_vector *dest, QOPRAW_F3_DiracFermion *src){
+f2p_wvec(wilson_vector *dest, const QOPRAW_F3_DiracFermion * const src){
   int i,j;
   
   for(j = 0; j < 4; j++)for(i = 0; i < 3; i++){
@@ -152,7 +152,7 @@ f2p_wvec(wilson_vector *dest, QOPRAW_F3_DiracFermion *src){
 
 /* Convert (or copy) wilson_vector from prevailing to single precision */
 static void 
-p2f_wvec(QOPRAW_F3_DiracFermion *dest, wilson_vector *src){
+p2f_wvec(QOPRAW_F3_DiracFermion *dest, const wilson_vector * const src){
   int i,j;
   
   for(j = 0; j < 4; j++)for(i = 0; i < 3; i++){
@@ -163,7 +163,7 @@ p2f_wvec(QOPRAW_F3_DiracFermion *dest, wilson_vector *src){
 }
 
 static void 
-d2p_wvec(wilson_vector *dest, QOPRAW_D3_DiracFermion *src){
+d2p_wvec(wilson_vector *dest, const QOPRAW_D3_DiracFermion * const src){
   int i,j;
   
   for(j = 0; j < 4; j++)for(i = 0; i < 3; i++){
@@ -173,7 +173,7 @@ d2p_wvec(wilson_vector *dest, QOPRAW_D3_DiracFermion *src){
 }
 
 static void 
-p2d_wvec(QOPRAW_D3_DiracFermion *dest, wilson_vector *src){
+p2d_wvec(QOPRAW_D3_DiracFermion *dest, const wilson_vector * const src){
   int i,j;
   
   for(j = 0; j < 4; j++)for(i = 0; i < 3; i++){

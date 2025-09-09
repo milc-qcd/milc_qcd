@@ -24,14 +24,14 @@ shift_field_cpu(int dir, enum shift_dir fb, su3_vector *dest, const su3_vector *
   //node0_printf("Using CPU shift\n");
 
   if(fb == SHIFT_FORWARD || fb == SHIFT_SYMMETRIC)
-    tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
+    tag[0] = start_gather_field( (void *)src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
   
   if(fb == SHIFT_BACKWARD || fb == SHIFT_SYMMETRIC){
     FORALLFIELDSITES(i)
     {
       mult_adj_su3_mat_vec( links+4*i+dir, src+i, tvec+i ) ;
     }
-    tag[1] = start_gather_field(tvec, sizeof(su3_vector), OPP_DIR(dir), 
+    tag[1] = start_gather_field((void *)tvec, sizeof(su3_vector), OPP_DIR(dir), 
 				EVENANDODD, gen_pt[1] );
   }
   

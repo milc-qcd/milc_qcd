@@ -91,7 +91,7 @@ forget_ksprop
 
 mass 0.07
 
-error_for_propagator 1e-12
+error_for_propagator 1e-6
 rel_error_for_propagator 0
 
 fresh_ksprop

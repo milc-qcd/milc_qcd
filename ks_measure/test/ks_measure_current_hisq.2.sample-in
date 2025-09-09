@@ -31,14 +31,8 @@ save_serial_ks_eigen eig.sample.l4444
 Max_Rayleigh_iters 100
 Restart_Rayleigh 10
 
-# Outer loop iterations
-Kalkreuter_iters 20
-
 # Eigenvalue tolerance
 eigenval_tolerance 1.0e-6
-
-# See README.ks_eigen - For optimizing the RR CG
-error_decrease .3
 
 # Chiral condensate and related measurements
 

@@ -1,6 +1,7 @@
 #ifndef _GENERIC_KS_QDP_H
 #define _GENERIC_KS_QDP_H
 /******************** generic_ks_qdp.h *********************************
+/* OBSOLETE */
 *  MIMD version 7 							*
 */
 

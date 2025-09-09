@@ -148,7 +148,7 @@ EXTERN	int Maxr0Iter;	/* max  Rayleigh iterations for h(-r0) */
 EXTERN	int Restart;	/* Restart  Rayleigh every so many iterations */
 EXTERN	int Kiters;	/* Kalkreuter iterations */
 EXTERN  wilson_vector  **eigVec0, **eigVec;
-EXTERN  double *eigVal0, *eigVal;
+EXTERN  Real *eigVal0, *eigVal;
 EXTERN  Real eigValcut;
 #endif
 

@@ -72,9 +72,6 @@ int setup()   {
 }
 
 
-static int n_naiks = 1;
-static double eps_naik[MAX_NAIK];
-
 /* SETUP ROUTINES */
 static int initial_set(void){
   int prompt=0,status;
@@ -224,11 +221,22 @@ int readin(int prompt) {
        links */
     /* APE smearing parameters (if needed) */
     /* Zero suppresses APE smearing */
+#ifdef APE_LINKS_FILE
+    IF_OK status += ask_starting_apelinks(stdin, prompt, &param.start_ape_flag, param.start_ape_file);
+    if(param.start_ape_flag == FRESH){
+      IF_OK status += get_f(stdin, prompt, "staple_weight",
+			    &param.staple_weight);
+      IF_OK status += get_i(stdin, prompt, "ape_iter",
+			    &param.ape_iter);
+    }
+    IF_OK status += ask_ending_apelinks(stdin, prompt, &param.save_ape_flag, param.save_ape_file);
+#else
     IF_OK status += get_f(stdin, prompt, "staple_weight",
 			  &param.staple_weight);
     IF_OK status += get_i(stdin, prompt, "ape_iter",
 			  &param.ape_iter);
-
+#endif
+    
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
     IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
     IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
@@ -247,13 +255,39 @@ int readin(int prompt) {
 
     IF_OK if(param.eigen_param.Nvecs > 0){
 
+      /* Additional parameters for QUDA deflation */
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
+      /* controls how often redeflation occurs during deflated inversions */
+      IF_OK status += get_f(stdin, prompt,"tol_restart", &param.eigen_param.tol_restart);
+#endif
+
       /* eigenvector input */
       IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
 					    param.ks_eigen_startfile);
 
+      /* Additional parameters for QUDA deflation */
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
+      if(param.ks_eigen_startflag == RELOAD_ASCII || 
+		      param.ks_eigen_startflag == RELOAD_SERIAL ||
+		      param.ks_eigen_startflag == RELOAD_PARALLEL ){
+        /* allow file to have more eigenpairs than will be used for deflation */
+        IF_OK status += get_i(stdin, prompt,"file_number_of_eigenpairs", &param.eigen_param.Nvecs_in);
+        /* eigensolver precision needs to be set for QUDA */ 
+	IF_OK status += get_i(stdin, prompt, "eigensolver_prec", &param.eigen_param.eigPrec );
+      }
+#endif
+
       /* eigenvector output */
       IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
 					  param.ks_eigen_savefile);
+
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
+      if(param.ks_eigen_saveflag == SAVE_PARTFILE_SCIDAC){
+        param.eigen_param.partfile = 1;
+      } else {
+	param.eigen_param.partfile = 0;
+      }
+#endif
 
       /* If we are reading in eigenpairs, we don't regenerate them */
 
@@ -261,47 +295,12 @@ int readin(int prompt) {
       if(param.ks_eigen_startflag == FRESH){
 
 	/*------------------------------------------------------------*/
-	/* Dirac eigenpair calculation                                */
+	/* Dirac eigenpair parameters                                 */
 	/*------------------------------------------------------------*/
 
-	/* max  Rayleigh iterations */
-	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.eigen_param.MaxIter);
+	status += read_ks_eigen_param(&param.eigen_param, status, prompt);
 
-	/* Restart  Rayleigh every so many iterations */
-	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.eigen_param.Restart);
-
-	/* Kalkreuter iterations */
-	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.eigen_param.Kiters);
-
-	/* Tolerance for the eigenvalue computation */
-	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigen_param.tol);
-
-	/* error decrease per Rayleigh minimization */
-	IF_OK status += get_f(stdin, prompt,"error_decrease", &param.eigen_param.error_decr);
-
-#ifdef POLY_EIGEN
-	/* Chebyshev preconditioner */
-#ifdef ARPACK
-	IF_OK status += get_i(stdin, prompt,"which_poly", &param.eigen_param.poly.which_poly );
-#endif
-	IF_OK status += get_i(stdin, prompt,"norder", &param.eigen_param.poly.norder);
-	IF_OK status += get_f(stdin, prompt,"eig_start", &param.eigen_param.poly.minE);
-	IF_OK status += get_f(stdin, prompt,"eig_end", &param.eigen_param.poly.maxE);
-
-#ifdef ARPACK
-	IF_OK status += get_f(stdin, prompt,"poly_param_1", &param.eigen_param.poly.poly_param_1  );
-	IF_OK status += get_f(stdin, prompt,"poly_param_2", &param.eigen_param.poly.poly_param_2  );
-	IF_OK status += get_i(stdin, prompt,"eigmax", &param.eigen_param.poly.eigmax );
-#endif
-#endif
-      } else {
-	param.eigen_param.MaxIter = 0;
-	param.eigen_param.Restart = 0;
-	param.eigen_param.Kiters = 0;
-	param.eigen_param.tol = 0;
-	param.eigen_param.error_decr = 0.0;
       }
-
 #else
 
       /* for eigcg */
@@ -489,7 +488,7 @@ int readin(int prompt) {
 	  char *op_descrp = param.src_qs_op[is].descrp;
 	  char *label = param.src_qs[is].label;
 	  char *op_label = param.src_qs_op[is].label;
-	  strncat(descrp, "/", MAXDESCRP-strlen(descrp)-1);
+          strncat(descrp, "/", MAXDESCRP-strlen(descrp)-1);
 	  strncat(descrp, op_descrp, MAXDESCRP-strlen(descrp)-1);
 	  strncpy(label,  op_label, MAXSRCLABEL-strlen(label)-1);
 	}
@@ -520,7 +519,7 @@ int readin(int prompt) {
     /* Propagators and their sources                              */
     /*------------------------------------------------------------*/
 
-    /* Number of sets grouped for multimass inversion */
+    /* Number of sets grouped for multimass or multisource inversion */
 
     IF_OK status += get_i(stdin,prompt,"number_of_sets", &param.num_set);
     if( param.num_set>MAX_SET ){
@@ -536,42 +535,68 @@ int readin(int prompt) {
 
       IF_OK status += get_s(stdin, prompt, "set_type", savebuf);
       IF_OK {
-	if(strcmp(savebuf,"multimass") == 0)
-	  param.set_type[k] = MULTIMASS_SET;
-	else if(strcmp(savebuf,"multisource") == 0)
-	  param.set_type[k] = MULTISOURCE_SET;
-	else if(strcmp(savebuf,"single") == 0)
-	  param.set_type[k] = SINGLES_SET;
-	else if(strcmp(savebuf,"multicolorsource") == 0)
-	  param.set_type[k] = MULTICOLORSOURCE_SET;
-	else {
-	  printf("Unrecognized set type %s\n",savebuf);
-	  printf("Choices are 'single', 'multimass', 'multisource', 'multicolorsource'\n");
-	  status++;
-	}
+        if(strcmp(savebuf,"multimass") == 0)
+          param.set_type[k] = MULTIMASS_SET;
+        else if(strcmp(savebuf,"multisource") == 0)
+          param.set_type[k] = MULTISOURCE_SET;
+        else if(strcmp(savebuf,"single") == 0)
+          param.set_type[k] = SINGLES_SET;
+        else if(strcmp(savebuf,"multicolorsource") == 0)
+          param.set_type[k] = MULTICOLORSOURCE_SET;
+        else {
+          printf("Unrecognized set type %s\n",savebuf);
+          printf("Choices are 'single', 'multimass', 'multisource', 'multicolorsource'\n");
+          status++;
+        }
       }
 
       IF_OK status += get_s(stdin, prompt, "inv_type", savebuf);
       IF_OK {
-	if(strcmp(savebuf,"MG") == 0)
-	  param.inv_type[k] = MGTYPE;
-	else if(strcmp(savebuf,"CG") == 0)
-	  param.inv_type[k] = CGTYPE;
-	else if(strcmp(savebuf,"CGZ") == 0)
-	  param.inv_type[k] = CGZTYPE;
-	else if(strcmp(savebuf,"UML") == 0)
-	  param.inv_type[k] = UMLTYPE;
-	else {
-	  printf("Unrecognized inverter type %s\n",savebuf);
-	  printf("Choices are 'CG', 'CGZ', 'MG', 'UML'\n");
-	  status++;
-	}
+        if(strcmp(savebuf,"MG") == 0)
+          param.inv_type[k] = MGTYPE;
+        else if(strcmp(savebuf,"CG") == 0)
+          param.inv_type[k] = CGTYPE;
+        else if(strcmp(savebuf,"CGZ") == 0)
+          param.inv_type[k] = CGZTYPE;
+        else if(strcmp(savebuf,"UML") == 0)
+          param.inv_type[k] = UMLTYPE;
+        else {
+          printf("Unrecognized inverter type %s\n",savebuf);
+          printf("Choices are 'CG', 'CGZ', 'MG', 'UML'\n");
+          status++;
+        }
       }
       
       IF_OK {
         if (param.inv_type[k] == MGTYPE) {
           IF_OK status += get_s(stdin, prompt, "MGparams", mgparamfile);
         }
+
+#ifdef MULTIGRID
+        /* parameter within MG solve to specify how to refresh the coarse op */
+
+        IF_OK {
+          if (param.inv_type[k] == MGTYPE &&
+              (param.set_type[k] == MULTISOURCE_SET || param.set_type[k] == MULTICOLORSOURCE_SET)) {
+            IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
+            IF_OK {
+              if(strcmp(savebuf,"FULL") == 0)
+                param.mg_rebuild_type[k] = FULLREBUILD;
+              else if(strcmp(savebuf,"THIN") == 0)
+                param.mg_rebuild_type[k] = THINREBUILD;
+              else if(strcmp(savebuf,"CG") == 0)
+                param.mg_rebuild_type[k] = CGREBUILD;
+              else {
+                printf("Unrecognized rebuild type %s\n",savebuf);
+                printf("Choices are 'FULL', 'THIN', 'CG'\n");
+                status++;
+              }
+            }
+          }
+        }
+#else
+        param.mg_rebuild_type[k] = CGREBUILD;
+#endif
 
 	/* maximum no. of conjugate gradient iterations */
         IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
@@ -581,7 +606,7 @@ int readin(int prompt) {
         IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
 			      &max_cg_restarts );
 
-#if (defined(HALF_MIXED) || defined(MAX_MIXED)) && ! defined(HAVE_QUDA)
+#if (defined(HALF_MIXED) || defined(MAX_MIXED)) && ! defined(HAVE_QUDA) && defined(HAVE_GRID)
 	/* (QUDA sets its own value).  We need this value for GRID mixed precision */
         IF_OK status += get_i(stdin,prompt,"max_inner_cg_iterations", 
 			      &max_inner_cg_iterations );
@@ -668,8 +693,8 @@ int readin(int prompt) {
       }
 
       if( param.inv_type[k] == MGTYPE && param.set_type[k] == MULTIMASS_SET
-	  && param.num_prop[k] > 1){
-	node0_printf("WARNING: Multigrid support for multimass is currently emulated via separate inversions\n");
+        && param.num_prop[k] > 1){
+        node0_printf("WARNING: Multigrid support for multimass is currently emulated via separate inversions\n");
       }
 
       /* Indexing range for set */
@@ -680,9 +705,13 @@ int readin(int prompt) {
 	status++;
       }
 
+      Real common_naik = 0;
+      
       IF_OK for(i = 0; i < param.num_prop[k]; i++){
 
 	/* Propagator parameters */
+
+	param.prop_type[nprop] = KS_TYPE;  /* Always for ks_spectrum */
 
 	IF_OK {
 	  
@@ -703,6 +732,15 @@ int readin(int prompt) {
 #if ( FERM_ACTION == HISQ )
 	    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 				  &param.ksp[nprop].naik_term_epsilon);
+	    if(param.set_type[k]  == MULTIMASS_SET){
+	      if(i == 0){
+		common_naik = param.ksp[nprop].naik_term_epsilon;
+	      } else if (param.ksp[nprop].naik_term_epsilon != common_naik){
+		node0_printf("ERROR: All propagators in a multimaws set must have the same Naik epsilon\n");
+		status++;
+	      }
+	    }
+
 #else
 	    param.ksp[nprop].naik_term_epsilon = 0.0;
 #endif
@@ -711,7 +749,6 @@ int readin(int prompt) {
 	}
 
 	IF_OK param.ksp[nprop].mass = atof(param.mass_label[nprop]);
-
 	IF_OK {
 	  int dir;
 	  FORALLUPDIR(dir)param.bdry_phase[nprop][dir] = bdry_phase[dir];
@@ -722,7 +759,7 @@ int readin(int prompt) {
 	/*------------------------------------------------------------*/
 	/* Propagator inversion control                               */
 	/*------------------------------------------------------------*/
-	
+
         /* inversion type */
         param.qic[nprop].inv_type = param.inv_type[k];
 
@@ -743,9 +780,10 @@ int readin(int prompt) {
 	param.qic[nprop].deflate = 0;
 	IF_OK {
 	  if(param.eigen_param.Nvecs > 0){  /* Need eigenvectors to deflate */
-	    IF_OK status += get_s(stdin, prompt,"deflate", savebuf);
+	    char savebuf2[128];
+	    IF_OK status += get_s(stdin, prompt,"deflate", savebuf2);
 	    IF_OK {
-	      if(strcmp(savebuf,"yes") == 0)param.qic[nprop].deflate = 1;
+	      if(strcmp(savebuf2,"yes") == 0)param.qic[nprop].deflate = 1;
 	    }
 	  }
 	}
@@ -756,31 +794,30 @@ int readin(int prompt) {
 	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator",
 			      &param.qic[nprop].relresid );
 #if defined(HALF_MIXED) && defined(HAVE_QOP)
-	/* Parameter used by QOPQDP inverter for mixed-precision solves ?? */
-	IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic[nprop].mixed_rsq );
+  /* Parameter used by QOPQDP inverter for mixed-precision solves ?? */
+  IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic[nprop].mixed_rsq );
 #endif
 
 #ifdef MULTIGRID
   /* parameter within MG solve to specify how to refresh the coarse op */
-
-	IF_OK {
-	  if (param.inv_type[k] == MGTYPE) {
-	    IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
-	    IF_OK {
-	      if(strcmp(savebuf,"FULL") == 0)
-		param.qic[nprop].mg_rebuild_type = FULLREBUILD;
-	      else if(strcmp(savebuf,"THIN") == 0)
-		param.qic[nprop].mg_rebuild_type = THINREBUILD;
-	      else if(strcmp(savebuf,"CG") == 0)
-		param.qic[nprop].mg_rebuild_type = CGREBUILD;
-	      else {
-		printf("Unrecognized rebuild type %s\n",savebuf);
-		printf("Choices are 'FULL', 'THIN', 'CG'\n");
-		status++;
-	      }
-	    }
-	  }
-	}
+  IF_OK {
+    if (param.inv_type[k] == MGTYPE && param.set_type[k] == MULTIMASS_SET) {
+      IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
+      IF_OK {
+        if(strcmp(savebuf,"FULL") == 0)
+          param.qic[nprop].mg_rebuild_type = FULLREBUILD;
+        else if(strcmp(savebuf,"THIN") == 0)
+          param.qic[nprop].mg_rebuild_type = THINREBUILD;
+        else if(strcmp(savebuf,"CG") == 0)
+          param.qic[nprop].mg_rebuild_type = CGREBUILD;
+        else {
+          printf("Unrecognized rebuild type %s\n",savebuf);
+          printf("Choices are 'FULL', 'THIN', 'CG'\n");
+          status++;
+        }
+      }
+    }
+  }
 #else
   param.qic[nprop].mg_rebuild_type = CGREBUILD;
 #endif
@@ -1634,13 +1671,13 @@ int readin(int prompt) {
      epsilon index.  We need to list any required Naik epsilons. */
 
   /* First term is always zero */
-  start_eps_naik(eps_naik, &n_naiks);
+  start_eps_naik(param.eps_naik, &param.n_naiks);
 
   /* Contribution from the chiral condensate epsilons */
   for(i = 0; i < param.num_pbp_masses; i++){
     param.ksp_pbp[i].naik_term_epsilon_index =
-      fill_eps_naik(eps_naik,
-	  &n_naiks, param.ksp_pbp[i].naik_term_epsilon);
+      fill_eps_naik(param.eps_naik,
+	  &param.n_naiks, param.ksp_pbp[i].naik_term_epsilon);
   }
 
   /* Contribution from the propagator epsilons */
@@ -1648,8 +1685,8 @@ int readin(int prompt) {
     nprop = param.end_prop[param.num_set-1] + 1;
     for(i = 0; i < nprop; i++)
       param.ksp[i].naik_term_epsilon_index = 
-	fill_eps_naik(eps_naik, 
-		      &n_naiks, param.ksp[i].naik_term_epsilon);
+	fill_eps_naik(param.eps_naik, 
+		      &param.n_naiks, param.ksp[i].naik_term_epsilon);
   }
 
   /* Requests from any embedded inverse and hopping operators in the
@@ -1659,7 +1696,7 @@ int readin(int prompt) {
     int is = param.num_base_source + i;
     /* If the operator uses Dslash, get the requested Naik epsilon */
     if(get_qss_eps_naik(&eps, &param.src_qs_op[is])){
-      insert_qss_eps_naik_index(fill_eps_naik(eps_naik, &n_naiks, eps), &param.src_qs_op[is]);
+      insert_qss_eps_naik_index(fill_eps_naik(param.eps_naik, &param.n_naiks, eps), &param.src_qs_op[is]);
     }
   }
 
@@ -1669,7 +1706,7 @@ int readin(int prompt) {
     Real eps = 0.;
     /* If the operator uses Dslash, get the requested Naik epsilon */
     if(get_qss_eps_naik(&eps, &param.snk_qs_op[i])){
-      insert_qss_eps_naik_index(fill_eps_naik(eps_naik, &n_naiks, eps), &param.snk_qs_op[i]);
+      insert_qss_eps_naik_index(fill_eps_naik(param.eps_naik, &param.n_naiks, eps), &param.snk_qs_op[i]);
     }
   }
 
@@ -1683,126 +1720,8 @@ int readin(int prompt) {
       param.naik_index[i] = param.naik_index[param.prop_for_qk[i]];
   }
 
- /* Do whatever is needed to get lattice */
-  if( param.startflag == CONTINUE ){
-    rephase( OFF );
-  }
-  if( param.startflag != CONTINUE ){
-    startlat_p = reload_lattice( param.startflag, param.startfile );
-  }
-  /* if a lattice was read in, put in KS phases and AP boundary condition */
-  phases_in = OFF;
-  rephase( ON );
 
-
-#ifdef U1_FIELD
-  /* Read the U(1) gauge field, if wanted */
-  start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
-#endif
-
-  /* Set options for fermion links */
-
-#ifdef DBLSTORE_FN
-  /* We want to double-store the links for optimization */
-  fermion_links_want_back(1);
-#endif
-
-  /* Don't need to save HISQ auxiliary links */
-  fermion_links_want_aux(0);
-  
-#if FERM_ACTION == HISQ
-
-#ifdef DM_DEPS
-  fermion_links_want_deps(1);
-#endif
-
-  fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
-
-#else
-
-#ifdef DM_DU0
-  fermion_links_want_du0(1);
-#endif
-
-  fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
-
-#endif
-
-  /* Construct APE smeared links without KS phases, but with
-     conventional antiperiodic bc.  This is the same initial
-     setup as the gauge field itself.  Later the phases are
-     adjusted according to boundary phases and momentum twists. */
-  rephase( OFF );
-  ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
-  if(param.time_bc == 0)apply_apbc( ape_links, param.coord_origin[3] );
-  refresh_ape_links = 1;
-  ape_links_ks_phases = OFF;
-  /* By default, the phases are ON */
-  rephase_field_offset( ape_links, ON, &ape_links_ks_phases, param.coord_origin );
-  
-  rephase( ON );
-
-#if EIGMODE == EIGCG
-  int Nvecs_max = param.eigcgp.Nvecs_max;
-  if(param.ks_eigen_startflag == FRESH)
-    Nvecs_tot = ((Nvecs_max - 1)/param.eigcgp.Nvecs)*param.eigcgp.Nvecs
-      + param.eigcgp.m;
-  else
-    Nvecs_tot = Nvecs_max;
-
-  Nvecs_alloc = Nvecs_tot;
-  eigVal = (double *)malloc(Nvecs_alloc*sizeof(double));
-  eigVec = (su3_vector **)malloc(Nvecs_alloc*sizeof(su3_vector *));
-  for(i = 0; i < Nvecs_alloc; i++)
-    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-
-  /* Do whatever is needed to get eigenpairs */
-  imp_ferm_links_t **fn = get_fm_links(fn_links);
-  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile,
-			   &Nvecs_tot, eigVal, eigVec, fn[0], 1);
-
-  if(param.fixflag != NO_GAUGE_FIX){
-    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
-  }
-  if(status != 0) normal_exit(0);
-
-  if(param.ks_eigen_startflag != FRESH){
-    param.eigcgp.Nvecs = 0;
-    param.eigcgp.Nvecs_curr = Nvecs_tot;
-    param.eigcgp.H = (double_complex *)malloc(Nvecs_max*Nvecs_max
-					      *sizeof(double_complex));
-    for(i = 0; i < Nvecs_max; i++){
-      for(k = 0; k < i; k++)
-	param.eigcgp.H[k + Nvecs_max*i] = dcmplx((double)0.0, (double)0.0);
-      param.eigcgp.H[(Nvecs_max+1)*i] = dcmplx(eigVal[i], (double)0.0);
-    }
-  }
-#endif
-
-#if EIGMODE != EIGCG
-  if(param.eigen_param.Nvecs > 0){
-    /* malloc for eigenpairs */
-    eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
-    eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
-    for(i=0; i < param.eigen_param.Nvecs; i++){
-      eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-      if(eigVec[i] == NULL){
-	printf("No room for eigenvector\n");
-	terminate(1);
-      }
-    }
-
-    /* Do whatever is needed to get eigenpairs */
-    imp_ferm_links_t **fn = get_fm_links(fn_links);
-    status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			     &param.eigen_param.Nvecs, eigVal, eigVec, fn[0], 1);
-    if(param.fixflag != NO_GAUGE_FIX){
-      node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
-    }
-  }
-#endif
-
-  ENDTIME("readin");
+  ENDTIME("read parameters");
 
   return 0;
 }

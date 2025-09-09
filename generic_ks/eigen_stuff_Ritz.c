@@ -30,8 +30,6 @@
 #include "../include/dslash_ks_redefine.h"
 #include <string.h>
 
-#ifdef Kalkreuter_Ritz
-
 static void copy_Vector(su3_vector *src, su3_vector *res ) ; 
 static void norm2(su3_vector *vec, double *norm, int parity); 
 static void dot_product(su3_vector *vec1, su3_vector *vec2, 
@@ -467,7 +465,7 @@ static void RotateBasis(su3_vector **eigVec, Matrix *V, int parity){
 }
 
 /*****************************************************************************/
-int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, 
+int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, Real *eigVal, 
 				  ks_eigen_param *eigen_param, int init ){
 
   Real Tolerance = eigen_param->tol;
@@ -494,7 +492,7 @@ int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal,
   double dtimec;
 #endif
 
-  imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
+  imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
 
 
   ToleranceG = 10.0*Tolerance ;
@@ -620,6 +618,7 @@ int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal,
   }
 
   /** Deallocate the arrays **/
+  destroy_fn_links(fn);
   deAllocate(&V) ;
   deAllocate(&Array) ;
   free(err) ;
@@ -632,20 +631,5 @@ int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal,
   free(MeigVec);
   cleanup_Matrix();
 
-  return total_iters ;
-}
-
-# else
-
-/* Stub to allow compilation (but not execution) in case Kalkreuter_Ritz is not available */
-
-int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, 
-				  ks_eigen_param *eigen_param, int init)
-{
-  node0_printf("ks_eigensolve_Kalkreuter_Ritz: Requires compilation with the Kalkreuter_Ritz package\n");
-  terminate(1);
-
   return 0;
 }
-
-#endif

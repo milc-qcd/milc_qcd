@@ -10,8 +10,6 @@
 /* Include files */
 #include "generic_ks_includes.h"
 
-#ifdef PRIMME
-
 /* NOTE: The PRIMME release version has clashing definitions for complex functions, so we provide
    a modified version.  This must be checked against future releases. 
    Also, watch out for the definition of PRIMME_INT = long? */
@@ -162,7 +160,7 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
 
   mxv = 0;
   mxv_precond = 0;
-  my_fn = get_fm_links(fn_links)[0];
+  my_fn = get_fm_links(fn_links, 0);
 
   if(parity == EVENANDODD){
     maxn=sites_on_node*3;			/*local size of matrix*/
@@ -298,6 +296,8 @@ int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
   reset_eigenvalues(eigVec, eigVal, Nvecs, parity, my_fn);
 #endif
 
+  destroy_fn_links(my_fn);
+
 #ifdef EIGTIME
   dtimec += dclock();
   node0_printf("KAULKREUTER: time = %e iters = %d iters/vec = %e\n",
@@ -329,17 +329,3 @@ static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme
 
     *ierr = 0 ;
 }
-
-#else  /* ifdef PRIMME */
-
-/* Stub to allow compilation (but not execution) in case PRIMME is not available */
-
-int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal, ks_eigen_param *eigen_param, int init)
-{
-  node0_printf("ks_eigensolve_PRIMME: Requires compilation with the PRIMME package\n");
-  terminate(1);
-
-  return 0;
-}
-
-#endif

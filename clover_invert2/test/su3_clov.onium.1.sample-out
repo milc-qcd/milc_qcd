@@ -664,6 +664,8 @@ SINKS: deriv2_B fat_covariant_gaussian AA2xB1_AA2xB1
 6 -8.904885e-07 -6.558770e-08
 7 -9.833228e-06 -8.672746e-07
 ENDPROP
+Time for printing correlator 1.358986e-04
+Aggregate time to tie hadron correlators 3.473616e-02
 RUNNING COMPLETED
 Time = 4.510466e+00 seconds
 total_iters = 1397

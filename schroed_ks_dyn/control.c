@@ -73,14 +73,15 @@ COMPILE WITH WANTQOP = false.
 
 	    /* generate a pseudofermion configuration */
 	    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
-	    fn = get_fm_links(fn_links);
+	    fn = get_fm_links(fn_links, 0);
 	    clear_latvec( F_OFFSET(phi), EVENANDODD );
 	    grsource_imp_plus(F_OFFSET(phi), F_OFFSET(g_rand), mass, EVEN, fn[0]);
 	    clear_latvec(F_OFFSET(xxx), EVENANDODD);
 	    /* do conjugate gradient to get (Madj M)inverse * phi  */
 	    m_iters=ks_congrad(F_OFFSET(phi), F_OFFSET(xxx), mass,
 			       niter, nrestart, rsqmin, MILC_PRECISION, EVEN,
-			       &rsq,  fn[0]);
+			       &rsq,  fn);
+	    destroy_fn_links(fn);
 
 	    /* call Psi-bar-Psi and fermion energy/pressure measurement */
 	    /* it also measures the pseudofermionic action 		*/

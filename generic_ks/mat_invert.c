@@ -73,7 +73,6 @@ void ks_dirac_opsq( su3_vector *src, su3_vector *dst, Real mass, int parity,
     register site *s;
     int otherparity = 0;
     Real msq_x4 = 4.0*mass*mass;
-    su3_vector *tmp = create_v_field();;
 
     switch(parity){
     case(EVEN): otherparity=ODD; break;
@@ -81,14 +80,12 @@ void ks_dirac_opsq( su3_vector *src, su3_vector *dst, Real mass, int parity,
     case(EVENANDODD): otherparity=EVENANDODD;
     }
 
-    dslash_field( src, tmp, otherparity, fn);
-    dslash_field( tmp, dst, parity, fn);
-    FORSOMEPARITYDOMAIN_OMP(i,s,parity,){
-      scalar_mult_su3_vector( dst+i, -1.0, dst+i);
-      scalar_mult_sum_su3_vector( dst+i, src+i, msq_x4 );
+    dslash_fn_field( src, dst, otherparity, fn);
+    dslash_fn_field( dst, dst, parity, fn);
+    FORSOMEFIELDPARITY_OMP(i,parity,){
+      scalar_mult_add_su3_vector( dst+i, src+i, -msq_x4, dst+i );
     } END_LOOP_OMP;
 
-    destroy_v_field(tmp);
 }
 
 /*****************************************************************************/
@@ -205,7 +202,8 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
     ks_dirac_adj_op( src, tmp, mass, EVENANDODD, fn);
 
     /* Do deflation if we have eigenvectors and the deflate parameter is true */
-
+    /* Skip MILC CPU deflation if using QUDA deflation */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
     if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
       dtime = - dclock();
@@ -222,12 +220,15 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
     }
+#endif
       
     /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
     qic->parity = EVEN;
     int cgn = ks_congrad_field( tmp, dst, qic, mass, fn );
     int even_iters = qic->final_iters;
 
+    /* Skip MILC CPU deflation if using QUDA deflation */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
     if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
       dtime = - dclock();
@@ -242,6 +243,7 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
     }
+#endif
 
     /* dst_o <- (M_adj M)^-1 tmp_o  (odd sites only) */
     qic->parity = ODD;
@@ -277,6 +279,8 @@ int mat_invert_cgz_field(su3_vector *src, su3_vector *dst,
 
     /* Put "exact" low-mode even-site solution in tmp if deflate parameter is true */
 
+    /* Skip MILC CPU deflation if using QUDA deflation */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
     if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
       dtime = - dclock();
@@ -292,6 +296,7 @@ int mat_invert_cgz_field(su3_vector *src, su3_vector *dst,
      node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
     }
+#endif
       
     /* Solve for all modes using tmp as an initial guess */
     /* tmp_e <- (M_adj M)^-1 src_e  (even sites only) */
@@ -301,6 +306,8 @@ int mat_invert_cgz_field(su3_vector *src, su3_vector *dst,
 
     /* Put "exact" low-mode odd-site solution in tmp if deflate parameter is true */
 
+    /* Skip MILC CPU deflation if using QUDA deflation */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
     if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
       dtime = - dclock();
@@ -316,6 +323,7 @@ int mat_invert_cgz_field(su3_vector *src, su3_vector *dst,
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
     }
+#endif
 
     /* Solve for all modes using tmp as an initial guess */
     /* tmp_o <- (M_adj M)^-1 src_o  (odd sites only) */
@@ -427,6 +435,8 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     ks_dirac_adj_op( src, tmp, mass, EVENANDODD, fn );
 
 #if EIGMODE != EIGCG
+    /* Skip MILC CPU deflation if using QUDA deflation */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
     if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
       dtime = - dclock();
@@ -439,6 +449,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
     }
+#endif
 #endif
 
     /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
@@ -460,6 +471,8 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     } END_LOOP_OMP;
 
 #if EIGMODE != EIGCG
+    /* Skip MILC CPU deflation if using QUDA deflation */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
     if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
       dtime = - dclock();
@@ -470,6 +483,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
       dtime += dclock();
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
     }
+#endif
 #endif
 
     /* Polish off odd sites to correct for possible roundoff error */
@@ -487,7 +501,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     return cgn;
 }
 
-#ifdef HAVE_QUDA
+#if defined(HAVE_QUDA) && defined(USE_CG_GPU)
 
 /********************************************************************/
 /* Multigrid solution of the full Dirac equation for both parities  */
@@ -623,8 +637,7 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
   if (qic->mg_rebuild_type == THINREBUILD) {
     mg_rebuild_type = 0;
   } 
-  
-  // Just BiCGstab for now
+
   qudaInvertMG(MILC_PRECISION,
 	       quda_precision, 
 	       mass,
@@ -711,7 +724,8 @@ int mat_invert_block_cg(su3_vector **src, su3_vector **dst,
   }
 
   /* Put "exact" low-mode even-site solution in tmp if deflate parameter is true */
-
+  /* Skip MILC CPU deflation if using QUDA deflation */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
   if(param.eigen_param.Nvecs > 0 && qic->deflate){
 
     dtime = -dclock();
@@ -728,6 +742,7 @@ int mat_invert_block_cg(su3_vector **src, su3_vector **dst,
     node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
   }
+#endif
 
   /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
   qic->parity = EVEN;
@@ -735,6 +750,8 @@ int mat_invert_block_cg(su3_vector **src, su3_vector **dst,
   int even_iters = qic->final_iters;
 
   /* Deflation on odd sites */
+  /* Skip MILC CPU deflation if using QUDA deflation */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
   if(param.eigen_param.Nvecs > 0 && qic->deflate){
     
     dtime = -dclock();
@@ -750,6 +767,7 @@ int mat_invert_block_cg(su3_vector **src, su3_vector **dst,
     node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
 #endif
   }
+#endif
 
   /* dst_o <- (M_adj M)^-1 tmp_o  (odd sites only) */
   qic->parity = ODD;
@@ -780,7 +798,8 @@ int mat_invert_block_cgz(su3_vector **src, su3_vector **dst,
     tmp[is] = create_v_field();
 
   /* Put "exact" low-mode even-site solution in tmp if deflate parameter is true */
-
+  /* Skip MILC CPU deflation if using QUDA deflation */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
   if(param.eigen_param.Nvecs > 0 && qic->deflate){
     for(int is = 0; is < nsrc; is++){
 
@@ -799,15 +818,18 @@ int mat_invert_block_cgz(su3_vector **src, su3_vector **dst,
 #endif
     }
   }
+#endif
 
   /* Solve for all modes on even sites using tmp as an initial guess */
   /* tmp_e <- (M_adj M)^-1 src_e  (even sites only) */
   qic->parity = EVEN;
+  node0_printf("Calling ks_congrad_block_field\n"); fflush(stdout);
   int cgn = ks_congrad_block_field( nsrc, src, tmp, qic, mass, fn );
   int even_iters = qic->final_iters;
 
   /* Put "exact" low-mode odd-site solution in tmp if deflate parameter is true */
-
+  /* Skip MILC CPU deflation if using QUDA deflation */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
   if(param.eigen_param.Nvecs > 0 && qic->deflate){
     for(int is = 0; is < nsrc; is++){
 
@@ -825,6 +847,7 @@ int mat_invert_block_cgz(su3_vector **src, su3_vector **dst,
 #endif
     }
   }
+#endif
 
   /* Solve for all modes on odd sites using tmp as an initial guess */
   /* dst_o <- (M_adj M)^-1 tmp_o  (odd sites only) */
@@ -870,7 +893,9 @@ int mat_invert_block_uml(su3_vector **src, su3_vector **dst,
   
   for(int is = 0; is < nsrc; is++){
     ks_dirac_adj_op( src[is], tmp[is], mass, EVENANDODD, fn );
-    
+
+    /* Skip MILC CPU deflation if using QUDA deflation */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
     if(param.eigen_param.Nvecs > 0 && qic->deflate){
       dtime = - dclock();
 #ifdef CGTIME
@@ -884,6 +909,7 @@ int mat_invert_block_uml(su3_vector **src, su3_vector **dst,
       dtime += dclock();
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
     }
+#endif
   }
   
   /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
@@ -900,6 +926,8 @@ int mat_invert_block_uml(su3_vector **src, su3_vector **dst,
       scalar_mult_su3_vector( dst[is]+i, 1.0/(2.0*mass), dst[is]+i );
     } END_LOOP_OMP;
 
+    /* Skip MILC CPU deflation if using QUDA deflation */
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
     if(param.eigen_param.Nvecs > 0 && qic->deflate){
       dtime = - dclock();
       node0_printf("deflating on odd sites for mass %g with %d eigenvec\n",
@@ -910,6 +938,7 @@ int mat_invert_block_uml(su3_vector **src, su3_vector **dst,
       dtime += dclock();
       node0_printf("Time to deflate %d modes %g\n", param.eigen_param.Nvecs, dtime);
     }
+#endif
   }
   
   /* Polish off odd sites to correct for possible roundoff error */
@@ -928,7 +957,7 @@ int mat_invert_block_uml(su3_vector **src, su3_vector **dst,
   return cgn;
 }
 
-#ifdef HAVE_QUDA
+#if defined(HAVE_QUDA) && defined(MULTIGRID)
 /*****************************************************************************/
 /* This algorithm solves the Dirac equation for both parities using
    staggered multigrid */
@@ -937,13 +966,188 @@ int mat_invert_block_mg(su3_vector **src, su3_vector **dst,
 			Real mass, int nsrc, quark_invert_control *qic,
 			imp_ferm_links_t *fn){
   
-  int cgn = 0;
+  //int cgn = 0;
   
   /* Temporary until there is multi-rhs support for multigrid */
-  for(int is = 0; is < nsrc; is++) {
-    cgn += mat_invert_mg_field_gpu(src[is], dst[is], qic, mass, fn );
+  //for(int is = 0; is < nsrc; is++) {
+  //  cgn += mat_invert_mg_field_gpu(src[is], dst[is], qic, mass, fn );
+  //}
+  //return cgn;
+
+#ifdef MULTIGRID
+  char myname[] = "mat_invert_block_mg";
+  QudaInvertArgs_t inv_args;
+  int i;
+  double dtimec = -dclock();
+#ifdef CGTIME
+  double nflop = 1187;
+#endif
+
+  /* Initialize qic */
+  qic->size_r = 0;
+  qic->size_relr = 0;
+  qic->final_iters   = 0;
+  qic->final_restart = 0;
+  qic->converged     = 1;
+  qic->final_rsq = 0.;
+  qic->final_relrsq = 0.;
+
+  
+  /* Initialize QUDA parameters */
+  initialize_quda();
+
+  // need to set a dummy value, ignored (for now),
+  // MG will eventually support Schur solve
+  inv_args.evenodd = QUDA_EVEN_PARITY; 
+  /*if(qic->parity == EVEN){
+          inv_args.evenodd = QUDA_EVEN_PARITY;
+  }else if(qic->parity == ODD){
+          inv_args.evenodd = QUDA_ODD_PARITY;
+  }else{
+    printf("%s: Unrecognised parity\n",myname);
+    terminate(2);
+  }*/
+
+  inv_args.max_iter = qic->max * qic->nrestart;
+#if defined(MAX_MIXED)
+  inv_args.mixed_precision = 2;
+#elif defined(HALF_MIXED)
+  inv_args.mixed_precision = 1;
+#else
+  inv_args.mixed_precision = 0;
+#endif
+
+  su3_matrix* fatlink = get_fatlinks(fn);
+  su3_matrix* longlink = get_lnglinks(fn);
+  const int quda_precision = qic->prec;
+  
+  double residual, relative_residual;
+  int num_iters = 0;
+  
+  inv_args.naik_epsilon = fn->eps_naik;
+
+#if (FERM_ACTION==HISQ)
+  inv_args.tadpole = 1.0;
+#else
+  inv_args.tadpole = u0;
+#endif
+
+  // for newer versions of QUDA we need to invalidate the gauge field if the links are new
+  if ( fn != get_fn_last() || fresh_fn_links(fn) ){
+
+    node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", myname);
+    cancel_quda_notification(fn);
+    set_fn_last(fn);
+    /* Hack to cause QUDA to copy new links to the GPU */
+    num_iters = -1;
+
+    node0_printf("%s: setting up the MG inverter\n", myname);
+
+    /* Set up the MG inverter when the links change */
+    /* FIXME: what do we do if the mgparamfile changes? */
+
+    if (mg_preconditioner == NULL ){
+      double mg_regen_time = -dclock();
+      mg_preconditioner = qudaMultigridCreate(MILC_PRECISION,
+                              quda_precision,
+                              mass,
+                              inv_args,
+                              fatlink,
+                              longlink,
+                              qic->mgparamfile);
+
+      mg_regen_time += dclock();
+      node0_printf("%s: MG inverter setup complete. Time = %g\n", myname, mg_regen_time);
+    } else {
+      node0_printf("%s: MG inverter already set up.  Skipping.\n", myname);
+    }
   }
-  return cgn;
+
+  /* Specify the type of rebuild _if_ a rebuild is required */
+  int mg_rebuild_type = 1;
+  if (qic->mg_rebuild_type == THINREBUILD) {
+    mg_rebuild_type = 0;
+  }
+
+  int cgn = 0;
+
+  /* check norms */
+  for (int is = 0; is < nsrc; is++) {
+
+    node0_printf("%s: starting source %d\n", myname, is);
+
+    /* Compute source norm */
+    double source_norm = 0.0;
+    FORSOMEFIELDPARITY(i,qic->parity){
+      source_norm += (double)magsq_su3vec( &src[is][i] );
+    } END_LOOP;
+    g_doublesum( &source_norm );
+#ifdef CG_DEBUG
+    node0_printf("%s: source %d source_norm = %e\n", myname, is, (double)source_norm);
+#endif
+
+    /* Provide for trivial solution */
+    if (source_norm == 0.0) {
+      /* Zero the solution and do not update the number of iterations */
+      FORSOMEFIELDPARITY(i, qic->parity){
+        memset(dst[is] + i, 0, sizeof(su3_vector));
+      } END_LOOP;
+    }
+  }
+
+  qudaInvertMsrcMG(MILC_PRECISION,
+        quda_precision, 
+        mass,
+        inv_args,
+        qic->resid,
+        qic->relresid,
+        fatlink, 
+        longlink,
+        mg_preconditioner,
+        mg_rebuild_type,
+        (void**)src,
+        (void**)dst,
+        &residual,
+        &relative_residual, 
+        &num_iters,
+        nsrc);
+
+  qic->final_rsq = residual*residual;
+  qic->final_relrsq = relative_residual*relative_residual;
+  qic->final_iters = num_iters;
+
+  // check for convergence 
+  qic->converged = (residual < qic->resid) ? 1 : 0;
+
+  // Cumulative residual. Not used in practice 
+  qic->size_r = 0.0;
+  qic->size_relr = 0.0;
+
+  dtimec += dclock();
+
+#ifdef CGTIME
+  if(this_node==0){
+    printf("CONGRAD5: time = %e (fn_QUDA %s) masses = 1 srcs = %d iters = %d mflops = %e\n",
+           dtimec, prec_label[quda_precision-1], nsrc, qic->final_iters,
+           (double)(nflop*nsrc*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
+    fflush(stdout);
+  }
+#endif
+
+    //node0_printf("Entering check_invert_field in mat_invert_mg_field_gpu\n");
+    //  fflush(stdout);
+    //  check_invert_field( t_dest, t_src, mass, 1e-6, fn, EVENANDODD);
+
+  report_status(qic);
+
+  return num_iters;
+
+#else
+  node0_printf("%s: ERROR. Multigrid is available only with GPU compilation\n", myname);
+  terminate(1);
+  return 0;  
+#endif
+
 }
 #endif
 
@@ -1013,11 +1217,11 @@ int mat_invert_field(su3_vector *src, su3_vector *dst,
 #endif
     } else {
       /* inv_type == MGTYPE */
-#ifdef USE_CG_GPU
+#if defined(USE_CG_GPU) && defined(HAVE_QUDA)
       /* Currently only available through QUDA on GPUs */
       cgn = mat_invert_mg_field_gpu(src, dst, qic, mass, fn );
 #else
-      node0_printf("mat_invert_field: ERROR. Multigrid is available only with GPU compilation\n");
+      node0_printf("mat_invert_field: ERROR. Multigrid is available only with QUDA compilation\n");
       terminate(1);
 #endif
     }
@@ -1062,13 +1266,13 @@ int mat_invert_block(su3_vector **src, su3_vector **dst,
     if(qic->mg_rebuild_type == CGREBUILD){    
       cgn = mat_invert_block_uml(src, dst, mass, nsrc, qic, fn);
       node0_printf("WARNING: Best practices for inv_type MG is to move forced CG solves to a different set\n");
-#ifdef HAVE_QUDA
+#if defined(USE_CG_GPU) && defined(HAVE_QUDA)
       /* Force a reload b/c of sloppy link precision changes */
       refresh_fn_links(fn);
 #endif
     } else {
       /* inv_type == MGTYPE */
-#ifdef USE_CG_GPU
+#if defined(MULTIGRID) && defined(HAVE_QUDA)
       /* Currently only available through QUDA on GPUs */
       cgn = mat_invert_block_mg(src, dst, mass, nsrc, qic, fn);
 #else
@@ -1154,6 +1358,28 @@ void check_invert( field_offset src, field_offset dest, Real mass,
   destroy_v_field(tsrc);
 }
 
+/* DEBUG */
+static Real 
+my_relative_residue(su3_vector *p, su3_vector *q, int parity)
+{
+  double residue, num, den;
+  int i;
+  
+  residue = 0;
+  FORSOMEFIELDPARITY_OMP(i,parity,private(num,den) reduction(+:residue)){
+    num = (double)magsq_su3vec( &(p[i]) );
+    den = (double)magsq_su3vec( &(q[i]) );
+    residue += (den==0) ? 1.0 : (num/den);
+  } END_LOOP_OMP;
+
+  g_doublesum(&residue);
+
+  if(parity == EVENANDODD)
+    return sqrt(residue/volume);
+  else
+    return sqrt(2*residue/volume);
+}
+
 /*****************************************************************************/
 /* FOR TESTING: multiply src by Madj M and check against dest */
 void check_invert_field2( su3_vector *src, su3_vector *dest, Real mass,
@@ -1162,52 +1388,71 @@ void check_invert_field2( su3_vector *src, su3_vector *dest, Real mass,
     register site *s;
     Real r_diff, i_diff;
     double sum,sum2,dflag,dmaxerr,derr;
-    su3_vector *tmp;
 
-    tmp = (su3_vector *)malloc(sites_on_node * sizeof(su3_vector));
-    if(tmp==NULL){
-      printf("check_invert_field2(%d): no room for tmp\n",this_node);
+    su3_vector *tmp   = create_v_field();
+    su3_vector *resid = create_v_field();
+    if(tmp==NULL || resid==NULL){
+      printf("check_invert_field2(%d): no room for tmp and resid\n",this_node);
       terminate(1);
     }
 
-    /* Compute tmp = (Madj M) src */
-    ks_dirac_opsq( src, tmp, mass, parity, fn);
+    /* Compute tmp = -(Madj M) dest */
+    ks_dirac_opsq( dest, tmp, mass, parity, fn);
 
+    FORSOMEFIELDPARITY(i,parity){
+      add_su3_vector(src+i, tmp+i, resid+i);
+    } END_LOOP;
+
+    node0_printf("check_invert_field2: Checking solution with tolerance %e\n",
+		 tol);
     sum2=sum=0.0;
     dmaxerr=0;
     flag = 0;
+
     FORSOMEFIELDPARITY(i,parity){
-	for(k=0;k<3;k++){
-	    r_diff = dest[i].c[k].real - tmp[i].c[k].real;
-	    i_diff = dest[i].c[k].imag - tmp[i].c[k].imag;
-	    if( fabs(r_diff) > tol || fabs(i_diff) > tol ){
-	      printf("site %d color %d  expected ( %.4e , %.4e ) got ( %.4e , %.4e )\n",
-		     i,k,
-		     dest[i].c[k].real, dest[i].c[k].imag,
-		     tmp[i].c[k].real, tmp[i].c[k].imag);
-	      flag++;
-	    }
-	    derr = r_diff*r_diff + i_diff*i_diff;
-	    if(derr>dmaxerr)dmaxerr=derr;
- 	    sum += derr;
-	}
-	sum2 += magsq_su3vec( dest+i );
+      sum2 += magsq_su3vec( src+i );
     } END_LOOP;
-    g_doublesum( &sum );
+
     g_doublesum( &sum2 );
+    double srcnorm = sqrt(sum2);
+
+    FORSOMEFIELDPARITY(i,parity){
+      for(k=0;k<3;k++){
+	r_diff = resid[i].c[k].real/srcnorm;
+	i_diff = resid[i].c[k].imag/srcnorm;
+	if( fabs(r_diff) > tol || fabs(i_diff) > tol ){
+	  if(flag < 50) /* Don't print too many */
+	    printf("site %d color %d  expected ( %.4e , %.4e ) got ( %.4e , %.4e )\n",
+		   i,k,
+		   src[i].c[k].real, src[i].c[k].imag,
+		   -tmp[i].c[k].real, -tmp[i].c[k].imag);
+	  flag++;
+	}
+	derr = r_diff*r_diff + i_diff*i_diff;
+	if(derr>dmaxerr)dmaxerr=derr;
+	sum += derr;
+      }
+    } END_LOOP;
+
+    g_doublesum( &sum );
     dflag=flag;
     g_doublesum( &dflag );
     g_doublemax( &dmaxerr );
+    double rel_resid = my_relative_residue(resid, dest, parity);
+
     if(this_node==0){
-      printf("Inversion checked, frac. error = %e\n",sqrt(sum/sum2));
+      printf("Inversion checked, resid = %e rel_resid = %g\n",
+	     sqrt(sum), rel_resid);
       printf("Flagged comparisons = %d\n",(int)dflag);
-      printf("Max err. = %e frac. = %e\n",sqrt(dmaxerr),
-	     sqrt(dmaxerr*volume/sum2));
+      printf("Max err. = %e\n",sqrt(dmaxerr));
       fflush(stdout);
     }
-    free(tmp);
+		 
+    destroy_v_field(tmp);
+    destroy_v_field(resid);
 }
 
+#if 0 /* Haven't been using these */
 /*****************************************************************************/
 /* Creates an array of vectors for the block-cg solver */
 
@@ -1235,3 +1480,5 @@ static void destroy_su3_vector_array(su3_vector **a, int n){
     if(a[i] != NULL)
       destroy_v_field(a[i]);
 }
+
+#endif

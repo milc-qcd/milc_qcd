@@ -1162,7 +1162,7 @@ static void spectrum_cl_print_diag(int pair){
       param.saveflag_c[pair] = FORGET;
     
     for(m=0;m<num_report;m++) {
-      norm_fac = num_corr_occur[m];
+      norm_fac = 1./num_corr_occur[m];
 
       print_start_meson_prop(pair, m, "POINT");
       print_start_fnal_meson_prop(corr_fp, pair, m);
@@ -1170,7 +1170,7 @@ static void spectrum_cl_print_diag(int pair){
 	tp = (t + param.t_offset[pair]) % nt;
 	prop = pmes_prop[m][tp];
 	g_complexsum( &prop );
-	CDIVREAL(prop, norm_fac, prop);
+	CMULREAL(prop, norm_fac, prop);
 	dprop.real = prop.real;	dprop.imag = prop.imag;
 	CMULREAL(dprop, meson_scale, dprop);
 	print_meson_prop(pair, t, dprop);
@@ -1258,7 +1258,7 @@ static void spectrum_cl_print_offdiag(int pair){
 
     /* print meson propagators */
     for(m=0;m<num_report;m++) {
-      norm_fac = num_corr_occur[m];
+      norm_fac = 1./num_corr_occur[m];
       
       print_start_meson_prop(pair, m, "POINT");
       print_start_fnal_meson_prop(corr_fp, pair, m);
@@ -1266,7 +1266,7 @@ static void spectrum_cl_print_offdiag(int pair){
 	tp = (t + param.t_offset[pair]) % nt;
 	prop = pmes_prop[m][tp];
 	g_complexsum( &prop );
-	CDIVREAL(prop, norm_fac, prop);
+	CMULREAL(prop, norm_fac, prop);
 	dprop.real = prop.real;	dprop.imag = prop.imag;
 	CMULREAL(dprop, meson_scale, dprop);
 	print_meson_prop(pair, t, dprop);

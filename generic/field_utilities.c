@@ -48,7 +48,7 @@ T* create_##ABBREV##_field(void){ \
 }
 
 #define make_copy_field(ABBREV, T) \
-void copy_##ABBREV##_field(T *dst, T *src){ \
+void copy_##ABBREV##_field(T *dst, const T * const src){ \
   memcpy(dst, src, sites_on_node*sizeof(T)); \
 }
 

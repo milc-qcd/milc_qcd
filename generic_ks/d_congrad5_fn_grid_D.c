@@ -1,7 +1,7 @@
 /******************** d_congrad5_fn_grid_D.c ****************************/
 /* MILC Version 7 */
 
-/* For specifically double precision inversions using QOP routines */
+/* For specifically double precision inversions using Grid routines */
 
 /* 12/23/15 C. DeTar */
 

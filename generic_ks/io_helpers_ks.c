@@ -175,23 +175,31 @@ r_open_ksprop(int flag, const char *filename)
     return NULL;
   }
 
-  if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS){
+  if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS){ /* USQCD format */
+
 #ifdef HAVE_QIO
     /* Create a kspf structure. (No file movement here.) */
     int serpar = interpret_usqcd_ks_reload_flag(flag);
     kspf = create_input_ksprop_file_handle(filename);
-    kspf->file_type = file_type;
     open_input_usqcd_ksprop_file(kspf, serpar);
+    kspf->file_type = file_type;
     if(kspf->infile == NULL){
       printf("r_open_ksprop: Failed to open %s for reading\n", filename);
       terminate(1);
     }
 #else
-    node0_printf("%s: This looks like a QIO file, but to read it requires QIO compilation\n", myname);
+    node0_printf("%s: %s looks like a QIO file, but to read it requires QIO compilation\n", myname, filename);
 #endif
-  }
-  else {
-    node0_printf("%s: File %s is not a supported KS propagator file\n", myname, filename);
+
+  } else {
+
+    if(file_type == FILE_TYPE_FM){ /* Old MILC format */
+      kspf = r_serial_ks_fm_i(filename);
+      kspf->file_type = file_type;
+    } else {
+      node0_printf("%s: File %s with file_type %d is not a supported KS propagator file (see include/file_types.h)\n", myname, filename, file_type);
+    }
+    
   }
 
   return kspf;
@@ -206,11 +214,8 @@ w_open_ksprop(int flag, const char *filename, int source_type)
 {
   ks_prop_file *kspf = NULL;
   su3_vector *ksp;
-#ifdef HAVE_QIO
-  char *fileinfo;
-  int volfmt, serpar, file_type;
-#endif
-  
+  int file_type;
+
   switch(flag){
 
   case FORGET:
@@ -227,19 +232,21 @@ w_open_ksprop(int flag, const char *filename, int source_type)
   case SAVE_PARTFILE_SCIDAC:
 
 #ifdef HAVE_QIO
-    kspf = create_output_ksprop_file_handle();
-    interpret_usqcd_ks_save_flag(&volfmt, &serpar, flag);
-    file_type = choose_usqcd_ks_file_type(source_type);
-    kspf->file_type = file_type;
-    fileinfo = create_ks_XML();
-    kspf->outfile = open_usqcd_ksprop_write(filename, volfmt, serpar, 
-					    QIO_ILDGNO,  NULL, 
-					    file_type, fileinfo);
-    if(kspf->outfile == NULL){
-      node0_printf("ks_open_wprop: Cannot open %s for writing\n",filename);
-      terminate(1);
+    {    int volfmt, serpar;
+      kspf = create_output_ksprop_file_handle();
+      interpret_usqcd_ks_save_flag(&volfmt, &serpar, flag);
+      file_type = choose_usqcd_ks_file_type(source_type);
+      kspf->file_type = file_type;
+      char *fileinfo = create_ks_XML();
+      kspf->outfile = open_usqcd_ksprop_write(filename, volfmt, serpar, 
+					      QIO_ILDGNO,  NULL, 
+					      file_type, fileinfo);
+      if(kspf->outfile == NULL){
+	node0_printf("w_open_ksprop: Cannot open %s for writing\n",filename);
+	terminate(1);
+      }
+      free_ks_XML(fileinfo);
     }
-    free_ks_XML(fileinfo);
     
 #else
     node0_printf("w_open_ksprop: SciDAC formats require QIO compilation\n");
@@ -267,7 +274,13 @@ r_close_ksprop(int flag, ks_prop_file *kspf)
     r_ascii_ks_f(kspf);
     break;
   case RELOAD_SERIAL:
-    r_serial_ks_f(kspf);
+    if(kspf->file_type == FILE_TYPE_KS_USQCD_VV_PAIRS)
+      r_serial_ks_f(kspf);
+    else if(kspf->file_type == FILE_TYPE_FM)
+      r_serial_ks_fm_f(kspf);
+    else
+      node0_printf("r_close_ksprop: ERROR: Can't close the file %s\n",
+		   kspf->filename);
     break;
   case RELOAD_PARALLEL:
     destroy_ksprop_file_handle(kspf);
@@ -320,7 +333,8 @@ reload_ksprop_c_to_field( int flag, ks_prop_file *kspf,
      1 read error */
 
   double dtime = 0;
-  int i,status;
+  size_t i;
+  int status;
   site *s;
   su3_vector *prop;
   su3_vector *cv;
@@ -343,11 +357,10 @@ reload_ksprop_c_to_field( int flag, ks_prop_file *kspf,
   case RELOAD_SERIAL:
     prop = kspf->prop;
     file_type = kspf->file_type;
-    if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS){
+    if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS){ /* USQCD format */
       /* Read the propagator record */
       status = read_usqcd_ksprop_record(kspf, color, src, dest, ksqs);
-    }
-    else {
+    } else {
       node0_printf("%s: Unsupported file type %d\n", myname, file_type);
       status = 1; /* Error status */
     }
@@ -357,23 +370,29 @@ reload_ksprop_c_to_field( int flag, ks_prop_file *kspf,
     if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS){
       status = read_usqcd_ksprop_record(kspf, color, src, dest, ksqs);
     } else {
-      node0_printf("%s: Unsupported file type %d\n", myname, file_type);
+      node0_printf("%s: Unsupported file type %d.\n",
+		   myname, file_type);
       status = 1;
     }
     break;
-#else
-    /* No QIO */
-    {
-      node0_printf("%s: Recompile with QIO to read this file\n", myname);
-      status = 1; /* Error status */
-    }
-    break;
-#endif
+
   default:
     node0_printf("%s: Unrecognized reload flag.\n", myname);
     terminate(1);
+#endif
   }
   
+#ifndef HAVE_QIO
+  /* No QIO */
+  file_type = kspf->file_type;
+  if(file_type == FILE_TYPE_FM){ /* Old MILC format */
+    r_serial_ks_to_field(kspf, color, dest);
+  } else {
+    node0_printf("%s: Unsupported file type %d. Recompile with QIO??\n", myname, file_type);
+    status = 1; /* Error status */
+  }
+#endif
+
   if(timing)
     {
       dtime += dclock();

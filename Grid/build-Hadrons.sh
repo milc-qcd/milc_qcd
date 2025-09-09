@@ -3,10 +3,13 @@
 ARCH=$1
 PK_CC=$2
 PK_CXX=$3
+
 #GIT_REPO=https://github.com/aportelli/Hadrons
 GIT_REPO=https://github.com/milc-qcd/Hadrons
+
 #GIT_BRANCH=develop
-GIT_BRANCH=feature/staggered-a2a-ml
+#GIT_BRANCH=feature/staggered-a2a-ml
+GIT_BRANCH=feature/LMI-master
 
 if [ -z ${PK_CXX} ]
 then
@@ -57,18 +60,19 @@ then
             --prefix=${INSTALLDIR} \
             --with-grid=${GRIDINSTALLDIR} \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=gnu++17 -O0 -g -fpermissive -Wno-psabi" \
+            CXXFLAGS="-std=gnu++17 -O0 -g -Wno-psabi" \
 
        status=$?
              ;;
 
     avx2)
 
+       source ${TOPDIR}/env.sh
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
             --with-grid=${GRIDINSTALLDIR} \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++17 -xCORE-AVX2" \
+            CXXFLAGS="-std=c++17 -mavx2" \
 
        status=$?
              ;;

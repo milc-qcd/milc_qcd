@@ -229,6 +229,7 @@ eigenval(28):   0.766032
 eigenval(29):   0.766032
 eigenval(30):   0.781853
 eigenval(31):   0.781853
+Aggregate time to calculate Dirac eigenpairs 4.045389e-01
 RUNNING COMPLETED
 Time = 2.265097e+00 seconds
 total Rayleigh iters = 7102

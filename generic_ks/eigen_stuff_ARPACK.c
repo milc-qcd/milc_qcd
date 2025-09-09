@@ -24,9 +24,8 @@ enum accel_type { NO_POLY, POLY_X , MSQ_POLY , CHEBY , POLY_INV , NO_POLY_SQRT ,
 /* Include files */
 
 #include "generic_ks_includes.h"
-
-#ifdef ARPACK
 #include "../include/arpack.h"
+#include "../include/openmp_defs.h"
 #include <string.h>
 
 #ifdef MPI_COMMS
@@ -88,10 +87,10 @@ static void constant_vec_even(su3_vector *v , Real c)
 {
   int i ;
   
-  FOREVENFIELDSITES(i)
+  FOREVENFIELDSITES_OMP(i,)
   {
     constant_vec(v + i, c) ;
-  }
+  } END_LOOP_OMP;
   
   
 }
@@ -105,10 +104,10 @@ static void constant_mult_even(su3_vector *in, Real c ,su3_vector *out)
 {
   int i ;
   
-  FOREVENFIELDSITES(i)
+  FOREVENFIELDSITES_OMP(i,)
   {
     constant_mult(in + i, c, out + i) ;
-  }
+  } END_LOOP_OMP;
   
   
 }
@@ -210,7 +209,7 @@ static void Matrix_Vec_mult_poly(su3_vector *src, su3_vector *res,
       Matrix_Vec_mult(old,tmp,eigen_param,fn);  /**  tmp = M *  old **/
       /**  constant_mult_even(old , debug_val, tmp) ;   ***/
       
-      FOREVENFIELDSITES(i)
+      FOREVENFIELDSITES_OMP(i,)
       {
 	su3vec_copy(old +i , sv + i ) ;                        /* sv = old  **/
 	scalar_mult_su3_vector(tmp+i, norm, old+i) ;           /* old = norm * M * old   ***/
@@ -222,7 +221,7 @@ static void Matrix_Vec_mult_poly(su3_vector *src, su3_vector *res,
 	
 	
 	su3vec_copy(sv + i , older +i ) ;   /** older = sv ***/
-      }
+      } END_LOOP_OMP;
       
     }
   
@@ -232,14 +231,14 @@ static void Matrix_Vec_mult_poly(su3_vector *src, su3_vector *res,
   Matrix_Vec_mult(old,res,eigen_param,fn);   /**   res = M * old **/
   /**    constant_mult_even(old , debug_val, res) ;  **/
   
-  FOREVENFIELDSITES(i)
+  FOREVENFIELDSITES_OMP(i,)
   {
     scalar_mult_su3_vector(res+i, norm2, res+i) ;   /* res = norm2 * M * old   ***/
     sub_su3_vector(res+i, old+i, res+i )  ;              /* res = res - old   **/           
     
     sub_su3_vector(res + i,older + i, res + i)  ; /** res = res - older **/
     scalar_mult_add_su3_vector(res + i, src + i, 0.5 * poly[0], res + i) ; /**  res = res + 0.5*poly[0] * src **/
-  }
+  } END_LOOP_OMP;
   
   
   /**    dump_vec_even(res) ;   exit(0) ;  **/
@@ -294,10 +293,10 @@ static void Matrix_Vec_mult_chebyshev_poly(su3_vector *src, su3_vector *res,
   //T_0(Q)=1 
   if(norder== 0){
     
-    FOREVENFIELDSITES(i)
+    FOREVENFIELDSITES_OMP(i,)
     {
       su3vec_copy(src +i , res + i ) ;                        /* res = src  **/
-    }
+    } END_LOOP_OMP;
     
     return;
   }
@@ -314,12 +313,12 @@ static void Matrix_Vec_mult_chebyshev_poly(su3_vector *src, su3_vector *res,
   Matrix_Vec_mult(src,v1,eigen_param,fn);  /**  v1 = M * src **/
   
   // out[s] = d1*v1 + d2*in; 
-  FOREVENFIELDSITES(i)
+  FOREVENFIELDSITES_OMP(i,)
   {
     scalar_mult_su3_vector(v1+i, d1, res+i) ;           /* res = d1 * v1   ***/
     scalar_mult_add_su3_vector(res+i, src+i, d2 , res+i) ; /* res = res + d2*src **/
     
-  }
+  } END_LOOP_OMP;
   
   if(norder== 1){
     return ;
@@ -328,11 +327,11 @@ static void Matrix_Vec_mult_chebyshev_poly(su3_vector *src, su3_vector *res,
   /**   **/
   //degree >=2  
   
-  FOREVENFIELDSITES(i)
+  FOREVENFIELDSITES_OMP(i,)
   {
     su3vec_copy(src +i , v1 + i ) ;                        /* v1 = src  **/
     su3vec_copy(res +i , v2 + i ) ;                        /* v2 = res  **/
-  }
+  } END_LOOP_OMP;
   sigma_old = sigma1;
   
   for (j=2 ; j <=  norder ; ++j)
@@ -346,7 +345,7 @@ static void Matrix_Vec_mult_chebyshev_poly(su3_vector *src, su3_vector *res,
       
       /**  constant_mult_even(v1 , debug_val, v2) ;   ***/
       
-      FOREVENFIELDSITES(i)
+      FOREVENFIELDSITES_OMP(i,)
       {
 	//  res = d1*v3 + d2*v2 + d3*v1; 
 	scalar_mult_su3_vector(v3+i, d1, res+i) ;           /* res = d1  * v3   ***/
@@ -356,7 +355,7 @@ static void Matrix_Vec_mult_chebyshev_poly(su3_vector *src, su3_vector *res,
 	
 	su3vec_copy(v2  + i , v1 +i ) ;   /** v1 = v2 ***/
 	su3vec_copy(res + i , v2 +i ) ;   /** res = v2 ***/
-      }
+      } END_LOOP_OMP;
       
       sigma_old  = sigma;
       
@@ -412,10 +411,10 @@ static void Matrix_Vec_mult_chebyshev_poly_org(su3_vector *src, su3_vector *res,
   //T_0(Q)=1 
   if(norder== 0){
     
-    FOREVENFIELDSITES(i)
+    FOREVENFIELDSITES_OMP(i,)
     {
       su3vec_copy(src +i , res + i ) ;                        /* res = src  **/
-    }
+    } END_LOOP_OMP;
     
     return;
   }
@@ -428,12 +427,12 @@ static void Matrix_Vec_mult_chebyshev_poly_org(su3_vector *src, su3_vector *res,
   Matrix_Vec_mult(src,v1,eigen_param,fn);  /**  v1 = M * src **/
   
   // out[s] = d1*v1 + d2*in; 
-  FOREVENFIELDSITES(i)
+  FOREVENFIELDSITES_OMP(i,)
   {
     scalar_mult_su3_vector(v1+i, d1, res+i) ;           /* res = d1 * v1   ***/
     scalar_mult_add_su3_vector(res+i, src+i, d2 , res+i) ; /* res = res + d2*src **/
     
-  }
+  } END_LOOP_OMP;
   
   if(norder== 1){
     return ;
@@ -442,11 +441,11 @@ static void Matrix_Vec_mult_chebyshev_poly_org(su3_vector *src, su3_vector *res,
   /**   **/
   //degree >=2  
   
-  FOREVENFIELDSITES(i)
+  FOREVENFIELDSITES_OMP(i,)
   {
     su3vec_copy(src +i , v1 + i ) ;                        /* v1 = src  **/
     su3vec_copy(res +i , v2 + i ) ;                        /* v2 = res  **/
-  }
+  } END_LOOP_OMP;
   
   for (j=2 ; j <=  norder ; ++j)
     { 
@@ -456,7 +455,7 @@ static void Matrix_Vec_mult_chebyshev_poly_org(su3_vector *src, su3_vector *res,
       
       Matrix_Vec_mult(v2,v3,eigen_param,fn);    /** v3 = M * v2  **/
       
-      FOREVENFIELDSITES(i)
+      FOREVENFIELDSITES_OMP(i,)
       {
 	//  res = d1*v3 + d2*v2 + d3*v1; 
 	scalar_mult_su3_vector(v3+i, d1, res+i) ;           /* res = d1  * v3   ***/
@@ -466,7 +465,7 @@ static void Matrix_Vec_mult_chebyshev_poly_org(su3_vector *src, su3_vector *res,
 	
 	su3vec_copy(v2  + i , v1 +i ) ;   /** v1 = v2 ***/
 	su3vec_copy(res + i , v2 +i ) ;   /** res = v2 ***/
-      }
+      } END_LOOP_OMP;
     }
   
   
@@ -680,7 +679,6 @@ static void my_check_eigen(su3_vector **eigVec, double *eigVal, int Nvecs,
   Real bot ;
   Real eigen_mod ;
   int k ; 
-  complex z ;
   
   //      eigen_param->parity = EVENANDODD ;
   eigen_param->parity = EVEN ;
@@ -698,14 +696,15 @@ static void my_check_eigen(su3_vector **eigVec, double *eigVal, int Nvecs,
       bot = 0.0 ;
       
       
-      FOREVENFIELDSITES(i)
+      FOREVENFIELDSITES_OMP(i,reduction(+:bot,eigVal_est_re,eigVal_est_im))
       {
-	z = su3_dot( eigVec[ieig] + i, M_eigvec +i )  ;
+	complex z = su3_dot( eigVec[ieig] + i, M_eigvec +i )  ;
 	eigVal_est_re += z.real ; 
 	eigVal_est_im += z.imag ; 
 	
-	bot  += su3_rdot(eigVec[ieig] + i  ,eigVec[ieig] + i)  ;
-      }
+	bot  += su3_rdot(eigVec[ieig] + i, eigVec[ieig] + i)  ;
+      } END_LOOP_OMP;
+
       g_doublesum(&eigVal_est_re );
       g_doublesum(&eigVal_est_im);
       g_doublesum(&bot);
@@ -879,7 +878,7 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
   double dtimec;
 #endif
   
-  imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
+  imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
   
   if(parity == EVENANDODD){
     maxn=sites_on_node*3;			/*local size of matrix*/
@@ -1075,18 +1074,16 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
 	    {
 	      for(k=0;k<6;k++) 
 		*(yy++) = *(xx++);
-            }
+            } END_LOOP;
 #endif
 	  
 #if 1
 	  //          printf("debug matrix multiplication called\n");
-	  xx= &((workd  +ipntr[0] -1 )->real)  ;
-	  FORSOMEPARITY(i,s,parity)
+	  su3_vector *wd = (su3_vector *)&((workd  +ipntr[0] -1 )->real);
+	  FORSOMEFIELDPARITY_OMP(i,parity,)
 	    {
-	      yy  = &(tmp1[i].c[0].real);
-	      for(k=0;k<6;k++) 
-		*(yy++) = *(xx++);
-	    }
+	      su3vec_copy(wd+i, tmp1+i);
+	    } END_LOOP_OMP;
 	  
 	  /**	  Matrix_Vec_mult(tmp1,tmp2,parity,fn[0]);   **/
 	  if( which_poly == NO_POLY  )
@@ -1106,15 +1103,11 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
 	      Matrix_Vec_mult_chebyshev_poly_org(tmp1,tmp2,eigen_param,fn)  ;  
 	    }
 	  
-	  
-	  
-	  yy = &((workd  +ipntr[1] -1)->real)  ;
-	  FORSOMEPARITY(i,s,parity)
+	  wd  = (su3_vector *)&((workd  +ipntr[1] -1)->real)  ;
+	  FORSOMEFIELDPARITY_OMP(i,parity,)
 	    {
-	      xx = &(tmp2[i].c[0].real);
-	      for(k=0;k<6;k++) 
-		*(yy++) = *(xx++);
-	    }
+	      su3vec_copy(tmp2+i, wd+i);
+	    } END_LOOP_OMP;
 #endif
 	  
 	}
@@ -1164,11 +1157,11 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
        * (convert from double to single precision if need be) */
       for(int m=0; m<eigen_param->Nvecs; m++) {
 	j = hash[m];
-	xx = (double*)&(evecs[0].real)+2*j*maxn;
-	FORSOMEFIELDPARITY(i,parity){
-	  yy= &(eigVec[m][i].c[0].real);
-	  for(k=0;k<6;k++) *(yy++) = *(xx++);
-	}
+	/* Points to the bottom of the jth eigenvector */
+	su3_vector *ev = (su3_vector *)(&evecs[0].real + 2*j*maxn);
+	FORSOMEFIELDPARITY_OMP(i,parity,){
+	  su3vec_copy(ev+i, eigVec[m]+i);
+	} END_LOOP_OMP;
       }
 
       /*report the computed evals and their residuals  **/
@@ -1218,6 +1211,8 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
       }
     
   }
+
+  destroy_fn_links(fn);
   
   /***  free up memory arpack  *************/
   free(resid); 
@@ -1234,28 +1229,3 @@ int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal,
   cleanup_Matrix() ;
   return iparam[2] ;  /*****  update ************/
 }
-  
-  
-
-
-  
-
-
-/*****************************************************************************/
-
-
-
-#else  /* ifdef ARPACK */
-
-/* Stub to allow compilation (but not execution) in case ARPACK is not available */
-
-int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal, 
-			 ks_eigen_param *eigen_param, int init)
-{
-  node0_printf("ks_eigensolve_ARPACK: Requires compilation with the ARPACK package\n");
-  terminate(1);
-
-  return 0;
-}
-
-#endif /* ifdef ARPACK */

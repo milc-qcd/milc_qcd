@@ -44,6 +44,8 @@
 # The job is launched with the commad
 # ${LAUNCH} ./${PROJ} ${LAUNCH2} in.sample.${PROJ} > out.test.${PROJ}
 
+LAUNCH = srun -n 1 -c 8 --cpu-bind=cores
+
 # SGI Origin
 #LAUNCH = mpirun -np 4
 #LAUNCH2 = 

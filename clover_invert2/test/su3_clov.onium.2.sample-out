@@ -665,6 +665,8 @@ SINKS: deriv2_B fat_covariant_gaussian AA2xB1_AA2xB1
 7 -9.833141e-06 -8.672591e-07
 ENDPROP
 RUNNING COMPLETED
+Time for printing correlator 1.251698e-04
+Aggregate time to tie hadron correlators 3.379202e-02
 Time = 2.473447e+00 seconds
 total_iters = 584
 destroy quark[0]

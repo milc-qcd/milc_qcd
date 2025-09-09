@@ -43,11 +43,13 @@ COMPLEXOBJS2 = cadd.2.o cdiv.2.o ce_itheta.2.o cexp.2.o clog.2.o cmplx.2.o cmul.
 ${COMPLEXOBJS1} : ${HEADERS} ${ALLMAKES} ${LASTMAKE}
 ${COMPLEXOBJS2} : ${HEADERS} ${ALLMAKES} ${LASTMAKE}
 
-complex.1.a: ${COMPLEXOBJS1}
-	${AR} rcs $@ ${COMPLEXOBJS1}
+MISCOBJS = crc32.o
 
-complex.2.a: ${COMPLEXOBJS2}
-	${AR} rcs $@ ${COMPLEXOBJS2}
+complex.1.a: ${COMPLEXOBJS1} ${MISCOBJS}
+	${AR} rcs $@ ${COMPLEXOBJS1} ${MISCOBJS}
+
+complex.2.a: ${COMPLEXOBJS2} ${MISCOBJS}
+	${AR} rcs $@ ${COMPLEXOBJS2} ${MISCOBJS}
 
 SU3OBJS1 = addmat.1.o addvec.1.o cmp_ahmat.1.o cs_m_a_vec.1.o cs_m_a_mat.1.o \
 	cs_m_s_vec.1.o cs_m_vec.1.o det_su3.1.o clear_mat.1.o dumpmat.1.o \

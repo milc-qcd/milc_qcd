@@ -297,7 +297,7 @@ void pswrite_data(int parallel, FILE* fp, void *src, size_t size,
   else        swrite_data(fp,src,size,myname,descrip);
 }
 /*---------------------------------------------------------------------------*/
-int sread_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
+int sread_data(FILE* fp, const void *src, size_t size, const char *myname, const char *descrip)
 {
   if(g_read(src,size,1,fp) != 1)
     {
@@ -310,7 +310,7 @@ int sread_data(FILE* fp, void *src, size_t size, const char *myname, const char 
   return 0;
 }
 /*---------------------------------------------------------------------------*/
-int pread_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
+int pread_data(FILE* fp, const void *src, size_t size, const char *myname, const char *descrip)
 {
   if(g_read(src,size,1,fp) != 1)
     {
@@ -329,21 +329,21 @@ int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, const cha
 
   status = pread_data(fp,src,size,myname,descrip);
   if(byterevflag==1)
-    byterevn((u_int32type *)src,size/sizeof(int32type));
+    byterevn((u_int32type *)src,size/sizeof(u_int32type));
   return status;
 }
 /*---------------------------------------------------------------------------*/
-int sread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, const char *myname, const char *descrip)
+int sread_byteorder(int byterevflag, FILE* fp, const void *src, size_t size, const char *myname, const char *descrip)
 {
   int status;
 
   status = sread_data(fp,src,size,myname,descrip);
   if(byterevflag==1)
-    byterevn((u_int32type *)src,size/sizeof(int32type));
+    byterevn((u_int32type *)src,size/sizeof(u_int32type));
   return status;
 }
 /*---------------------------------------------------------------------------*/
-int psread_data(int parallel, FILE* fp, void *src, size_t size, 
+int psread_data(int parallel, FILE* fp, const void *src, size_t size, 
 		 const char *myname, const char *descrip)
 {
   if(parallel)return pread_data(fp,src,size,myname,descrip);
@@ -642,7 +642,7 @@ gauge_file *setup_input_gauge_file(const char *filename)
   /* Allocate space for the header */
 
   /* Make sure compilation gave us a 32 bit integer type */
-  assert(sizeof(int32type) == 4);
+  assert(sizeof(u_int32type) == 4);
 
   gh = (gauge_header *)malloc(sizeof(gauge_header));
   if(gh == NULL)
@@ -696,7 +696,7 @@ gauge_file *setup_output_gauge_file()
   /* Allocate space for a new header structure */
 
   /* Make sure compilation gave us a 32 bit integer type */
-  assert(sizeof(int32type) == 4);
+  assert(sizeof(u_int32type) == 4);
 
   gh = (gauge_header *)malloc(sizeof(gauge_header));
   if(gh == NULL)
@@ -918,10 +918,10 @@ int read_v3_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 	{
 	  *byterevflag=1;
 	  printf("Reading as old-style gauge field configuration with byte reversal\n");
-	  if( sizeof(float) != sizeof(int32type)) {
+	  if( sizeof(float) != sizeof(u_int32type)) {
 	    printf("read_v3_gauge_hdr: Can't byte reverse\n");
-	    printf("requires size of int32type(%d) = size of float(%d)\n",
-		   (int)sizeof(int32type),(int)sizeof(float));
+	    printf("requires size of u_int32type(%d) = size of float(%d)\n",
+		   (int)sizeof(u_int32type),(int)sizeof(float));
 	    terminate(1);
 	  }
 	}
@@ -1016,9 +1016,9 @@ int read_1996_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
      we ignore all but the two parameters */
 
   struct {                      /* Gauge field parameters */
-    int32type n_descript;          /* Number of bytes in character string */
+    u_int32type n_descript;          /* Number of bytes in character string */
     char   descript[MAX_GAUGE_FIELD_DESCRIPT];  /* Describes gauge field */
-    int32type n_param;             /* Number of gauge field parameters */
+    u_int32type n_param;             /* Number of gauge field parameters */
     float  param[MAX_GAUGE_FIELD_PARAM];        /* GF parameters */
   } gauge_field;
   char myname[] = "read_1996_gauge_hdr";
@@ -1042,10 +1042,10 @@ int read_1996_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 	{
 	  *byterevflag=1;
 	  printf("Reading as 1996-style gauge field configuration with byte reversal\n");
-	  if( sizeof(float) != sizeof(int32type)) {
+	  if( sizeof(float) != sizeof(u_int32type)) {
 	    printf("read_1996_gauge_hdr: Can't byte reverse\n");
-	    printf("requires size of int32type(%d) = size of float(%d)\n",
-		   (int)sizeof(int32type),(int)sizeof(float));
+	    printf("requires size of u_int32type(%d) = size of float(%d)\n",
+		   (int)sizeof(u_int32type),(int)sizeof(float));
 	    terminate(1);
 	  }
 	}
@@ -1200,10 +1200,10 @@ int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 	{
 	  *byterevflag=1;
 	  printf("Reading as FNAL-style gauge field configuration with byte reversal\n");
-	  if( sizeof(float) != sizeof(int32type)) {
+	  if( sizeof(float) != sizeof(u_int32type)) {
 	    printf("read_fnal_gauge_hdr: Can't byte reverse\n");
-	    printf("requires size of int32type(%d) = size of float(%d)\n",
-		   (int)sizeof(int32type),(int)sizeof(float));
+	    printf("requires size of u_int32type(%d) = size of float(%d)\n",
+		   (int)sizeof(u_int32type),(int)sizeof(float));
 	    terminate(1);
 	  }
 	}
@@ -1326,10 +1326,10 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
 	  ARCHYES=1;
 	  byterevflag=1;	/* not really needed */
 	  gh->magic_number = btmp;
-	  if( sizeof(float) != sizeof(int32type)) {
+	  if( sizeof(float) != sizeof(u_int32type)) {
 	    printf("%s: Can't byte reverse\n",myname);
-	    printf("requires size of int32type(%d) = size of float(%d)\n",
-		   (int)sizeof(int32type),(int)sizeof(float));
+	    printf("requires size of u_int32type(%d) = size of float(%d)\n",
+		   (int)sizeof(u_int32type),(int)sizeof(float));
 	    terminate(1);
 	  }
 	}
@@ -1342,10 +1342,10 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
       byterevflag=1;
       gh->magic_number = btmp;
       /**      printf("Reading with byte reversal\n"); **/
-      if( sizeof(float) != sizeof(int32type)) {
+      if( sizeof(float) != sizeof(u_int32type)) {
 	printf("%s: Can't byte reverse\n",myname);
-	printf("requires size of int32type(%d) = size of float(%d)\n",
-	       (int)sizeof(int32type),(int)sizeof(float));
+	printf("requires size of u_int32type(%d) = size of float(%d)\n",
+	       (int)sizeof(u_int32type),(int)sizeof(float));
 	terminate(1);
       }
     }
@@ -1512,7 +1512,7 @@ void write_site_list(FILE *fp, gauge_header *gh)
   /* Location of site list for this node */
   
   offset = gh->header_bytes + 
-    sizeof(int32type)*sites_on_node*this_node;
+    sizeof(u_int32type)*sites_on_node*this_node;
 
   cbuf = (u_int32type *)malloc(sites_on_node*sizeof(u_int32type));
   if(cbuf == NULL)
@@ -1538,7 +1538,7 @@ void write_site_list(FILE *fp, gauge_header *gh)
       buf_length++;
     }
 
-    if( (int)g_write(cbuf,sizeof(int32type),sites_on_node,fp) != sites_on_node)
+    if( (int)g_write(cbuf,sizeof(u_int32type),sites_on_node,fp) != sites_on_node)
       {
 	printf("write_site_list: Node %d coords write error %d\n",
 	       this_node,errno);fflush(stdout);terminate(1);   
@@ -1876,11 +1876,11 @@ char *read_info_file(const char base_filename[]){
   /* Allocate space for metadata on all nodes */
 
   info = (char *)malloc(INFO_DATA_SIZE*sizeof(char));
+  memset(info, '\0', INFO_DATA_SIZE*sizeof(char));
   if(info == NULL){
     printf("read_info_file: No room for info\n");
     terminate(1);
   }
-  info[0] = '\0';
 
   /* Node 0 reads the file */
   if(this_node==0)

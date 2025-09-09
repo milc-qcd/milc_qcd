@@ -118,6 +118,37 @@ typedef struct
   GRID_ChebyParams chebyParams;
   GRID_IRLdiagonalisation diag;
 } GRID_eig_arg_t;
+
+/* Parameters for the HISQ links and force */
+
+/* Only GRID_HISQ_REUNIT_U3 is currently supported */
+enum GRID_hisq_unitarize_group_t {
+  GRID_HISQ_REUNIT_U3,
+  GRID_HISQ_REUNIT_SU3,
+  GRID_HISQ_REUNIT_SVD_REL_ERROR,
+  GRID_HISQ_REUNIT_SVD_ABS_ERROR
+};
+
+/* Only GRID_HISQ_UNITARIZE_ANALYTIC is currently supported */
+enum GRID_hisq_unitarize_method_t {
+  GRID_HISQ_UNITARIZE_NONE,
+  GRID_HISQ_UNITARIZE_APE,
+  GRID_HISQ_UNITARIZE_ROOT,
+  GRID_HISQ_UNITARIZE_RATIONAL,
+  GRID_HISQ_UNITARIZE_HISQ,
+  GRID_HISQ_UNITARIZE_ANALYTIC,
+  GRID_HISQ_UNITARIZE_STOUT,
+  GRID_HISQ_UNITARIZE_ITERATIVE,
+  GRID_HISQ_REUNIT_ALLOW_SVD
+  };
+
+typedef  struct {
+    enum GRID_hisq_unitarize_group_t ugroup;
+    enum GRID_hisq_unitarize_method_t umethod;
+  } GRID_hisq_coeffs_t;
+
+#define GRID_HISQ_COEFFS_DEFAULT {GRID_HISQ_REUNIT_U3, GRID_HISQ_UNITARIZE_ANALYTIC}
+  
   
   /**********************/
   /*  General routines  */

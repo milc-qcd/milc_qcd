@@ -8,6 +8,7 @@
 /* In io_scidac.c */
 
 void build_qio_layout(QIO_Layout *layout);
+void build_qio_layout_grid_odd_to_milc(QIO_Layout *layout);
 void build_qio_filesystem(QIO_Filesystem *fs);
 void close_scidac_input(QIO_Reader *infile);
 void close_scidac_output(QIO_Writer *outfile);

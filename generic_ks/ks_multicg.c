@@ -26,7 +26,7 @@ static int ks_multicg_fake_field(	/* Return value is number of iterations taken 
     ks_param *ksp,	/* the offsets */
     int num_offsets,	/* number of offsets */
     quark_invert_control qic[],
-    imp_ferm_links_t *fn[]    /* Storage for fermion links */
+    imp_ferm_links_t *fn /* Storage for fermion links */
 );
 
 static int ks_multicg_hybrid_field(	/* Return value is number of iterations taken */
@@ -35,7 +35,7 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
     ks_param *ksp,	/* the offsets */
     int num_offsets,	/* number of offsets */
     quark_invert_control qic[],
-    imp_ferm_links_t *fn[]    /* Storage for fermion links */
+    imp_ferm_links_t *fn /* Storage for fermion links */
 );
 
 // static void ks_multicg_reverse_field(	/* Return value is number of iterations taken */
@@ -68,7 +68,7 @@ int ks_multicg_field(   /* Return value is number of iterations taken */
     ks_param *ksp,	/* the offsets */
     int num_offsets,	/* number of offsets */
     quark_invert_control qic[], /* inversion parameters */
-    imp_ferm_links_t *fn[]    /* Storage for fermion links */
+    imp_ferm_links_t *fn /* Storage for fermion links */
     )
 {
 
@@ -134,14 +134,14 @@ static int ks_multicg_fake_field(	/* Return value is number of iterations taken 
     ks_param *ksp,	/* the offsets */
     int num_offsets,	/* number of offsets */
     quark_invert_control qic[],
-    imp_ferm_links_t *fn_multi[]    /* Storage for fermion links */
+    imp_ferm_links_t *fn  /* Storage for fermion links */
     )
 {
   int i,iters=0;
 
+  /* fn must be the same for all masses */
   for(i=0;i<num_offsets;i++){
-    ks_congrad_field( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset),
-		      fn_multi[i] );
+    ks_congrad_field( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn );
     //    report_status(qic+i);
     iters += qic->final_iters;
   }
@@ -174,7 +174,7 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
     ks_param *ksp,	/* the offsets */
     int num_offsets,	/* number of offsets */
     quark_invert_control qic[],
-    imp_ferm_links_t *fn_multi[]    /* Storage for fermion links */
+    imp_ferm_links_t *fn /* Storage for fermion links */
     )
 {
   int i,multi_iters=0,iters=0;
@@ -197,9 +197,9 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
   //  node0_printf("Using HALF-MIXED CG; resid = %e\n", qic[0].resid);
 #endif
 
-  /* First we invert as though all masses took the same Naik epsilon */
+  /* All masses take the same Naik epsilon (and fn) */
   multi_iters = iters =
-    ks_multicg_offset_field( src, psim, ksp, num_offsets, qic, fn_multi[0]);
+    ks_multicg_offset_field( src, psim, ksp, num_offsets, qic, fn);
   report_status(qic+0);
 
 #if defined(HALF_MIXED) && !defined(USE_CG_GPU)
@@ -208,6 +208,7 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
   qic[0].relresid = relresid_save;
 #endif
 
+#if 0   // We don't attempt multimass solves with different Naik epsilons any more 
   /* Then we refine using the correct Naik epsilon */
   for(i=0;i<num_offsets;i++){
 #if defined(NO_REFINE) || defined(USE_CG_GPU) 
@@ -226,6 +227,7 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
     iters += qic[i].final_iters;
     qic[i].final_iters += multi_iters;
   }
+#endif
 
   return iters;
 }
@@ -633,13 +635,15 @@ static void ks_multicg_revhyb_field(	/* Return value is number of iterations tak
     ks_param *ksp,	/* the offsets */
     int num_offsets,	/* number of offsets */
     quark_invert_control *qic,
-    imp_ferm_links_t *fn_multi[]     /* Storage for fermion links */
+    imp_ferm_links_t *fn /* Storage for fermion links */
     )
 {
   int i,iters=0,index;
 
   /* First we invert without the Naik epsilon correction*/
-  ks_multicg_reverse_field( src, psim, ksp, num_offsets, qic, fn_multi[0]);
+  ks_multicg_reverse_field( src, psim, ksp, num_offsets, qic, fn);
+
+#if 0
   /* Then we polish with the correct Naik epsilon */
   for(i=0;i<num_offsets;i++){
 //#if FERM_ACTION == HISQ
@@ -652,6 +656,8 @@ static void ks_multicg_revhyb_field(	/* Return value is number of iterations tak
     iters += ks_congrad_field_cpu( src, psim[i], qic, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
     report_status(qic);
   }
+#endif
+  
 }
 
 #endif //if 0
@@ -666,7 +672,7 @@ int ks_multicg_mass_field(	/* Return value is number of iterations taken */
     ks_param *ksp,	/* KS parameters, including masses */
     int num_masses,	/* number of masses */
     quark_invert_control qic[],  /* inversion parameters */
-    imp_ferm_links_t *fn_multi[]     /* Storage for fat and Naik links */
+    imp_ferm_links_t *fn /* Storage for fat and Naik links */
 				)
 {
   int i, iters;
@@ -675,7 +681,7 @@ int ks_multicg_mass_field(	/* Return value is number of iterations taken */
     ksp[i].offset = 4.0*ksp[i].mass*ksp[i].mass;
   }
 
-  iters = ks_multicg_field(src, psim, ksp, num_masses, qic, fn_multi);
+  iters = ks_multicg_field(src, psim, ksp, num_masses, qic, fn);
 
   return iters;
 }
@@ -695,7 +701,7 @@ int ks_multicg_mass_site(	/* Return value is number of iterations taken */
     int prec,           /* internal precision for inversion (ignored) */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr, /* final residue squared */
-    imp_ferm_links_t *fn_multi[]     /* Storage for fat and Naik links */
+    imp_ferm_links_t *fn /* Storage for fat and Naik links */
     )
 {
   su3_vector *in;
@@ -738,7 +744,7 @@ int ks_multicg_mass_site(	/* Return value is number of iterations taken */
     ksp[i].residue = 0.0;
   }
 
-  iters = ks_multicg_mass_field(in, psim, ksp, num_masses, qic, fn_multi);
+  iters = ks_multicg_mass_field(in, psim, ksp, num_masses, qic, fn);
 
   destroy_v_field(in);
   free(ksp);
@@ -760,7 +766,7 @@ int mat_invert_multi(
     ks_param *ksp,	/* KS parameters, including masses */
     int num_masses,	/* number of masses */
     quark_invert_control qic[],  /* inversion parameters */
-    imp_ferm_links_t *fn_multi[]   /* Storage for fat and Naik links */
+    imp_ferm_links_t *fn /* Storage for common fat and Naik links */
     )
 {
   int i, tot_iters = 0;
@@ -778,7 +784,7 @@ int mat_invert_multi(
   if(param.eigen_param.Nvecs > 0 || num_masses <= 2){
     
     for(i = 0; i < num_masses; i++){
-      tot_iters += mat_invert_field(src, dst[i], &qic[i], ksp[i].mass, fn_multi[i] );
+      tot_iters += mat_invert_field(src, dst[i], &qic[i], ksp[i].mass, fn );
     }
 
   } else {
@@ -796,17 +802,17 @@ int mat_invert_multi(
       qic[i].parity = EVEN;
 
     node0_printf("Solving for %d masses on even sites\n", num_masses);
-    tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn_multi);
+    tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn);
 
     for(i = 0; i < num_masses; i++)
       qic[i].parity = ODD;
 
     node0_printf("Solving for %d masses on odd sites\n", num_masses);
-    tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn_multi);
+    tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn);
 
     /* Multiply all solutions by Madjoint to get dst = M^-1 * src */
     for(i = 0; i < num_masses; i++){
-      ks_dirac_adj_op_inplace( dst[i], ksp[i].mass, EVENANDODD, fn_multi[i]);
+      ks_dirac_adj_op_inplace( dst[i], ksp[i].mass, EVENANDODD, fn);
     }
   }
 

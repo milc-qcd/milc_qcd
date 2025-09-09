@@ -5,40 +5,57 @@
 #include "../include/su3.h"
 #include "../include/comdefs.h"
 #include "../include/generic_quark_types.h"
-#include "quark_action.h"  /* Defines FERM_ACTION */
+#include <quark_action.h>  /* Defines FERM_ACTION */
 
 /*-----------------------------------------------------------------*/
 /* Define imp_ferm_links_t */
 
 #ifdef HAVE_QOP
 
-#include "../include/fn_links_qop.h"
-typedef fn_links_qop_t imp_ferm_links_t;
+#include <qop.h>
 
-#else
+#if FERM_ACTION == HISQ
+
+#include "../include/fn_links_qop.h"
+#include "../include/hisq_links_qop.h"
+#include "../include/fermion_links_qop.h"
+#define imp_ferm_links_t fn_links_qop_t
+#define create_imp_ferm_links create_fn_links_qop
+#define destroy_imp_ferm_links destroy_fn_links_qop
+
+
+#else /* Not HISQ */
+
+#include "../include/fn_links_qop.h"
+#include "../include/fermion_links_qop.h"
+#define imp_ferm_links_t fn_links_qop_t
+#define create_imp_ferm_links create_fn_links_qop
+#define load_imp_ferm_links load_fn_links_qop
+#define destroy_imp_ferm_links destroy_fn_links_qop
+
+#endif
+
+#else /* Not HAVE_QOP */
 
 #include "../include/fn_links.h"
 #include "../include/eo_links.h"
 
 #if ( FERM_ACTION == HISQ ) || ( FERM_ACTION == FN_TYPE )
-typedef fn_links_t imp_ferm_links_t;
+
+#define imp_ferm_links_t fn_links_t
 #define create_imp_ferm_links create_fn_links
 #define load_imp_ferm_links load_fn_links
 #define destroy_imp_ferm_links destroy_fn_links
+
 #else
-typedef eo_links_t imp_ferm_links_t;
+
+#define imp_ferm_links_t eo_links_t 
 #define create_imp_ferm_links create_eo_links
 #define load_imp_ferm_links load_eo_links
 #define destroy_imp_ferm_links destroy_eo_links
-#endif
 
 #endif
 
-#ifdef HAVE_QOP
-#include <qop.h>
-#include "../include/fermion_links_qop.h"
-#else
-#include "../include/fermion_links_milc.h"
 #endif
 
 /*-----------------------------------------------------------------*/
@@ -71,6 +88,7 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 
 
 #ifdef USE_CG_GPU
+#if defined(HAVE_QUDA) || defined(HAVE_GRID) 
 
 #define ks_congrad_parity ks_congrad_parity_gpu
 #define ks_congrad_block_parity ks_congrad_block_parity_gpu
@@ -80,10 +98,7 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 #define ks_congrad_parity ks_congrad_parity_qphix
 #define ks_congrad_block_parity ks_congrad_block_parity_qphix
 
-#elif HAVE_GRID
-
-#define ks_congrad_parity ks_congrad_parity_grid
-#define ks_congrad_block_parity ks_congrad_block_parity_grid
+#endif
 
 #else
 
@@ -135,7 +150,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity,
 			   imp_ferm_links_t *fn, imp_ferm_links_t *fn_dmdu0);
 
-void dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
+void dslash_fn_dir(const su3_vector * const src, su3_vector *dest, int parity,
 		   imp_ferm_links_t *fn, int dir, int fb, 
 		   Real wtfat, Real wtlong);
 
@@ -196,7 +211,7 @@ int ks_multicg_field(   /* Return value is number of iterations taken */
     ks_param *ksp,	/* KS parameters with offsets defined */
     int num_offsets,	/* number of offsets */
     quark_invert_control qic[], /* inversion parameters */
-    imp_ferm_links_t *fn[]    /* Storage for fat and Naik links */
+    imp_ferm_links_t *fn /* Storage for fat and Naik links */
     );
 
 int ks_multicg_offset_field_cpu(	/* Return value is number of iterations taken */
@@ -217,15 +232,6 @@ int ks_multicg_offset_field_gpu(	/* Return value is number of iterations taken *
     imp_ferm_links_t *fn      /* Storage for fat and Naik links */
     );
 
-int ks_multicg_offset_field_grid(	/* Return value is number of iterations taken */
-    su3_vector *src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    ks_param *ksp,	/* the offsets */
-    int num_offsets,	/* number of offsets */
-    quark_invert_control qic[], /* inversion parameters */
-    imp_ferm_links_t *fn      /* Storage for fat and Naik links */
-    );
-
 int ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken */
     su3_vector *src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
@@ -236,11 +242,11 @@ int ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken
     );
 
 #ifdef USE_CG_GPU
+#if defined(HAVE_GRID) || defined(HAVE_QUDA)
 #define ks_multicg_offset_field ks_multicg_offset_field_gpu
-#elif HAVE_GRID
-#define ks_multicg_offset_field ks_multicg_offset_field_grid
 #elif USE_CG_QPHIX
 #define ks_multicg_offset_field ks_multicg_offset_field_qphix
+#endif
 #else
 #define ks_multicg_offset_field ks_multicg_offset_field_cpu
 #endif
@@ -251,7 +257,7 @@ int ks_multicg_mass_field(	/* Return value is number of iterations taken */
     ks_param *ksp,	/* the KS parameters, including masses */
     int num_masses,	/* number of masses */
     quark_invert_control qic[],  /* inversion parameters */
-    imp_ferm_links_t *fn[]     /* Storage for fat and Naik links */
+    imp_ferm_links_t *fn /* Storage for fat and Naik links */
     );
 
 
@@ -265,7 +271,7 @@ int ks_multicg_mass_site(	/* Return value is number of iterations taken */
     int prec,           /* internal precision for inversion (ignored) */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr, /* final residue squared */
-    imp_ferm_links_t *fn[]     /* Storage for fat and Naik links */
+    imp_ferm_links_t *fn /* Storage for fat and Naik links */
 );
 
 
@@ -278,8 +284,8 @@ int mat_invert_multi(
     ks_param *ksp,	/* KS parameters, including masses */
     int num_masses,	/* number of masses */
     quark_invert_control qic[],  /* inversion parameters */
-    imp_ferm_links_t *fn[]   /* Storage for fat and Naik links */
-     );
+    imp_ferm_links_t *fn /* Storage for fat and Naik links */
+    );
 
 /*
   Return the most recent fermion link field passed to QUDA
@@ -295,6 +301,8 @@ void set_fn_last(imp_ferm_links_t *fn_last_new);
 
 /* eigen_stuff*.c */
 
+void restore_eigVec(int Nvecs, Real *eigVal, su3_vector **eigVec, int parity,
+		    imp_ferm_links_t *fn);
 typedef struct {
   int norder ; /* Order of the preconditioning polynomial */
   int which_poly; /* Polynomial selection */
@@ -305,7 +313,7 @@ typedef struct {
   double eigmax;
 } ks_eigen_poly;
 
-#if defined(PRIMME)
+#if defined(HAVE_PRIMME)
 #define ks_eigensolve ks_eigensolve_PRIMME
 typedef struct {
   int Nvecs ; /* number of eigenvectors */
@@ -318,7 +326,7 @@ typedef struct {
   int parity; 
   ks_eigen_poly poly; /* Preconditioning polynomial */
 } ks_eigen_param;
-#elif defined(ARPACK)
+#elif defined(HAVE_ARPACK)
 #define ks_eigensolve ks_eigensolve_ARPACK
 typedef struct {
   int Nvecs ; /* number of eigenvectors */
@@ -330,7 +338,7 @@ typedef struct {
   int parity; 
   ks_eigen_poly poly; /* Preconditioning polynomial */
 } ks_eigen_param;
-#elif defined(Grid_EIG)
+#elif defined(USE_EIG_GPU) && defined(HAVE_GRID)
 #define ks_eigensolve ks_eigensolve_Grid
 typedef struct {
   int Nvecs; /* number of eigenvectors */
@@ -344,16 +352,33 @@ typedef struct {
   char diagAlg[10];
   int parity; 
 } ks_eigen_param;
-#elif defined(USE_EIG_QUDA)
+#elif defined(USE_EIG_GPU) && defined(HAVE_QUDA)
 #define ks_eigensolve ks_eigensolve_QUDA
 typedef struct {
   int Nvecs ; /* number of eigenvectors */
   int Nvecs_in; /* number of input starting eigenvectors */
   Real tol; /* Tolerance for the eigenvalue computation */
   int MaxIter; /* max restarting iterations */
+  int Nrestart; /* Lanczos restarts from this number of eigenvalues */
   int Nkr; /* size of the Krylov subspace */
   ks_eigen_poly poly; /* Preconditioning polynomial */
   int blockSize; /* block size for block variant eigensolvers */
+  int partfile; /* Whether to save in partfile or not */
+  int eigPrec; /* Run the eigensolver in this precision */
+  int batchedRotate; /* Size of the rotation space to use for solver */
+  int parity;
+  double tol_restart; 
+} ks_eigen_param;
+#elif defined(HAVE_QDP)
+#define ks_eigensolve Kalkreuter
+typedef struct {
+  int Nvecs ; /* number of eigenvectors */
+  int Nvecs_in ; /* number of input starting eigenvectors */
+  Real tol ; /* Tolerance for the eigenvalue computation */
+  Real RelTol ;
+  int MaxIter ; /* max  Rayleigh iterations */
+  int Restart ; /* Restart  Rayleigh every so many iterations */
+  int Kiters ; /* Kalkreuter iterations */
   int parity; 
 } ks_eigen_param;
 #else
@@ -363,10 +388,12 @@ typedef struct {
   int Nvecs_in ; /* number of input starting eigenvectors */
   Real tol ; /* Tolerance for the eigenvalue computation */
   Real error_decr ; /* error decrease per Rayleigh minimization */
+  int partfile; /* Whether to save in partfile or not */
   int MaxIter ; /* max  Rayleigh iterations */
   int Restart ; /* Restart  Rayleigh every so many iterations */
   int Kiters ; /* Kalkreuter iterations */
   int parity; 
+  Real tol_restart;
 } ks_eigen_param;
 #endif
 
@@ -375,14 +402,15 @@ typedef struct {
 int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance, 
 		 Real RelTol, int Nvecs, int MaxIter, int Restart, 
 		 ks_eigen_param *eigen_param, imp_ferm_links_t *fn);
-int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, 
+int ks_eigensolve_Kalkreuter_Ritz(su3_vector **eigVec, Real *eigVal, 
 				  ks_eigen_param *eigen_param, int init );
-int ks_eigensolve_PRIMME(su3_vector **eigVec, double *eigVal,
+int ks_eigensolve_PRIMME(su3_vector **eigVec, Real *eigVal,
 				  ks_eigen_param *eigen_param, int init );
-int ks_eigensolve_ARPACK(su3_vector **eigVec, double *eigVal, 
+int Kalkreuter(su3_vector **eigVec, Real *eigVal, ks_eigen_param *eigen_param, int init);
+int ks_eigensolve_ARPACK(su3_vector **eigVec, Real *eigVal, 
 				  ks_eigen_param *eigen_param, int init );
-int ks_eigensolve_Grid( su3_vector ** eigVec, double * eigVal, ks_eigen_param * eigen_param, int init );
-int ks_eigensolve_QUDA( su3_vector ** eigVec, double * eigVal, ks_eigen_param * eigen_param, int init );
+int ks_eigensolve_Grid( su3_vector ** eigVec, Real * eigVal, ks_eigen_param * eigen_param, int init );
+int ks_eigensolve_QUDA( su3_vector ** eigVec, Real * eigVal, ks_eigen_param * eigen_param, int init );
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *eigen_param, 
 		     imp_ferm_links_t *fn );
 void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *eigen_param, 
@@ -391,23 +419,35 @@ void cleanup_Matrix();
 void measure_chirality(su3_vector *src, double *chirality, int parity);
 void print_densities(su3_vector *src, char *tag, int y,int z,int t, 
 		     int parity);
-void reset_eigenvalues(su3_vector *eigVec[], double *eigVal,
+void reset_eigenvalues(su3_vector *eigVec[], Real *eigVal,
 		       int Nvecs, int parity, imp_ferm_links_t *fn);
-void perturb_eigpair(su3_vector *eigVec_new[], double *eigVal_new,
-		     su3_vector *eigVec_old[], double *eigVal_old,
+void perturb_eigpair(su3_vector *eigVec_new[], Real *eigVal_new,
+		     su3_vector *eigVec_old[], Real *eigVal_old,
 		     int Nvecs, int parity, imp_ferm_links_t *fn_new,
 		     imp_ferm_links_t *fn_old);
-void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
+void check_eigres(double *resid, su3_vector *eigVec[], Real *eigVal,
 		  int Nvecs, int parity, imp_ferm_links_t *fn);
-void construct_eigen_odd(su3_vector **eigVec, double *eigVal, ks_eigen_param* eigen_param, imp_ferm_links_t *fn);
+void construct_eigen_other_parity(su3_vector *eigVec[], Real eigVal[], 
+				  ks_eigen_param *eigen_param, imp_ferm_links_t *fn);
+#ifdef HAVE_QOP
 
+/* fn_links_qop.c */
 
-/* fn_links_qop.c  and fn_links_milc.c */
+su3_matrix *get_fatlinks(fn_links_qop_t *fn);
+su3_matrix *get_lnglinks(fn_links_qop_t *fn);
+su3_matrix *get_fatbacklinks(fn_links_qop_t *fn);
+su3_matrix *get_lngbacklinks(fn_links_qop_t *fn);
 
-su3_matrix *get_fatlinks(imp_ferm_links_t *fn);
-su3_matrix *get_lnglinks(imp_ferm_links_t *fn);
-su3_matrix *get_fatbacklinks(imp_ferm_links_t *fn);
-su3_matrix *get_lngbacklinks(imp_ferm_links_t *fn);
+#else
+
+/* fn_links_milc.c */
+
+su3_matrix *get_fatlinks(fn_links_t *fn);
+su3_matrix *get_lnglinks(fn_links_t *fn);
+su3_matrix *get_fatbacklinks(fn_links_t *fn);
+su3_matrix *get_lngbacklinks(fn_links_t *fn);
+
+#endif
 
 /* fn_links_milc.c only -- for QUDA */
 int fresh_fn_links(imp_ferm_links_t *fn);
@@ -450,12 +490,12 @@ typedef struct {
   int Nvecs_max;     /* Maximum number of eigenpairs computed in entire incremental eigCG */
   double_complex *H; /* H = -U^+ Dslash^2 U, U: projection onto smaller subspace */
 } eigcg_params;
-void calc_eigenpairs(double *eigVal, su3_vector **eigVec, eigcg_params *eigcgp, int parity);
-void calc_eigresid(int Nvecs, double *resid, double *norm, double *eigVal,
+void calc_eigenpairs(Real *eigVal, su3_vector **eigVec, eigcg_params *eigcgp, int parity);
+void calc_eigresid(int Nvecs, double *resid, double *norm, Real *eigVal,
 		   su3_vector **eigVec, int parity, imp_ferm_links_t *fn);
-int ks_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal, su3_vector **eigVec,
+int ks_eigCG_parity( su3_vector *src, su3_vector *dest, Real *eigVal, su3_vector **eigVec,
 		     int m, int Nvecs, quark_invert_control *qic, Real mass, imp_ferm_links_t *fn);
-int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
+int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, Real *eigVal,
 			 su3_vector **eigVec, eigcg_params *eigcgp, quark_invert_control *qic,
 			 Real mass, imp_ferm_links_t *fn);
 
@@ -547,6 +587,9 @@ typedef struct {
 } params_mminv;
 
 int multimass_inverter( params_mminv *mminv, imp_ferm_links_t *fn);
+
+/* read_eigen_param.c */
+int read_ks_eigen_param(ks_eigen_param *eigen_param, int status, int prompt);
 
 #if 0  /* obsolete */
 
