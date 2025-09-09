@@ -142,6 +142,10 @@ int main(int argc, char *argv[])
 	}
       }
 
+#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+      load_evecs_quda(fn);
+#endif
+
       destroy_fn_links(fn);
 
       ENDTIME("calculate/reload Dirac eigenpairs"); fflush(stdout);
