@@ -606,7 +606,7 @@ void restore_color_matrix_scidac_to_site(const char *filename,
 
 /* Read color matrices in SciDAC format to a field */
 void restore_color_matrix_scidac_to_field(const char *filename, 
-		  su3_matrix *dest, int count, int prec){
+    su3_matrix *dest, int count, int prec, int serpar){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
@@ -624,7 +624,7 @@ void restore_color_matrix_scidac_to_field(const char *filename,
   build_qio_filesystem(&fs);
 
   /* Open file for reading */
-  infile = open_scidac_input(filename, &layout, &fs, QIO_SERIAL);
+  infile = open_scidac_input(filename, &layout, &fs, serpar);
   if(infile == NULL)terminate(1);
 
   /* Check the record type (double or single precision) */

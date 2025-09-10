@@ -30,7 +30,7 @@ QIO_Reader *r_open_scidac_file(const char *filename, int serpar);
 void restore_color_matrix_scidac_to_site(const char *filename, 
 			 field_offset dest, int count);
 void restore_color_matrix_scidac_to_field(const char *filename, 
-			  su3_matrix *dest, int count, int prec);
+			 su3_matrix *dest, int count, int prec, int serpar);
 void restore_random_state_scidac_to_site(const char *filename, field_offset dest);
 
 void restore_real_scidac_to_field(const char *filename, int serpar,

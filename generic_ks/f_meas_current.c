@@ -35,6 +35,9 @@
 #include "../include/fn_links.h"
 #include "../include/io_scidac.h"
 #include "../include/imp_ferm_links.h"
+#include "../include/openmp_defs.h"
+#define LOOPEND
+#include "../include/loopend.h"
 #include <qio.h>
 #include <string.h>
 #ifdef HAVE_QUDA
@@ -183,11 +186,40 @@ write_jdotA_value(char *tag, int jr, Real mass1, Real charge1,
   node0_printf("%.10g\n", jdotA);
 } 
 
+#if 1
+
 /*****************************************************************************/
 /* Returns the dot product of two fermion vectors */
 static void
 dot_product(su3_vector *vec1, su3_vector *vec2, 
 	    double_complex *dot, int parity) {
+  int i;
+  complex cc ;
+  double re = 0.0, im = 0.0;
+
+  FORSOMEFIELDPARITY_OMP(i,parity, reduction(+:re,im)){
+    complex temp1,temp2;
+    CMULJ_(vec1[i].c[0],vec2[i].c[0],temp1) 
+    CMULJ_(vec1[i].c[1],vec2[i].c[1],temp2)
+    CSUM(temp1,temp2);
+    CMULJ_(vec1[i].c[2],vec2[i].c[2],temp2)
+    CSUM(temp1,temp2);
+    re += temp1.real ;
+    im += temp1.imag ;
+  } END_LOOP_OMP;
+
+  dot->real = re ; 
+  dot->imag = im ;
+  g_dcomplexsum(dot);
+}
+
+#else
+
+/*****************************************************************************/
+/* Returns the dot product of two fermion vectors */
+static void
+static dot_product(su3_vector *vec1, su3_vector *vec2, 
+		   double_complex *dot, int parity) {
   register double re,im ;
   register  int i;
   complex cc ;
@@ -201,7 +233,11 @@ dot_product(su3_vector *vec1, su3_vector *vec2,
   dot->real = re ; 
   dot->imag = im ;
   g_dcomplexsum(dot);
-}
+} END_LOOP;
+
+#endif
+
+#if 1
 
 /*****************************************************************************/
 /* Returns vec2 = vec2 - cc*vec1   cc is a double complex   */
@@ -215,10 +251,44 @@ complex_vec_mult_sub(double_complex *cc, su3_vector *vec1,
   sc.real= (Real)(cc->real) ; 
   sc.imag= (Real)(cc->imag) ;
 
-  FORSOMEFIELDPARITY(i,parity){
+  FORSOMEFIELDPARITY_OMP(i,parity, ){
+
+    double sr,si,br,bi,cr,ci;
+
+    sr = cc->real; si = cc->imag;
+
+    for(int j=0;j<3;j++){
+	br=vec1[i].c[j].real; bi=vec1[i].c[j].imag;
+
+	cr = sr*br - si*bi;
+	ci = sr*bi + si*br;
+
+	vec2[i].c[j].real -= cr;
+	vec2[i].c[j].imag -= ci;
+    }
+  }
+} END_LOOP_OMP;
+
+#else
+
+/*****************************************************************************/
+/* Returns vec2 = vec2 - cc*vec1   cc is a double complex   */
+static void
+complex_vec_mult_sub(double_complex *cc, su3_vector *vec1, 
+		     su3_vector *vec2, int parity){
+
+  register  int i;
+  complex sc ;
+  
+  sc.real= (Real)(cc->real) ; 
+  sc.imag= (Real)(cc->imag) ;
+
+  FORSOMEFIELDPARITY_OMP(i,parity){
     c_scalar_mult_sub_su3vec(&(vec2[i]), (&sc), &(vec1[i])) ;
   } END_LOOP;
 }
+
+#endif
 
 /************************************************************************/
 /*  Projects out the set of *vector from the  vec. Num is the number of vectors  *
@@ -275,6 +345,8 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
 
 static void
 project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
+
+  // node0_printf("Entered project_out with parity %d\n", parity);
   register int i ;
   double_complex cc ;
   double ptime = -dclock();
@@ -720,11 +792,14 @@ block_current_stochastic_delta_udls( Real **j_mu[], Real masses[],
       destroy_v_field(Ml_inv_gr[is]);
   }
   
+  double onelinktime = -dclock();
   /* Might be better to use a block dslash here?? */
   for(int is = 0; is < nsrc; is++){
     dslash_fn_field( Mls_inv_gr[is], Mls_inv_gr[is], otherparity, fn_ls);
     dslash_fn_field( Mud_inv_gr[is], Mud_inv_gr[is], otherparity, fn_ud);
   }
+  onelinktime += dclock();
+  node0_printf("Time to do one-link dslash %e\n", onelinktime);
   
   /* For each source, apply current in various directions at the sink */
   su3_vector *gr_ls_mu = create_v_field();
@@ -2251,6 +2326,7 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
   /* Compute high-mode current density stochastically in blocks of size nr */
   for(int jrand = 0; jrand < nrand; jrand += nr){
 
+    double meastime = -dclock();
     /* Create sources in gr_even and gr_odd for block solves */
     collect_sources(gr_even, gr_odd, nr, d, evol);
     
@@ -2267,6 +2343,9 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
 #endif
     /* Reset j_mu */
     clear_jhi(n_masses, nr, j_mu);
+
+    meastime += dclock();
+    node0_printf("Time to do one measurement step %e\n", meastime); fflush(stdout);
     
   } /* jrand */
 
@@ -2340,6 +2419,7 @@ f_meas_current( int n_masses, int nrand, int thinning,
 
   /* Compute high-mode current density stochastically in blocks of size nr */
   for(int jrand = 0; jrand < nrand; jrand += nr){
+    double meastime = -dclock();
 
     /* Create sources in gr_even and gr_odd for block solves */
     collect_sources(gr_even, gr_odd, nr, d, evol);
@@ -2357,6 +2437,9 @@ f_meas_current( int n_masses, int nrand, int thinning,
 
     /* Reset j_mu */
     clear_jhi(n_masses, nr, j_mu);
+
+    meastime += dclock();
+    node0_printf("Time to do one measurement step %e\n", meastime); fflush(stdout);
   } /* jrand */
   
   /* Clean up */

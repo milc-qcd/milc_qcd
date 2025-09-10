@@ -299,6 +299,16 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
       
 }
 
+void dslash_fn_field_cpu( su3_vector *src, su3_vector *dest, int parity,
+			  fn_links_t *fn) {
+    
+  msg_tag *tag[16];
+
+  dslash_fn_field_special(src, dest, parity, tag, 1, fn);
+  cleanup_one_gather_set(tag);
+
+}
+
 #ifdef USE_CG_GPU
 #include "../include/generic_quda.h"
 
@@ -348,10 +358,7 @@ void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
 void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
 		      fn_links_t *fn) {
 
-  msg_tag *tag[16];
-
-  dslash_fn_field_special(src, dest, parity, tag, 1, fn);
-  cleanup_one_gather_set(tag);
+  dslash_fn_field_cpu( src, dest, parity, fn);
 
 }
 

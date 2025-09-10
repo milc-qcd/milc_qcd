@@ -658,7 +658,7 @@ int r_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal, su3_vector
   int rank29, rank31;
   su3_vector *eigbuf = NULL;
   int idest = 0;
-  double tmp;
+  double tmp = 0.;
 
   struct {
     su3_vector ksv;

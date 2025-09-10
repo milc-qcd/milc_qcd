@@ -82,10 +82,13 @@ int main(int argc, char *argv[])
 
 
     /**************************************************************/
-    /* Compute Dirac eigenpairs           */
-    if(param.eigen_param.Nvecs > 0){
+    /* Compute Dirac eigenpairs unless QUDA is managing the eigensolve */
 
 #if EIGMODE != EIGCG
+
+#if ( !defined(USE_CG_GPU) || !defined(HAVE_QUDA) || !defined(USE_EIG_GPU) )
+
+    if(param.eigen_param.Nvecs > 0){
 
       STARTTIME;
       
@@ -146,8 +149,10 @@ int main(int argc, char *argv[])
 
       ENDTIME("calculate/reload Dirac eigenpairs"); fflush(stdout);
       
-#endif
     }
+
+#endif
+#endif
     
     /**************************************************************/
     /* Compute chiral condensate and other observables            */
@@ -194,6 +199,7 @@ int main(int argc, char *argv[])
 	if(twist_status(fn_mass[j]) == OFF)boundary_twist_fn(fn_mass[j], ON);
       }
       
+
 #ifdef CURRENT_DISC
       if(param.truncate_diff[k])
 	f_meas_current_diff( num_pbp_masses, param.npbp_reps[k],

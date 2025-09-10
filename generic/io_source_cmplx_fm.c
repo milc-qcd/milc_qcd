@@ -1,5 +1,5 @@
 /************************** io_source_cmplx_fm.c ****************************/
-/* MIMD version 7 */
+/* MIMD version 7  DEPRECATED */
 /*
  *  Load the Fermilab format file for a 3D complex field.
  *
@@ -43,8 +43,8 @@ read_cmplx_fm_source_hdr(cmplx_source_file *csf)
   const u_int32type *dims = csh->dims;
 
   u_int32type   t_stamp;
-  u_int32type   size_of_element;
-  u_int32type   tmp, elements_per_site; 
+  u_int32type   size_of_element = 0;
+  u_int32type   tmp, elements_per_site = 0; 
   u_int32type   order; 
   int byterevflag = 0;
   char myname[] = "read_cmplx_fm_source_hdr";

@@ -144,6 +144,8 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity,
 
 void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
 		      imp_ferm_links_t *fn);
+void dslash_fn_field_cpu( su3_vector *src, su3_vector *dest, int parity,
+			  imp_ferm_links_t *fn);
 void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 			     int parity, msg_tag **tag, int start,
 			     imp_ferm_links_t *fn);
@@ -306,8 +308,8 @@ void restore_eigVec(int Nvecs, Real *eigVal, su3_vector **eigVec, int parity,
 typedef struct {
   int norder ; /* Order of the preconditioning polynomial */
   int which_poly; /* Polynomial selection */
-  double minE ; /* Lower end of eigenvalue exclusion window */
-  double maxE ; /* Upper end of eigenvalue exclusion window */
+  Real minE ; /* Lower end of eigenvalue exclusion window */
+  Real maxE ; /* Upper end of eigenvalue exclusion window */
   double poly_param_1;
   double poly_param_2;
   double eigmax;

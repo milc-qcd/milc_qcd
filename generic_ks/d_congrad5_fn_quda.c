@@ -45,7 +45,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   double nflop = 1187;
 #endif
 
-  // node0_printf("Entered %s\n", myname);
+  //  node0_printf("Entered %s\n", myname);
 
   /* Initialize qic */
   qic->size_r = 0;
@@ -136,6 +136,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   // Inversion without deflation and eigensolve on GPU
 
   node0_printf("Calling qudaInvert with fatlink %x and longlink %x\n", fatlink, longlink); fflush(stdout);
+
   qudaInvert(MILC_PRECISION,
 	     quda_precision, 
 	     mass,
@@ -149,6 +150,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 	     &residual,
 	     &relative_residual, 
 	     &num_iters);
+
   node0_printf("Done with qudaInvert\n"); fflush(stdout);
   
 #else
@@ -264,11 +266,14 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   char myname[] = "ks_congrad_block_parity_gpu";
 
+  //  node0_printf("Entered %s\n", myname);
+
 #if 0
   /* Debug: Solve separately, rather than batch */
   int num_iters = 0;
   for(int i = 0; i < nsrc; i++){
     num_iters += ks_congrad_parity_gpu(t_src[i], t_dest[i], qic, mass, fn);
+    report_status(qic);
   }
   return num_iters;
 #else
@@ -326,10 +331,8 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   if(qic->parity == EVEN){
     inv_args.evenodd = QUDA_EVEN_PARITY;
-    node0_printf("%s: Using QUDA's block solver with EVEN parity %x\n", myname);
   }else if(qic->parity == ODD){
     inv_args.evenodd = QUDA_ODD_PARITY;
-    node0_printf("%s: Using QUDA's block solver with ODD parity %x\n", myname);
   }else{
     printf("%s: Unrecognised parity\n",myname);
     terminate(2);

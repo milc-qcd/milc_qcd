@@ -69,8 +69,8 @@ void check_link_fattening( char *lngansfile, int lngansflag, char *fatansfile, i
     }
     memset(fattrust, '\0', 4*sites_on_node*sizeof(su3_matrix));
 
-    restore_color_matrix_scidac_to_field(lngansfile, lngtrust, 4, MILC_PRECISION);
-    restore_color_matrix_scidac_to_field(fatansfile, fattrust, 4, MILC_PRECISION);
+    restore_color_matrix_scidac_to_field(lngansfile, lngtrust, 4, MILC_PRECISION, QIO_SERIAL);
+    restore_color_matrix_scidac_to_field(fatansfile, fattrust, 4, MILC_PRECISION, QIO_SERIAL);
 
   } else {
 

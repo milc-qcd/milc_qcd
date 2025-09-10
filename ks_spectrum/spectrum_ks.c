@@ -1093,7 +1093,6 @@ static double get_meson_scale_factor(int iq0, int iq1){
   if(param.prop_type[ip1] == KS_TYPE)
     scale_factor *= param.src_qs[is1].scale_fact;
 
-
   return 1./scale_factor;
 }
 /*--------------------------------------------------------------------*/
@@ -1180,7 +1179,6 @@ static void spectrum_ks_print_offdiag(int pair){
   /* Rescaling */
   double meson_scale = get_meson_scale_factor(param.qkpair[pair][0],  
 					      param.qkpair[pair][1]);
-
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);

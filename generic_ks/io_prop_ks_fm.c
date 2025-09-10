@@ -1,5 +1,5 @@
 /********************** io_prop_ks_fm.c *********************************/
-/* MIMD version 7 */
+/* MIMD version 7 DEPRECATED */
 /* Reads and write KS quark propagators
    in a site major format compatible with Fermilab running
    (previous versions variously called io_prop_sgks.c io_prop_ks_write.c
@@ -599,7 +599,7 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
   FILE *fp = NULL;
   ks_prop_header *ksph;
   u_int32type tmp;
-  u_int32type elements_per_site, size_of_element;
+  u_int32type elements_per_site = 0, size_of_element = 0;
   int j;
   int byterevflag = 0;
   char myname[] = "read_ks_fmprop_hdr";

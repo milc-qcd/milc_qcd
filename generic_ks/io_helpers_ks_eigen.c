@@ -616,6 +616,11 @@ static void pack_map_layouts(int x, int y, int z, int t, int *args, int fb,
   }
 }
 
+#if 0
+
+// All of this is unnecessary. The GRID serialized odd checkerboard
+// site order matches MILC's, so the input order needs no remapping.
+
 /* Define map between Grid odd checkerboard and MILC full lattice */
 /* The grid eigenpack saves only the odd-site values.  We read them
    without regard to parity, so treating them as even and odd values
@@ -625,8 +630,8 @@ static void pack_map_layouts(int x, int y, int z, int t, int *args, int fb,
    full eigenvector.  The forward map is the inverse.
 */
 
-static void pack_grid_map_layouts(int x, int y, int z, int t, int *args, int fb,
-				  int *xp, int *yp, int *zp, int *tp){
+static void unpack_grid_map_layouts(int x, int y, int z, int t, int *args, int fb,
+				     int *xp, int *yp, int *zp, int *tp){
 
   int latdim[4] = {nx, ny, nz, nt};
   int coords[4] = {x, y, z, t};
@@ -655,6 +660,8 @@ static void pack_grid_map_layouts(int x, int y, int z, int t, int *args, int fb,
 
   }
 }
+
+#endif
 
 int pack_dir;
 int unpack_dir;
@@ -706,6 +713,32 @@ void unpack_field(void *data, int size){
   
   pack_unpack_field(data, size, unpack_dir);
 }
+
+#if 0
+
+/* Not needed.  See note above */
+
+int unpack_grid_dir;
+int pack_grid_dir;
+static int pack_unpack_grid_initialized = 0;
+
+
+/* Make the packing map for Grid epacks */
+static void unpack_grid_make_gather(void){
+  node0_printf("Creating grid map\n");fflush(stdout);
+  unpack_grid_dir =  make_gather(unpack_grid_map_layouts, NULL, WANT_INVERSE,
+				 ALLOW_EVEN_ODD, SCRAMBLE_PARITY);
+  pack_grid_dir = unpack_grid_dir + 1;  /* Convention for the inverse map */
+  pack_unpack_grid_initialized = 1;
+}
+
+void unpack_grid_field(void *data, int size){
+  if(!pack_unpack_grid_initialized)
+    unpack_grid_make_gather();
+  pack_unpack_field(data, size, unpack_grid_dir);
+}
+
+#endif
 
 /*---------------------------------------------------------------*/
 /* Translate output flag to the appropriate input flag for restoring
