@@ -1508,23 +1508,16 @@ block_currents_deltam( int n_masses, Real **j_mu[], Real masses[],
 #ifdef HAVE_QUDA
 
 /*********************************************************************/
-/* Calculate exact low-mode current densities using QUDA.
- *
- * For nmass=1, this function emulates MILC's exact_current()
- * For nmass=2, this function emulates MILC's exact_current_delta_ls()
- * For nmass=3, this function emulates MILC's exact_current_delta_udus
+/* Load the EVEN and ODD deflation spaces (i.e. eigenvectors) into QUDA
+*
+*  This should probably be generalized and could be moved elsewhere.
  */
-static void
-exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp_ferm_links_t *fn_mass){
+void
+load_evecs_quda(imp_ferm_links_t *fn_mass){
 
-  char myname[] = "exact_current_quda";
-  node0_printf("Computing exact current with QUDA\n");
-
-  if( nmass<1 || nmass>3 ) {
-    node0_printf("%s: wrong number of masses %d\n", myname, nmass);
-    terminate(1);
-  }
-
+  char myname[] = "load_evecs_quda";
+  node0_printf("Loading deflation spaces in QUDA\n");
+  
   /* Initialize QUDA parameters */
   initialize_quda();
   
@@ -1574,17 +1567,9 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   strcpy( eig_args.vec_infile, "" );
   strcpy( eig_args.vec_outfile, "" );
   int quda_precision = MILC_PRECISION;
-
+  
   su3_matrix* fatlink = get_fatlinks(fn_mass);
   su3_matrix* longlink = get_lnglinks(fn_mass);
-
-  int refresh  = 0;
-  if (fn_mass != get_fn_last() || fresh_fn_links(fn_mass)){
-    cancel_quda_notification(fn_mass);
-    set_fn_last(fn_mass);
-    refresh = 1;
-    node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", __func__);
-  }
 
   // Deflation spaces should only be loaded once
   static int deflation_spaces_loaded = 0;
@@ -1630,12 +1615,90 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
 
     deflation_spaces_loaded = 1;
   } // if(!deflation_spaces_loaded)
+}
 
-  // Compute exactc current via QUDA
+/*********************************************************************/
+/* Calculate exact low-mode current densities using QUDA.
+ *
+ * For nmass=1, this function emulates MILC's exact_current()
+ * For nmass=2, this function emulates MILC's exact_current_delta_ls()
+ * For nmass=3, this function emulates MILC's exact_current_delta_udus
+ */
+static void
+exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp_ferm_links_t *fn_mass){
+
+  char myname[] = "exact_current_quda";
+  node0_printf("Computing exact current with QUDA\n");
+  
+  load_evecs_quda(fn_mass);
+
+  if( nmass<1 || nmass>3 ) {
+    node0_printf("%s: wrong number of masses %d\n", myname, nmass);
+    terminate(1);
+  }
+
+  int refresh  = 0;
+  if (fn_mass != get_fn_last() || fresh_fn_links(fn_mass)){
+    cancel_quda_notification(fn_mass);
+    set_fn_last(fn_mass);
+    refresh = 1;
+    node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", __func__);
+  }
+  
+  QudaInvertArgs_t inv_args;
+  inv_args.mixed_precision = 0;
+  inv_args.naik_epsilon = fn_mass->eps_naik;
+#if (FERM_ACTION==HISQ)
+  inv_args.tadpole = 1.0;
+#else
+  inv_args.tadpole = u0;
+#endif
+
+  QudaEigensolverArgs_t eig_args;
+  eig_args.struct_size = 1192;
+  eig_args.block_size = 8;
+  eig_args.n_conv = param.eigen_param.Nvecs;
+  eig_args.n_ev_deflate = param.eigen_param.Nvecs;
+  eig_args.n_ev = param.eigen_param.Nvecs;
+  eig_args.n_kr = 2*param.eigen_param.Nvecs;
+  eig_args.tol = 1e-12;
+  eig_args.max_restarts = 20;
+  eig_args.poly_deg = 100;
+  eig_args.a_min = 0.01;
+  eig_args.a_max = 0.0;
+  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE;
+  eig_args.batched_rotate = 20;
+  eig_args.save_prec = QUDA_SINGLE_PRECISION;
+  eig_args.partfile = QUDA_BOOLEAN_TRUE;
+  eig_args.io_parity_inflate = QUDA_BOOLEAN_FALSE;
+  eig_args.use_norm_op = QUDA_BOOLEAN_FALSE;
+  eig_args.use_pc = QUDA_BOOLEAN_TRUE;
+  eig_args.tol_restart = 1e-2;
+  eig_args.eig_type = QUDA_EIG_BLK_TR_LANCZOS;
+  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG;
+  eig_args.qr_tol = eig_args.tol;
+  eig_args.require_convergence = QUDA_BOOLEAN_TRUE;
+  eig_args.check_interval = 10;
+  eig_args.use_dagger = QUDA_BOOLEAN_FALSE;
+  eig_args.compute_gamma5 = QUDA_BOOLEAN_FALSE;
+  eig_args.compute_svd = QUDA_BOOLEAN_FALSE;
+  eig_args.use_eigen_qr = QUDA_BOOLEAN_TRUE;
+  eig_args.use_poly_acc = QUDA_BOOLEAN_TRUE;
+  eig_args.arpack_check = QUDA_BOOLEAN_FALSE;
+  eig_args.compute_evals_batch_size = 16;
+  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
+  eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
+  strcpy( eig_args.vec_infile, "" );
+  strcpy( eig_args.vec_outfile, "" );
+  
+  su3_matrix* fatlink = get_fatlinks(fn_mass);
+  su3_matrix* longlink = get_lnglinks(fn_mass);
+
+  // Compute exact current via QUDA
   // FIXME(?): Here I am just passing jlow_mu to QUDA and filling it there in the
   // same way that MILC's exact_current fills it. I'm not sure if this is the ideal approach or not.
   node0_printf("Calling qudaExactCurrent with fatlink %x and longlink %x, jlow_mu1 %x jlow_mu2 %x\n", fatlink, longlink, jlow_mu1, jlow_mu2); fflush(stdout);
-  qudaExactCurrent(MILC_PRECISION, quda_precision, fatlink, longlink, ape_links, nmass, masses, inv_args, eig_args, jlow_mu1, jlow_mu2, refresh);
+  qudaExactCurrent(MILC_PRECISION, MILC_PRECISION, fatlink, longlink, ape_links, nmass, masses, inv_args, eig_args, jlow_mu1, jlow_mu2, refresh);
   node0_printf("Done with qudaExactCurrent\n"); fflush(stdout);
 
 } // exact_current_quda
