@@ -478,10 +478,10 @@ ifeq ($(strip ${WANTQUDA}),true)
   WANT_CURRENT_GPU ?= #true
   WANT_MULTIGRID ?= false
 
-  # If QUDA CG is enabled, then eigensolve/deflation must be enabled
-  ifeq ($(strip ${WANT_FN_CG_GPU}),true)
-    WANT_EIG_GPU = true
-  endif
+#  # If QUDA CG is enabled, then eigensolve/deflation must be enabled
+#  ifeq ($(strip ${WANT_FN_CG_GPU}),true)
+#    WANT_EIG_GPU = true
+#  endif
 endif
 
 ifeq ($(strip ${WANTQUDA}),true)
