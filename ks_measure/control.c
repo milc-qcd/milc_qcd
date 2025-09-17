@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 
 #if EIGMODE != EIGCG
 
-#if ( !defined(USE_CG_GPU) || !defined(HAVE_QUDA) || !defined(USE_EIG_GPU) )
+    //#if ( !defined(USE_CG_GPU) || !defined(HAVE_QUDA) || !defined(USE_EIG_GPU) )
 
     if(param.eigen_param.Nvecs > 0){
 
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 	construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
       }
 
-#if !(defined(HAVE_QUDA) && defined(USE_CURRENT_GPU))
+      //#if !(defined(HAVE_QUDA) && defined(USE_CURRENT_GPU))
 
       /* Check the eigenvectors. (Not done when QUDA keeps them for itself)  */
 
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
       node0_printf("Odd site residuals\n");
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
-#endif
+      //#endif
 
       /* Unapply twisted boundary conditions on the fermion links and
 	 restore conventional KS phases and antiperiodic BC, if
@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
       
     }
 
-#endif
+    //#endif
 #endif
     
     /**************************************************************/
