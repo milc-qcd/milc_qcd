@@ -210,7 +210,7 @@ int readin(int prompt) {
     /* The usual case. May be changed by I/O routines */
     param.eigen_param.parity = EVEN;
     eigenvectors_offloaded = 0;
-
+    param.eigen_param.Nvecs_in = param.eigen_param.Nvecs;  /* Default value */
 
     IF_OK if(param.eigen_param.Nvecs > 0){
       
@@ -688,7 +688,7 @@ int readin(int prompt) {
   
 #if EIGMODE != EIGCG
     /* If using QUDA for deflation, then eigenvectors are loaded directly by QUDA and not MILC */
-#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
+  //#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
   if(param.eigen_param.Nvecs > 0){
     /* malloc for eigenpairs */
     eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
@@ -714,7 +714,7 @@ int readin(int prompt) {
     destroy_m_field(G);
 #endif
   }
-#endif
+  //#endif
 #endif
 
   ENDTIME("readin");
