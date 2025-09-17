@@ -1605,9 +1605,9 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
       // Compute ODDs from EVENs
 
       inv_args.evenodd = QUDA_ODD_PARITY;
-      node0_printf("Calling qudaLoadDeflationSpace\n"); fflush(stdout);
+      node0_printf("Calling qudaLoadDeflationSpace2\n"); fflush(stdout);
       qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
-      node0_printf("Done with qudaLoadDeflationSpace\n"); fflush(stdout);
+      node0_printf("Done with qudaLoadDeflationSpace2\n"); fflush(stdout);
 
     } else {
 
@@ -1631,7 +1631,7 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
     deflation_spaces_loaded = 1;
   } // if(!deflation_spaces_loaded)
 
-  // Compute exact current via QUDA
+  // Compute exactc current via QUDA
   // FIXME(?): Here I am just passing jlow_mu to QUDA and filling it there in the
   // same way that MILC's exact_current fills it. I'm not sure if this is the ideal approach or not.
   node0_printf("Calling qudaExactCurrent with fatlink %x and longlink %x, jlow_mu1 %x jlow_mu2 %x\n", fatlink, longlink, jlow_mu1, jlow_mu2); fflush(stdout);
