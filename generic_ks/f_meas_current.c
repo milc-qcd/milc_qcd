@@ -1524,6 +1524,7 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   QudaInvertArgs_t inv_args;
   inv_args.mixed_precision = 0;
   inv_args.naik_epsilon = fn_mass->eps_naik;
+  inv_args.max_iter = 1; // Disables deflation and sets CG's max_iter=1 for computing eigenvectors
 #if (FERM_ACTION==HISQ)
   inv_args.tadpole = 1.0;
 #else
@@ -1531,8 +1532,9 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
 #endif
 
   QudaEigensolverArgs_t eig_args;
+  int blockSize = param.eigen_param.blockSize;
   eig_args.struct_size = 1192;
-  eig_args.block_size = 8;
+  eig_args.block_size = blockSize;
   eig_args.n_conv = param.eigen_param.Nvecs;
   eig_args.n_ev_deflate = param.eigen_param.Nvecs;
   eig_args.n_ev = param.eigen_param.Nvecs;
@@ -1550,7 +1552,6 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   eig_args.use_norm_op = QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = QUDA_BOOLEAN_TRUE;
   eig_args.tol_restart = 1e-2;
-  int blockSize = param.eigen_param.blockSize;
   eig_args.eig_type = ( blockSize > 1 ) ? QUDA_EIG_BLK_TR_LANCZOS : QUDA_EIG_TR_LANCZOS;  /* or QUDA_EIG_IR_ARNOLDI, QUDA_EIG_BLK_IR_ARNOLDI */
   eig_args.spectrum = QUDA_SPECTRUM_SR_EIG;
   eig_args.qr_tol = eig_args.tol;
@@ -1656,8 +1657,9 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
 #endif
 
   QudaEigensolverArgs_t eig_args;
+  int blockSize = param.eigen_param.blockSize;
   eig_args.struct_size = 1192;
-  eig_args.block_size = 8;
+  eig_args.block_size = blockSize;
   eig_args.n_conv = param.eigen_param.Nvecs;
   eig_args.n_ev_deflate = param.eigen_param.Nvecs;
   eig_args.n_ev = param.eigen_param.Nvecs;
@@ -1675,7 +1677,6 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   eig_args.use_norm_op = QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = QUDA_BOOLEAN_TRUE;
   eig_args.tol_restart = 1e-2;
-  int blockSize = param.eigen_param.blockSize;
   eig_args.eig_type = ( blockSize > 1 ) ? QUDA_EIG_BLK_TR_LANCZOS : QUDA_EIG_TR_LANCZOS;  /* or QUDA_EIG_IR_ARNOLDI, QUDA_EIG_BLK_IR_ARNOLDI */
   eig_args.spectrum = QUDA_SPECTRUM_SR_EIG;
   eig_args.qr_tol = eig_args.tol;
