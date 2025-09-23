@@ -1510,13 +1510,36 @@ block_currents_deltam( int n_masses, Real **j_mu[], Real masses[],
 /*********************************************************************/
 /* Load the EVEN and ODD deflation spaces (i.e. eigenvectors) into QUDA
 *
-*  This should probably be generalized and could be moved elsewhere.
+*  There are two cases (selected via the input parameters file), that
+*  this function handles:
+*   1. Loading FRESH eigenvectors into QUDA via QUDA's eigensolver
+*   2. Loading eigenvectors from file(s) into QUDA via MILC's file loader
+       and eigVec array
+*
+*  This function is useful if QUDA deflation spaces are to be used for,
+*  e.g., subsequent calls to qudaProject or qudaExactCurrent. The
+*  QUDA eigenvectors can be returned to MILC by calling qudaGetDeflationSpace.
+*
+*  If the eigenvectors are only needed for deflated CG, then one should instead
+*  simply call ks_congrad_parity_gpu or ks_congrad_block_parity_gpu since
+*  those function paths are smart enough to automatically trigger the QUDA
+*  eigensolve and hold the eigenvectors for deflation if deflation is desired.
+* 
+*  FIXME: This function should be moved elsewhere.
+*  FIXME: Ideally, a QUDA format file would be loaded directly by QUDA without
+*     passing through MILC. This could be done by setting eig_args.vec_infile
+*     to the QUDA file's name and then calling qudaLoadDeflationSpace with
+*     QUDA_MILC_EIG_COMPUTE. Then QUDA would automatically load the eigenvectors
+*     from the file instead of computing them. Then one could avoid the doubling of host
+*     memory usage created by the allocation of eigVec. This is not implemented here.
+*     Here, a QUDA eigenvector file is treated like any other file, i.e., loaded by
+*     MILC into the eigVec array and then passed to QUDA.
  */
 void
 load_evecs_quda(imp_ferm_links_t *fn_mass){
 
   char myname[] = "load_evecs_quda";
-  node0_printf("Loading deflation spaces in QUDA\n");
+  node0_printf("Loading deflation spaces into QUDA\n");
   
   /* Initialize QUDA parameters */
   initialize_quda();
@@ -1546,17 +1569,17 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   eig_args.a_max = param.eigen_param.poly.maxE;
   eig_args.preserve_evals = QUDA_BOOLEAN_TRUE;
   eig_args.batched_rotate = param.eigen_param.batchedRotate;
-  eig_args.save_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-  eig_args.partfile = QUDA_BOOLEAN_TRUE;
-  eig_args.io_parity_inflate = QUDA_BOOLEAN_FALSE;
+  eig_args.save_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION; // Do we really want this?
+  eig_args.partfile = param.eigen_param.partfile ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
+  eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
   eig_args.use_norm_op = QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = QUDA_BOOLEAN_TRUE;
-  eig_args.tol_restart = 1e-2;
-  eig_args.eig_type = ( blockSize > 1 ) ? QUDA_EIG_BLK_TR_LANCZOS : QUDA_EIG_TR_LANCZOS;  /* or QUDA_EIG_IR_ARNOLDI, QUDA_EIG_BLK_IR_ARNOLDI */
+  eig_args.tol_restart = param.eigen_param.tol_restart;
+  eig_args.eig_type = ( blockSize > 1 ) ? QUDA_EIG_BLK_TR_LANCZOS : QUDA_EIG_TR_LANCZOS;
   eig_args.spectrum = QUDA_SPECTRUM_SR_EIG;
   eig_args.qr_tol = eig_args.tol;
   eig_args.require_convergence = QUDA_BOOLEAN_TRUE;
-  eig_args.check_interval = 1;
+  eig_args.check_interval = 10;
   eig_args.use_dagger = QUDA_BOOLEAN_FALSE;
   eig_args.compute_gamma5 = QUDA_BOOLEAN_FALSE;
   eig_args.compute_svd = QUDA_BOOLEAN_FALSE;
@@ -1565,58 +1588,47 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   eig_args.arpack_check = QUDA_BOOLEAN_FALSE;
   eig_args.compute_evals_batch_size = 16;
   eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
-  eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
   strcpy( eig_args.vec_infile, "" );
-  strcpy( eig_args.vec_outfile, "" );
+  strcpy( eig_args.vec_outfile, param.ks_eigen_savefile );
+  
+  if(param.eigen_param.eigPrec == 2) {
+    eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
+  } else if(param.eigen_param.eigPrec == 1) {
+    eig_args.prec_eigensolver = QUDA_SINGLE_PRECISION;
+  } else if(param.eigen_param.eigPrec == 0) {
+    eig_args.prec_eigensolver = QUDA_HALF_PRECISION;
+  } else {
+    printf("%s: Unrecognized eigensolver precision\n",myname);
+    terminate(2);
+  }
+  
   int quda_precision = MILC_PRECISION;
   
   su3_matrix* fatlink = get_fatlinks(fn_mass);
   su3_matrix* longlink = get_lnglinks(fn_mass);
+  
+  if(param.ks_eigen_startflag == FRESH) { // Want QUDA to compute FRESH eigenvectors
 
-  // Deflation spaces should only be loaded once
-  static int deflation_spaces_loaded = 0;
-  if(!deflation_spaces_loaded) {
+    // Compute EVEN eigenvectors in QUDA
+    inv_args.evenodd = QUDA_EVEN_PARITY;
+    qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_COMPUTE);
 
-    if(eigenvectors_offloaded){
-
-      // QUDA already has the eigenvectors on even sites
-      // FIXME: Needs to be generalized
-
-      // Set up EVEN deflation space
-
-      inv_args.evenodd = QUDA_EVEN_PARITY;
-      node0_printf("Calling qudaLoadDeflationSpace\n"); fflush(stdout);
-      qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_COMPUTE);
-      node0_printf("Done with qudaLoadDeflationSpace\n"); fflush(stdout);
-
-      // Compute ODDs from EVENs
-
-      inv_args.evenodd = QUDA_ODD_PARITY;
-      node0_printf("Calling qudaLoadDeflationSpace2\n"); fflush(stdout);
-      qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
-      node0_printf("Done with qudaLoadDeflationSpace2\n"); fflush(stdout);
-
-    } else {
-
-      // Load ODD eigenvectors from MILC into QUDA
-      // Here, we are passing them to QUDA.
-
-      inv_args.evenodd = QUDA_ODD_PARITY;
-      node0_printf("Calling qudaLoadDeflationSpace\n"); fflush(stdout);
-      qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, (void **)eigVec, QUDA_MILC_EIG_LOAD);
-      node0_printf("Done with qudaLoadDeflationSpace\n"); fflush(stdout);
-      eigenvectors_offloaded = 1;
+  } else { // Eigenvectors were loaded from file(s) by MILC into eigVec array
       
-      // Compute EVENs from ODDs
-      // FIXME: Needs to be generalized similar to above
-      inv_args.evenodd = QUDA_EVEN_PARITY;
-      node0_printf("Calling qudaLoadDeflationSpace\n"); fflush(stdout);
-      qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
-      node0_printf("Done with qudaLoadDeflationSpace\n"); fflush(stdout);
-    }
+    // Eigenvector file parity is set in reload_ks_eigen() when the file is loaded by MILC
+    inv_args.evenodd = (param.eigen_param.parity == EVEN) ? QUDA_EVEN_PARITY : QUDA_ODD_PARITY;
+    
+    // QUDA requires that this be set equal to the gauge precision
+    eig_args.prec_eigensolver = (quda_precision == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
 
-    deflation_spaces_loaded = 1;
-  } // if(!deflation_spaces_loaded)
+    // Load one parity eigenvectors from MILC into QUDA
+    qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, (void **)eigVec, QUDA_MILC_EIG_LOAD);
+  }
+    
+  // Reconstruct other parity eigenvectors in QUDA
+  inv_args.evenodd = (inv_args.evenodd == QUDA_EVEN_PARITY) ? QUDA_ODD_PARITY : QUDA_EVEN_PARITY;
+  qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
+
 }
 
 /*********************************************************************/
@@ -1631,8 +1643,6 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
 
   char myname[] = "exact_current_quda";
   node0_printf("Computing exact current with QUDA\n");
-  
-  load_evecs_quda(fn_mass);
 
   if( nmass<1 || nmass>3 ) {
     node0_printf("%s: wrong number of masses %d\n", myname, nmass);
@@ -1673,7 +1683,7 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   eig_args.batched_rotate = param.eigen_param.batchedRotate;
   eig_args.save_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
   eig_args.partfile = QUDA_BOOLEAN_TRUE;
-  eig_args.io_parity_inflate = QUDA_BOOLEAN_FALSE;
+  eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
   eig_args.use_norm_op = QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = QUDA_BOOLEAN_TRUE;
   eig_args.tol_restart = 1e-2;

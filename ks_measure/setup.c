@@ -687,9 +687,12 @@ int readin(int prompt) {
 #endif
   
 #if EIGMODE != EIGCG
-    /* If using QUDA for deflation, then eigenvectors are loaded directly by QUDA and not MILC */
-  //#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
+#if ( defined(USE_CURRENT_GPU) && defined(HAVE_QUDA) )
+  // Don't allocate space for the eigenvectors in MILC if using QUDA to generate them
+  if((param.eigen_param.Nvecs > 0) && (param.ks_eigen_startflag != FRESH)){
+#else
   if(param.eigen_param.Nvecs > 0){
+#endif
     /* malloc for eigenpairs */
     eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
     eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));

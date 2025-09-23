@@ -105,27 +105,34 @@ int main(int argc, char *argv[])
       
       Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
       
-      /* compute eigenpairs if requested */
+      /* compute eigenpairs if requested and check them */
+#if ( defined(HAVE_QUDA) && defined(USE_CURRENT_GPU) )
+      /* Eigensolve, reconstruction of other parity eigenvectors, and
+       * residual checking is all done within QUDA */
+      load_evecs_quda(fn);
+#else
       if(param.ks_eigen_startflag == FRESH){
 	int total_R_iters;
 	total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
 	node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
 	construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
       }
+#endif
 
-      //#if !(defined(HAVE_QUDA) && defined(USE_CURRENT_GPU))
-
-      /* Check the eigenvectors. (Not done when QUDA keeps them for itself)  */
-
-      /* Calculate and print the residues and norms of the eigenvectors
-       * (if not using QUDA for the current calculation) */
-      resid = (double *)malloc(Nvecs_curr*sizeof(double));
-      construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
-      node0_printf("Even site residuals\n");
-      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
-      node0_printf("Odd site residuals\n");
-      check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
-      //#endif
+#if ( defined(USE_CURRENT_GPU) && defined(HAVE_QUDA) )
+      // Checking is done by QUDA
+      if(param.ks_eigen_startflag != FRESH){
+#else
+      {
+#endif
+        /* Calculate and print the residues and norms of the eigenvectors */
+        resid = (double *)malloc(Nvecs_curr*sizeof(double));
+        construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
+        node0_printf("Even site residuals\n");
+        check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
+        node0_printf("Odd site residuals\n");
+        check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
+      }
 
       /* Unapply twisted boundary conditions on the fermion links and
 	 restore conventional KS phases and antiperiodic BC, if
@@ -133,6 +140,7 @@ int main(int argc, char *argv[])
       boundary_twist_fn(fn, OFF);
       
       /* print eigenvalues of iDslash */
+#if !( defined(HAVE_QUDA) && defined(USE_CURRENT_GPU) )
       node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
       node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
       for(int i=0;i<Nvecs_curr;i++){ 
@@ -144,9 +152,6 @@ int main(int argc, char *argv[])
 	  node0_printf("eigenval(%i): %10g\n", i, 0.0);
 	}
       }
-
-#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
-      load_evecs_quda(fn);
 #endif
 
       destroy_fn_links(fn);
@@ -297,7 +302,12 @@ int main(int argc, char *argv[])
     ENDTIME("compute eigenvectors");
 #endif
 
+#if ( defined(HAVE_QUDA) && defined(USE_CURRENT_GPU) )
+    // Eigenvector space is not allocated in MILC if using QUDA to generate them
+    if((param.eigen_param.Nvecs > 0) && (param.ks_eigen_startflag != FRESH)){
+#else
     if(param.eigen_param.Nvecs > 0){
+#endif
       /* save eigenvectors if requested */
       int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
 				 Nvecs_curr, eigVal, eigVec, resid, 1);
@@ -309,7 +319,7 @@ int main(int argc, char *argv[])
       for(int i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
       free(eigVal); free(eigVec); free(resid);
     }
-    
+
     node0_printf("RUNNING COMPLETED\n");
     endtime = dclock();
 

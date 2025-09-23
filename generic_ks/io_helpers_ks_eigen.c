@@ -257,6 +257,7 @@ int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, Real *eigVal,
       param.eigen_param.parity = ODD;
       status = reload_grid_ks_eigenpack_dir(eigfile, serpar, Nvecs, eigVal, eigVec, fn);
     } else {
+      param.eigen_param.parity = EVEN; // Assume non-Grid eigenvectors are EVEN
       status = reload_ks_eigen_file(eigfile, serpar, Nvecs, eigVal, eigVec, fn, EVEN);
     }
     break;
