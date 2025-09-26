@@ -1751,8 +1751,10 @@ void apply_fermion_flow_v(su3_vector **srcs, quark_source_sink_op *qss_op, int n
   } else {
     node0_printf("apply_fermion_flow_v: Loading gauge field for fermion flow\n");
 
-    /* Get gauge field */
+    /* Get gauge field without staggered phases */
+    rephase( OFF );
     su3_matrix *links = create_G_from_site_quda();
+    rephase( ON );
 
     /* Setup QUDA gauge parameters */
     QudaGaugeParam qgp = newQudaGaugeParam();
