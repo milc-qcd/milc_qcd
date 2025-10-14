@@ -420,7 +420,7 @@ endif
 # GRID support
 
   HISQ_FORCE_GRID = fermion_force_hisq_multi.o fermion_force_hisq_multi_grid.o \
-        show_hisq_force_opts.o gridHISQLinks.o
+        show_hisq_force_opts.o gridHISQForce.o
 
 # Define ASQ_FORCE and HISQ_FORCE depending on compilation parameters
 
