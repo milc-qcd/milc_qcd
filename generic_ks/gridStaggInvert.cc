@@ -1,5 +1,7 @@
 // Wrappers for Grid Staggered Inverters
 
+#undef HMC
+
 #include <omp.h>
 #include <Grid/Grid.h>
 
