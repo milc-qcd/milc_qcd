@@ -147,7 +147,7 @@
 #include "../include/su3_mat_op.h"
 #endif
 
-#if defined(USE_FF_GPU)
+#if defined(USE_FF_GPU) && defined(HAVE_QUDA)
 #include "../include/generic_quda.h"
 #define special_alloc qudaAllocateManaged
 #define special_free qudaFreeManaged
