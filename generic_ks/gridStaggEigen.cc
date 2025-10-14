@@ -3,6 +3,7 @@
 // 
 // impResLanczos() : implicitly restarted Lanczos
 //----------------------------------------------
+#undef HMC
 
 #include <Grid/Grid.h>
 #include <Grid/algorithms/iterative/ImplicitlyRestartedLanczos.h>
