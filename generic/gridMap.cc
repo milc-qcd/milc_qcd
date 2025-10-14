@@ -1,5 +1,7 @@
 // Mapping between MILC and Grid types
 
+#undef HMC
+
 #include "../include/openmp_defs.h"
 #include <Grid/Grid.h>
 #include "../include/mGrid/mGrid_internal.h"

@@ -105,6 +105,7 @@ G_KS_ALL = \
   gauss_smear_ks.o \
   gauss_smear_ks_cpu.o \
   gauss_smear_ks_QUDA.o \
+  gridHISQForce.o \
   gridHISQLinks.o \
   grsource_rhmc.o \
   gb_baryon_mmap.o \
@@ -411,6 +412,8 @@ gb_baryon_src.o: ../generic_ks/gb_baryon_src.c
 	${CC} -c ${CFLAGS} $<
 gb_ops.o: ../generic_ks/gb_ops.c
 	${CC} -c ${CFLAGS} $<
+gridHISQForce.o: ../generic_ks/gridHISQForce.cc
+	${CXX} -c ${CXXFLAGS} $<
 gridHISQLinks.o: ../generic_ks/gridHISQLinks.cc
 	${CXX} -c ${CXXFLAGS} $<
 gridStaggEigen.o: ../generic_ks/gridStaggEigen.cc

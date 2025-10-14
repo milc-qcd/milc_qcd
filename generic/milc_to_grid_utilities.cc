@@ -6,6 +6,8 @@
 #include <omp.h>
 #endif
 
+#undef HMC
+
 #include <Grid/Grid.h>
 #include <Grid/communicator/Communicator.h>
 #include <vector>
