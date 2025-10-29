@@ -51,6 +51,8 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
 
   char myname[] = "load_evecs_quda";
   node0_printf("Loading deflation spaces into QUDA\n");
+
+  double dtime;
   
   /* Initialize QUDA parameters */
   initialize_quda();
@@ -121,8 +123,11 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   if(param.ks_eigen_startflag == FRESH) { // Want QUDA to compute FRESH eigenvectors
 
     // Compute EVEN eigenvectors in QUDA
+    dtime = -dclock();
     inv_args.evenodd = QUDA_EVEN_PARITY;
     qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_COMPUTE);
+    dtime += dclock();
+    node0_printf( "Time to compute fresh eigenvectors = %g s\n", dtime );
 
   } else { // Eigenvectors were loaded from file(s) by MILC into eigVec array
       
@@ -133,12 +138,18 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
     eig_args.prec_eigensolver = (quda_precision == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
 
     // Load one parity eigenvectors from MILC into QUDA
+    dtime = -dclock();
     qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, (void **)eigVec, QUDA_MILC_EIG_LOAD);
+    dtime += dclock();
+    node0_printf( "Time to load eigenvectors from file = %g s\n", dtime );
   }
     
   // Reconstruct other parity eigenvectors in QUDA
+  dtime = -dclock();
   inv_args.evenodd = (inv_args.evenodd == QUDA_EVEN_PARITY) ? QUDA_ODD_PARITY : QUDA_EVEN_PARITY;
   qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
+  dtime += dclock();
+  node0_printf( "Time to reconstruct other parity eivenvectors = %g s\n", dtime );
 
 } // load_evecs_quda
 
