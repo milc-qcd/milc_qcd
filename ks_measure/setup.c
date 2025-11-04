@@ -623,11 +623,11 @@ int readin(int prompt) {
 					   MILC_PRECISION, QIO_SERIAL);
     rtime += dclock();
     node0_printf("Time to restore lng %e\n",rtime); fflush(stdout);
-  }
 
 #ifdef DBLSTORE_FN
-  load_fn_backlinks(fn_links_t *my_fn){
+    load_fn_backlinks(my_fn);
 #endif
+ }
 
 #endif  
 
