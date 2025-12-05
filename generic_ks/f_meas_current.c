@@ -416,11 +416,7 @@ collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
 	/* Project out (remove) the low mode part, based on the given eigenvectors */
 	int Nvecs = param.eigen_param.Nvecs;
 	if(Nvecs > 0){
-	  node0_printf("Before project_out gr[%d][0] is\n",is);
-	  my_dumpvec(gr[is]);
 	  project_out(gr[is], eigVec, Nvecs, parity);
-	  node0_printf("After project_out gr[%d][0] is\n",is);
-	  my_dumpvec(gr[is]);
 	}
 #if 0
 	/* DEBUG */
