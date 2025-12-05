@@ -155,7 +155,6 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 #else
   
   // Inversion with deflation and eigensolve on GPU
-
   int parity = qic->parity;
   int blockSize = param.eigen_param.blockSize;
 
@@ -221,8 +220,6 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 	     &residual,
 	     &relative_residual, 
 	     &num_iters);
-
-#endif
 
   qic->final_rsq = residual*residual;
   qic->final_relrsq = relative_residual*relative_residual;
@@ -457,7 +454,6 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
      &relative_residual,
      &num_iters,
      nsrc);
-#endif
 
   // MILC's convention impled from d_congrad5_fn_milc.c is that final_rsq, final_relrsq, and final_iters
   // are based on the values from the last solve, which qudaInvertMsrc respects.
