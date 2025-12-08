@@ -82,9 +82,13 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   eig_args.a_max = param.eigen_param.poly.maxE;
   eig_args.preserve_evals = QUDA_BOOLEAN_TRUE;
   eig_args.batched_rotate = param.eigen_param.batchedRotate;
-  eig_args.save_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION; // Do we really want this?
+  /** With save_prec, we are currently saving the eigenvectors in double
+   * precision if running MILC in double precision. At some point, we may
+   * want to be able to control this separately via the parameters input file
+   **/
+  eig_args.save_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
   eig_args.partfile = param.eigen_param.partfile ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
+  eig_args.io_parity_inflate = QUDA_BOOLEAN_FALSE;
   eig_args.use_norm_op = QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = QUDA_BOOLEAN_TRUE;
   eig_args.tol_restart = param.eigen_param.tol_restart;
