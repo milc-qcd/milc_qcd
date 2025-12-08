@@ -230,6 +230,7 @@ int readin(int prompt) {
 	 param.ks_eigen_startflag == RELOAD_PARALLEL ){
         /* allow file to have more eigenpairs than will be used for deflation */
         IF_OK status += get_i(stdin, prompt,"file_number_of_eigenpairs", &param.eigen_param.Nvecs_in);
+	IF_OK status += get_i(stdin, prompt, "eigensolver_prec", &param.eigen_param.eigPrec );
       }
 #endif
       /* eigenvector output */
