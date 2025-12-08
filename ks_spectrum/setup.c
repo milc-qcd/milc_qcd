@@ -39,6 +39,8 @@ int setup()   {
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
   this_node = mynode();
+  printf("pid(%d) = %d\n", this_node, getpid());
+  printf("io_node(%d) = %d\n", this_node, io_node(this_node));
   /* initialize the node random number generator */
   initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
@@ -126,7 +128,10 @@ static int initial_set(void){
 
     if(status>0) param.stopflag=1; else param.stopflag=0;
   } /* end if(mynode()==0) */
-
+  else {
+    gethostname(hostname, 128);
+    printf("Host(%d) = %s\n", mynode(), hostname);
+  }
   fflush(stdout);
   /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));
@@ -256,7 +261,7 @@ int readin(int prompt) {
     IF_OK if(param.eigen_param.Nvecs > 0){
 
       /* Additional parameters for QUDA deflation */
-#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
       /* controls how often redeflation occurs during deflated inversions */
       IF_OK status += get_f(stdin, prompt,"tol_restart", &param.eigen_param.tol_restart);
 #endif
@@ -266,7 +271,7 @@ int readin(int prompt) {
 					    param.ks_eigen_startfile);
 
       /* Additional parameters for QUDA deflation */
-#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
       if(param.ks_eigen_startflag == RELOAD_ASCII || 
 		      param.ks_eigen_startflag == RELOAD_SERIAL ||
 		      param.ks_eigen_startflag == RELOAD_PARALLEL ){
@@ -281,7 +286,7 @@ int readin(int prompt) {
       IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
 					  param.ks_eigen_savefile);
 
-#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
       if(param.ks_eigen_saveflag == SAVE_PARTFILE_SCIDAC){
         param.eigen_param.partfile = 1;
       } else {
@@ -794,30 +799,31 @@ int readin(int prompt) {
 	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator",
 			      &param.qic[nprop].relresid );
 #if defined(HALF_MIXED) && defined(HAVE_QOP)
-  /* Parameter used by QOPQDP inverter for mixed-precision solves ?? */
-  IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic[nprop].mixed_rsq );
+	/* Parameter used by QOPQDP inverter for mixed-precision solves ?? */
+	IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic[nprop].mixed_rsq );
 #endif
 
 #ifdef MULTIGRID
   /* parameter within MG solve to specify how to refresh the coarse op */
-  IF_OK {
-    if (param.inv_type[k] == MGTYPE && param.set_type[k] == MULTIMASS_SET) {
-      IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
-      IF_OK {
-        if(strcmp(savebuf,"FULL") == 0)
-          param.qic[nprop].mg_rebuild_type = FULLREBUILD;
-        else if(strcmp(savebuf,"THIN") == 0)
-          param.qic[nprop].mg_rebuild_type = THINREBUILD;
-        else if(strcmp(savebuf,"CG") == 0)
-          param.qic[nprop].mg_rebuild_type = CGREBUILD;
-        else {
-          printf("Unrecognized rebuild type %s\n",savebuf);
-          printf("Choices are 'FULL', 'THIN', 'CG'\n");
-          status++;
-        }
-      }
-    }
-  }
+
+	IF_OK {
+	  if (param.inv_type[k] == MGTYPE && param.set_type[k] == MULTIMASS_SET) {
+	    IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
+	    IF_OK {
+	      if(strcmp(savebuf,"FULL") == 0)
+		param.qic[nprop].mg_rebuild_type = FULLREBUILD;
+	      else if(strcmp(savebuf,"THIN") == 0)
+		param.qic[nprop].mg_rebuild_type = THINREBUILD;
+	      else if(strcmp(savebuf,"CG") == 0)
+		param.qic[nprop].mg_rebuild_type = CGREBUILD;
+	      else {
+		printf("Unrecognized rebuild type %s\n",savebuf);
+		printf("Choices are 'FULL', 'THIN', 'CG'\n");
+		status++;
+	      }
+	    }
+	  }
+	}
 #else
   param.qic[nprop].mg_rebuild_type = CGREBUILD;
 #endif
