@@ -246,7 +246,9 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
     node0_printf("Calling check_invert_field2\n"); fflush(stdout);
     check_invert_field2(t_src, t_dest, mass, 2e-5, fn, qic->parity);
 #endif
-  
+ 
+#endif
+
   return num_iters;
 }
 
@@ -490,6 +492,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   // the number of iterations for a single solve times the number of sources.
   return num_iters * nsrc;
 
+#endif
 #endif /* if 1 */
   return num_iters;
 }
