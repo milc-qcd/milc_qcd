@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
       Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
       
       /* compute eigenpairs if requested and check them */
+      resid = (double *)malloc(Nvecs_curr*sizeof(double));
 #if ( defined(HAVE_QUDA) && defined(USE_CURRENT_GPU) )
       /* Eigensolve, reconstruction of other parity eigenvectors, and
        * residual checking is all done within QUDA */
@@ -117,22 +118,14 @@ int main(int argc, char *argv[])
 	node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
 	construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
       }
-#endif
 
-#if ( defined(USE_CURRENT_GPU) && defined(HAVE_QUDA) )
-      // Checking is done by QUDA
-      if(param.ks_eigen_startflag != FRESH){
-#else
-      {
+      /* Calculate and print the residues and norms of the eigenvectors */
+      construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
+      node0_printf("Even site residuals\n");
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
+      node0_printf("Odd site residuals\n");
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
 #endif
-        /* Calculate and print the residues and norms of the eigenvectors */
-        resid = (double *)malloc(Nvecs_curr*sizeof(double));
-        construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
-        node0_printf("Even site residuals\n");
-        check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
-        node0_printf("Odd site residuals\n");
-        check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
-      }
 
       /* Unapply twisted boundary conditions on the fermion links and
 	 restore conventional KS phases and antiperiodic BC, if
