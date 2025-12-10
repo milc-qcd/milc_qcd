@@ -130,7 +130,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   inv_args.tadpole = u0;
 #endif
 
-#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA))
 
   // Inversion without deflation and eigensolve on GPU
 
@@ -366,7 +366,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   inv_args.tadpole = u0;
 #endif
 
-#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
+#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
 
   // Inversion without deflation and eigensolve on GPU
 
