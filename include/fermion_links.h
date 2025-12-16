@@ -319,7 +319,10 @@ void f_meas_current_diff( int n_masses, int nrand, int thinning,
 			  Real masses[], Real charges[],
 			  imp_ferm_links_t *fn_mass[], 
 			  Real *u1_A, char filenames[][MAXFILENAME]);
+
+/* eigen_stuff_QUDA.c */
 void load_evecs_quda( imp_ferm_links_t *fn_mass);
+
 /* mu.c and mu_fast.c */
 void M_derivatives(field_offset phi_off, field_offset xxx_off, 
 		   field_offset xxx1_off, Real mass,
