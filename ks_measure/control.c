@@ -143,10 +143,6 @@ int main(int argc, char *argv[])
       node0_printf("Odd site residuals\n");
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
 
-#endif
-
-#ifdef HAVE_QUDA
-
       /* Compute or reread eigenpairs with QUDA or just load the above
 	 ones into QUDA. */
       load_evecs_quda(fn);
