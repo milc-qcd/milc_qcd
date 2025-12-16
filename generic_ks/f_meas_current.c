@@ -1539,6 +1539,39 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
 #endif
 
   QudaEigensolverArgs_t eig_args;
+  /* Load QUDA default values from MILC eigen_param */
+  load_quda_default_eig_args(&eig_args);
+  /* Specialization */
+  eig_args.partfile = QUDA_BOOLEAN_TRUE;
+  eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
+  eig_args.check_interval = 1;
+  eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
+  strcpy( eig_args.vec_infile, "" );
+  strcpy( eig_args.vec_outfile, "" );
+
+#if 0
+
+#ifndef USE_EIG_GPU
+
+  // Dummy eig_args. QUDA is not doing the eigensolve, so not using
+  // them */
+
+  eig_args.struct_size = 1192;
+  eig_args.n_ev = param.eigen_param.Nvecs;
+  eig_args.n_kr = eig_args.n_ev + 10;
+  eig_args.n_conv = eig_args.n_ev;
+  eig_args.n_ev_deflate = eig_args.n_ev;
+  eig_args.block_size = 1;
+  eig_args.prec_eigensolver = MILC_PRECISION == 2? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+  eig_args.eig_type = QUDA_EIG_TR_LANCZOS;
+  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG; 
+  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE;
+  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
+  
+#else
+
+  // QUDA eig_args
+  
   int blockSize = param.eigen_param.blockSize;
   eig_args.struct_size = 1192;
   eig_args.block_size = blockSize;
@@ -1575,6 +1608,9 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
   strcpy( eig_args.vec_infile, "" );
   strcpy( eig_args.vec_outfile, "" );
+
+#endif
+#endif
   
   su3_matrix* fatlink = get_fatlinks(fn_mass);
   su3_matrix* longlink = get_lnglinks(fn_mass);

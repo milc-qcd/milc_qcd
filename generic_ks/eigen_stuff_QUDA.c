@@ -5,9 +5,6 @@
 /**********************************************/
 
 #include "generic_ks_includes.h"
-
-#ifdef USE_EIG_GPU
-
 #include <string.h>
 #include <assert.h>
 
@@ -22,11 +19,11 @@
 /*********************************************************************/
 /* Load the EVEN and ODD deflation spaces (i.e. eigenvectors) into QUDA
 *
-*  There are two cases (selected via the input parameters file), that
+*  There are two cases (selected via the HAVE_QUDA and USE_EIG_GPU macros) that
 *  this function handles:
-*   1. Loading FRESH eigenvectors into QUDA via QUDA's eigensolver
-*   2. Loading eigenvectors MILC's eigVec array into QUDA (presumably
-*      these would've been originally loaded from file(s) via MILC's file loader).
+*   1. Using QUDA either to calculate eigenvectors or to read and write them
+*   2. Using MILC to arrange eigensolutions by other means and/or read and write them
+*  In both cases both parities of eigenvectors are loaded into QUDA
 *
 *  This function is useful if QUDA deflation spaces are to be used for,
 *  e.g., subsequent calls to qudaProject or qudaExactCurrent. The
@@ -37,15 +34,8 @@
 *  those function paths are smart enough to automatically trigger the QUDA
 *  eigensolve and hold the eigenvectors for deflation if deflation is desired.
 * 
-*  FIXME: Ideally, a QUDA format file would be loaded directly by QUDA without
-*     passing through MILC. This could be done by setting eig_args.vec_infile
-*     to the QUDA file's name and then calling qudaLoadDeflationSpace with
-*     QUDA_MILC_EIG_COMPUTE. Then QUDA would automatically load the eigenvectors
-*     from the file instead of computing them. Then one could avoid the doubling of host
-*     memory usage created by the allocation of eigVec. This is not implemented here.
-*     Here, a QUDA eigenvector file is treated like any other file, i.e., loaded by
-*     MILC into the eigVec array and then passed to QUDA.
- */
+*/
+
 void
 load_evecs_quda(imp_ferm_links_t *fn_mass){
 
@@ -68,6 +58,31 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
 #endif
 
   QudaEigensolverArgs_t eig_args;
+
+  load_quda_default_eig_args(&eig_args);
+
+#if 0
+#ifndef USE_EIG_GPU
+
+  // Dummy eig_args-> QUDA is not doing the eigensolve, so not using
+  // them */
+
+  eig_args.struct_size = 1192;
+  eig_args.n_ev = param.eigen_param.Nvecs;
+  eig_args.n_kr = eig_args.n_ev + 10;
+  eig_args.n_conv = eig_args.n_ev;
+  eig_args.n_ev_deflate = eig_args.n_ev;
+  eig_args.block_size = 1;
+  eig_args.prec_eigensolver = MILC_PRECISION == 2? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+  eig_args.eig_type = QUDA_EIG_TR_LANCZOS;
+  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG; 
+  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE; // Default to preserving the eigenvalues
+  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
+  
+#else
+
+  // QUDA eig_args
+  
   int blockSize = param.eigen_param.blockSize;
   eig_args.struct_size = 1192;
   eig_args.block_size = blockSize;
@@ -118,36 +133,52 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
     printf("%s: Unrecognized eigensolver precision\n",myname);
     terminate(2);
   }
+
+#endif
+#endif
   
   int quda_precision = MILC_PRECISION;
   
   su3_matrix* fatlink = get_fatlinks(fn_mass);
   su3_matrix* longlink = get_lnglinks(fn_mass);
   
-  if(param.ks_eigen_startflag == FRESH) { // Want QUDA to compute FRESH eigenvectors
+#ifdef USE_EIG_GPU
 
-    // Compute EVEN eigenvectors in QUDA
-    dtime = -dclock();
-    inv_args.evenodd = QUDA_EVEN_PARITY;
-    qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_COMPUTE);
-    dtime += dclock();
-    node0_printf( "Time to compute fresh eigenvectors = %g s\n", dtime );
-
-  } else { // Eigenvectors were loaded from file(s) by MILC into eigVec array
-      
-    // Eigenvector file parity is set in reload_ks_eigen() when the file is loaded by MILC
-    inv_args.evenodd = (param.eigen_param.parity == EVEN) ? QUDA_EVEN_PARITY : QUDA_ODD_PARITY;
-    
-    // QUDA requires that this be set equal to the gauge precision
-    eig_args.prec_eigensolver = (quda_precision == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-
-    // Load one parity eigenvectors from MILC into QUDA
-    dtime = -dclock();
-    qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, (void **)eigVec, QUDA_MILC_EIG_LOAD);
-    dtime += dclock();
-    node0_printf( "Time to load eigenvectors from file = %g s\n", dtime );
+  // If we are not recomputing, set the name of the QUDA-generated EVEN eigenvector file
+  if(param.ks_eigen_startflag != FRESH) { 
+    strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
+    // Hacks to humor QUDA.  We aren't using these args to calculate eigenvectors.
+    eig_args.n_kr = eig_args.n_ev + 10;
+    eig_args.n_conv = eig_args.n_ev;
+    eig_args.n_ev_deflate = eig_args.n_ev;
+    eig_args.block_size = 1;
   }
+
+  // Compute or read EVEN eigenvectors in QUDA
+  dtime = -dclock();
+  inv_args.evenodd = QUDA_EVEN_PARITY;
+  qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_COMPUTE);
+  dtime += dclock();
+  node0_printf( "Time to load deflation space = %g s\n", dtime );
+
+#else
+
+  // Eigenvectors were loaded from file(s) by MILC into eigVec array
+  
+  // Eigenvector file parity is set in reload_ks_eigen() when the file is loaded by MILC
+  inv_args.evenodd = (param.eigen_param.parity == EVEN) ? QUDA_EVEN_PARITY : QUDA_ODD_PARITY;
+  
+  // QUDA requires that this be set equal to the gauge precision
+  eig_args.prec_eigensolver = (quda_precision == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+  
+  // Load one parity eigenvectors from MILC into QUDA
+  dtime = -dclock();
+  qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, (void **)eigVec, QUDA_MILC_EIG_LOAD);
+  dtime += dclock();
+  node0_printf( "Time to load deflation space = %g s\n", dtime );
     
+#endif
+
   // Reconstruct other parity eigenvectors in QUDA
   dtime = -dclock();
   inv_args.evenodd = (inv_args.evenodd == QUDA_EVEN_PARITY) ? QUDA_ODD_PARITY : QUDA_EVEN_PARITY;
@@ -156,6 +187,8 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   node0_printf( "Time to reconstruct other parity eivenvectors = %g s\n", dtime );
 
 } // load_evecs_quda
+
+#ifdef USE_EIG_GPU
 
 /* Compute eigenvalues and eigenvectors of the Kogut-Susskind
  * dslash^2. */

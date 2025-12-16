@@ -132,7 +132,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 
 #if !( defined(USE_CG_GPU) && defined(HAVE_QUDA))
 
-  // Inversion without deflation and eigensolve on GPU
+  // Inversion without QUDA deflation
 
   node0_printf("Calling qudaInvert with fatlink %x and longlink %x\n", fatlink, longlink); fflush(stdout);
 
@@ -154,11 +154,49 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   
 #else
   
-  // Inversion with deflation and eigensolve on GPU
+  // Inversion with QUDA deflation
+
+  /* Load eig_args structure with default values */
+  QudaEigensolverArgs_t eig_args;
+  load_quda_default_eig_args(&eig_args);
+
+#ifdef USQ_EG_GPU
+  /* Fix up for inversion */
   int parity = qic->parity;
+  eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
+  eig_args.n_ev_deflate = ( qic->deflate ) ? param.eigen_param.Nvecs : 0;
+  eig_args.n_ev = eig_args.n_conv;
+  eig_args.n_kr = (param.eigen_param.Nkr < eig_args.n_ev ) ? 2*eig_args.n_ev : param.eigen_param.Nkr;
+  eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
+  eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
+#endif
+
+#if 0
+
+#ifndef USE_EIG_GPU
+
+  // Dummy eig_args. QUDA is not doing the eigensolve, so not using
+  // them */
+
+  eig_args.struct_size = 1192;
+  eig_args.n_kr = eig_args.n_ev + 10;
+  eig_args.n_conv = eig_args.n_ev;
+  eig_args.n_ev_deflate = eig_args.n_ev;
+  eig_args.block_size = 1;
+  eig_args.prec_eigensolver = MILC_PRECISION == 2? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+  eig_args.eig_type = QUDA_EIG_TR_LANCZOS;
+  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG;
+  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE; // Default to preserving the eigenvalues
+  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
+  eig_args.max_restarts = 1;
+  eig_args.require_convergence = QUDA_BOOLEAN_FALSE;
+  
+#else
+
+  // QUDA eig_args
+  
   int blockSize = param.eigen_param.blockSize;
 
-  QudaEigensolverArgs_t eig_args;
   eig_args.struct_size = 1192; // Could also use sizeof(QudaEigensolverArgs_t) to automagically update, but using a static number will catch the case when the struct is updated by QUDA but MILC is not updated
   eig_args.block_size = blockSize;
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
@@ -170,8 +208,6 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   eig_args.poly_deg = param.eigen_param.poly.norder;
   eig_args.a_min = param.eigen_param.poly.minE;
   eig_args.a_max = param.eigen_param.poly.maxE;
-  strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
-  strcpy( eig_args.vec_outfile, param.ks_eigen_savefile );
 //  eig_args.vec_in_parity = QUDA_EVEN_PARITY; // TODO: Update when we add support for odd parity eigenvector files
   eig_args.preserve_evals = QUDA_BOOLEAN_TRUE; // Default to preserving the eigenvalues
   eig_args.batched_rotate = param.eigen_param.batchedRotate;
@@ -194,6 +230,8 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   eig_args.arpack_check = QUDA_BOOLEAN_FALSE;
   eig_args.compute_evals_batch_size = 16;
   eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
+  strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
+  strcpy( eig_args.vec_outfile, param.ks_eigen_savefile );
   
   if(param.eigen_param.eigPrec == 2) {
     eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
@@ -205,6 +243,9 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
     printf("%s: Unrecognized eigensolver precision\n",myname);
     terminate(2);
   }
+#endif
+  
+#endif
 
   qudaInvertDeflatable(MILC_PRECISION,
 	     quda_precision, 
@@ -388,12 +429,50 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
 #else
 
-  // Inversion with deflation (and eigensolve) on GPU
+  // Inversion with QUDA deflation
 
+  /* Load eig_args structure with default values */
+  QudaEigensolverArgs_t eig_args;
+  load_quda_default_eig_args(&eig_args);
+
+#ifdef USQ_EG_GPU
+  /* Fix up for inversion */
+  int parity = qic->parity;
+  eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
+  eig_args.n_ev_deflate = ( qic->deflate ) ? param.eigen_param.Nvecs : 0;
+  eig_args.n_ev = eig_args.n_conv;
+  eig_args.n_kr = (param.eigen_param.Nkr < eig_args.n_ev ) ? 2*eig_args.n_ev : param.eigen_param.Nkr;
+  eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
+  eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
+#endif
+
+#if 0
+#ifndef USE_EIG_GPU
+
+  // Dummy eig_args. QUDA is not doing the eigensolve, so not using
+  // them */
+
+  eig_args.struct_size = 1192;
+  eig_args.n_ev = param.eigen_param.Nvecs;
+  eig_args.n_kr = eig_args.n_ev + 10;
+  eig_args.n_conv = eig_args.n_ev;
+  eig_args.n_ev_deflate = eig_args.n_ev;
+  eig_args.block_size = 1;
+  eig_args.prec_eigensolver = MILC_PRECISION == 2? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+  eig_args.eig_type = QUDA_EIG_TR_LANCZOS;
+  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG; 
+  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE; // Default to preserving the eigenvalues
+  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
+  eig_args.max_restarts = 1;
+  eig_args.require_convergence = QUDA_BOOLEAN_FALSE;
+  
+#else
+
+  // QUDA eig_args
+  
   int parity = qic->parity;
   int blockSize = param.eigen_param.blockSize;
 
-  QudaEigensolverArgs_t eig_args;
   eig_args.struct_size = 1192; // Could also use sizeof(QudaEigensolverArgs_t) to automagically update, but using a static number will catch the case when the struct is updated by QUDA but MILC is not updated
   eig_args.block_size = blockSize;
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
@@ -440,6 +519,9 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
     printf("%s: Unrecognized eigensolver precision\n",myname);
     terminate(2);
   }
+
+#endif
+#endif
 
   qudaInvertMsrcDeflatable(MILC_PRECISION,
      quda_precision,
