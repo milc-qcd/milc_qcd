@@ -245,38 +245,6 @@ int readin(int prompt) {
       }
 #endif
 
-      /* If we are reading in eigenpairs, we don't regenerate them */
-
-#if EIGMODE == EIGCG
-      /* for eigcg */
-
-      /* maximum number of eigenvectors */
-      param.eigcgp.Nvecs_max =  param.eigen_param.Nvecs;
-
-      /* If we are reading in eigenpairs, we don't regenerate them */
-
-      if(param.ks_eigen_startflag == FRESH){
-	
-	/* restart for Lanczos */
-	IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
-	
-	/* number of eigenvectors per inversion */
-	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigcgp.Nvecs);
-	
-	if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
-	  printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
-	  status++;
-	}
-      } else {
-	param.eigcgp.m = 0;
-	param.eigcgp.Nvecs = 0;
-      }
-      
-      param.eigcgp.Nvecs_curr = 0;
-      param.eigcgp.H = NULL;
-
-#else // EIGMODE != EIGCG
-
       /*------------------------------------------------------------*/
       /* Dirac eigenpair calculation                                */
       /*------------------------------------------------------------*/
@@ -284,11 +252,8 @@ int readin(int prompt) {
       if(param.ks_eigen_startflag == FRESH){
 	
 	status += read_ks_eigen_param(&param.eigen_param, status, prompt);
-
+	
       }
-
-#endif
-
     }
 
     /*------------------------------------------------------------*/
@@ -642,84 +607,6 @@ int readin(int prompt) {
   /* Put the KS phases into APE links to match what we did to the gauge field */
   ape_links_ks_phases = OFF;
   rephase_field_offset( ape_links, ON, &ape_links_ks_phases, param.coord_origin );
-
-#if EIGMODE == EIGCG
-  int Nvecs_max = param.eigcgp.Nvecs_max;
-  if(param.ks_eigen_startflag == FRESH)
-    //    Nvecs_tot = ((Nvecs_max - 1)/param.eigcgp.Nvecs)*param.eigcgp.Nvecs
-    //      + param.eigcgp.m;
-    Nvecs_tot = Nvecs_max + param.eigcgp.m - 1;
-  else
-    Nvecs_tot = Nvecs_max;
-
-  eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
-  eigVec = (su3_vector **)malloc(Nvecs_tot*sizeof(su3_vector *));
-  for(int i = 0; i < Nvecs_tot; i++){
-    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-    if(eigVec[i] == NULL){
-      printf("No room for eigenvector\n");
-      terminate(1);
-    }
-  }
-
-  /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
-  imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
-  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &Nvecs_tot, eigVal, eigVec, fn, 1);
-  // DEBUG
-  //reset_eigenvalues( eigVec, eigVal, Nvecs_tot, ODD, fn)
-  destroy_fn_links(fn);
-  if(status != 0) terminate(1);
-  //  if(param.fixflag != NO_GAUGE_FIX){
-  //    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
-  //  }
-
-  if(param.ks_eigen_startflag != FRESH){
-    param.eigcgp.Nvecs = 0;
-    param.eigcgp.Nvecs_curr = Nvecs_tot;
-    param.eigcgp.H = (double_complex *)malloc(Nvecs_max*Nvecs_max
-					      *sizeof(double_complex));
-    for(int i = 0; i < Nvecs_max; i++){
-      for(k = 0; k < i; k++)
-	param.eigcgp.H[k + Nvecs_max*i] = dcmplx((double)0.0, (double)0.0);
-      param.eigcgp.H[(Nvecs_max+1)*i] = dcmplx(eigVal[i], (double)0.0);
-    }
-  }
-#endif
-  
-#if EIGMODE != EIGCG
-#if ( defined(USE_CURRENT_GPU) && defined(HAVE_QUDA) )
-  // Don't allocate space for the eigenvectors in MILC if using QUDA to generate them
-  if((param.eigen_param.Nvecs > 0) && (param.ks_eigen_startflag != FRESH)){
-#else
-  if(param.eigen_param.Nvecs > 0){
-#endif
-    /* malloc for eigenpairs */
-    eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
-    eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
-    for(i=0; i < param.eigen_param.Nvecs; i++){
-      eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-      if(eigVec[i] == NULL){
-	printf("No room for eigenvector\n");
-	terminate(1);
-      }
-    }
-    
-    /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
-    imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
-    status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			     &param.eigen_param.Nvecs, eigVal, eigVec, fn, 1);
-    destroy_fn_links(fn);
-    if(status != 0)terminate(1);
-#if 0
-    for(int j = 0; j < param.eigen_param.Nvecs; j++){
-      gauge_transform_v_field(eigVec[j], G);
-    }
-    destroy_m_field(G);
-#endif
-  }
-  //#endif
-#endif
 
   ENDTIME("readin");
   fflush(stdout);
