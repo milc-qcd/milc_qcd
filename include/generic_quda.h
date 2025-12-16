@@ -28,6 +28,9 @@ static QudaMILCSiteArg_t newQudaMILCSiteArg() {
 
 void finalize_quda(void);
 
+void
+load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args);
+
 #include <string.h>
 
 static inline void fast_copy(void *dest, const void *src, size_t n) {
