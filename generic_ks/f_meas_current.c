@@ -1539,8 +1539,25 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
 #endif
 
   QudaEigensolverArgs_t eig_args;
-  /* Load QUDA default values from MILC eigen_param */
-  load_quda_default_eig_args(&eig_args);
+
+#ifdef USE_EIG_GPU
+
+  // Here we use QUDA for the eigensolution or for reading is own eigenvector file
+
+  int quda_does_eigensolve = (param.ks_eigen_startflag == FRESH);
+
+  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
+
+#else
+
+  // Here, eigenvectors were loaded from file(s) by MILC or by a non-QUDA eigensolver
+
+  int quda_does_eigensolve = 0;
+
+  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
+
+#endif
+
   /* Specialization */
   eig_args.partfile = QUDA_BOOLEAN_TRUE;
   eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
@@ -1549,68 +1566,6 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   strcpy( eig_args.vec_infile, "" );
   strcpy( eig_args.vec_outfile, "" );
 
-#if 0
-
-#ifndef USE_EIG_GPU
-
-  // Dummy eig_args. QUDA is not doing the eigensolve, so not using
-  // them */
-
-  eig_args.struct_size = 1192;
-  eig_args.n_ev = param.eigen_param.Nvecs;
-  eig_args.n_kr = eig_args.n_ev + 10;
-  eig_args.n_conv = eig_args.n_ev;
-  eig_args.n_ev_deflate = eig_args.n_ev;
-  eig_args.block_size = 1;
-  eig_args.prec_eigensolver = MILC_PRECISION == 2? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-  eig_args.eig_type = QUDA_EIG_TR_LANCZOS;
-  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG; 
-  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE;
-  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
-  
-#else
-
-  // QUDA eig_args
-  
-  int blockSize = param.eigen_param.blockSize;
-  eig_args.struct_size = 1192;
-  eig_args.block_size = blockSize;
-  eig_args.n_conv = param.eigen_param.Nvecs;
-  eig_args.n_ev_deflate = param.eigen_param.Nvecs;
-  eig_args.n_ev = param.eigen_param.Nvecs;
-  eig_args.n_kr = param.eigen_param.Nkr;
-  eig_args.tol = param.eigen_param.tol;
-  eig_args.max_restarts = param.eigen_param.MaxIter;
-  eig_args.poly_deg = param.eigen_param.poly.norder;
-  eig_args.a_min = param.eigen_param.poly.minE;
-  eig_args.a_max = param.eigen_param.poly.maxE;
-  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE;
-  eig_args.batched_rotate = param.eigen_param.batchedRotate;
-  eig_args.save_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-  eig_args.partfile = QUDA_BOOLEAN_TRUE;
-  eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
-  eig_args.use_norm_op = QUDA_BOOLEAN_FALSE;
-  eig_args.use_pc = QUDA_BOOLEAN_TRUE;
-  eig_args.tol_restart = 1e-2;
-  eig_args.eig_type = ( blockSize > 1 ) ? QUDA_EIG_BLK_TR_LANCZOS : QUDA_EIG_TR_LANCZOS;  /* or QUDA_EIG_IR_ARNOLDI, QUDA_EIG_BLK_IR_ARNOLDI */
-  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG;
-  eig_args.qr_tol = eig_args.tol;
-  eig_args.require_convergence = QUDA_BOOLEAN_TRUE;
-  eig_args.check_interval = 1;
-  eig_args.use_dagger = QUDA_BOOLEAN_FALSE;
-  eig_args.compute_gamma5 = QUDA_BOOLEAN_FALSE;
-  eig_args.compute_svd = QUDA_BOOLEAN_FALSE;
-  eig_args.use_eigen_qr = QUDA_BOOLEAN_TRUE;
-  eig_args.use_poly_acc = QUDA_BOOLEAN_TRUE;
-  eig_args.arpack_check = QUDA_BOOLEAN_FALSE;
-  eig_args.compute_evals_batch_size = 16;
-  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
-  eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
-  strcpy( eig_args.vec_infile, "" );
-  strcpy( eig_args.vec_outfile, "" );
-
-#endif
-#endif
   
   su3_matrix* fatlink = get_fatlinks(fn_mass);
   su3_matrix* longlink = get_lnglinks(fn_mass);

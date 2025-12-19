@@ -28,8 +28,7 @@ static QudaMILCSiteArg_t newQudaMILCSiteArg() {
 
 void finalize_quda(void);
 
-void
-load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args);
+void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_eigensolve);
 
 #include <string.h>
 

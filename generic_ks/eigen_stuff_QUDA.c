@@ -57,102 +57,20 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   inv_args.tadpole = u0;
 #endif
 
-  QudaEigensolverArgs_t eig_args;
-
-  load_quda_default_eig_args(&eig_args);
-
-#if 0
-#ifndef USE_EIG_GPU
-
-  // Dummy eig_args-> QUDA is not doing the eigensolve, so not using
-  // them */
-
-  eig_args.struct_size = 1192;
-  eig_args.n_ev = param.eigen_param.Nvecs;
-  eig_args.n_kr = eig_args.n_ev + 10;
-  eig_args.n_conv = eig_args.n_ev;
-  eig_args.n_ev_deflate = eig_args.n_ev;
-  eig_args.block_size = 1;
-  eig_args.prec_eigensolver = MILC_PRECISION == 2? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-  eig_args.eig_type = QUDA_EIG_TR_LANCZOS;
-  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG; 
-  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE; // Default to preserving the eigenvalues
-  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
-  
-#else
-
-  // QUDA eig_args
-  
-  int blockSize = param.eigen_param.blockSize;
-  eig_args.struct_size = 1192;
-  eig_args.block_size = blockSize;
-  eig_args.n_conv = param.eigen_param.Nvecs;
-  eig_args.n_ev_deflate = param.eigen_param.Nvecs;
-  eig_args.n_ev = param.eigen_param.Nvecs;
-  eig_args.n_kr = param.eigen_param.Nkr;
-  eig_args.tol = param.eigen_param.tol;
-  eig_args.max_restarts = param.eigen_param.MaxIter;
-  eig_args.poly_deg = param.eigen_param.poly.norder;
-  eig_args.a_min = param.eigen_param.poly.minE;
-  eig_args.a_max = param.eigen_param.poly.maxE;
-  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE;
-  eig_args.batched_rotate = param.eigen_param.batchedRotate;
-  /** With save_prec, we are currently saving the eigenvectors in double
-   * precision if running MILC in double precision. At some point, we may
-   * want to be able to control this separately via the parameters input file
-   **/
-  eig_args.save_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-  eig_args.partfile = param.eigen_param.partfile ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  eig_args.io_parity_inflate = QUDA_BOOLEAN_FALSE;
-  eig_args.use_norm_op = QUDA_BOOLEAN_FALSE;
-  eig_args.use_pc = QUDA_BOOLEAN_TRUE;
-  eig_args.tol_restart = param.eigen_param.tol_restart;
-  eig_args.eig_type = ( blockSize > 1 ) ? QUDA_EIG_BLK_TR_LANCZOS : QUDA_EIG_TR_LANCZOS;
-  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG;
-  eig_args.qr_tol = eig_args.tol;
-  eig_args.require_convergence = QUDA_BOOLEAN_TRUE;
-  eig_args.check_interval = 10;
-  eig_args.use_dagger = QUDA_BOOLEAN_FALSE;
-  eig_args.compute_gamma5 = QUDA_BOOLEAN_FALSE;
-  eig_args.compute_svd = QUDA_BOOLEAN_FALSE;
-  eig_args.use_eigen_qr = QUDA_BOOLEAN_TRUE;
-  eig_args.use_poly_acc = QUDA_BOOLEAN_TRUE;
-  eig_args.arpack_check = QUDA_BOOLEAN_FALSE;
-  eig_args.compute_evals_batch_size = 16;
-  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
-  strcpy( eig_args.vec_infile, "" );
-  strcpy( eig_args.vec_outfile, param.ks_eigen_savefile );
-  
-  if(param.eigen_param.eigPrec == 2) {
-    eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
-  } else if(param.eigen_param.eigPrec == 1) {
-    eig_args.prec_eigensolver = QUDA_SINGLE_PRECISION;
-  } else if(param.eigen_param.eigPrec == 0) {
-    eig_args.prec_eigensolver = QUDA_HALF_PRECISION;
-  } else {
-    printf("%s: Unrecognized eigensolver precision\n",myname);
-    terminate(2);
-  }
-
-#endif
-#endif
-  
   int quda_precision = MILC_PRECISION;
   
   su3_matrix* fatlink = get_fatlinks(fn_mass);
   su3_matrix* longlink = get_lnglinks(fn_mass);
+
+  QudaEigensolverArgs_t eig_args;
   
 #ifdef USE_EIG_GPU
 
-  // If we are not recomputing, set the name of the QUDA-generated EVEN eigenvector file
-  if(param.ks_eigen_startflag != FRESH) { 
-    strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
-    // Hacks to humor QUDA.  We aren't using these args to calculate eigenvectors.
-    eig_args.n_kr = eig_args.n_ev + 10;
-    eig_args.n_conv = eig_args.n_ev;
-    eig_args.n_ev_deflate = eig_args.n_ev;
-    eig_args.block_size = 1;
-  }
+  // Here we use QUDA for the eigensolution or for reading is own eigenvector file
+
+  int quda_does_eigensolve = (param.ks_eigen_startflag == FRESH);
+  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
+  strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
 
   // Compute or read EVEN eigenvectors in QUDA
   dtime = -dclock();
@@ -163,11 +81,14 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
 
 #else
 
-  // Eigenvectors were loaded from file(s) by MILC into eigVec array
+  int quda_does_eigensolve = 0;
+
+  // Here, eigenvectors were loaded from file(s) by MILC or computed with a non-QUDA eigensolver
   
   // Eigenvector file parity is set in reload_ks_eigen() when the file is loaded by MILC
   inv_args.evenodd = (param.eigen_param.parity == EVEN) ? QUDA_EVEN_PARITY : QUDA_ODD_PARITY;
-  
+
+  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
   // QUDA requires that this be set equal to the gauge precision
   eig_args.prec_eigensolver = (quda_precision == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
   
@@ -190,8 +111,9 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
 
 #ifdef USE_EIG_GPU
 
-/* Compute eigenvalues and eigenvectors of the Kogut-Susskind
- * dslash^2. */
+/* Compute eigenvalues and eigenvectors of the Kogut-Susskind  * dslash^2. */
+// ToDo: bring conventions into alignment with the newer code above
+
 int ks_eigensolve_QUDA( su3_vector ** eigVec,
                         Real * eigVal,
                         ks_eigen_param * eigen_param,

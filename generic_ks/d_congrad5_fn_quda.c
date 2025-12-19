@@ -158,93 +158,34 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 
   /* Load eig_args structure with default values */
   QudaEigensolverArgs_t eig_args;
-  load_quda_default_eig_args(&eig_args);
 
-#ifdef USQ_EG_GPU
-  /* Fix up for inversion */
+#ifdef USE_EIG_GPU
+
+  // Here we use QUDA for the eigensolution or for reading is own eigenvector file
+
+  int quda_does_eigensolve = (param.ks_eigen_startflag == FRESH);
+
+  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
+  strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
+
+  /* Fix up for deflation */
   int parity = qic->parity;
+
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
   eig_args.n_ev_deflate = ( qic->deflate ) ? param.eigen_param.Nvecs : 0;
   eig_args.n_ev = eig_args.n_conv;
   eig_args.n_kr = (param.eigen_param.Nkr < eig_args.n_ev ) ? 2*eig_args.n_ev : param.eigen_param.Nkr;
   eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-#endif
 
-#if 0
-
-#ifndef USE_EIG_GPU
-
-  // Dummy eig_args. QUDA is not doing the eigensolve, so not using
-  // them */
-
-  eig_args.struct_size = 1192;
-  eig_args.n_kr = eig_args.n_ev + 10;
-  eig_args.n_conv = eig_args.n_ev;
-  eig_args.n_ev_deflate = eig_args.n_ev;
-  eig_args.block_size = 1;
-  eig_args.prec_eigensolver = MILC_PRECISION == 2? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-  eig_args.eig_type = QUDA_EIG_TR_LANCZOS;
-  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG;
-  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE; // Default to preserving the eigenvalues
-  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
-  eig_args.max_restarts = 1;
-  eig_args.require_convergence = QUDA_BOOLEAN_FALSE;
-  
 #else
 
-  // QUDA eig_args
-  
-  int blockSize = param.eigen_param.blockSize;
+  // Here, eigenvectors were loaded from file(s) by MILC or by a non-QUDA eigensolver
 
-  eig_args.struct_size = 1192; // Could also use sizeof(QudaEigensolverArgs_t) to automagically update, but using a static number will catch the case when the struct is updated by QUDA but MILC is not updated
-  eig_args.block_size = blockSize;
-  eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
-  eig_args.n_ev_deflate = ( qic->deflate ) ? param.eigen_param.Nvecs : 0;
-  eig_args.n_ev = eig_args.n_conv;
-  eig_args.n_kr = (param.eigen_param.Nkr < eig_args.n_ev ) ? 2*eig_args.n_ev : param.eigen_param.Nkr;
-  eig_args.tol = param.eigen_param.tol;
-  eig_args.max_restarts = param.eigen_param.MaxIter;
-  eig_args.poly_deg = param.eigen_param.poly.norder;
-  eig_args.a_min = param.eigen_param.poly.minE;
-  eig_args.a_max = param.eigen_param.poly.maxE;
-//  eig_args.vec_in_parity = QUDA_EVEN_PARITY; // TODO: Update when we add support for odd parity eigenvector files
-  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE; // Default to preserving the eigenvalues
-  eig_args.batched_rotate = param.eigen_param.batchedRotate;
-  eig_args.save_prec = QUDA_SINGLE_PRECISION; // add to input parameters?
-  eig_args.partfile = param.eigen_param.partfile ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  eig_args.io_parity_inflate = QUDA_BOOLEAN_FALSE;
-  eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  eig_args.tol_restart = param.eigen_param.tol_restart;
-  eig_args.eig_type = ( eig_args.block_size > 1 ) ? QUDA_EIG_BLK_TR_LANCZOS : QUDA_EIG_TR_LANCZOS;  /* or QUDA_EIG_IR_ARNOLDI, QUDA_EIG_BLK_IR_ARNOLDI */
-  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG; /* Smallest Real. Other options: LM, SM, LR, SR, LI, SI */
-  eig_args.qr_tol = eig_args.tol;
-  eig_args.require_convergence = QUDA_BOOLEAN_TRUE;
-  eig_args.check_interval = 10;
-  eig_args.use_dagger = QUDA_BOOLEAN_FALSE;
-  eig_args.compute_gamma5 = QUDA_BOOLEAN_FALSE;
-  eig_args.compute_svd = QUDA_BOOLEAN_FALSE;
-  eig_args.use_eigen_qr = QUDA_BOOLEAN_TRUE;
-  eig_args.use_poly_acc = QUDA_BOOLEAN_TRUE;
-  eig_args.arpack_check = QUDA_BOOLEAN_FALSE;
-  eig_args.compute_evals_batch_size = 16;
-  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
-  strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
-  strcpy( eig_args.vec_outfile, param.ks_eigen_savefile );
-  
-  if(param.eigen_param.eigPrec == 2) {
-    eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
-  } else if(param.eigen_param.eigPrec == 1) {
-    eig_args.prec_eigensolver = QUDA_SINGLE_PRECISION;
-  } else if(param.eigen_param.eigPrec == 0) {
-    eig_args.prec_eigensolver = QUDA_HALF_PRECISION;
-  } else {
-    printf("%s: Unrecognized eigensolver precision\n",myname);
-    terminate(2);
-  }
-#endif
-  
+  int quda_does_eigensolve = 0;
+
+  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
+
 #endif
 
   qudaInvertDeflatable(MILC_PRECISION,
@@ -433,94 +374,34 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   /* Load eig_args structure with default values */
   QudaEigensolverArgs_t eig_args;
-  load_quda_default_eig_args(&eig_args);
 
-#ifdef USQ_EG_GPU
-  /* Fix up for inversion */
+#ifdef USE_EIG_GPU
+
+  // Here we use QUDA for the eigensolution or for reading is own eigenvector file
+
+  int quda_does_eigensolve = (param.ks_eigen_startflag == FRESH);
+
+  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
+  strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
+
+  /* Fix up for deflation */
   int parity = qic->parity;
+
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
   eig_args.n_ev_deflate = ( qic->deflate ) ? param.eigen_param.Nvecs : 0;
   eig_args.n_ev = eig_args.n_conv;
   eig_args.n_kr = (param.eigen_param.Nkr < eig_args.n_ev ) ? 2*eig_args.n_ev : param.eigen_param.Nkr;
   eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-#endif
 
-#if 0
-#ifndef USE_EIG_GPU
-
-  // Dummy eig_args. QUDA is not doing the eigensolve, so not using
-  // them */
-
-  eig_args.struct_size = 1192;
-  eig_args.n_ev = param.eigen_param.Nvecs;
-  eig_args.n_kr = eig_args.n_ev + 10;
-  eig_args.n_conv = eig_args.n_ev;
-  eig_args.n_ev_deflate = eig_args.n_ev;
-  eig_args.block_size = 1;
-  eig_args.prec_eigensolver = MILC_PRECISION == 2? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-  eig_args.eig_type = QUDA_EIG_TR_LANCZOS;
-  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG; 
-  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE; // Default to preserving the eigenvalues
-  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
-  eig_args.max_restarts = 1;
-  eig_args.require_convergence = QUDA_BOOLEAN_FALSE;
-  
 #else
 
-  // QUDA eig_args
-  
-  int parity = qic->parity;
-  int blockSize = param.eigen_param.blockSize;
+  // Here, eigenvectors were loaded from file(s) by MILC or by a non-QUDA eigensolver
 
-  eig_args.struct_size = 1192; // Could also use sizeof(QudaEigensolverArgs_t) to automagically update, but using a static number will catch the case when the struct is updated by QUDA but MILC is not updated
-  eig_args.block_size = blockSize;
-  eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
-  eig_args.n_ev_deflate = ( qic->deflate ) ? param.eigen_param.Nvecs : 0;
-  eig_args.n_ev = eig_args.n_conv;
-  eig_args.n_kr = (param.eigen_param.Nkr < eig_args.n_ev ) ? 2*eig_args.n_ev : param.eigen_param.Nkr;
-  eig_args.tol = param.eigen_param.tol;
-  eig_args.max_restarts = param.eigen_param.MaxIter;
-  eig_args.poly_deg = param.eigen_param.poly.norder;
-  eig_args.a_min = param.eigen_param.poly.minE;
-  eig_args.a_max = param.eigen_param.poly.maxE;
-  strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
-  strcpy( eig_args.vec_outfile, param.ks_eigen_savefile );
-//  eig_args.vec_in_parity = QUDA_EVEN_PARITY; // TODO: Update when we add support for odd parity eigenvector files
-  eig_args.preserve_evals = QUDA_BOOLEAN_TRUE; // Default to preserving the eigenvalues
-  eig_args.batched_rotate = param.eigen_param.batchedRotate;
-  eig_args.save_prec = QUDA_SINGLE_PRECISION; // add to input parameters?
-  eig_args.partfile = param.eigen_param.partfile ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  eig_args.io_parity_inflate = QUDA_BOOLEAN_FALSE;
-  eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  eig_args.tol_restart = param.eigen_param.tol_restart;
-  eig_args.eig_type = ( eig_args.block_size > 1 ) ? QUDA_EIG_BLK_TR_LANCZOS : QUDA_EIG_TR_LANCZOS;  /* or QUDA_EIG_IR_ARNOLDI, QUDA_EIG_BLK_IR_ARNOLDI */
-  eig_args.spectrum = QUDA_SPECTRUM_SR_EIG; /* Smallest Real. Other options: LM, SM, LR, SR, LI, SI */
-  eig_args.qr_tol = eig_args.tol;
-  eig_args.require_convergence = QUDA_BOOLEAN_TRUE;
-  eig_args.check_interval = 10;
-  eig_args.use_dagger = QUDA_BOOLEAN_FALSE;
-  eig_args.compute_gamma5 = QUDA_BOOLEAN_FALSE;
-  eig_args.compute_svd = QUDA_BOOLEAN_FALSE;
-  eig_args.use_eigen_qr = QUDA_BOOLEAN_TRUE;
-  eig_args.use_poly_acc = QUDA_BOOLEAN_TRUE;
-  eig_args.arpack_check = QUDA_BOOLEAN_FALSE;
-  eig_args.compute_evals_batch_size = 16;
-  eig_args.preserve_deflation = QUDA_BOOLEAN_TRUE;
-  
-  if(param.eigen_param.eigPrec == 2) {
-    eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
-  } else if(param.eigen_param.eigPrec == 1) {
-    eig_args.prec_eigensolver = QUDA_SINGLE_PRECISION;
-  } else if(param.eigen_param.eigPrec == 0) {
-    eig_args.prec_eigensolver = QUDA_HALF_PRECISION;
-  } else {
-    printf("%s: Unrecognized eigensolver precision\n",myname);
-    terminate(2);
-  }
+  int quda_does_eigensolve = 0;
 
-#endif
+  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
+
 #endif
 
   qudaInvertMsrcDeflatable(MILC_PRECISION,
