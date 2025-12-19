@@ -143,12 +143,12 @@ int main(int argc, char *argv[])
       node0_printf("Odd site residuals\n");
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
 
+#endif
+    
       /* Compute or reread eigenpairs with QUDA or just load the above
 	 ones into QUDA. */
       load_evecs_quda(fn);
 
-#endif
-    
       /* Unapply twisted boundary conditions on the fermion links and
 	 restore conventional KS phases and antiperiodic BC, if
 	 changed. */
@@ -272,13 +272,27 @@ int main(int argc, char *argv[])
     }
 #endif
 
-#if ( defined(HAVE_QUDA) && defined(USE_CURRENT_GPU) )
-    // Eigenvector space is not allocated in MILC if using QUDA to generate them
-    if((param.eigen_param.Nvecs > 0) && (param.ks_eigen_startflag != FRESH)){
-#else
+#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU) && defined(USE_EIG_GPU)
+
+    // QUDA either did the eigensolution or read the eigenpair file 
+
     if(param.eigen_param.Nvecs > 0){
-#endif
-      /* save eigenvectors if requested */
+      /* QUDA saves eigenvectors if requested */
+      int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
+				 Nvecs_curr, eigVal, eigVec, resid, 1);
+      if(status != 0){
+	node0_printf("ERROR writing eigenvectors\n");
+      }
+    }
+
+    // Eigenvector space is not allocated in MILC if using QUDA to generate them
+
+#else
+
+    // MILC has the eigenvectors
+    
+    if(param.eigen_param.Nvecs > 0){
+      /* QUDA saves eigenvectors if requested */
       int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
 				 Nvecs_curr, eigVal, eigVec, resid, 1);
       if(status != 0){
@@ -289,7 +303,8 @@ int main(int argc, char *argv[])
       for(int i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
       free(eigVal); free(eigVec); free(resid);
     }
-
+#endif
+    
     node0_printf("RUNNING COMPLETED\n");
     endtime = dclock();
 
