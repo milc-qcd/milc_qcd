@@ -139,7 +139,7 @@ int read_ks_vector_scidac_xml(QIO_Reader *infile, su3_vector *dest, int count,
     return read_D3_V_to_field(infile, recxml, dest, count);
   else {
     node0_printf("%s: Incorrect data type size %d\n", myname, typesize);
-    return 1;
+    exit(EXIT_FAILURE);
   }
 
 }
