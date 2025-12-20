@@ -44,6 +44,7 @@
 #define SAVE_PARALLEL_SCIDAC_DP          62
 #define SAVE_MULTIFILE_SCIDAC_DP         63
 #define SAVE_PARTFILE_SCIDAC_DP          64
+#define SAVE_PARTFILE_DIR_SCIDAC         65
 
 /* Format for NERSC archive files */
 #define ARCHIVE_3x2   0
@@ -373,6 +374,7 @@ gauge_file *save_serial_scidac(su3_matrix *field, const char *filename, int prec
 gauge_file *save_parallel_scidac(su3_matrix *field, const char *filename, int prec);
 gauge_file *save_multifile_scidac(su3_matrix *field, const char *filename, int prec);
 gauge_file *save_partfile_scidac(su3_matrix *field, const char *filename, int prec);
+gauge_file *save_partfile_dir_scidac(su3_matrix *field, const char *filename, int prec);
 gauge_file *save_serial_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
 gauge_file *save_parallel_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
 gauge_file *save_partfile_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
@@ -436,6 +438,7 @@ gauge_file *parallel_open(int order, const char *filename);
 fsu3_matrix *w_parallel_setup(gauge_file *gf, off_t *checksum_offset);
 gauge_file *w_parallel_i(const char *filename);
 gauge_file *w_checkpoint_i(const char *filename);
+FILE *open_scidac_detect_volume_format(const char *filename, int *volfmt);
 gauge_file *r_serial_i(const char *filename);
 void w_serial_f(gauge_file *gf);
 void r_serial_f(gauge_file *gf);
