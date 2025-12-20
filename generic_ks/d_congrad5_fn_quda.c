@@ -221,6 +221,8 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 	     &relative_residual, 
 	     &num_iters);
 
+#endif
+  
   qic->final_rsq = residual*residual;
   qic->final_relrsq = relative_residual*relative_residual;
   qic->final_iters = num_iters;
@@ -455,6 +457,8 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
      &num_iters,
      nsrc);
 
+#endif
+  
   // MILC's convention impled from d_congrad5_fn_milc.c is that final_rsq, final_relrsq, and final_iters
   // are based on the values from the last solve, which qudaInvertMsrc respects.
   qic->final_rsq = residual * residual;
@@ -491,7 +495,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   return num_iters * nsrc;
 
 #endif /* if 1 */
-  return num_iters;
+
 }
 
 
