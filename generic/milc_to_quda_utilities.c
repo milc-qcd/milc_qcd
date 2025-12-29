@@ -117,12 +117,16 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
     
     int blockSize = param.eigen_param.blockSize;
     
+
     eig_args->struct_size = 1192;
     eig_args->block_size = blockSize;
-    eig_args->n_conv = param.eigen_param.Nvecs;
-    eig_args->n_ev_deflate = param.eigen_param.Nvecs;
-    eig_args->n_ev = param.eigen_param.Nvecs;
-    eig_args->n_kr = param.eigen_param.Nkr;
+    // Number of eigenvectors QUDA should expect
+    eig_args->n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
+    // Number of eigenvectors QUDA uses for deflation.
+    eig_args->n_ev_deflate = eig_args->n_conv;
+    // Number of eigenvectors
+    eig_args->n_ev = eig_args->n_conv;
+    eig_args->n_kr = (param.eigen_param.Nkr < eig_args->n_ev ) ? 2*eig_args->n_ev : param.eigen_param.Nkr;
     eig_args->tol = param.eigen_param.tol;
     eig_args->max_restarts = param.eigen_param.MaxIter;
     eig_args->poly_deg = param.eigen_param.poly.norder;
