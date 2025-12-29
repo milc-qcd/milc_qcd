@@ -369,6 +369,18 @@ int readin(int prompt) {
 	IF_OK strcpy(param.charge_label[npbp_masses],"0.");
 	IF_OK param.ksp_pbp[npbp_masses].charge = 0.;
 #endif
+
+	/* Use deflation or not when available ? */
+	int deflate = 0;
+	IF_OK {
+	  if(param.eigen_param.Nvecs > 0){  /* Need eigenvectors to deflate */
+	    IF_OK status += get_s(stdin, prompt,"deflate", savebuf);
+	    IF_OK {
+	      if(strcmp(savebuf,"yes") == 0)deflate = 1;
+	    }
+	  }
+	}
+
 	/* error for staggered propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
 			      &error_for_propagator );
@@ -404,6 +416,9 @@ int readin(int prompt) {
 	/* precision */
 	param.qic_pbp[npbp_masses].prec = prec_pbp;
 
+	/* deflation */
+	param.qic_pbp[npbp_masses].deflate = deflate;
+
 	/* errors */
 	param.qic_pbp[npbp_masses].resid = error_for_propagator;
 	param.qic_pbp[npbp_masses].relresid = rel_error_for_propagator;
@@ -416,13 +431,6 @@ int readin(int prompt) {
 	param.qic_pbp[npbp_masses].min = 0;
 	param.qic_pbp[npbp_masses].start_flag = 0;
 	param.qic_pbp[npbp_masses].nsrc = 1;
-
-	/* Should we be deflating? */
-	param.qic_pbp[npbp_masses].deflate = 0;
-	IF_OK {
-	  /* Always deflate if we have eigenvectors */
-	  if(param.eigen_param.Nvecs > 0)param.qic_pbp[npbp_masses].deflate = 1;
-	}
 
 #ifdef CURRENT_DISC
       /* If we are taking the difference between a sloppy and a precise solve,
@@ -438,6 +446,9 @@ int readin(int prompt) {
 	  /* precision */
 	  param.qic_pbp_sloppy[npbp_masses].prec = prec_pbp_sloppy;
 	  
+	  /* deflation */
+	  param.qic_pbp_sloppy[npbp_masses].deflate = deflate;
+
 	  /* errors */
 	  param.qic_pbp_sloppy[npbp_masses].resid = error_for_propagator_sloppy;
 	  param.qic_pbp_sloppy[npbp_masses].relresid = rel_error_for_propagator_sloppy;
