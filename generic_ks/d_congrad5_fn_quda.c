@@ -170,9 +170,9 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   
   if(eig_args.n_ev_deflate == 0){
-    node0_printf("Solving for %d source(s) without deflation\n", nsrc);
+    node0_printf("Solving for %d source(s) without deflation for parity %d\n", nsrc, parity);
   } else {
-    node0_printf("Solving for %d source(s) with deflation\n", nsrc);;
+    node0_printf("Solving for %d source(s) with deflation for parity %d\n", nsrc, parity);
   }
   
   qudaInvertMsrcDeflatable(MILC_PRECISION,
