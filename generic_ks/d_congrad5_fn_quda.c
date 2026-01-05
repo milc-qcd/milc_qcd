@@ -168,12 +168,15 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   if(qic->relresid > 0.) eig_args.n_ev_deflate = 0;
   eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  
+ 
+  if(!qic->deflate) eig_args.n_ev_deflate = 0; // Deflate only if desired 
   if(eig_args.n_ev_deflate == 0){
     node0_printf("Solving for %d source(s) without deflation for parity %d\n", nsrc, parity);
   } else {
     node0_printf("Solving for %d source(s) with deflation for parity %d\n", nsrc, parity);
   }
+
+  //print_quda_eig_args(&eig_args); // For debugging
   
   qudaInvertMsrcDeflatable(MILC_PRECISION,
 			   quda_precision,
