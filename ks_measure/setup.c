@@ -18,9 +18,9 @@ extern int gethostname (char *__name, size_t __len); // Should get this from uni
 
 /* Forward declarations */
 
-static int initial_set();
+static int initial_set(void);
 static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
-static void make_3n_gathers();
+static void make_3n_gathers(void);
 
 
 int setup()   {
