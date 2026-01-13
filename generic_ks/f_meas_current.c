@@ -1587,7 +1587,7 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
     refresh = 1;
     node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", __func__);
   }
-  
+
   QudaInvertArgs_t inv_args; // To set invertParams and gaugeParams in QUDA
   inv_args.mixed_precision = 0;
   inv_args.naik_epsilon = fn_mass->eps_naik;
@@ -1600,16 +1600,11 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   QudaEigensolverArgs_t eig_args; // To tell QUDA how many eigenvectors to use
 
 #ifdef USE_EIG_GPU
-
   // Here we use QUDA for the eigensolution or for reading is own eigenvector file
   int quda_does_eigensolve = (param.ks_eigen_startflag == FRESH);
-
 #else
-
   // Here, eigenvectors were loaded from file(s) by MILC or by a non-QUDA eigensolver
   int quda_does_eigensolve = 0;
-
-#endif
 
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
 
@@ -1621,7 +1616,6 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
 //  strcpy( eig_args.vec_infile, "" );
 //  strcpy( eig_args.vec_outfile, "" );
 
-  
   su3_matrix* fatlink = get_fatlinks(fn_mass);
   su3_matrix* longlink = get_lnglinks(fn_mass);
 

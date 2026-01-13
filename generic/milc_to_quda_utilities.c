@@ -171,7 +171,50 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
       terminate(2);
     }
   }
-}
+} // load_quda_default_eig_args
+
+void print_quda_eig_args(QudaEigensolverArgs_t *eig_args){
+
+  char myname[] = "print_quda_eig_args";
+
+  node0_printf("%s:", myname);
+  node0_printf(" struct_size = %d\n", eig_args->struct_size);
+  node0_printf(" n_conv = %d\n", eig_args->n_conv);
+  node0_printf(" n_ev_deflate = %d\n", eig_args->n_ev_deflate);
+  node0_printf(" n_ev = %d\n", eig_args->n_ev);
+  node0_printf(" n_kr = %d\n", eig_args->n_kr);
+  node0_printf(" eig_type = %d\n", eig_args->eig_type);
+  node0_printf(" spectrum = %d\n", eig_args->spectrum);
+  node0_printf(" block_size = %d\n", eig_args->block_size);
+  node0_printf(" max_restarts = %d\n", eig_args->max_restarts);
+  node0_printf(" batched_rotate = %d\n", eig_args->batched_rotate);
+  node0_printf(" tol_restart = %e\n", eig_args->tol_restart);
+  node0_printf(" use_poly_acc = %d\n", eig_args->use_poly_acc);
+  node0_printf(" poly_deg = %d\n", eig_args->poly_deg);
+  node0_printf(" a_min = %e\n", eig_args->a_min);
+  node0_printf(" a_max = %e\n", eig_args->a_max);
+  node0_printf(" compute_evals_batch_size = %d\n", eig_args->compute_evals_batch_size);
+  node0_printf(" tol = %e\n", eig_args->tol);
+  node0_printf(" qr_tol = %e\n", eig_args->qr_tol);
+  node0_printf(" prec_eigensolver = %d\n", eig_args->prec_eigensolver);
+  node0_printf(" require_convergence = %d\n", eig_args->require_convergence);
+  node0_printf(" check_interval = %d\n", eig_args->check_interval);
+  node0_printf(" preserve_evals = %d\n", eig_args->preserve_evals);
+  node0_printf(" preserve_deflation = %d\n", eig_args->preserve_deflation);
+  node0_printf(" use_norm_op = %d\n", eig_args->use_norm_op);
+  node0_printf(" use_pc = %d\n", eig_args->use_pc);
+  node0_printf(" use_dagger = %d\n", eig_args->use_dagger);
+  node0_printf(" use_eigen_qr = %d\n", eig_args->use_eigen_qr);
+  node0_printf(" compute_gamma5 = %d\n", eig_args->compute_gamma5);
+  node0_printf(" compute_svd = %d\n", eig_args->compute_svd);
+  node0_printf(" arpack_check = %d\n", eig_args->arpack_check);
+  node0_printf(" vec_infile = %s\n", eig_args->vec_infile);
+  node0_printf(" vec_outfile = %s\n", eig_args->vec_outfile);
+  node0_printf(" save_prec = %d\n", eig_args->save_prec);
+  node0_printf(" partfile = %d\n", eig_args->partfile);
+  node0_printf(" io_parity_inflate = %d\n", eig_args->io_parity_inflate);
+
+} // print_quda_eig_args
 /* milc_to_quda_utilities */
 
 

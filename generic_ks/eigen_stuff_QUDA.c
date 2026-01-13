@@ -66,7 +66,18 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   
 #ifdef USE_EIG_GPU
 
-  // Here we use QUDA for the eigensolution or for reading is own eigenvector file
+  /**
+   * Here we use QUDA for the eigensolution or for reading is own eigenvector file
+   *
+   * Calling qudaLoadDeflationSpace with QUDA_MILC_EIG_COMPUTE triggers a
+   * dummy inversion via qudaInvertDeflatable (dummy point source and want inv_args.max_iter=1
+   * in this case). This triggers a call to QUDA's deflate functions, which will
+   * attempt to get the eigenvectors. Generally, this will mean a fresh eigensolve,
+   * however, if eig_args.vec_infile is not empty, it will instead attempt to load
+   * eigenvectors from the specified file. So this case handles both a fresh QUDA eigensolve
+   * and loading QUDA eigenvectors from file with the behavior switching based on whether
+   * or not a filename is provided.
+  **/
 
   int quda_does_eigensolve = (param.ks_eigen_startflag == FRESH);
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
@@ -81,9 +92,14 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
 
 #else
 
-  int quda_does_eigensolve = 0;
+  /**
+   * Here, eigenvectors were loaded from file(s) by MILC or computed with a non-QUDA eigensolver
+   *
+   * Calling qudaLoadDeflationSpace with QUDA_MILC_EIG_LOAD results in QUDA reading a single parity
+   * of eigenvectors from MILC's eigVec array.
+  **/
 
-  // Here, eigenvectors were loaded from file(s) by MILC or computed with a non-QUDA eigensolver
+  int quda_does_eigensolve = 0;
   
   // Eigenvector file parity is set in reload_ks_eigen() when the file is loaded by MILC
   inv_args.evenodd = (param.eigen_param.parity == EVEN) ? QUDA_EVEN_PARITY : QUDA_ODD_PARITY;
@@ -100,12 +116,20 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
     
 #endif
 
+  /**
+   * Here, the other parity of eigenvectors is loaded into QUDA
+   *
+   * Calling qudaLoadDeflationSpace with QUDA_MILC_EIG_FROM_OTHER_PARITY results in QUDA
+   * computing one parity eigenvectors by applying Dslash to the other parity eigenvectors.
+   * This requires that the other parity eigenvectors are already loaded into QUDA.
+  **/
+
   // Reconstruct other parity eigenvectors in QUDA
   dtime = -dclock();
   inv_args.evenodd = (inv_args.evenodd == QUDA_EVEN_PARITY) ? QUDA_ODD_PARITY : QUDA_EVEN_PARITY;
   qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
   dtime += dclock();
-  node0_printf( "Time to reconstruct other parity eivenvectors = %g s\n", dtime );
+  node0_printf( "Time to reconstruct other parity eigenvectors = %g s\n", dtime );
 
 } // load_evecs_quda
 
