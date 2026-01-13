@@ -44,7 +44,8 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   //  node0_printf("Entered %s\n", myname);
 
-#if 1
+  if(1){
+    //  if(nsrc <= 1){ // DEBUG.  Sole for each source separately
 
   QudaInvertArgs_t inv_args;
   int i;
@@ -169,10 +170,11 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   
+  if(!qic->deflate) eig_args.n_ev_deflate = 0; // Deflate only if desired 
   if(eig_args.n_ev_deflate == 0){
-    node0_printf("Solving for %d source(s) without deflation\n", nsrc);
+    node0_printf("Solving for %d source(s) without deflation for parity %d\n", nsrc, parity);
   } else {
-    node0_printf("Solving for %d source(s) with deflation\n", nsrc);;
+    node0_printf("Solving for %d source(s) with deflation for parity %d\n", nsrc, parity);
   }
   
   qudaInvertMsrcDeflatable(MILC_PRECISION,
@@ -226,7 +228,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   // the number of iterations for a single solve times the number of sources.
   return num_iters * nsrc;
   
-#else
+  } else {
 
   /* Debug: Solve separately, rather than batch */
   int num_iters = 0;
@@ -236,7 +238,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   }
   return num_iters;
 
-#endif /* if 1 */
+  }
 }
 
 /********************************************************************/
