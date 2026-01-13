@@ -133,6 +133,12 @@ write_tslice_values(char *tag, int jr, Real mass1, Real charge1,
     }
   }
 
+#if 0
+  // DEBUG
+  printf("JTMU0 %20.12f %20.12f %20.12f %20.12f\n", 
+	 jtmu[0], jtmu[1], jtmu[2], jtmu[3]);
+#endif
+
   /* Write the results for each time slice */
   for(int t = 0; t < param.nt; t++){
     if(jr < 0){
@@ -328,7 +334,7 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
 
   copy_v_field(vec, outvecs[0]);
   destroy_v_field(outvecs[0]);
-  
+
   ptime += dclock();
 #ifdef CGTIME
   if(parity == EVEN){
@@ -408,7 +414,7 @@ collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
 #if 0
 	node0_printf("Source %d is %d %d %d %d\n", is, ex, ey, ez, et);
 #endif
-
+	
 	/* Apply source thinning */
 	copy_v_field( gr[is], gr0 );
 	thin_source( gr[is], d, ex, ey, ez, et );
@@ -418,6 +424,20 @@ collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
 	if(Nvecs > 0){
 	  project_out(gr[is], eigVec, Nvecs, parity);
 	}
+#if 0
+	// DEBUG
+	int i;
+	FORSOMEFIELDPARITY(i, parity){
+	  if(lattice[i].t == 0){
+	    printf("GR[%d] %d %d %d %d %30.20f %30.20f %30.20f %30.20f %30.20f %30.20f\n", is,
+		   lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t,
+		   gr[is][i].c[0].real, gr[is][i].c[0].imag,
+		   gr[is][i].c[1].real, gr[is][i].c[1].imag,
+		   gr[is][i].c[2].real, gr[is][i].c[2].imag);
+	  }
+	} END_LOOP;
+#endif
+	
 #if 0
 	/* DEBUG */
 	/* Check the norm of the reduced source */
@@ -1450,7 +1470,7 @@ block_currents_delta_udlsc( int n_masses, Real **j_mu[], Real masses[],
   quark_invert_control *qic_c  = &qic[4];
 
   /* Construct current density from the list of sources */
-
+  
 #ifdef OPT_UDLSC
   node0_printf("Solving sloppily for all EVEN displacements for mass diff %g %g and %g %g\n",
 	       m_u, m_d, m_l, m_s);
@@ -1502,6 +1522,7 @@ block_currents_delta_udlsc( int n_masses, Real **j_mu[], Real masses[],
     block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, ODD,
 			      qic_c, fn_c, gr_odd);
   }
+
 }
 
 
@@ -1545,6 +1566,8 @@ block_currents_deltam( int n_masses, Real **j_mu[], Real masses[],
  * For nmass=1, this function emulates MILC's exact_current()
  * For nmass=2, this function emulates MILC's exact_current_delta_ls()
  * For nmass=3, this function emulates MILC's exact_current_delta_udus
+ *
+ * Both parity eigenvectors must be loaded into QUDA before calling this function.
  */
 static void
 exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp_ferm_links_t *fn_mass){
@@ -1565,7 +1588,7 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
     node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", __func__);
   }
   
-  QudaInvertArgs_t inv_args;
+  QudaInvertArgs_t inv_args; // To set invertParams and gaugeParams in QUDA
   inv_args.mixed_precision = 0;
   inv_args.naik_epsilon = fn_mass->eps_naik;
 #if (FERM_ACTION==HISQ)
@@ -1574,41 +1597,35 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   inv_args.tadpole = u0;
 #endif
 
-  QudaEigensolverArgs_t eig_args;
+  QudaEigensolverArgs_t eig_args; // To tell QUDA how many eigenvectors to use
 
 #ifdef USE_EIG_GPU
 
   // Here we use QUDA for the eigensolution or for reading is own eigenvector file
-
   int quda_does_eigensolve = (param.ks_eigen_startflag == FRESH);
-
-  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
 
 #else
 
   // Here, eigenvectors were loaded from file(s) by MILC or by a non-QUDA eigensolver
-
   int quda_does_eigensolve = 0;
-
-  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
 
 #endif
 
-  /* Specialization */
-  eig_args.partfile = QUDA_BOOLEAN_TRUE;
-  eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
-  eig_args.check_interval = 1;
-  eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
-  strcpy( eig_args.vec_infile, "" );
-  strcpy( eig_args.vec_outfile, "" );
+  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
+
+//  /* Specialization */
+//  eig_args.partfile = QUDA_BOOLEAN_TRUE;
+//  eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
+//  eig_args.check_interval = 1;
+//  eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
+//  strcpy( eig_args.vec_infile, "" );
+//  strcpy( eig_args.vec_outfile, "" );
 
   
   su3_matrix* fatlink = get_fatlinks(fn_mass);
   su3_matrix* longlink = get_lnglinks(fn_mass);
 
   // Compute exact current via QUDA
-  // FIXME(?): Here I am just passing jlow_mu to QUDA and filling it there in the
-  // same way that MILC's exact_current fills it. I'm not sure if this is the ideal approach or not.
   node0_printf("Calling qudaExactCurrent with fatlink %x and longlink %x, jlow_mu1 %x jlow_mu2 %x\n", fatlink, longlink, jlow_mu1, jlow_mu2); fflush(stdout);
   qudaExactCurrent(MILC_PRECISION, MILC_PRECISION, fatlink, longlink, ape_links, nmass, masses, inv_args, eig_args, jlow_mu1, jlow_mu2, refresh);
   node0_printf("Done with qudaExactCurrent\n"); fflush(stdout);
@@ -2185,7 +2202,24 @@ write_jhi(char tag[], int n_masses, int nr, int jrand, Real masses[],
       write_tslice_values(tag, jrand+ir, masses[3], charges[3], 0., 0., j_mu[3][ir]);
     for(int ir = 0; ir < nr; ir++)
       write_tslice_values(tag, jrand+ir, masses[4], charges[4], 0., 0., j_mu[4][ir]);
+
+#if 0
+    // DEBUG
+    int i;
+    FORALLFIELDSITES(i){
+      if(lattice[i].t == 0){
+	for(int ir = 0; ir < nr; ir++){
+	  printf("JMU0[%d] %d %d %d %d %30.20f %30.20f %30.20f %30.20f\n", ir,
+		  lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t,
+		  j_mu[0][ir][4*i], j_mu[0][ir][4*i+1],
+		  j_mu[0][ir][4*i+2], j_mu[0][ir][4*i+3]);
+	}
+      }
+    }
+#endif
+    
     break;
+    
   }
 #else
   for(int j = 0; j < n_masses; j++)
