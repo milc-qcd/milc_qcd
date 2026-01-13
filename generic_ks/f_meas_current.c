@@ -1605,6 +1605,7 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
 #else
   // Here, eigenvectors were loaded from file(s) by MILC or by a non-QUDA eigensolver
   int quda_does_eigensolve = 0;
+#endif
 
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
 
