@@ -122,8 +122,9 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
     eig_args->block_size = blockSize;
     // Number of eigenvectors QUDA should expect
     eig_args->n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
-    // Number of eigenvectors QUDA uses for deflation.
-    eig_args->n_ev_deflate = eig_args->n_conv;
+    // Number of eigenvectors QUDA uses for deflation must be set with each inversion
+    eig_args->n_ev_deflate = param.eigen_param.Nvecs;
+ 
     // Number of eigenvectors
     eig_args->n_ev = eig_args->n_conv;
     eig_args->n_kr = (param.eigen_param.Nkr < eig_args->n_ev ) ? 2*eig_args->n_ev : param.eigen_param.Nkr;
@@ -178,7 +179,7 @@ void print_quda_eig_args(QudaEigensolverArgs_t *eig_args){
   char myname[] = "print_quda_eig_args";
 
   node0_printf("%s:", myname);
-  node0_printf(" struct_size = %d\n", eig_args->struct_size);
+  node0_printf(" struct_size = %lu\n", eig_args->struct_size);
   node0_printf(" n_conv = %d\n", eig_args->n_conv);
   node0_printf(" n_ev_deflate = %d\n", eig_args->n_ev_deflate);
   node0_printf(" n_ev = %d\n", eig_args->n_ev);

@@ -1608,6 +1608,9 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
 #endif
 
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
+  eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
+  eig_args.n_ev = eig_args.n_conv;
+  if(!quda_does_eigensolve)eig_args.n_kr = eig_args.n_ev + 10;   // Work around for QUDA fussiness
 
 //  /* Specialization */
 //  eig_args.partfile = QUDA_BOOLEAN_TRUE;
