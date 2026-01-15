@@ -44,7 +44,8 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   //  node0_printf("Entered %s\n", myname);
 
-#if 1
+  if(1){
+    //  if(nsrc <= 1){ // DEBUG.  Sole for each source separately
 
   QudaInvertArgs_t inv_args;
   int i;
@@ -150,6 +151,9 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
   strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
+  eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
+  eig_args.n_ev = eig_args.n_conv;
+  if(!quda_does_eigensolve)eig_args.n_kr = eig_args.n_ev + 10;   // Work around for QUDA fussiness
 
  #else
   
@@ -163,17 +167,21 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
       
   // Adjustments to default eig_args
   
-  int parity = qic->parity;
+  eig_args.n_ev_deflate = ( qic->deflate ) ? param.eigen_param.Nvecs : 0;
   // QUDA currently doesn't support deflation with the relative residual stopping condition 
   if(qic->relresid > 0.) eig_args.n_ev_deflate = 0;
+
+  int parity = qic->parity;
   eig_args.use_norm_op = ( parity == EVENANDODD ) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   eig_args.use_pc = ( parity != EVENANDODD) ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-  
+
   if(eig_args.n_ev_deflate == 0){
-    node0_printf("Solving for %d source(s) without deflation\n", nsrc);
+    node0_printf("Solving for %d source(s) without deflation for parity %d\n", nsrc, parity);
   } else {
-    node0_printf("Solving for %d source(s) with deflation\n", nsrc);;
+    node0_printf("Solving for %d source(s) with deflation for parity %d\n", nsrc, parity);
   }
+  
+  print_quda_eig_args(&eig_args); // For debugging
   
   qudaInvertMsrcDeflatable(MILC_PRECISION,
 			   quda_precision,
@@ -226,7 +234,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   // the number of iterations for a single solve times the number of sources.
   return num_iters * nsrc;
   
-#else
+  } else {
 
   /* Debug: Solve separately, rather than batch */
   int num_iters = 0;
@@ -236,7 +244,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   }
   return num_iters;
 
-#endif /* if 1 */
+  }
 }
 
 /********************************************************************/

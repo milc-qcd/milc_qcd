@@ -252,6 +252,10 @@ int readin(int prompt) {
 
     /* number of eigenpairs */
     IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
+    /* The usual case. May be changed by I/O routines */
+    param.eigen_param.parity = EVEN;
+    eigenvectors_offloaded = 0;
+    param.eigen_param.Nvecs_in = param.eigen_param.Nvecs;  /* Default value */
 
     IF_OK if(param.eigen_param.Nvecs > 0){
 
@@ -268,8 +272,8 @@ int readin(int prompt) {
       /* Additional parameters for QUDA deflation */
 #if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU))
       if(param.ks_eigen_startflag == RELOAD_ASCII || 
-		      param.ks_eigen_startflag == RELOAD_SERIAL ||
-		      param.ks_eigen_startflag == RELOAD_PARALLEL ){
+	 param.ks_eigen_startflag == RELOAD_SERIAL ||
+	 param.ks_eigen_startflag == RELOAD_PARALLEL ){
         /* allow file to have more eigenpairs than will be used for deflation */
         IF_OK status += get_i(stdin, prompt,"file_number_of_eigenpairs", &param.eigen_param.Nvecs_in);
         /* eigensolver precision needs to be set for QUDA */ 
@@ -291,49 +295,15 @@ int readin(int prompt) {
 
       /* If we are reading in eigenpairs, we don't regenerate them */
 
-#if EIGMODE != EIGCG
-      if(param.ks_eigen_startflag == FRESH){
-
 	/*------------------------------------------------------------*/
 	/* Dirac eigenpair parameters                                 */
 	/*------------------------------------------------------------*/
-
+	
+      if(param.ks_eigen_startflag == FRESH){
+	
 	status += read_ks_eigen_param(&param.eigen_param, status, prompt);
 
       }
-#else
-
-      /* for eigcg */
-
-      /* maximum number of eigenvectors */
-      param.eigcgp.Nvecs_max =  param.eigen_param.Nvecs;
-
-      /* If we are reading in eigenpairs, we don't regenerate them */
-
-      if(param.ks_eigen_startflag == FRESH){
-
-
-	/* restart for Lanczos */
-	IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
-
-	/* number of eigenvectors per inversion */
-	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals_per_inversion", &param.eigcgp.Nvecs);
-
-	IF_OK {
-	  if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
-	    printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
-	    status++;
-	  }
-	}
-      } else {
-	param.eigcgp.m = 0;
-	param.eigcgp.Nvecs = 0;
-      }
-
-      param.eigcgp.Nvecs_curr = 0;
-      param.eigcgp.H = NULL;
-#endif
-
     }
 
     /*------------------------------------------------------------*/

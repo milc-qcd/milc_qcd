@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 
       /* Allocate space on host for eigenpairs */
       eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
-      eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
+      eigVec = (dsu3_vector **)malloc(param.eigen_param.Nvecs*sizeof(dsu3_vector *));
       for(int i=0; i < param.eigen_param.Nvecs; i++){
 	eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 	if(eigVec[i] == NULL){
