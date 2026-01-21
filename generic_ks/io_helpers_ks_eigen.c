@@ -173,6 +173,11 @@ reload_ks_eigen_file(char *eigfile, int serpar, int *Nvecs, Real *eigVal,
 	status = 1;
       }
     }
+
+    /* QUDA eigenvector files do not contain the eigenvalues
+     * so they need to be generated */
+    if(status == 0) reset_eigenvalues( eigVec, eigVal, *Nvecs, parity, fn);
+
   }
   close_ks_eigen_infile(infile);
   
