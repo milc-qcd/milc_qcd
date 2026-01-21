@@ -282,6 +282,16 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
     free(tempvec);
 }
 
+void dslash_fn_field_cpu( su3_vector *src, su3_vector *dest, int parity,
+			  fn_links_t *fn) {
+    
+  msg_tag *tag[16];
+
+  dslash_fn_field_special(src, dest, parity, tag, 1, fn);
+  cleanup_one_gather_set(tag);
+
+}
+
 void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
 		      fn_links_t *fn) {
     int dir;
