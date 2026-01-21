@@ -303,10 +303,10 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   if(qic->parity == EVEN){
     inv_args.evenodd = QUDA_EVEN_PARITY;
-    node0_printf("%s: Using QUDA's block solver with EVEN parity %x\n", myname);
+    node0_printf("%s: Using QUDA's block solver with EVEN parity\n", myname);
   }else if(qic->parity == ODD){
     inv_args.evenodd = QUDA_ODD_PARITY;
-    node0_printf("%s: Using QUDA's block solver with ODD parity %x\n", myname);
+    node0_printf("%s: Using QUDA's block solver with ODD parity\n", myname);
   }else{
     printf("%s: Unrecognised parity\n",myname);
     terminate(2);
