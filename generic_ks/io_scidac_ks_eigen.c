@@ -482,12 +482,12 @@ read_ks_eigenvector(QIO_Reader *infile, int packed, su3_vector *eigVec, Real *ei
       terminate(1);
     }
 
-//  if(packed){
-//    double dt = -dclock();
-//    unpack_field(eigVec, sizeof(su3_vector));
-//    dt += dclock();
-//    node0_printf("%s unpack time %0.2f\n",__func__,dt);
-//  }
+  if(packed){
+    double dt = -dclock();
+    unpack_field(eigVec, sizeof(su3_vector));
+    dt += dclock();
+    node0_printf("%s unpack time %0.2f\n",__func__,dt);
+  }
 
   if(status != QIO_EOF){
     xml = QIO_string_ptr(recxml);
@@ -738,10 +738,10 @@ read_grid_ks_eigenvector(char *eigfile, int *Nvecs, su3_vector *eigVec, Real *ei
 
   fclose(fpt);
 
-  double dt = -dclock();
-  unpack_grid_field(eigVec, sizeof(su3_vector));
-  dt += dclock();
-  node0_printf("%s unpack time %0.2f\n",__func__,dt);
+//  double dt = -dclock();
+//  unpack_grid_field(eigVec, sizeof(su3_vector));
+//  dt += dclock();
+//  node0_printf("%s unpack time %0.2f\n",__func__,dt);
 
   return status;
 
