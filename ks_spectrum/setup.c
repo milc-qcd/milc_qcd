@@ -706,7 +706,8 @@ int readin(int prompt) {
 				  &param.ksp[nprop].naik_term_epsilon);
 	    if(i == 0){
 	      common_naik = param.ksp[nprop].naik_term_epsilon;
-	    } else if (param.ksp[nprop].naik_term_epsilon != common_naik){
+	    } else if (param.ksp[nprop].naik_term_epsilon != common_naik &&
+		       param.set_type[k] != SINGLES_SET){
 	      node0_printf("ERROR: All propagators in a multimaws set must have the same Naik epsilon\n");
 	      status++;
 	    }
