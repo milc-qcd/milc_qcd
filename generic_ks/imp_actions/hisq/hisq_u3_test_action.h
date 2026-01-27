@@ -111,14 +111,14 @@
     };
     static int path_length_in_3[NUM_BASIC_PATHS_3] = {1,3};
     static int quark_action_npaths_3 = NUM_BASIC_PATHS_3 ;
-//    static Real path_coeff_3[NUM_BASIC_PATHS_3] = {
-//       1.0/8.0,        /* one link */
-//       -1.0/24.0,                 /* Naik */
-//    };
     static Real path_coeff_3[NUM_BASIC_PATHS_3] = {
-      (0.0),        /* one link */
-      (0.0),        /* Naik */
+       1.0/8.0,        /* one link */
+       -1.0/24.0,                 /* Naik */
     };
+//    static Real path_coeff_3[NUM_BASIC_PATHS_3] = {
+//      (0.0),        /* one link */
+//      (0.0),        /* Naik */
+//    };
 #endif /* IMP_QUARK_ACTION_INFO_ONLY */
 
 
