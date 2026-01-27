@@ -9,7 +9,7 @@
 #ifdef HAVE_QIO
 #include <qio.h>
 #else
-BOMB THE COMPILE
+#error Must compile with QIO
 #endif
 
 
