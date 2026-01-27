@@ -351,12 +351,14 @@ int main(int argc, char *argv[])
 
       ENDTIME("save eigenvectors (if requested)");
 #endif
-      
+     
+#ifdef HAVE_QUDA 
       /* Compute or reread eigenpairs with QUDA or just load the above
 	 ones into QUDA. */
 
       QIO_verbose(QIO_VERB_DEBUG);
       load_evecs_quda(fn);
+#endif
 
       /* Unapply twisted boundary conditions on the fermion links and
 	 restore conventional KS phases and antiperiodic BC, if

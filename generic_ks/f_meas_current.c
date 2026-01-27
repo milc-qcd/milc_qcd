@@ -2030,9 +2030,9 @@ write_jlow(int n_masses, Real masses[], Real charges[], Real *jlow_mu[]){
     write_tslice_values("LOW", -1, masses[0], charges[0], masses[2], charges[2], jlow_mu[2]);
     break;
     
-  case(5):  /* u - d,  l - s,  s, c */
+  case(5):  /* u - d,  u - s,  s, c */
     write_tslice_values("LOW", -1, masses[0], charges[0], masses[1], charges[1], jlow_mu[0]);
-    write_tslice_values("LOW", -1, masses[2], charges[2], masses[3], charges[3], jlow_mu[2]);
+    write_tslice_values("LOW", -1, masses[0], charges[0], masses[3], charges[3], jlow_mu[2]);
     write_tslice_values("LOW", -1, masses[3], charges[3], 0., 0., jlow_mu[3]);
     write_tslice_values("LOW", -1, masses[4], charges[4], 0., 0., jlow_mu[4]);
     break;
