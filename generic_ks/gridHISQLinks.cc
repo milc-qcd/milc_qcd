@@ -12,7 +12,7 @@ extern "C" {
 #include "../include/mGrid/mGrid_internal.h"
 #include "../include/mGrid/mGrid.h"
 #include "../include/milc_datatypes.h"
-#include "../include/mGrid/mGrid_assert.h"
+//#include "../include/mGrid/mGrid_assert.h"
 
 #include "../generic/gridMap.h"
 #include <Grid/Grid.h>
@@ -31,27 +31,42 @@ hisqLinks (GRID_info_t *info,
 {
   auto start = std::chrono::system_clock::now();
 
-  // Instantiate the Smear_HISQ class
-  Smear_HISQ<Gimpl> HL(CGrid, path_coeff);
-
   // Copy MILC-formatted thin links
   LatticeGaugeField Umu(CGrid);
   milcGaugeFieldToGrid<LatticeGaugeField, Complex>(in, &Umu);
 
   // Allocate space for output fat and long links
   LatticeGaugeField fatlinks(CGrid);
-  GRID_ASSERT(&fatlinks != NULL, GRID_MEM_ERROR);
+  GRID_ASSERT(&fatlinks != NULL);
   LatticeGaugeField lnglinks(CGrid);
-  GRID_ASSERT(&lnglinks != NULL, GRID_MEM_ERROR);
+  GRID_ASSERT(&lnglinks != NULL);
+
+  // Set action coefficients
+  RealD pc_one_link       = path_coeff[0];
+  RealD pc_naik           = path_coeff[1];
+  RealD pc_three_staple   = path_coeff[2];
+  RealD pc_five_staple    = path_coeff[3];
+  RealD pc_seven_staple   = path_coeff[4];
+  RealD pc_lepage         = path_coeff[5];
+  bool backupSVD = false;
+  RealD svdTolerance = 0.;
+  RealD eigenCutoff = 0.;
+  
+  HISFContext ctx(pc_one_link, pc_three_staple, pc_five_staple, pc_seven_staple,
+		  pc_lepage, pc_naik, backupSVD, svdTolerance, eigenCutoff);
+
+  // Instantiate the HISQ fermion implementation class
+  bool calculateStaggeredPhases = true;
+  HighlyImprovedStaggeredFermionImpl<Gimpl> HL(CGrid, calculateStaggeredPhases);
 
   if(lng != NULL){
-    HL.smear(fatlinks, lnglinks, Umu);
+    HL.smear(fatlinks, lnglinks, Umu, ctx);
     std::cout << "Done with smear" << std::endl << std::flush;
     gridToMilcGaugeField<LatticeGaugeField, Complex>(fat, &fatlinks);
     gridToMilcGaugeField<LatticeGaugeField, Complex>(lng, &lnglinks);
   }
   else{
-    HL.smear(fatlinks, lnglinks, Umu);
+    HL.smear(fatlinks, lnglinks, Umu, ctx);
     std::cout << "Done with smear" << std::endl << std::flush;
     gridToMilcGaugeField<LatticeGaugeField, Complex>(fat, &fatlinks);
   }
@@ -83,9 +98,26 @@ hisqAuxLinks (GRID_info_t *info,
 
   milcGaugeFieldToGrid<LatticeGaugeField, Complex>(V, &Vgrid);
 
+  // Set action coefficients
+  RealD pc_one_link       = path_coeff[0];
+  RealD pc_naik           = path_coeff[1];
+  RealD pc_three_staple   = path_coeff[2];
+  RealD pc_five_staple    = path_coeff[3];
+  RealD pc_seven_staple   = path_coeff[4];
+  RealD pc_lepage         = path_coeff[5];
+  bool backupSVD = false;
+  RealD svdTolerance = 0.;
+  RealD eigenCutoff = 0.;
+  
+  HISFContext ctx(pc_one_link, pc_three_staple, pc_five_staple, pc_seven_staple,
+		  pc_lepage, pc_naik, backupSVD, svdTolerance, eigenCutoff);
+
+  // Instantiate the HISQ fermion implementation class
+  bool calculateStaggeredPhases = true;
+  HighlyImprovedStaggeredFermionImpl<Gimpl> HL(CGrid, calculateStaggeredPhases);
+
   // Do the reunitarization
-  Smear_HISQ<Gimpl> HL(CGrid, path_coeff);
-  HL.projectU3(Wgrid, Vgrid);
+  HL.project(Wgrid, Vgrid);
   
   gridToMilcGaugeField<LatticeGaugeField, Complex>(V, &Vgrid);
   gridToMilcGaugeField<LatticeGaugeField, Complex>(W, &Wgrid);
