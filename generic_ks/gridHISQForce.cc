@@ -20,6 +20,7 @@ extern "C" {
 
 using namespace Grid;
 
+#if 0
 template<typename T>
 static HISQParameters<T> get_hisq_param(int n_naiks,
 					std::array<T,GRID_MAX_NAIK> eps_naiks, fermion_links_t *fl){
@@ -48,6 +49,8 @@ static HISQParameters<T> get_hisq_param(int n_naiks,
 	  cnaik    , diff_c1     , diff_cnaik);
   return hisq_param;
 }
+
+#endif
 
 // residues and multi_x are indexed by the pseudofermion fields
 // multi_x[i] points to a color vector field.
@@ -94,11 +97,11 @@ hisqForce (GRID_info_t *info,
 
   int n_naiks = fermion_links_get_n_naiks(fl);
   Real *eps_naik = fermion_links_get_eps_naik(fl);
-  std::array<Real,GRID_MAX_NAIK> eps_naiks;
+  std::vector<RealD> eps_naiks(n_naiks);
   for(int i = 0; i < n_naiks; i++)
     eps_naiks[i] = eps_naik[i];
   
-  HISQParameters<Real> hisq_param = get_hisq_param(n_naiks, eps_naiks, fl);
+  //  HISQParameters<Real> hisq_param = get_hisq_param(n_naiks, eps_naiks, fl);
 
   bool allow_svd = false, svd_only = false;
   Real svd_rel_error = HISQ_REUNIT_SVD_REL_ERROR;
@@ -133,15 +136,31 @@ hisqForce (GRID_info_t *info,
     milcVectorFieldToGrid<FermionField, Complex>(multi_x[i], &vecx[i]);
   }
   
-  HISQReunitSVDParameters<Real> hisq_SVD(allow_svd, svd_only, svd_rel_error,
-					 svd_abs_error, force_filter);
-  
-  //HF.ddVprojectU3(UForce, Umu, Umu, 5e-5);
+  //  HISQReunitSVDParameters<Real> hisq_SVD(allow_svd, svd_only, svd_rel_error,
+  //					 svd_abs_error, force_filter);
 
-  Force_HISQ<Gimpl> HF(CGrid, hisq_param, Wmu, Vmu, Umu, hisq_SVD);
+#if 0
+  // Set action coefficients
+  RealD pc_one_link       = path_coeff[0];
+  RealD pc_naik           = path_coeff[1];
+  RealD pc_three_staple   = path_coeff[2];
+  RealD pc_five_staple    = path_coeff[3];
+  RealD pc_seven_staple   = path_coeff[4];
+  RealD pc_lepage         = path_coeff[5];
+  bool backupSVD = allow_SVD;
+  RealD svdTolerance = 0.;  // IS ABS OR REL ERROR??
+  RealD eigenCutoff = 0.;   // WHAT ??
   
-  HF.force( UForce, vecdt, vecx, orders_naik);
+  HISFContext ctx(pc_one_link, pc_three_staple, pc_five_staple, pc_seven_staple,
+		  pc_lepage, pc_naik, backupSVD, svdTolerance, eigenCutoff);
+#endif
 
+  // Instantiate the HISQ fermion implementation class
+  bool calculateStaggeredPhases = true;
+  HighlyImprovedStaggeredFermionImpl<Gimpl> HL(CGrid, calculateStaggeredPhases);
+  
+  HL.milcSmearDerivative(UForce, Wmu, Vmu, Umu, vecx, vecdt, orders_naik, eps_naiks);
+  
   gridToMilcGaugeField<LatticeGaugeField, Complex>(deriv, &UForce);
 
   auto end = std::chrono::system_clock::now();
@@ -150,7 +169,7 @@ hisqForce (GRID_info_t *info,
 	    << "\n";
 }
 	
-	
+#if 0	
 template<typename LatticeGaugeField, typename Gimpl, typename Complex>
 static void
 reunitDeriv(GRID_info_t *info,
@@ -200,7 +219,7 @@ reunitDeriv(GRID_info_t *info,
   info->final_sec /= 1e3;
 
 }
-	
+#endif	
 
 //====================================================================//
 // The GRID C API for the fermion force
@@ -237,6 +256,7 @@ void GRID_D3_hisq_force(GRID_info_t *info,
 //====================================================================//
 // The GRID C API for testing the reunitarization derivative
 
+#if 0
 void GRID_F3_reunit_deriv( GRID_info_t *info, su3_matrix *V, su3_matrix *dW,
 			   su3_matrix *Q, GRID_4Dgrid * grid_full ){
   //  std::cout << "GRID_F3_reunit_deriv is not supported yet" << std::endl;
@@ -249,3 +269,4 @@ void GRID_D3_reunit_deriv( GRID_info_t *info, su3_matrix *V, su3_matrix *dW,
   reunitDeriv<LatticeGaugeFieldD, StaggeredImplD, ComplexD>(info, V, dW, Q, grid_full->gridD);
 }
 
+#endif
