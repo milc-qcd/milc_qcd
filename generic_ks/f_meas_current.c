@@ -1615,7 +1615,6 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   su3_matrix* longlink = get_lnglinks(fn_mass);
 
   // Compute exact current via QUDA
-  node0_printf("Calling qudaExactCurrent with fatlink %x and longlink %x, jlow_mu1 %x jlow_mu2 %x\n", fatlink, longlink, jlow_mu1, jlow_mu2); fflush(stdout);
   qudaExactCurrent(MILC_PRECISION, MILC_PRECISION, fatlink, longlink, ape_links, nmass, masses, inv_args, eig_args, jlow_mu1, jlow_mu2, refresh);
   node0_printf("Done with qudaExactCurrent\n"); fflush(stdout);
 
