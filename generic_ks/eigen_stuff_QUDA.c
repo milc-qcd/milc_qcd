@@ -85,7 +85,6 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   // Number of eigenvectors QUDA should expect
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
   eig_args.n_ev = eig_args.n_conv;
-  if(!quda_does_eigensolve)eig_args.n_kr = eig_args.n_ev + 10;   // Work around for QUDA fussiness
 
   print_quda_eig_args(&eig_args); // For debugging
 

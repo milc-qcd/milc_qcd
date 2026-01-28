@@ -1610,15 +1610,6 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
   eig_args.n_ev = eig_args.n_conv;
-  if(!quda_does_eigensolve)eig_args.n_kr = eig_args.n_ev + 10;   // Work around for QUDA fussiness
-
-//  /* Specialization */
-//  eig_args.partfile = QUDA_BOOLEAN_TRUE;
-//  eig_args.io_parity_inflate = QUDA_BOOLEAN_TRUE;
-//  eig_args.check_interval = 1;
-//  eig_args.prec_eigensolver = QUDA_DOUBLE_PRECISION;
-//  strcpy( eig_args.vec_infile, "" );
-//  strcpy( eig_args.vec_outfile, "" );
 
   su3_matrix* fatlink = get_fatlinks(fn_mass);
   su3_matrix* longlink = get_lnglinks(fn_mass);

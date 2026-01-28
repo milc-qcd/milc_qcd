@@ -153,7 +153,6 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
   eig_args.n_ev = eig_args.n_conv;
-  if(!quda_does_eigensolve)eig_args.n_kr = eig_args.n_ev + 10;   // Work around for QUDA fussiness
 
  #else
   
