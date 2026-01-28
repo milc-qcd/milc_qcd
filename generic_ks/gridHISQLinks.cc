@@ -16,19 +16,21 @@ extern "C" {
 
 #include "../generic/gridMap.h"
 #include <Grid/Grid.h>
-#include <Grid/qcd/smearing/HISQSmearing.h>
+#include <Grid/qcd/utils/HighlyImprovedStaggeredFermionImpl.h>
 
 using namespace Grid;
 
 template<typename LatticeGaugeField, typename Gimpl, typename Complex>
-static void
-hisqLinks (GRID_info_t *info,
-	   double path_coeff[],
-	   su3_matrix *fat,
-	   su3_matrix *lng,
-	   su3_matrix *in,
-	   GridCartesian *CGrid)
-{
+static void hisqLinks(
+  GRID_info_t* info,
+  double path_coeff[],
+  su3_matrix* fat,
+  su3_matrix* lng,
+  su3_matrix* in,
+  GridCartesian* CGrid,
+  bool reunitarize = false
+) {
+  // start timer
   auto start = std::chrono::system_clock::now();
 
   // Copy MILC-formatted thin links
@@ -41,91 +43,61 @@ hisqLinks (GRID_info_t *info,
   LatticeGaugeField lnglinks(CGrid);
   GRID_ASSERT(&lnglinks != NULL);
 
-  // Set action coefficients
-  RealD pc_one_link       = path_coeff[0];
-  RealD pc_naik           = path_coeff[1];
-  RealD pc_three_staple   = path_coeff[2];
-  RealD pc_five_staple    = path_coeff[3];
-  RealD pc_seven_staple   = path_coeff[4];
-  RealD pc_lepage         = path_coeff[5];
-  bool backupSVD = false;
-  RealD svdTolerance = 0.;
-  RealD eigenCutoff = 0.;
-  
-  HISFContext ctx(pc_one_link, pc_three_staple, pc_five_staple, pc_seven_staple,
-		  pc_lepage, pc_naik, backupSVD, svdTolerance, eigenCutoff);
+  // Instantiate context object
+  HISFContext ctx(
+    path_coeff[0], // 1-link
+    path_coeff[2], // 3-link
+    path_coeff[3], // 5-link
+    path_coeff[4], // 7-link
+    path_coeff[5], // Lepage
+    path_coeff[1]  // Naik
+  );
 
   // Instantiate the HISQ fermion implementation class
-  bool calculateStaggeredPhases = true;
-  HighlyImprovedStaggeredFermionImpl<Gimpl> HL(CGrid, calculateStaggeredPhases);
+  HighlyImprovedStaggeredFermionImpl<Gimpl> hisq(CGrid, false);
 
-  if(lng != NULL){
-    HL.smear(fatlinks, lnglinks, Umu, ctx);
-    std::cout << "Done with smear" << std::endl << std::flush;
-    gridToMilcGaugeField<LatticeGaugeField, Complex>(fat, &fatlinks);
+  // Smear according to context
+  if (lng != NULL) {
+    hisq.smear(fatlinks, lnglinks, Umu, ctx);
     gridToMilcGaugeField<LatticeGaugeField, Complex>(lng, &lnglinks);
   }
-  else{
-    HL.smear(fatlinks, lnglinks, Umu, ctx);
-    std::cout << "Done with smear" << std::endl << std::flush;
-    gridToMilcGaugeField<LatticeGaugeField, Complex>(fat, &fatlinks);
-  }
+  else hisq.smear(fatlinks, Umu, ctx);
+  std::cout << "Done with smear" << std::endl << std::flush;
+  gridToMilcGaugeField<LatticeGaugeField, Complex>(fat, &fatlinks);
 
+  // reunitarization
+  if (reunitarize) hisq.project(fatlinks, fatlinks, ctx);
+
+  // finish timing
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
-  std::cout << "generate fat and long links " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
-	    << "\n";
+  std::cout << "generate fat and long links "
+	    << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+	    << std::endl;
 }
 
 	
 template<typename LatticeGaugeField, typename Gimpl, typename Complex>
-static void
-hisqAuxLinks (GRID_info_t *info,
-	      double path_coeff[],
-	      su3_matrix *U, su3_matrix *V, su3_matrix *W,
-	      GridCartesian *CGrid)
-{
+static void hisqAuxLinks(
+  GRID_info_t* info,
+  double path_coeff[],
+  su3_matrix* U,
+  su3_matrix* V,
+  su3_matrix* W,
+  GridCartesian* CGrid
+) {
+  // start timer
   auto start = std::chrono::system_clock::now();
 
-  // Load U links
-  LatticeGaugeField Ugrid(CGrid);
+  // Do the first level fattening w/ additional reunitarization
+  hisqLinks<LatticeGaugeField, Gimpl, Complex>(info, path_coeff, V, NULL, U, CGrid, true);
 
-  // Do the first level fattening
-  hisqLinks<LatticeGaugeField, Gimpl, Complex>(info, path_coeff, V, NULL, U, CGrid);
-
-  LatticeGaugeField Vgrid(CGrid);
-  LatticeGaugeField Wgrid(CGrid);
-
-  milcGaugeFieldToGrid<LatticeGaugeField, Complex>(V, &Vgrid);
-
-  // Set action coefficients
-  RealD pc_one_link       = path_coeff[0];
-  RealD pc_naik           = path_coeff[1];
-  RealD pc_three_staple   = path_coeff[2];
-  RealD pc_five_staple    = path_coeff[3];
-  RealD pc_seven_staple   = path_coeff[4];
-  RealD pc_lepage         = path_coeff[5];
-  bool backupSVD = false;
-  RealD svdTolerance = 0.;
-  RealD eigenCutoff = 0.;
-  
-  HISFContext ctx(pc_one_link, pc_three_staple, pc_five_staple, pc_seven_staple,
-		  pc_lepage, pc_naik, backupSVD, svdTolerance, eigenCutoff);
-
-  // Instantiate the HISQ fermion implementation class
-  bool calculateStaggeredPhases = true;
-  HighlyImprovedStaggeredFermionImpl<Gimpl> HL(CGrid, calculateStaggeredPhases);
-
-  // Do the reunitarization
-  HL.project(Wgrid, Vgrid);
-  
-  gridToMilcGaugeField<LatticeGaugeField, Complex>(V, &Vgrid);
-  gridToMilcGaugeField<LatticeGaugeField, Complex>(W, &Wgrid);
-
+  // end timer
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
-  std::cout << "generate HISQ aux links " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
-	    << "\n";
+  std::cout << "generate HISQ aux links "
+	    << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+	    << std::endl;
 }
 
 //====================================================================//
