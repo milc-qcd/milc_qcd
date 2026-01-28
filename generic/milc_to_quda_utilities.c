@@ -82,7 +82,7 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
   // Number of eigenvectors to use for deflation must be set with each inversion
   eig_args->n_ev_deflate = param.eigen_param.Nvecs;
   eig_args->n_ev = param.eigen_param.Nvecs;
-  eig_args->n_kr = param.eigen_param.Nvecs + 10;
+  eig_args->n_kr = param.eigen_param.Nvecs + 20;
   eig_args->tol = 1e-8;
   eig_args->max_restarts = 0;
   eig_args->poly_deg = 0;
