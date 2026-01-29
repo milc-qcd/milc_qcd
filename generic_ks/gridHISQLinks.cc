@@ -46,17 +46,18 @@ static void hisqLinks(
 
   // reunitarization "force filter" & backup SVD
   Real eigenvalue_cutoff = (filter) ? HISQ_FORCE_FILTER : 0.;
-  Real svd_tol = 0.;
+  Real rel_svd_tol = HISQ_REUNIT_SVD_REL_ERROR;
+  Real abs_svd_tol = HISQ_REUNIT_SVD_ABS_ERROR;
   bool allow_svd = false;
   bool svd_only = false;
   
 #ifdef HISQ_REUNIT_ALLOW_SVD
   allow_svd = true;
-  svd_tol = HISQ_REUNIT_SVD_REL_ERROR;
 #endif
 
 #ifdef HISQ_REUNIT_SVD_ONLY
   svd_only = true;
+  rel_svd_tol = 0.;
 #endif
 
   // Instantiate context object
@@ -68,7 +69,8 @@ static void hisqLinks(
     path_coeff[5],         // Lepage
     path_coeff[1],         // Naik
     allow_svd || svd_only, // backup SVD
-    svd_tol,               // SVD tolerance
+    rel_svd_tol,           // relative SVD tolerance
+    abs_svd_tol,           // absolute SVD tolerance
     eigenvalue_cutoff      // reunit eig cutoff = "force filter"
   );
 

@@ -89,17 +89,18 @@ static void hisqForce (
 
   ks_action_paths_hisq* ap = get_action_paths_hisq(fl);
   Real eigenvalue_cutoff = HISQ_FORCE_FILTER;
-  Real svd_tol = 0.;
+  Real rel_svd_tol = HISQ_REUNIT_SVD_REL_ERROR;
+  Real abs_svd_tol = HISQ_REUNIT_SVD_ABS_ERROR;
   bool allow_svd = false;
   bool svd_only = false;
   
 #ifdef HISQ_REUNIT_ALLOW_SVD
   allow_svd = true;
-  svd_tol = HISQ_REUNIT_SVD_REL_ERROR;
 #endif
 
 #ifdef HISQ_REUNIT_SVD_ONLY
   svd_only = true;
+  rel_svd_tol = 0.;
 #endif
   
   HISFContext fatCtx(
@@ -110,7 +111,8 @@ static void hisqForce (
     0.0,
     0.0,
     allow_svd || svd_only,
-    svd_tol,
+    rel_svd_tol,
+    abs_svd_tol,
     eigenvalue_cutoff
   );
 
