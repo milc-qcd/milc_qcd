@@ -62,6 +62,116 @@ static HISQParameters<T> get_hisq_param(int n_naiks,
 // deriv[] is indexed by the spacetime dimension
 
 template<typename LatticeGaugeField, typename FermionField, typename Gimpl, typename Complex>
+static void hisqForce (
+  GRID_info_t* info,
+	void* fl_void,
+	Real residues[],
+	su3_vector* multi_x[],
+	int n_orders_naik[],
+	su3_matrix* deriv,
+	GridCartesian* CGrid
+) {
+  fermion_links_t* fl = (fermion_links_t*)fl_void;
+  
+  auto start = std::chrono::system_clock::now();
+
+  hisq_auxiliary_t* aux = get_hisq_auxiliary(fl);
+  su3_matrix* Umilc = aux->U_link;
+  su3_matrix* Vmilc = aux->V_link;
+  su3_matrix* Wmilc = aux->W_unitlink;
+
+  LatticeGaugeField Umu(CGrid), Vmu(CGrid), Wmu(CGrid), UForce(CGrid);
+  milcGaugeFieldToGrid<LatticeGaugeField, Complex>(Umilc, &Umu);
+  milcGaugeFieldToGrid<LatticeGaugeField, Complex>(Vmilc, &Vmu);
+  milcGaugeFieldToGrid<LatticeGaugeField, Complex>(Wmilc, &Wmu);
+
+  // -- coefficient preparation -- //
+
+  ks_action_paths_hisq* ap = get_action_paths_hisq(fl);
+  Real eigenvalue_cutoff = HISQ_FORCE_FILTER;
+  Real svd_tol = 0.;
+  bool allow_svd = false;
+  bool svd_only = false;
+  
+#ifdef HISQ_REUNIT_ALLOW_SVD
+  allow_svd = true;
+  svd_tol = HISQ_REUNIT_SVD_REL_ERROR;
+#endif
+
+#ifdef HISQ_REUNIT_SVD_ONLY
+  svd_only = true;
+#endif
+  
+  HISFContext fatCtx(
+    ap->p1.act_path_coeff.one_link,
+    ap->p1.act_path_coeff.three_staple,
+    ap->p1.act_path_coeff.five_staple,
+    ap->p1.act_path_coeff.seven_staple,
+    0.0,
+    0.0,
+    allow_svd || svd_only,
+    svd_tol,
+    eigenvalue_cutoff
+  );
+
+  HISFContext asqCtx(
+    ap->p2.act_path_coeff.one_link,
+    ap->p2.act_path_coeff.three_staple,
+    ap->p2.act_path_coeff.five_staple,
+    ap->p2.act_path_coeff.seven_staple,
+    ap->p2.act_path_coeff.lepage,
+    ap->p2.act_path_coeff.naik
+  );
+
+  // -- naik preparation -- //
+
+  int n_naiks = fermion_links_get_n_naiks(fl);
+  Real* eps_naik = fermion_links_get_eps_naik(fl);
+  std::vector<RealD> eps_naiks(n_naiks);
+  for(int i = 0; i < n_naiks; i++) eps_naiks[i] = eps_naik[i];
+
+  // Make orders_naik
+  std::vector<int> orders_naik(n_naiks);
+  int nterms = 0;
+  for(int i = 0; i< n_naiks; i++) {
+    orders_naik[i] = n_orders_naik[i];
+    nterms += n_orders_naik[i];
+  }
+
+  // Make vecdt
+  std::vector<Real> vecdt(nterms);
+  for(int i = 0; i < nterms; i++) vecdt[i] = 2.*residues[i];
+  
+  // Make vecx
+  std::vector<FermionField> vecx(nterms,CGrid);
+  for(int i = 0; i < nterms; i++)
+  { milcVectorFieldToGrid<FermionField, Complex>(multi_x[i], &vecx[i]); }
+
+  // -- force calculation -- //
+
+  // Instantiate the HISQ fermion implementation class
+  HighlyImprovedStaggeredFermionImpl<Gimpl> hisq(CGrid, false);
+  
+  // Calculate derivative
+  hisq.milcSmearDerivative(
+    UForce, 
+    Wmu, Vmu, Umu, 
+    vecx,
+    fatCtx, asqCtx,
+    vecdt, orders_naik, eps_naiks
+  );
+  
+  gridToMilcGaugeField<LatticeGaugeField, Complex>(deriv, &UForce);
+
+  auto end = std::chrono::system_clock::now();
+  auto elapsed = end - start;
+  std::cout << "generate fat and long links " 
+            << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+	          << std::endl;
+}
+
+/*
+template<typename LatticeGaugeField, typename FermionField, typename Gimpl, typename Complex>
 static void
 hisqForce (GRID_info_t *info,
 	   void *fl_void,
@@ -169,6 +279,7 @@ hisqForce (GRID_info_t *info,
   std::cout << "generate fat and long links " << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
 	    << "\n";
 }
+*/
 	
 #if 0	
 template<typename LatticeGaugeField, typename Gimpl, typename Complex>
