@@ -109,11 +109,7 @@ static void hisqForce (
     ap->p1.act_path_coeff.five_staple,
     ap->p1.act_path_coeff.seven_staple,
     0.0,
-    0.0,
-    allow_svd || svd_only,
-    rel_svd_tol,
-    abs_svd_tol,
-    eigenvalue_cutoff
+    0.0
   );
 
   HISFContext asqCtx(
@@ -151,17 +147,14 @@ static void hisqForce (
 
   // -- force calculation -- //
 
+  // MILC-specific context
+  MILCContext milcCtx(fatCtx, asqCtx, vecdt, eps_naiks, orders_naik);
+
   // Instantiate the HISQ fermion implementation class
   HighlyImprovedStaggeredFermionImpl<Gimpl> hisq(CGrid, false);
   
   // Calculate derivative
-  hisq.milcSmearDerivative(
-    UForce, 
-    Wmu, Vmu, Umu, 
-    vecx,
-    fatCtx, asqCtx,
-    vecdt, orders_naik, eps_naiks
-  );
+  hisq.milcSmearDerivative(UForce, Wmu, Vmu, Umu, vecx, milcCtx);
   
   gridToMilcGaugeField<LatticeGaugeField, Complex>(deriv, &UForce);
 
