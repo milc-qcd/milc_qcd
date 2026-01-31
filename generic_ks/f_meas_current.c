@@ -76,12 +76,12 @@ thin_source(su3_vector *src, int thinning, int ex, int ey, int ez, int et){
   site *s;
   int i;
 
-  FORALLSITES(i,s) {
+  FORALLSITES_OMP(i,s,) {
     if(s->x % thinning != ex || s->y % thinning != ey ||
        s->z % thinning != ez || s->t % thinning != et){
       clearvec(src+i);
     }
-  }
+  } END_LOOP_OMP;
 }
 
 /*****************************************************************************/
@@ -127,11 +127,11 @@ write_tslice_values(char *tag, int jr, Real mass1, Real charge1,
     jtmu[tmu] = 0.;
   }
   int i;
-  FORALLFIELDSITES(i){
+  FORALLFIELDSITES_OMP(i,){
     for(int mu = 0; mu < 4; mu++){
       jtmu[4*lattice[i].t + mu] += j_mu[4*i + mu];
     }
-  }
+  } END_LOOP_OMP;
 
 #if 0
   // DEBUG
@@ -182,12 +182,12 @@ write_jdotA_value(char *tag, int jr, Real mass1, Real charge1,
 
   double jdotA = 0.;
   int i;
-  FORALLFIELDSITES(i){
+  FORALLFIELDSITES_OMP(i, ){
     int mu;
     FORALLUPDIR(mu){
       jdotA += j_mu[4*i + mu] * u1_A[4*i + mu];
     }
-  }
+  } END_LOOP_OMP;
   g_doublesum(&jdotA);
   node0_printf("%.10g\n", jdotA);
 } 
@@ -289,9 +289,9 @@ complex_vec_mult_sub(double_complex *cc, su3_vector *vec1,
   sc.real= (Real)(cc->real) ; 
   sc.imag= (Real)(cc->imag) ;
 
-  FORSOMEFIELDPARITY_OMP(i,parity){
+  FORSOMEFIELDPARITY_OMP(i,parity, ){
     c_scalar_mult_sub_su3vec(&(vec2[i]), (&sc), &(vec1[i])) ;
-  } END_LOOP;
+  } END_LOOP_OMP;
 }
 
 #endif
@@ -402,7 +402,9 @@ collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
 			su3_vector *gr0){
   /* Create thinned sources of the specified parity */
   /* Result in gr */
-  
+
+  double dtime = -dclock();
+
   /* Iterate over displacements within a d^4 cube for this parity. */
   int ex, ey, ez, et;
   int is = 0;
@@ -451,6 +453,9 @@ collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
 	  terminate(1);
 	}
       } /* ex, ey, ez, et */
+  
+  dtime += dclock();
+  node0_printf("Time to collect sources %g\n", dtime);
 }
 
 /************************************************************************/
