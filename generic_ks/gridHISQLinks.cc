@@ -83,17 +83,23 @@ static void hisqLinks(
     gridToMilcGaugeField<LatticeGaugeField, Complex>(lng, &lnglinks);
   } else hisq.smear(fatlinks, Umu, ctx);
   std::cout << "Done with smear" << std::endl << std::flush;
+  if (reunitarize) hisq.project(fatlinks, fatlinks, ctx); // reunitarize
   gridToMilcGaugeField<LatticeGaugeField, Complex>(fat, &fatlinks);
 
-  // reunitarization
-  if (reunitarize) hisq.project(fatlinks, fatlinks, ctx);
-
   // finish timing
-  auto end = std::chrono::system_clock::now();
-  auto elapsed = end - start;
-  std::cout << "generate fat and long links "
-	    << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
-	    << std::endl;
+  if (reunitarize) {
+    auto end = std::chrono::system_clock::now();
+    auto elapsed = end - start;
+    std::cout << "generate reunitarized fat links "
+        << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+        << std::endl;
+  } else {
+    auto end = std::chrono::system_clock::now();
+    auto elapsed = end - start;
+    std::cout << "generate hisq and long links "
+        << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+        << std::endl;
+  }
 }
 
 	
@@ -107,18 +113,8 @@ static void hisqAuxLinks(
   GridCartesian* CGrid,
   bool filter = false
 ) {
-  // start timer
-  auto start = std::chrono::system_clock::now();
-
   // Do the first level fattening w/ additional reunitarization
   hisqLinks<LatticeGaugeField, Gimpl, Complex>(info, path_coeff, V, NULL, U, CGrid, true, filter);
-
-  // end timer
-  auto end = std::chrono::system_clock::now();
-  auto elapsed = end - start;
-  std::cout << "generate HISQ aux links "
-	    << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
-	    << std::endl;
 }
 
 //====================================================================//
