@@ -158,15 +158,16 @@ static void hisqForce (
   HighlyImprovedStaggeredFermionImpl<Gimpl> hisq(CGrid, calculateStaggeredPhases);
   
   // Calculate derivative
+  hisq.smear(Vmu, Umu, milcCtx.fat7); // apparently Vmu is empty, so must resmear :(
   hisq.milcSmearDerivative(UForce, Wmu, Vmu, Umu, vecx, milcCtx);
   
   gridToMilcGaugeField<LatticeGaugeField, Complex>(deriv, &UForce);
 
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
-  std::cout << "generate fat and long links " 
+  std::cout << "Grid fermion force " 
             << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
-	    << std::endl;
+	          << std::endl;
 }
 
 /*
