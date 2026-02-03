@@ -63,7 +63,8 @@ then
        echo "Scalar configure"
 
        ${SRCDIR}/configure \
-            --prefix=${INSTALLDIR} \
+  	    --prefix=${INSTALLDIR} \
+	    --enable-gen-scalar=yes \
             --enable-simd=GEN \
             --enable-comms=none \
 	    --disable-fermion-reps       \
