@@ -64,12 +64,12 @@ static HISQParameters<T> get_hisq_param(int n_naiks,
 template<typename LatticeGaugeField, typename FermionField, typename Gimpl, typename Complex>
 static void hisqForce (
   GRID_info_t* info,
-	void* fl_void,
-	Real residues[],
-	su3_vector* multi_x[],
-	int n_orders_naik[],
-	su3_matrix* deriv,
-	GridCartesian* CGrid
+  void* fl_void,
+  Real residues[],
+  su3_vector* multi_x[],
+  int n_orders_naik[],
+  su3_matrix* deriv,
+  GridCartesian* CGrid
 ) {
   fermion_links_t* fl = (fermion_links_t*)fl_void;
   
@@ -138,12 +138,15 @@ static void hisqForce (
 
   // Make vecdt
   std::vector<Real> vecdt(nterms);
-  for(int i = 0; i < nterms; i++) vecdt[i] = 2.*residues[i];
+  for(int i = 0; i < nterms; i++)
+    // Need a factor of 2 to match the MILC-code force.
+    vecdt[i] = 2.*residues[i];
   
   // Make vecx
   std::vector<FermionField> vecx(nterms,CGrid);
-  for(int i = 0; i < nterms; i++)
-  { milcVectorFieldToGrid<FermionField, Complex>(multi_x[i], &vecx[i]); }
+  for(int i = 0; i < nterms; i++) {
+    milcVectorFieldToGrid<FermionField, Complex>(multi_x[i], &vecx[i]);
+  }
 
   // -- force calculation -- //
 
@@ -151,7 +154,8 @@ static void hisqForce (
   MILCContext milcCtx(fatCtx, asqCtx, vecdt, eps_naiks, orders_naik);
 
   // Instantiate the HISQ fermion implementation class
-  HighlyImprovedStaggeredFermionImpl<Gimpl> hisq(CGrid, false);
+  bool calculateStaggeredPhases = false;
+  HighlyImprovedStaggeredFermionImpl<Gimpl> hisq(CGrid, calculateStaggeredPhases);
   
   // Calculate derivative
   hisq.milcSmearDerivative(UForce, Wmu, Vmu, Umu, vecx, milcCtx);
@@ -162,7 +166,7 @@ static void hisqForce (
   auto elapsed = end - start;
   std::cout << "generate fat and long links " 
             << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
-	          << std::endl;
+	    << std::endl;
 }
 
 /*
