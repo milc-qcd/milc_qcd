@@ -75,13 +75,16 @@ static void hisqLinks(
   );
 
   // Instantiate the HISQ fermion implementation class
-  HighlyImprovedStaggeredFermionImpl<Gimpl> hisq(CGrid, false);
+  bool calculateStaggeredPhases = false;
+  HighlyImprovedStaggeredFermionImpl<Gimpl> hisq(CGrid, calculateStaggeredPhases);
 
   // Smear according to context
   if (lng != NULL) {
     hisq.smear(fatlinks, lnglinks, Umu, ctx);
     gridToMilcGaugeField<LatticeGaugeField, Complex>(lng, &lnglinks);
-  } else hisq.smear(fatlinks, Umu, ctx);
+  } else {
+    hisq.smear(fatlinks, Umu, ctx);
+  }
   std::cout << "Done with smear" << std::endl << std::flush;
   if (reunitarize) hisq.project(fatlinks, fatlinks, ctx); // reunitarize
   gridToMilcGaugeField<LatticeGaugeField, Complex>(fat, &fatlinks);
@@ -114,7 +117,8 @@ static void hisqAuxLinks(
   bool filter = false
 ) {
   // Do the first level fattening w/ additional reunitarization
-  hisqLinks<LatticeGaugeField, Gimpl, Complex>(info, path_coeff, V, NULL, U, CGrid, true, filter);
+  // NOTE: The auxiliary field V is not returned.
+  hisqLinks<LatticeGaugeField, Gimpl, Complex>(info, path_coeff, W, NULL, U, CGrid, true, filter);
 }
 
 //====================================================================//
@@ -127,8 +131,8 @@ void GRID_F3_hisq_links(GRID_info_t *info,
 			su3_matrix *in,
 			GRID_4Dgrid *grid_full)
 {
-  //  std::cout << "GRID_F3_hisq_links is not supported yet" << std::endl;
-  //  assert(0);
+  std::cout << "GRID_F3_hisq_links is not supported yet" << std::endl;
+  assert(0);
   // hisqLinks<LatticeGaugeFieldF, StaggeredImplF, ComplexF>(info, path_coeff, fat, lng, in, grid_full->gridF);
 }
 
