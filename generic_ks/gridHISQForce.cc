@@ -158,7 +158,6 @@ static void hisqForce (
   HighlyImprovedStaggeredFermionImpl<Gimpl> hisq(CGrid, calculateStaggeredPhases);
   
   // Calculate derivative
-  hisq.smear(Vmu, Umu, milcCtx.fat7); // apparently Vmu is empty, so must resmear :(
   hisq.milcSmearDerivative(UForce, Wmu, Vmu, Umu, vecx, milcCtx);
   
   gridToMilcGaugeField<LatticeGaugeField, Complex>(deriv, &UForce);

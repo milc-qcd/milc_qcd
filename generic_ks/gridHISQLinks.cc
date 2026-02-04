@@ -44,6 +44,55 @@ static void hisqLinks(
   LatticeGaugeField lnglinks(CGrid);
   GRID_ASSERT(&lnglinks != NULL);
 
+  // Instantiate context object
+  HISFContext ctx(
+    path_coeff[0],         // 1-link
+    path_coeff[2],         // 3-link
+    path_coeff[3],         // 5-link
+    path_coeff[4],         // 7-link
+    path_coeff[5],         // Lepage
+    path_coeff[1]          // Naik
+  );
+
+  // Instantiate the HISQ fermion implementation class
+  bool calculateStaggeredPhases = false;
+  HighlyImprovedStaggeredFermionImpl<Gimpl> hisq(CGrid, calculateStaggeredPhases);
+
+  // Smear according to context
+  if (lng != NULL) {
+    hisq.smear(fatlinks, lnglinks, Umu, ctx);
+    gridToMilcGaugeField<LatticeGaugeField, Complex>(lng, &lnglinks);
+  } else {
+    hisq.smear(fatlinks, Umu, ctx);
+  }
+  std::cout << "Done with smear" << std::endl << std::flush;
+  gridToMilcGaugeField<LatticeGaugeField, Complex>(fat, &fatlinks);
+
+  auto end = std::chrono::system_clock::now();
+  auto elapsed = end - start;
+  std::cout << "generate hisq and long links "
+	    << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+	    << std::endl;
+}
+
+	
+template<typename LatticeGaugeField, typename Gimpl, typename Complex>
+static void hisqAuxLinks(
+  GRID_info_t* info,
+  double path_coeff[],
+  su3_matrix* U,
+  su3_matrix* V,
+  su3_matrix* W,
+  GridCartesian* CGrid,
+  bool filter = false
+) {
+
+  // Do the first level fattening
+  hisqLinks<LatticeGaugeField, Gimpl, Complex>(info, path_coeff, V, NULL, U, CGrid, true, filter);
+
+  // start timer
+  auto start = std::chrono::system_clock::now();
+
   // reunitarization "force filter" & backup SVD
   Real eigenvalue_cutoff = (filter) ? HISQ_FORCE_FILTER : 0.;
   Real rel_svd_tol = HISQ_REUNIT_SVD_REL_ERROR;
@@ -60,65 +109,33 @@ static void hisqLinks(
   rel_svd_tol = 0.;
 #endif
 
+  // Unitaty projection of the result of first level smearing
+
   // Instantiate context object
   HISFContext ctx(
-    path_coeff[0],         // 1-link
-    path_coeff[2],         // 3-link
-    path_coeff[3],         // 5-link
-    path_coeff[4],         // 7-link
-    path_coeff[5],         // Lepage
-    path_coeff[1],         // Naik
     allow_svd || svd_only, // backup SVD
     rel_svd_tol,           // relative SVD tolerance
     abs_svd_tol,           // absolute SVD tolerance
     eigenvalue_cutoff      // reunit eig cutoff = "force filter"
   );
 
-  // Instantiate the HISQ fermion implementation class
+  LatticeGaugeField Vgrid(CGrid);
+  LatticeGaugeField Wgrid(CGrid);
+  milcGaugeFieldToGrid<LatticeGaugeField, Complex>(V, &Vgrid);
+
+  // Do the projection
   bool calculateStaggeredPhases = false;
   HighlyImprovedStaggeredFermionImpl<Gimpl> hisq(CGrid, calculateStaggeredPhases);
+  hisq.project(Wgrid, Vgrid, ctx); // reunitarize
 
-  // Smear according to context
-  if (lng != NULL) {
-    hisq.smear(fatlinks, lnglinks, Umu, ctx);
-    gridToMilcGaugeField<LatticeGaugeField, Complex>(lng, &lnglinks);
-  } else {
-    hisq.smear(fatlinks, Umu, ctx);
-  }
-  std::cout << "Done with smear" << std::endl << std::flush;
-  if (reunitarize) hisq.project(fatlinks, fatlinks, ctx); // reunitarize
-  gridToMilcGaugeField<LatticeGaugeField, Complex>(fat, &fatlinks);
+  gridToMilcGaugeField<LatticeGaugeField, Complex>(W, &Wgrid);
 
   // finish timing
-  if (reunitarize) {
-    auto end = std::chrono::system_clock::now();
-    auto elapsed = end - start;
-    std::cout << "generate reunitarized fat links "
-        << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
-        << std::endl;
-  } else {
-    auto end = std::chrono::system_clock::now();
-    auto elapsed = end - start;
-    std::cout << "generate hisq and long links "
-        << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
-        << std::endl;
-  }
-}
-
-	
-template<typename LatticeGaugeField, typename Gimpl, typename Complex>
-static void hisqAuxLinks(
-  GRID_info_t* info,
-  double path_coeff[],
-  su3_matrix* U,
-  su3_matrix* V,
-  su3_matrix* W,
-  GridCartesian* CGrid,
-  bool filter = false
-) {
-  // Do the first level fattening w/ additional reunitarization
-  // NOTE: The auxiliary field V is not returned.
-  hisqLinks<LatticeGaugeField, Gimpl, Complex>(info, path_coeff, W, NULL, U, CGrid, true, filter);
+  auto end = std::chrono::system_clock::now();
+  auto elapsed = end - start;
+  std::cout << "unitary projection "
+	    << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) 
+	    << std::endl;
 }
 
 //====================================================================//
