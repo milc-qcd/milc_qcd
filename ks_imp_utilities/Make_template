@@ -149,9 +149,10 @@ make_links_hisq::
 	"DEFINES= -DFN -DHAVE_KS -DLINK_FATTENING \
 	-DHISQ_REUNIT_ALLOW_SVD \
 	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
-	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8" \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
 	"GAUGE = symanzik_1loop_action.h" \
-	"QUARK = hisq/hisq_u3_test_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS=  ${HISQ_OBJECTS}"
 
 check_link_fattening::
@@ -162,7 +163,7 @@ check_link_fattening::
 	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
 	-DHISQ_FORCE_FILTER=5.0e-5" \
 	"GAUGE = symanzik_1loop_action.h" \
-	"QUARK = hisq/hisq_u3_test_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS=  ${HISQ_OBJECTS}  check_link_fattening.o"
 
 check_fermion_force_asqtad::
