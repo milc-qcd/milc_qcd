@@ -63,8 +63,6 @@ ifeq ($(strip ${HAVEQOP}),true)
   ADD_OBJECTS += ${GENERICQOP}
 endif
 
-#  ${GAUGE_OBJECTS} \
-
 OBJECTS = \
   ${ADD_OBJECTS} \
   ${EXTRA_OBJECTS} \
@@ -97,6 +95,7 @@ ${LASTMAKE}:
 ALL_MAKES = \
    Make_template \
    ${MAKEFILE} \
+   ../Make_template_combos \
    ../Make_template_qop \
    ../Make_template_scidac \
    ../generic/Make_template \
@@ -203,6 +202,22 @@ check_reunit_deriv::
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} check_reunit_deriv.o"
+
+check_gauge_force_1loop::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DHAVE_KS -DGAUGE_FORCE" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} ${GAUGE_FORCE} \
+	check_gauge_force.o gauge_force_imp_ks.o ploop3_ks.o ploop3.o"
+
+check_gauge_force_1loop_nf::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES=  -DGAUGE_FORCE" \
+	"GAUGE = symanzik_1loop_nf_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} ${GAUGE_FORCE} \
+	check_gauge_force.o gauge_force_imp_ks.o ploop3_ks.o ploop3.o"
 
 clean:
 	-/bin/rm -f *.o
