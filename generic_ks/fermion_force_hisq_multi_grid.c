@@ -43,7 +43,7 @@ fermion_force_multi_hisq_grid(info_t* info, int prec, Real eps, Real *residues,
   double *epsv = (double *)malloc(sizeof(double)*nterms);
   for(int i = 0; i < nterms; i++) epsv[i] = eps*residues[i];
 
-  su3_matrix* momentum = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
+  dsu3_matrix* momentum = (su3_matrix *)malloc(sites_on_node*4*sizeof(dsu3_matrix));
 
   /* Support only double-precision calculation */
   GRID_D3_hisq_force(&grid_info, fl, epsv, multi_x, n_orders_naik, momentum,
@@ -64,8 +64,9 @@ fermion_force_multi_hisq_grid(info_t* info, int prec, Real eps, Real *residues,
       s->mom[dir].m02.imag += ah3.m02.imag;
       s->mom[dir].m12.imag += ah3.m12.imag;
     }
-  } END_LOOP_OMP
+  } END_LOOP_OMP;
 
+  free(momentum);
   free(epsv);
   return;
   
