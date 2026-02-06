@@ -464,7 +464,8 @@ ifeq ($(strip ${WANTQUDA}),true)
   WANT_FN_CG_GPU ?= #true
   WANT_FL_GPU ?= #true
   WANT_FF_GPU ?= #true
-  WANT_GF_GPU ?= #true
+  WANT_GA_GPU ?= #true    # QUDA gauge force, action, plaquette, ploop
+  WANT_GF_GPU ?= false   # Kept for backward compatibility
   WANT_EIG_GPU ?= #true
   WANT_GSMEAR_GPU ?= #true
   WANT_KS_CONT_GPU ?= #true
@@ -632,10 +633,11 @@ ifeq ($(strip ${WANTGRID}), true)
   CGPU += -DHAVE_GRID
 
   WANT_FN_CG_GPU ?= false   
-  WANT_FL_GPU ?= false       # Under development
-  WANT_FF_GPU ?= false       # Future
-  WANT_GF_GPU ?= false       # Future
-  WANT_EIG_GPU ?= false      # Automatic for now
+  WANT_FL_GPU ?= false
+  WANT_FF_GPU ?= false
+  WANT_GA_GPU ?= false   # GRID gauge force, action
+  WANT_GF_GPU ?= false   # Kept for backward compatibility
+  WANT_EIG_GPU ?= false
 
   GRID_SHMEM_MAX ?= 2048        # Megabytes
   GRID_DEVICE_MEM_MAX ?= 32768  # Megabytes
@@ -1130,9 +1132,9 @@ ifeq ($(strip ${WANT_GA_GPU}),true)
   CGPU += -DUSE_GA_GPU
 endif
 
-ifeq ($(strip ${WANT_GF_GPU}),true)
-  HAVE_GF_GPU = true
-  CGPU += -DUSE_GF_GPU
+ifeq ($(strip ${WANT_GF_GPU}),true)  # Implies GA
+  HAVE_GA_GPU = true
+  CGPU += -DUSE_GA_GPU
 endif
 
 ifeq ($(strip ${WANT_FL_GPU}),true)
