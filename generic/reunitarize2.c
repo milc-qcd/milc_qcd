@@ -13,7 +13,7 @@
 #include "generic_includes.h"
 #include "../include/openmp_defs.h"
 
-#ifdef USE_GF_GPU
+#if defined(USE_GA_GPU) && defined(HAVE_QUDA)
 #include "../include/generic_quda.h"
 #endif
 
@@ -205,7 +205,7 @@ int reunit_su3(su3_matrix *c)
 
 } /* reunit_su3 */
 
-#ifdef USE_GF_GPU
+#if defined(USE_GA_GPU) && defined(HAVE_QUDA)
 
 void reunitarize_gpu() {
 
