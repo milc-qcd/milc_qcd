@@ -1,0 +1,21 @@
+# This input file will use Grid to generate the gauge force and
+# then compare it with the ficudial gauge force
+prompt 0
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 1234
+reload_serial ../binary_samples/lat.sample.l8888
+u0 1
+forget
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
+forget
+forget
+withKSphases 1
+reload_serial_color_matrix fiducial_mom
+
+
+
+
