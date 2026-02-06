@@ -131,6 +131,21 @@ void GRID_F3_hisq_aux_links(GRID_info_t *info,
 void GRID_F3_reunit_deriv(GRID_info_t *info, su3_matrix *V, su3_matrix *dW,
 			  su3_matrix *Q, GRID_4Dgrid * grid_full);
 
+double GRID_F3_gauge_action(GRID_info_t *info,
+			    su3_matrix *Umilc,
+			    float beta,
+			    float u0,
+			    int nf,
+			    GRID_4Dgrid *grid_full);
+  
+void GRID_F3_gauge_force(GRID_info_t *info,
+			 su3_matrix *Umilc,
+			 float beta,
+			 float u0,
+			 int nf,
+			 su3_matrix *deriv,
+			 GRID_4Dgrid *grid_full);
+  
 void GRID_F3_hisq_force(GRID_info_t *info,
 			void *fl,
 			float residues[],
