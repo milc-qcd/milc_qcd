@@ -83,7 +83,7 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
 
 /* plaquette action */
 void plaquette_action(double *ss_plaq, double *st_plaq) {
-#if !defined(HAVE_QUDA) || defined(SCHROED_FUN)
+#if !defined(HAVE_QUDA) || defined(SCHROED_FUN) || !defined(USE_GA_GPU)
   d_plaquette(ss_plaq, st_plaq);
 #else
   d_plaquette_gpu(ss_plaq, st_plaq);
