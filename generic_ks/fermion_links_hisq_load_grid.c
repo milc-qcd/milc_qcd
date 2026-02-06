@@ -10,7 +10,7 @@
 void
 load_fatlinks_gpu(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matrix *thin_links){
   if(MILC_PRECISION == 1)
-    printf("ERROR. load_fatlinks_grid_F\n");
+    printf("ERROR. load_fatlinks_grid_F is not supported\n");
   //    load_fatlinks_grid_F(info, fat, p, thin_links);
   else
     load_fatlinks_grid_D(info, fat, p, thin_links);
