@@ -6,8 +6,11 @@
 #include "generic_ks_includes.h"        /* definitions files and prototypes */
 
 double imp_gauge_action_ks(void) {
-#if defined (HAVE_QUDA) && defined(USE_GA_GPU) && !defined(ANISOTROPY)
-  return imp_gauge_action_gpu();
+
+#if defined(USE_GA_GPU) && defined(HAVE_GRID) && !defined(ANISOTROPY)
+  return imp_gauge_action_grid();
+#elif defined(USE_GA_GPU) && defined(HAVE_GRID) && !defined(ANISOTROPY)
+  return imp_gauge_action_quda();
 #else
   rephase(OFF);
   double g_action = imp_gauge_action();
