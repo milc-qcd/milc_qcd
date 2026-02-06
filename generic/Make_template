@@ -29,9 +29,11 @@ G_ALL = \
  gaugefix.o \
  gaugefix2.o \
  gauge_action_imp.o \
- gauge_action_imp_gpu.o \
+ gauge_action_imp_grid.o \
+ gauge_action_imp_quda.o \
  gauge_force_imp.o \
- gauge_force_imp_gpu.o \
+ gauge_force_imp_grid.o \
+ gauge_force_imp_quda.o \
  gauge_force_symzk1_qphix.o \
  gauge_force_symzk1_qphix_D.o \
  gauge_force_symzk1_qphix_F.o \
@@ -42,6 +44,7 @@ G_ALL = \
  gauge_utilities.o \
  general_staple.o \
  glueball_op.o \
+ gridGaugeForce.o \
  gridMap.o \
  hvy_pot.o \
  io_ansi.o \
@@ -177,11 +180,15 @@ gaugefix2.o: ../generic/gaugefix2.c
 	${CC} -c ${CFLAGS} $<
 gauge_action_imp.o: ../generic/gauge_action_imp.c
 	${CC} -c ${CFLAGS} $<
-gauge_action_imp_gpu.o: ../generic/gauge_action_imp_gpu.c
+gauge_action_imp_grid.o: ../generic/gauge_action_imp_grid.c
+	${CC} -c ${CFLAGS} $<
+gauge_action_imp_quda.o: ../generic/gauge_action_imp_quda.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_imp.o: ../generic/gauge_force_imp.c
 	${CC} -c ${CFLAGS} $<
-gauge_force_imp_gpu.o: ../generic/gauge_force_imp_gpu.c
+gauge_force_imp_grid.o: ../generic/gauge_force_imp_grid.c
+	${CC} -c ${CFLAGS} $<
+gauge_force_imp_quda.o: ../generic/gauge_force_imp_quda.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_symzk1_qphix.o: ../generic/gauge_force_symzk1_qphix.c
 	${CC} -c ${CFLAGS} $<
@@ -203,6 +210,8 @@ general_staple.o: ../generic/general_staple.c
 	${CC} -c ${CFLAGS} $<
 glueball_op.o: ../generic/glueball_op.c
 	${CC} -c ${CFLAGS} $<
+gridGaugeForce.o: ../generic/gridGaugeForce.cc
+	${CXX} -c ${CXXFLAGS} $<
 gridMap.o: ../generic/gridMap.cc ../generic/gridMap.h
 	${CXX} -c ${CXXFLAGS} $<
 hvy_pot.o: ../generic/hvy_pot.c
