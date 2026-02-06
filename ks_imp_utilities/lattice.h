@@ -99,8 +99,11 @@ EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 EXTERN  params param;           /* user input parameters */
 EXTERN	uint32_t iseed;		/* random number seed */
 EXTERN  int nmass;
+EXTERN  int n_dyn_masses; // number of dynamical masses
+EXTERN  int dyn_flavors[MAX_DYN_MASSES]; 
 EXTERN  Real beta;
 EXTERN  Real mass,u0;
+EXTERN  Real epsilon;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */
 EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,

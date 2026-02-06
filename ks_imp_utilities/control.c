@@ -71,6 +71,8 @@ int main( int argc, char **argv ){
     check_link_fattening( param.ansfile[0], param.ansflag[0], param.ansfile[1], param.ansflag[1] );
 #elif defined(REUNIT)
     check_reunitarization( param.ansfile[0], param.ansflag[0], param.ansfile[1], param.ansflag[1] );
+#elif defined(GAUGE_FORCE)
+    check_gauge_force( param.ansfile[0], param.ansflag[0] );
 #endif
     
     /* save lattice if requested */

@@ -88,6 +88,8 @@ initial_set()
     printf("Checking FN link fattening files\n");
 #elif defined(REUNIT)
     printf("Reunitarization checking\n");
+#elif defined(GAUGE_FORCE)
+    printf("Gauge force checking\n");
 #else
 #error "Must specify what is being checked"
 #endif
@@ -195,7 +197,7 @@ readin(int prompt)
 	status++;
       }
     }
-    
+
     /* find out what to do with longlinks at end */
     IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.savelongflag),
 				       param.savelongfile );
@@ -207,7 +209,7 @@ readin(int prompt)
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.savefatflag,
 				  param.stringLFNfat );
     IF_OK status += get_i(stdin, prompt,"withKSphases", &param.withKSphases );
-
+    
     /* Eigenpairs not supported */
     param.eigen_param.Nvecs = 0;
 
@@ -282,8 +284,8 @@ readin(int prompt)
 #endif
     } /* param.nass */
 #endif // CHECK_INVERT or FERMION_FORCE
-#if defined(FERMION_FORCE) || defined(CHECK_FATTENING)
-    /* Optional answer for fat links or fermion force */
+#if defined(FERMION_FORCE) || defined(CHECK_FATTENING) || defined(GAUGE_FORCE)
+    /* Optional answer for fat links or fermion force or gauge force */
     IF_OK status += ask_color_matrix( prompt, &(param.ansflag[0]),
 				      param.ansfile[0] );
 #ifdef CHECK_FATTENING
@@ -383,6 +385,11 @@ readin(int prompt)
   fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 #else
   fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
+#endif
+
+#ifdef GAUGE_FORCE
+  /* make table of coefficients and permutations of loops in gauge action */
+  make_loop_table();
 #endif
 
   return 0;

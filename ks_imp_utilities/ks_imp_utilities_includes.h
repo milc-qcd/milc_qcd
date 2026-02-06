@@ -58,6 +58,7 @@ int ask_color_matrix( int prompt, int *flag, char *filename );
 void check_link_fattening( char *lngansfile, int lngansflag, char *fatansfile, int fatansflag );
 void check_fermion_force( char srcfile[MAX_MASS][MAXFILENAME], int srcflag,
 			  char *ansfile, int ansflag, int nmass, ks_param *ksp);
+void check_gauge_force( char *ansfile, int ansflag );
 void check_ks_invert( char *srcfile, int srcflag, 
 		      char ansfile[MAX_MASS][MAXFILENAME],
 		      int ansflag[MAX_MASS],
