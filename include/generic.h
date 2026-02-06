@@ -301,11 +301,13 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 
 /* gauge_force_imp_*.c */
 void imp_gauge_force_cpu( Real eps, field_offset mom_off );
-void imp_gauge_force_gpu( Real eps, field_offset mom_off );
+void imp_gauge_force_grid( Real eps, field_offset mom_off );
+void imp_gauge_force_quda( Real eps, field_offset mom_off );
 void imp_gauge_force( Real eps, field_offset mom_off );
 
 /* imp_gauge_action_*.c */
-double imp_gauge_action_gpu(void);
+double imp_gauge_action_grid(void);
+double imp_gauge_action_quda(void);
 double imp_gauge_action_cpu(void);
 double imp_gauge_action(void);
 
