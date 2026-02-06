@@ -698,19 +698,19 @@ void save_color_matrix_scidac_from_site(const char *filename, const char *filein
   
   /* Write information */
   if(volfmt == QIO_SINGLEFILE){
-    node0_printf("Saved KS matrix serially to binary file %s\n",
+    node0_printf("Saved color matrix serially to binary file %s\n",
 		 filename);
   }
   else if(volfmt == QIO_MULTIFILE){
-    node0_printf("Saved KS matrix as multifile to binary file %s\n",
+    node0_printf("Saved color matrix as multifile to binary file %s\n",
 	   filename);
   }
   else if(volfmt == QIO_PARTFILE){
-    node0_printf("Saved KS matrix in partition format to binary file %s\n",
+    node0_printf("Saved color matrix in partition format to binary file %s\n",
 	   filename);
   }
   else if(volfmt == QIO_PARTFILE_DIR){
-    node0_printf("Saved KS matrix in partition format to binary file %s\n",
+    node0_printf("Saved color matrix in partition format to binary file %s\n",
 	   filename);
   }
 
@@ -770,19 +770,19 @@ void save_color_matrix_scidac_from_field(const char *filename,
 
   /* Write information */
   if(volfmt == QIO_SINGLEFILE){
-    node0_printf("Saved KS matrix serially to binary file %s\n",
+    node0_printf("Saved color matrix serially to binary file %s\n",
                  filename);
   }
   else if(volfmt == QIO_MULTIFILE){
-    node0_printf("Saved KS matrix as multifile to binary file %s\n",
+    node0_printf("Saved color matrix as multifile to binary file %s\n",
            filename);
   }
   else if(volfmt == QIO_PARTFILE){
-    node0_printf("Saved KS matrix in partition format to binary file %s\n",
+    node0_printf("Saved color matrix in partition format to binary file %s\n",
            filename);
   }
   else if(volfmt == QIO_PARTFILE_DIR){
-    node0_printf("Saved KS matrix in partition format to binary file %s\n",
+    node0_printf("Saved color matrix in partition format to binary file %s\n",
            filename);
   }
 
