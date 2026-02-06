@@ -490,7 +490,12 @@ endif
 
 # GPU support
 
-  GAUGE_FORCE_MILC_GPU = gauge_force_imp_gpu.o gauge_action_imp_gpu.o gauge_action_imp.o gauge_stuff.o ranmom.o
+  GAUGE_FORCE_MILC_GRID = gauge_force_imp_grid.o gauge_action_imp_grid.o \
+    			gauge_action_imp.o gauge_action_imp_ks.o gauge_stuff.o \
+			ranmom.o gridGaugeForce.o
+  GAUGE_FORCE_MILC_QUDA = gauge_force_imp_quda.o gauge_action_imp_quda.o \
+  			gauge_action_imp.o gauge_action_imp_ks .o gauge_stuff.o \
+			ranmom.o
   
 # Standard QOP combinations
 
@@ -501,8 +506,12 @@ endif
   GAUGE_FORCE_QPHIX = gauge_force_symzk1_qphix.o gauge_stuff.o ranmom.o \
     gauge_force_symzk1_qphix_D.o gauge_force_symzk1_qphix_F.o
 
-ifeq ($(strip ${HAVE_GF_GPU}),true)
-  GAUGE_FORCE_MILC = ${GAUGE_FORCE_MILC_GPU}
+ifeq ($(strip ${HAVE_GA_GPU}),true)
+  ifeq ($(strip ${HAVE_GRID}),true)
+    GAUGE_FORCE_MILC = ${GAUGE_FORCE_MILC_GRID}
+  else
+    GAUGE_FORCE_MILC = ${GAUGE_FORCE_MILC_QUDA}
+  endif
 else
   ifeq ($(strip ${HAVE_GF_QPHIX}),true)
     GAUGE_FORCE_MILC = ${GAUGE_FORCE_QPHIX}
