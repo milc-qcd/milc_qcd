@@ -34,6 +34,7 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 MY_OBJECTS= \
   control.o \
   setup.o \
+  gauge_action_imp_ks.o \
   gauge_info.o \
   io_helpers_ks_utils.o \
   ks_info.o
