@@ -28,8 +28,7 @@ static void hisqLinks(
   su3_matrix* lng,
   su3_matrix* in,
   GridCartesian* CGrid,
-  bool reunitarize = false,
-  bool filter = false
+  bool reunitarize = false
 ) {
   // start timer
   auto start = std::chrono::system_clock::now();
@@ -83,18 +82,17 @@ static void hisqAuxLinks(
   su3_matrix* U,
   su3_matrix* V,
   su3_matrix* W,
-  GridCartesian* CGrid,
-  bool filter = false
+  GridCartesian* CGrid
 ) {
 
   // Do the first level fattening
-  hisqLinks<LatticeGaugeField, Gimpl, Complex>(info, path_coeff, V, NULL, U, CGrid, true, filter);
+  hisqLinks<LatticeGaugeField, Gimpl, Complex>(info, path_coeff, V, NULL, U, CGrid, true);
 
   // start timer
   auto start = std::chrono::system_clock::now();
 
   // reunitarization "force filter" & backup SVD
-  Real eigenvalue_cutoff = (filter) ? HISQ_FORCE_FILTER : 0.;
+  Real eigenvalue_cutoff = 0.;
   Real rel_svd_tol = HISQ_REUNIT_SVD_REL_ERROR;
   Real abs_svd_tol = HISQ_REUNIT_SVD_ABS_ERROR;
   bool allow_svd = false;
@@ -106,17 +104,17 @@ static void hisqAuxLinks(
 
 #ifdef HISQ_REUNIT_SVD_ONLY
   svd_only = true;
-  rel_svd_tol = 0.;
 #endif
 
   // Unitaty projection of the result of first level smearing
 
   // Instantiate context object
   HISFContext ctx(
-    allow_svd || svd_only, // backup SVD
+    svd_only,              // svd only
+    allow_svd,             // backup SVD
     rel_svd_tol,           // relative SVD tolerance
     abs_svd_tol,           // absolute SVD tolerance
-    eigenvalue_cutoff      // reunit eig cutoff = "force filter"
+    eigenvalue_cutoff      // reunit eig cutoff = "force filter"; zero for link smear
   );
 
   LatticeGaugeField Vgrid(CGrid);

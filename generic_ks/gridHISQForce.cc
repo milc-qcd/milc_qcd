@@ -100,7 +100,6 @@ static void hisqForce (
 
 #ifdef HISQ_REUNIT_SVD_ONLY
   svd_only = true;
-  rel_svd_tol = 0.;
 #endif
   
   HISFContext fatCtx(
@@ -109,7 +108,12 @@ static void hisqForce (
     ap->p1.act_path_coeff.five_staple,
     ap->p1.act_path_coeff.seven_staple,
     0.0,
-    0.0
+    0.0,
+    svd_only,
+    allow_svd,
+    rel_svd_tol,
+    abs_svd_tol,
+    eigenvalue_cutoff
   );
 
   HISFContext asqCtx(
