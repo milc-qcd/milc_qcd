@@ -93,10 +93,22 @@ static void hisqAuxLinks(
 
   // reunitarization "force filter" & backup SVD
   Real eigenvalue_cutoff = 0.;
-  Real rel_svd_tol = HISQ_REUNIT_SVD_REL_ERROR;
-  Real abs_svd_tol = HISQ_REUNIT_SVD_ABS_ERROR;
+  Real rel_svd_tol = 1e-8;
+  Real abs_svd_tol = 1e-8;
   bool allow_svd = false;
   bool svd_only = false;
+
+#ifdef defined(HISQ_REUNIT_SVD_REL_ERROR)
+  rel_svd_tol = HISQ_REUNIT_SVD_REL_ERROR;
+#elif defined(GRID_HISQ_REUNIT_SVD_ONLY)
+  rel_svd_tol = GRID_HISQ_REUNIT_SVD_REL_ERROR;
+#endif
+
+#ifdef defined(HISQ_REUNIT_SVD_ABS_ERROR)
+  abs_svd_tol = HISQ_REUNIT_SVD_ABS_ERROR;
+#elif defined(GRID_HISQ_REUNIT_SVD_ONLY)
+  abs_svd_tol = GRID_HISQ_REUNIT_SVD_ABS_ERROR;
+#endif
   
 #ifdef HISQ_REUNIT_ALLOW_SVD
   allow_svd = true;
@@ -106,7 +118,7 @@ static void hisqAuxLinks(
   svd_only = true;
 #endif
 
-  // Unitaty projection of the result of first level smearing
+  // Unitary projection of the result of first level smearing
 
   // Instantiate context object
   HISFContext ctx(

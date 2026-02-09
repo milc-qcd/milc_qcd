@@ -88,11 +88,29 @@ static void hisqForce (
   // -- coefficient preparation -- //
 
   ks_action_paths_hisq* ap = get_action_paths_hisq(fl);
-  Real eigenvalue_cutoff = HISQ_FORCE_FILTER;
-  Real rel_svd_tol = HISQ_REUNIT_SVD_REL_ERROR;
-  Real abs_svd_tol = HISQ_REUNIT_SVD_ABS_ERROR;
+  Real eigenvalue_cutoff = 0.0;
+  Real rel_svd_tol = 1e-8;
+  Real abs_svd_tol = 1e-8;
   bool allow_svd = false;
   bool svd_only = false;
+
+#ifdef defined(HISQ_FORCE_FILTER)
+  eigenvalue_cutoff = HISQ_FORCE_FILTER;
+#elif defined(GRID_HISQ_FORCE_FILTER)
+  eigenvalue_cutoff = GRID_HISQ_FORCE_FILTER;
+#endif
+
+#ifdef defined(HISQ_REUNIT_SVD_REL_ERROR)
+  rel_svd_tol = HISQ_REUNIT_SVD_REL_ERROR;
+#elif defined(GRID_HISQ_REUNIT_SVD_ONLY)
+  rel_svd_tol = GRID_HISQ_REUNIT_SVD_REL_ERROR;
+#endif
+
+#ifdef defined(HISQ_REUNIT_SVD_ABS_ERROR)
+  abs_svd_tol = HISQ_REUNIT_SVD_ABS_ERROR;
+#elif defined(GRID_HISQ_REUNIT_SVD_ONLY)
+  abs_svd_tol = GRID_HISQ_REUNIT_SVD_ABS_ERROR;
+#endif
   
 #ifdef HISQ_REUNIT_ALLOW_SVD
   allow_svd = true;
