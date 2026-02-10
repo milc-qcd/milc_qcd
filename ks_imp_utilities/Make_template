@@ -34,7 +34,6 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 MY_OBJECTS= \
   control.o \
   setup.o \
-  gauge_action_imp_ks.o \
   gauge_info.o \
   io_helpers_ks_utils.o \
   ks_info.o
@@ -210,15 +209,17 @@ check_gauge_force_1loop::
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} ${GAUGE_FORCE} \
-	check_gauge_force.o gauge_force_imp_ks.o ploop3_ks.o ploop3.o"
+	check_gauge_force.o gauge_action_imp_ks.o gauge_force_imp_ks.o \
+	ploop3_ks.o ploop3.o"
 
 check_gauge_force_1loop_nf::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES=  -DGAUGE_FORCE" \
+	"DEFINES= -DFN -DHAVE_KS -DGAUGE_FORCE" \
 	"GAUGE = symanzik_1loop_nf_action.h" \
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} ${GAUGE_FORCE} \
-	check_gauge_force.o gauge_force_imp_ks.o ploop3_ks.o ploop3.o"
+	check_gauge_force.o gauge_action_imp_ks.o gauge_force_imp_ks.o \
+	ploop3_ks.o ploop3.o"
 
 clean:
 	-/bin/rm -f *.o

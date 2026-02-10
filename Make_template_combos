@@ -492,10 +492,10 @@ endif
 # GPU support
 
   GAUGE_FORCE_MILC_GRID = gauge_force_imp_grid.o gauge_action_imp_grid.o \
-    			gauge_action_imp.o gauge_action_imp_ks.o gauge_stuff.o \
+    			gauge_action_imp.o gauge_stuff.o \
 			ranmom.o gridGaugeForce.o
   GAUGE_FORCE_MILC_QUDA = gauge_force_imp_quda.o gauge_action_imp_quda.o \
-  			gauge_action_imp.o gauge_action_imp_ks .o gauge_stuff.o \
+  			gauge_action_imp.o gauge_stuff.o \
 			ranmom.o
   
 # Standard QOP combinations
