@@ -1,12 +1,14 @@
-# Build check_link_fattening without Grid
-# and run with this code to generate the fiducial fat and long link files
+# First generate fiducial links fat.sample.l8888. etc
+# with intest.make_staple
+# Then build the code with Grid turned on
+# This input file will use Grid to generate links and
+# then compare them with the ficudial links
 prompt 0
-nx 8
-ny 8
-nz 8
-nt 8
-iseed 1234
-#reload_serial ../binary_samples/lat.sample.l8888
+nx 16
+ny 16
+nz 16
+nt 48
+iseed 5741034
 warm
 u0 1
 forget
@@ -43,8 +45,7 @@ naik_term_epsilon -0.271190134429433
 error_for_propagator 1e-5
 rel_error_for_propagator 0
 
-save_serial_color_matrix fiducial_mom
-
+reload_serial_color_matrix fiducial_mom
 
 
 

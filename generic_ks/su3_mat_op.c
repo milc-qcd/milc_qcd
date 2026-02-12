@@ -1688,7 +1688,7 @@ void u3_unit_der_analytic( info_t *info, su3_matrix *V, su3_tensor4 *dwdv,
   if(g1<gmin) gmin=g1;
   if(g2<gmin) gmin=g2;
   if(gmin<HISQ_FORCE_FILTER) {
-    printf("(%d) Applying force filter", this_node);
+    printf("(%d) Applying force filter\n", this_node);
     INFO_HISQ_FORCE_FILTER_COUNTER(info)++;
 /*    g_epsilon=HISQ_FORCE_FILTER-gmin;
     if(g_epsilon<0) g_epsilon=-g_epsilon;*/

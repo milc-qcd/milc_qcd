@@ -221,7 +221,7 @@ su3_rhmd_hisq::
 
 su3_rhmc_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS} \
-	"DEFINES+= -DHMC"
+	"DEFINES+= -DHMC -DHISQ_SVD_COUNTER -DHISQ_FORCE_FILTER_COUNTER"
 
 #######################################################################
 # Experimental targets
