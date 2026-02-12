@@ -1,0 +1,16 @@
+# Build check_link_fattening without Grid
+# and run with this code to generate the fiducial fat and long link files
+prompt 0
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 1234
+reload_serial ../binary_samples/lat.sample.l8888
+u0 1
+forget
+coordinate_origin 0 0 0 0
+time_bc antiperiodic
+save_serial lng.sample.l8888
+save_serial fat.sample.l8888
+withKSphases 1
