@@ -1,4 +1,7 @@
-set(my_sources
+set(pn _ks_imp_rhmc)
+
+add_interface_library(${pn}_my_objects
+    SOURCES
     d_action_rhmc.c
     eo_fermion_force_rhmc.c
     ../generic_ks/gauge_action_imp_ks.c
@@ -16,36 +19,50 @@ set(my_sources
     update_u.c
 )
 
-set(layout_sources
+add_interface_library(${pn}_layout
+    SOURCES
     ../generic/layout_hyper_prime.c
 )
 
-set(add_sources
+add_interface_library(${pn}_add_objects
+    OBJECTS
+    machine_dep_io
+    commpkg
+    SOURCES
     ../generic/ploop3.c
     ../generic_ks/show_generic_ks_md_opts.c
 )
 
-set(sources
-    ${my_sources}
-    ${layout_sources}
-    ${add_sources}
+add_interface_library(${pn}_objects
+    OBJECTS
+    ${pn}_my_objects
+    gauge_objects
+    ${pn}_layout
+    standard_objects
+    ${pn}_add_objects
 )
 
-add_library(libraries INTERFACE)
-target_link_libraries(libraries INTERFACE
-    gauge_iface ${gauge_force} standard_iface
-    qcd scidac add machine_dep_io comm m
+add_interface_library(${pn}_libraries
+    OBJECTS
+    qcd
+    scidac
+    add
+    m
 )
 
-add_executable(su3_leapfrog ${sources} control.c)
-target_link_action(su3_leapfrog symanzik_1loop_action asqtad_action)
-target_compile_definitions(su3_leapfrog PRIVATE FN INT_ALG=INT_LEAPFROG)
-target_link_libraries(su3_leapfrog PRIVATE fn_iface ${asq_force} libraries)
+add_milc_executable(su3_leapfrog control.c
+    GAUGE symanzik_1loop_action
+    QUARK asqtad_action
+    DEFINES FN INT_ALG=INT_LEAPFROG
+    OBJECTS ${pn}_objects fn_objects asq_force gauge_force ${pn}_libraries
+)
 
-add_executable(su3_omelyan_rhmc ${sources} control.c)
-target_link_action(su3_omelyan_rhmc symanzik_1loop_action asqtad_action)
-target_compile_definitions(su3_omelyan_rhmc PRIVATE FN HMC INT_ALG=INT_OMELYAN)
-target_link_libraries(su3_omelyan_rhmc PRIVATE fn_iface ${asq_force} libraries)
+add_milc_executable(su3_omelyan control.c
+    GAUGE symanzik_1loop_action
+    QUARK asqtad_action
+    DEFINES FN HMC INT_ALG=INT_OMELYAN
+    OBJECTS ${pn}_objects fn_objects asq_force gauge_force ${pn}_libraries
+)
 
 set(hisq_options
     FN
@@ -57,7 +74,9 @@ set(hisq_options
     DHISQ_FORCE_FILTER=5.0e-5
 )
 
-add_executable(su3_rhmd_hisq ${sources} control.c)
-target_link_action(su3_rhmd_hisq symanzik_1loop_hisq_action hisq/hisq_u3_action)
-target_compile_definitions(su3_rhmd_hisq PRIVATE ${hisq_options})
-target_link_libraries(su3_rhmd_hisq PRIVATE hisq_iface ${hisq_force} libraries)
+add_milc_executable(su3_rhmd_hisq control.c
+    GAUGE symanzik_1loop_hisq_action
+    QUARK hisq/hisq_u3_action
+    DEFINES ${hisq_options}
+    OBJECTS ${pn}_objects hisq_objects hisq_force gauge_force ${pn}_libraries
+)

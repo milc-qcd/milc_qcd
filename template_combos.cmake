@@ -2,8 +2,8 @@
 # Standard lattice routines
 ######################################################################
 
-add_library(standard_iface INTERFACE)
-target_sources(standard_iface INTERFACE
+add_library(standard_objects INTERFACE)
+target_sources(standard_objects INTERFACE
     generic/blind_data.c
     generic/field_translation.c
     generic/field_utilities.c
@@ -17,21 +17,20 @@ target_sources(standard_iface INTERFACE
     generic/remap_stdio_from_args.c
 )
 if(HAVEQIO)
-    target_sources(standard_iface INTERFACE
+    target_sources(standard_objects INTERFACE
         generic/file_types_milc_usqcd.c generic/io_scidac.c generic/io_scidac_types.c
     )
 endif()
 if(HAVE_APE_IO)
-    target_sources(standard_iface INTERFACE
+    target_sources(standard_objects INTERFACE
         generic/io_ape_links.c
     )
 endif()
-set(standard_sources_iface standard_iface)
 
 # These use the gauge field extensively
 
-add_library(gauge_iface INTERFACE)
-target_sources(gauge_iface INTERFACE
+add_library(gauge_objects INTERFACE)
+target_sources(gauge_objects INTERFACE
     generic/ape_smear.c
     generic/check_unitarity.c
     generic/d_plaq4.c
@@ -46,43 +45,41 @@ target_sources(gauge_iface INTERFACE
     generic/show_scidac_opts.c
 )
 if(HAVE_GRID)
-    target_sources(gauge_iface INTERFACE
+    target_sources(gauge_objects INTERFACE
         generic/gridMap.cc generic/milc_to_grid_utilities.cc
     )
 endif()
 if(HAVEQOP)
-    target_sources(gauge_iface INTERFACE
+    target_sources(gauge_objects INTERFACE
         generic/map_milc_to_qopqdp.c generic/milc_to_qop_utilities.c
     )
 endif()
 if(HAVE_QUDA)
-    target_sources(gauge_iface INTERFACE
+    target_sources(gauge_objects INTERFACE
         generic/milc_to_quda_utilities.c generic/d_plaq4_gpu.c generic/ploop3_gpu.c
     )
 endif()
 if(HAVE_QPHIX)
-    target_sources(gauge_iface INTERFACE
+    target_sources(gauge_objects INTERFACE
         generic/map_milc_to_qphix.c generic/milc_to_qphix_utilities.c
     )
 endif()
 if(HAVE_QPHIXJ)
-    target_sources(gauge_iface INTERFACE
+    target_sources(gauge_objects INTERFACE
         generic/qphixjClovMap.cc generic/milc_to_qphixj_utilities.cc
     )
 endif()
-set(gauge_sources_iface gauge_iface)
 
-add_library(fft_iface INTERFACE)
+add_library(fft_objects INTERFACE)
 if(HAVEFFTW)
-    target_sources(fft_iface INTERFACE
+    target_sources(fft_objects INTERFACE
         generic/remap_fftw_fourier.c
     )
 else()
-    target_sources(fft_iface INTERFACE
+    target_sources(fft_objects INTERFACE
         generic/restrict_fourier.c
     )
 endif()
-set(fft_sources_iface fft_iface)
 
 ######################################################################
 # Standard fermion routines
@@ -90,8 +87,8 @@ set(fft_sources_iface fft_iface)
 
 # These are needed for either KS or Clover sources:
 
-add_library(fermion_iface INTERFACE)
-target_sources(fermion_iface INTERFACE
+add_library(fermion_objects INTERFACE)
+target_sources(fermion_objects INTERFACE
     generic/discretize_wf.c
     generic_wilson/gammas.c
     generic/io_source_cmplx_fm.c
@@ -102,12 +99,11 @@ target_sources(fermion_iface INTERFACE
     generic_ks/spin_taste_ops.c
     generic_ks/shift_field.c
 )
-set(fermion_sources_iface fermion_iface)
 
 # These are used to build propagators
 
-add_library(ks_links_iface INTERFACE)
-target_sources(ks_links_iface INTERFACE
+add_library(ks_links_objects INTERFACE)
+target_sources(ks_links_objects INTERFACE
     generic_ks/charge_utilities.c
     generic_ks/fermion_links_from_site.c
     generic_ks/f_meas.c
@@ -121,135 +117,127 @@ target_sources(ks_links_iface INTERFACE
     generic_ks/show_generic_ks_opts.c
     generic_ks/show_hisq_links_opts.c
 )
-set(ks_links_sources_iface ks_links_iface)
 
 # These are used to read propagators
 
-add_library(ks_io_iface INTERFACE)
-target_sources(ks_io_iface INTERFACE
+add_library(ks_io_objects INTERFACE)
+target_sources(ks_io_objects INTERFACE
     generic_ks/io_helpers_ks.c
     generic_ks/io_prop_ks.c
     generic_ks/io_prop_ks_fm.c
 )
 if(HAVEQIO)
-    target_sources(ks_io_iface INTERFACE
+    target_sources(ks_io_objects INTERFACE
         generic_ks/io_scidac_ks.c
     )
 endif()
-set(ks_io_sources_iface ks_io_iface)
 
 # These are used to compute the hadron correlators
 
-add_library(ks_spectrum_iface INTERFACE)
-target_sources(ks_spectrum_iface INTERFACE
+add_library(ks_spectrum_objects INTERFACE)
+target_sources(ks_spectrum_objects INTERFACE
     generic_ks/ks_baryon.c
 )
 if(HAVE_KS_CONT_GPU)
-    target_sources(ks_spectrum_iface INTERFACE
+    target_sources(ks_spectrum_objects INTERFACE
         generic_ks/ks_meson_mom_quda.c
     )
 else()
-    target_sources(ks_spectrum_iface INTERFACE
+    target_sources(ks_spectrum_objects INTERFACE
         generic_ks/ks_meson_mom.c
     )
 endif()
-set(ks_spectrum_sources_iface ks_spectrum_iface)
 
-add_library(gb_baryon_iface INTERFACE)
-target_sources(gb_baryon_iface INTERFACE
+add_library(gb_baryon_objects INTERFACE)
+target_sources(gb_baryon_objects INTERFACE
     generic_ks/gb_baryon_mmap.c
     generic_ks/gb_baryon_snk.c
     generic_ks/gb_baryon_src.c
     generic_ks/gb_baryon_3pt.c
     generic_ks/gb_ops.c
 )
-set(gb_baryon_sources_iface gb_baryon_iface)
 
 # These are used to build propagators
 
-add_library(cl_links_iface INTERFACE)
-target_sources(cl_links_iface INTERFACE
+add_library(cl_links_objects INTERFACE)
+target_sources(cl_links_objects INTERFACE
     generic_wilson/gauss_smear_w.c
 )
-set(cl_links_sources_iface cl_links_iface)
 
 # These are used to read propagators
 
-add_library(cl_io_iface INTERFACE)
-target_sources(cl_io_iface INTERFACE
+add_library(cl_io_objects INTERFACE)
+target_sources(cl_io_objects INTERFACE
     generic_wilson/canopy2weyl_rot.c
     generic_wilson/io_helpers_w.c
     generic_wilson/io_prop_w.c
     generic_wilson/staggered2naive.c
 )
 if(HAVEQIO)
-    target_sources(cl_io_iface INTERFACE
+    target_sources(cl_io_objects INTERFACE
         generic_wilson/io_scidac_w.c
     )
 endif()
-set(cl_io_sources_iface cl_io_iface)
 
 # These are used to compute the spectrum
 
-add_library(cl_spectrum_iface INTERFACE)
-target_sources(cl_spectrum_iface INTERFACE
+add_library(cl_spectrum_objects INTERFACE)
+target_sources(cl_spectrum_objects INTERFACE
     generic_wilson/baryon_cont.c
     generic_wilson/w_baryon.c
     generic_wilson/w_baryon_hl.c
     generic_wilson/w_meson_mom.c
     generic_wilson/w_meson_open_mom.c
 )
-set(cl_spectrum_sources_iface cl_spectrum_iface)
 
 # These are used to calculate eigenvectors
 
-add_library(eigen_iface INTERFACE)
-target_sources(eigen_iface INTERFACE
+add_library(eigen_objects INTERFACE)
+target_sources(eigen_objects INTERFACE
     generic_ks/eigen_stuff_helpers.c generic_ks/io_helpers_ks_eigen.c generic_ks/io_ks_eigen.c generic_ks/read_eigen_param.c
 )
 if(HAVEQIO)
-    target_sources(eigen_iface INTERFACE
+    target_sources(eigen_objects INTERFACE
         generic_ks/io_scidac_ks_eigen.c generic_ks/io_grid_ks_eigen.c
     )
 endif()
 if(HAVE_EIG_GPU)
     if(HAVE_GRID)
-        target_sources(eigen_iface INTERFACE
+        target_sources(eigen_objects INTERFACE
             generic_ks/eigen_stuff_Grid.c generic_ks/gridStaggEigen.cc
         )
     elseif(HAVE_QUDA)
-        target_sources(eigen_iface INTERFACE
+        target_sources(eigen_objects INTERFACE
             generic_ks/eigen_stuff_QUDA.c
         )
     else()
-        target_sources(eigen_iface INTERFACE
+        target_sources(eigen_objects INTERFACE
             generic_ks/must_specify_HAVE_QUDA_or_HAVE_GRID.c
         )
     endif()
 else()
     if(HAVE_PRIMME)
-        target_sources(eigen_iface INTERFACE
+        target_sources(eigen_objects INTERFACE
             generic_ks/eigen_stuff_PRIMME.c
         )
     elseif(HAVE_QDP)
-        target_sources(eigen_iface INTERFACE
+        target_sources(eigen_objects INTERFACE
             generic_ks/eigen_stuff_qdp.c
         )
     elseif(HAVE_ARPACK)
-        target_sources(eigen_iface INTERFACE
+        target_sources(eigen_objects INTERFACE
             generic_ks/eigen_stuff_ARPACK.c
         )
     elseif(HAVEQDP)
-        target_sources(eigen_iface INTERFACE
+        target_sources(eigen_objects INTERFACE
             generic_ks/eigen_stuff_qdp.c generic_ks/jacobi.c
         )
     else()
-        target_sources(eigen_iface INTERFACE
+        target_sources(eigen_objects INTERFACE
             generic_ks/eigen_stuff_Ritz.c generic_ks/jacobi.c
         )
     endif()
 endif()
-set(eigen_sources_iface eigen_iface)
 
 ######################################################################
 # Staggered fermion links routines
@@ -342,27 +330,31 @@ target_sources(flinks_hisq_qop INTERFACE
 target_link_libraries(flinks_hisq_qop INTERFACE flinks_qop)
 
 # Generic actions are not supported in QOP, so we use MILC
-set(flinks_eo_qop flinks_eo_milc)
+add_library(flinks_eo_qop INTERFACE)
+target_link_libraries(flinks_eo_qop INTERFACE flinks_eo_milc)
 
+add_library(flinks_fn INTERFACE)
+add_library(flinks_eo INTERFACE)
+add_library(flinks_hisq INTERFACE)
 if(HAVE_FL_GPU)
     if(HAVE_QUDA)
-        set(flinks_fn flinks_fn_quda)
-        set(flinks_eo flinks_eo_milc)
-        set(flinks_hisq flinks_hisq_quda)
+        target_link_libraries(flinks_fn INTERFACE flinks_fn_quda)
+        target_link_libraries(flinks_eo INTERFACE flinks_eo_milc)
+        target_link_libraries(flinks_hisq INTERFACE flinks_hisq_quda)
     elseif(HAVE_GRID)
-        set(flinks_fn flinks_fn_grid)
-        set(flinks_eo flinks_eo_milc)
-        set(flinks_hisq flinks_hisq_grid)
+        target_link_libraries(flinks_fn INTERFACE flinks_fn_grid)
+        target_link_libraries(flinks_eo INTERFACE flinks_eo_milc)
+        target_link_libraries(flinks_hisq INTERFACE flinks_hisq_grid)
     endif()
 else()
     if(HAVEQOP)
-        set(flinks_fn flinks_fn_qop)
-        set(flinks_eo flinks_eo_qop)
-        set(flinks_hisq flinks_hisq_qop)
+        target_link_libraries(flinks_fn INTERFACE flinks_fn_qop)
+        target_link_libraries(flinks_eo INTERFACE flinks_eo_qop)
+        target_link_libraries(flinks_hisq INTERFACE flinks_hisq_qop)
     else()
-        set(flinks_fn flinks_fn_milc)
-        set(flinks_eo flinks_eo_milc)
-        set(flinks_hisq flinks_hisq_milc)
+        target_link_libraries(flinks_fn INTERFACE flinks_fn_milc)
+        target_link_libraries(flinks_eo INTERFACE flinks_eo_milc)
+        target_link_libraries(flinks_hisq INTERFACE flinks_hisq_milc)
     endif()
 endif()
 
@@ -462,17 +454,18 @@ target_sources(congrad_fn_qop INTERFACE
 )
 target_link_libraries(congrad_fn_qop INTERFACE congrad_fn_base)
 
+add_library(congrad_fn_milc INTERFACE)
 if(HAVE_FN_CG_GPU)
     if(HAVE_QUDA)
-        set(congrad_fn_milc congrad_fn_quda)
+        target_link_libraries(congrad_fn_milc INTERFACE congrad_fn_quda)
     elseif(HAVE_GRID)
-        set(congrad_fn_milc congrad_fn_grid)
+        target_link_libraries(congrad_fn_milc INTERFACE congrad_fn_grid)
     endif()
 else()
     if(HAVE_QPHIX)
-        set(congrad_fn_milc congrad_fn_qphix)
+        target_link_libraries(congrad_fn_milc INTERFACE congrad_fn_qphix)
     else()
-        set(congrad_fn_milc congrad_fn_milc_cpu)
+        target_link_libraries(congrad_fn_milc INTERFACE congrad_fn_milc_cpu)
     endif()
 endif()
 
@@ -526,17 +519,18 @@ target_sources(multi_inv_fn_qop INTERFACE
     generic_ks/ks_multicg_offset_qop_D.c generic_ks/ks_multicg_offset_qop_F.c
 )
 
+add_library(multi_inv_fn_milc INTERFACE)
 if(HAVE_FN_CG_GPU)
     if(HAVE_QUDA)
-        set(multi_inv_fn_milc multi_inv_fn_quda)
+        target_link_libraries(multi_inv_fn_milc INTERFACE multi_inv_fn_quda)
     elseif(HAVE_GRID)
-        set(multi_inv_fn_milc multi_inv_fn_grid)
+        target_link_libraries(multi_inv_fn_milc INTERFACE multi_inv_fn_grid)
     endif()
 else()
     if(HAVE_QPHIX)
-        set(multi_inv_fn_milc multi_inv_fn_qphix)
+        target_link_libraries(multi_inv_fn_milc INTERFACE multi_inv_fn_qphix)
     else()
-        set(multi_inv_fn_milc multi_inv_fn_milc_cpu)
+        target_link_libraries(multi_inv_fn_milc INTERFACE multi_inv_fn_milc_cpu)
     endif()
 endif()
 
@@ -570,7 +564,7 @@ target_sources(eo_force INTERFACE
 add_library(asq_force_qop INTERFACE)
 target_sources(asq_force_qop INTERFACE
     generic_ks/fermion_force_asqtad_qop.c generic_ks/fermion_force_asqtad_qop_F.c
-    generic_ks/fermion_force_asqtad_qop_D.c generic_ks/ff_opt.c ${FORCE_OPTS}
+    generic_ks/fermion_force_asqtad_qop_D.c generic_ks/ff_opt.c # ${FORCE_OPTS}
 )
 
 add_library(hisq_force_qop INTERFACE)
@@ -603,21 +597,22 @@ target_sources(hisq_force_grid INTERFACE
 
 # Define ASQ_FORCE and HISQ_FORCE depending on compilation parameters
 
+add_library(asq_force INTERFACE)
+add_library(hisq_force INTERFACE)
 if(HAVE_FF_GPU)
     if(HAVE_QUDA)
-        set(asq_force asq_force_quda)
-        set(hisq_force hisq_force_quda)
+        target_link_libraries(asq_force INTERFACE asq_force_quda)
+        target_link_libraries(hisq_force INTERFACE hisq_force_quda)
     elseif(HAVE_GRID)
-        set(asq_force)
-        set(hisq_force hisq_force_grid)
+        target_link_libraries(hisq_force INTERFACE hisq_force_grid)
     endif()
 else()
     if(HAVEQOP)
-        set(asq_force asq_force_qop)
-        set(hisq_force hisq_force_qop)
+        target_link_libraries(asq_force INTERFACE asq_force_qop)
+        target_link_libraries(hisq_force INTERFACE hisq_force_qop)
     else()
-        set(asq_force asq_force_milc)
-        set(hisq_force hisq_force_milc)
+        target_link_libraries(asq_force INTERFACE asq_force_milc)
+        target_link_libraries(hisq_force INTERFACE hisq_force_milc)
     endif()
 endif()
 
@@ -668,12 +663,13 @@ target_sources(congrad_cl_milc_qphixj INTERFACE
 )
 target_link_libraries(congrad_cl_milc_qphixj INTERFACE congrad_cl_base)
 
+add_library(congrad_cl_milc INTERFACE)
 if(HAVE_CL_GPU)
-    set(congrad_cl_milc congrad_cl_milc_gpu)
+    target_link_libraries(congrad_cl_milc INTERFACE congrad_cl_milc_gpu)
 elseif(HAVE_QPHIXJ)
-    set(congrad_cl_milc congrad_cl_milc_qphixj)
+    target_link_libraries(congrad_cl_milc INTERFACE congrad_cl_milc_qphixj)
 else()
-    set(congrad_cl_milc congrad_cl_milc_cpu)
+    target_link_libraries(congrad_cl_milc INTERFACE congrad_cl_milc_cpu)
 endif()
 
 ######################################################################
@@ -709,13 +705,14 @@ target_sources(gauge_force_qphix INTERFACE
     generic/gauge_force_symzk1_qphix_D.c generic/gauge_force_symzk1_qphix_F.c
 )
 
+add_library(gauge_force_milc INTERFACE)
 if(HAVE_GF_GPU)
-    set(gauge_force_milc gauge_force_milc_gpu)
+    target_link_libraries(gauge_force_milc INTERFACE gauge_force_milc_gpu)
 else()
     if(HAVE_GF_QPHIX)
-        set(gauge_force_milc gauge_force_qphix)
+        target_link_libraries(gauge_force_milc INTERFACE gauge_force_qphix)
     else()
-        set(gauge_force_milc gauge_force_milc_cpu)
+        target_link_libraries(gauge_force_milc INTERFACE gauge_force_milc_cpu)
     endif()
 endif()
 
@@ -723,56 +720,61 @@ endif()
 # QOP or MILC/GPU or QPHIX or GRID
 ######################################################################
 
+add_library(congrad_cl INTERFACE)
+add_library(dslash_fn INTERFACE)
+add_library(congrad_fn INTERFACE)
+add_library(multi_inv_fn INTERFACE)
+add_library(gauge_force INTERFACE)
 if(HAVEQOP)
     # Interface to access QOP
-    set(congrad_cl congrad_cl_qop)
-    set(dslash_fn dslash_fn_qop)
-    set(congrad_fn congrad_fn_qop)
-    set(multi_inv_fn multi_inv_fn_qop)
-    set(gauge_force gauge_force_qop)
+    target_link_libraries(congrad_cl INTERFACE congrad_cl_qop)
+    target_link_libraries(dslash_fn INTERFACE dslash_fn_qop)
+    target_link_libraries(congrad_fn INTERFACE congrad_fn_qop)
+    target_link_libraries(multi_inv_fn INTERFACE multi_inv_fn_qop)
+    target_link_libraries(gauge_force INTERFACE gauge_force_qop)
 else()
-    set(congrad_cl ${congrad_cl_milc})
-    set(dslash_fn dslash_fn_milc)
-    set(congrad_fn ${congrad_fn_milc})
-    set(multi_inv_fn ${multi_inv_fn_milc})
-    set(gauge_force ${gauge_force_milc})
+    target_link_libraries(congrad_cl INTERFACE congrad_cl_milc)
+    target_link_libraries(dslash_fn INTERFACE dslash_fn_milc)
+    target_link_libraries(congrad_fn INTERFACE congrad_fn_milc)
+    target_link_libraries(multi_inv_fn INTERFACE multi_inv_fn_milc)
+    target_link_libraries(gauge_force INTERFACE gauge_force_milc)
 endif()
 
 ######################################################################
 # Standard lists of objects for staggered fermion links and inverters
 ######################################################################
 
-add_library(cl_iface INTERFACE)
-target_link_libraries(cl_iface INTERFACE
-    cl_links_iface
+add_library(cl_objects INTERFACE)
+target_link_libraries(cl_objects INTERFACE
+    cl_links_objects
     flinks_cl
-    ${congrad_cl}
+    congrad_cl
     dslash_cl
 )
 
-add_library(eo_iface INTERFACE)
-target_link_libraries(eo_iface INTERFACE
-    ks_links_iface
-    ${flinks_eo}
+add_library(eo_objects INTERFACE)
+target_link_libraries(eo_objects INTERFACE
+    ks_links_objects
+    flinks_eo
     congrad_eo
     dslash_eo
     multi_inv_eo
 )
 
-add_library(fn_iface INTERFACE)
-target_link_libraries(fn_iface INTERFACE
-    ks_links_iface
-    ${flinks_fn}
-    ${congrad_fn}
-    ${dslash_fn}
-    ${multi_inv_fn}
+add_library(fn_objects INTERFACE)
+target_link_libraries(fn_objects INTERFACE
+    ks_links_objects
+    flinks_fn
+    congrad_fn
+    dslash_fn
+    multi_inv_fn
 )
 
-add_library(hisq_iface INTERFACE)
-target_link_libraries(hisq_iface INTERFACE
-    ks_links_iface
-    ${flinks_hisq}
-    ${congrad_fn}
-    ${dslash_fn}
-    ${multi_inv_fn}
+add_library(hisq_objects INTERFACE)
+target_link_libraries(hisq_objects INTERFACE
+    ks_links_objects
+    flinks_hisq
+    congrad_fn
+    dslash_fn
+    multi_inv_fn
 )

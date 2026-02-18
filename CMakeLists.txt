@@ -30,24 +30,24 @@ option(WANTHADRONS "Enable Hadrons" OFF)
 option(WANTGRID "Enable Grid" OFF)
 option(WANTQPHIXJ "Enable QPhiXJ" OFF)
 
-option(WANT_CL_BCG_GPU "Enable Clover BCG GPU" ON)
-option(WANT_FN_CG_GPU "Enable KS FN CG GPU" ON)
-option(WANT_GA_GPU "Enable gauge action CG GPU" ON)
-option(WANT_GF_GPU "Enable gauge force GPU" ON)
-option(WANT_FL_GPU "Enable fermion links GPU" ON)
-option(WANT_FF_GPU "Enable fermion force GPU" ON)
-option(WANT_EIG_GPU "Enable eigensolver GPU" ON)
-option(WANT_GSMEAR_GPU "Enable gaussian smearing GPU" ON)
-option(WANT_KS_CONT_GPU "Enable KS contraction GPU" ON)
-option(WANT_SHIFT_GPU "Enable shift GPU" ON)
-option(WANT_SPIN_TASTE_GPU "Enable spin taste GPU" ON)
-option(WANT_GAUGEFIX_OVR_GPU "Enable gauge fixing override GPU" ON)
-option(WANT_MULTIGRID "Enable multigrid GPU" ON)
+option(WANT_CL_BCG_GPU "Enable Clover BCG GPU" OFF)
+option(WANT_FN_CG_GPU "Enable KS FN CG GPU" OFF)
+option(WANT_GA_GPU "Enable gauge action CG GPU" OFF)
+option(WANT_GF_GPU "Enable gauge force GPU" OFF)
+option(WANT_FL_GPU "Enable fermion links GPU" OFF)
+option(WANT_FF_GPU "Enable fermion force GPU" OFF)
+option(WANT_EIG_GPU "Enable eigensolver GPU" OFF)
+option(WANT_GSMEAR_GPU "Enable gaussian smearing GPU" OFF)
+option(WANT_KS_CONT_GPU "Enable KS contraction GPU" OFF)
+option(WANT_SHIFT_GPU "Enable shift GPU" OFF)
+option(WANT_SPIN_TASTE_GPU "Enable spin taste GPU" OFF)
+option(WANT_GAUGEFIX_OVR_GPU "Enable gauge fixing override GPU" OFF)
+option(WANT_MULTIGRID "Enable multigrid GPU" OFF)
 
-option(WANT_FN_CG_QPHIX "Enable KS FN CG QPhiX" ON)
-option(WANT_GF_QPHIX "Enable gauge force QPhiX" ON)
+option(WANT_FN_CG_QPHIX "Enable KS FN CG QPhiX" OFF)
+option(WANT_GF_QPHIX "Enable gauge force QPhiX" OFF)
 
-option(GAUSS_SMEAR_KS_TWOLINK "Use two-link term in Gaussian smearing for KS" ON)
+option(GAUSS_SMEAR_KS_TWOLINK "Use two-link term in Gaussian smearing for KS" OFF)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
@@ -333,26 +333,26 @@ if(OMP)
     target_link_libraries(add INTERFACE OpenMP::OpenMP_C)
 endif()
 
-add_library(comm INTERFACE)
+add_library(commpkg INTERFACE)
 if(MPP)
     if(HAVEQMP)
-        target_sources(comm INTERFACE generic/com_qmp.c)
-        target_compile_definitions(comm INTERFACE QMP)
-        target_link_libraries(comm INTERFACE QMP::qmp)
+        target_sources(commpkg INTERFACE generic/com_qmp.c)
+        target_compile_definitions(commpkg INTERFACE QMP)
+        target_link_libraries(commpkg INTERFACE QMP::qmp)
     else()
         find_package(MPI REQUIRED)
-        target_sources(comm INTERFACE generic/com_mpi.c)
-        target_compile_definitions(comm INTERFACE MPI_COMMS)
-        target_link_libraries(comm INTERFACE MPI::MPI_C)
+        target_sources(commpkg INTERFACE generic/com_mpi.c)
+        target_compile_definitions(commpkg INTERFACE MPI_COMMS)
+        target_link_libraries(commpkg INTERFACE MPI::MPI_C)
     endif()
 else()
     if(HAVEQMP)
-        target_sources(comm INTERFACE generic/com_qmp.c)
-        target_compile_definitions(comm INTERFACE SINGLE)
-        target_link_libraries(comm INTERFACE QMP::qmp)
+        target_sources(commpkg INTERFACE generic/com_qmp.c)
+        target_compile_definitions(commpkg INTERFACE SINGLE)
+        target_link_libraries(commpkg INTERFACE QMP::qmp)
     else()
-        target_sources(comm INTERFACE generic/com_vanilla.c)
-        target_compile_definitions(comm INTERFACE SINGLE)
+        target_sources(commpkg INTERFACE generic/com_vanilla.c)
+        target_compile_definitions(commpkg INTERFACE SINGLE)
     endif()
 endif()
 
@@ -380,32 +380,49 @@ elseif(${WANT_MIXED_PRECISION_GPU} STREQUAL 2)
     target_compile_definitions(add INTERFACE MAX_MIXED)
 endif()
 
-function(target_link_action TARGET_NAME GAUGE_ACTION QUARK_ACTION)
-    set(SRC ${CMAKE_SOURCE_DIR}/generic/imp_actions/${GAUGE_ACTION}.h)
-    set(DST ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_include/gauge_action.h)
-    add_custom_command(
-        OUTPUT ${DST}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
-        DEPENDS ${SRC}
-        COMMENT "Copying ${GAUGE_ACTION}.h to gauge_action.h"
-    )
-    target_sources(${TARGET_NAME} PRIVATE ${DST})
+function(add_interface_library TARGET)
+    cmake_parse_arguments(AIL "" "" "OBJECTS;SOURCES" ${ARGN})
+    add_library(${TARGET} INTERFACE)
+    target_sources(${TARGET} INTERFACE ${AIL_SOURCES})
+    target_link_libraries(${TARGET} INTERFACE ${AIL_OBJECTS})
+endfunction()
 
-    set(SRC ${CMAKE_SOURCE_DIR}/generic_ks/imp_actions/${QUARK_ACTION}.h)
-    set(DST ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_include/quark_action.h)
-    add_custom_command(
-        OUTPUT ${DST}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
-        DEPENDS ${SRC}
-        COMMENT "Copying ${QUARK_ACTION}.h to quark_action.h"
-    )
-    target_sources(${TARGET_NAME} PRIVATE ${DST})
+function(add_milc_executable TARGET MAIN)
+    add_executable(${TARGET} ${MAIN})
+    cmake_parse_arguments(AME "" "GAUGE;QUARK" "DEFINES;OBJECTS" ${ARGN})
+    set(gauge_include ${CMAKE_SOURCE_DIR}/generic/imp_actions)
+    set(quark_include ${CMAKE_SOURCE_DIR}/generic_ks/imp_actions)
+    set(local_include ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_include)
 
-    target_include_directories(${TARGET_NAME} PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_include
-    )
+    if(AME_GAUGE)
+        set(SRC ${gauge_include}/${AME_GAUGE}.h)
+        set(DST ${local_include}/gauge_action.h)
+        add_custom_command(
+            OUTPUT ${DST}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+            DEPENDS ${SRC}
+            COMMENT "Copying ${AME_GAUGE}.h to gauge_action.h"
+        )
+        target_sources(${TARGET} PRIVATE ${DST})
+    endif()
+
+    if(AME_QUARK)
+        set(SRC ${quark_include}/${AME_QUARK}.h)
+        set(DST ${local_include}/quark_action.h)
+        add_custom_command(
+            OUTPUT ${DST}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+            DEPENDS ${SRC}
+            COMMENT "Copying ${AME_QUARK}.h to quark_action.h"
+        )
+        target_sources(${TARGET} PRIVATE ${DST})
+    endif()
+
+    target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${local_include})
+    target_compile_definitions(${TARGET} PRIVATE ${AME_DEFINES})
+    target_link_libraries(${TARGET} PRIVATE ${AME_OBJECTS})
 endfunction()
 
 add_subdirectory(libraries)
 add_subdirectory(ks_imp_rhmc)
+add_subdirectory(ks_spectrum)
