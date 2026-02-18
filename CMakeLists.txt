@@ -382,23 +382,29 @@ endif()
 
 function(target_link_action TARGET_NAME GAUGE_ACTION QUARK_ACTION)
     set(SRC ${CMAKE_SOURCE_DIR}/generic/imp_actions/${GAUGE_ACTION}.h)
-    set(DST ${CMAKE_CURRENT_BINARY_DIR}/gauge_action.h)
+    set(DST ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_include/gauge_action.h)
     add_custom_command(
         OUTPUT ${DST}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
         DEPENDS ${SRC}
         COMMENT "Copying ${GAUGE_ACTION}.h to gauge_action.h"
     )
+    target_sources(${TARGET_NAME} PRIVATE ${DST})
+
     set(SRC ${CMAKE_SOURCE_DIR}/generic_ks/imp_actions/${QUARK_ACTION}.h)
-    set(DST ${CMAKE_CURRENT_BINARY_DIR}/quark_action.h)
+    set(DST ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_include/quark_action.h)
     add_custom_command(
         OUTPUT ${DST}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
         DEPENDS ${SRC}
         COMMENT "Copying ${QUARK_ACTION}.h to quark_action.h"
     )
-    target_sources(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/gauge_action.h ${CMAKE_CURRENT_BINARY_DIR}/quark_action.h)
-    target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_sources(${TARGET_NAME} PRIVATE ${DST})
+
+    target_include_directories(${TARGET_NAME} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_include
+    )
 endfunction()
 
 add_subdirectory(libraries)

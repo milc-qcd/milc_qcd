@@ -31,11 +31,25 @@ set(sources
     ${add_sources}
 )
 
-add_library(library INTERFACE)
-target_link_libraries(library INTERFACE qcd scidac add machine_dep_io comm m)
+add_library(libraries INTERFACE)
+target_link_libraries(libraries INTERFACE
+    gauge_iface ${gauge_force} standard_iface
+    qcd scidac add machine_dep_io comm m
+)
+
+add_executable(su3_leapfrog ${sources} control.c)
+target_link_action(su3_leapfrog symanzik_1loop_action asqtad_action)
+target_compile_definitions(su3_leapfrog PRIVATE FN INT_ALG=INT_LEAPFROG)
+target_link_libraries(su3_leapfrog PRIVATE fn_iface ${asq_force} libraries)
+
+add_executable(su3_omelyan_rhmc ${sources} control.c)
+target_link_action(su3_omelyan_rhmc symanzik_1loop_action asqtad_action)
+target_compile_definitions(su3_omelyan_rhmc PRIVATE FN HMC INT_ALG=INT_OMELYAN)
+target_link_libraries(su3_omelyan_rhmc PRIVATE fn_iface ${asq_force} libraries)
 
 set(hisq_options
-    FN INT_ALG=INT_3G1F
+    FN
+    INT_ALG=INT_3G1F
     HISQ_REUNIT_ALLOW_SVD
     HISQ_REUNIT_SVD_REL_ERROR=1e-8
     DHISQ_REUNIT_SVD_ABS_ERROR=1e-8
@@ -45,6 +59,5 @@ set(hisq_options
 
 add_executable(su3_rhmd_hisq ${sources} control.c)
 target_link_action(su3_rhmd_hisq symanzik_1loop_hisq_action hisq/hisq_u3_action)
-target_link_libraries(su3_rhmd_hisq PRIVATE hisq_iface ${hisq_force} gauge_iface ${gauge_force} standard_iface library)
 target_compile_definitions(su3_rhmd_hisq PRIVATE ${hisq_options})
-target_include_directories(su3_rhmd_hisq PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(su3_rhmd_hisq PRIVATE hisq_iface ${hisq_force} libraries)
