@@ -137,8 +137,9 @@ endif()
 
 if(WANTQUDA)
     find_package(QUDA REQUIRED)
-    find_package(CUDAToolkit REQUIRED)
-    target_link_libraries(add INTERFACE QUDA::quda CUDA::cuda CUDA::cublas CUDA::cufft)
+    set(HAVE_QUDA ON)
+    set(HAVE_GPU ON)
+    target_link_libraries(add INTERFACE QUDA::quda)
     target_compile_definitions(add INTERFACE HAVE_QUDA SET_QUDA_SUMMARIZE)
 
     if(WANT_FN_CG_GPU)

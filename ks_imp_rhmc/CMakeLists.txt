@@ -32,7 +32,7 @@ set(sources
 )
 
 add_library(library INTERFACE)
-target_link_libraries(library INTERFACE qcd scidac add machine_dep_io comm)
+target_link_libraries(library INTERFACE qcd scidac add machine_dep_io comm m)
 
 set(hisq_options
     FN INT_ALG=INT_3G1F

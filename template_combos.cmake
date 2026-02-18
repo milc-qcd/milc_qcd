@@ -373,14 +373,13 @@ endif()
 # Standard MILC
 
 # Choices here are dslash_fn.c dslash_fn2.c dslash_fn_dblstore.c
+add_library(dslash_fn_milc INTERFACE)
 if(HAVE_QUDA)
     # When using QUDA, the back links are not used and just add unnecessary overhead
-    add_library(dslash_fn_milc INTERFACE)
     target_sources(dslash_fn_milc INTERFACE
         generic_ks/dslash_fn.c
     )
 else()
-    add_library(dslash_fn_milc INTERFACE)
     target_sources(dslash_fn_milc INTERFACE
         generic_ks/dslash_fn_dblstore.c
     )
