@@ -1,5 +1,4 @@
 add_interface_library(my_objects
-    SOURCES
     gauge_info.c
     ks_source_info.c
     ksprop_info.c
@@ -10,14 +9,12 @@ add_interface_library(my_objects
 
 
 add_interface_library(g_u1_objects
-    SOURCES
     ../generic_u1/io_u1lat.c
     ../generic_u1/u1link.c
     ../generic_u1/u1plaq.c
 )
 
 add_interface_library(layout
-    SOURCES
     ../generic/layout_hyper_prime.c
 )
 
@@ -42,7 +39,6 @@ add_interface_library(objects
 )
 
 add_interface_library(eigcg_objects
-    SOURCES
     ../generic_ks/inc_eigcg.c
 )
 

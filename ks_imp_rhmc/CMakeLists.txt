@@ -1,5 +1,4 @@
 add_interface_library(my_objects
-    SOURCES
     d_action_rhmc.c
     eo_fermion_force_rhmc.c
     ../generic_ks/gauge_action_imp_ks.c
@@ -18,17 +17,15 @@ add_interface_library(my_objects
 )
 
 add_interface_library(layout
-    SOURCES
     ../generic/layout_hyper_prime.c
 )
 
 add_interface_library(add_objects
+    ../generic/ploop3.c
+    ../generic_ks/show_generic_ks_md_opts.c
     OBJECTS
     machine_dep_io
     commpkg
-    SOURCES
-    ../generic/ploop3.c
-    ../generic_ks/show_generic_ks_md_opts.c
 )
 
 add_interface_library(objects

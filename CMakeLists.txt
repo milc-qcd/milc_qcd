@@ -56,6 +56,19 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/libraries/include
 )
 
+function(add_interface_library TARGET)
+    cmake_parse_arguments(AIL "" "" "OBJECTS;SOURCES" ${ARGN})
+    add_library(${TARGET} INTERFACE)
+    target_sources(${TARGET} INTERFACE ${AIL_UNPARSED_ARGUMENTS} ${AIL_SOURCES})
+    target_link_libraries(${TARGET} INTERFACE ${AIL_OBJECTS})
+endfunction()
+
+function(append_interface_library TARGET)
+    cmake_parse_arguments(AIL "" "" "OBJECTS;SOURCES" ${ARGN})
+    target_sources(${TARGET} INTERFACE ${AIL_UNPARSED_ARGUMENTS} ${AIL_SOURCES})
+    target_link_libraries(${TARGET} INTERFACE ${AIL_OBJECTS})
+endfunction()
+
 # Intel Classic Compiler Configuration
 if(CMAKE_C_COMPILER_ID STREQUAL "Intel" OR CMAKE_C_COMPILER_ID STREQUAL "IntelLLVM")
     if(ARCH STREQUAL "knl")
@@ -381,13 +394,6 @@ if(${WANT_MIXED_PRECISION_GPU} STREQUAL 1)
 elseif(${WANT_MIXED_PRECISION_GPU} STREQUAL 2)
     target_compile_definitions(add INTERFACE MAX_MIXED)
 endif()
-
-function(add_interface_library TARGET)
-    cmake_parse_arguments(AIL "" "" "OBJECTS;SOURCES" ${ARGN})
-    add_library(${TARGET} INTERFACE)
-    target_sources(${TARGET} INTERFACE ${AIL_SOURCES})
-    target_link_libraries(${TARGET} INTERFACE ${AIL_OBJECTS})
-endfunction()
 
 function(add_milc_executable TARGET MAIN)
     add_executable(${TARGET} ${MAIN})
