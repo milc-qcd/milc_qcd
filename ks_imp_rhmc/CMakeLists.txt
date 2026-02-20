@@ -1,6 +1,4 @@
-set(pn _ks_imp_rhmc)
-
-add_interface_library(${pn}_my_objects
+add_interface_library(my_objects
     SOURCES
     d_action_rhmc.c
     eo_fermion_force_rhmc.c
@@ -19,12 +17,12 @@ add_interface_library(${pn}_my_objects
     update_u.c
 )
 
-add_interface_library(${pn}_layout
+add_interface_library(layout
     SOURCES
     ../generic/layout_hyper_prime.c
 )
 
-add_interface_library(${pn}_add_objects
+add_interface_library(add_objects
     OBJECTS
     machine_dep_io
     commpkg
@@ -33,16 +31,16 @@ add_interface_library(${pn}_add_objects
     ../generic_ks/show_generic_ks_md_opts.c
 )
 
-add_interface_library(${pn}_objects
+add_interface_library(objects
     OBJECTS
-    ${pn}_my_objects
+    my_objects
     gauge_objects
-    ${pn}_layout
+    layout
     standard_objects
-    ${pn}_add_objects
+    add_objects
 )
 
-add_interface_library(${pn}_libraries
+add_interface_library(libraries
     OBJECTS
     qcd
     scidac
@@ -54,14 +52,14 @@ add_milc_executable(su3_leapfrog control.c
     GAUGE symanzik_1loop_action
     QUARK asqtad_action
     DEFINES FN INT_ALG=INT_LEAPFROG
-    OBJECTS ${pn}_objects fn_objects asq_force gauge_force ${pn}_libraries
+    EXTRA_OBJECTS fn_objects asq_force gauge_force
 )
 
 add_milc_executable(su3_omelyan control.c
     GAUGE symanzik_1loop_action
     QUARK asqtad_action
     DEFINES FN HMC INT_ALG=INT_OMELYAN
-    OBJECTS ${pn}_objects fn_objects asq_force gauge_force ${pn}_libraries
+    EXTRA_OBJECTS fn_objects asq_force gauge_force
 )
 
 set(hisq_options
@@ -78,5 +76,5 @@ add_milc_executable(su3_rhmd_hisq control.c
     GAUGE symanzik_1loop_hisq_action
     QUARK hisq/hisq_u3_action
     DEFINES ${hisq_options}
-    OBJECTS ${pn}_objects hisq_objects hisq_force gauge_force ${pn}_libraries
+    EXTRA_OBJECTS hisq_objects hisq_force gauge_force
 )
