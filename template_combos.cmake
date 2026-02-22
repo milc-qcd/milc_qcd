@@ -1,6 +1,16 @@
+# This is not a standalone Makefile
+# It is intended to be included in other Makefiles
+
+# It defines standard ccmbinations of generic object files for building code
+# These definitions are intended to apply to all builds.
+# If you want to customize a build, this list can be used as a starting point
+# for making changes.
+
 ######################################################################
 # Standard lattice routines
 ######################################################################
+
+# These are required for essentially all applications
 
 add_interface_library(standard_objects
     generic/blind_data.c
@@ -132,10 +142,12 @@ add_interface_library(ks_spectrum_objects
     generic_ks/ks_baryon.c
 )
 if(HAVE_KS_CONT_GPU)
+    # use QUDA GPU contraction code
     append_interface_library(ks_spectrum_objects
         generic_ks/ks_meson_mom_quda.c
     )
 else()
+    # otherwise use old CPU contraction code
     append_interface_library(ks_spectrum_objects
         generic_ks/ks_meson_mom.c
     )
@@ -221,6 +233,7 @@ else()
             generic_ks/eigen_stuff_qdp.c generic_ks/jacobi.c
         )
     else()
+        # Default solver
         append_interface_library(eigen_objects
             generic_ks/eigen_stuff_Ritz.c generic_ks/jacobi.c
         )
@@ -337,7 +350,7 @@ endif()
 
 # Standard MILC
 
-# Choices here are dslash_fn.c dslash_fn2.c dslash_fn_dblstore.c
+# Choices here are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
 if(HAVE_QUDA)
     # When using QUDA, the back links are not used and just add unnecessary overhead
     add_interface_library(dslash_fn_milc
@@ -593,6 +606,13 @@ add_interface_library(congrad_cl_milc_gpu
     generic_clover/d_bicgilu_cl_gpu.c
     OBJECTS congrad_cl_base
 )
+
+# QPHIXJ support
+# add_interface_library(congrad_cl_qphixj
+#     generic_clover/d_bicgilu_cl_qphixj.c generic_clover/d_bicgilu_cl_qphixj_F.c
+#     generic_clover/d_bicgilu_cl_qphixj_D.c
+#     OBJECTS congrad_cl_base
+# )
 
 # QPHIXJ support
 add_interface_library(congrad_cl_milc_qphixj

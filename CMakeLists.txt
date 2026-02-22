@@ -374,7 +374,6 @@ endif()
 target_compile_definitions(add INTERFACE
     MILC_PRECISION=${PRECISION}
     ${cgitver}
-    ${cscidac}
     ${ctime}
     ${cprof}
     ${cdebug}
