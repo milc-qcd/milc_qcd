@@ -127,11 +127,11 @@ write_tslice_values(char *tag, int jr, Real mass1, Real charge1,
     jtmu[tmu] = 0.;
   }
   int i;
-  FORALLFIELDSITES_OMP(i,){
+  FORALLFIELDSITES(i){
     for(int mu = 0; mu < 4; mu++){
       jtmu[4*lattice[i].t + mu] += j_mu[4*i + mu];
     }
-  } END_LOOP_OMP;
+  }
 
 #if 0
   // DEBUG
