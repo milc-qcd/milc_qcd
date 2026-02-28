@@ -19,9 +19,9 @@ set(WANT_MIXED_PRECISION 2 CACHE STRING "Mixed-precision (1 = half, 2 = max)")
 set_property(CACHE WANT_MIXED_PRECISION PROPERTY STRINGS 1 2)
 set(WANT_MIXED_PRECISION_GPU ${WANT_MIXED_PRECISION} CACHE STRING "Mixed-precision for GPU (1 = half, 2 = max)")
 set_property(CACHE WANT_MIXED_PRECISION_GPU PROPERTY STRINGS 1 2)
-option(WANTQOP "Enable QOP" OFF)
-option(WANTQIO "Enable QIO" OFF)
+option(DOWNLOAD_SCIDAC "Download SciDAC libraries" OFF)
 option(WANTQMP "Enable QMP" OFF)
+option(WANTQIO "Enable QIO" OFF)
 option(WANT_APE_IO "Enable APE IO" OFF)
 option(WANTFFTW "Enable FFTW" OFF)
 option(WANTPRIMME "Enable PRIMME" OFF)
@@ -55,6 +55,9 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/libraries/include
 )
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+include(cmake/CPM.cmake)
 
 function(add_interface_library TARGET)
     cmake_parse_arguments(AIL "" "" "OBJECTS;SOURCES" ${ARGN})
@@ -256,12 +259,28 @@ endif()
 #     target_compile_definitions(add INTERFACE HAVE_HADRONS)
 # endif()
 
-# if(WANTGRID)
-#     find_package(Grid REQUIRED)
-#     set(HAVE_GRID ON)
-#     set(HAVE_GPU ON)
-#     target_compile_definitions(add INTERFACE HAVE_GRID)
-# endif()
+if(WANTGRID)
+    find_package(Grid REQUIRED)
+    set(HAVE_GRID ON)
+    set(HAVE_GPU ON)
+    target_link_libraries(add INTERFACE Grid::Grid)
+    target_compile_definitions(add INTERFACE HAVE_GRID)
+
+    set(GRID_SHMEM_MAX 2048) # Megabytes
+    set(GRID_DEVICE_MEM_MAX 32768) # Megabytes
+    set(GRID_SHMEM_MPI 1)
+    set(GRID_ACCELERATOR_THREADS 8)
+    set(GRID_MULTI_CG GRID_5DCG) # GRID_5DCG GRID_BLOCKCG GRID_MRHSCG
+
+    target_compile_definitions(add INTERFACE
+        GRID_SHMEM_MAX=${GRID_SHMEM_MAX}
+        GRID_DEVICE_MEM_MAX=${GRID_DEVICE_MEM_MAX}
+        GRID_SHMEM_MPI=${GRID_SHMEM_MPI}
+        GRID_ACCELERATOR_THREADS=${GRID_ACCELERATOR_THREADS}
+        GRID_COMMS_OVERLAP
+        GRID_MULTI_CG=${GRID_MULTI_CG}
+    )
+endif()
 
 # if(WANTQPHIXJ)
 #     set(HAVE_QPHIXJ ON)
