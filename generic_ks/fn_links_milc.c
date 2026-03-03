@@ -34,7 +34,7 @@ create_G_special(void){
     terminate(1);
   }
 
-  memset(m, '\0', sites_on_node*4*sizeof(su3_matrix));
+  clear_m_array_field(m, 4);
   return m;
 }
 
@@ -402,6 +402,40 @@ add_fn(fn_links_t *fn_A, fn_links_t *fn_B, fn_links_t *fn_C){
 	add_su3_matrix( fatbackA + 4*i + dir, fatbackB + 4*i + dir, fatbackC + 4*i + dir );
       if(lngbackA != NULL && lngbackB != NULL && lngbackC != NULL)
 	add_su3_matrix( lngbackA + 4*i + dir, lngbackB + 4*i + dir, lngbackC + 4*i + dir );
+    }
+  }
+  END_LOOP_OMP;
+}
+
+void scalar_mult_add_fn(fn_links_t *fnA, fn_links_t *fnB, Real s, fn_links_t *fnC) {
+
+  char myname[] = "scalar_mult_add_fn";
+
+  int i, dir;
+
+  su3_matrix *fatA = get_fatlinks(fnA);
+  su3_matrix *lngA = get_lnglinks(fnA);
+  su3_matrix *fatbackA = get_fatbacklinks(fnA);
+  su3_matrix *lngbackA = get_lngbacklinks(fnA);
+
+  su3_matrix *fatB = get_fatlinks(fnB);
+  su3_matrix *lngB = get_lnglinks(fnB);
+  su3_matrix *fatbackB = get_fatbacklinks(fnB);
+  su3_matrix *lngbackB = get_lngbacklinks(fnB);
+
+  su3_matrix *fatC = get_fatlinks(fnC);
+  su3_matrix *lngC = get_lnglinks(fnC);
+  su3_matrix *fatbackC = get_fatbacklinks(fnC);
+  su3_matrix *lngbackC = get_lngbacklinks(fnC);
+
+  FORALLFIELDSITES_OMP(i,private(dir)) {
+    for(dir=XUP;dir<=TUP;dir++) {
+      scalar_mult_add_su3_matrix( fatA + 4*i + dir, fatB + 4*i + dir, s, fatC + 4*i + dir );
+      scalar_mult_add_su3_matrix( lngA + 4*i + dir, lngB + 4*i + dir, s, lngC + 4*i + dir );
+      if(fatbackA != NULL && fatbackB != NULL && fatbackC != NULL)
+        scalar_mult_add_su3_matrix( fatbackA + 4*i + dir, fatbackB + 4*i + dir, s, fatbackC + 4*i + dir );
+      if(lngbackA != NULL && lngbackB != NULL && lngbackC != NULL)
+        scalar_mult_add_su3_matrix( lngbackA + 4*i + dir, lngbackB + 4*i + dir, s, lngbackC + 4*i + dir );
     }
   }
   END_LOOP_OMP;
