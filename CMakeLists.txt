@@ -9,8 +9,8 @@ set(SUBDIR "ks_imp_rhmc" CACHE STRING "Project subdirectory")
 set_property(CACHE SUBDIR PROPERTY STRINGS ks_imp_rhmc ks_spectrum)
 set(ARCH "general" CACHE STRING "CPU architecture (knl, knc, skx, hsw, general)")
 set_property(CACHE ARCH PROPERTY STRINGS knl knc skx hsw general)
-set(OFFLOAD "cuda" CACHE STRING "GPU compiler (cuda, hip, sycl)")
-set_property(CACHE OFFLOAD PROPERTY STRINGS cuda hip sycl)
+set(OFFLOAD "cuda" CACHE STRING "Accelerator offload backend (cuda, hip, sycl, openmp)")
+set_property(CACHE OFFLOAD PROPERTY STRINGS cuda hip sycl openmp)
 option(MPP "Enable MPI" OFF)
 option(OMP "Enable OpenMP" OFF)
 set(PRECISION 2 CACHE STRING "Precision (1 = single, 2 = double)")
@@ -20,21 +20,21 @@ set_property(CACHE WANT_MIXED_PRECISION PROPERTY STRINGS 1 2)
 set(WANT_MIXED_PRECISION_GPU ${WANT_MIXED_PRECISION} CACHE STRING "Mixed-precision for GPU (1 = half, 2 = max)")
 set_property(CACHE WANT_MIXED_PRECISION_GPU PROPERTY STRINGS 1 2)
 option(DOWNLOAD_SCIDAC "Download SciDAC libraries" OFF)
-option(WANTQMP "Enable QMP" OFF)
-option(WANTQIO "Enable QIO" OFF)
-option(WANT_APE_IO "Enable APE IO" OFF)
+option(WANTQMP "Enable QMP communication library" OFF)
+option(WANTQIO "Enable QIO binary I/O library (requires WANTQMP)" OFF)
+option(WANT_APE_IO "Enable APE I/O support" OFF)
 option(WANTFFTW "Enable FFTW" OFF)
 option(WANTPRIMME "Enable PRIMME" OFF)
 option(WANTARPACK "Enable ARPACK" OFF)
 option(WANTQUDA "Enable QUDA" OFF)
 option(WANTQPHIX "Enable QPhiX" OFF)
-option(WANTHADRONS "Enable Hadrons" OFF)
+option(WANTHADRONS "Enable Hadrons (not yet wired in top-level CMake)" OFF)
 option(WANTGRID "Enable Grid" OFF)
-option(WANTQPHIXJ "Enable QPhiXJ" OFF)
+option(WANTQPHIXJ "Enable QPhiXJ (not yet wired in top-level CMake)" OFF)
 
 option(WANT_CL_BCG_GPU "Enable Clover BCG GPU" OFF)
 option(WANT_FN_CG_GPU "Enable KS FN CG GPU" OFF)
-option(WANT_GA_GPU "Enable gauge action CG GPU" OFF)
+option(WANT_GA_GPU "Enable gauge action GPU" OFF)
 option(WANT_GF_GPU "Enable gauge force GPU" OFF)
 option(WANT_FL_GPU "Enable fermion links GPU" OFF)
 option(WANT_FF_GPU "Enable fermion force GPU" OFF)
@@ -49,7 +49,46 @@ option(WANT_MULTIGRID "Enable multigrid GPU" OFF)
 option(WANT_FN_CG_QPHIX "Enable KS FN CG QPhiX" OFF)
 option(WANT_GF_QPHIX "Enable gauge force QPhiX" OFF)
 
-option(GAUSS_SMEAR_KS_TWOLINK "Use two-link term in Gaussian smearing for KS" OFF)
+option(GAUSS_SMEAR_KS_TWOLINK "Compute two-link field for KS Gaussian smearing" ON)
+
+option(INLINE_C "Enable C inline functions" OFF)
+option(INLINE_C_GLOBAL "Enable C global inline functions" ON)
+option(INLINE_SSE "Enable SSE inline functions" OFF)
+option(INLINE_SSE_GLOBAL "Enable SSE global inline functions" OFF)
+
+option(TIME_NERSC "Enable NERSC file timing" ON)
+option(TIME_CG "Enable CG timing" ON)
+option(TIME_FF "Enable fermion force timing" ON)
+option(TIME_FL "Enable fermion links timing" ON)
+option(TIME_GA "Enable gauge action timing" OFF)
+option(TIME_GF "Enable gauge force timing" ON)
+option(TIME_REMAP "Enable remap timing" ON)
+option(TIME_PR "Enable propagator timing" ON)
+option(TIME_IO "Enable I/O timing" ON)
+option(TIME_WM "Enable Wilson matrix timing" ON)
+option(TIME_GS "Enable Gaussian smearing timing" OFF)
+
+option(DEBUG_CG_OK "Print inverter convergence information even when successful" ON)
+option(DEBUG_REMAP_STDIO_APPEND "Append stdout from all MPI ranks for remapped stdio" ON)
+option(DEBUG_CHECK_MALLOC "Report malloc/free activity for debugging" OFF)
+
+option(COMPAT_QOPQDP_NORM "Use old QOPQDP norm" OFF)
+option(COMPAT_STAGGERED2NAIVE "Use pre-7.7.2 staggered-to-naive conversion" OFF)
+option(COMPAT_GAUSSRAND "Use old Gaussian random number generator" OFF)
+
+option(GEOM_FIX_NODE "Fix node geometry" OFF)
+option(GEOM_FIX_IONODE "Fix ionode geometry" OFF)
+
+option(SHIFT_ONE_SIDED "Use forward-only shift for nonlocal KS operators" OFF)
+
+option(CLMEM_LEAN "Write intermediate clover propagators to disk to save memory" OFF)
+
+set(KS_MULTICG "HYBRID" CACHE STRING "KS multi-CG algorithm (OFFSET, HYBRID, FAKE, REVERSE, REVHYB)")
+set_property(CACHE KS_MULTICG PROPERTY STRINGS OFFSET HYBRID FAKE REVERSE REVHYB)
+set(KS_MULTIFF "FNMAT" CACHE STRING "KS multifermion force algorithm (FNMAT, FNMATREV, ASVEC)")
+set_property(CACHE KS_MULTIFF PROPERTY STRINGS FNMAT FNMATREV ASVEC)
+set(CL_CG "BICG" CACHE STRING "Clover inverter algorithm (BICG, CG, MR, HOP)")
+set_property(CACHE CL_CG PROPERTY STRINGS BICG CG MR HOP)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
@@ -140,15 +179,15 @@ endif()
 
 if(WANTPRIMME)
     find_package(PRIMME REQUIRED)
-    set(HAVEPRIMME ON)
+    set(HAVE_PRIMME ON)
     target_compile_definitions(add INTERFACE HAVE_PRIMME)
     target_link_libraries(add INTERFACE PRIMME::primme)
-    # target_compile_definitions(add INTERFACE PRIMME_PRECOND POLY_EIGEN)
+    # target_compile_definitions(add INTERFACE PRIMME_PRECOND MATVEC_PRECOND POLY_EIGEN)
 endif()
 
 if(WANTARPACK)
     find_package(ARPACK REQUIRED)
-    set(HAVEARPACK ON)
+    set(HAVE_ARPACK ON)
     target_compile_definitions(add INTERFACE HAVE_ARPACK)
     target_link_libraries(add INTERFACE ARPACK::arpack)
 endif()
@@ -266,6 +305,27 @@ if(WANTGRID)
     target_link_libraries(add INTERFACE Grid::Grid)
     target_compile_definitions(add INTERFACE HAVE_GRID)
 
+    if(WANT_FN_CG_GPU)
+        set(HAVE_FN_CG_GPU ON)
+        target_compile_definitions(add INTERFACE USE_CG_GPU)
+    endif()
+    if(WANT_FL_GPU)
+        set(HAVE_FL_GPU ON)
+        target_compile_definitions(add INTERFACE USE_FL_GPU)
+    endif()
+    if(WANT_FF_GPU)
+        set(HAVE_FF_GPU ON)
+        target_compile_definitions(add INTERFACE USE_FF_GPU)
+    endif()
+    if(WANT_GF_GPU)
+        set(HAVE_GF_GPU ON)
+        target_compile_definitions(add INTERFACE USE_GF_GPU)
+    endif()
+    if(WANT_EIG_GPU)
+        set(HAVE_EIG_GPU ON)
+        target_compile_definitions(add INTERFACE USE_EIG_GPU)
+    endif()
+
     set(GRID_SHMEM_MAX 2048) # Megabytes
     set(GRID_DEVICE_MEM_MAX 32768) # Megabytes
     set(GRID_SHMEM_MPI 1)
@@ -299,10 +359,10 @@ endif()
 include(template_combos.cmake)
 
 set(inlineopt
-    # C_INLINE
-    C_GLOBAL_INLINE
-    # SSE_INLINE
-    # SSE_GLOBAL_INLINE
+    $<$<BOOL:${INLINE_C}>:INLINE>
+    $<$<BOOL:${INLINE_C_GLOBAL}>:C_GLOBAL_INLINE>
+    $<$<BOOL:${INLINE_SSE}>:SSE_INLINE>
+    $<$<BOOL:${INLINE_SSE_GLOBAL}>:SSE_GLOBAL_INLINE>
 )
 
 find_package(Git REQUIRED)
@@ -317,23 +377,34 @@ set(cgitver
 )
 
 set(ctime
-    NERSC_TIME CGTIME FFTIME FLTIME GFTIME REMAP PRTIME IOTIME WMTIME
-)
-
-set(cprof
+    $<$<BOOL:${TIME_NERSC}>:NERSC_TIME>
+    $<$<BOOL:${TIME_CG}>:CGTIME>
+    $<$<BOOL:${TIME_FF}>:FFTIME>
+    $<$<BOOL:${TIME_FL}>:FLTIME>
+    $<$<BOOL:${TIME_GA}>:GATIME>
+    $<$<BOOL:${TIME_GF}>:GFTIME>
+    $<$<BOOL:${TIME_REMAP}>:REMAP>
+    $<$<BOOL:${TIME_PR}>:PRTIME>
+    $<$<BOOL:${TIME_IO}>:IOTIME>
+    $<$<BOOL:${TIME_WM}>:WMTIME>
+    $<$<BOOL:${TIME_GS}>:GS_TIME>
 )
 
 set(cdebug
-    CG_OK REMAP_STDIO_APPEND
+    $<$<BOOL:${DEBUG_CG_OK}>:CG_OK>
+    $<$<BOOL:${DEBUG_REMAP_STDIO_APPEND}>:REMAP_STDIO_APPEND>
+    $<$<BOOL:${DEBUG_CHECK_MALLOC}>:CHECK_MALLOC>
 )
 
-set(ccompat)
-# list(APPEND ccompat OLD_QOPQDP_NORM)
-# list(APPEND ccompat OLD_STAGGERED2NAIVE OLD_GAUSSRAND)
+set(ccompat
+    $<$<BOOL:${COMPAT_QOPQDP_NORM}>:OLD_QOPQDP_NORM>
+    $<$<BOOL:${COMPAT_STAGGERED2NAIVE}>:OLD_STAGGERED2NAIVE>
+    $<$<BOOL:${COMPAT_GAUSSRAND}>:OLD_GAUSSRAND>
+)
 
 set(cgeom
-    # FIX_NODE_GEOM
-    # FIX_IONODE_GEOM
+    $<$<BOOL:${GEOM_FIX_NODE}>:FIX_NODE_GEOM>
+    $<$<BOOL:${GEOM_FIX_IONODE}>:FIX_IONODE_GEOM>
 )
 
 if(WANTQUDA)
@@ -342,23 +413,24 @@ else()
     set(kscgstore DBLSTORE_FN FEWSUMS D_FN_GATHER13)
 endif()
 
-set(cprefetch
+# set(kscgmulti
+#     KS_MULTICG=${KS_MULTICG}
+# )
+
+# set(ksffmulti
+#     KS_MULTIFF=${KS_MULTIFF}
+# )
+
+set(ksshift
+    $<$<BOOL:${SHIFT_ONE_SIDED}>:ONE_SIDED_SHIFT>
 )
 
-set(kscgmulti
-    KS_MULTICG=HYBRID
-)
+# set(clcg
+#     CL_CG=${CL_CG}
+# )
 
-set(kscgmixed
-)
-
-set(kssource
-)
-
-set(ksffmulti
-    KS_MULTIFF=FNMAT
-    # KS_MULTIFF=FNMATREV
-    # KS_MULTIFF=ASVEC
+set(clmem
+    $<$<BOOL:${CLMEM_LEAN}>:CLOV_LEAN>
 )
 
 if(OMP)
@@ -394,17 +466,20 @@ target_compile_definitions(add INTERFACE
     MILC_PRECISION=${PRECISION}
     ${cgitver}
     ${ctime}
-    ${cprof}
+    ${inlineopt}
+    # ${cprof}
     ${cdebug}
+    ${ccompat}
     ${cgeom}
     ${kscgstore}
-    ${cprefetch}
-    ${kscgmulti}
-    ${kscgmixed}
-    ${kssource}
-    ${ksffmulti}
-    ${ccompat}
-    ${cgitver}
+    # ${cprefetch}
+    KS_MULTICG=${KS_MULTICG}
+    # ${kscgmixed}
+    # ${kssource}
+    KS_MULTIFF=${KS_MULTIFF}
+    ${ksshift}
+    CL_CG=${CL_CG}
+    ${clmem}
 )
 
 if(${WANT_MIXED_PRECISION_GPU} STREQUAL 1)
@@ -415,7 +490,7 @@ endif()
 
 function(add_milc_executable TARGET MAIN)
     add_executable(${TARGET} ${MAIN})
-    cmake_parse_arguments(AME "" "GAUGE;QUARK" "DEFINES;EXTRA_OBJECTS" ${ARGN})
+    cmake_parse_arguments(AME "" "GAUGE;QUARK" "DEFINES;EXTRA_SOURCES;EXTRA_OBJECTS" ${ARGN})
     set(gauge_include ${CMAKE_SOURCE_DIR}/generic/imp_actions)
     set(quark_include ${CMAKE_SOURCE_DIR}/generic_ks/imp_actions)
     set(local_include ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_include)
@@ -446,6 +521,7 @@ function(add_milc_executable TARGET MAIN)
 
     target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${local_include})
     target_compile_definitions(${TARGET} PRIVATE ${AME_DEFINES})
+    target_sources(${TARGET} PRIVATE ${AME_EXTRA_SOURCES} ${AME_UNPARSED_ARGUMENTS})
     target_link_libraries(${TARGET} PRIVATE objects ${AME_EXTRA_OBJECTS} libraries)
 endfunction()
 
