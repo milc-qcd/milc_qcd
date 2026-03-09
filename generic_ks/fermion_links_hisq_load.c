@@ -103,21 +103,22 @@ load_V_from_U(info_t *info, hisq_auxiliary_t *aux, ks_component_paths *ap1){
 
   load_fatlinks(info, V_link, ap1, U_link);
 
-#ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_REUNITARIZATION_DEBUG
-  int i, idir;
-  complex cdetV;
-  FORALLSITES_OMP(i,s,private(idir,cdetV)) 
-    for(idir=XUP;idir<=TUP;idir++) {
-      if( lattice[i].on_step_V[idir] < global_current_time_step ) {
-        lattice[i].on_step_V[idir] = global_current_time_step;
-        cdetV = det_su3( &(V_link[idir][i]) );
-        lattice[i].Vdet[idir] = cabs( &cdetV );
-      }
-    }
-  END_LOOP_OMP;
-#endif /* HISQ_REUNITARIZATION_DEBUG */
-#endif /* MILC_GLOBAL_DEBUG */
+//#ifdef MILC_GLOBAL_DEBUG
+//#ifdef HISQ_REUNITARIZATION_DEBUG
+//  int i, idir;
+//  register site *s;
+//  complex cdetV;
+//  FORALLSITES_OMP(i,s,private(idir,cdetV)) 
+//    for(idir=XUP;idir<=TUP;idir++) {
+//      if( lattice[i].on_step_V[idir] < global_current_time_step ) {
+//        lattice[i].on_step_V[idir] = global_current_time_step;
+//        cdetV = det_su3( &(V_link[idir][i]) );
+//        lattice[i].Vdet[idir] = cabs( &cdetV );
+//      }
+//    }
+//  END_LOOP_OMP;
+//#endif /* HISQ_REUNITARIZATION_DEBUG */
+//#endif /* MILC_GLOBAL_DEBUG */
 }
 
 /*--------------------------------------------------------------------*/
@@ -417,8 +418,8 @@ load_W_from_Y(info_t *info, hisq_auxiliary_t *aux, int umethod, int ugroup){
 	   CAREFUL WITH FERMION PHASES! */
 #ifdef MILC_GLOBAL_DEBUG
 #ifdef HISQ_REUNITARIZATION_DEBUG
-	su3_spec_unitarize_index( &( Y_unitlink[dir][i] ), &tmat, 
-				  &cdet, i, dir );
+//	su3_spec_unitarize_index( &( Y_unitlink[dir][i] ), &tmat, 
+//				  &cdet, i, dir );
 #else  /* HISQ_REUNITARIZATION_DEBUG */
 	su3_spec_unitarize( &( Y_unitlink[dir][i] ), &tmat, &cdet );
 #endif /* HISQ_REUNITARIZATION_DEBUG */
@@ -512,7 +513,7 @@ load_X_from_W(info_t *info, fn_links_t *fn, hisq_auxiliary_t *aux,
 #endif
   dtime += dclock();
   
-  node0_printf("Combined fattening and long-link calculation time: %lf\n",dtime);
+//  node0_printf("Combined fattening and long-link calculation time: %lf\n",dtime);
 
   info->final_flop = final_flop;
 

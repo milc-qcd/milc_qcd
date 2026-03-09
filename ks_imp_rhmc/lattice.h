@@ -21,6 +21,10 @@
 #include "../include/io_lat.h"    /* For gauge_file */
 #include "params.h"
 #include "../include/fermion_links.h"  /* For fermion_links_t */
+#ifdef HAVE_U1
+#include "../include/io_u1lat.h"  /* For gauge_file */
+#include "../include/complex.h"
+#endif
 
 /* Begin definition of site structure */
 
@@ -59,6 +63,11 @@ typedef struct {
 	/* For accept/reject */
 #endif
 
+#ifdef HAVE_U1
+    complex u1tmp, loop, gftmp2; /* used by ../generic_u1/u1pot.c */
+    /* the conjugate momentum for U(1) is a real(imaginary) number */
+    Real mom_u1[4];
+#endif
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */
  	Real phase[4];
@@ -124,8 +133,17 @@ EXTERN  params param;
 EXTERN	uint32_t iseed;		/* random number seed */
 EXTERN  Real beta,u0;
 EXTERN  int n_dyn_masses; // number of dynamical masses
-EXTERN  Real dyn_mass[MAX_DYN_MASSES]; 
-EXTERN  int dyn_flavors[MAX_DYN_MASSES]; 
+EXTERN  Real dyn_mass[MAX_DYN_MASSES];
+EXTERN  int dyn_flavors[MAX_DYN_MASSES];
+#ifdef HAVE_U1
+EXTERN  Real beta_u1;
+/* Do we need a seperate u0_u1 for U1 links? */
+EXTERN  int n_pseudo_charges; /* number of charges */
+EXTERN  Real pseudo_charges[MAX_CHARGES];
+EXTERN  int n_charges_uniq; /* number of unique charges */
+EXTERN  Real charges_uniq[MAX_CHARGES];
+EXTERN  Real current_charge_u1;
+#endif
 EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
 EXTERN  int niter_md[MAX_N_PSEUDO], niter_fa[MAX_N_PSEUDO], niter_gr[MAX_N_PSEUDO];
 EXTERN  int prec_md[MAX_N_PSEUDO], prec_fa[MAX_N_PSEUDO], prec_gr[MAX_N_PSEUDO];
@@ -137,9 +155,39 @@ EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */
 EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
 			   SAVE_CHECKPOINT */
+/* Added by YL on 05/11/2016 */
+#ifdef HAVE_U1
+/* begin u(1) lattice:
+ * fresh_u1, continue_u1 or reload_u1_ascii/serial/parallel
+ */
+EXTERN int start_u1flag;
+/* end u(1) lattice:
+ * save_u1_ascii/serial/parallel/scidac/parallel_scidac
+ * or forget_u1
+ */
+EXTERN int save_u1flag;
+EXTERN char start_u1file[MAXFILENAME];
+EXTERN char save_u1file[MAXFILENAME];
+#endif
+/* end YL */
+
 EXTERN	char rparamfile[MAXFILENAME];
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 EXTERN  double g_ssplaq, g_stplaq;
+
+#ifdef HAVE_U1
+EXTERN  Real g_splaq, g_tplaq;  /* global non-compact U1 plaquette measures */
+EXTERN  Real *u1_A;             /* fundamental noncompact U1 field */
+EXTERN  complex *link_u1;       /* noncompact U1 link exp(i * q * A) */
+#ifdef HMC
+EXTERN  Real *old_u1_A;
+EXTERN  complex *old_link_u1;
+/* For accept/reject */
+#endif
+EXTERN complex
+*u1gf;           /* temporary global u1 field (complex vector potential) */
+#endif
+
 EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
@@ -159,6 +207,10 @@ EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
 EXTERN gauge_file *startlat_p;
+#ifdef HAVE_U1
+EXTERN gauge_file *start_u1lat_p;
+EXTERN gauge_file *save_u1lat_p;
+#endif
 EXTERN char hostname[128];
 
 /* Each node maintains a structure with the pseudorandom number
@@ -177,6 +229,10 @@ EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
 EXTERN fermion_links_t        *fn_links;
+#ifdef HAVE_U1
+/* EXTERN fermion_links_u1_t        *fn_links_u1; */
+EXTERN imp_ferm_links_t *fn_combined;
+#endif
 
 EXTERN int n_pseudo;
 EXTERN int max_rat_order;
@@ -189,6 +245,12 @@ EXTERN int global_current_time_step;
 EXTERN int n_order_naik_total;
 EXTERN int n_pseudo_naik[MAX_N_PSEUDO];
 EXTERN int n_orders_naik[MAX_N_PSEUDO];
+#ifdef HAVE_U1
+EXTERN int n_pseudo_naik_charge[MAX_N_PSEUDO];
+EXTERN int n_orders_naik_charge[MAX_N_PSEUDO];
+EXTERN int n_pseudo_naik_charge_heavy[MAX_N_PSEUDO];
+EXTERN int n_orders_naik_charge_heavy[MAX_N_PSEUDO];
+#endif
 
 /* For eigenpair calculation */
 /* Not used for HMC */

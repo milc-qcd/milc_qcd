@@ -54,7 +54,7 @@ const int  want_quda_gaugepipe = 0;
 /* CPU version */
 
 void update_u( Real eps ){
-
+#ifndef U1_ONLY
   register int i,dir;
   register site *s;
   su3_matrix *link,temp1,temp2,htemp;
@@ -115,6 +115,42 @@ void update_u( Real eps ){
 	       dtime, (double)(5616.0*volume/(1.0e6*dtime*numnodes())) );
 #endif
 
+#endif /* U1_ONLY */
+#ifdef HAVE_U1
+  update_u_u1(eps);
+#endif
 } /* update_u */
 
 #endif
+
+/* Added by YL on 05/27/2016 */
+void update_u_u1(Real eps) {
+#ifdef HAVE_U1
+  register int i, dir;
+  register site *s;
+
+  eps *= (-1.0 / 3.0 / pseudo_charges[0]);
+  FORALLSITES(i, s) {
+#ifdef SCHROED_FUN
+    for (dir = XUP; dir <= TUP; dir++) if (dir == TUP || s->t > 0) {
+#else
+    for (dir = XUP; dir <= TUP; dir++) {
+#endif
+        u1_A[4 * i + dir] += eps * (s->mom_u1[dir]); /* dA/d\tau = mom_u1 */
+#ifdef U1_DEBUG
+        if (dir == XUP && i == 0) {
+          node0_printf("update_u.c s->mom_u1[XUP] eps, s->mom_u1[dir], "
+                       "u1_A[4*i+dir] %e %e %e\n",
+                       eps, s->mom_u1[dir], u1_A[4 * i + dir]);
+        }
+#endif
+      }
+  }
+
+#else /* HAVE_U1 */
+  printf("function update_u_u1 should not be called in a QCD code\n");
+  terminate(-1);
+#endif
+
+} /* update_u_u1 */
+/* YL end */

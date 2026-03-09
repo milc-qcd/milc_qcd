@@ -124,6 +124,7 @@ extern int gethostname (char *__name, size_t __len); // Should get this from uni
 static int initial_set(void);
 static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 static void make_3n_gathers(void);
+static int uniq_charges(int n, Real *c, Real *c_uniq);
 
 int
 setup(void)
@@ -140,6 +141,13 @@ setup(void)
   initialize_prn( &node_prn, iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
+  node0_printf("Made lattice\n"); fflush(stdout);
+#ifdef HAVE_U1
+  u1_A = create_r_array_field(4);
+#ifdef HMC
+  old_u1_A = create_r_array_field(4);
+#endif
+#endif
 
   /* set up neighbor pointers and comlink structures */
   make_nn_gathers();
@@ -153,6 +161,9 @@ setup(void)
 }
 
 static int n_naiks;
+#ifdef HAVE_U1
+static int n_naiks_u1;
+#endif
 static double eps_naik[MAX_NAIK];
 
 /* SETUP ROUTINES */
@@ -161,11 +172,18 @@ initial_set(void)
 {
   int prompt=0,status,i,tmporder;
   Real current_naik_epsilon;
+#ifdef HAVE_U1
+  int  tmporder_heavy;
+  Real current_charge;
+#endif
 
   /* On node zero, read lattice size, seed, and send to others */
   if(mynode()==0){
     /* print banner */
     printf("SU3 with improved KS action\n");
+#ifdef HAVE_U1
+    printf("Non-compact U(1) gauge field is included\n");
+#endif
     printf("Microcanonical simulation with refreshing\n");
     printf("Rational function hybrid Monte Carlo algorithm\n");
     printf("MIMD version %s\n",MILC_CODE_VERSION);
@@ -229,6 +247,23 @@ initial_set(void)
     IF_OK status += get_i(stdin, prompt,"n_dyn_masses", &param.n_dyn_masses );
     IF_OK status += get_vf(stdin, prompt, "dyn_mass", param.dyn_mass, param.n_dyn_masses);
     IF_OK status += get_vi(stdin, prompt, "dyn_flavors", param.dyn_flavors, param.n_dyn_masses);
+
+#ifdef HAVE_U1
+    /* U(1) beta */
+    IF_OK status += get_f(stdin, prompt, "beta_u1", &param.beta_u1 );
+    /* Number of input pseudo_charges */
+    IF_OK status += get_i(stdin, prompt, "n_pseudo_charges",
+                          &param.n_pseudo_charges);
+    IF_OK status += get_vf(stdin, prompt, "pseudo_charges",
+                           param.pseudo_charges,
+                           param.n_pseudo_charges);
+    if (param.n_pseudo_charges > MAX_CHARGES) {
+      printf("Error:  Too many pseudo_charges. "
+             "Recompile. Current max is %d\n",
+             MAX_CHARGES);
+      terminate(1);
+    }
+#endif
 
     IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
 
@@ -315,6 +350,12 @@ initial_set(void)
     n_order_naik_total += tmporder;
     n_naiks++;
   }
+
+
+
+
+
+
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   // calculate epsilon corrections for different Naik terms
   if( 0 != eps_naik[0] ) {
@@ -359,6 +400,79 @@ initial_set(void)
     dyn_mass[i] = param.dyn_mass[i];
     dyn_flavors[i] = param.dyn_flavors[i];
   }
+
+#ifdef HAVE_U1
+  beta_u1 = param.beta_u1;
+  n_pseudo_charges = param.n_pseudo_charges;
+  for (i = 0; i < n_pseudo_charges; i++) {
+    pseudo_charges[i] = param.pseudo_charges[i];
+  }
+  /* Get unique charges */
+  n_charges_uniq = uniq_charges( n_pseudo_charges, pseudo_charges,
+                                 charges_uniq );
+  node0_printf("n_pseudo_charges %d\n", n_pseudo_charges);
+  for (i = 0; i < n_pseudo_charges; i++) {
+    node0_printf("pseudo_charge[%d]=%e\n", i, pseudo_charges[i]);
+  }
+  node0_printf("n_charges_uniq %d\n", n_charges_uniq);
+  for (i = 0; i < n_charges_uniq; i++) {
+    node0_printf("charge_uniq[%d]=%e\n", i, charges_uniq[i]);
+  }
+#endif
+
+#ifdef HAVE_U1
+  /* Determine the number of different Naik masses
+   * and fill in n_orders_naik_charge and n_pseudo_naik_charge
+   * This only works with up to one nonzero naik epsion term
+   * Note that if (rparam[i].naik_term_epsilon != 0) is used.
+   * This also assumes that the pseudo fermions are arranged
+   * such that the charges are ordered.
+   */
+  current_naik_epsilon = rparam[0].naik_term_epsilon;
+  current_charge = pseudo_charges[0];
+  tmporder = 0;
+  tmporder_heavy = 0;
+  n_naiks_u1 = 0;
+  for ( i = 0; i < n_pseudo; i++ ) {
+#ifdef U1_DEBUG
+    node0_printf("setup.c i, pseudo_charges[i], current_charge %d %e %e\n", i,
+                 pseudo_charges[i], current_charge);
+#endif
+    if (pseudo_charges[i] == current_charge) {
+      n_orders_naik_charge[n_naiks_u1] += rparam[i].MD.order;
+      n_pseudo_naik_charge[n_naiks_u1] ++;
+      if (rparam[i].naik_term_epsilon != 0) {
+        n_pseudo_naik_charge_heavy[n_naiks_u1] ++;
+        n_orders_naik_charge_heavy[n_naiks_u1] += rparam[i].MD.order;
+      }
+    } else {
+      n_naiks_u1++;
+      current_charge = pseudo_charges[i];
+      n_orders_naik_charge[n_naiks_u1] += rparam[i].MD.order;
+      n_pseudo_naik_charge[n_naiks_u1] ++;
+      if (rparam[i].naik_term_epsilon != 0) {
+        n_pseudo_naik_charge_heavy[n_naiks_u1] ++;
+        n_orders_naik_charge_heavy[n_naiks_u1] += rparam[i].MD.order;
+      }
+    }
+  }
+  n_naiks_u1++;
+
+  node0_printf("n_pseudo_naik_charge[0] %d\n", n_pseudo_naik_charge[0]);
+  node0_printf("n_pseudo_naik_charge[1] %d\n", n_pseudo_naik_charge[1]);
+  node0_printf("n_pseudo_naik_charge_heavy[0] %d\n",
+               n_pseudo_naik_charge_heavy[0]);
+  node0_printf("n_pseudo_naik_charge_heavy[1] %d\n",
+               n_pseudo_naik_charge_heavy[1]);
+  node0_printf("n_orders_naik_charge[0] %d\n", n_orders_naik_charge[0]);
+  node0_printf("n_orders_naik_charge[1] %d\n", n_orders_naik_charge[1]);
+  node0_printf("n_orders_naik_charge_heavy[0] %d\n",
+               n_orders_naik_charge_heavy[0]);
+  node0_printf("n_orders_naik_charge_heavy[1] %d\n",
+               n_orders_naik_charge_heavy[1]);
+#endif
+
+
   u0 = param.u0;
 
   return(prompt);
@@ -472,21 +586,31 @@ readin(int prompt)
     /* find out what kind of starting lattice to use */
     IF_OK status += ask_starting_lattice(stdin,  prompt, &(param.startflag),
 					 param.startfile );
-    
+
+#ifdef HAVE_U1
+    IF_OK status += ask_starting_u1_lattice(stdin, prompt,
+                                            &(param.start_u1flag),
+                                            param.start_u1file);
+#endif
     /* find out what to do with lattice at end */
     IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.saveflag),
 				       param.savefile );
+#ifdef HAVE_U1
+    IF_OK status += ask_ending_u1_lattice(stdin, prompt,
+                                          &(param.save_u1flag),
+                                          param.save_u1file);
+#endif
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
 				 param.stringLFN );
-    
+
     if( status > 0)param.stopflag=1; else param.stopflag=0;
-  } /* end if(mynode()==0) */
-  
+  } /* end if(this_node==0) */
+
     /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));
-  
+
   if( param.stopflag != 0 )return param.stopflag;
-  
+
   warms = param.warms;
   trajecs = param.trajecs;
   steps = param.steps;
@@ -515,6 +639,14 @@ readin(int prompt)
   strcpy(startfile,param.startfile);
   strcpy(savefile,param.savefile);
   strcpy(stringLFN, param.stringLFN);
+
+#ifdef HAVE_U1
+  start_u1flag = param.start_u1flag;
+  save_u1flag = param.save_u1flag;
+  strcpy(start_u1file, param.start_u1file);
+  strcpy(save_u1file, param.save_u1file);
+  /*  strcpy(stringLFN_u1, param.stringLFN_u1); */
+#endif
 
 #ifdef MILC_GLOBAL_DEBUG
 #ifdef HISQ_REUNITARIZATION_DEBUG
@@ -565,9 +697,12 @@ readin(int prompt)
 
   phases_in = OFF;
   rephase( ON );
-  
+#ifdef HAVE_U1
+  /* do not need KS phase or AP boundary condition in U(1) links */
+  start_u1lat_p = reload_u1_lattice(start_u1flag, start_u1file);
+#endif
   /* Copy gauge links from site structure to field */
-  /* (This is a transitional step.  As we upgrade the code, we will 
+  /* (This is a transitional step.  As we upgrade the code, we will
      read/construct the lattice directly in the field and drop the
      site structure */
 
@@ -576,7 +711,7 @@ readin(int prompt)
   /* We want to calculate both the links and their u0 derivatives */
   fermion_links_want_du0(1);
 #endif
-  
+
 #ifdef DBLSTORE_FN
   /* We want to double-store the links for optimization */
   fermion_links_want_back(1);
@@ -594,6 +729,9 @@ readin(int prompt)
   fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 #endif
     
+#ifdef HAVE_U1
+  fn_combined = create_imp_ferm_links();
+#endif
   /* make table of coefficients and permutations of loops in gauge action */
   make_loop_table();
   
@@ -644,4 +782,23 @@ third_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
   case TDOWN: *tp = (t+4*nt-3)%nt; break;
   default: printf("third_neighb: bad direction\n"); exit(1);
   }
+}
+
+static int
+uniq_charges(int n, Real *c, Real *c_uniq)
+{
+  int i,j, n_uniq;
+
+  n_uniq = 0;
+  for( i=0; i<n; i++){
+    for( j=0; j< i; j++){
+      if( c[i] == c[j])
+        break;
+    }
+    if(i == j){
+      c_uniq[n_uniq] = c[i];
+      n_uniq += 1;
+    }
+  }
+  return n_uniq;
 }

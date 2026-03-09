@@ -42,7 +42,7 @@ main( int argc, char **argv )
   
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
-  
+
   g_sync();
   
   starttime = dclock();
@@ -54,7 +54,7 @@ main( int argc, char **argv )
   
   /* loop over input sets */
   while( readin(prompt) == 0) {
-    
+
     /* perform warmup trajectories */
 #ifdef MILC_GLOBAL_DEBUG
     global_current_time_step = 0;
@@ -64,7 +64,7 @@ main( int argc, char **argv )
       update();
     }
     node0_printf("WARMUPS COMPLETED\n"); fflush(stdout);
-    
+
     /* perform measuring trajectories, reunitarizing and measuring 	*/
     meascount=0;		/* number of measurements 		*/
     avs_iters = avbcorr_iters = 0;
@@ -92,7 +92,7 @@ main( int argc, char **argv )
       
       /* measure every "propinterval" trajectories */
       if( (traj_done%propinterval)==(propinterval-1) ){
-	
+
 	/* call gauge_variable fermion_variable measuring routines */
 	/* results are printed in output file */
 	STARTTIME;
@@ -101,6 +101,9 @@ main( int argc, char **argv )
 #ifdef MILC_GLOBAL_DEBUG
 #if FERM_ACTION == HISQ
         g_measure_plaq( );
+#ifdef HAVE_U1
+	g_measure_nc_u1( );
+#endif
 #endif
 #ifdef MEASURE_AND_TUNE_HISQ
         g_measure_tune( );
@@ -110,7 +113,7 @@ main( int argc, char **argv )
 	
 	/**************************************************************/
 	/* Compute chiral condensate and related quantities           */
-	
+
 	/* Make fermion links if not already done */
 	
 	STARTTIME;
@@ -136,7 +139,7 @@ main( int argc, char **argv )
 	fflush(stdout);
       }
     }	/* end loop over trajectories */
-    
+
     node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
     if(meascount>0)  {
       node0_printf("average cg iters for step= %e\n",
@@ -144,6 +147,7 @@ main( int argc, char **argv )
     }
     
     endtime = dclock();
+
     if(this_node==0){
       printf("Time = %e seconds\n",(double)(endtime-starttime));
       printf("total_iters = %d\n",total_iters);
@@ -165,6 +169,13 @@ main( int argc, char **argv )
       rephase( ON );
     }
     
+#ifdef HAVE_U1
+    /* save U(1) lattice if requested */
+    if (save_u1flag != FORGET) {
+        save_u1_lattice(save_u1flag, save_u1file);
+    }
+#endif
+
     /* Destroy fermion links (created in readin() */
     
 #if FERM_ACTION == HISQ
@@ -175,6 +186,15 @@ main( int argc, char **argv )
   }
   free_lattice();
   
+#ifdef HAVE_U1
+#ifdef HMC
+    destroy_r_array_field(old_u1_A, 4);
+    old_u1_A = NULL;
+#endif
+    destroy_r_array_field(u1_A, 4);
+    u1_A = NULL;
+#endif
+
 #ifdef HAVE_QUDA
   finalize_quda();
 #endif
@@ -182,8 +202,7 @@ main( int argc, char **argv )
 #ifdef HAVE_QPHIX
   finalize_qphix();
 #endif
-  
+
   normal_exit(0);
   return 0;
 }
-

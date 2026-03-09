@@ -12,6 +12,8 @@ G_U1_ALL = \
   io_u1lat.o \
   u1link.o \
   u1plaq.o \
+  u1Fmunu.o \
+  gauge_force_u1_cpu.o \
   u1pot.o
 
 # Must match our headers in generic_u1_includes.h
@@ -42,6 +44,10 @@ u1avlink.o: ../generic_u1/u1avlink.c
 u1link.o: ../generic_u1/u1link.c
 	${CC} -c ${CFLAGS} $<
 u1plaq.o: ../generic_u1/u1plaq.c
+	${CC} -c ${CFLAGS} $<
+u1Fmunu.o: ../generic_u1/u1Fmunu.c
+	${CC} -c ${CFLAGS} $<
+gauge_force_u1_cpu.o: ../generic_u1/gauge_force_u1_cpu.c
 	${CC} -c ${CFLAGS} $<
 u1pot.o: ../generic_u1/u1pot.c
 	${CC} -c ${CFLAGS} $<

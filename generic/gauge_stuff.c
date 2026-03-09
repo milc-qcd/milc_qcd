@@ -466,6 +466,29 @@ void g_measure( ){
     special_free(tempmat1);
 }
 
+#ifdef HAVE_U1
+void g_measure_nc_u1( ){
+    double ss_plaquette, st_plaquette;
+    complex p_loop;
+    double total_action;
+
+    u1plaq(&ss_plaquette, &st_plaquette);
+    if (this_node == 0) printf("PLAQ U1:\t%f\t%f\n", ss_plaquette, st_plaquette);
+
+
+    p_loop = u1ploop();
+    if (this_node == 0) printf("P_LOOP U1:\t%e\t%e\n", p_loop.real, p_loop.imag);
+
+    /* U(1) gauge action */
+    /* here ss_plaquette and st_plaquette are in fact Fmunu**2 */
+    u1Fmunu(&ss_plaquette, &st_plaquette);
+    total_action = ss_plaquette + st_plaquette;
+    node0_printf("GACTION U1: %e\n", total_action / volume);
+
+    if (this_node == 0) fflush(stdout);
+} /* g_measure_nc_u1() */
+#endif
+
 void printpath( int *path, int length ){
     register int i;
     node0_printf("\t( ");

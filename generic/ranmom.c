@@ -47,3 +47,34 @@ register site *s;
 
 }
 
+#ifdef HAVE_U1
+/* Produce Gaussian random momenta for the U(1) gauge fields. */
+/* Added by YL on 11/03/2016. */
+void ranmom_u1(){
+    register int i, dir;
+    register site *s;
+    FORALLSITES(i, s) {
+        for (dir = XUP; dir <= TUP; dir++) {
+#ifdef SCHROED_FUN
+            if (dir == TUP || s->t > 0) {
+#endif
+#ifdef SITERAND
+                s->mom_u1[dir] = gaussian_rand_no_u1(&s->site_prn);
+#else
+                s->mom_u1[dir] = gaussian_rand_no_u1(&node_prn);
+#endif
+#ifdef SCHROED_FUN
+            } else {
+                s->mom_u1[dir] = 0.0;
+            }
+#endif
+
+#ifdef DRUT_DEBUG
+            if (dir != TUP) {
+                s->mom_u1[dir] = 0.0;
+            }
+#endif
+        }
+    }
+} /* ranmom_u1 */
+#endif

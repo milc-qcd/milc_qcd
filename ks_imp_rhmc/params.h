@@ -29,6 +29,18 @@ typedef struct {
   int n_dyn_masses;       /* number of dynamical masses */
   Real dyn_mass[MAX_DYN_MASSES];  /* List of dynamical masses */
   int dyn_flavors[MAX_DYN_MASSES]; /* Numbers of dynamical flavors */
+
+#ifdef HAVE_U1
+  Real beta_u1;             /* U(1) gauge coupling */
+  int n_pseudo_charges;     /* number of charges */
+  /* list of charges
+   * should not be more than the number of dynamical masses)
+   */
+  Real pseudo_charges[MAX_CHARGES];
+  int n_charges_uniq;       /* number of unique charges */
+  Real charges_uniq[MAX_CHARGES]; /* number of charges */
+#endif
+
   Real u0;                /* tadpole parameter */
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
   int time_bc;          /* 0 for antiperiodic, 1 for periodic */
@@ -55,6 +67,16 @@ typedef struct {
   ks_eigen_param eigen_param; /* Parameters for eigensolver */
   char ks_eigen_startfile[MAXFILENAME]; /* KS eigenvector file to be loaded */
   char ks_eigen_savefile[MAXFILENAME]; /* KS eigenvector file to be saved */
+
+#ifdef HAVE_U1
+  int start_u1flag;     /* what to do for beginning u(1) lattice */
+  int save_u1flag;    /* what to do with u(1) lattice at end */
+  char start_u1file[MAXFILENAME];
+  char save_u1file[MAXFILENAME];
+  /** ILDG LFN if applicable **/
+  /*  char stringLFN_u1[MAXFILENAME]; */
+#endif
+
   /* PBP and related quantities */
   int num_pbp_masses;   /* Number of masses for pbp calculation */
   quark_invert_control qic_pbp[MAX_MASS_PBP];

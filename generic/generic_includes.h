@@ -13,6 +13,11 @@
 #include "../include/macros.h"
 #include "../include/comdefs.h"
 #include "../include/generic.h"
+#ifdef HAVE_U1
+/* for measurements routines */
+/* in gauge_stuff.c et al */
+#include "../include/generic_u1.h"
+#endif
 #include "../include/int32type.h"
 #include "../include/dirs.h"
 #include <lattice.h>

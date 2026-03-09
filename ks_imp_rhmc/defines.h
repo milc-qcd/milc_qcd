@@ -12,3 +12,10 @@
 #define MAX_N_PSEUDO 10
 
 #endif /* _DEFINES_H */
+
+/*********************** QED U(1) *************************/
+/* This can be moved to the Makefile.
+ *   Added by Yuzhi Liu on 05/05/2016.
+ */
+//#define HAVE_U1
+#define MAX_CHARGES 12

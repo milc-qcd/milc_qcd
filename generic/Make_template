@@ -101,6 +101,8 @@ G_ALL = \
  quark_source_io.o \
  quark_source_sink_op.o \
  rand_gauge2.o \
+ rand_gauge_u1.o \
+ rand_gauge_u1_A.o \
  ranmom.o \
  ranstuff.o \
  remap_fftw_fourier.o \
@@ -323,6 +325,10 @@ quark_source_io.o: ../generic/quark_source_io.c
 quark_source_sink_op.o: ../generic/quark_source_sink_op.c
 	${CC} -c ${CFLAGS} $<
 rand_gauge2.o: ../generic/rand_gauge2.c
+	${CC} -c ${CFLAGS} $<
+rand_gauge_u1.o: ../generic/rand_gauge_u1.c
+	${CC} -c ${CFLAGS} $<
+rand_gauge_u1_A.o: ../generic/rand_gauge_u1_A.c
 	${CC} -c ${CFLAGS} $<
 ranmom.o: ../generic/ranmom.c
 	${CC} -c ${CFLAGS} $<

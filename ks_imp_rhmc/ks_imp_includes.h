@@ -22,6 +22,10 @@
 #include "../include/io_lat.h"
 #include "../include/generic_ks.h"
 #include "../include/generic.h"
+#ifdef HAVE_U1
+#include "../include/io_u1lat.h"
+#include "../include/generic_u1.h"
+#endif
 #include "../include/dirs.h"
 #include "../include/fermion_links.h"
 
@@ -74,6 +78,9 @@ int update_h_rhmc( Real eps, su3_vector **multi_x );
 void update_h_gauge( Real eps );
 int update_h_fermion( Real eps, su3_vector **multi_x );
 void update_u( Real eps );
+#ifdef HAVE_U1
+void update_u_u1( Real eps );
+#endif
 
 /* d_action_rhmc.c */
 double d_action_rhmc(su3_vector **multi_x, su3_vector *sumvec );
@@ -81,6 +88,9 @@ void gauge_field_copy(field_offset src,field_offset dest);
 double fermion_action( su3_vector **multi_x, su3_vector *sumvec );
 double hmom_action(void);
 void plaquette_action(double *ss_plaq, double *st_plaq);
+#ifdef HAVE_U1
+double hmom_action_u1(void);
+#endif
 
 #endif /* KS_IMP_INCLUDES_H_ */
 

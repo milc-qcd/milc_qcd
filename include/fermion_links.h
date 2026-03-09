@@ -182,6 +182,9 @@ void fermion_force_multi_hisq_D( Real eps, Real *residues,
 /* fermion_force_fn_multi.c */
 
 enum ks_multiff_opt_t {ASVEC, FNMAT, FNMATREV};
+  
+void eo_fermion_force_multi_su3_u1( Real eps, Real *residues, su3_vector **xxx, 
+			     int nterms, int nterms_heavy, int prec, fermion_links_t *fn, Real charge);
 void fermion_force_fn_multi( Real eps, Real *residues, su3_vector **multi_x, 
 			     int nterms, int prec, fermion_links_t *fn);
 const char *ks_multiff_opt_chr( void );

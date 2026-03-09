@@ -54,6 +54,17 @@ MY_OBJECTS = \
   update_rhmc.o \
   update_u.o \
 
+# Basic set from generic_u1 generic and generic_ks directories
+G_U1_OBJECTS =       \
+  io_u1lat.o         \
+  u1link.o           \
+  u1plaq.o           \
+  u1Fmunu.o           \
+  gauge_force_u1_cpu.o           \
+  rand_gauge_u1.o           \
+  rand_gauge_u1_A.o           \
+  u1pot.o
+
 LAYOUT = layout_hyper_prime.o
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ploop3.o show_generic_ks_md_opts.o
@@ -91,7 +102,8 @@ ALL_MAKES = \
    ../Make_template_combos \
    ../Make_template_scidac \
    ../generic/Make_template \
-   ../generic_ks/Make_template
+   ../generic_ks/Make_template \
+   ../generic_u1/Make_template
 
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
@@ -222,6 +234,54 @@ su3_rhmd_hisq::
 su3_rhmc_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS} \
 	"DEFINES+= -DHMC"
+
+
+HISQ_OPTIONS_U1_DEBUG = "DEFINES= -DFN -DINT_ALG=INT_LEAPFROG \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHAVE_U1 \
+	-DU1_DEBUG \
+	-DMILC_GLOBAL_DEBUG -DHISQ_FF_DEBUG -DHISQ_REUNITARIZATION_DEBUG\
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
+        -DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} ${G_U1_OBJECTS} control.o"
+
+
+HISQ_OPTIONS_U1 = "DEFINES= -DFN -DINT_ALG=INT_3G1F \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHAVE_U1 \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
+        -DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE} ${G_U1_OBJECTS} control.o"
+
+
+su3_u1_rhmd_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS_U1} \
+
+su3_u1_rhmc_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS_U1} \
+	"DEFINES+= -DHMC"
+
+u1_rhmd_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS_U1} \
+	"DEFINES+= -DU1_ONLY"
+
+u1_rhmc_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS_U1} \
+	"DEFINES+= -DU1_ONLY -DHMC"
+
+pure_gauge_u1::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS_U1} \
+	"DEFINES+= -DU1_ONLY -DPURE_GAUGE_U1"
 
 #######################################################################
 # Experimental targets
@@ -408,6 +468,9 @@ include ../generic/Make_template
 
 # Rules for generic_ks routines
 include ../generic_ks/Make_template
+
+# Rules for generic_u1 routines
+include ../generic_u1/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
