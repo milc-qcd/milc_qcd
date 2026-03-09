@@ -36,8 +36,8 @@ cd ks_spectrum
 cp ../Makefile .
 make clean
 
-MY_CC=mpicc \
-MY_CXX=mpiCC \
+MY_CC=cc \
+MY_CXX=CC \
 ARCH="" \
 GPU_ARCH="nvidia" \
 OFFLOAD="CUDA" \

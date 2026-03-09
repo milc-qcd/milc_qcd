@@ -240,11 +240,12 @@ get_hisq_links_t_fn(hisq_links_t *hl, int i_naik, ferm_links_options_t *options)
     fn = hl->fn0;
     fn->preserve = 1;
   } else {
-    fn = create_fn_links();
+    fn = create_fn_links_uninitialized();
     if(options->want_back){
-      fn->fatback = create_fatlinks();
-      fn->lngback = create_lnglinks();
+      fn->fatback = create_fatlinks_uninitialized();
+      fn->lngback = create_lnglinks_uninitialized();
     }
+    // fn = hl->fn0 + eps_naik[i_naik] * fn_deps
     scalar_mult_add_fn(hl->fn0, fn_deps, eps_naik[i_naik], fn);
     fn->preserve = 0;
     fn->eps_naik = eps_naik[i_naik];

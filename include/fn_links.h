@@ -21,13 +21,16 @@ typedef struct {
 } fn_links_t;
 
 su3_matrix *create_lnglinks(void);
+su3_matrix *create_lnglinks_uninitialized(void);
 void destroy_lnglinks(su3_matrix *lng);
 su3_matrix *create_fatlinks(void);
+su3_matrix *create_fatlinks_uninitialized(void);
 void destroy_fatlinks(su3_matrix *fat);
 void load_fn_backlinks(fn_links_t *fn);
 void destroy_fn_backlinks(fn_links_t *fn);
 
 fn_links_t *create_fn_links(void);
+fn_links_t *create_fn_links_uninitialized(void);
 void destroy_fn_links(fn_links_t *fn);
 
 void init_ferm_links(fn_links_t *fn);
@@ -35,6 +38,6 @@ void init_ferm_links(fn_links_t *fn);
 void copy_fn(fn_links_t *fn_src, fn_links_t *fn_dst);
 void scalar_mult_fn(fn_links_t *fnsrc, Real s, fn_links_t *fndst);
 void add_fn(fn_links_t *fnA, fn_links_t *fnB, fn_links_t *fnC);
-void scalar_mult_add_fn(fn_links_t *fnA, fn_links_t *fnB, Real s, fn_links_t *fnC);
+void scalar_mult_add_fn(fn_links_t *fn_A, fn_links_t *fn_B, Real s, fn_links_t *fn_C);
 
 #endif /* _FN_LINKS_H */
