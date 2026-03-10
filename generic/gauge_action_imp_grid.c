@@ -101,11 +101,20 @@ double imp_gauge_action_grid() {
     }
   } END_LOOP_OMP;
 
+  Real **loop_coeff = get_loop_coeff();
+  int nloop = get_nloop();
+  
+  double cp  = loop_coeff[0][0];
+  double cr  = (nloop > 1) ? loop_coeff[1][0] : 0;
+  double cpg = (nloop > 2) ? loop_coeff[2][0] : 0;
+
+  printf("cp = %g, cr = %g, cpg = %g\n", cp, cr, cpg);
+
   double g_action;
   if(MILC_PRECISION == 1){
-    g_action = GRID_F3_gauge_action(&grid_info, U, eb3, u0, total_dyn_flavors, grid_full);
+    g_action = GRID_F3_gauge_action(&grid_info, U, eb3, cp, cr, cpg, grid_full);
   } else {
-    g_action = GRID_D3_gauge_action(&grid_info, U, eb3, u0, total_dyn_flavors, grid_full);
+    g_action = GRID_D3_gauge_action(&grid_info, U, eb3, cp, cr, cpg, grid_full);
   }
   
 #if 0

@@ -22,8 +22,9 @@ static void gaugeForce (
   GRID_info_t* info,
   su3_matrix* Umilc,
   double beta,
-  double u0,
-  int nf,
+  double cp,
+  double cr,
+  double cpg,
   su3_matrix *deriv,
   GridCartesian* CGrid
 ) {
@@ -33,8 +34,10 @@ static void gaugeForce (
   LatticeGaugeField Umu(CGrid), UForce(CGrid);
   milcGaugeFieldToGrid<LatticeGaugeField, Complex>(Umilc, &Umu);
 
+  OneLoopGaugeActionContext ctx(beta, cp, cr, cpg);
+
   // Instantiate the gauge action class
-  PeriodicSymanzikOneLoopGaugeAction<Gimpl> action(CGrid, beta, u0, nf);
+  PeriodicSymanzikOneLoopGaugeAction<Gimpl> action(CGrid, ctx);
   
   action.deriv(Umu, UForce);
 
@@ -52,8 +55,9 @@ static double gaugeAction (
   GRID_info_t* info,
   su3_matrix* Umilc,
   double beta,
-  double u0,
-  int nf,
+  double cp,
+  double cr,
+  double cpg,
   GridCartesian* CGrid
 ) {
   
@@ -62,9 +66,11 @@ static double gaugeAction (
   LatticeGaugeField Umu(CGrid);
   milcGaugeFieldToGrid<LatticeGaugeField, Complex>(Umilc, &Umu);
 
-  PeriodicSymanzikOneLoopGaugeAction<Gimpl> action(CGrid, beta, u0, nf);
+  OneLoopGaugeActionContext ctx(beta, cp, cr, cpg);
+
+  PeriodicSymanzikOneLoopGaugeAction<Gimpl> action(CGrid, ctx);
   
-  auto actionValue = action.S(Umu);
+  auto actionValue = action.S(Umu, ctx);
 
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
@@ -81,12 +87,13 @@ static double gaugeAction (
 void GRID_F3_gauge_force(GRID_info_t *info,
 			 su3_matrix *Umilc,
 			 Real beta,
-			 Real u0,
-			 int nf,
+			 double cp,
+			 double cr,
+			 double cpg,
 			 su3_matrix *deriv,
 			 GRID_4Dgrid *grid_full)
 {
-  gaugeForce<LatticeGaugeFieldF, PeriodicGimplF, ComplexF>(info, Umilc, beta, u0, nf,
+  gaugeForce<LatticeGaugeFieldF, PeriodicGimplF, ComplexF>(info, Umilc, beta, cp, cr, cpg,
 							   deriv, grid_full->gridF);
 }
 #endif
@@ -94,12 +101,13 @@ void GRID_F3_gauge_force(GRID_info_t *info,
 void GRID_D3_gauge_force(GRID_info_t *info,
 			 su3_matrix *Umilc,
 			 Real beta,
-			 Real u0,
-			 int nf,
+			 double cp,
+			 double cr,
+			 double cpg,
 			 su3_matrix *deriv,
 			 GRID_4Dgrid *grid_full)
 {
-  gaugeForce<LatticeGaugeFieldD, PeriodicGimplD, ComplexD>(info, Umilc, beta, u0, nf,
+  gaugeForce<LatticeGaugeFieldD, PeriodicGimplD, ComplexD>(info, Umilc, beta, cp, cr, cpg,
 							   deriv, grid_full->gridD);
 }
 
@@ -107,11 +115,12 @@ void GRID_D3_gauge_force(GRID_info_t *info,
 double GRID_F3_gauge_action(GRID_info_t *info,
 			    su3_matrix *Umilc,
 			    Real beta,
-			    Real u0,
-			    int nf,
+			    double cp,
+			    double cr,
+			    double cpg,
 			    GRID_4Dgrid *grid_full)
 {
-  return gaugeAction<LatticeGaugeFieldF, PeriodicGimplF, ComplexF>(info, Umilc, beta, u0, nf,
+  return gaugeAction<LatticeGaugeFieldF, PeriodicGimplF, ComplexF>(info, Umilc, beta, cp, cr, cpg,
 								   grid_full->gridF);
 }
 #endif
@@ -119,11 +128,12 @@ double GRID_F3_gauge_action(GRID_info_t *info,
 double GRID_D3_gauge_action(GRID_info_t *info,
 			    su3_matrix *Umilc,
 			    Real beta,
-			    Real u0,
-			    int nf,
+			    double cp,
+			    double cr,
+			    double cpg,
 			    GRID_4Dgrid *grid_full)
 {
-  return gaugeAction<LatticeGaugeFieldD, PeriodicGimplD, ComplexD>(info, Umilc, beta, u0, nf,
+  return gaugeAction<LatticeGaugeFieldD, PeriodicGimplD, ComplexD>(info, Umilc, beta, cp, cr, cpg,
 								   grid_full->gridD);
 }
 

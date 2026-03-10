@@ -20,6 +20,7 @@ extern "C" {
 #endif
 
 #include "../include/milc_datatypes.h"
+#include "../include/precision.h"
 
 
 typedef STRUCT GRID_D3_ColorVector_struct		GRID_D3_ColorVector;
@@ -155,16 +156,18 @@ void GRID_D3_reunit_deriv(GRID_info_t *info, su3_matrix *V, su3_matrix *dW,
 
 double GRID_D3_gauge_action(GRID_info_t *info,
 			    su3_matrix *Umilc,
-			    double beta,
-			    double u0,
-			    int nf,
+			    Real beta,
+			    double cp,
+			    double cr,
+			    double cpg,
 			    GRID_4Dgrid *grid_full);
   
 void GRID_D3_gauge_force(GRID_info_t *info,
 			 su3_matrix *Umilc,
-			 double beta,
-			 double u0,
-			 int nf,
+			 Real beta,
+			 double cp,
+			 double cr,
+			 double cpg,
 			 su3_matrix *deriv,
 			 GRID_4Dgrid *grid_full);
 

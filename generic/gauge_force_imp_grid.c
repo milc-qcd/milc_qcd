@@ -11,6 +11,7 @@
 #include "generic_includes.h"	/* definitions files and prototypes */
 #include "../include/generic_grid.h"
 #include "../include/openmp_defs.h"
+
 extern GRID_4Dgrid *grid_full;
 
 void imp_gauge_force_grid(Real eps, field_offset mom_off){
@@ -50,10 +51,19 @@ void imp_gauge_force_grid(Real eps, field_offset mom_off){
     }
   } END_LOOP_OMP;
 
+  Real **loop_coeff = get_loop_coeff();
+  int nloop = get_nloop();
+  
+  double cp  = loop_coeff[0][0];
+  double cr  = (nloop > 1) ? -loop_coeff[1][0] : 0;
+  double cpg = (nloop > 2) ? loop_coeff[2][0] : 0;
+
+  printf("cp = %g, cr = %g, cpg = %g\n", cp, cr, cpg);
+
   if(MILC_PRECISION == 1)
-    GRID_F3_gauge_force(&grid_info, U, eb3, u0, total_dyn_flavors, momentum, grid_full);
+    GRID_F3_gauge_force(&grid_info, U, eb3, cp, cr, cpg, momentum, grid_full);
   else
-    GRID_D3_gauge_force(&grid_info, U, eb3, u0, total_dyn_flavors, momentum, grid_full);
+    GRID_D3_gauge_force(&grid_info, U, eb3, cp, cr, cpg, momentum, grid_full);
 
   // append result
   FORALLSITES_OMP(i,s,){
