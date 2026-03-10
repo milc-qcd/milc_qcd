@@ -94,7 +94,7 @@ int update_h_fermion( Real eps, su3_vector **multi_x ){
       invalidate_fermion_links(fn_links);
 #endif
       restore_fermion_links_from_site(fn_links, prec_md[iphi]);
-      fn = get_fm_links(fn_links);
+      fn = get_fm_links(fn_links, i);
 
       // Add the current pseudofermion to the current set
       order = rparam[iphi].MD.order;

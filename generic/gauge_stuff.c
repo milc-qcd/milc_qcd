@@ -472,11 +472,11 @@ void g_measure_nc_u1( ){
     complex p_loop;
     double total_action;
 
-    u1plaq(&ss_plaquette, &st_plaquette);
+    u1plaq(&ss_plaquette, &st_plaquette, 1.);
     if (this_node == 0) printf("PLAQ U1:\t%f\t%f\n", ss_plaquette, st_plaquette);
 
 
-    p_loop = u1ploop();
+    p_loop = u1ploop(1.);
     if (this_node == 0) printf("P_LOOP U1:\t%e\t%e\n", p_loop.real, p_loop.imag);
 
     /* U(1) gauge action */

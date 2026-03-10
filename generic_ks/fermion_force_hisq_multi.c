@@ -240,9 +240,9 @@ void eo_fermion_force_multi_su3_u1(Real eps, Real *residues, su3_vector **xxx,
   double dtime = -dclock();
   info_t info = INFO_ZERO;
 
-  if(prec != PRECISION){
+  if(prec != MILC_PRECISION){
     node0_printf("eo_fermion_force_multi_su3_u1: WARNING, precision requests not supported. Using %d.\n",
-		 PRECISION);
+		 MILC_PRECISION);
   }
   switch(KS_MULTIFF){
   case FNMATREV:
@@ -266,7 +266,7 @@ void eo_fermion_force_multi_su3_u1(Real eps, Real *residues, su3_vector **xxx,
   info.final_sec = dtime;
 #ifdef FFTIME
   node0_printf("FFTIME:  time = %e (HISQ %s) terms = %d flops/site = %d mflops = %e\n",
-	       info.final_sec,qop_prec[PRECISION-1],nterms,
+	       info.final_sec,prec_char[MILC_PRECISION-1],nterms,
 	       (int)(info.final_flop*numnodes()/volume),
 	       info.final_flop/(1e6*info.final_sec) );
 #endif
@@ -339,26 +339,6 @@ void eo_fermion_force_twoterms_site( Real eps, Real weight1, Real weight2,
 }
 #endif /* #if 0 */
 
-/**********************************************************************/
-/*   Accessor for string describing the option                        */
-/**********************************************************************/
-const char *ks_multiff_opt_chr( void )
-{
-  switch(KS_MULTIFF){
-  case ASVEC:
-    return "ASVEC";
-    break;
-  case FNMATREV:
-    return "FNMATREV";
-    break;
-  case FNMAT:
-    return "FNMAT";
-    break;
-  default:
-    return "FNMAT";
-  }
-  return NULL;
-}
 /**********************************************************************/
 /*   General FN Version for "nterms" sources                          */
 /**********************************************************************/

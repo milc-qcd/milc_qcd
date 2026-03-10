@@ -144,7 +144,7 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
       u1phase_on(current_charge_u1, u1_A);
       invalidate_fermion_links(fn_links);
       restore_fermion_links_from_site(fn_links, prec_fa[iphi]);
-      fn = get_fm_links(fn_links);
+      fn = get_fm_links(fn_links, inaik);
 #endif
       ks_ratinv( F_OFFSET(phi[iphi]), multi_x,
                  rparam[iphi].FA.pole, rparam[iphi].FA.res,
