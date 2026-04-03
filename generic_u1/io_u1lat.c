@@ -1277,32 +1277,27 @@ static void r_u1_serial(gauge_file *gf)
               }
             where_in_buf = 0;  /* reset counter */
           }  /*** end of the buffer read ****/
-  
-        if(destnode==0){        /* just copy links */
-          idest = node_index(x,y,z,t);
-          /* Save 4 u1 phases in tmpu1 for further processing */
-          memcpy(tmpu1,&lbuf[4*where_in_buf],4*sizeof(float));
-        }
-        else {          /* send to correct node */
-          send_field((char *)&lbuf[4*where_in_buf],
-                     4*sizeof(float),destnode);
-        } 
+
+        /* Copy current site into tmpu1; broadcast below delivers it to
+           all nodes, replacing the former send_field/get_field scatter.
+           This avoids QMP persistent-request teardown which triggers an
+           assertion failure in Cray MPICH's MPI_Request_free. */
+        memcpy(tmpu1,&lbuf[4*where_in_buf],4*sizeof(float));
         where_in_buf++;
       }
-     
-      /* The node that contains this site reads the message */
-      else {    /* for all nodes other than node 0 */
-        if(this_node==destnode){
-          idest = node_index(x,y,z,t);
 
-          /* Receive 4 u1 in temporary space for further processing */
-          get_field((char *)tmpu1,4*sizeof(float),0);
-        }
-      }
+      /* Broadcast tmpu1 from node 0 to all nodes.  Every node then
+         checks whether this site belongs to it and stores accordingly. */
+      broadcast_bytes((char *)tmpu1, 4*sizeof(float));
 
       /* The receiving node does the byte reversal and then checksum,
          if needed.  At this point tmpu1 contains the input u1
          and idest points to the destination site structure. */
+
+      if(this_node==destnode)
+        {
+          idest = node_index(x,y,z,t);
+        }
 
       if(this_node==destnode)
         {
