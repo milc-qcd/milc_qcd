@@ -78,11 +78,11 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
   eig_args->block_size = 1;
   // When doing a fresh eigensolve, n_conv is the number of eigenvectors requested
   // when loading from file, n_conv is the total number of eigenvectors in the file
-  eig_args->n_conv = param.eigen_param.Nvecs;
+  eig_args->n_conv = param.eigen_param.Nvecs_in;
   // Number of eigenvectors to use for deflation must be set with each inversion
-  eig_args->n_ev_deflate = param.eigen_param.Nvecs;
-  eig_args->n_ev = param.eigen_param.Nvecs;
-  eig_args->n_kr = param.eigen_param.Nvecs + 20;
+  eig_args->n_ev_deflate = param.eigen_param.Nvecs_in;
+  eig_args->n_ev = param.eigen_param.Nvecs_in;
+  eig_args->n_kr = param.eigen_param.Nvecs_in + 20;
   eig_args->tol = 1e-8;
   eig_args->max_restarts = 0;
   eig_args->poly_deg = 0;
@@ -116,7 +116,7 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
   strcpy( eig_args->vec_infile, "" );
   strcpy( eig_args->vec_outfile, param.ks_eigen_savefile );
   eig_args->prec_eigensolver = QUDA_DOUBLE_PRECISION;
-  
+
   if(quda_does_eigensolve){
     
     // In this case QUDA does the eigensolve and we need the proper eig_args
