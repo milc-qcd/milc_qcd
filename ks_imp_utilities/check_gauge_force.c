@@ -41,6 +41,8 @@ void check_gauge_force( char *ansfile, int ansflag )
     terminate(1);
   }
 
+  g_measure();
+
   /* Compute the gauge action */
   double g_action = (beta/3.0)*imp_gauge_action_ks();
   node0_printf("The gauge action is %.14e\n", g_action);
