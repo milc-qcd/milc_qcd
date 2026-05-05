@@ -34,12 +34,13 @@ static void gaugeForce (
   LatticeGaugeField Umu(CGrid), UForce(CGrid);
   milcGaugeFieldToGrid<LatticeGaugeField, Complex>(Umilc, &Umu);
 
-  OneLoopGaugeActionContext ctx(beta, cp, cr, cpg);
+  // Factors of 2*Nc to match MILC conventions */
+  OneLoopGaugeActionContext ctx(beta, 2.*Nc*cp, 2.*Nc*cr, 2.*Nc*cpg);
 
   // Instantiate the gauge action class
-  PeriodicSymanzikOneLoopGaugeAction<Gimpl> action(CGrid, ctx);
+  PeriodicPlaqPlusRectanglePlusParallelogramGaugeAction<Gimpl> action(CGrid, ctx);
   
-  action.deriv(Umu, UForce);
+  action.deriv(Umu, UForce, ctx);
 
   gridToMilcGaugeField<LatticeGaugeField, Complex>(deriv, &UForce);
 
@@ -68,9 +69,12 @@ static double gaugeAction (
 
   OneLoopGaugeActionContext ctx(beta, cp, cr, cpg);
 
-  PeriodicSymanzikOneLoopGaugeAction<Gimpl> action(CGrid, ctx);
+  PeriodicPlaqPlusRectanglePlusParallelogramGaugeAction<Gimpl> action(CGrid, ctx);
   
-  auto actionValue = action.S(Umu, ctx);
+  double actionValue = action.S(Umu);
+
+  // A MILC convention
+  actionValue *= 3.;
 
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
@@ -93,7 +97,7 @@ void GRID_F3_gauge_force(GRID_info_t *info,
 			 su3_matrix *deriv,
 			 GRID_4Dgrid *grid_full)
 {
-  gaugeForce<LatticeGaugeFieldF, PeriodicGimplF, ComplexF>(info, Umilc, beta, cp, cr, cpg,
+  gaugeForcePhase<LatticeGaugeFieldF, PeriodicGimplF, ComplexF>(info, Umilc, beta, cp, cr, cpg,
 							   deriv, grid_full->gridF);
 }
 #endif
