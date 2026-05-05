@@ -9,7 +9,7 @@ double imp_gauge_action_ks(void) {
 
 #if defined(USE_GA_GPU) && defined(HAVE_GRID) && !defined(ANISOTROPY)
   return imp_gauge_action_grid();
-#elif defined(USE_GA_GPU) && defined(HAVE_GRID) && !defined(ANISOTROPY)
+#elif defined(USE_GA_GPU) && defined(HAVE_QUDA) && !defined(ANISOTROPY)
   return imp_gauge_action_quda();
 #else
   rephase(OFF);
