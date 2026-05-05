@@ -35,11 +35,7 @@ void imp_gauge_force_grid(Real eps, field_offset mom_off){
 
   site *s; int i;
   const Real eb3 = eps*beta/3.0;
-  int total_dyn_flavors = 0;
-  for(i = 0; i < n_dyn_masses; i++){
-    total_dyn_flavors += dyn_flavors[i];
-  }
-  
+
   GRID_info_t grid_info;
   su3_matrix* momentum = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
   su3_matrix* U = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
@@ -57,8 +53,6 @@ void imp_gauge_force_grid(Real eps, field_offset mom_off){
   double cp  = loop_coeff[0][0];
   double cr  = (nloop > 1) ? -loop_coeff[1][0] : 0;
   double cpg = (nloop > 2) ? loop_coeff[2][0] : 0;
-
-  printf("cp = %g, cr = %g, cpg = %g\n", cp, cr, cpg);
 
   if(MILC_PRECISION == 1)
     GRID_F3_gauge_force(&grid_info, U, eb3, cp, cr, cpg, momentum, grid_full);
