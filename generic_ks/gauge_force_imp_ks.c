@@ -7,9 +7,9 @@
 
 void imp_gauge_force_ks( Real eps, field_offset mom_off ){
 
-#if defined(USE_GA_GPU) && defined(HAVE_GRID)
+#if defined(USE_GF_GPU) && defined(HAVE_GRID)
   imp_gauge_force_grid(eps, mom_off);
-#elif defined(USE_GA_GPU) && defined(HAVE_QUDA)
+#elif defined(USE_GF_GPU) && defined(HAVE_QUDA)
   imp_gauge_force_quda(eps, mom_off);
 #elif USE_GF_QPHIX
   rephase(OFF);
