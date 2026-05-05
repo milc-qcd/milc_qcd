@@ -94,12 +94,14 @@ double imp_gauge_action_grid() {
   su3_matrix* momentum = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
   su3_matrix* U = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
 
+  rephase( OFF );
   FORALLSITES_OMP(i,s,){
     int dir;
     FORALLUPDIR(dir){
       su3mat_copy(&s->link[dir], &U[4*i+dir]);
     }
   } END_LOOP_OMP;
+  rephase( ON );
 
   Real **loop_coeff = get_loop_coeff();
   int nloop = get_nloop();
@@ -116,7 +118,7 @@ double imp_gauge_action_grid() {
   } else {
     g_action = GRID_D3_gauge_action(&grid_info, U, eb3, cp, cr, cpg, grid_full);
   }
-  
+
 #if 0
   free(loop_coeff);
   free(path_length);
