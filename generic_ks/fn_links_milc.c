@@ -38,6 +38,20 @@ create_G_special(void){
   return m;
 }
 
+static su3_matrix *
+create_G_special_uninitialized(void){
+  char myname[] = "create_G_special_uninitialized";
+  su3_matrix *m;
+
+  m = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
+  if(m==NULL){
+    printf("%s: no room\n",myname);
+    terminate(1);
+  }
+
+  return m;
+}
+
 static void
 destroy_G_special(su3_matrix *m){
   if(m == NULL)return;
@@ -77,6 +91,13 @@ create_lnglinks(void) {
   lng = create_G_special();
   return lng;
 }
+
+su3_matrix *
+create_lnglinks_uninitialized(void) {
+  su3_matrix *lng;
+  lng = create_G_special_uninitialized();
+  return lng;
+}
   
 /*-------------------------------------------------------------------*/
 
@@ -94,6 +115,13 @@ create_fatlinks(void) {
 
   su3_matrix *fat;
   fat = create_G_special();
+  return fat;
+}
+
+su3_matrix *
+create_fatlinks_uninitialized(void) {
+  su3_matrix *fat;
+  fat = create_G_special_uninitialized();
   return fat;
 }
   
@@ -270,6 +298,33 @@ create_fn_links(void){
   return fn;
 }
 
+fn_links_t *
+create_fn_links_uninitialized(void){
+
+  fn_links_t *fn;
+  char myname[] = "create_fn_links_uninitialized";
+
+  /* Create the structure and allocate the fat and lng members, but
+     not the back links. The values of the link variables are not initialized.
+     To create the back links, use load_fn_backlinks */
+
+  fn = (fn_links_t *)malloc(sizeof(fn_links_t));
+  if(fn == NULL){
+    printf("%s: no room\n",myname);
+    terminate(1);
+  }
+
+  init_ferm_links(fn);
+  fn->preserve = 0;
+  fn->phase = create_link_phase_info();
+  fn->fat = create_fatlinks_uninitialized();
+  fn->lng = create_lnglinks_uninitialized();
+  fn->fatback = NULL;
+  fn->lngback = NULL;
+  fn->eps_naik = 0.0;
+
+  return fn;
+}
 /*-------------------------------------------------------------------*/
 void 
 destroy_fn_links(fn_links_t *fn){
@@ -402,6 +457,37 @@ add_fn(fn_links_t *fn_A, fn_links_t *fn_B, fn_links_t *fn_C){
 	add_su3_matrix( fatbackA + 4*i + dir, fatbackB + 4*i + dir, fatbackC + 4*i + dir );
       if(lngbackA != NULL && lngbackB != NULL && lngbackC != NULL)
 	add_su3_matrix( lngbackA + 4*i + dir, lngbackB + 4*i + dir, lngbackC + 4*i + dir );
+    }
+  }
+  END_LOOP_OMP;
+}
+
+void 
+scalar_mult_add_fn(fn_links_t *fn_A, fn_links_t *fn_B, Real s, fn_links_t *fn_C) {
+  int i, dir;
+  su3_matrix *fatA = get_fatlinks(fn_A);
+  su3_matrix *lngA = get_lnglinks(fn_A);
+  su3_matrix *fatbackA = get_fatbacklinks(fn_A);
+  su3_matrix *lngbackA = get_lngbacklinks(fn_A);
+
+  su3_matrix *fatB = get_fatlinks(fn_B);
+  su3_matrix *lngB = get_lnglinks(fn_B);
+  su3_matrix *fatbackB = get_fatbacklinks(fn_B);
+  su3_matrix *lngbackB = get_lngbacklinks(fn_B);
+
+  su3_matrix *fatC = get_fatlinks(fn_C);
+  su3_matrix *lngC = get_lnglinks(fn_C);
+  su3_matrix *fatbackC = get_fatbacklinks(fn_C);
+  su3_matrix *lngbackC = get_lngbacklinks(fn_C);
+
+  FORALLFIELDSITES_OMP(i,private(dir)) {
+    for(dir=XUP;dir<=TUP;dir++) {
+      scalar_mult_add_su3_matrix( fatA + 4*i + dir, fatB + 4*i + dir, s, fatC + 4*i + dir );
+      scalar_mult_add_su3_matrix( lngA + 4*i + dir, lngB + 4*i + dir, s, lngC + 4*i + dir );
+      if(fatbackA != NULL && fatbackB != NULL && fatbackC != NULL)
+        scalar_mult_add_su3_matrix( fatbackA + 4*i + dir, fatbackB + 4*i + dir, s, fatbackC + 4*i + dir );
+      if(lngbackA != NULL && lngbackB != NULL && lngbackC != NULL)
+        scalar_mult_add_su3_matrix( lngbackA + 4*i + dir, lngbackB + 4*i + dir, s, lngbackC + 4*i + dir );
     }
   }
   END_LOOP_OMP;

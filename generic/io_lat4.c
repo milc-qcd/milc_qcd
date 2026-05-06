@@ -26,6 +26,9 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
+#ifdef HAVE_MPI
+#include <mpi.h>
+#endif
 #ifdef HAVE_QIO
 #include <qio.h>
 #endif
@@ -1015,6 +1018,128 @@ static void w_parallel(gauge_file *gf)
 
 } /* w_parallel */
 
+/* Read gauge configuration in parallel from a single file */
+static void w_mpiio(gauge_file *gf)
+{
+  char myname[] = "w_mpiio";
+
+#ifdef HAVE_MPI
+  /* (1996 gauge configuration files had a 32-bit unused checksum
+     record before the gauge link data) */
+  size_t gauge_check_size;
+  if (gf->header->magic_number == GAUGE_VERSION_NUMBER)
+    gauge_check_size = sizeof(gf->check.sum29) + sizeof(gf->check.sum31);
+  else
+    gauge_check_size = 0;
+
+  size_t coord_list_size;
+  if (gf->header->order == NATURAL_ORDER)
+    coord_list_size = 0;
+  else
+    coord_list_size = sizeof(u_int32type) * volume;
+  size_t checksum_offset = gf->header->header_bytes + coord_list_size;
+  size_t head_size = checksum_offset + gauge_check_size;
+
+  size_t gauge_node_size = sites_on_node * 4 * sizeof(fsu3_matrix);
+  fsu3_matrix *buf = (fsu3_matrix *)malloc(gauge_node_size);
+  const int *grid_size = get_logical_dimensions();
+  const int *grid_coord = get_logical_coordinate();
+  const int gx = grid_coord[0], gy = grid_coord[1], gz = grid_coord[2], gt = grid_coord[3];
+  const int lx = nx / grid_size[0], ly = ny / grid_size[1], lz = nz / grid_size[2], lt = nt / grid_size[3];
+  const int sizes[7] = {nt, nz, ny, nx, 4, 3, 3};
+  const int subsizes[7] = {lt, lz, ly, lx, 4, 3, 3};
+  const int starts[7] = {gt * lt, gz * lz, gy * ly, gx * lx, 0, 0, 0};
+
+  /* initialize checksums */
+  gf->check.sum29 = 0;
+  gf->check.sum31 = 0;
+
+  size_t where_in_buf = 0;
+  int k, n = 4 * (int)sizeof(fsu3_matrix) / (int)sizeof(u_int32type);
+  u_int32type *val;
+  for (int t = gt * lt; t < (gt + 1) * lt; t++)
+    for (int z = gz * lz; z < (gz + 1) * lz; z++)
+      for (int y = gy * ly; y < (gy + 1) * ly; y++)
+        for (int x = gx * lx; x < (gx + 1) * lx; x++) {
+          size_t i = node_index(x, y, z, t);
+          d2f_4mat(&lattice[i].link[0], (fsu3_matrix *)&buf[4 * where_in_buf]);
+
+          size_t rank = ((((size_t)t * nz + z) * ny + y) * nx + x) * n;
+          int rank29 = rank % 29;
+          int rank31 = rank % 31;
+
+          /* Accumulate checksums - contribution from next site */
+          for (k = 0, val = (u_int32type *)&buf[4 * where_in_buf]; k < n; k++, val++) {
+            gf->check.sum29 ^= (*val) << rank29 | (rank29 == 0 ? 0 : (*val) >> (32 - rank29));
+            // test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
+            gf->check.sum31 ^= (*val) << rank31 | (rank31 == 0 ? 0 : (*val) >> (32 - rank31));
+            // test_gc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
+            rank29++;
+            if (rank29 >= 29)
+              rank29 = 0;
+            rank31++;
+            if (rank31 >= 31)
+              rank31 = 0;
+          }
+
+          if (gf->byterevflag == 1)
+            byterevn((u_int32type *)&buf[4 * where_in_buf], n);
+
+          where_in_buf++;
+        }
+  g_sync();
+
+  MPI_File fh;
+  MPI_File_open(MPI_COMM_WORLD, gf->filename, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+  MPI_Datatype filetype;
+  MPI_Type_create_subarray(7, sizes, subsizes, starts, MPI_ORDER_C, MPI_COMPLEX8, &filetype);
+  MPI_Type_commit(&filetype);
+  MPI_File_set_view(fh, head_size, MPI_BYTE, filetype, "native", MPI_INFO_NULL);
+  size_t buf_offset = 0, total_count = gauge_node_size / sizeof(fcomplex);
+  while (buf_offset < total_count) {
+    int count_ = (total_count - buf_offset > (1 << 30)) ? (1 << 30) : (total_count - buf_offset);
+    MPI_File_write_all(fh, &((fcomplex *)buf)[buf_offset], count_, MPI_COMPLEX8, MPI_STATUS_IGNORE);
+    buf_offset += count_;
+  }
+  // MPI_File_write_all(fh, buf, total_count, MPI_COMPLEX8, MPI_STATUS_IGNORE);
+  MPI_Type_free(&filetype);
+  MPI_File_close(&fh);
+
+  free(buf);
+
+  /* Combine checksums */
+
+  g_xor32(&gf->check.sum29);
+  g_xor32(&gf->check.sum31);
+
+  /* Write checksum at end of lattice file */
+
+  /* Position file for writing checksum */
+  /* Only node 0 writes checksum data */
+
+  if (this_node == 0) {
+    if (g_seek(gf->fp, checksum_offset, SEEK_SET) < 0)
+      {
+        printf("%s: Node %d g_seek %ld for checksum failed error %d file %s\n",
+               myname, this_node, (long)checksum_offset, errno, gf->filename);
+        fflush(stdout);
+        terminate(1);
+      }
+
+    write_checksum(PARALLEL, gf);
+
+    printf("Saved gauge configuration in parallel with MPI I/O to binary file %s\n", gf->filename);
+    printf("Time stamp %s\n", (gf->header)->time_stamp);
+
+  }
+#else
+  printf("ERROR: %s requires MPP build to support MPI I/O\n", myname);
+  fflush(stdout);
+  terminate(1);
+#endif
+
+} /* w_mpiio */
+
 /*-----------------------------------------------------------------------*/
 
 /* Write parallel gauge configuration in node dump order */
@@ -1427,6 +1552,125 @@ static void r_parallel(gauge_file *gf)
   
 } /* r_parallel */
 
+/* Read gauge configuration in parallel from a single file */
+static void r_mpiio(gauge_file *gf)
+{
+  char myname[] = "r_mpiio";
+
+#ifdef HAVE_MPI
+  /* (1996 gauge configuration files had a 32-bit unused checksum
+     record before the gauge link data) */
+  size_t gauge_check_size;
+  if (gf->header->magic_number == GAUGE_VERSION_NUMBER)
+    gauge_check_size = sizeof(gf->check.sum29) + sizeof(gf->check.sum31);
+  else
+    gauge_check_size = 0;
+
+  size_t coord_list_size;
+  if (gf->header->order == NATURAL_ORDER)
+    coord_list_size = 0;
+  else
+    coord_list_size = sizeof(u_int32type) * volume;
+  size_t checksum_offset = gf->header->header_bytes + coord_list_size;
+  size_t head_size = checksum_offset + gauge_check_size;
+
+  size_t gauge_node_size = sites_on_node * 4 * sizeof(fsu3_matrix);
+  fsu3_matrix *buf = (fsu3_matrix *)malloc(gauge_node_size);
+  const int *grid_size = get_logical_dimensions();
+  const int *grid_coord = get_logical_coordinate();
+  const int gx = grid_coord[0], gy = grid_coord[1], gz = grid_coord[2], gt = grid_coord[3];
+  const int lx = nx / grid_size[0], ly = ny / grid_size[1], lz = nz / grid_size[2], lt = nt / grid_size[3];
+  const int sizes[7] = {nt, nz, ny, nx, 4, 3, 3};
+  const int subsizes[7] = {lt, lz, ly, lx, 4, 3, 3};
+  const int starts[7] = {gt * lt, gz * lz, gy * ly, gx * lx, 0, 0, 0};
+
+  MPI_File fh;
+  MPI_File_open(MPI_COMM_WORLD, gf->filename, MPI_MODE_RDONLY, MPI_INFO_NULL, &fh);
+  MPI_Datatype filetype;
+  MPI_Type_create_subarray(7, sizes, subsizes, starts, MPI_ORDER_C, MPI_COMPLEX8, &filetype);
+  MPI_Type_commit(&filetype);
+  MPI_File_set_view(fh, head_size, MPI_BYTE, filetype, "native", MPI_INFO_NULL);
+  size_t buf_offset = 0, total_count = gauge_node_size / sizeof(fcomplex);
+  while (buf_offset < total_count) {
+    int count_ = (total_count - buf_offset > (1 << 30)) ? (1 << 30) : (total_count - buf_offset);
+    MPI_File_read_all(fh, &((fcomplex *)buf)[buf_offset], count_, MPI_COMPLEX8, MPI_STATUS_IGNORE);
+    buf_offset += count_;
+  }
+  // MPI_File_read_all(fh, buf, total_count, MPI_COMPLEX8, MPI_STATUS_IGNORE);
+  MPI_Type_free(&filetype);
+  MPI_File_close(&fh);
+
+  gauge_check test_gc;
+  /* initialize checksums */
+  test_gc.sum29 = 0;
+  test_gc.sum31 = 0;
+
+  size_t where_in_buf = 0;
+  int k, n = 4 * (int)sizeof(fsu3_matrix) / (int)sizeof(u_int32type);
+  u_int32type *val;
+  for (int t = gt * lt; t < (gt + 1) * lt; t++)
+    for (int z = gz * lz; z < (gz + 1) * lz; z++)
+      for (int y = gy * ly; y < (gy + 1) * ly; y++)
+        for (int x = gx * lx; x < (gx + 1) * lx; x++) {
+          if (gf->byterevflag == 1)
+            byterevn((u_int32type *)&buf[4 * where_in_buf], n);
+
+          size_t rank = ((((size_t)t * nz + z) * ny + y) * nx + x) * n;
+          int rank29 = rank % 29;
+          int rank31 = rank % 31;
+
+          /* Accumulate checksums - contribution from next site */
+          for (k = 0, val = (u_int32type *)&buf[4 * where_in_buf]; k < n; k++, val++) {
+            test_gc.sum29 ^= (*val) << rank29 | (rank29 == 0 ? 0 : (*val) >> (32 - rank29));
+            // test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
+            test_gc.sum31 ^= (*val) << rank31 | (rank31 == 0 ? 0 : (*val) >> (32 - rank31));
+            // test_gc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
+            rank29++;
+            if (rank29 >= 29)
+              rank29 = 0;
+            rank31++;
+            if (rank31 >= 31)
+              rank31 = 0;
+          }
+
+          size_t i = node_index(x, y, z, t);
+          f2d_4mat((fsu3_matrix *)&buf[4 * where_in_buf], &lattice[i].link[0]);
+          where_in_buf++;
+        }
+  g_sync();
+
+  free(buf);
+
+  /* Combine node checksum contributions with global exclusive or */
+  g_xor32(&test_gc.sum29);
+  g_xor32(&test_gc.sum31);
+
+  /* Read and verify checksum */
+
+  if (this_node == 0) {
+    /* Node 0 positions file for reading checksum */
+    printf("Restored binary gauge configuration in parallel with MPI I/O from file %s\n", gf->filename);
+    if (gf->header->magic_number == GAUGE_VERSION_NUMBER) {
+      printf("Time stamp %s\n", gf->header->time_stamp);
+      if (g_seek(gf->fp, checksum_offset, SEEK_SET) < 0) {
+        printf("%s: Node 0 g_seek %ld for checksum failed error %d file %s\n",
+               myname, (long)head_size, errno, gf->filename);
+        fflush(stdout);
+        terminate(1);
+      }
+
+      read_checksum(PARALLEL, gf, &test_gc);
+    }
+    fflush(stdout);
+  }
+#else
+  printf("ERROR: %s requires MPP build to support MPI I/O\n", myname);
+  fflush(stdout);
+  terminate(1);
+#endif
+
+} /* r_mpiio */
+
 /*---------------------------------------------------------------------------*/
 /* Top level routines */
 /*---------------------------------------------------------------------------*/
@@ -1742,6 +1986,18 @@ gauge_file *restore_parallel(const char *filename)
   
 } /* restore_parallel */
 
+gauge_file *restore_mpiio(const char *filename)
+{
+  gauge_file *gf;
+
+  gf = r_parallel_i(filename);
+  r_mpiio(gf);
+  r_parallel_f(gf);
+
+  return gf;
+
+} /* restore_mpiio */
+
 /*---------------------------------------------------------------------------*/
 
 /* Save lattice in natural order by writing serially (node 0 only) */
@@ -1773,6 +2029,18 @@ gauge_file *save_parallel(const char *filename)
   return gf;
 
 } /* save_parallel */
+
+gauge_file *save_mpiio(const char *filename)
+{
+  gauge_file *gf;
+
+  gf = w_parallel_i(filename);
+  w_mpiio(gf);
+  w_parallel_f(gf);
+
+  return gf;
+
+} /* save_mpiio */
 
 /*---------------------------------------------------------------------------*/
 

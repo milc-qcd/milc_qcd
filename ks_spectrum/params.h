@@ -13,10 +13,10 @@
 #define MAX_MASS_PBP 8
 #define MAX_SOURCE 128
 #define MAX_SET 256
-#define MAX_PROP 64
-#define MAX_QK 512
+#define MAX_PROP 128
+#define MAX_QK 1536
 #define MAX_COMBO 8
-#define MAX_PAIR 5000
+#define MAX_PAIR 5760
 #define MAX_TRIPLET 64
 #define MAX_QKPAIR_LABEL 64
 #define MAX_MESON 32
@@ -110,6 +110,7 @@ typedef struct {
   int num_set;  /* number of sets */
   enum set_type set_type[MAX_SET];    /* multimass or multisource */
   enum inv_type inv_type[MAX_SET];    /* inverter type MG or CG */
+  enum mg_rebuild_type mg_rebuild_type[MAX_SET];    /* how to refresh MG solve if mass/gauge links change for multisource set */
   Real charge[MAX_SET];     /* charge for propagators in the set */
   char charge_label[MAX_SET][32];  /* for correlator label */
   int num_prop[MAX_SET]; /* number of propagators in a set */

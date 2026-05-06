@@ -140,7 +140,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   eig_args.struct_size = 1192; // Could also use sizeof(QudaEigensolverArgs_t) to automagically update, but using a static number will catch the case when the struct is updated by QUDA but MILC is not updated
   eig_args.block_size = blockSize;
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
-  eig_args.n_ev_deflate = ( parity == EVEN ) ? param.eigen_param.Nvecs : 0; // Only deflate even solves for now
+  eig_args.n_ev_deflate = ( parity == EVEN && qic->deflate ) ? param.eigen_param.Nvecs : 0; // Only deflate even solves for now
   eig_args.n_ev = eig_args.n_conv;
   eig_args.n_kr = (param.eigen_param.Nkr < eig_args.n_ev ) ? 2*eig_args.n_ev : param.eigen_param.Nkr;
   eig_args.tol = param.eigen_param.tol;
@@ -303,10 +303,10 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   if(qic->parity == EVEN){
     inv_args.evenodd = QUDA_EVEN_PARITY;
-    node0_printf("%s: Using QUDA's block solver with EVEN parity %x\n", myname);
+    node0_printf("%s: Using QUDA's block solver with EVEN parity\n", myname);
   }else if(qic->parity == ODD){
     inv_args.evenodd = QUDA_ODD_PARITY;
-    node0_printf("%s: Using QUDA's block solver with ODD parity %x\n", myname);
+    node0_printf("%s: Using QUDA's block solver with ODD parity\n", myname);
   }else{
     printf("%s: Unrecognised parity\n",myname);
     terminate(2);
@@ -352,7 +352,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   eig_args.struct_size = 1192; // Could also use sizeof(QudaEigensolverArgs_t) to automagically update, but using a static number will catch the case when the struct is updated by QUDA but MILC is not updated
   eig_args.block_size = blockSize;
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
-  eig_args.n_ev_deflate = ( parity == EVEN ) ? param.eigen_param.Nvecs : 0; // Only deflate even solves for now
+  eig_args.n_ev_deflate = ( parity == EVEN && qic->deflate ) ? param.eigen_param.Nvecs : 0; // Only deflate even solves for now
   eig_args.n_ev = eig_args.n_conv;
   eig_args.n_kr = (param.eigen_param.Nkr < eig_args.n_ev ) ? 2*eig_args.n_ev : param.eigen_param.Nkr;
   eig_args.tol = param.eigen_param.tol;

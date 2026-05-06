@@ -7,7 +7,6 @@
 pushd .
 
 module reset
-module load gcc cuda
 module list
 
 echo "LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
@@ -38,13 +37,13 @@ cp ../Makefile .
 make clean
 
 MY_CC=mpicc \
-MY_CXX=mpiCC \
+MY_CXX=mpicxx \
 ARCH="" \
-GPU_ARCH="nvidia" \
-OFFLOAD="CUDA" \
+GPU_ARCH="intel" \
+OFFLOAD="SYCL" \
 COMPILER="gnu" \
 OPT="-O3 -Ofast -g" \
-LDFLAGS="-g -L/home1/apps/nvidia/Linux_aarch64/24.9/cuda/lib64/stubs -lcuda -lnvidia-ml" \
+LDFLAGS="-g " \
 QUDA_HOME=${QUDA_BUILD} \
 WANTQUDA=true \
 WANT_FN_CG_GPU=true \

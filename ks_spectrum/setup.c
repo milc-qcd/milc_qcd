@@ -535,42 +535,68 @@ int readin(int prompt) {
 
       IF_OK status += get_s(stdin, prompt, "set_type", savebuf);
       IF_OK {
-	if(strcmp(savebuf,"multimass") == 0)
-	  param.set_type[k] = MULTIMASS_SET;
-	else if(strcmp(savebuf,"multisource") == 0)
-	  param.set_type[k] = MULTISOURCE_SET;
-	else if(strcmp(savebuf,"single") == 0)
-	  param.set_type[k] = SINGLES_SET;
-	else if(strcmp(savebuf,"multicolorsource") == 0)
-	  param.set_type[k] = MULTICOLORSOURCE_SET;
-	else {
-	  printf("Unrecognized set type %s\n",savebuf);
-	  printf("Choices are 'single', 'multimass', 'multisource', 'multicolorsource'\n");
-	  status++;
-	}
+        if(strcmp(savebuf,"multimass") == 0)
+          param.set_type[k] = MULTIMASS_SET;
+        else if(strcmp(savebuf,"multisource") == 0)
+          param.set_type[k] = MULTISOURCE_SET;
+        else if(strcmp(savebuf,"single") == 0)
+          param.set_type[k] = SINGLES_SET;
+        else if(strcmp(savebuf,"multicolorsource") == 0)
+          param.set_type[k] = MULTICOLORSOURCE_SET;
+        else {
+          printf("Unrecognized set type %s\n",savebuf);
+          printf("Choices are 'single', 'multimass', 'multisource', 'multicolorsource'\n");
+          status++;
+        }
       }
 
       IF_OK status += get_s(stdin, prompt, "inv_type", savebuf);
       IF_OK {
-	if(strcmp(savebuf,"MG") == 0)
-	  param.inv_type[k] = MGTYPE;
-	else if(strcmp(savebuf,"CG") == 0)
-	  param.inv_type[k] = CGTYPE;
-	else if(strcmp(savebuf,"CGZ") == 0)
-	  param.inv_type[k] = CGZTYPE;
-	else if(strcmp(savebuf,"UML") == 0)
-	  param.inv_type[k] = UMLTYPE;
-	else {
-	  printf("Unrecognized inverter type %s\n",savebuf);
-	  printf("Choices are 'CG', 'CGZ', 'MG', 'UML'\n");
-	  status++;
-	}
+        if(strcmp(savebuf,"MG") == 0)
+          param.inv_type[k] = MGTYPE;
+        else if(strcmp(savebuf,"CG") == 0)
+          param.inv_type[k] = CGTYPE;
+        else if(strcmp(savebuf,"CGZ") == 0)
+          param.inv_type[k] = CGZTYPE;
+        else if(strcmp(savebuf,"UML") == 0)
+          param.inv_type[k] = UMLTYPE;
+        else {
+          printf("Unrecognized inverter type %s\n",savebuf);
+          printf("Choices are 'CG', 'CGZ', 'MG', 'UML'\n");
+          status++;
+        }
       }
       
       IF_OK {
         if (param.inv_type[k] == MGTYPE) {
           IF_OK status += get_s(stdin, prompt, "MGparams", mgparamfile);
         }
+
+#ifdef MULTIGRID
+        /* parameter within MG solve to specify how to refresh the coarse op */
+
+        IF_OK {
+          if (param.inv_type[k] == MGTYPE &&
+              (param.set_type[k] == MULTISOURCE_SET || param.set_type[k] == MULTICOLORSOURCE_SET)) {
+            IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
+            IF_OK {
+              if(strcmp(savebuf,"FULL") == 0)
+                param.mg_rebuild_type[k] = FULLREBUILD;
+              else if(strcmp(savebuf,"THIN") == 0)
+                param.mg_rebuild_type[k] = THINREBUILD;
+              else if(strcmp(savebuf,"CG") == 0)
+                param.mg_rebuild_type[k] = CGREBUILD;
+              else {
+                printf("Unrecognized rebuild type %s\n",savebuf);
+                printf("Choices are 'FULL', 'THIN', 'CG'\n");
+                status++;
+              }
+            }
+          }
+        }
+#else
+        param.mg_rebuild_type[k] = CGREBUILD;
+#endif
 
 	/* maximum no. of conjugate gradient iterations */
         IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
@@ -667,8 +693,8 @@ int readin(int prompt) {
       }
 
       if( param.inv_type[k] == MGTYPE && param.set_type[k] == MULTIMASS_SET
-	  && param.num_prop[k] > 1){
-	node0_printf("WARNING: Multigrid support for multimass is currently emulated via separate inversions\n");
+        && param.num_prop[k] > 1){
+        node0_printf("WARNING: Multigrid support for multimass is currently emulated via separate inversions\n");
       }
 
       /* Indexing range for set */
@@ -709,7 +735,8 @@ int readin(int prompt) {
 	    if(param.set_type[k]  == MULTIMASS_SET){
 	      if(i == 0){
 		common_naik = param.ksp[nprop].naik_term_epsilon;
-	      } else if (param.ksp[nprop].naik_term_epsilon != common_naik){
+	      } else if (param.ksp[nprop].naik_term_epsilon != common_naik &&
+			 param.set_type[k] != SINGLES_SET){
 		node0_printf("ERROR: All propagators in a multimaws set must have the same Naik epsilon\n");
 		status++;
 	      }
@@ -733,7 +760,7 @@ int readin(int prompt) {
 	/*------------------------------------------------------------*/
 	/* Propagator inversion control                               */
 	/*------------------------------------------------------------*/
-	
+
         /* inversion type */
         param.qic[nprop].inv_type = param.inv_type[k];
 
@@ -768,31 +795,30 @@ int readin(int prompt) {
 	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator",
 			      &param.qic[nprop].relresid );
 #if defined(HALF_MIXED) && defined(HAVE_QOP)
-	/* Parameter used by QOPQDP inverter for mixed-precision solves ?? */
-	IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic[nprop].mixed_rsq );
+  /* Parameter used by QOPQDP inverter for mixed-precision solves ?? */
+  IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic[nprop].mixed_rsq );
 #endif
 
 #ifdef MULTIGRID
   /* parameter within MG solve to specify how to refresh the coarse op */
-
-	IF_OK {
-	  if (param.inv_type[k] == MGTYPE) {
-	    IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
-	    IF_OK {
-	      if(strcmp(savebuf,"FULL") == 0)
-		param.qic[nprop].mg_rebuild_type = FULLREBUILD;
-	      else if(strcmp(savebuf,"THIN") == 0)
-		param.qic[nprop].mg_rebuild_type = THINREBUILD;
-	      else if(strcmp(savebuf,"CG") == 0)
-		param.qic[nprop].mg_rebuild_type = CGREBUILD;
-	      else {
-		printf("Unrecognized rebuild type %s\n",savebuf);
-		printf("Choices are 'FULL', 'THIN', 'CG'\n");
-		status++;
-	      }
-	    }
-	  }
-	}
+  IF_OK {
+    if (param.inv_type[k] == MGTYPE && param.set_type[k] == MULTIMASS_SET) {
+      IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
+      IF_OK {
+        if(strcmp(savebuf,"FULL") == 0)
+          param.qic[nprop].mg_rebuild_type = FULLREBUILD;
+        else if(strcmp(savebuf,"THIN") == 0)
+          param.qic[nprop].mg_rebuild_type = THINREBUILD;
+        else if(strcmp(savebuf,"CG") == 0)
+          param.qic[nprop].mg_rebuild_type = CGREBUILD;
+        else {
+          printf("Unrecognized rebuild type %s\n",savebuf);
+          printf("Choices are 'FULL', 'THIN', 'CG'\n");
+          status++;
+        }
+      }
+    }
+  }
 #else
   param.qic[nprop].mg_rebuild_type = CGREBUILD;
 #endif

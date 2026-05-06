@@ -20,7 +20,7 @@ ARCH ?= # epyc hsw skx clx icx spr knl pow8 pow9
 #----------------------------------------------------------------------
 # 2. Compiler family
 
-COMPILER ?= gnu # intel, ibm, cray-intel, rocm
+COMPILER ?= gnu # intel, intel-classic, ibm, cray-intel, rocm, nvhpc
 OFFLOAD ?= # cuda hip sycl openmp
 
 #----------------------------------------------------------------------
@@ -47,6 +47,16 @@ ifeq ($(strip ${COMPILER}),intel)
   else
     MY_CC  ?= icx
     MY_CXX ?= icpx
+  endif
+
+else ifeq ($(strip ${COMPILER}),intel-classic)
+
+  ifeq ($(strip ${MPP}),true)
+    MY_CC ?= mpicc
+    MY_CXX ?= mpicxx
+  else
+    MY_CC  ?= icc
+    MY_CXX ?= icpc
   endif
 
 else ifeq ($(strip ${COMPILER}),cray-intel)
@@ -87,6 +97,16 @@ else ifeq ($(strip ${COMPILER}),amdclang)
   else
     MY_CC ?= amdclang
     MY_CXX ?= amdclang++
+  endif
+
+else ifeq ($(strip ${COMPILER}),nvhpc)
+
+  ifeq ($(strip ${MPP}),true)
+    MY_CC ?= mpicc
+    MY_CXX ?= mpicxx
+  else
+    MY_CC ?= nvc
+    MY_CXX ?= nvc++
   endif
 
 endif
@@ -167,7 +187,7 @@ ifeq ($(strip ${COMPILER}),ibm)
 
 endif
 
-#-------------- Intel icc/ecc -----------------------------------
+#-------------- Intel (OneAPI) icx/icpx -----------------------------------
 
 ifeq ($(strip ${COMPILER}),intel)
 
@@ -202,6 +222,44 @@ ifeq ($(strip ${COMPILER}),intel)
   LDFLAGS += ${ARCH_FLAG}
   OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -fsave-optimization-record
   OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -fsave-optimization-record
+
+  ifeq ($(strip ${OMP}),true)
+    OCFLAGS += -qopenmp
+    OCXXFLAGS += -qopenmp
+    LDFLAGS += -qopenmp
+  endif
+
+endif
+
+#-------------- Intel Classic icc/icpc -----------------------------------
+
+ifeq ($(strip ${COMPILER}),intel-classic)
+
+  OCFLAGS += -std=c99
+  OCXXFLAGS += -std=c++17
+
+  ifeq ($(strip ${ARCH}),knl)
+  ARCH_FLAG = -xMIC-AVX512
+  BINEXT=.knl
+  else ifeq ($(strip ${ARCH}),knc)
+  ARCH_FLAG = -mmic
+  BINEXT=.knc
+  else ifeq ($(strip ${ARCH}),skx)
+  ARCH_FLAG = -xCORE-AVX512 -qopt-zmm-usage=high
+  BINEXT=.skx
+  else ifeq ($(strip ${ARCH}),hsw)
+  ARCH_FLAG = -xCORE-AVX2
+  BINEXT=.hsw
+  else
+  ARCH_FLAG = -mavx
+  BINEXT=
+  endif
+
+  OCFLAGS += ${ARCH_FLAG}
+  OCXXFLAGS += ${ARCH_FLAG}
+  LDFLAGS += ${ARCH_FLAG}
+  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
 
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
@@ -249,6 +307,26 @@ endif
 #-------------- Portland Group ----------------------------
 #OCFLAGS = -tp p6 -Munroll=c:4,n:4
 #OCFLAGS= -mpentiumpro -march=pentiumpro -funroll-all-loops -malign-double -D_REENTRANT  # Pentium pro
+
+#-------------- NVHPC ----------------------------
+ifeq ($(strip ${COMPILER}),nvhpc)
+
+  OCFLAGS += -std=c99
+  OCXXFLAGS += --c++17
+
+  ARCH_FLAG = -tp host
+
+  OCFLAGS += ${ARCH_FLAG}
+  OCXXFLAGS += ${ARCH_FLAG}
+  LDFLAGS += ${ARCH_FLAG}
+
+  ifeq ($(strip ${OMP}),true)
+    OCFLAGS += -mp
+    OCXXFLAGS += -mp
+    LDFLAGS += -mp
+  endif
+
+endif
 
 #-------------- AMD Clang ----------------------------
 ifeq ($(strip ${COMPILER}),amdclang)
@@ -368,6 +446,9 @@ WANT_APE_IO ?= # true
 # 12. Intel MKL for FFTW and LAPACK
 
 ifeq ($(strip ${COMPILER}),intel)
+  INCFFTW = -mkl
+  LIBFFTW = -mkl
+else ifeq ($(strip ${COMPILER}),intel-classic)
   INCFFTW = -mkl
   LIBFFTW = -mkl
 else ifeq ($(strip ${COMPILER}),cray-intel)
@@ -498,13 +579,18 @@ ifeq ($(strip ${WANTQUDA}),true)
   QUDA_HEADERS = ${QUDA_HOME}/include
 
   ifeq ($(strip ${OFFLOAD}),cuda)
-    CUDA_HOME ?= /usr/local/cuda
-    CUDA_MATH ?= /usr/local/cuda
-    CUDA_COMP ?= /usr/local/cuda
-    CUDA_NVML ?= /usr/local/cuda
-    INCQUDA += -I${CUDA_HOME}/include
-    PACKAGE_HEADERS += ${CUDA_HOME}/include
-    LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -L${CUDA_COMP} -lcuda  -L${CUDA_MATH}/lib -lcublas -lcufft -ldl -L${CUDA_NVML} -lnvidia-ml
+    ifneq ($(strip ${COMPILER}),nvhpc)
+      CUDA_HOME ?= /usr/local/cuda
+      CUDA_MATH ?= /usr/local/cuda
+      CUDA_COMP ?= /usr/local/cuda
+      CUDA_NVML ?= /usr/local/cuda
+      INCQUDA += -I${CUDA_HOME}/include
+      PACKAGE_HEADERS += ${CUDA_HOME}/include
+      LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -L${CUDA_COMP} -lcuda  -L${CUDA_MATH}/lib -lcublas -lcufft -ldl -L${CUDA_NVML} -lnvidia-ml
+    else
+      INCQUDA += -cuda
+      LIBQUDA += -cuda -cudalib=cublas,cufft
+    endif
   endif
 
 # Verbosity choices:
@@ -526,7 +612,7 @@ endif
 #----------------------------------------------------------------------
 # 16. QPhiX Options
 
-WANTQPHIX = #true
+WANTQPHIX ?= false
 WANT_FN_CG_QPHIX = true
 WANT_GF_QPHIX = true
 
