@@ -10,40 +10,12 @@ Useful commands:
 
 ## Issues
 
-##### libfabric:
+### <span style="color:red">QUDA P2P and ROCM</span>
 
-There is a known issue with the default version of libfabric. See [Frontier User Guide: olcfdev-1811-libfabric-1-20-1-cpu-buffer-performance-regression](https://docs.olcf.ornl.gov/systems/frontier_user_guide.html#olcfdev-1811-libfabric-1-20-1-cpu-buffer-performance-regression) for details and workarounds.
+If you are running QUDA on Frontier (or any AMD MI250X system) with the ROCm 6.x or 7.x modules, the default peer-to-peer halo-exchange path is
+broken at the ROCm runtime level and will produce **silent numerical errors** (rocm/6.x, all versions) or **hard crashes** (rocm/7.x, tested up to 7.2.0). The silent numerical errors from rocm/6.x occur specifically in the Dslash halo exchanges that go over P2P. The workaround for both cases is to disable QUDA P2P at runtime (`export QUDA_ENABLE_P2P=0`). The older software stack (`module load PrgEnv-amd amd/5.3.0 rocm/5.3.0`) may also work for you, but it is believed this older software will be removed soon from Frontier.
 
-##### LLVM 17:
-
-There is a bug in LLVM 17, which causes the MILC compilation to fail. This is the version of LLVM that is loaded by default since the Frontier software stack update in July 2024. The failure is triggered during the compilation of `milc_qcd/generic/momentum_twist.c`. The bug report on this issue can be found at https://github.com/llvm/llvm-project/issues/97949 however, they note that it will not be fixed since this version of LLVM is no longer maintained. A workaround is to use the older software stack which loads LLVM 15:
-
-```
-module load PrgEnv-amd amd/5.3.0 rocm/5.3.0
-```
-
-##### ROCm 6:
-
-**As of July 16, 2025, this remains an issue with all versions of ROCm 6+ available on Frontier.**
-
-There is a serious bug in the ROCm 6+ tool chains that can cause incorrect QUDA results without warning when using P2P. 
-
-```
-ROCm 5.3.0: Works
-ROCm 6.0.0: Works, but only if QUDA P2P disabled
-ROCm 6.2.0: Works, but only if QUDA P2P disabled
-ROCm 6.2.4: Works, but only if QUDA P2P disabled
-ROCm 6.3.1: Works, but only if QUDA P2P disabled
-ROCm 6.4.1: Works, but only if QUDA P2P disabled
-```
-
-The workaround is to disable QUDA P2P (`export QUDA_ENABLE_P2P=0`) or to use the older software stack:
-
-```
-module load PrgEnv-amd amd/5.3.0 rocm/5.3.0
-```
-
-##### QUDA Performance Regression with Large Kernel Argument:
+### QUDA Performance Regression with Large Kernel Argument:
 
 We have seen a significant QUDA performance regression in certain cases (e.g. eigensolve) related to large kernel arguments. See [QUDA Issue 1568](https://github.com/lattice/quda/issues/1568) and [QUDA PR 1569](https://github.com/lattice/quda/pull/1569) for details.
 
