@@ -13,6 +13,11 @@
 #include "../include/io_scidac.h"
 #endif
 
+#ifdef HAVE_QUDA
+#include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
+#endif
+
 #ifdef DEBUG_FIELDS
 void dump_double_lattice();
 #endif
@@ -49,11 +54,35 @@ main( int argc, char **argv )
     dtimec = -dclock();
 
     /* integrate the flow */
+#if defined(HAVE_QUDA)
+    run_gradient_flow_quda();
+#else
     run_gradient_flow();
+#endif
 
     /* Save lattice if requested */
-    if( saveflag != FORGET )
+    if( saveflag != FORGET ) {
+#ifdef HAVE_QUDA
+      QudaGaugeParam qgp = newQudaGaugeParam();
+      const int * nsquares = get_logical_dimensions();
+      qgp.X[0] = nx / nsquares[0];
+      qgp.X[1] = ny / nsquares[1];
+      qgp.X[2] = nz / nsquares[2];
+      qgp.X[3] = nt / nsquares[3];
+      qgp.cuda_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+      qgp.cpu_prec = qgp.cuda_prec;
+      qgp.anisotropy = 1.0;
+      qgp.gauge_fix = QUDA_GAUGE_FIXED_NO;
+      qgp.t_boundary = QUDA_PERIODIC_T;
+      qgp.gauge_order = QUDA_MILC_GAUGE_ORDER;
+      qgp.type = QUDA_SMEARED_LINKS;
+      writeGaugeQuda(savefile, &qgp);
+#else
       save_lattice( saveflag, savefile, stringLFN );
+#endif
+    }
+
+
 #ifdef DEBUG_FIELDS
       dump_double_lattice();
 #endif
@@ -73,6 +102,12 @@ main( int argc, char **argv )
   dtime += dclock();
   node0_printf("Time = %e seconds\n", dtime);
   fflush(stdout);
+  
+  free_lattice();
+  
+#ifdef HAVE_QUDA
+  finalize_quda();
+#endif
 
   normal_exit(0);
   return 0;
