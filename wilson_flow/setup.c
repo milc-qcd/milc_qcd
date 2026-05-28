@@ -52,7 +52,7 @@ initial_set()
   if(mynode()==0){
     /* print banner */
     printf("Wilson/Symanzik Flow application\n");
-    printf("MIMD version 7\n");
+    printf("MIMD version %s\n",MILC_CODE_VERSION);
     printf("Machine = %s, with %d nodes\n", machine_type(), numnodes());
     gethostname(hostname, 128);
     printf("Host(0) = %s\n",hostname);
@@ -115,6 +115,11 @@ readin(int prompt)
     /* Identify the starting configuration */
     IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
                                          par_buf.startfile);
+
+    if( par_buf.startflag == WARM ) {
+      node0_printf( "ERROR: warm lattices are not supported by this application\n" );
+      terminate(1);
+    }
 
     /* Get flow parameters */
     IF_OK {

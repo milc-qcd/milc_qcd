@@ -1,14 +1,14 @@
-Documentation: https://docs.ncsa.illinois.edu/systems/deltaai/en/latest/
+Documentation: https://docs.alcf.anl.gov/aurora/getting-started-on-aurora/
 
 Access via:
 
-    ssh [USERNAME]@dtai-login.delta.ncsa.illinois.edu
+    ssh [USERNAME]@aurora.alcf.anl.gov
 
 Useful commands:
 
-    accounts
-    quota
-    squeue -u [USERNAME]
+    myprojectquotas
+    sbank
+    qstat -u [USERNAME]
 
 ## Building and Running the Sample Code
 
@@ -30,10 +30,10 @@ Useful commands:
    
    This will download the MILC code into a `milc_qcd` directory and compile the `ks_spectrum_hisq` executable therein.
 
-4. Finally, edit `submit.sbatch` to replace the SBATCH account string with your own and submit it to the queue:
+4. Finally, edit `submit.qsub` to replace the account string with your own and submit it to the queue:
    
    ```bash
-   sbatch submit.sbatch
+   qsub submit.qsub
    ```
    
-   This will run the executable in the current directory. The output should be a slurm output file, an output file `sample.out` from the MILC executable, and correlators saved to a file `ks_spectrum_hisq.fpi.2.corrfile_t0.test-out`.
+   This will run the executable in the current directory. The output should be a PBS output file, an output file `sample.out` from the MILC executable, and correlators saved to a file `ks_spectrum_hisq.fpi.2.corrfile_t0.test-out`.

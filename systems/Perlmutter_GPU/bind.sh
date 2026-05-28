@@ -7,7 +7,9 @@ set -euo pipefail
 # Local rank on the node
 lrank=$(( $SLURM_LOCALID % 4 ))
 
-export MPICH_OFI_NIC_POLICY GPU
+# GPU and NIC binding
+export MPICH_OFI_NIC_POLICY="USER"
+export MPICH_OFI_NIC_MAPPING="0:3;1:2;2:1;3:0"
 
 # Print what each rank will run
 echo "rank=$SLURM_PROCID localid=$SLURM_LOCALID lrank=$lrank cmd: $*" >&2
