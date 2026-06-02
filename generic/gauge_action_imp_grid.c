@@ -114,7 +114,9 @@ double imp_gauge_action_grid() {
 
   double g_action;
   if(MILC_PRECISION == 1){
-    g_action = GRID_F3_gauge_action(&grid_info, U, eb3, cp, cr, cpg, grid_full);
+    // g_action = GRID_F3_gauge_action(&grid_info, U, eb3, cp, cr, cpg, grid_full);
+    node0_printf("ERROR: GRID Single-precision gauge action not supported\n");
+    terminate(1);
   } else {
     g_action = GRID_D3_gauge_action(&grid_info, U, eb3, cp, cr, cpg, grid_full);
   }
