@@ -65,7 +65,7 @@ template<typename LatticeGaugeField, typename FermionField, typename Gimpl, type
 static void hisqForce (
   GRID_info_t* info,
   void* fl_void,
-  Real residues[],
+  double residues[],
   su3_vector* multi_x[],
   int n_orders_naik[],
   su3_matrix* deriv,
@@ -88,27 +88,27 @@ static void hisqForce (
   // -- coefficient preparation -- //
 
   ks_action_paths_hisq* ap = get_action_paths_hisq(fl);
-  Real eigenvalue_cutoff = 0.0;
-  Real rel_svd_tol = 1e-8;
-  Real abs_svd_tol = 1e-8;
+  double eigenvalue_cutoff = 0.0;
+  double rel_svd_tol = 1e-8;
+  double abs_svd_tol = 1e-8;
   bool allow_svd = false;
   bool svd_only = false;
 
-#ifdef defined(HISQ_FORCE_FILTER)
+#ifdef HISQ_FORCE_FILTER
   eigenvalue_cutoff = HISQ_FORCE_FILTER;
 #elif defined(GRID_HISQ_FORCE_FILTER)
   eigenvalue_cutoff = GRID_HISQ_FORCE_FILTER;
 #endif
 
-#ifdef defined(HISQ_REUNIT_SVD_REL_ERROR)
+#ifdef HISQ_REUNIT_SVD_REL_ERROR
   rel_svd_tol = HISQ_REUNIT_SVD_REL_ERROR;
 #elif defined(GRID_HISQ_REUNIT_SVD_ONLY)
   rel_svd_tol = GRID_HISQ_REUNIT_SVD_REL_ERROR;
 #endif
 
-#ifdef defined(HISQ_REUNIT_SVD_ABS_ERROR)
+#ifdef HISQ_REUNIT_SVD_ABS_ERROR
   abs_svd_tol = HISQ_REUNIT_SVD_ABS_ERROR;
-#elif defined(GRID_HISQ_REUNIT_SVD_ONLY)
+#elif GRID_HISQ_REUNIT_SVD_ONLY
   abs_svd_tol = GRID_HISQ_REUNIT_SVD_ABS_ERROR;
 #endif
   
@@ -146,7 +146,7 @@ static void hisqForce (
   // -- naik preparation -- //
 
   int n_naiks = fermion_links_get_n_naiks(fl);
-  Real* eps_naik = fermion_links_get_eps_naik(fl);
+  RealD* eps_naik = fermion_links_get_eps_naik(fl);
   std::vector<RealD> eps_naiks(n_naiks);
   for(int i = 0; i < n_naiks; i++) eps_naiks[i] = eps_naik[i];
 
@@ -159,7 +159,7 @@ static void hisqForce (
   }
 
   // Make vecdt
-  std::vector<Real> vecdt(nterms);
+  std::vector<RealD> vecdt(nterms);
   for(int i = 0; i < nterms; i++)
     // Need a factor of 2 to match the MILC-code force.
     vecdt[i] = 2.*residues[i];
@@ -358,24 +358,10 @@ reunitDeriv(GRID_info_t *info,
 // The GRID C API for the fermion force
 
 // Single precision is not supported
-#if 0
-void GRID_F3_hisq_force(GRID_info_t *info,
-			void *fl,
-			Real residues[],
-			su3_vector *multi_x[],
-			int n_orders_naik[],
-			su3_matrix *deriv,
-			GRID_4Dgrid *grid_full)
-{
-  hisqForce<LatticeGaugeFieldF, ImprovedStaggeredFermionF::FermionField, StaggeredImplF, ComplexF>(info, fl, residues,
-							  multi_x, n_orders_naik,
-							  deriv, grid_full->gridF);
-}
-#endif
 
 void GRID_D3_hisq_force(GRID_info_t *info,
 			void *fl,
-			Real residues[],
+			double residues[],
 			su3_vector *multi_x[],
 			int n_orders_naik[],
 			su3_matrix *deriv,
@@ -386,20 +372,12 @@ void GRID_D3_hisq_force(GRID_info_t *info,
 							  deriv, grid_full->gridD);
 }
 
+#if 0
 //====================================================================//
 // The GRID C API for testing the reunitarization derivative
-
-#if 0
-void GRID_F3_reunit_deriv( GRID_info_t *info, su3_matrix *V, su3_matrix *dW,
-			   su3_matrix *Q, GRID_4Dgrid * grid_full ){
-  //  std::cout << "GRID_F3_reunit_deriv is not supported yet" << std::endl;
-  //  assert(0);
-  reunitDeriv<LatticeGaugeFieldF, StaggeredImplF, ComplexF>(info, V, dW, Q, grid_full->gridF);
-}
 
 void GRID_D3_reunit_deriv( GRID_info_t *info, su3_matrix *V, su3_matrix *dW,
 			   su3_matrix *Q, GRID_4Dgrid * grid_full ){
   reunitDeriv<LatticeGaugeFieldD, StaggeredImplD, ComplexD>(info, V, dW, Q, grid_full->gridD);
 }
-
 #endif
