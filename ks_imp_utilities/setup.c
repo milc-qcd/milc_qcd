@@ -281,6 +281,7 @@ readin(int prompt)
 	node0_printf("Must reload all or save all alike.");
 	status++;
       }
+      param.qic[i].inv_type = UMLTYPE;
 #endif
     } /* param.nass */
 #endif // CHECK_INVERT or FERMION_FORCE
