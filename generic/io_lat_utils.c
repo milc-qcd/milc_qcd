@@ -1754,7 +1754,7 @@ FILE *open_scidac_detect_volume_format(const char *filename, int* volfmt){
   char myname[] = "r_try_open_scidac";
   FILE* fp = NULL;
 
-  if(this_node!=0)return;
+  if(this_node!=0)return NULL;
 
   fp = g_open(filename, "rb");
   
