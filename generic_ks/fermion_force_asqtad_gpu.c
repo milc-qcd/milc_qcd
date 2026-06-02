@@ -19,6 +19,10 @@
 #error "Must build with FN"
 #endif
 
+#ifdef HAVE_GRID
+#error "Can't build for GRID: GRID does not support the Asqtad force."
+#else
+
 #error "Can't build for QUDA: QUDA no longer supports qudaComputeOprod."
 
 static void 
@@ -163,3 +167,4 @@ eo_fermion_force_twoterms_site_gpu(Real eps, Real weight1, Real weight2,
 }
 
 
+#endif
