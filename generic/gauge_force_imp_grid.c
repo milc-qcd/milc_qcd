@@ -54,11 +54,14 @@ void imp_gauge_force_grid(Real eps, field_offset mom_off){
   double cr  = (nloop > 1) ? -loop_coeff[1][0] : 0;
   double cpg = (nloop > 2) ? loop_coeff[2][0] : 0;
 
-  if(MILC_PRECISION == 1)
-    GRID_F3_gauge_force(&grid_info, U, eb3, cp, cr, cpg, momentum, grid_full);
-  else
+  if(MILC_PRECISION == 1){
+    //GRID_F3_gauge_force(&grid_info, U, eb3, cp, cr, cpg, momentum, grid_full);
+    node0_printf("ERROR: GRID gauge force requires double precision\n");
+    terminate(1);
+  } else {
     GRID_D3_gauge_force(&grid_info, U, eb3, cp, cr, cpg, momentum, grid_full);
-
+  }
+  
   // append result
   FORALLSITES_OMP(i,s,){
     anti_hermitmat ah3;
