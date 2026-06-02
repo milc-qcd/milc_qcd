@@ -419,6 +419,8 @@ endif
 
 # GRID support
 
+  ASQ_FORCE_GRID = ${ASQ_FORCE_MILC} fermion_force_asqtad_gpu.o
+  
   HISQ_FORCE_GRID = fermion_force_hisq_multi.o fermion_force_hisq_multi_grid.o \
         show_hisq_force_opts.o gridHISQForce.o
 
@@ -429,6 +431,7 @@ ifeq ($(strip ${HAVE_FF_GPU}),true)
     ASQ_FORCE = ${ASQ_FORCE_QUDA}
     HISQ_FORCE = ${HISQ_FORCE_QUDA}
   else ifeq ($(strip ${HAVE_GRID}),true)
+    ASQ_FORCE = ${ASQ_FORCE_GRID}
     HISQ_FORCE = ${HISQ_FORCE_GRID}
   endif
 else	     
