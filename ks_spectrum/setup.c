@@ -262,7 +262,13 @@ int readin(int prompt) {
       /* Additional parameters for QUDA deflation */
 #if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU))
       /* controls how often redeflation occurs during deflated inversions */
-      IF_OK status += get_f(stdin, prompt,"tol_restart", &param.eigen_param.tol_restart);
+      /* QUDA requires tol_restart to be double, but get_f writes a Real (float in single-precision
+         builds); read into a Real temp first to avoid a partial 4-byte write. */
+      IF_OK {
+        Real tol_restart_tmp = 0;
+        status += get_f(stdin, prompt,"tol_restart", &tol_restart_tmp);
+        param.eigen_param.tol_restart = tol_restart_tmp;
+      }
 #endif
 
       /* eigenvector input */
