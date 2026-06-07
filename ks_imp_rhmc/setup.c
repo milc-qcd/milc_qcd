@@ -450,6 +450,13 @@ readin(int prompt)
 			    &param.qic_pbp[0].max);
       IF_OK status += get_i(stdin, prompt, "max_cg_prop_restarts",
 			    &param.qic_pbp[0].nrestart);
+#if (defined(HALF_MIXED) || defined(MAX_MIXED)) && ! defined(HAVE_QUDA) && defined(HAVE_GRID)
+      /* (QUDA sets its own value).  We need this value for GRID mixed precision */
+      IF_OK status += get_i(stdin,prompt,"max_inner_cg_iterations", 
+			    &param.qic_pbp[0].max_inner );
+#else
+      param.qic_pbp[0].max_inner = 0;
+#endif
       IF_OK status += get_i(stdin, prompt, "npbp_reps", &param.npbp_reps );
       IF_OK status += get_i(stdin, prompt, "prec_pbp", &param.prec_pbp);
       IF_OK for(i = 0; i < param.num_pbp_masses; i++){
@@ -462,6 +469,7 @@ readin(int prompt)
 	param.qic_pbp[i].start_flag = 0;
 	param.qic_pbp[i].nsrc = 1;
 	param.qic_pbp[i].max = param.qic_pbp[0].max;
+	param.qic_pbp[i].max_inner = param.qic_pbp[0].max_inner;
 	param.qic_pbp[i].nrestart = param.qic_pbp[0].nrestart;
 	param.qic_pbp[i].prec = param.prec_pbp;
 	IF_OK status += get_f(stdin, prompt, "error_for_propagator", &param.qic_pbp[i].resid);
