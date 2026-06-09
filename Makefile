@@ -1134,7 +1134,7 @@ endif
 
 ifeq ($(strip ${WANT_GF_GPU}),true)  # Implies GA
   HAVE_GA_GPU = true
-  CGPU += -DUSE_GA_GPU
+  CGPU += -DUSE_GF_GPU
 endif
 
 ifeq ($(strip ${WANT_FL_GPU}),true)
