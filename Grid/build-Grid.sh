@@ -85,25 +85,28 @@ then
 
     avx2)
 
-	source ${TOPDIR}/env.sh
+#	source ${TOPDIR}/env.sh
 
 	${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
-            --enable-mkl=yes \
             --enable-simd=GEN \
             --enable-shm=shmnone \
-            --enable-comms=mpi3-auto \
-	    --disable-fermion-reps       \
-	    --disable-gparity            \
+            --enable-comms=mpi \
+	    --disable-fermion-reps \
+	    --disable-unified \
+	    --disable-gparity \
 	    --disable-zmobius \
-	    --with-lime=${HOME}/frontier/quda/install/qio \
+	    --with-lime=${HOME}/scidac/install/qio \
 	    --with-hdf5=${HDF5_ROOT} \
-            --with-mpfr=/opt/cray/pe/gcc/mpfr/3.1.4/ \
-	    --with-openssl=${HOME}/frontier/openssl/install/ \
+	    --with-mpfr=${HOME}/mpfr \
+	    --with-gmp=${HOME}/gmp \
+	    --with-fftw=${FFTW_DIR} \
+	    --with-openssl=${HOME}/openssl/install/ \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -fPIC -fopenmp -std=c++17 -O0 -g -Wno-psabi -mavx2" \
-	    LDFLAGS="-L/lib64 -fopenmp -L${ROCM_PATH}/lib ${MPI_LDFLAGS}" \
+            CXXFLAGS="${MPI_CFLAGS} -fPIC -fopenmp -std=c++17 -O0 -g -Wno-psabi -mavx2" \
+	    LDFLAGS="-L/lib64 -fopenmp ${MPI_LDFLAGS}" \
 
+	    
        status=$?
              ;;
     avx512-knl)
@@ -265,7 +268,7 @@ then
     echo "Quitting because of configure errors"
   else
     echo "Building in ${BUILDDIR}"
-    ${MAKE} -k -j20
+    ${MAKE} -k -j20 V=1
 
     echo "Installing in ${INSTALLDIR}"
     ${MAKE} install
