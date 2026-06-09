@@ -278,6 +278,10 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 	sub_su3_matrix( ansmom + 4*i + dir, &tmat, &diffmat);
 	diff = sqrt(realtrace_su3( &diffmat, &diffmat ));
 	norm = sqrt(realtrace_su3( &tmat, &tmat));
+	if(isnan(norm) || isinf(norm)){
+	  printf("Bad mom matrix node %d site %d dir %d\n",
+                 this_node,i,dir);
+	}
 	//printf("DIFF %g %g\n",norm,diff);
 	if(diff > tol * norm){
 	  printf("Intolerable relative difference %e node %d site %d dir %d\n",
