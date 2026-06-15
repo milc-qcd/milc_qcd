@@ -1,6 +1,6 @@
 // Wrappers for Grid Staggered Link Fattening
 
-#include <omp.h>
+//#include <omp.h>
 
 #undef HMC
 
