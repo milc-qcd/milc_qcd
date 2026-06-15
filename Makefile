@@ -1280,11 +1280,12 @@ CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
 CXXFLAGS = ${OPT} ${OCXXFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
         ${CPREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DARCH} \
 	${DEFINES} ${ADDDEFINES} ${IMPI} ${INCADD}
+LDFLAGS += ${OPT}
 
 ILIB = ${LIBSCIDAC} ${LMPI} ${LIBADD}
 
 # Loader flag for command-line macro substitution
-+LDFLAGS_ADD ?=
++LDFLAGS_ADD ?= 
 +LDFLAGS += ${LDFLAGS_ADD}
 
 .PHONY: time check test_clean
