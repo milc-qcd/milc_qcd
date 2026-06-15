@@ -16,7 +16,7 @@ extern "C" {
 
 #include "../generic/gridMap.h"
 #include <Grid/Grid.h>
-//#include <Grid/qcd/utils/HighlyImprovedStaggeredFermionImpl.h>
+#include <Grid/qcd/utils/HighlyImprovedStaggeredFermionImpl.h>
 
 using namespace Grid;
 
