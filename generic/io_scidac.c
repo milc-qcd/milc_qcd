@@ -202,15 +202,26 @@ save_scidac(su3_matrix *field,  const char *filename, int volfmt, int serpar, in
   return NULL;
 }
 #else
+
+#include <sys/time.h>
+void random_wait(int range){
+  struct timeval tp;
+  gettimeofday(&tp,NULL);
+  int usec = (int)tp.tv_usec;
+  int wait_sec = usec % range;
+  sleep(wait_sec);
+}
+
 /* Save the lattice in the site structure in SciDAC format */
 /* The QIO file is closed after writing the lattice */
 static gauge_file *
 save_scidac(su3_matrix *field, const char *filename, int volfmt, int serpar, int ildgstyle,
 	    int prec, const char *stringLFN){
+  char myname[] = "save_scidac";
   QIO_Layout layout;
   QIO_Filesystem fs;
-  QIO_Writer *outfile;
-  int status;
+  QIO_Writer *outfile = NULL;
+  int status = QIO_SUCCESS;
   gauge_file *gf;
   char *info;
   QIO_String *filexml;
@@ -231,34 +242,69 @@ save_scidac(su3_matrix *field, const char *filename, int volfmt, int serpar, int
   /* Set the filename in the gauge_file structure */
   gf->filename = filename;
 
-  /* Open file for writing */
-  filexml = QIO_string_create();
-  QIO_string_set(filexml, default_file_xml);
-  outfile = open_scidac_output(filename, volfmt, serpar, ildgstyle, 
-			       stringLFN, &layout, &fs, filexml);
-  if(outfile == NULL)terminate(1);
-  QIO_string_destroy(filexml);
+  /* Allow retries */
 
-  /* Create the QCDML string for this configuration */
-  info = create_QCDML();
-  recxml = QIO_string_create();
-  QIO_string_set(recxml, info);
+  int try_write = 5;
+  int itry;
 
-  /* Write the lattice field */
-  if(field == NULL){
-    field_offset src = F_OFFSET(link[0]);
-    if(prec == 1)
-      status = write_F3_M_from_site(outfile, recxml, src, LATDIM);
-    else
-      status = write_D3_M_from_site(outfile, recxml, src, LATDIM);
-  } else {
-    if(prec == 1)
-      status = write_F3_M_from_field(outfile, recxml, field, LATDIM);
-    else
-      status = write_D3_M_from_field(outfile, recxml, field, LATDIM);
+  for(itry = 0; itry < try_write; itry++){
+
+    status = QIO_SUCCESS;
+    outfile = NULL;
+    
+    /* Open file for writing */
+    filexml = QIO_string_create();
+    QIO_string_set(filexml, default_file_xml);
+    outfile = open_scidac_output(filename, volfmt, serpar, ildgstyle, 
+				 stringLFN, &layout, &fs, filexml);
+    QIO_string_destroy(filexml);
+
+    if(outfile == NULL){
+      node0_printf("%s: Open %s failed. retrying if enough retries remain\n", myname, filename);
+      fflush(stdout);
+      random_wait(15);
+      continue;
+    }
+
+    /* Create the QCDML string for this configuration */
+    info = create_QCDML();
+    recxml = QIO_string_create();
+    QIO_string_set(recxml, info);
+
+    /* Write the lattice field */
+    if(field == NULL){
+      field_offset src = F_OFFSET(link[0]);
+      if(prec == 1)
+	status = write_F3_M_from_site(outfile, recxml, src, LATDIM);
+      else
+	status = write_D3_M_from_site(outfile, recxml, src, LATDIM);
+    } else {
+      if(prec == 1)
+	status = write_F3_M_from_field(outfile, recxml, field, LATDIM);
+      else
+	status = write_D3_M_from_field(outfile, recxml, field, LATDIM);
+    }
+
+    if(status != QIO_SUCCESS){
+      printf("%s(%d): SciDAC write for file %s failed. Status %d\n",
+	     myname, this_node, filename, status);
+      node0_printf("%s: Retrying if enough retries remain\n", myname);
+      fflush(stdout);
+
+      /* Close the file */
+      QIO_close_write(outfile);
+      QIO_string_destroy(recxml);
+      free_QCDML(info);
+      random_wait(15);
+      continue;
+    }
+  } /* itry */
+
+  if(status != QIO_SUCCESS || outfile == NULL){
+    node0_printf("%s: Failed to save %s after %d tries. Quitting\n",
+		 myname, filename, itry);
+    terminate(1);
   }
-
-  if(status)terminate(1);
 
   /* Discard for now */
   QIO_string_destroy(recxml);
@@ -448,7 +494,11 @@ static gauge_file *restore_scidac(su3_matrix *field, const char *filename, int s
       }
   }
   
-  if(status)terminate(1);
+  if(status){
+    printf("restore_scidac(%d): Failed to read file %s. Status %d\n",
+	   this_node, filename, status);
+    terminate(1);
+  }
 
   /* Discard for now */
   QIO_string_destroy(recxml);
