@@ -115,7 +115,7 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
   eig_args->preserve_deflation = QUDA_BOOLEAN_TRUE;
   strcpy( eig_args->vec_infile, "" );
   strcpy( eig_args->vec_outfile, param.ks_eigen_savefile );
-  eig_args->prec_eigensolver = QUDA_DOUBLE_PRECISION;
+  eig_args->prec_eigensolver = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
 
   if(quda_does_eigensolve){
     
