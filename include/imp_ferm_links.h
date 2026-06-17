@@ -88,7 +88,6 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 
 
 #ifdef USE_CG_GPU
-#if defined(HAVE_QUDA) || defined(HAVE_GRID) 
 
 #define ks_congrad_parity ks_congrad_parity_gpu
 #define ks_congrad_block_parity ks_congrad_block_parity_gpu
@@ -97,8 +96,6 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 
 #define ks_congrad_parity ks_congrad_parity_qphix
 #define ks_congrad_block_parity ks_congrad_block_parity_qphix
-
-#endif
 
 #else
 
@@ -244,11 +241,9 @@ int ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken
     );
 
 #ifdef USE_CG_GPU
-#if defined(HAVE_GRID) || defined(HAVE_QUDA)
 #define ks_multicg_offset_field ks_multicg_offset_field_gpu
 #elif USE_CG_QPHIX
 #define ks_multicg_offset_field ks_multicg_offset_field_qphix
-#endif
 #else
 #define ks_multicg_offset_field ks_multicg_offset_field_cpu
 #endif

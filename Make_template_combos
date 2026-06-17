@@ -335,11 +335,13 @@ ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
     CONGRAD_FN_MILC = ${CONGRAD_FN_QUDA}
   else ifeq ($(strip ${HAVE_GRID}),true)
     CONGRAD_FN_MILC = ${CONGRAD_FN_GRID}
-  else ifeq ($(strip ${HAVE_QPHIX}),true)
-    CONGRAD_FN_MILC = ${CONGRAD_FN_QPHIX}
   endif
 else
-  CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
+  ifeq ($(strip ${HAVE_QPHIX}),true)
+    CONGRAD_FN_MILC = ${CONGRAD_FN_QPHIX}
+  else
+    CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
+  endif
 endif
 
 ######################################################################
@@ -373,15 +375,17 @@ endif
     ks_multicg_offset_qop_D.o  ks_multicg_offset_qop_F.o
 
 ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
-ifeq ($(strip ${HAVE_QUDA}),true)
-  MULTI_INV_FN_MILC = ${MULTI_INV_FN_QUDA}
-else ifeq ($(strip ${HAVE_GRID}),true)
-  MULTI_INV_FN_MILC = ${MULTI_INV_FN_GRID}
-else ifeq ($(strip ${HAVE_QPHIX}),true)
-  MULTI_INV_FN_MILC = ${MULTI_INV_FN_QPHIX}
-endif
+  ifeq ($(strip ${HAVE_QUDA}),true)
+    MULTI_INV_FN_MILC = ${MULTI_INV_FN_QUDA}
+  else ifeq ($(strip ${HAVE_GRID}),true)
+    MULTI_INV_FN_MILC = ${MULTI_INV_FN_GRID}
+  endif
 else
-  MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_CPU}
+  ifeq ($(strip ${HAVE_QPHIX}),true)
+    MULTI_INV_FN_MILC = ${MULTI_INV_FN_QPHIX}
+  else
+    MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_CPU}
+  endif
 endif
 
 ######################################################################
@@ -484,7 +488,7 @@ endif
 
 # Standard MILC combinations
 
-  GAUGE_FORCE_MILC_CPU = gauge_force_imp.o gauge_stuff.o gauge_action_imp.o ranmom.o
+  GAUGE_FORCE_MILC_CPU = gauge_force_imp.o gauge_action_imp.o gauge_stuff.o ranmom.o
 
 # GPU support
 
@@ -492,11 +496,11 @@ endif
   
 # Standard QOP combinations
 
-  GAUGE_FORCE_QOP = gauge_force_symzk1_qop.o gauge_action_imp.o  gauge_stuff.o ranmom.o
+  GAUGE_FORCE_QOP = gauge_force_symzk1_qop.o gauge_action_imp.o gauge_stuff.o ranmom.o
 
 # Standard QPhiX combinations
 
-  GAUGE_FORCE_QPHIX = gauge_force_symzk1_qphix.o gauge_stuff.o ranmom.o \
+  GAUGE_FORCE_QPHIX = gauge_force_symzk1_qphix.o gauge_action_imp.o gauge_stuff.o ranmom.o \
     gauge_force_symzk1_qphix_D.o gauge_force_symzk1_qphix_F.o
 
 ifeq ($(strip ${HAVE_GF_GPU}),true)

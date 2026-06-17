@@ -6,29 +6,17 @@
 ################### Setup environment for Frontier
 
 module reset
-module load PrgEnv-amd amd/5.3.0 rocm/5.3.0
+module load PrgEnv-amd amd/7.1.1 rocm/7.1.1
 module load craype-accel-amd-gfx90a
-module load cray-mpich/8.1.28
 module load cmake
-module load perftools
 module load ninja
 module list
 
-export PK_BUILD_TYPE="Release"
-export MPICH_ROOT=${CRAY_MPICH_ROOTDIR}
-export GTL_ROOT=${MPICH_ROOT}/gtl/lib
-export MPICH_DIR=${MPICH_ROOT}/ofi/rocm-compiler/5.0
-export PATH=${ROCM_PATH}/bin:${ROCM_PATH}/llvm/bin:${PATH}
-export LD_LIBRARY_PATH=${INSTALLDIR}/lib:${ROCM_PATH}/llvm/lib64:${LD_LIBRARY_PATH}
-export LD_LIBRARY_PATH=${ROCM_PATH}/llvm/lib:${MPICH_DIR}/lib:${GTL_ROOT}:${LD_LIBRARY_PATH}
+# Per OLCF docs, set HIPFLAGS when compiling without Cray compiler wrappers
+HIPFLAGS="--offload-arch=gfx90a "
 
-MPI_CFLAGS="-I${MPICH_DIR}/include -g "
-# Note the flags needed to enable XPMEM support when compiling with hipcc:
-MPI_LDFLAGS="-g -Wl,-rpath=${MPICH_DIR}/lib -L${MPICH_DIR}/lib -lmpi -L${GTL_ROOT} -Wl,-rpath=${GTL_ROOT} -lmpi_gtl_hsa ${CRAY_XPMEM_POST_LINK_OPTS} -lxpmem ${PE_MPICH_GTL_DIR_amd_gfx90a} ${PE_MPICH_GTL_LIBS_amd_gfx90a}"
-
-MY_CFLAGS="$(pat_opts include hipcc gpu) $(pat_opts pre_compile hipcc gpu) ${MPI_CFLAGS} --offload-arch=gfx90a $(pat_opts post_compile hipcc gpu) -g -pg"
-HIPFLAGS="$(pat_opts include hipcc gpu) $(pat_opts pre_compile hipcc gpu) --offload-arch=gfx90a $(pat_opts post_compile hipcc gpu)"
-MY_LDFLAGS="$(pat_opts pre_link hipcc gpu) ${MPI_LDFLAGS} --offload-arch=gfx90a  $(pat_opts post_link hipcc gpu) -g -pg"
+MY_CFLAGS="-I${MPICH_DIR}/include --offload-arch=gfx90a -g -pg"
+MY_LDFLAGS="-Wl,-rpath=${MPICH_DIR}/lib -L${MPICH_DIR}/lib -lmpi ${CRAY_XPMEM_POST_LINK_OPTS} -lxpmem ${PE_MPICH_GTL_DIR_amd_gfx90a} ${PE_MPICH_GTL_LIBS_amd_gfx90a} --offload-arch=gfx90a -g -pg"
 
 ################### Get QUDA and prepare build/ directory
 
@@ -68,7 +56,6 @@ cmake ../quda \
     -DQUDA_QIO=ON \
     -DQUDA_DOWNLOAD_USQCD=ON \
     -DQUDA_MULTIGRID=OFF \
-    -DQUDA_SMEAR_GAUSS_TWOLINK=ON \
     -DCMAKE_BUILD_TYPE="DEVEL" \
     -DCMAKE_CXX_COMPILER="hipcc" \
     -DCMAKE_C_COMPILER="hipcc" \

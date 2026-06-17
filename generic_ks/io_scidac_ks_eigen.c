@@ -742,7 +742,7 @@ read_grid_ks_eigenvector(char *eigfile, int *Nvecs, su3_vector *eigVec, Real *ei
 //  unpack_grid_field(eigVec, sizeof(su3_vector));
 //  dt += dclock();
 //  node0_printf("%s unpack time %0.2f\n",__func__,dt);
-  
+
   return status;
 
 } /* read_grid_ks_eigenvector */

@@ -20,6 +20,7 @@
 int setup();
 int readin(int prompt);
 void run_gradient_flow();
+void run_gradient_flow_quda();
 void flow_step();
 
 //void stout_step_rk();
