@@ -130,6 +130,11 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   }
   
   if( num_offsets==0 )return(0);
+
+  if(num_offsets < 0){
+    printf("%s(%d): Called with num_offsets %d\n", myname, this_node, num_offsets);
+    terminate(1);
+  }
   
   if(fn == NULL){
     printf("%s(%d): Called with NULL fn\n", myname, this_node);

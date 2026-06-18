@@ -49,6 +49,7 @@ static size_t lex_rank(const int coords[], int dim, int size[])
   return rank;
 }
 
+#if 0 // unused/dead function
 /* Do byte reversal on n contiguous 32-bit words */
 static void
 byterevn32(uint32_t w[], size_t n)
@@ -68,6 +69,7 @@ byterevn32(uint32_t w[], size_t n)
       w[j] = newv;
     }
 }
+#endif
 
 /*------------------------------------------------------------------*/
 /* Compute Grid-version of SciDac checksum on the odd-site data as

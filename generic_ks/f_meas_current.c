@@ -383,6 +383,7 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
 
 #endif
 
+#if 0 // unused (debugging) function
 /******************************************************************
 *									*
 *  void dumpvec( su3_vector *vec )					*
@@ -395,6 +396,7 @@ my_dumpvec( su3_vector *v ){
   for(j=0;j<3;j++)printf("(%.12e,%.12e)\n",
 			 v->c[j].real,v->c[j].imag);
 }
+#endif
 
 /************************************************************************/
 static void

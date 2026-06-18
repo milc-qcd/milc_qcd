@@ -223,9 +223,9 @@ save_scidac(su3_matrix *field, const char *filename, int volfmt, int serpar, int
   QIO_Writer *outfile = NULL;
   int status = QIO_SUCCESS;
   gauge_file *gf;
-  char *info;
+  char *info = NULL;
   QIO_String *filexml;
-  QIO_String *recxml;
+  QIO_String *recxml = NULL;
   char default_file_xml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>MILC ILDG archival gauge configuration</title>";
 
   QIO_verbose(QIO_VERB_OFF);

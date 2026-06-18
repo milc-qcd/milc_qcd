@@ -11,7 +11,7 @@
 
 int initialize_quda(void);
 
-static QudaMILCSiteArg_t newQudaMILCSiteArg() {
+static inline QudaMILCSiteArg_t newQudaMILCSiteArg() {
   QudaMILCSiteArg_t arg;
   arg.site = lattice;
   arg.link = NULL;
@@ -46,14 +46,14 @@ static inline void fast_copy(void *dest, const void *src, size_t n) {
 /*
   Allocate a pinned gauge-field array suitable for DMA transfer to the GPU
  */
-static su3_matrix* create_G_quda(void) {
+static inline su3_matrix* create_G_quda(void) {
   return (su3_matrix*)qudaAllocatePinned(sites_on_node*4*sizeof(su3_matrix));
 }
 
 /*
   Extract the gauge field elements into a pinned array suitable for DMA transfer to the GPU
  */
-static su3_matrix* create_G_from_site_quda(void) {
+static inline su3_matrix* create_G_from_site_quda(void) {
   su3_matrix *links = create_G_quda();
   int i;
   site *s;
@@ -68,7 +68,7 @@ static su3_matrix* create_G_from_site_quda(void) {
 /*
   Copy the momentum field elements into the site struct array
  */
-static void copy_to_site_from_G_quda(su3_matrix *links) {
+static inline void copy_to_site_from_G_quda(su3_matrix *links) {
   int i;
   site *s;
 
@@ -80,14 +80,14 @@ static void copy_to_site_from_G_quda(su3_matrix *links) {
 /*
   Free the pinned gauge-field array
  */
-static void destroy_G_quda(su3_matrix *links) {
+static inline void destroy_G_quda(su3_matrix *links) {
   qudaFreePinned(links);
 }
 
 /*
   Allocate a pinned momentum-field array suitable for DMA transfer to the GPU
  */
-static anti_hermitmat* create_M_quda(void) {
+static inline anti_hermitmat* create_M_quda(void) {
   return (anti_hermitmat*)qudaAllocatePinned(sites_on_node*4*sizeof(anti_hermitmat));
 }
 
@@ -95,7 +95,7 @@ static anti_hermitmat* create_M_quda(void) {
 /*
   Extract the momentum field elements into a pinned array suitable for DMA transfer to the GPU
  */
-static anti_hermitmat* create_M_from_site_quda(void) {
+static inline anti_hermitmat* create_M_from_site_quda(void) {
   anti_hermitmat* momentum = create_M_quda();
   int i;
   site *s;
@@ -110,7 +110,7 @@ static anti_hermitmat* create_M_from_site_quda(void) {
 /*
   Copy the momentum field elements into the site struct array
  */
-static void copy_to_site_from_M_quda(anti_hermitmat *momentum) {
+static inline void copy_to_site_from_M_quda(anti_hermitmat *momentum) {
   int i;
   site *s;
 
@@ -122,7 +122,7 @@ static void copy_to_site_from_M_quda(anti_hermitmat *momentum) {
 /*
   Free the pinned gauge-field array
  */
-static void destroy_M_quda(anti_hermitmat *momentum) {
+static inline void destroy_M_quda(anti_hermitmat *momentum) {
   qudaFreePinned(momentum);
 }
 

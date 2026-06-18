@@ -72,9 +72,9 @@ DdagD( su3_vector *res, su3_vector *src, int ds, msg_tag *t1[], msg_tag *t2[],
   } END_LOOP_OMP;
 }
 
+#if 0 // unused/dead function
 /************************************************************************/
 /* Chebyshev polynomial                                                 */
-
 static double 
 poly( double am, double aM, int p, double x) {
   double delta = 0.5*(aM-am);
@@ -109,6 +109,7 @@ poly( double am, double aM, int p, double x) {
   
   return x2;
 }
+#endif
 
 /************************************************************************/
 /* Matrix vector operators                                              */
