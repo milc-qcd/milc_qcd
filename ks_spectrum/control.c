@@ -346,8 +346,6 @@ int main(int argc, char *argv[])
       if(status != 0){
 	node0_printf("ERROR writing eigenvectors\n");
       }
-
-      ENDTIME("save eigenvectors (if requested)");
 #endif
      
 #if ( defined(HAVE_QUDA) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
@@ -365,7 +363,7 @@ int main(int argc, char *argv[])
       boundary_twist_fn(fn, OFF);
       destroy_fn_links(fn);
      
-      ENDTIME("calculate/reload Dirac eigenpairs"); fflush(stdout);
+      ENDTIME("calculate/reload Dirac eigenpairs");
 
       if(param.fixflag != NO_GAUGE_FIX){
 	node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
@@ -379,8 +377,6 @@ int main(int argc, char *argv[])
       initialize_site_prn_from_seed(iseed);
 #endif
 
-      ENDTIME("calculate Dirac eigenpairs");
-    
     } /* param.eigen_param.Nvecs > 0 */
 
     /**************************************************************/
