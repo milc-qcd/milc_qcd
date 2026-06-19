@@ -602,7 +602,7 @@ int readin(int prompt) {
       restore_color_matrix_scidac_to_field(param.inputlngfile, lng, 4,
 					   MILC_PRECISION, QIO_PARALLEL);
     else
-      restore_color_matrix_scidac_to_field(param.inputfatfile, fat, 4,
+      restore_color_matrix_scidac_to_field(param.inputlngfile, lng, 4,
 					   MILC_PRECISION, QIO_SERIAL);
     rtime += dclock();
     node0_printf("Time to restore lng %e\n",rtime); fflush(stdout);
