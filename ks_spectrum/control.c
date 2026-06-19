@@ -368,7 +368,7 @@ int main(int argc, char *argv[])
       ENDTIME("calculate/reload Dirac eigenpairs"); fflush(stdout);
 
       if(param.fixflag != NO_GAUGE_FIX){
-	node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+	node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
       }
       
 #if 0 /* If needed for debugging */
