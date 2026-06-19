@@ -44,9 +44,6 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   //  node0_printf("Entered %s\n", myname);
 
-  if(1){
-    //  if(nsrc <= 1){ // DEBUG.  Sole for each source separately
-
   QudaInvertArgs_t inv_args;
   int i;
   double dtimec = -dclock();
@@ -91,12 +88,10 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 	     (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
       fflush(stdout);}
 #endif
-    
     return 0;
   }
   
   /* Initialize QUDA parameters */
-
   initialize_quda();
 
   if(qic->parity == EVEN){
@@ -171,9 +166,11 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   } else {
     node0_printf("Solving for %d source(s) with deflation for parity %d\n", nsrc, parity);
   }
-  
-  print_quda_eig_args(&eig_args); // For debugging
-  
+ 
+#ifdef CG_DEBUG 
+  print_quda_eig_args(&eig_args);
+#endif
+
   qudaInvertMsrcDeflatable(MILC_PRECISION,
 			   quda_precision,
 			   mass,
@@ -212,7 +209,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 	   (double)(nflop*nsrc*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
 #endif
-#if 0
+#ifdef CG_DEBUG
   for(int j = 0; j < nsrc; j++){
     node0_printf("Calling check_invert_field2 for case %d\n", j); fflush(stdout);
     check_invert_field2(t_src[j], t_dest[j], mass, 2e-5, fn, qic->parity);
@@ -222,18 +219,6 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   // performed by each solve if it was performed sequentially. This can be approximated by
   // the number of iterations for a single solve times the number of sources.
   return num_iters * nsrc;
-  
-  } else {
-
-  /* Debug: Solve separately, rather than batch */
-  int num_iters = 0;
-  for(int i = 0; i < nsrc; i++){
-    num_iters += ks_congrad_parity_gpu(t_src[i], t_dest[i], qic, mass, fn);
-    report_status(qic);
-  }
-  return num_iters;
-
-  }
 }
 
 /********************************************************************/
