@@ -92,7 +92,7 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 #define ks_congrad_parity ks_congrad_parity_gpu
 #define ks_congrad_block_parity ks_congrad_block_parity_gpu
 
-#elif USE_CG_QPHIX
+#elif defined(USE_CG_QPHIX)
 
 #define ks_congrad_parity ks_congrad_parity_qphix
 #define ks_congrad_block_parity ks_congrad_block_parity_qphix
@@ -242,7 +242,7 @@ int ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken
 
 #ifdef USE_CG_GPU
 #define ks_multicg_offset_field ks_multicg_offset_field_gpu
-#elif USE_CG_QPHIX
+#elif defined(USE_CG_QPHIX)
 #define ks_multicg_offset_field ks_multicg_offset_field_qphix
 #else
 #define ks_multicg_offset_field ks_multicg_offset_field_cpu
