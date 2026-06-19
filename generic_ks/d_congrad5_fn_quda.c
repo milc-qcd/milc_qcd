@@ -42,8 +42,6 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   char myname[] = "ks_congrad_block_parity_gpu";
 
-  //  node0_printf("Entered %s\n", myname);
-
   QudaInvertArgs_t inv_args;
   int i;
   double dtimec = -dclock();

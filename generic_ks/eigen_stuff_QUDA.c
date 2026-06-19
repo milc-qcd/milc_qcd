@@ -185,7 +185,9 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
   eig_args.n_ev = eig_args.n_conv;
 
-  print_quda_eig_args(&eig_args); // For debugging
+#ifdef EIG_DEBUG
+  print_quda_eig_args(&eig_args);
+#endif
 
   // Compute or read EVEN eigenvectors in QUDA
   dtime = -dclock();

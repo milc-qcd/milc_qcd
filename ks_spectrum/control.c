@@ -86,8 +86,6 @@ int main(int argc, char *argv[])
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
-  printf("(%d) Calling g_sync\n", this_node);
-  fflush(stdout);
   g_sync();
 
   starttime=dclock();
@@ -1129,9 +1127,6 @@ int main(int argc, char *argv[])
   } /* readin(prompt) */
   
   free_lattice();
-
-  printf("(%d) Calling finalize_quda\n", this_node);
-  fflush(stdout);
 #ifdef HAVE_QUDA
   finalize_quda();
 #endif
@@ -1144,8 +1139,6 @@ int main(int argc, char *argv[])
   finalize_grid();
 #endif
 
-  printf("(%d) Calling normal_exit\n", this_node);
-  fflush(stdout);
   normal_exit(0);
   return 0;
 }

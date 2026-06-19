@@ -39,8 +39,6 @@ int setup()   {
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
   this_node = mynode();
-  printf("pid(%d) = %d\n", this_node, getpid());
-  printf("io_node(%d) = %d\n", this_node, io_node(this_node));
   /* initialize the node random number generator */
   initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */

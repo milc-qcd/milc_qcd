@@ -352,7 +352,6 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
 static void
 project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
 
-  // node0_printf("Entered project_out with parity %d\n", parity);
   register int i ;
   double_complex cc ;
   double ptime = -dclock();
@@ -1580,7 +1579,6 @@ static void
 exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp_ferm_links_t *fn_mass){
 
   char myname[] = "exact_current_quda";
-  node0_printf("Computing exact current with QUDA\n");
 
   if( nmass<1 || nmass>3 ) {
     node0_printf("%s: wrong number of masses %d\n", myname, nmass);
@@ -1623,7 +1621,6 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
 
   // Compute exact current via QUDA
   qudaExactCurrent(MILC_PRECISION, MILC_PRECISION, fatlink, longlink, ape_links, nmass, masses, inv_args, eig_args, jlow_mu1, jlow_mu2, refresh);
-  node0_printf("Done with qudaExactCurrent\n"); fflush(stdout);
 
 } // exact_current_quda
 
