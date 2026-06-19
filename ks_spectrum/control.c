@@ -300,7 +300,7 @@ int main(int argc, char *argv[])
       
       /* Compute or reread eigenpairs if requested and check them */
 
-#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
+#if !( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
 
       /* Eigenpairs are read or computed without QUDA */
 	 
@@ -352,9 +352,10 @@ int main(int argc, char *argv[])
       ENDTIME("save eigenvectors (if requested)");
 #endif
      
-#ifdef HAVE_QUDA 
+#if ( defined(HAVE_QUDA) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
       /* Compute or reread eigenpairs with QUDA or just load the above
-	 ones into QUDA. */
+	 ones into QUDA.  Only needed when a QUDA consumer (deflated CG or
+	 exact current) will use a device-resident deflation space. */
 
       QIO_verbose(QIO_VERB_DEBUG);
       load_evecs_quda(fn);
