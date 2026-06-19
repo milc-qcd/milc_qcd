@@ -409,10 +409,10 @@ reload_ksprop_c_to_field( int flag, ks_prop_file *kspf,
 /* save a propagator one source color at a time */
 /* recinfo is for USQCD formats */
 int 
-save_ksprop_c_from_field( int flag, ks_prop_file *kspf, 
+save_ksprop_c_from_field( int flag, ks_prop_file *kspf,
 			  quark_source *ksqs, int color,
-			  su3_vector *src, su3_vector *prop, 
-			  char *recinfo, int timing)
+			  su3_vector *src, su3_vector *prop,
+			  const char *recinfo, int timing)
 {
   double dtime = 0;
   int status;

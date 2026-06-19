@@ -412,7 +412,7 @@ void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *e
 			     imp_ferm_links_t *fn );
 void cleanup_Matrix();
 void measure_chirality(su3_vector *src, double *chirality, int parity);
-void print_densities(su3_vector *src, char *tag, int y,int z,int t, 
+void print_densities(su3_vector *src, const char *tag, int y,int z,int t,
 		     int parity);
 void reset_eigenvalues(su3_vector *eigVec[], Real *eigVal,
 		       int Nvecs, int parity, imp_ferm_links_t *fn);
@@ -495,7 +495,7 @@ int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, Real *eigVal,
 			 Real mass, imp_ferm_links_t *fn);
 
 /* ks_baryon.c */
-int baryon_type_index(char *label);
+int baryon_type_index(const char *label);
 const char *baryon_type_label(int index);
 void ks_baryon_nd(complex *prop[],
 		  ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *qp2,

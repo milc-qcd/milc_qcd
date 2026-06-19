@@ -747,6 +747,7 @@ sort_quark_paths( Q_path *src_table, Q_path *dest_table, int npaths,
     return 0;
 }
 
+#if 0
 // Fermion force SKETCH:
 // 1) loop on different epsilon corrections to Naik term
 //   a) calculate force from smearing level 2 on full multi_x array
@@ -1562,6 +1563,7 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
 //printf("FF flops = %d\n",tempflops);
 } //fn_fermion_force_multi_hisq_mx
 
+#endif
 
 /********************************************************************/
 // HISQ wrapper routine: contribution to the force due to

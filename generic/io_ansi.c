@@ -31,12 +31,12 @@ int g_seek(FILE *stream, off_t offset, int whence)
 #endif
 }
 
-size_t g_write(const void *ptr, size_t size, size_t nmemb,FILE *stream)
+size_t g_write(void * restrict ptr, size_t size, size_t nmemb,FILE *stream)
 {
   return fwrite(ptr,size,nmemb,stream);
 }
 
-size_t g_read(void *ptr, size_t size, size_t nmemb, FILE *stream)
+size_t g_read(void * restrict ptr, size_t size, size_t nmemb, FILE *stream)
 {
   return fread(ptr,size,nmemb,stream);
 }
