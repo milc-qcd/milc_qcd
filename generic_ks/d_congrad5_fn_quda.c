@@ -152,7 +152,11 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 #endif
       
   // Adjustments to default eig_args
-  eig_args.tol_restart = param.eigen_param.tol_restart; 
+#ifdef USE_EIG_GPU
+  /* tol_restart is read from the input file only when QUDA owns the eigensolve
+     (USE_EIG_GPU); otherwise keep the default from load_quda_default_eig_args(). */
+  eig_args.tol_restart = param.eigen_param.tol_restart;
+#endif
   eig_args.n_ev_deflate = ( qic->deflate ) ? param.eigen_param.Nvecs : 0;
   // QUDA currently doesn't support deflation with the relative residual stopping condition 
   if(qic->relresid > 0.) eig_args.n_ev_deflate = 0;
