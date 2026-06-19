@@ -12,8 +12,6 @@ module list
 
 echo "LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
 
-export C_INCLUDE_PATH=$C_INCLUDE_PATH:/home1/apps/nvidia24/openmpi5/fftw3/3.3.10/include
-
 # QUDA and USQCD build directories: Modify paths as needed
 cd build
 QUDA_BUILD=`pwd`
@@ -46,7 +44,7 @@ GPU_ARCH="nvidia" \
 OFFLOAD="CUDA" \
 COMPILER="gnu" \
 OPT="-O3 -Ofast -g" \
-LDFLAGS="-g -L/home1/apps/nvidia/Linux_aarch64/24.9/cuda/lib64 -lcudart -L/home1/apps/nvidia/Linux_aarch64/24.9/math_libs/lib64 -lcublas -lcufft -L/home1/apps/nvidia/Linux_aarch64/24.9/cuda/lib64/stubs -lcuda -lnvidia-ml" \
+LDFLAGS="-g -L/home1/apps/nvidia/Linux_aarch64/24.9/cuda/lib64/stubs -lcuda -lnvidia-ml" \
 QUDA_HOME=${QUDA_BUILD} \
 WANTQUDA=true \
 WANT_FN_CG_GPU=true \

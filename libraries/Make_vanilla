@@ -30,18 +30,22 @@ MAKEFILE = Make_vanilla
 
 ifeq ($(strip ${COMPILER}),intel)
   CC = icx
-else ifeq ($(strip ${COMPILER}),gnu)
-  CC = gcc
+else ifeq ($(strip ${COMPILER}),intel-classic)
+  CC = icc
 else ifeq ($(strip ${COMPILER}),cray-intel)
   CC = icc
+else ifeq ($(strip ${COMPILER}),gnu)
+  CC = gcc
 else ifeq ($(strip ${COMPILER}),ibm)
   CC = xlc_r
 else ifeq ($(strip ${COMPILER}),amdclang)
   CC = amdclang
+else ifeq ($(strip ${COMPILER}),nvhpc)
+  CC = nvc
 endif
 
 # Override
-CC = gcc # ( cc89 gcc xlc gcc pgcc cl g++ )
+# CC = gcc # ( cc89 gcc xlc gcc pgcc cl g++ )
 
 #----------------------------------------------------------------------
 # 2. Compiler optimization level
@@ -53,6 +57,11 @@ OPT              = -O3 -g # ( -g -O, etc )
 #-------------- Gnu C -------------------------------------
 ifeq ($(strip ${COMPILER}),gnu)
   #OCFLAGS = -Wall
+
+  ifeq ($(strip ${ARCH}),arm64)
+    OCFLAGS += -arch arm64
+  endif
+
 endif
 #------------------------ BlueGene -----------------------------------
 ifeq ($(strip ${COMPILER}),ibm)
@@ -99,6 +108,24 @@ else ifeq ($(strip ${COMPILER}),intel)
 
   # Debugging and optimization
   OCFLAGS += #-parallel-source-info=2 -debug inline-debug-info -fsave-optimization-record
+
+else ifeq ($(strip ${COMPILER}),intel-classic)
+
+  # Architecture choices: knl, skx, clx, icx, knc, hsw
+  ifeq ($(strip ${ARCH}),knl)
+    OCFLAGS += -xMIC-AVX512
+  else ifeq ($(strip ${ARCH}),knc)
+    OCFLAGS += -mmic
+  else ifeq ($(strip ${ARCH}),skx)
+    OCFLAGS += -xCORE-AVX512 -qopt-zmm-usage=high
+  else ifeq ($(strip ${ARCH}),hsw)
+    OCFLAGS += -mavx2
+  else
+    OCFLAGS += -mavx
+  endif
+
+  # Debugging and optimization
+  OCFLAGS += #-parallel-source-info=2 -debug inline-debug-info -qopt-report=5
 
 endif
 

@@ -9,7 +9,7 @@
 #include "../include/su3.h"
 
 /* c <- a + s*b, matrices */
-void scalar_mult_add_su3_matrix(su3_matrix *a,su3_matrix *b,Real s,
+void scalar_mult_add_su3_matrix(const su3_matrix *a,const su3_matrix *b,Real s,
 	su3_matrix *c){
 
 #ifndef NATIVEDOUBLE

@@ -6,7 +6,7 @@
 
 pushd .
 
-module load gcc-native/12.3
+module reset
 module list
 
 echo "LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
@@ -43,7 +43,7 @@ GPU_ARCH="nvidia" \
 OFFLOAD="CUDA" \
 COMPILER="gnu" \
 OPT="-O3 -Ofast -g" \
-LDFLAGS="-g -L/opt/cray/pe/fftw/3.3.10.8/aarch64/lib" \
+LDFLAGS="-g " \
 QUDA_HOME=${QUDA_BUILD} \
 WANTQUDA=true \
 WANT_FN_CG_GPU=true \

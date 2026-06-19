@@ -87,7 +87,7 @@ load_hisq_aux_links_gpu(info_t *info, ks_action_paths_hisq *ap,
   }
 
   // load U links (is this really necessary since we have extracted "links" already?)
-  memcpy(aux->U_link, links, 4*sizeof(su3_matrix)*sites_on_node);
+  copy_m_array_field(aux->U_link, links, 4);
 
   double path_coeff[6];
   path_coeff[0] = ap->p1.act_path_coeff.one_link;

@@ -599,7 +599,7 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
   FILE *fp = NULL;
   ks_prop_header *ksph;
   u_int32type tmp;
-  u_int32type elements_per_site, size_of_element;
+  u_int32type elements_per_site = 0, size_of_element = 0;
   int j;
   int byterevflag = 0;
   char myname[] = "read_ks_fmprop_hdr";

@@ -9,7 +9,7 @@
 #include "../include/su3.h"
 
 #ifndef FAST
-void mult_su3_nn( su3_matrix *a, su3_matrix *b, su3_matrix *c ){
+void mult_su3_nn( const su3_matrix *a, const su3_matrix *b, su3_matrix *c ){
 register int i,j,k;
 register complex x,y;
     for(i=0;i<3;i++)for(j=0;j<3;j++){
@@ -26,7 +26,7 @@ register complex x,y;
 #else
 #ifdef NATIVEDOUBLE   /* RS6000 version */
 
-void mult_su3_nn( su3_matrix *a, su3_matrix *b, su3_matrix *c ){
+void mult_su3_nn( const su3_matrix *a, const su3_matrix *b, su3_matrix *c ){
   int j;
   register double a0r,a0i,a1r,a1i,a2r,a2i;
   register double b0r,b0i,b1r,b1i,b2r,b2i;
@@ -67,7 +67,7 @@ void mult_su3_nn( su3_matrix *a, su3_matrix *b, su3_matrix *c ){
 }
 #else
 
-void mult_su3_nn( su3_matrix *a, su3_matrix *b, su3_matrix *c ){
+void mult_su3_nn( const su3_matrix *a, const su3_matrix *b, su3_matrix *c ){
   int i,j;
   register Real t,ar,ai,br,bi,cr,ci;
     for(i=0;i<3;i++)for(j=0;j<3;j++){
