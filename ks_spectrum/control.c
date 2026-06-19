@@ -1089,17 +1089,15 @@ int main(int argc, char *argv[])
     //node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
 #endif 
 
-#if ! ( defined(HAVE_QUDA) && defined(USE_CURRENT_GPU) && defined(USE_EIG_GPU) )
-
-    // MILC has allocated the eigenvectors, so free them
-    
-    if(param.eigen_param.Nvecs > 0){
-      /* Clean up eigen storage */
+    /* Free host eigenvector storage if MILC allocated it.
+       When QUDA owns the deflation space, these stayed NULL.
+       free(NULL) is a no-op, so this is safe and self-consistent */
+    if(eigVec != NULL){
       for(int i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
-      free(eigVal); free(eigVec); free(resid);
+      free(eigVec); eigVec = NULL;
     }
-
-#endif
+    free(eigVal); eigVal = NULL;
+    free(resid);  resid  = NULL;
     
     node0_printf("RUNNING COMPLETED\n");
     endtime=dclock();
