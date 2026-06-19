@@ -48,11 +48,15 @@ int initialize_quda(void){
 }
 
 void finalize_quda(void){
-#ifdef USE_CG_GPU
+  /* Free any QUDA-resident deflation space.  A space can be created by the
+     deflated CG, the exact-current path, or the QUDA eigensolver, so clean up
+     for any of those consumers.  qudaCleanUpDeflationSpace() is a safe no-op
+     when nothing was allocated. */
+#if defined(USE_CG_GPU) || defined(USE_EIG_GPU) || defined(USE_CURRENT_GPU)
   qudaCleanUpDeflationSpace();
-#ifdef MULTIGRID
-  mat_invert_mg_cleanup();
 #endif
+#if defined(USE_CG_GPU) && defined(MULTIGRID)
+  mat_invert_mg_cleanup();
 #endif
   qudaFinalize();
 }
