@@ -414,7 +414,6 @@ int main(int argc, char *argv[])
       u1phase_off();
       invalidate_fermion_links(fn_links);
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i].prec);
-      fn = get_fm_links(fn_links, 0);
 #endif
     }
 
