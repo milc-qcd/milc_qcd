@@ -60,6 +60,7 @@ destroy_hisq_links_t(hisq_links_t *hisq){
   hisq->aux = NULL;
   hisq->fn0 = NULL;
   hisq->fn_deps = NULL;
+  free(hisq);
 }
 
 
@@ -158,6 +159,7 @@ destroy_milc_hisq_links_t(milc_hisq_links_t *flg){
   if(flg == NULL)return;
 
   destroy_hisq_links_t(flg->hisq);
+  free(flg);
 }
 
 static void
