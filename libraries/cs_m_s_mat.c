@@ -9,7 +9,7 @@
 #include "../include/su3.h"
 
 /* c <- a - s*b, matrices */
-void c_scalar_mult_sub_su3mat( su3_matrix *a, su3_matrix *b, complex *s,
+void c_scalar_mult_sub_su3mat( const su3_matrix *a, const su3_matrix *b, const complex *s,
 	su3_matrix *c){
 
 #ifndef NATIVEDOUBLE

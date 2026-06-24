@@ -5,7 +5,7 @@
 #include "../include/config.h"
 #include "../include/complex.h"
 
-double_complex dcdiv( double_complex *a, double_complex *b ){
+double_complex dcdiv( const double_complex *a, const double_complex *b ){
     double_complex c;
     double scale;
     scale = 1.0/((*b).real*(*b).real+(*b).imag*(*b).imag);

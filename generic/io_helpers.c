@@ -41,6 +41,9 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
 	case SAVE_PARALLEL:
 	    gf = save_parallel(filename);
 	    break;
+        case SAVE_MPIIO:
+            gf = save_mpiio(filename);
+            break;
 	case SAVE_CHECKPOINT:
 	    gf = save_checkpoint(filename);
 	    break;
@@ -135,6 +138,14 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
 	    terminate(1);
 #endif
             break;
+        case SAVE_PARTFILE_DIR_SCIDAC:
+#ifdef HAVE_QIO
+	  gf = save_partfile_dir_scidac(NULL, filename, 1);
+#else
+	    node0_printf("save_partfile_scidac requires QIO compilation\n");
+	    terminate(1);
+#endif
+            break;
         case SAVE_PARTFILE_SCIDAC_DP:
 #ifdef HAVE_QIO
 	  gf = save_partfile_scidac(NULL, filename, 2);
@@ -205,6 +216,9 @@ gauge_file *reload_lattice( int flag, const char *filename){
 	case RELOAD_PARALLEL:	/* read binary lattice in parallel */
 	    gf = restore_parallel(filename);
 	    break;
+        case RELOAD_MPIIO:
+            gf = restore_mpiio(filename);
+            break;
 	default:
 	    if(this_node==0)printf("reload_lattice: Bad startflag %d\n",flag);
 	    terminate(1);
@@ -366,6 +380,9 @@ int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename ){
   else if(strcmp("reload_parallel",savebuf) == 0 ) {
     *flag = RELOAD_PARALLEL;
   }
+  else if(strcmp("reload_mpiio",savebuf) == 0 ) {
+    *flag = RELOAD_MPIIO;
+  }
   else{
     printf(" is not a valid starting lattice command. INPUT ERROR.\n"); 
     return 1;
@@ -394,7 +411,7 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
   const char myname[] = "ask_ending_lattice";
   
   if (prompt==1) printf(
-			"'forget' lattice at end, 'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partfile_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_serial_scidac_dp', 'save_parallel_scidac_dp', 'save_multifile_scidac_dp', 'save_partfile_scidac_dp', 'save_serial_archive_dp', 'save_serial_ildg_dp', or 'save_parallel_ildg_dp'\n");
+			"'forget' lattice at end, 'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partfile_scidac', 'save_partfile_dir_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_serial_scidac_dp', 'save_parallel_scidac_dp', 'save_multifile_scidac_dp', 'save_partfile_scidac_dp', 'save_serial_archive_dp', 'save_serial_ildg_dp', or 'save_parallel_ildg_dp'\n");
   
   savebuf = get_next_tag(fp, "save lattice command", myname);
   if (savebuf == NULL)return 1;
@@ -408,6 +425,9 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
   }
   else if(strcmp("save_parallel",savebuf) == 0 ) {
     *flag=SAVE_PARALLEL;
+  }
+  else if(strcmp("save_mpiio",savebuf) == 0 ) {
+    *flag=SAVE_MPIIO;
   }
   else if(strcmp("save_checkpoint",savebuf) == 0 ) {
     *flag=SAVE_CHECKPOINT;
@@ -450,6 +470,14 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
   else if(strcmp("save_multifile_scidac",savebuf) == 0 ) {
 #ifdef HAVE_QIO
     *flag=SAVE_MULTIFILE_SCIDAC;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_partfile_dir_scidac",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARTFILE_DIR_SCIDAC;
 #else
     node0_printf("requires QIO compilation!\n");
     terminate(1);

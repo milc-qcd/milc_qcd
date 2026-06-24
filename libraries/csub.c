@@ -5,7 +5,7 @@
 #include "../include/config.h"
 #include "../include/complex.h"
 
-complex csub( complex *a, complex *b ) {
+complex csub( const complex *a, const complex *b ) {
     complex c;
     c.real = (*a).real - (*b).real;
     c.imag = (*a).imag - (*b).imag;

@@ -1,10 +1,10 @@
 # Library versions and git branch tags
 
 QMPV= quda-1.1.0-consistent
-QMPT= 3010fef  
+QMPT= 3010fef
 
 QIOV= quda-1.1.0-consistent
-QIOT= a5c3ae580b846130c06dc060ab822f17d6fe2171
+QIOT= qio3-0-0
 
 QLAV= 1.9.0
 QLAT= qla1-9-0

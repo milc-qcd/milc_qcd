@@ -328,15 +328,19 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   if(qic->parity == EVEN){
     inv_args.evenodd = QUDA_EVEN_PARITY;
+    node0_printf("%s: Using QUDA's block solver with EVEN parity\n", myname);
   }else if(qic->parity == ODD){
     inv_args.evenodd = QUDA_ODD_PARITY;
+    node0_printf("%s: Using QUDA's block solver with ODD parity\n", myname);
   }else{
     printf("%s: Unrecognised parity\n",myname);
     terminate(2);
   }
 
   inv_args.max_iter = qic->max*qic->nrestart;
-#if defined(MAX_MIXED) || defined(HALF_MIXED)
+#if defined(MAX_MIXED)
+  inv_args.mixed_precision = 2;
+#elif defined(HALF_MIXED)
   inv_args.mixed_precision = 1;
 #else
   inv_args.mixed_precision = 0;
@@ -397,7 +401,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   eig_args.struct_size = 1192; // Could also use sizeof(QudaEigensolverArgs_t) to automagically update, but using a static number will catch the case when the struct is updated by QUDA but MILC is not updated
   eig_args.block_size = blockSize;
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
-  eig_args.n_ev_deflate = ( parity == EVEN && qic->deflate ) ? param.eigen_param.Nvecs : 0; // Only deflate even solves for now
+  eig_args.n_ev_deflate = ( parity == EVEN ) ? param.eigen_param.Nvecs : 0; // Only deflate even solves for now
   eig_args.n_ev = eig_args.n_conv;
   eig_args.n_kr = (param.eigen_param.Nkr < eig_args.n_ev ) ? 2*eig_args.n_ev : param.eigen_param.Nkr;
   eig_args.tol = param.eigen_param.tol;
@@ -490,7 +494,11 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
     check_invert_field2(t_src[j], t_dest[j], mass, 2e-5, fn, qic->parity);
   }
 #endif
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 7de740d9fdd70461b89b4651342fcee8d6f38d56
   // On the other hand, MILC expects the returned value to be the aggregate number of iterations
   // performed by each solve if it was performed sequentially. This can be approximated by
   // the number of iterations for a single solve times the number of sources.

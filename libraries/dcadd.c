@@ -5,7 +5,7 @@
 #include "../include/config.h"
 #include "../include/complex.h"
 
-double_complex dcadd( double_complex *a, double_complex *b ){
+double_complex dcadd( const double_complex *a, const double_complex *b ){
     double_complex c;
     c.real = (*a).real + (*b).real;
     c.imag = (*a).imag + (*b).imag;
