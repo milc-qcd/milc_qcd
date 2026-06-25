@@ -107,7 +107,6 @@ destroy_link_phase_info(link_phase_info_t *lp){
 static void 
 negate_su3_matrix(su3_matrix *link){
   int j,k;
-#pragma unroll
   for(j=0;j<3;j++)for(k=0;k<3;k++){
       CNEGATE(link->e[j][k],link->e[j][k]);
     }
@@ -205,7 +204,6 @@ switch_KS_phases(fn_links_t *fn, int r0_old[], int r0_new[]){
   FORALLSITES_OMP(i,s,private(dir,h,p_old,p_new)){
     alpha_offset(h, p_old, s, r0_old);
     alpha_offset(h, p_new, s, r0_new);
-#pragma unroll
     FORALLUPDIR(dir){
       if(p_old[dir]*p_new[dir] == -1){
 	negate_su3_matrix(fat+4*i+dir);
