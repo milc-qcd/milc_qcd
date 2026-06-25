@@ -268,10 +268,10 @@ int save_ksprop_from_ksp_field( int flag, const char *filename, char *recxml,
 void save_ksprop_from_site3( int flag, const char *filename, char *recxml, 
 			     quark_source *ksqs,
 			     field_offset src, int timing);
-int save_ksprop_c_from_field( int flag, ks_prop_file *kspf,
+int save_ksprop_c_from_field( int flag, ks_prop_file *kspf, 
 			      quark_source *ksqs, int color,
 			      su3_vector *src, su3_vector *prop,
-			      const char *recinfo, int timing);
+			      char *recinfo, int timing);
 int ask_starting_ksprop( FILE *fp, int prompt, int *flag, char *filename );
 int ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename );
 int convert_outflag_to_inflag_ksprop(int out_flag);

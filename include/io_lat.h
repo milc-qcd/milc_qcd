@@ -45,7 +45,8 @@
 #define SAVE_PARALLEL_SCIDAC_DP          62
 #define SAVE_MULTIFILE_SCIDAC_DP         63
 #define SAVE_PARTFILE_SCIDAC_DP          64
-#define SAVE_MPIIO                       65
+#define SAVE_PARTFILE_DIR_SCIDAC         65
+#define SAVE_MPIIO                       66
 
 /* Format for NERSC archive files */
 #define ARCHIVE_3x2   0
@@ -377,6 +378,7 @@ gauge_file *save_serial_scidac(su3_matrix *field, const char *filename, int prec
 gauge_file *save_parallel_scidac(su3_matrix *field, const char *filename, int prec);
 gauge_file *save_multifile_scidac(su3_matrix *field, const char *filename, int prec);
 gauge_file *save_partfile_scidac(su3_matrix *field, const char *filename, int prec);
+gauge_file *save_partfile_dir_scidac(su3_matrix *field, const char *filename, int prec);
 gauge_file *save_serial_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
 gauge_file *save_parallel_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
 gauge_file *save_partfile_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
