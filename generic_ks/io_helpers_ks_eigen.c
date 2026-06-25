@@ -496,6 +496,7 @@ static int coord_parity(int r[]){
   return (r[0] + r[1] + r[2] + r[3]) % 2;
 }
 
+#if 0
 /*------------------------------------------------------------------*/
 /* Convert coordinate to linear lexicographic rank (inverse of
    lex_coords) */
@@ -562,6 +563,7 @@ static void my_coords(int coords[], size_t index, int *latdim){
     }
   }
 }
+#endif
 #endif
 
 /* Define map for packing even sites into half the lattice */
