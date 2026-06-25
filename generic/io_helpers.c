@@ -563,6 +563,102 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
   return 0;
 }
 
+/* find out what kind of starting fat-link file to use, and lattice name if
+   necessary.  This routine is only called by node 0.
+*/
+int ask_starting_fat_link_file( FILE *fp, int prompt, int *flag, char *filename ){
+  const char *savebuf;
+  int status;
+  const char myname[] = "ask_starting_fat_link_file";
+  
+  if (prompt==1) printf(
+			"enter 'continue_fat', 'fresh_fat', 'reload_serial_fat', or 'reload_parallel_fat'\n");
+  
+  savebuf = get_next_tag(fp, "read fat-link-file command", myname);
+  if (savebuf == NULL)return 1;
+  
+  printf("%s ",savebuf);
+  if(strcmp("fresh_fat",savebuf) == 0 ) {
+    *flag = FRESH;
+    printf("\n");
+  }
+  else if(strcmp("continue_fat",savebuf) == 0 ) {
+    *flag = CONTINUE;
+    printf("\n");
+  }
+  else if(strcmp("reload_serial_fat",savebuf) == 0 ) {
+    *flag = RELOAD_SERIAL;
+  }
+  else if(strcmp("reload_parallel_fat",savebuf) == 0 ) {
+    *flag = RELOAD_PARALLEL;
+  }
+  else{
+    printf(" is not a valid starting fat-link-file command. INPUT ERROR.\n"); 
+    return 1;
+  }
+  
+  /*read name of file and load it */
+  if( *flag != FRESH && *flag != CONTINUE ){
+    if(prompt==1)printf("enter name of file containing fat links\n");
+    status=fscanf(fp," %s",filename);
+    if(status !=1) {
+      printf("\n%s(%d): ERROR IN INPUT: error reading file name\n",
+	     myname, this_node); 
+      return 1;
+    }
+    printf("%s\n",filename);
+  }
+  return 0;
+}
+
+/* find out what kind of starting long-link file to use, and lattice name if
+   necessary.  This routine is only called by node 0.
+*/
+int ask_starting_lng_link_file( FILE *fp, int prompt, int *flag, char *filename ){
+  const char *savebuf;
+  int status;
+  const char myname[] = "ask_starting_long_link_file";
+  
+  if (prompt==1) printf(
+			"enter 'continue_long', 'fresh_long', 'reload_serial_long', or 'reload_parallel_long'\n");
+  
+  savebuf = get_next_tag(fp, "read long-link-file command", myname);
+  if (savebuf == NULL)return 1;
+  
+  printf("%s ",savebuf);
+  if(strcmp("fresh_long",savebuf) == 0 ) {
+    *flag = FRESH;
+    printf("\n");
+  }
+  else if(strcmp("continue_long",savebuf) == 0 ) {
+    *flag = CONTINUE;
+    printf("\n");
+  }
+  else if(strcmp("reload_serial_long",savebuf) == 0 ) {
+    *flag = RELOAD_SERIAL;
+  }
+  else if(strcmp("reload_parallel_long",savebuf) == 0 ) {
+    *flag = RELOAD_PARALLEL;
+  }
+  else{
+    printf(" is not a valid starting long-link-file command. INPUT ERROR.\n"); 
+    return 1;
+  }
+  
+  /*read name of file and load it */
+  if( *flag != FRESH && *flag != CONTINUE ){
+    if(prompt==1)printf("enter name of file containing long links\n");
+    status=fscanf(fp," %s",filename);
+    if(status !=1) {
+      printf("\n%s(%d): ERROR IN INPUT: error reading file name\n",
+	     myname, this_node); 
+      return 1;
+    }
+    printf("%s\n",filename);
+  }
+  return 0;
+}
+
 /*--------------------------------------------------------------------*/
 
 /* For FNAL formatted ASCII correlator files */
