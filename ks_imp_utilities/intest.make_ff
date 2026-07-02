@@ -6,8 +6,7 @@ ny 8
 nz 8
 nt 8
 iseed 1234
-#reload_serial ../binary_samples/lat.sample.l8888
-warm
+reload_serial ../binary_samples/lat.sample.l8888
 u0 1
 forget
 coordinate_origin 0 0 0 0
