@@ -14,13 +14,13 @@ MAKEFILE = Makefile
 # 1. Host and accelerator architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH ?= # epyc hsw skx clx icx spr knl pow8 pow9
+ARCH ?= # epyc hsw skx clx icx spr knl pow8 pow9 arm64
 #GPU_ARCH ?= # nvidia amd intel
 
 #----------------------------------------------------------------------
 # 2. Compiler family
 
-COMPILER ?= gnu # intel, ibm, cray-intel, rocm, nvhpc
+COMPILER ?= gnu # intel, intel-classic, ibm, cray-intel, rocm, nvhpc
 OFFLOAD ?= # cuda hip sycl openmp
 
 #----------------------------------------------------------------------
@@ -49,6 +49,16 @@ ifeq ($(strip ${COMPILER}),intel)
     MY_CXX ?= icpx
   endif
 
+else ifeq ($(strip ${COMPILER}),intel-classic)
+
+  ifeq ($(strip ${MPP}),true)
+    MY_CC ?= mpicc
+    MY_CXX ?= mpicxx
+  else
+    MY_CC  ?= icc
+    MY_CXX ?= icpc
+  endif
+
 else ifeq ($(strip ${COMPILER}),cray-intel)
 
   ifeq ($(strip ${MPP}),true)
@@ -65,8 +75,8 @@ else ifeq ($(strip ${COMPILER}),gnu)
     MY_CC ?= mpicc
     MY_CXX ?= mpiCC
   else
-    MY_CC  ?= gcc-8
-    MY_CXX ?= g++-8
+    MY_CC  ?= gcc
+    MY_CXX ?= g++
   endif
 
 else ifeq ($(strip ${COMPILER}),ibm)
@@ -139,6 +149,10 @@ ifeq ($(strip ${COMPILER}),gnu)
   OCFLAGS += -std=c99
   OCXXFLAGS += -std=gnu++17
 
+  ifeq ($(strip ${ARCH}),arm64)
+    ARCH_FLAG = -arch arm64
+  endif
+
   ifeq ($(strip ${ARCH}),pow8)
     ARCH_FLAG = -mcpu=power8
   endif
@@ -154,10 +168,14 @@ ifeq ($(strip ${COMPILER}),gnu)
 
   endif
 
-# Other Gnu options
-#OCFLAGS += -mavx # depends on architecture
-# enable all warnings with exceptions
-OCFLAGS += -Wall -Wno-unused-variable -Wno-unused-but-set-variable
+  # Other Gnu options
+
+  OCFLAGS += ${ARCH_FLAG}
+  OCXXFLAGS += ${ARCH_FLAG}
+  LDFLAGS += ${ARCH_FLAG}
+
+  # enable all warnings with exceptions
+  OCFLAGS += -Wall -Wno-unused-variable -Wno-unused-but-set-variable
 
 endif
 
@@ -177,7 +195,7 @@ ifeq ($(strip ${COMPILER}),ibm)
 
 endif
 
-#-------------- Intel icc/ecc -----------------------------------
+#-------------- Intel (OneAPI) icx/icpx -----------------------------------
 
 ifeq ($(strip ${COMPILER}),intel)
 
@@ -212,6 +230,44 @@ ifeq ($(strip ${COMPILER}),intel)
   LDFLAGS += ${ARCH_FLAG}
   OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -fsave-optimization-record
   OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -fsave-optimization-record
+
+  ifeq ($(strip ${OMP}),true)
+    OCFLAGS += -qopenmp
+    OCXXFLAGS += -qopenmp
+    LDFLAGS += -qopenmp
+  endif
+
+endif
+
+#-------------- Intel Classic icc/icpc -----------------------------------
+
+ifeq ($(strip ${COMPILER}),intel-classic)
+
+  OCFLAGS += -std=c99
+  OCXXFLAGS += -std=c++17
+
+  ifeq ($(strip ${ARCH}),knl)
+  ARCH_FLAG = -xMIC-AVX512
+  BINEXT=.knl
+  else ifeq ($(strip ${ARCH}),knc)
+  ARCH_FLAG = -mmic
+  BINEXT=.knc
+  else ifeq ($(strip ${ARCH}),skx)
+  ARCH_FLAG = -xCORE-AVX512 -qopt-zmm-usage=high
+  BINEXT=.skx
+  else ifeq ($(strip ${ARCH}),hsw)
+  ARCH_FLAG = -xCORE-AVX2
+  BINEXT=.hsw
+  else
+  ARCH_FLAG = -mavx
+  BINEXT=
+  endif
+
+  OCFLAGS += ${ARCH_FLAG}
+  OCXXFLAGS += ${ARCH_FLAG}
+  LDFLAGS += ${ARCH_FLAG}
+  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
 
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
@@ -400,6 +456,9 @@ WANT_APE_IO ?= # true
 ifeq ($(strip ${COMPILER}),intel)
   INCFFTW = -mkl
   LIBFFTW = -mkl
+else ifeq ($(strip ${COMPILER}),intel-classic)
+  INCFFTW = -mkl
+  LIBFFTW = -mkl
 else ifeq ($(strip ${COMPILER}),cray-intel)
   INCFFTW = -mkl
   LIBFFTW = -mkl
@@ -561,7 +620,7 @@ endif
 #----------------------------------------------------------------------
 # 16. QPhiX Options
 
-WANTQPHIX = #true
+WANTQPHIX ?= false
 WANT_FN_CG_QPHIX = true
 WANT_GF_QPHIX = true
 

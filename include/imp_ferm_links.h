@@ -88,7 +88,6 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 
 
 #ifdef USE_CG_GPU
-#if defined(HAVE_QUDA) || defined(HAVE_GRID) 
 
 #define ks_congrad_parity ks_congrad_parity_gpu
 #define ks_congrad_block_parity ks_congrad_block_parity_gpu
@@ -97,8 +96,6 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 
 #define ks_congrad_parity ks_congrad_parity_qphix
 #define ks_congrad_block_parity ks_congrad_block_parity_qphix
-
-#endif
 
 #else
 
@@ -242,11 +239,9 @@ int ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken
     );
 
 #ifdef USE_CG_GPU
-#if defined(HAVE_GRID) || defined(HAVE_QUDA)
 #define ks_multicg_offset_field ks_multicg_offset_field_gpu
 #elif USE_CG_QPHIX
 #define ks_multicg_offset_field ks_multicg_offset_field_qphix
-#endif
 #else
 #define ks_multicg_offset_field ks_multicg_offset_field_cpu
 #endif
@@ -306,8 +301,8 @@ void restore_eigVec(int Nvecs, Real *eigVal, su3_vector **eigVec, int parity,
 typedef struct {
   int norder ; /* Order of the preconditioning polynomial */
   int which_poly; /* Polynomial selection */
-  double minE ; /* Lower end of eigenvalue exclusion window */
-  double maxE ; /* Upper end of eigenvalue exclusion window */
+  Real minE ; /* Lower end of eigenvalue exclusion window */
+  Real maxE ; /* Upper end of eigenvalue exclusion window */
   double poly_param_1;
   double poly_param_2;
   double eigmax;
@@ -417,7 +412,7 @@ void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, ks_eigen_param *e
 			     imp_ferm_links_t *fn );
 void cleanup_Matrix();
 void measure_chirality(su3_vector *src, double *chirality, int parity);
-void print_densities(su3_vector *src, char *tag, int y,int z,int t, 
+void print_densities(su3_vector *src, const char *tag, int y,int z,int t,
 		     int parity);
 void reset_eigenvalues(su3_vector *eigVec[], Real *eigVal,
 		       int Nvecs, int parity, imp_ferm_links_t *fn);
@@ -500,7 +495,7 @@ int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, Real *eigVal,
 			 Real mass, imp_ferm_links_t *fn);
 
 /* ks_baryon.c */
-int baryon_type_index(char *label);
+int baryon_type_index(const char *label);
 const char *baryon_type_label(int index);
 void ks_baryon_nd(complex *prop[],
 		  ks_prop_field *qp0, ks_prop_field *qp1, ks_prop_field *qp2,

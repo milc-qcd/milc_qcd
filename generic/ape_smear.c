@@ -559,7 +559,7 @@ int ask_ending_apelinks(FILE *fp, int prompt, int *flag, char *filename ){
   const char myname[] = "ask_ending_lattice";
   
   if (prompt==1) printf(
-			"'forget_ape' links at end, 'save_serial_scidac_ape', 'save_parallel_scidac_ape', 'save_partfile_scidac_ape', 'save_serial_scidac_ape_dp', 'save_parallel_scidac_ape_dp', 'save_partfile_scidac_ape_dp'\n");
+			"'forget_ape' links at end, 'save_serial_scidac_ape', 'save_parallel_scidac_ape', 'save_partfile_scidac_ape', 'save_partfile_dir_scidac_ape', 'save_serial_scidac_ape_dp', 'save_parallel_scidac_ape_dp', 'save_partfile_scidac_ape_dp'\n");
   
   savebuf = get_next_tag(fp, "save APE file command", myname);
   if (savebuf == NULL)return 1;
@@ -606,6 +606,14 @@ int ask_ending_apelinks(FILE *fp, int prompt, int *flag, char *filename ){
   else if(strcmp("save_partfile_scidac_ape",savebuf) == 0 ) {
 #ifdef HAVE_QIO
     *flag=SAVE_PARTFILE_SCIDAC;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_partfile_dir_scidac_ape",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARTFILE_DIR_SCIDAC;
 #else
     node0_printf("requires QIO compilation!\n");
     terminate(1);

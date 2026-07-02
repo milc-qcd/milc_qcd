@@ -25,7 +25,7 @@ void mult_rho0_field( int fdir,  int r0[], const su3_vector *const src, su3_vect
 		      const su3_matrix *const linkss, int *refresh_links );
 void spin_taste_op(int index, int r0[], su3_vector *dest, const su3_vector *const src);
 
-int spin_taste_index(char *label);
+int spin_taste_index(const char *label);
 const char *spin_taste_label(int index);
 int is_rhosfn_index(int index);
 int is_rhosffn_index(int index);

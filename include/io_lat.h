@@ -16,8 +16,9 @@
 #define FRESH                            11
 #define RELOAD_ASCII                     12
 #define RELOAD_SERIAL                    13
-#define RELOAD_MULTIDUMP                 18
-#define RELOAD_PARALLEL                  19
+#define RELOAD_MULTIDUMP                 17
+#define RELOAD_PARALLEL                  18
+#define RELOAD_MPIIO                     19
 #define WARM                             20
 #define FORGET                           40
 #define SAVE_ASCII                       41
@@ -44,6 +45,8 @@
 #define SAVE_PARALLEL_SCIDAC_DP          62
 #define SAVE_MULTIFILE_SCIDAC_DP         63
 #define SAVE_PARTFILE_SCIDAC_DP          64
+#define SAVE_PARTFILE_DIR_SCIDAC         65
+#define SAVE_MPIIO                       66
 
 /* Format for NERSC archive files */
 #define ARCHIVE_3x2   0
@@ -332,6 +335,8 @@ gauge_file *restore_serial(const char *filename);
 gauge_file *save_serial(const char *filename);
 gauge_file *restore_parallel(const char *filename);
 gauge_file *save_parallel(const char *filename);
+gauge_file *restore_mpiio(const char *filename);
+gauge_file *save_mpiio(const char *filename);
 gauge_file *save_checkpoint(const char *filename);
 gauge_file *save_serial_archive(const char *filename);
 gauge_file *save_parallel_archive(const char *filename);
@@ -373,6 +378,7 @@ gauge_file *save_serial_scidac(su3_matrix *field, const char *filename, int prec
 gauge_file *save_parallel_scidac(su3_matrix *field, const char *filename, int prec);
 gauge_file *save_multifile_scidac(su3_matrix *field, const char *filename, int prec);
 gauge_file *save_partfile_scidac(su3_matrix *field, const char *filename, int prec);
+gauge_file *save_partfile_dir_scidac(su3_matrix *field, const char *filename, int prec);
 gauge_file *save_serial_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
 gauge_file *save_parallel_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
 gauge_file *save_partfile_ildg(su3_matrix *field, const char *filename, int prec, const char *stringLFN);
@@ -386,35 +392,35 @@ gauge_file *restore_parallel_scidac(su3_matrix *field, const char *filename);
 
 FILE *g_open(const char *filename, const char *mode);
 int g_seek(FILE *stream, off_t offset, int whence);
-size_t g_write(const void *ptr, size_t size, size_t nmemb,FILE *stream);
-size_t g_read(void *ptr, size_t size, size_t nmemb, FILE *stream);
+size_t g_write(void * restrict ptr, size_t size, size_t nmemb,FILE *stream);
+size_t g_read(void * restrict ptr, size_t size, size_t nmemb, FILE *stream);
 int g_close(FILE *stream);
 
 /**********************************************************************/
 /* Prototypes for io_lat_util.c routines */
 
-int qcdhdr_get_str(char *s, QCDheader *hdr, char **q);
-int qcdhdr_get_int(char *s,QCDheader *hdr,int *q);
-int qcdhdr_get_int32x(char *s,QCDheader *hdr,u_int32type *q);
-int qcdhdr_get_float(char *s, QCDheader *hdr, Real *q);
-void error_exit(char *s);
+int qcdhdr_get_str(const char *s, QCDheader *hdr, char **q);
+int qcdhdr_get_int(const char *s,QCDheader *hdr,int *q);
+int qcdhdr_get_int32x(const char *s,QCDheader *hdr,u_int32type *q);
+int qcdhdr_get_float(const char *s, QCDheader *hdr, Real *q);
+void error_exit(const char *s);
 void complete_U(float *u);
 void complete_Ud(double *u);
 QCDheader * qcdhdr_get_hdr(FILE *in);
 void f2d_4mat(fsu3_matrix *a, su3_matrix *b);
 void d2f_4mat(su3_matrix *a, fsu3_matrix *b);
-void swrite_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
-void pwrite_data(FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
-void pswrite_data(int parallel, FILE* fp, void *src, size_t size, 
+void swrite_data(FILE* fp, void * restrict src, size_t size, const char *myname, const char *descrip);
+void pwrite_data(FILE* fp, void * restrict src, size_t size, const char *myname, const char *descrip);
+void pswrite_data(int parallel, FILE* fp, void * restrict src, size_t size, 
 		  const char *myname, const char *descrip);
-int sread_data(FILE* fp, const void *src, size_t size, const char *myname, const char *descrip);
-int pread_data(FILE* fp, const void *src, size_t size, const char *myname, const char *descrip);
-int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, const char *myname, const char *descrip);
-int sread_byteorder(int byterevflag, FILE* fp, const void *src, size_t size, const char *myname, const char *descrip);
-int psread_data(int parallel, FILE* fp, const void *src, size_t size, 
+int sread_data(FILE* fp, void * restrict src, size_t size, const char *myname, const char *descrip);
+int pread_data(FILE* fp, void * restrict src, size_t size, const char *myname, const char *descrip);
+int pread_byteorder(int byterevflag, FILE* fp, void * restrict src, size_t size, const char *myname, const char *descrip);
+int sread_byteorder(int byterevflag, FILE* fp, void * restrict src, size_t size, const char *myname, const char *descrip);
+int psread_data(int parallel, FILE* fp, void * restrict src, size_t size, 
 		const char *myname, const char *descrip);
 int psread_byteorder(int byterevflag, int parallel, FILE* fp, 
-		      void *src, size_t size, 
+		      void * restrict src, size_t size, 
 		     const char *myname, const char *descrip);
 void pwrite_gauge_hdr(FILE *fp, gauge_header *gh);
 void swrite_gauge_hdr(FILE *fp, gauge_header *gh);

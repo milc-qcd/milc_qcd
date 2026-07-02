@@ -167,8 +167,8 @@ void d2f_wvec(wilson_vector *a, fwilson_vector *b){
 
 /* Write a data item to the propagator info file */
 int write_w_prop_info_item( FILE *fpout,    /* ascii file pointer */
-		       char *keyword,   /* keyword */
-		       char *fmt,       /* output format -
+		       const char *keyword,   /* keyword */
+		       const char *fmt,       /* output format -
 					      must use s, d, e, f, or g */
 		       const char *src,  /* address of starting data
 					   floating point data must be
@@ -231,11 +231,11 @@ int write_w_prop_info_item( FILE *fpout,    /* ascii file pointer */
 /*------------------------------------------------------------------------*/
 
 /* Write a data item to a character string */
-int sprint_w_prop_info_item( 
+int sprint_w_prop_info_item(
   char *string,    /* character string */
-  size_t nstring,     /* string length */			    
-  char *keyword,   /* keyword */
-  char *fmt,       /* output format -
+  size_t nstring,     /* string length */
+  const char *keyword,   /* keyword */
+  const char *fmt,       /* output format -
 		      must use s, d, e, f, or g */
   const char *src,  /* address of starting data
 		      floating point data must be
@@ -368,7 +368,7 @@ int write_w_prop_info_file(w_prop_file *wpf)
 
 /* Set up the input propagator file structure and header structure */
 
-w_prop_file *setup_input_w_prop_file(char *filename)
+w_prop_file *setup_input_w_prop_file(const char *filename)
 {
   w_prop_file *wpf;
   w_prop_header *wph;
@@ -532,7 +532,7 @@ void clear_output_w_prop_file(w_prop_file *wpf){
 /*---------------------------------------------------------------------------*/
 /* Open and write header info for ascii propagator file */
 
-w_prop_file *w_ascii_w_i(char *filename)
+w_prop_file *w_ascii_w_i(const char *filename)
 {
   w_prop_header *wph;
   w_prop_file *wpf;
@@ -675,7 +675,7 @@ void w_ascii_w_f(w_prop_file *wpf)
 /*---------------------------------------------------------------------------*/
 /* Open ASCII propagator file and read header information */
 
-w_prop_file *r_ascii_w_i(char *filename)
+w_prop_file *r_ascii_w_i(const char *filename)
 {
   w_prop_file *wpf;
   w_prop_header *wph;
