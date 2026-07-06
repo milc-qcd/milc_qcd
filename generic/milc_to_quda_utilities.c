@@ -119,7 +119,19 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
   eig_args->preserve_deflation = QUDA_BOOLEAN_TRUE;
   strcpy( eig_args->vec_infile, "" );
   strcpy( eig_args->vec_outfile, param.ks_eigen_savefile );
-  eig_args->prec_eigensolver = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+  /* Precision at which QUDA holds/applies the deflation space, from the
+     input-file parameter eigensolver_prec.  Applied whether QUDA computes
+     the eigenvectors or loads them from file. */
+  if(param.eigen_param.eigPrec == 2) {
+    eig_args->prec_eigensolver = QUDA_DOUBLE_PRECISION;
+  } else if(param.eigen_param.eigPrec == 1) {
+    eig_args->prec_eigensolver = QUDA_SINGLE_PRECISION;
+  } else if(param.eigen_param.eigPrec == 0) {
+    eig_args->prec_eigensolver = QUDA_HALF_PRECISION;
+  } else {
+    printf("%s: Unrecognized eigensolver precision\n",myname);
+    terminate(2);
+  }
 
   if(quda_does_eigensolve){
     
@@ -152,17 +164,6 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
     eig_args->qr_tol = eig_args->tol;
     eig_args->require_convergence = QUDA_BOOLEAN_TRUE;
     strcpy( eig_args->vec_infile, param.ks_eigen_startfile );
-    
-    if(param.eigen_param.eigPrec == 2) {
-      eig_args->prec_eigensolver = QUDA_DOUBLE_PRECISION;
-    } else if(param.eigen_param.eigPrec == 1) {
-      eig_args->prec_eigensolver = QUDA_SINGLE_PRECISION;
-    } else if(param.eigen_param.eigPrec == 0) {
-      eig_args->prec_eigensolver = QUDA_HALF_PRECISION;
-    } else {
-      printf("%s: Unrecognized eigensolver precision\n",myname);
-      terminate(2);
-    }
   }
 } // load_quda_default_eig_args
 

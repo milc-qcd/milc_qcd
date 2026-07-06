@@ -212,7 +212,8 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   inv_args.evenodd = (param.eigen_param.parity == EVEN) ? QUDA_EVEN_PARITY : QUDA_ODD_PARITY;
 
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
-  // QUDA requires that this be set equal to the gauge precision
+  // QUDA requires that prec_eigensolver match the field precision here, since the
+  // vectors are supplied from MILC's host eigVec array in MILC_PRECISION.
   eig_args.prec_eigensolver = (quda_precision == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
   
   // Load one parity eigenvectors from MILC into QUDA
