@@ -72,7 +72,7 @@ DdagD( su3_vector *res, su3_vector *src, int ds, msg_tag *t1[], msg_tag *t2[],
   } END_LOOP_OMP;
 }
 
-#if 0 // unused/dead function
+#if 0
 /************************************************************************/
 /* Chebyshev polynomial                                                 */
 static double 
@@ -110,7 +110,6 @@ poly( double am, double aM, int p, double x) {
   return x2;
 }
 #endif
-
 /************************************************************************/
 /* Matrix vector operators                                              */
 
@@ -292,7 +291,7 @@ void measure_chirality(su3_vector *src, double *chirality, int parity){
 
 /*****************************************************************************/
 /* prints the density and chiral density of a normalized fermion state */
-void print_densities(su3_vector *src, char *tag, int y,int z,int t, 
+void print_densities(su3_vector *src, const char *tag, int y,int z,int t,
 		     int parity){
 
   register int i;

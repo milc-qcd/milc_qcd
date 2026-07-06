@@ -22,7 +22,7 @@ REQUIRES QIO
 /* Write color vectors in SciDAC format, taking data from the site
    structure */
 
-int save_ks_vector_scidac(QIO_Writer *outfile, const char *filename, char *recinfo,
+int save_ks_vector_scidac(QIO_Writer *outfile, const char *filename, const char *recinfo,
 			  int volfmt, su3_vector *src, int count, int prec)
 {
   QIO_String *recxml;
@@ -64,9 +64,9 @@ int save_ks_vector_scidac(QIO_Writer *outfile, const char *filename, char *recin
 /* Write color vectors in SciDAC format, taking data from the site
    structure */
 
-void save_ks_vector_scidac_from_field(const char *filename, char *fileinfo,
-				      char *recinfo, 
-				      int volfmt, int serpar, 
+void save_ks_vector_scidac_from_field(const char *filename, const char *fileinfo,
+				      const char *recinfo,
+				      int volfmt, int serpar,
 				      su3_vector *src, int count, int prec)
 {
   QIO_Writer *outfile;
@@ -89,9 +89,9 @@ void save_ks_vector_scidac_from_field(const char *filename, char *fileinfo,
 /* Write color vectors in SciDAC format, taking data from the site
    structure */
 
-void save_ks_vector_scidac_from_site(const char *filename, char *fileinfo,
-				     char *recinfo, 
-				     int volfmt, int serpar, 
+void save_ks_vector_scidac_from_site(const char *filename, const char *fileinfo,
+				     const char *recinfo,
+				     int volfmt, int serpar,
 				     field_offset src, int count, int prec)
 {
 
@@ -212,10 +212,10 @@ void restore_ks_vector_scidac_to_site(const char *filename, int serpar,
 
 /* Write the file header for the propagator */
 
-QIO_Writer *open_usqcd_ksprop_write(const char *filename, int volfmt, 
-				    int serpar, int ildgstyle, 
+QIO_Writer *open_usqcd_ksprop_write(const char *filename, int volfmt,
+				    int serpar, int ildgstyle,
 				    const char *stringLFN, int milc_type,
-				    char *fileinfo){
+				    const char *fileinfo){
   
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -329,7 +329,7 @@ int write_kspropsource_C_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml,
 /********************************************************************/
 /* Encode the record info and write a complex source field */
 
-int write_kspropsource_C_usqcd(QIO_Writer *outfile, char *srcinfo, 
+int write_kspropsource_C_usqcd(QIO_Writer *outfile, const char *srcinfo,
 			       complex *src, int t0){
   QIO_USQCDKSPropSourceInfo *propsource_info;
   QIO_String *recxml;
@@ -368,7 +368,7 @@ int write_kspropsource_V_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml,
 /********************************************************************/
 /* Write a KS vector source field */
 
-int write_kspropsource_V_usqcd(QIO_Writer *outfile, char *srcinfo, 
+int write_kspropsource_V_usqcd(QIO_Writer *outfile, const char *srcinfo,
 			       su3_vector *src, int t0){
   QIO_USQCDKSPropSourceInfo *propsource_info;
   QIO_String *recxml;
@@ -387,8 +387,8 @@ int write_kspropsource_V_usqcd(QIO_Writer *outfile, char *srcinfo,
 /********************************************************************/
 /* Write a KS vector solution field for a given source color */
 
-int write_ksprop_usqcd_c(QIO_Writer *outfile, su3_vector *src, 
-			 int color, char *recinfo)
+int write_ksprop_usqcd_c(QIO_Writer *outfile, su3_vector *src,
+			 int color, const char *recinfo)
 {
   QIO_USQCDKSPropRecordInfo *proprecord_info;
   QIO_String *recxml;

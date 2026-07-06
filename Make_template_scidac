@@ -80,10 +80,10 @@ QOPLIBDIR = $(strip ${QOPQDP})/lib
 
 IQMP = -I${QMPINCDIR}
 QMPLIBDIR = $(strip ${QMP})/lib
-LQMP = -L${QMPLIBDIR} -lqmp
+LQMP = -Wl,-rpath,${QMPLIBDIR} -L${QMPLIBDIR} -lqmp
 
 IQIO = -I${QIOINCDIR}
-LQIO = -L${QIOLIBDIR} -lqio -llime 
+LQIO = -Wl,-rpath,${QIOLIBDIR} -L${QIOLIBDIR} -lqio -llime 
 
 IQLA = -I${QLAINCDIR}
 LQLA = -L$(strip ${QLA})/lib \

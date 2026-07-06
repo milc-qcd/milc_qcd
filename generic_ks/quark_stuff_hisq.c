@@ -44,7 +44,7 @@
     /* Include file specifies the basic paths */
 
 static int 
-make_path_table_hisq( char *action_desc, int npaths, int max_paths,
+make_path_table_hisq( const char *action_desc, int npaths, int max_paths,
 		      int *path_length, Real *coeff,
 		      int paths[][MAX_LENGTH], Real *act_coeff, 
 		      Q_path *this_q_paths, Real mass, int index_onelink,
@@ -182,7 +182,7 @@ int make_path_table(ks_action_paths *ap,
 }
 
 static int 
-make_path_table_hisq( char *action_desc, int npaths, int max_paths,
+make_path_table_hisq( const char *action_desc, int npaths, int max_paths,
 		      int *path_length, Real *coeff,
 		      int paths[][MAX_LENGTH], Real *act_coeff, 
 		      Q_path *this_q_paths, Real naik_term_epsilon, 

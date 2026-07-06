@@ -8,7 +8,7 @@
 #include "../include/su3.h"
 
 /* c <- s*b, matrices */
-void c_scalar_mult_su3mat( su3_matrix *b, complex *s, su3_matrix *c ){
+void c_scalar_mult_su3mat( const su3_matrix *b, const complex *s, su3_matrix *c ){
 
 #ifndef NATIVEDOUBLE
 register int i,j;

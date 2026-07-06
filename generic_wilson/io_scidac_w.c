@@ -19,7 +19,7 @@ REQUIRES QIO
 /********************************************************************/
 /* Generic Wilson vector file (not USQCD)                           */
 
-int save_w_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
+int save_w_vector_scidac(QIO_Writer *outfile, const char *filename, const char *recinfo,
 			 int volfmt, wilson_vector *src, int count)
 {
   QIO_String *recxml;
@@ -61,8 +61,8 @@ int save_w_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
 /* Write Wilson vectors in SciDAC format, taking data from a field */
 /* We don't have a MILC format for such a file */
 
-void save_w_vector_scidac_from_field(char *filename, char *fileinfo,
-				     char *recinfo, 
+void save_w_vector_scidac_from_field(const char *filename, const char *fileinfo,
+				     const char *recinfo,
 				     int volfmt, int serpar,
 				     wilson_vector *src, int count)
 {
@@ -88,8 +88,8 @@ void save_w_vector_scidac_from_field(char *filename, char *fileinfo,
 /* Write Dirac vectors in SciDAC format, taking data from the site
    structure */
 
-void save_w_vector_scidac_from_site(char *filename, char *fileinfo,
-				    char *recinfo, int volfmt, int serpar,
+void save_w_vector_scidac_from_site(const char *filename, const char *fileinfo,
+				    const char *recinfo, int volfmt, int serpar,
 				    field_offset src, int count)
 {
   wilson_vector *tmp;
@@ -162,7 +162,7 @@ int read_w_vector_scidac(QIO_Reader *infile, wilson_vector *dest, int count)
 /********************************************************************/
 /* Read Wilson vectors in SciDAC format (non-USQCD)                 */
 
-void restore_w_vector_scidac_to_field(char *filename, int serpar,
+void restore_w_vector_scidac_to_field(const char *filename, int serpar,
 				      wilson_vector *dest, int count){
   QIO_Reader *infile;
   int status;
@@ -185,7 +185,7 @@ void restore_w_vector_scidac_to_field(char *filename, int serpar,
 /********************************************************************/
 /* Read Wilson vectors in SciDAC format (non USQCD) */
 
-void restore_w_vector_scidac_to_site(char *filename, int serpar,
+void restore_w_vector_scidac_to_site(const char *filename, int serpar,
 				     field_offset dest, int count){
   wilson_vector *tmp;
   int i,j;
@@ -215,10 +215,10 @@ void restore_w_vector_scidac_to_site(char *filename, int serpar,
 
 /* Write the file header for the propagator */
 
-QIO_Writer *w_open_usqcd_wprop_file(char *filename, int volfmt, 
-				    int serpar, int ildgstyle, 
-				    char *stringLFN, int milc_type,
-				    char *fileinfo){
+QIO_Writer *w_open_usqcd_wprop_file(const char *filename, int volfmt,
+				    int serpar, int ildgstyle,
+				    const char *stringLFN, int milc_type,
+				    const char *fileinfo){
   
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -260,7 +260,7 @@ int write_wpropsource_C_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml,
 /********************************************************************/
 /* Encode the record XML and write a complex source field */
 
-int write_wpropsource_C_usqcd(QIO_Writer *outfile, char *srcinfo, 
+int write_wpropsource_C_usqcd(QIO_Writer *outfile, const char *srcinfo,
 			      complex *src, int t0){
   QIO_USQCDPropSourceInfo *propsource_info;
   QIO_String *recxml;
@@ -300,7 +300,7 @@ int write_wpropsource_D_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml,
 /********************************************************************/
 /* Encode the record XML and write a Wilson vector source field */
 
-int write_wpropsource_D_usqcd(QIO_Writer *outfile, char *srcinfo, 
+int write_wpropsource_D_usqcd(QIO_Writer *outfile, const char *srcinfo,
 			      wilson_vector *src, int t0){
   QIO_USQCDPropSourceInfo *propsource_info;
   QIO_String *recxml;
@@ -319,8 +319,8 @@ int write_wpropsource_D_usqcd(QIO_Writer *outfile, char *srcinfo,
 /********************************************************************/
 /* Write a Wilson vector solution field for a given source spin and color */
 
-int write_prop_usqcd_sc(QIO_Writer *outfile, wilson_vector *src, int spin, 
-			int color, char *recinfo)
+int write_prop_usqcd_sc(QIO_Writer *outfile, wilson_vector *src, int spin,
+			int color, const char *recinfo)
 {
   QIO_USQCDPropRecordInfo *proprecord_info;
   QIO_String *recxml;
@@ -352,7 +352,7 @@ void w_close_usqcd_wprop_file(QIO_Writer *outfile){
 /********************************************************************/
 /* Read the file header for the propagator */
 
-QIO_Reader *r_open_usqcd_wprop_file(char *filename, int serpar){
+QIO_Reader *r_open_usqcd_wprop_file(const char *filename, int serpar){
 
   QIO_Layout layout;
   QIO_Filesystem fs;

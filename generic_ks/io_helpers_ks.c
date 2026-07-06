@@ -449,15 +449,15 @@ save_ksprop_c_from_field( int flag, ks_prop_file *kspf,
     file_type = kspf->file_type;
     /* Save color vector source field */
     if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS){
-      status = write_kspropsource_V_usqcd(kspf->outfile, ksqs->descrp, 
-				  src, ksqs->t0);
+      status = qio_status(write_kspropsource_V_usqcd(kspf->outfile, ksqs->descrp, 
+						     src, ksqs->t0));
     } else {
       node0_printf("%s: Unsupported file type %d.\n", myname, file_type);
       terminate(1);
     }
     /* Save solution field */
-    if(status == QIO_SUCCESS)
-      status = write_ksprop_usqcd_c(kspf->outfile, prop, color, recinfo);
+    if(status == 0)
+      status = qio_status(write_ksprop_usqcd_c(kspf->outfile, prop, color, recinfo));
 #else
     node0_printf("%s: SciDAC formats require QIO compilation\n",myname);
     terminate(1);
@@ -602,7 +602,7 @@ save_ksprop_from_field3( int flag, const char *filename, char *recxml,
 			 su3_vector *src, int timing)
 {
   ks_prop_file *kspf = NULL;
-  int i, color, status = QIO_SUCCESS;
+  int i, color, status = 0;
   site *s;
   su3_vector *prop;
   char myname[] = "save_ksprop_from_field3";
@@ -625,18 +625,18 @@ save_ksprop_from_field3( int flag, const char *filename, char *recxml,
       }
       status = save_ksprop_c_from_field(flag, kspf, ksqs, color, NULL,
 					prop, recxml, timing);
-      if(status != QIO_SUCCESS)break;
+      if(status != 0)break;
     }
 
     w_close_ksprop(flag, kspf);
 
-    if(status == QIO_SUCCESS)break;
+    if(status == 0)break;
 
     node0_printf("%s: Failed to save %s. Retrying if enough retries remain\n",
 		 myname, filename);
   } /* itry */
 
-  if(status != QIO_SUCCESS || kspf == NULL){
+  if(status != 0 || kspf == NULL){
     node0_printf("%s: Failed to save %s ksprop after %d tries. Quitting\n",
 		 myname, filename, itry);
     terminate(1);
@@ -659,7 +659,7 @@ save_ksprop_from_ksp_field( int flag, const char *filename, char *recxml,
 			    ks_prop_field *prop, int timing)
 {
   ks_prop_file *kspf = NULL;
-  int  color, status = QIO_SUCCESS;
+  int  color, status = 0;
   char myname[] = "save_ksprop_from_ksp_field";
 
   if(flag == FORGET)return 0;
@@ -684,18 +684,18 @@ save_ksprop_from_ksp_field( int flag, const char *filename, char *recxml,
 					  prop->v[color], recxml, timing);
       }
 
-      if(status != QIO_SUCCESS)break;
+      if(status != 0)break;
     }
   
     w_close_ksprop(flag, kspf);
 
-    if(status == QIO_SUCCESS) break;
+    if(status == 0) break;
 
     node0_printf("%s: Failed to save %s. Retrying if enough retries remain\n",
 		   myname, filename);
   } /* itry */
   
-  if(status != QIO_SUCCESS || kspf == NULL){
+  if(status != 0 || kspf == NULL){
     node0_printf("%s: Failed to save %s ksprop after %d tries. Quitting\n",
 		 myname, filename, itry);
     terminate(1);

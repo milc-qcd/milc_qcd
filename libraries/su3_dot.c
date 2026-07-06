@@ -7,7 +7,7 @@
 #include "../include/complex.h"
 #include "../include/su3.h"
 
-complex su3_dot( su3_vector *a, su3_vector *b ){
+complex su3_dot( const su3_vector *a, const su3_vector *b ){
 
 #ifndef FAST
 complex temp1,temp2;

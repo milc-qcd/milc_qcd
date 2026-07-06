@@ -426,6 +426,7 @@ open_ks_eigen_infile(const char *filename, int *Nvecs, int *packed, int *file_ty
   return infile;
 }
 
+#if 0
 /*------------------------------------------------------------------*/
 /* Convert rank to coordinates */
 static void lex_coords(int coords[], const int dim, const int size[], 
@@ -454,7 +455,7 @@ static size_t lex_rank(const int coords[], int dim, int size[])
   }
   return rank;
 }
-
+#endif
 /*------------------------------------------------------------------*/
 /* Read an eigenvector and its eigenvalue */
 
@@ -626,7 +627,7 @@ skipToLimeRecord(LimeReader *LimeR, char *lime_type){
 
 /* Read the Grid eigenector file */
 int
-read_grid_ks_eigenvector(char *eigfile, int *Nvecs, su3_vector *eigVec, Real *eigVal){
+read_grid_ks_eigenvector(const char *eigfile, int *Nvecs, su3_vector *eigVec, Real *eigVal){
   int packed = 0, file_type = 0;
   char myname[] = "read_grid_ks_eigenvector";
 
@@ -686,7 +687,7 @@ read_grid_ks_eigenvector(char *eigfile, int *Nvecs, su3_vector *eigVec, Real *ei
 
     uint64_t bytes_wanted = typesize*volume/2;
     if(nbytes != bytes_wanted){
-      printf("ERROR: LIME record byte count %lu is not equal to the wanted number %lu\n",
+      printf("ERROR: LIME record byte count %llu is not equal to the wanted number %llu\n",
 	     nbytes, bytes_wanted);
       terminate(1);
     }

@@ -14,7 +14,7 @@ MAKEFILE = Makefile
 # 1. Host and accelerator architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH ?= # epyc hsw skx clx icx spr knl pow8 pow9
+ARCH ?= # epyc hsw skx clx icx spr knl pow8 pow9 arm64
 #GPU_ARCH ?= # nvidia amd intel
 
 #----------------------------------------------------------------------
@@ -149,6 +149,10 @@ ifeq ($(strip ${COMPILER}),gnu)
   OCFLAGS += -std=c99
   OCXXFLAGS += -std=gnu++17
 
+  ifeq ($(strip ${ARCH}),arm64)
+    ARCH_FLAG = -arch arm64
+  endif
+
   ifeq ($(strip ${ARCH}),pow8)
     ARCH_FLAG = -mcpu=power8
   endif
@@ -164,10 +168,14 @@ ifeq ($(strip ${COMPILER}),gnu)
 
   endif
 
-# Other Gnu options
-#OCFLAGS += -mavx # depends on architecture
-# enable all warnings with exceptions
-OCFLAGS += -Wall -Wno-unused-variable -Wno-unused-but-set-variable
+  # Other Gnu options
+
+  OCFLAGS += ${ARCH_FLAG}
+  OCXXFLAGS += ${ARCH_FLAG}
+  LDFLAGS += ${ARCH_FLAG}
+
+  # enable all warnings with exceptions
+  OCFLAGS += -Wall -Wno-unused-variable -Wno-unused-but-set-variable
 
 endif
 

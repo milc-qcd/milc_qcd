@@ -399,7 +399,7 @@ r_source_w_fm_generic(char *filename,
 }
 
 /*--------------------------------------------------------------------*/
-void r_source_w_fm_to_site(char *filename, field_offset dest_site,
+void r_source_w_fm_to_site(const char *filename, field_offset dest_site,
 			   int spin, int color, int x0, int y0, int z0, int t0)
 {
   r_source_w_fm_generic(filename, dest_site, (wilson_vector *)NULL,
@@ -407,7 +407,7 @@ void r_source_w_fm_to_site(char *filename, field_offset dest_site,
 }
 
 /*--------------------------------------------------------------------*/
-void r_source_w_fm_to_field(char *filename, wilson_vector *dest_field,
+void r_source_w_fm_to_field(const char *filename, wilson_vector *dest_field,
 			    int spin, int color, int x0, int y0, int z0, int t0)
 {
   r_source_w_fm_generic(filename, (field_offset)(-1), dest_field, 
