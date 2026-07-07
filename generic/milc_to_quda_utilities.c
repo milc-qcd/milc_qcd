@@ -94,11 +94,15 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
   eig_args->a_max = 0.;
   eig_args->preserve_evals = QUDA_BOOLEAN_TRUE; // Default to preserving the eigenvalues
   eig_args->batched_rotate = 0;
-  /** With save_prec, we are currently saving the eigenvectors in double
-     * precision if running MILC in double precision. At some point, we may
-     * want to be able to control this separately via the parameters input file
+  /** Precision at which eigenvectors are written to disk.  This follows the
+     * precision at which they were computed/held (eigensolver_prec), not the
+     * compiled MILC precision: eigensolver_prec 2 -> double, otherwise single.
+     * (eigensolver_prec 0 is half, which cannot be saved, so it maps to single;
+     * single storage is lossless for single- or half-precision eigenvectors.)
+     * This lets, e.g., a double-precision build with eigensolver_prec 1 store
+     * a single-precision deflation space in single-precision files.
   **/
-  eig_args->save_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+  eig_args->save_prec = (param.eigen_param.eigPrec == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
   eig_args->partfile = QUDA_BOOLEAN_FALSE;
   eig_args->io_parity_inflate = QUDA_BOOLEAN_FALSE;
   eig_args->use_norm_op = QUDA_BOOLEAN_FALSE;

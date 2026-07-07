@@ -484,7 +484,10 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
 
   strcpy( qep.vec_infile, "" );
   strcpy( qep.vec_outfile, "" );
-  qep.save_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+  /* Save eigenvectors at the precision they were computed/held
+     (eigensolver_prec), not the compiled MILC precision: eigensolver_prec 2
+     -> double, otherwise single (half maps to single, which cannot be saved). */
+  qep.save_prec = (precEigensolver == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
   qep.io_parity_inflate = QUDA_BOOLEAN_FALSE;
   /**************************************************/  
 
