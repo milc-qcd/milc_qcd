@@ -349,12 +349,17 @@ int main(int argc, char *argv[])
 #endif
      
 #if ( defined(HAVE_QUDA) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
-      /* Compute or reread eigenpairs with QUDA or just load the above
-	 ones into QUDA.  Only needed when a QUDA consumer (deflated CG or
-	 exact current) will use a device-resident deflation space. */
+      /* Prime QUDA with only the file-parity deflation space
+	 (load_other_parity=0).  The deflated CG solver reconstructs the
+	 opposite parity on demand (FROM_OTHER_PARITY) only if a solve of that
+	 parity occurs, so an even-parity workflow holds only the even deflation
+	 space resident.
+
+	 NOTE: the QUDA path assumes the file-parity eigenvectors are EVEN
+	 (see load_evecs_quda); */
 
       QIO_verbose(QIO_VERB_DEBUG);
-      load_evecs_quda(fn);
+      load_evecs_quda(fn, 0);
 #endif
 
       /* Unapply twisted boundary conditions on the fermion links and
