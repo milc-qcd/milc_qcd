@@ -651,7 +651,7 @@ block_current_stochastic_delta_udus( Real **j_mu[], Real masses[],
 				     quark_invert_control qic[],
 				     su3_vector *gr[]){
   
-  char myname[] = "block_current_stochastic_delta_udls";
+  char myname[] = "block_current_stochastic_delta_udus";
 
   /* Offset for staggered phases in the current definition */
   int r_offset[4] = {0, 0, 0, 0};
@@ -689,13 +689,14 @@ block_current_stochastic_delta_udus( Real **j_mu[], Real masses[],
     Mu_inv_gr[is] = create_v_field();
   }
 
-  qic->parity = parity;
+  qic_ud->parity = parity;
+  qic_us->parity = parity;
   /* Mu_inv_gr = 1/[D^2 + 4*m_u^2] gr */
-  ks_congrad_block_field(nsrc, gr, Mu_inv_gr, qic, m_u, fn_us);
+  ks_congrad_block_field(nsrc, gr, Mu_inv_gr, qic_ud, m_u, fn_us);
   /* Mud_inv_gr = 1/[D^2 + 4*m_d^2] Mu_inv_gr */
-  ks_congrad_block_field(nsrc, Mu_inv_gr, Mud_inv_gr, qic, m_d, fn_ud);
+  ks_congrad_block_field(nsrc, Mu_inv_gr, Mud_inv_gr, qic_ud, m_d, fn_ud);
   /* Mus_inv_gr = 1/[D^2 + 4*m_s^2] Mu_inv_gr */
-  ks_congrad_block_field(nsrc, Mu_inv_gr, Mus_inv_gr, qic, m_s, fn_us);
+  ks_congrad_block_field(nsrc, Mu_inv_gr, Mus_inv_gr, qic_us, m_s, fn_us);
 
   for(int is = 0; is < nsrc; is++){
       destroy_v_field(Mu_inv_gr[is]);
@@ -801,14 +802,18 @@ block_current_stochastic_delta_udls( Real **j_mu[], Real masses[],
     Ml_inv_gr[is] = create_v_field();
   }
 
-  qic->parity = parity;
+  qic_ls->parity = parity;
+  int save_deflate = qic_ls->deflate;
+  if(parity == ODD)qic_ls->deflate = 0;  // No further deflation for odd parity contribution
+
   /* Ml_inv_gr = 1/[D^2 + 4*m_l^2] gr */
-  ks_congrad_block_field(nsrc, gr, Ml_inv_gr, qic, m_l, fn_ls);
+  ks_congrad_block_field(nsrc, gr, Ml_inv_gr, qic_ls, m_l, fn_ls);
   /* Mud_inv_gr = 1/[D^2 + 4*m_l^2] Ml_inv_gr */
   /* NOTE: we are approximating ud here */
-  ks_congrad_block_field(nsrc, Ml_inv_gr, Mud_inv_gr, qic, m_l, fn_ud);
+  ks_congrad_block_field(nsrc, Ml_inv_gr, Mud_inv_gr, qic_ls, m_l, fn_ud);
   /* Mls_inv_gr = 1/[D^2 + 4*m_s^2] Ml_inv_gr */
-  ks_congrad_block_field(nsrc, Ml_inv_gr, Mls_inv_gr, qic, m_s, fn_ls);
+  ks_congrad_block_field(nsrc, Ml_inv_gr, Mls_inv_gr, qic_ls, m_s, fn_ls);
+  qic_ls->deflate = save_deflate;
 
   for(int is = 0; is < nsrc; is++){
       destroy_v_field(Ml_inv_gr[is]);
