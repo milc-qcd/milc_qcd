@@ -7,7 +7,7 @@
 pushd .
 
 module reset
-module load gcc cuda
+module load gcc cuda nvidia/26.1
 module list
 
 echo "LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
@@ -44,7 +44,7 @@ GPU_ARCH="nvidia" \
 OFFLOAD="CUDA" \
 COMPILER="gnu" \
 OPT="-O3 -Ofast -g" \
-LDFLAGS="-g -L/home1/apps/nvidia/Linux_aarch64/24.9/cuda/lib64/stubs -lcuda -lnvidia-ml" \
+LDFLAGS="-g -lcuda -lnvidia-ml" \
 QUDA_HOME=${QUDA_BUILD} \
 WANTQUDA=true \
 WANT_FN_CG_GPU=true \

@@ -23,7 +23,11 @@
 *  this function handles:
 *   1. Using QUDA either to calculate eigenvectors or to read and write them
 *   2. Using MILC to arrange eigensolutions by other means and/or read and write them
-*  In both cases both parities of eigenvectors are loaded into QUDA
+*  In both cases the file-parity deflation space is loaded into QUDA.  The
+*  opposite parity is reconstructed here only when load_other_parity != 0;
+*  otherwise QUDA builds it on demand (FROM_OTHER_PARITY) if a solve of that
+*  parity occurs.  Note the QUDA (USE_EIG_GPU) path assumes the file parity is
+*  EVEN.
 *
 *  This function is useful if QUDA deflation spaces are to be used for,
 *  e.g., subsequent calls to qudaProject or qudaExactCurrent. The
@@ -114,7 +118,7 @@ stage_eigenfile_on_tmp(char **cpy_eigfile){
 #endif  
 
 void
-load_evecs_quda(imp_ferm_links_t *fn_mass){
+load_evecs_quda(imp_ferm_links_t *fn_mass, int load_other_parity){
 
   char myname[] = "load_evecs_quda";
   node0_printf("Loading deflation spaces into QUDA\n");
@@ -212,7 +216,8 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   inv_args.evenodd = (param.eigen_param.parity == EVEN) ? QUDA_EVEN_PARITY : QUDA_ODD_PARITY;
 
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
-  // QUDA requires that this be set equal to the gauge precision
+  // QUDA requires that prec_eigensolver match the field precision here, since the
+  // vectors are supplied from MILC's host eigVec array in MILC_PRECISION.
   eig_args.prec_eigensolver = (quda_precision == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
   
   // Load one parity eigenvectors from MILC into QUDA
@@ -231,12 +236,18 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
    * This requires that the other parity eigenvectors are already loaded into QUDA.
   **/
 
-  // Reconstruct other parity eigenvectors in QUDA
-  dtime = -dclock();
-  inv_args.evenodd = (inv_args.evenodd == QUDA_EVEN_PARITY) ? QUDA_ODD_PARITY : QUDA_EVEN_PARITY;
-  qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
-  dtime += dclock();
-  node0_printf( "Time to reconstruct other parity eigenvectors = %g s\n", dtime ); fflush(stdout);
+  // Reconstruct other parity eigenvectors in QUDA.
+  // ks_measure passes load_other_parity=1 because exact current requires both
+  // parities resident.  ks_spectrum passes 0: the deflated CG solver
+  // reconstructs the other parity on demand (FROM_OTHER_PARITY) only if a solve
+  // of that parity occurs, so a single-parity workflow holds just one space.
+  if(load_other_parity){
+    dtime = -dclock();
+    inv_args.evenodd = (inv_args.evenodd == QUDA_EVEN_PARITY) ? QUDA_ODD_PARITY : QUDA_EVEN_PARITY;
+    qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
+    dtime += dclock();
+    node0_printf( "Time to reconstruct other parity eigenvectors = %g s\n", dtime ); fflush(stdout);
+  }
 
 } // load_evecs_quda
 
@@ -473,7 +484,10 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
 
   strcpy( qep.vec_infile, "" );
   strcpy( qep.vec_outfile, "" );
-  qep.save_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+  /* Save eigenvectors at the precision they were computed/held
+     (eigensolver_prec), not the compiled MILC precision: eigensolver_prec 2
+     -> double, otherwise single (half maps to single, which cannot be saved). */
+  qep.save_prec = (precEigensolver == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
   qep.io_parity_inflate = QUDA_BOOLEAN_FALSE;
   /**************************************************/  
 

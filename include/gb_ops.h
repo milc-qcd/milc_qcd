@@ -96,7 +96,7 @@ void gb_baryon(ks_prop_field *qko0[], ks_prop_field *qko1[], ks_prop_field *qko2
                int num_corr_gb, int phase[], Real fact[], complex *prop[]);
 
 /* generic_ks/gb_ops.c function declarations */
-int gb_baryon_op(char *label);
+int gb_baryon_op(const char *label);
 char *gb_baryon_label(enum gb_baryon_op gbop);
 enum  gb_baryon_op decode_gb_op (char* sym_label, char* gts_irrep, int ns, int cls);
 

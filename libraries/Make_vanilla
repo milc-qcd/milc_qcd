@@ -58,6 +58,11 @@ OPT              = -O3 -g # ( -g -O, etc )
 #-------------- Gnu C -------------------------------------
 ifeq ($(strip ${COMPILER}),gnu)
   #OCFLAGS = -Wall
+
+  ifeq ($(strip ${ARCH}),arm64)
+    OCFLAGS += -arch arm64
+  endif
+
 endif
 #------------------------ BlueGene -----------------------------------
 ifeq ($(strip ${COMPILER}),ibm)

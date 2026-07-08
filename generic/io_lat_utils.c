@@ -91,7 +91,7 @@ typedef float OUTPUT_TYPE;
    Routines for archive I/O
    -----------------------------------------------------------------------*/
 
-int qcdhdr_get_str(char *s, QCDheader *hdr, char **q) {     
+int qcdhdr_get_str(const char *s, QCDheader *hdr, char **q) {     
   /* find a token and return the value */
   int i;
   for (i=0; i<(char)(*hdr).ntoken; i++) {
@@ -104,14 +104,14 @@ int qcdhdr_get_str(char *s, QCDheader *hdr, char **q) {
   return (FAILURE);
 }
   
-int qcdhdr_get_int(char *s,QCDheader *hdr,int *q) {
+int qcdhdr_get_int(const char *s,QCDheader *hdr,int *q) {
   char *p;
   qcdhdr_get_str(s,hdr,&p);
   if (p==NULL) return (FAILURE);
   sscanf(p,"%d",q);
   return (SUCCESS);
 }
-int qcdhdr_get_int32x(char *s,QCDheader *hdr,u_int32type *q) {
+int qcdhdr_get_int32x(const char *s,QCDheader *hdr,u_int32type *q) {
   char *p;
   int r;
   qcdhdr_get_str(s,hdr,&p);
@@ -120,7 +120,7 @@ int qcdhdr_get_int32x(char *s,QCDheader *hdr,u_int32type *q) {
   *q = r;
   return (SUCCESS);
 }
-int qcdhdr_get_float(char *s, QCDheader *hdr, Real *q) {
+int qcdhdr_get_float(const char *s, QCDheader *hdr, Real *q) {
   char *p;
   qcdhdr_get_str(s,hdr,&p);
   if (p==NULL) return (FAILURE);
@@ -132,7 +132,7 @@ int qcdhdr_get_float(char *s, QCDheader *hdr, Real *q) {
   return (SUCCESS);
 }
 
-void error_exit(char *s) { printf("%s\n",s); terminate(1);}
+void error_exit(const char *s) { printf("%s\n",s); terminate(1);}
 
 void complete_U(float *u) {
   u[12] = u[ 2]*u[10] - u[ 4]*u[ 8] - u[ 3]*u[11] + u[ 5]*u[ 9];
@@ -297,7 +297,7 @@ void pswrite_data(int parallel, FILE* fp, void *src, size_t size,
   else        swrite_data(fp,src,size,myname,descrip);
 }
 /*---------------------------------------------------------------------------*/
-int sread_data(FILE* fp, const void *src, size_t size, const char *myname, const char *descrip)
+int sread_data(FILE* fp, void * restrict src, size_t size, const char *myname, const char *descrip)
 {
   if(g_read(src,size,1,fp) != 1)
     {
@@ -310,7 +310,7 @@ int sread_data(FILE* fp, const void *src, size_t size, const char *myname, const
   return 0;
 }
 /*---------------------------------------------------------------------------*/
-int pread_data(FILE* fp, const void *src, size_t size, const char *myname, const char *descrip)
+int pread_data(FILE* fp, void * restrict src, size_t size, const char *myname, const char *descrip)
 {
   if(g_read(src,size,1,fp) != 1)
     {
@@ -333,7 +333,7 @@ int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, const cha
   return status;
 }
 /*---------------------------------------------------------------------------*/
-int sread_byteorder(int byterevflag, FILE* fp, const void *src, size_t size, const char *myname, const char *descrip)
+int sread_byteorder(int byterevflag, FILE* fp, void * restrict src, size_t size, const char *myname, const char *descrip)
 {
   int status;
 
@@ -343,7 +343,7 @@ int sread_byteorder(int byterevflag, FILE* fp, const void *src, size_t size, con
   return status;
 }
 /*---------------------------------------------------------------------------*/
-int psread_data(int parallel, FILE* fp, const void *src, size_t size, 
+int psread_data(int parallel, FILE* fp,  void * restrict src, size_t size, 
 		 const char *myname, const char *descrip)
 {
   if(parallel)return pread_data(fp,src,size,myname,descrip);

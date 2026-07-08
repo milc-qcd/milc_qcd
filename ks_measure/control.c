@@ -154,7 +154,9 @@ int main(int argc, char *argv[])
       /* Compute or reread eigenpairs with QUDA or just load the above
 	 ones into QUDA.  Only needed when a QUDA consumer (deflated CG or
 	 exact current) will use a device-resident deflation space. */
-      load_evecs_quda(fn);
+      /* Pass load_other_parity=1: exact current (qudaExactCurrent) requires
+	 BOTH parity deflation spaces resident. */
+      load_evecs_quda(fn, 1);
 
 #endif
 

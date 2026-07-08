@@ -9,7 +9,7 @@
 
 /* FIX THIS - more efficient to take cross product of first two
    rows, dot with third. */
-complex det_su3( su3_matrix *a ) {
+complex det_su3( const su3_matrix *a ) {
 register complex cc,dd,sum;
     CMUL(a->e[0][0],a->e[1][1],cc);
     CMUL(cc,a->e[2][2],sum);

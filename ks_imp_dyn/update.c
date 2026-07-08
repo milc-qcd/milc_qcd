@@ -31,7 +31,7 @@ int update()  {
   double startaction,endaction,d_action();
   Real xrandom;
 #endif
-  imp_ferm_links_t* fn, fn_last;
+  imp_ferm_links_t *fn, *fn_last;
   
   /* refresh the momenta */
   ranmom();

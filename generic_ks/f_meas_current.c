@@ -87,19 +87,19 @@ thin_source(su3_vector *src, int thinning, int ex, int ey, int ez, int et){
 /*****************************************************************************/
 /*Write current record for the accumulated average over random sources */
 static void
-write_tslice_values_begin(char *tag){
+write_tslice_values_begin(const char *tag){
   node0_printf("BEGIN JTMU%s\n", tag);
 }
 
 /*****************************************************************************/
 static void
-write_tslice_values_end(char *tag){
+write_tslice_values_end(const char *tag){
   node0_printf("END JTMU%s\n", tag);
 }
 
 /*****************************************************************************/
 static void
-write_tslice_values(char *tag, int jr, Real mass1, Real charge1,
+write_tslice_values(const char *tag, int jr, Real mass1, Real charge1,
 		    Real mass2, Real charge2, Real *j_mu ){
   double *jtmu = (double *)malloc(sizeof(double)*4*param.nt);
 
@@ -160,7 +160,7 @@ write_tslice_values(char *tag, int jr, Real mass1, Real charge1,
 /* Calculate and write the result for random source jr with the listed
    masses */
 static void
-write_jdotA_value(char *tag, int jr, Real mass1, Real charge1,
+write_jdotA_value(const char *tag, int jr, Real mass1, Real charge1,
 		  Real mass2, Real charge2, Real *j_mu, Real *u1_A ){
 
   if(jr < 0){
@@ -1926,6 +1926,7 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
 #endif
 }
 
+#if 0
 /*********************************************************************/
 static void
 check_eigen(int Nvecs){
@@ -1938,6 +1939,8 @@ check_eigen(int Nvecs){
 	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
     }
 }
+
+#endif
 
 /*********************************************************************/
 /* Create fields for low- and high-mode current densities */
