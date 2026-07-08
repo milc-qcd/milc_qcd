@@ -460,7 +460,7 @@ void gamma_conj(gamma_matrix_t *dest, gamma_matrix_t *src){
 
 /* Map a label to the gamma index */
 
-int gamma_index(char *label){
+int gamma_index(const char *label){
   int i;
   for(i = 0; i < MAXGAMMA; i++){
     if(strcmp(label,gammalabel[i]) == 0)return i;

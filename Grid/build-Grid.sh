@@ -180,7 +180,9 @@ then
 
     gpu-hip)
 
-	source ${TOPDIR}/env.sh
+	source ${TOPDIR}/env-ml.sh
+	INSTALL_GMP=/opt/cray/chapel/1.31.0/hpe-cray-ex/third-party/gmp/install/hpe-cray-ex-x86_64-znver2-llvm-pic/
+	INSTALLROOT=${HOME}/frontier/quda/install
 
 	${SRCDIR}/configure \
 	     --prefix ${INSTALLDIR}      \

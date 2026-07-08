@@ -200,15 +200,29 @@ int readin(int prompt) {
 
 
     IF_OK if(param.eigen_param.Nvecs > 0){
+      
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
+      /* controls how often redeflation occurs during deflated inversions */
+      IF_OK status += get_f(stdin, prompt,"tol_restart", &param.eigen_param.tol_restart);
+#endif
 
       /* eigenvector input */
       IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
 					    param.ks_eigen_startfile);
       
+      /* Additional parameters for QUDA deflation */
+#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU))
+      if(param.ks_eigen_startflag == RELOAD_ASCII || 
+	 param.ks_eigen_startflag == RELOAD_SERIAL ||
+	 param.ks_eigen_startflag == RELOAD_PARALLEL ){
+        /* allow file to have more eigenpairs than will be used for deflation */
+        IF_OK status += get_i(stdin, prompt,"file_number_of_eigenpairs", &param.eigen_param.Nvecs_in);
+      }
+#endif
       /* eigenvector output */
       IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
 					  param.ks_eigen_savefile);
-
+      
       /* If we are reading in eigenpairs, we don't regenerate them */
 
 #if EIGMODE == EIGCG
@@ -238,7 +252,8 @@ int readin(int prompt) {
       
       param.eigcgp.Nvecs_curr = 0;
       param.eigcgp.H = NULL;
-#else
+
+#else // EIGMODE != EIGCG
 
       /*------------------------------------------------------------*/
       /* Dirac eigenpair calculation                                */

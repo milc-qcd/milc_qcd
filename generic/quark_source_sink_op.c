@@ -1114,8 +1114,9 @@ static int apply_ks_inverse(su3_vector *v, quark_source_sink_op *qss_op,
   /* Apply twist to the boundary links of fn and reset origin of KS
      phases if requested */
   set_boundary_twist_fn(fn, mybdry_phase, r0);
-  boundary_twist_fn(fn, ON);
-
+  if(fn->phase->twist_in == OFF)
+    boundary_twist_fn(fn, ON);
+ 
   /* If we are twisting, apply the momentum twist to the source */
   /* See ks_spectrum/make_prop.c for an explanation */
   mybdry_phase[3] = 0; 

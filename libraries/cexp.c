@@ -6,7 +6,7 @@
 #include <math.h>
 #include "../include/complex.h"
 
-complex cexp( complex *a ){
+complex cexp( const complex *a ){
     complex c;
     Real mag;
     mag = (Real)exp( (double)(*a).real );

@@ -5,7 +5,7 @@
 #include "../include/config.h"
 #include "../include/complex.h"
 
-complex cdiv( complex *a, complex *b ) {
+complex cdiv( const complex *a, const complex *b ) {
     complex c;
     Real scale;
     scale = 1.0/((*b).real*(*b).real+(*b).imag*(*b).imag);

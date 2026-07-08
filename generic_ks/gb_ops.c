@@ -73,7 +73,7 @@ static char *gb_baryon_string[MAX_GB_BARYON] = {
 /**
   Convert a baryon string into the corresponding enum index
  */
-int gb_baryon_op(char *label){
+int gb_baryon_op(const char *label){
   int i;
   for(i = 0; i < MAX_GB_BARYON; i++){
     if(strcmp(label,gb_baryon_string[i]) == 0) return i;
