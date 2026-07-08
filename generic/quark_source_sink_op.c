@@ -1847,7 +1847,7 @@ void apply_fermion_flow_v(su3_vector **srcs, quark_source_sink_op *qss_op, int n
   invParams.cuda_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
 
   /* Perform fermion flow */
-  performGFlowQuda(srcs, srcs, &invParams, &smearParams, obsParams, nsrcs);
+  performGFlowQuda((void **)srcs, (void **)srcs, &invParams, &smearParams, obsParams, nsrcs);
 
   /* Clean up */
   free(obsParams);
@@ -2658,7 +2658,7 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_vf(stdin, prompt, "momentum_twist", qss_op->bp, 3);
   }
   else if( op_type == FERMION_FLOW){
-    IF_OK status += get_s(fp, prompt, "flow_type", &qss_op->flow_type);
+    IF_OK status += get_s(fp, prompt, "flow_type", qss_op->flow_type);
     IF_OK status += get_f(stdin, prompt,"step_size", &qss_op->step_size );
     IF_OK status += get_i(stdin, prompt,"restart", &qss_op->restart );
     IF_OK status += get_f(stdin, prompt,"start_time", &qss_op->start_time );
