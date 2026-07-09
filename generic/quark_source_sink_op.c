@@ -247,7 +247,8 @@ void insert_qss_op(quark_source *qs, quark_source_sink_op *qss_op){
 /* Accessor for Naik epsilon parameter in embedded KS inverse and hopping operator */
 /* Returns 0 if a Naik epsilon is not used for this operator */
 int get_qss_eps_naik(Real *eps_naik, quark_source_sink_op *qss_op){
-  if(qss_op->type == KS_INVERSE || qss_op->type == HOPPING){
+  if(qss_op->type == KS_INVERSE || qss_op->type == HOPPING ||
+     qss_op->type == FERMION_FLOW){
     *eps_naik = qss_op->eps_naik;
     return 1;
   }
@@ -1822,6 +1823,97 @@ void apply_fermion_flow_v(su3_vector **srcs, quark_source_sink_op *qss_op, int n
   smearParams.t0 = qss_op->start_time;
   smearParams.rk_order = 3;
 
+  /* Select the fermion flow generator (the K_t operator that smooths the quark).
+     This is independent of smear_type above, which sets the GAUGE flow.
+
+     Available fermion_flow_op choices:
+       laplace4d  - 4D gauge-covariant Laplacian. The original/default generator;
+                    color-vector field, no fermion action input needed.
+       laplace3d  - 3D (spatial-only) gauge-covariant Laplacian. As laplace4d but
+                    the temporal direction is excluded from the smoothing.
+       staggered  - naive-staggered -DdagD smoother
+       hisq       - full HISQ -DdagD. Staggered smoother built on HISQ fat + Naik
+                    (long) links
+       hisq_trunc - HISQ -DdagD with the Naik (long) term dropped (fat links only). */
+  if(      strcmp("laplace4d",  qss_op->fermion_flow_op)==0 )
+    smearParams.fermion_flow_type = QUDA_FERMION_FLOW_LAPLACE_4D;
+  else if( strcmp("laplace3d",  qss_op->fermion_flow_op)==0 )
+    smearParams.fermion_flow_type = QUDA_FERMION_FLOW_LAPLACE_3D;
+  else if( strcmp("staggered",  qss_op->fermion_flow_op)==0 )
+    smearParams.fermion_flow_type = QUDA_FERMION_FLOW_STAGGERED;
+  else if( strcmp("hisq",       qss_op->fermion_flow_op)==0 )
+    smearParams.fermion_flow_type = QUDA_FERMION_FLOW_HISQ;
+  else if( strcmp("hisq_trunc", qss_op->fermion_flow_op)==0 )
+    smearParams.fermion_flow_type = QUDA_FERMION_FLOW_HISQ_TRUNCATED;
+  else {
+    node0_printf("ERROR: fermion_flow_op %s is invalid "
+                 "(laplace4d|laplace3d|staggered|hisq|hisq_trunc)\n",
+                 qss_op->fermion_flow_op);
+    terminate(1);
+  }
+
+  /* KS phase convention for the staggered/HISQ flow operators (ignored by the
+     Laplacian operators). MILC ships the gauge field phase-free (rephase(OFF)
+     above) and QUDA re-applies the KS phases internally per this convention. */
+  smearParams.staggered_phase_type = QUDA_STAGGERED_PHASE_MILC;
+
+  /* For the HISQ flow operators, QUDA does NOT recompute the smearing/action
+     coefficients: it consumes the final, tadpole-scaled fat7 (level-1) and
+     asqtad (level-2) path coefficients supplied here, exactly as MILC built
+     them.
+     -------------------------------------------------------------------------
+     SOURCE OF COEFFICIENTS AND THE NAIK EPSILON FOLD (read before changing):
+     We pull the coefficients from the SAME HISQ links object (fn_links) that
+     was constructed for the propagator solve. Consequences:
+       * The tadpole factor u0 is already baked into p1/p2 (it enters when the
+         HISQ path table was built from the input u0), so we pass NO separate
+         tadpole here.
+       * The Naik epsilon (eps_N) is NOT stored inside p2. In MILC, p2 holds the
+         eps_N = 0 asqtad baseline; a nonzero eps_N is applied per-quark at
+         FN-link build time as links(p2) + eps_N*links(p3). Because building the
+         fat/long links is LINEAR in the path coefficients, that link-level fold
+         is identical to a scalar fold on the affected (one_link, Naik) terms:
+             asqtad.one_link = p2.one_link + eps_N * p3.one_link
+             asqtad.naik     = p2.naik     + eps_N * p3.naik
+         which is what we do below. This makes the operator EXACT for any eps_N.
+       * Which eps_N? The one the propagator being flowed was solved with. The
+         flow op carries its own naik_term_epsilon (input parameter). It is the
+         user's responsibility to set the flow op's naik_term_epsilon to match the
+         propagator; there is no automatic linkage at the sink-op layer (the op
+         receives only the color-vector field, not the propagator's Naik index).
+     ------------------------------------------------------------------------- */
+  if(smearParams.fermion_flow_type == QUDA_FERMION_FLOW_HISQ ||
+     smearParams.fermion_flow_type == QUDA_FERMION_FLOW_HISQ_TRUNCATED) {
+    ks_action_paths_hisq *ap = get_action_paths_hisq(fn_links);
+    if(ap == NULL) {
+      node0_printf("ERROR: HISQ fermion flow requires a HISQ links object (fn_links)\n");
+      terminate(1);
+    }
+    /* Naik epsilon of the propagator being flowed (0 for the light quarks).
+       inaik indexes the shared eps_naik table; it is set by setup.c from the
+       flow op's naik_term_epsilon via get_qss_eps_naik(). */
+    int inaik = qss_op->ksp.naik_term_epsilon_index;
+    double eps_naik = get_eps_naik(ap)[inaik];
+
+    /* Ordering matches load_fatlinks_gpu()/load_fatlonglinks_gpu():
+       [one_link, naik, three_staple, five_staple, seven_staple, lepage].
+       p1 = fat7 (level 1, eps_N-independent), p2 = asqtad (level 2). */
+    smearParams.hisq_fat7_coeff[0]   = ap->p1.act_path_coeff.one_link;
+    smearParams.hisq_fat7_coeff[1]   = ap->p1.act_path_coeff.naik;         /* 0 for fat7 */
+    smearParams.hisq_fat7_coeff[2]   = ap->p1.act_path_coeff.three_staple;
+    smearParams.hisq_fat7_coeff[3]   = ap->p1.act_path_coeff.five_staple;
+    smearParams.hisq_fat7_coeff[4]   = ap->p1.act_path_coeff.seven_staple;
+    smearParams.hisq_fat7_coeff[5]   = ap->p1.act_path_coeff.lepage;       /* 0 for fat7 */
+    /* p2 baseline with the Naik (eps_N) correction from p3 folded into the
+       one_link and Naik terms (see the linearity argument above). */
+    smearParams.hisq_asqtad_coeff[0] = ap->p2.act_path_coeff.one_link + eps_naik * ap->p3.act_path_coeff.one_link;
+    smearParams.hisq_asqtad_coeff[1] = ap->p2.act_path_coeff.naik     + eps_naik * ap->p3.act_path_coeff.naik;
+    smearParams.hisq_asqtad_coeff[2] = ap->p2.act_path_coeff.three_staple;
+    smearParams.hisq_asqtad_coeff[3] = ap->p2.act_path_coeff.five_staple;
+    smearParams.hisq_asqtad_coeff[4] = ap->p2.act_path_coeff.seven_staple;
+    smearParams.hisq_asqtad_coeff[5] = ap->p2.act_path_coeff.lepage;
+  }
+
   /* Setup QUDA observable parameters */
   int nObsParams = smearParams.n_steps / smearParams.meas_interval + 1;
   QudaGaugeObservableParam *obsParams;
@@ -1846,6 +1938,14 @@ void apply_fermion_flow_v(su3_vector **srcs, quark_source_sink_op *qss_op, int n
   invParams.verbosity = QUDA_SUMMARIZE;
   invParams.cpu_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
   invParams.cuda_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+
+  /* Mass of the fermion flow generator. We deliberately flow with a ZERO-MASS
+     operator (a pure -DdagD smoother). This is a property of the flow itself and
+     is INDEPENDENT of the quark mass used in the propagator solve: the field
+     being flowed already carries the propagator's mass; the flow generator's
+     mass only sets the smoothing kernel. Read by the staggered/HISQ operators
+     (as invParams.mass) and ignored by the Laplacian operators. */
+  invParams.mass = 0.0;
 
   /* Perform fermion flow */
   performGFlowQuda((void **)srcs, (void **)srcs, &invParams, &smearParams, obsParams, nsrcs);
@@ -2660,6 +2760,16 @@ static int get_field_op(int *status_p, FILE *fp,
   }
   else if( op_type == FERMION_FLOW){
     IF_OK status += get_s(fp, prompt, "flow_type", qss_op->flow_type);
+    /* Required: selects the fermion flow generator (K_t operator). See the
+       string->QudaFermionFlowType map in apply_fermion_flow_v(). */
+    IF_OK status += get_s(fp, prompt, "fermion_flow_op", qss_op->fermion_flow_op);
+    /* Required: Naik epsilon of the propagator being flowed. Only consumed by
+       the HISQ flow operators (folded into the asqtad coefficients); ignored by
+       the Laplacian/staggered operators. MUST match the naik_term_epsilon used
+       for the propagator this quark came from. setup.c resolves it to a Naik
+       index (into the shared eps_naik table) via get_qss_eps_naik(), exactly
+       like the KS_INVERSE/HOPPING operators. */
+    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", &qss_op->eps_naik );
     IF_OK status += get_f(stdin, prompt,"step_size", &qss_op->step_size );
     IF_OK status += get_i(stdin, prompt,"restart", &qss_op->restart );
     IF_OK status += get_f(stdin, prompt,"start_time", &qss_op->start_time );

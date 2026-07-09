@@ -301,7 +301,9 @@ struct qss_op_struct {
   int t0;             /* For time slice projection */
   quark_source qs_save; /* for SAVE_QUARK_SRC */
   struct qss_op_struct *op;   /* Next operation in the chain */
-  char flow_type[MAXDESCRP]; /* wilson or symanzik for fermion flow */
+  char flow_type[MAXDESCRP]; /* wilson or symanzik: the GAUGE flow discretization used in the fermion flow */
+  char fermion_flow_op[MAXDESCRP]; /* fermion flow generator (the K_t operator):
+                                      laplace4d | laplace3d | staggered | hisq | hisq_trunc */
   Real step_size; /* stepsize for fermion flow */
   Real start_time; /* start time t0 for fermion flow */
   int flow_steps; /* number of fermion flow steps to apply */
