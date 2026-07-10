@@ -2,7 +2,7 @@
 #SBATCH -A XXXXXXX 		# Change to your account
 #SBATCH -J JobName
 #SBATCH --partition=lq2_gpu
-#SBATCH --qos=test		# Change to 'normal' for regular running
+#SBATCH --qos=normal
 #SBATCH --time=00:30:00
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:a100:4
