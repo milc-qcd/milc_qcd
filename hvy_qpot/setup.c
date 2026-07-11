@@ -157,9 +157,9 @@ int readin(int prompt){
 #endif
     startflag = par_buf.startflag;
     saveflag = par_buf.saveflag;
-    strcpy(startfile,par_buf.startfile);
-    strcpy(savefile,par_buf.savefile);
-    strcpy(stringLFN, par_buf.stringLFN);
+    snprintf(startfile,MAXFILENAME,"%s",par_buf.startfile);
+    snprintf(savefile,MAXFILENAME,"%s",par_buf.savefile);
+    snprintf(stringLFN,MAXFILENAME,"%s",par_buf.stringLFN);
 
     /* Do whatever is needed to get lattice */
 	if( startflag != CONTINUE )
