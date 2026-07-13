@@ -280,7 +280,7 @@ HISQ_TREE_OPTIONS = "DEFINES= -DFN -UKS_MULTICG \
         -DHISQ_FF_MULTI_WRAPPER \
 	-DHISQ_FORCE_FILTER=5.0e-5" \
 	"GAUGE = symanzik_tree_action.h" \
-	"QUARK = hisq/hisq_u3_test_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
 	${GAUGE_FORCE}"
 
@@ -322,7 +322,7 @@ su3_hmc1_tree_hisq::
 	"EXTRA_OBJECTS += d_action.o update_onemass.o"
 
 clean:
-	-/bin/rm -f *.o
+	-/bin/rm -f *.o quark_action.h gauge_action.h
 
 # Rules for generic routines
 include ../generic/Make_template
