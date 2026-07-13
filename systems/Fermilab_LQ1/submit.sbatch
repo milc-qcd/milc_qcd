@@ -2,7 +2,7 @@
 #SBATCH -A XXXXXXX 		# Change to your account
 #SBATCH -J JobName
 #SBATCH --partition=lq1_cpu
-#SBATCH --qos=test		# Change to 'normal' for regular running
+#SBATCH --qos=normal
 #SBATCH --time=00:30:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
