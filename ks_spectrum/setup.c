@@ -9,6 +9,9 @@
 #include <string.h>
 #include "params.h"
 #include <unistd.h>
+#ifdef HAVE_QUDA
+#include "../include/generic_quda.h"
+#endif
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
 #endif
@@ -16,6 +19,8 @@
 /* Forward declarations */
 
 static int initial_set(void);
+static int get_vi_optional(FILE *fp, int prompt, const char *tag,
+			   int *value, int nvalues);
 static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 static void make_3n_gathers(void);
 static void second_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
@@ -38,6 +43,54 @@ int setup()   {
   if(prompt == 2)return prompt;
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
+
+  /* The split-grid key partitions the machine grid, so it can only be checked
+     now that setup_layout() has fixed that grid.  This is a property of the job
+     as a whole: if it is wrong, nothing downstream can work, so die here rather
+     than after the gauge configuration has been read. */
+  {
+    const int *machine_dim = get_logical_dimensions();
+    int n_sub = 1;
+    for(dir = 0; dir < 4; dir++){
+      if(param.split_grid[dir] < 1){
+	node0_printf("setup: split_grid[%d] = %d must be positive\n",
+		     dir, param.split_grid[dir]);
+	terminate(1);
+      }
+      if(machine_dim[dir] % param.split_grid[dir] != 0){
+	node0_printf("setup: split_grid %d %d %d %d does not divide the machine grid %d %d %d %d in direction %d\n",
+		     param.split_grid[0], param.split_grid[1],
+		     param.split_grid[2], param.split_grid[3],
+		     machine_dim[0], machine_dim[1], machine_dim[2],
+		     machine_dim[3], dir);
+	node0_printf("setup: split_grid must be consistent with node_geometry\n");
+	terminate(1);
+      }
+      n_sub *= param.split_grid[dir];
+    }
+
+    if(n_sub > 1){
+      node0_printf("Split-grid deflation requested: split_grid %d %d %d %d (%d sub-grids of the %d %d %d %d machine grid)\n",
+		   param.split_grid[0], param.split_grid[1],
+		   param.split_grid[2], param.split_grid[3], n_sub,
+		   machine_dim[0], machine_dim[1], machine_dim[2], machine_dim[3]);
+#if !defined(HAVE_QUDA) || !defined(USE_CG_GPU)
+      /* Split-grid deflation is implemented entirely in QUDA's deflated block
+	 solver, so a build without the QUDA CG cannot honor the request.  Warn
+	 rather than abort: the solve is still correct, just not split. */
+      node0_printf("WARNING: this build has no QUDA GPU CG, so SPLIT-GRID DEFLATION IS DISABLED and split_grid is ignored\n");
+#endif
+    }
+
+#if defined(HAVE_QUDA) && defined(USE_CG_GPU)
+    /* Hand the key to QUDA once for the whole job.  It is not passed through
+       QudaInvertArgs_t because that struct is not zero-initialized by its
+       callers, so a new field in it would be garbage at every call site that
+       does not know about split-grid deflation. */
+    qudaSetSplitGrid(param.split_grid);
+#endif
+  }
+
   this_node = mynode();
   printf("pid(%d) = %d\n", this_node, getpid());
   printf("io_node(%d) = %d\n", this_node, io_node(this_node));
@@ -73,6 +126,61 @@ int setup()   {
   return(prompt);
 }
 
+
+/* Read a vector of ints for a keyword that may or may not be present.
+
+   The stock readers are no help here: get_vi -> get_check_tag -> get_next_tag
+   consumes the next token unconditionally and reports an error if it is not the
+   expected tag, and there is no way to push it back.  So peek instead: remember
+   the stream position, read the tag, and rewind if it is not ours, leaving the
+   stream exactly as the next get_* expects to find it.  The rewind is sound
+   because remap_stdio_from_args() (control.c) freopens the input file as stdin,
+   so stdin is a seekable regular file rather than a pipe.
+
+   Returns 1 if the tag was present and its values were read, 0 if it was absent
+   (values untouched, stream restored), -1 on a format error. */
+static int get_vi_optional(FILE *fp, int prompt, const char *tag,
+			   int *value, int nvalues){
+  const char myname[] = "get_vi_optional";
+  const char *checktag;
+  long pos;
+  int i;
+
+  /* Interactive input has no stream to rewind; an optional keyword is simply
+     never prompted for, so the caller's default stands. */
+  if(prompt != 0)return 0;
+
+  pos = ftell(fp);
+  if(pos < 0){
+    /* Cannot peek, so we cannot tell whether the keyword is there.  Say so:
+       silently ignoring a keyword the user did supply is the one outcome worth
+       avoiding.  (Does not arise when the input is a file, which is how
+       remap_stdio_from_args supplies it.) */
+    printf("\n%s: input is not seekable, so the optional keyword %s cannot be read and is ignored\n",
+	   myname,tag);
+    return 0;
+  }
+
+  checktag = get_next_tag(fp, tag, myname);
+  if(checktag == NULL || strcmp(checktag,tag) != 0){
+    if(fseek(fp,pos,SEEK_SET) != 0){
+      printf("\n%s: could not rewind input while looking for %s\n",myname,tag);
+      return -1;
+    }
+    return 0;
+  }
+
+  printf("%s ",tag);
+  for(i = 0; i < nvalues; i++){
+    if(fscanf(fp,"%d",value+i) != 1){
+      printf("\n%s: format error reading value %d of %s\n",myname,i,tag);
+      return -1;
+    }
+    printf("%d ",value[i]);
+  }
+  printf("\n");
+  return 1;
+}
 
 /* SETUP ROUTINES */
 static int initial_set(void){
@@ -119,6 +227,16 @@ static int initial_set(void){
 			   param.ionode_geometry, 4);
 #endif
 #endif
+    /* Optional: sub-grid layout for split-grid deflation.  Absent (or 1 1 1 1)
+       means no splitting, so input files that predate this keyword run
+       unchanged.  Validated against the machine grid in setup(), once
+       setup_layout() has fixed it. */
+    IF_OK {
+      int j;
+      for(j = 0; j < 4; j++) param.split_grid[j] = 1;
+      if(get_vi_optional(stdin, prompt, "split_grid", param.split_grid, 4) < 0)
+	status++;
+    }
     IF_OK {
       int iseed_in;
       status += get_i(stdin, prompt,"iseed", &iseed_in);

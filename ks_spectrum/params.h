@@ -67,6 +67,13 @@ typedef struct {
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
+  int split_grid[4];    /* Split-grid deflation (QUDA): partitions the machine
+			   grid into product(split_grid) sub-grids, on which the
+			   CG iterations of a deflated block solve run while the
+			   deflation stays on the full grid.  Optional keyword;
+			   1 1 1 1 (the default when absent) disables it.  Must
+			   divide the machine grid (get_logical_dimensions()) in
+			   each direction. */
   uint32_t iseed;
   char job_id[MAXFILENAME]; /* Usually encoded by scripts */
 
