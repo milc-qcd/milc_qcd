@@ -82,13 +82,6 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
 #endif
 }
 
-#if 0
-n
-/**********************************************************************/
-/* These routines are left here for consistency, but unsupported
-   until we decide what a HISQ one-term or two-term force means */
-/**********************************************************************/
-
 void 
 eo_fermion_force_oneterm( Real eps, Real weight, su3_vector *temp_x,
 			  int prec, fermion_links_t *fl )
@@ -139,8 +132,6 @@ void eo_fermion_force_twoterms_site( Real eps, Real weight1, Real weight2,
   destroy_v_field(x1);
   destroy_v_field(x2);
 }
-
-#endif /* #if 0 */
 
 /**********************************************************************/
 /*   Accessor for string describing the multiff option                */
