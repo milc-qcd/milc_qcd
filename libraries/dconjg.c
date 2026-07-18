@@ -5,7 +5,7 @@
 #include "../include/config.h"
 #include "../include/complex.h"
 
-double_complex dconjg(  double_complex *a ){
+double_complex dconjg( const double_complex *a ){
     double_complex c;
     c.real = (*a).real;
     c.imag = -(*a).imag;

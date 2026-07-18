@@ -303,6 +303,50 @@ create_fermion_links_hisq(int precision, int n_naiks,
 
   make_path_table_hisq(ap, n_naiks, eps_naik);
 
+#if 0
+
+  /* DEBUG dump */
+
+  printf("Path coeffs\n");
+  printf("n_naiks = %d\n", ap->n_naiks);
+  printf("eps_naik[0] = %f\n", ap->eps_naik[0]);
+
+  printf("path p1 asqtad_coeffs\n");
+  printf("one_link = %f\n", ap->p1.act_path_coeff.one_link);;
+  printf("naik = %f\n", ap->p1.act_path_coeff.naik);;
+  printf("three_staple = %f\n", ap->p1.act_path_coeff.three_staple);;
+  printf("five_staple = %f\n", ap->p1.act_path_coeff.five_staple);;
+  printf("seven_staple = %f\n", ap->p1.act_path_coeff.seven_staple);;
+  printf("lepage = %f\n", ap->p1.act_path_coeff.lepage);;
+
+  printf("num_q_paths = %d\n", ap->p1.num_q_paths);
+
+  printf("path p2 asqtad_coeffs\n");
+  printf("one_link = %f\n", ap->p2.act_path_coeff.one_link);;
+  printf("naik = %f\n", ap->p2.act_path_coeff.naik);;
+  printf("three_staple = %f\n", ap->p2.act_path_coeff.three_staple);;
+  printf("five_staple = %f\n", ap->p2.act_path_coeff.five_staple);;
+  printf("seven_staple = %f\n", ap->p2.act_path_coeff.seven_staple);;
+  printf("lepage = %f\n", ap->p2.act_path_coeff.lepage);;
+
+  printf("num_q_paths = %d\n", ap->p2.num_q_paths);
+
+  printf("path p3.act_path_coeff asqtad_coeffs\n");
+  printf("one_link = %f\n", ap->p3.act_path_coeff.one_link);;
+  printf("naik = %f\n", ap->p3.act_path_coeff.naik);;
+  printf("three_staple = %f\n", ap->p3.act_path_coeff.three_staple);;
+  printf("five_staple = %f\n", ap->p3.act_path_coeff.five_staple);;
+  printf("seven_staple = %f\n", ap->p3.act_path_coeff.seven_staple);;
+  printf("lepage = %f\n", ap->p3.act_path_coeff.lepage);;
+
+  printf("num_q_paths = %d\n", ap->p3.num_q_paths);
+
+  printf("umethod = %d\n", ap->umethod);
+  printf("ugroup = %d\n", ap->ugroup);
+  printf("constructed = %d\n", ap->constructed);
+
+#endif
+
   /* Complete the structure */
 
   fl->flg = create_milc_hisq_links_t(&info, ap, links, &fl->options);

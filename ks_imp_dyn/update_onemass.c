@@ -46,7 +46,7 @@ int update()  {
     if(step==1){
       restore_fermion_links_from_site(fn_links, MILC_PRECISION);
       fn = get_fm_links(fn_links, 0);
-      grsource_imp(F_OFFSET(phi), mass, EVEN, fn[0]);
+      grsource_imp(F_OFFSET(phi), mass, EVEN, fn);
       destroy_fn_links(fn);
       old_cg_time = cg_time = -1.0e6;
     }
@@ -82,14 +82,15 @@ int update()  {
     update_u(epsilon*(0.5-nflavors/8.0));
     
     /* generate a pseudofermion configuration */
+    clear_latvec( F_OFFSET(xxx), EVENANDODD );
     restore_fermion_links_from_site(fn_links, MILC_PRECISION);
     fn = get_fm_links(fn_links, 0);
-    grsource_imp(F_OFFSET(phi), mass, EVEN, fn); 
+    grsource_imp(F_OFFSET(phi), mass, EVEN, fn);
+    destroy_fn_links(fn);
     cg_time = -1.0e6;
-    
+
     /* update U's to middle of interval */
     update_u(epsilon*nflavors/8.0);
-    destroy_fn_links(fn);
 #endif
     
     /* do conjugate gradient to get (Madj M)inverse * phi */
@@ -99,6 +100,7 @@ int update()  {
 			 niter, nrestart, rsqmin, MILC_PRECISION, 
 			 EVEN, &final_rsq, fn );
     dslash_site( F_OFFSET(xxx), F_OFFSET(xxx), ODD, fn);
+    destroy_fn_links(fn);
     cg_time = ((Real)step - 0.5)*epsilon;
     /* now update H by full time interval */
     update_h(epsilon);
@@ -109,8 +111,6 @@ int update()  {
     /* reunitarize the gauge field */
     reunitarize_ks();
 
-    destroy_fn_links(fn);
-    
   }	/* end loop over microcanonical steps */
   
 #ifdef HMC_ALGORITHM

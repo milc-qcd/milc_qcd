@@ -155,10 +155,10 @@ int read_ks_eigen_hdr(ks_eigen_file *kseigf, int parallel){
 
 /* Write a data item to the KS eigenvector info file */
 int write_ks_eigen_info_item(FILE *fpout,    /* ascii file pointer */
-			     char *keyword,  /* keyword */
-			     char *fmt,      /* output format -
+			     const char *keyword,  /* keyword */
+			     const char *fmt,      /* output format -
 						must use s, d, e, f, or g */
-			     char *src,      /* address of starting data
+			     const char *src,      /* address of starting data
 						floating point data must be
 						of type (Real) */
 			     int count,      /* number of data items if > 1 */
@@ -257,7 +257,7 @@ void write_ks_eigen_info_file(ks_eigen_file *kseigf){
 /*----------------------------------------------------------------------*/
 
 /* Set up the input KS eigenvector file and header structures */
-ks_eigen_file *create_input_ks_eigen_file_handle(char *filename){
+ks_eigen_file *create_input_ks_eigen_file_handle(const char *filename){
 
   ks_eigen_file *kseigf;
   ks_eigen_header *kseigh;
@@ -378,7 +378,7 @@ void destroy_ks_eigen_file_handle(ks_eigen_file *kseigf){
 /* Open a binary file for serial writing by node 0 */
 /* Only node 0 opens the file filename */
 /* Returns a file structure describing the opened file */
-ks_eigen_file *w_serial_ks_eigen_i(char *filename, int parity){
+ks_eigen_file *w_serial_ks_eigen_i(const char *filename, int parity){
 
   FILE *fp;
   ks_eigen_file *kseigf;
@@ -591,7 +591,7 @@ void w_serial_ks_eigen_f(ks_eigen_file *kseigf){
 /*---------------------------------------------------------------------------*/
 
 /* Returns file descriptor for opened file */
-ks_eigen_file *r_serial_ks_eigen_i(char *filename){
+ks_eigen_file *r_serial_ks_eigen_i(const char *filename){
 
   FILE *fp;
   ks_eigen_file *kseigf;
@@ -644,7 +644,7 @@ ks_eigen_file *r_serial_ks_eigen_i(char *filename){
 int r_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal, su3_vector **eigVec){
 
   FILE *fp;
-  char *filename;
+  const char *filename;
   int byterevflag;
 
   int rcv_rank, rcv_coords;
@@ -658,7 +658,6 @@ int r_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal, su3_vector
   int rank29, rank31;
   su3_vector *eigbuf = NULL;
   int idest = 0;
-  double tmp;
 
   struct {
     su3_vector ksv;
@@ -683,6 +682,7 @@ int r_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal, su3_vector
     status += sread_byteorder(byterevflag, fp, &(kseigf->Nvecs), sizeof(int),
 			      myname, "Nvecs");
     for(ivecs = 0; ivecs < kseigf->Nvecs; ivecs++){
+      double tmp = 0.0;
       status += sread_byteorder(byterevflag, fp, &tmp, sizeof(double),
 				myname, "eigVal");
       if(ivecs < Nvecs) eigVal[ivecs] = tmp;
@@ -876,7 +876,7 @@ void r_serial_ks_eigen_f(ks_eigen_file *kseigf){
 /*---------------------------------------------------------------------------*/
 
 /* Open and write header info for ASCII KS eigenvector file */
-ks_eigen_file *w_ascii_ks_eigen_i(char *filename, int parity){
+ks_eigen_file *w_ascii_ks_eigen_i(const char *filename, int parity){
 
   FILE *fp;
   ks_eigen_file *kseigf;
@@ -1048,7 +1048,7 @@ void w_ascii_ks_eigen_f(ks_eigen_file *kseigf){
 /*---------------------------------------------------------------------------*/
 
 /* Open ASCII KS eigenvector file and read header information */
-ks_eigen_file *r_ascii_ks_eigen_i(char *filename){
+ks_eigen_file *r_ascii_ks_eigen_i(const char *filename){
 
   FILE *fp;
   ks_eigen_file *kseigf;

@@ -138,6 +138,14 @@ gauge_file *save_lattice( int flag, const char *filename, const char *stringLFN)
 	    terminate(1);
 #endif
             break;
+        case SAVE_PARTFILE_DIR_SCIDAC:
+#ifdef HAVE_QIO
+	  gf = save_partfile_dir_scidac(NULL, filename, 1);
+#else
+	    node0_printf("save_partfile_scidac requires QIO compilation\n");
+	    terminate(1);
+#endif
+            break;
         case SAVE_PARTFILE_SCIDAC_DP:
 #ifdef HAVE_QIO
 	  gf = save_partfile_scidac(NULL, filename, 2);
@@ -403,7 +411,7 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
   const char myname[] = "ask_ending_lattice";
   
   if (prompt==1) printf(
-			"'forget' lattice at end, 'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partfile_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_serial_scidac_dp', 'save_parallel_scidac_dp', 'save_multifile_scidac_dp', 'save_partfile_scidac_dp', 'save_serial_archive_dp', 'save_serial_ildg_dp', or 'save_parallel_ildg_dp'\n");
+			"'forget' lattice at end, 'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partfile_scidac', 'save_partfile_dir_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_serial_scidac_dp', 'save_parallel_scidac_dp', 'save_multifile_scidac_dp', 'save_partfile_scidac_dp', 'save_serial_archive_dp', 'save_serial_ildg_dp', or 'save_parallel_ildg_dp'\n");
   
   savebuf = get_next_tag(fp, "save lattice command", myname);
   if (savebuf == NULL)return 1;
@@ -462,6 +470,14 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
   else if(strcmp("save_multifile_scidac",savebuf) == 0 ) {
 #ifdef HAVE_QIO
     *flag=SAVE_MULTIFILE_SCIDAC;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_partfile_dir_scidac",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARTFILE_DIR_SCIDAC;
 #else
     node0_printf("requires QIO compilation!\n");
     terminate(1);
@@ -543,6 +559,102 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
     }
     printf("%s\n",filename);
     
+  }
+  return 0;
+}
+
+/* find out what kind of starting fat-link file to use, and lattice name if
+   necessary.  This routine is only called by node 0.
+*/
+int ask_starting_fat_link_file( FILE *fp, int prompt, int *flag, char *filename ){
+  const char *savebuf;
+  int status;
+  const char myname[] = "ask_starting_fat_link_file";
+  
+  if (prompt==1) printf(
+			"enter 'continue_fat', 'fresh_fat', 'reload_serial_fat', or 'reload_parallel_fat'\n");
+  
+  savebuf = get_next_tag(fp, "read fat-link-file command", myname);
+  if (savebuf == NULL)return 1;
+  
+  printf("%s ",savebuf);
+  if(strcmp("fresh_fat",savebuf) == 0 ) {
+    *flag = FRESH;
+    printf("\n");
+  }
+  else if(strcmp("continue_fat",savebuf) == 0 ) {
+    *flag = CONTINUE;
+    printf("\n");
+  }
+  else if(strcmp("reload_serial_fat",savebuf) == 0 ) {
+    *flag = RELOAD_SERIAL;
+  }
+  else if(strcmp("reload_parallel_fat",savebuf) == 0 ) {
+    *flag = RELOAD_PARALLEL;
+  }
+  else{
+    printf(" is not a valid starting fat-link-file command. INPUT ERROR.\n"); 
+    return 1;
+  }
+  
+  /*read name of file and load it */
+  if( *flag != FRESH && *flag != CONTINUE ){
+    if(prompt==1)printf("enter name of file containing fat links\n");
+    status=fscanf(fp," %s",filename);
+    if(status !=1) {
+      printf("\n%s(%d): ERROR IN INPUT: error reading file name\n",
+	     myname, this_node); 
+      return 1;
+    }
+    printf("%s\n",filename);
+  }
+  return 0;
+}
+
+/* find out what kind of starting long-link file to use, and lattice name if
+   necessary.  This routine is only called by node 0.
+*/
+int ask_starting_lng_link_file( FILE *fp, int prompt, int *flag, char *filename ){
+  const char *savebuf;
+  int status;
+  const char myname[] = "ask_starting_long_link_file";
+  
+  if (prompt==1) printf(
+			"enter 'continue_long', 'fresh_long', 'reload_serial_long', or 'reload_parallel_long'\n");
+  
+  savebuf = get_next_tag(fp, "read long-link-file command", myname);
+  if (savebuf == NULL)return 1;
+  
+  printf("%s ",savebuf);
+  if(strcmp("fresh_long",savebuf) == 0 ) {
+    *flag = FRESH;
+    printf("\n");
+  }
+  else if(strcmp("continue_long",savebuf) == 0 ) {
+    *flag = CONTINUE;
+    printf("\n");
+  }
+  else if(strcmp("reload_serial_long",savebuf) == 0 ) {
+    *flag = RELOAD_SERIAL;
+  }
+  else if(strcmp("reload_parallel_long",savebuf) == 0 ) {
+    *flag = RELOAD_PARALLEL;
+  }
+  else{
+    printf(" is not a valid starting long-link-file command. INPUT ERROR.\n"); 
+    return 1;
+  }
+  
+  /*read name of file and load it */
+  if( *flag != FRESH && *flag != CONTINUE ){
+    if(prompt==1)printf("enter name of file containing long links\n");
+    status=fscanf(fp," %s",filename);
+    if(status !=1) {
+      printf("\n%s(%d): ERROR IN INPUT: error reading file name\n",
+	     myname, this_node); 
+      return 1;
+    }
+    printf("%s\n",filename);
   }
   return 0;
 }

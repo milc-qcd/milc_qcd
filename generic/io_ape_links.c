@@ -37,6 +37,9 @@ save_apelinks( int flag, su3_matrix *links, const char *filename){
   case SAVE_PARTFILE_SCIDAC:
     gf = save_partfile_scidac(links, filename, 1);
     break;
+  case SAVE_PARTFILE_DIR_SCIDAC:
+    gf = save_partfile_dir_scidac(links, filename, 1);
+    break;
   case SAVE_PARTFILE_SCIDAC_DP:
     gf = save_partfile_scidac(links, filename, 2);
     break;

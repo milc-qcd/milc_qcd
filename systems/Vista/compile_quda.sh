@@ -4,6 +4,7 @@
 #	bash compile_quda.sh
 
 module reset
+module load nvidia/26.1 # Default, currently nvidia/24.7 (cuda 12.5), is apparently too old for QUDA
 echo "module list:"
 module list
 

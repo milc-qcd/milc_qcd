@@ -311,7 +311,7 @@ readin(int prompt)
 #else
     IF_OK status += get_f(stdin, prompt,"mass1", &param.mass1 );
     IF_OK status += get_f(stdin, prompt,"mass2", &param.mass2 );
-#if FERM_ACTION == HISQ || FERM_ACTION == HYPISQ
+#if FERM_ACTION == HISQ
     IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", &param.naik_term_epsilon2 );
 #endif
 #endif
@@ -400,8 +400,6 @@ readin(int prompt)
   
     /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&param,sizeof(param));
-  /* We really should simply change the name so we always use "param" consistently */
-  param = param;
   
   if( param.stopflag != 0 )return param.stopflag;
   

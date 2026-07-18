@@ -49,6 +49,7 @@ static size_t lex_rank(const int coords[], int dim, int size[])
   return rank;
 }
 
+#if 0
 /* Do byte reversal on n contiguous 32-bit words */
 static void
 byterevn32(uint32_t w[], size_t n)
@@ -68,7 +69,7 @@ byterevn32(uint32_t w[], size_t n)
       w[j] = newv;
     }
 }
-
+#endif
 /*------------------------------------------------------------------*/
 /* Compute Grid-version of SciDac checksum on the odd-site data as
    read */
@@ -136,7 +137,7 @@ grid_checksum(su3_vector *eigVec, uint32_t *suma, uint32_t *sumb){
 
 /*------------------------------------------------------------------*/
 void
-read_grid_eigenvector_data(su3_vector *eigVec, int typesize, char* file, off_t offset,
+read_grid_eigenvector_data(su3_vector *eigVec, int typesize, const char *file, off_t offset,
 			   uint32_t *suma, uint32_t *sumb){
   char myname[] = "read_grid_eigenvector_data";
 
