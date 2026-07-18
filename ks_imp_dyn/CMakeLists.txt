@@ -205,6 +205,15 @@ set(hisq_options
     HISQ_FORCE_FILTER=5.0e-5
 )
 
+set(hisq_tree_options
+    FN
+    HISQ_REUNIT_ALLOW_SVD
+    HISQ_REUNIT_SVD_REL_ERROR=1e-8
+    HISQ_REUNIT_SVD_ABS_ERROR=1e-8
+    HISQ_FF_MULTI_WRAPPER
+    HISQ_FORCE_FILTER=5.0e-5
+)
+
 add_milc_executable(su3_rmd_hisq control.c
     GAUGE symanzik_1loop_hisq_action
     QUARK hisq/hisq_u3_action
@@ -246,6 +255,15 @@ add_milc_executable(su3_hmc1_hisq control.c
     QUARK hisq/hisq_u3_action
     DEFINES ${hisq_options} ONEMASS PHI_ALGORITHM HMC_ALGORITHM
     EXTRA_OBJECTS hisq_objects hisq_force gauge_force
-    EXTRA_SOURCES ../generic_ks/reunitarize_ks.c d_action.c update_onemass.c
+    EXTRA_SOURCES d_action.c update_onemass.c
 )
 target_compile_options(su3_hmc1_hisq PRIVATE ${ks_multicg_off})
+
+add_milc_executable(su3_hmc1_tree_hisq control.c
+    GAUGE symanzik_tree_action
+    QUARK hisq/hisq_u3_action
+    DEFINES ${hisq_tree_options}
+    EXTRA_OBJECTS hisq_objects hisq_force gauge_force
+    EXTRA_SOURCES d_action.c update_onemass.c
+)
+target_compile_options(su3_hmc1_tree_hisq PRIVATE ${ks_multicg_off})
