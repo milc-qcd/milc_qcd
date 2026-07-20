@@ -177,10 +177,6 @@ initial_set()
     show_su3_mat_opts();
     show_hisq_links_opts();
     show_hisq_force_opts();
-#elif FERM_ACTION == HYPISQ
-    show_su3_mat_opts();
-    show_hypisq_links_opts();
-    show_hypisq_force_opts();
 #endif
 
     status=get_prompt(stdin, &prompt);
@@ -260,16 +256,8 @@ initial_set()
   hisq_svd_counter = 0;
 #endif
       
-#ifdef HYPISQ_SVD_COUNTER
-  hypisq_svd_counter = 0;
-#endif
-      
 #ifdef HISQ_FORCE_FILTER_COUNTER
   hisq_force_filter_counter = 0;
-#endif
-
-#ifdef HYPISQ_FORCE_FILTER_COUNTER
-  hypisq_force_filter_counter = 0;
 #endif
 
   return(prompt);
@@ -486,13 +474,13 @@ readin(int prompt)
   fermion_links_want_back(1);
 #endif
   
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+#if FERM_ACTION == HISQ & defined(DM_DEPS)
   /* We want to calculate both the links and their Naik eps
      derivatives (HISQ only) */
   fermion_links_want_deps(1);
 #endif
 
-#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+#if FERM_ACTION == HISQ 
   fn_links = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
 #else
   fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
