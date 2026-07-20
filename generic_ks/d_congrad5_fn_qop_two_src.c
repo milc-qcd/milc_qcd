@@ -27,7 +27,7 @@ ks_congrad_two_src_F(	/* Return value is number of iterations taken */
     imp_ferm_links_t *fn 
     )
 {
-  int iterations_used;
+  int iterations_used = 0;
   static Real t_mass1;
   static Real t_mass2;
   Real *masses[2];
@@ -58,6 +58,7 @@ ks_congrad_two_src_F(	/* Return value is number of iterations taken */
       ks_congrad_qop_F_field2field( qic, masses, nmass, srcs,
 				    sols, nsrc, fn );
 #else
+    iterations_used = 
       ks_congrad_qop_D_field2field( qic, masses, nmass, srcs,
 				    sols, nsrc, fn );
 #endif
