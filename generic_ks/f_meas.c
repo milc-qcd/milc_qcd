@@ -224,10 +224,7 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
       /* M_inv_gr = M^{-1} gr */
 
       M_inv_gr = create_v_field();
-      if(mass == 0.0)
-	mat_invert_cgz_field( gr, M_inv_gr, qic, mass, fn );
-      else
-	mat_invert_uml_field( gr, M_inv_gr, qic, mass, fn );
+      mat_invert_uml_field( gr, M_inv_gr, qic, mass, fn );
       
       
 #ifdef DM_DU0
