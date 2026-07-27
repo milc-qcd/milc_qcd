@@ -22,7 +22,7 @@ STANDARD_OBJECTS = \
   io_helpers.o \
   io_lat_utils.o \
   make_lattice.o \
-	mmap_cache.o \
+  mmap_cache.o \
   ranstuff.o \
   remap_stdio_from_args.o
 
@@ -250,21 +250,21 @@ endif
 # Generic actions are not supported in QOP, so we use MILC
   FLINKS_EO_QOP = ${FLINKS_EO_MILC}
 
-ifeq ($(strip ${HAVE_FL_GPU}),true)
-  ifeq ($(strip ${HAVE_QUDA}),true)
-    FLINKS_FN = ${FLINKS_FN_QUDA}
-    FLINKS_EO = ${FLINKS_EO_MILC}
-    FLINKS_HISQ = ${FLINKS_HISQ_QUDA}
-  else ifeq ($(strip ${HAVE_GRID}),true)
-    FLINKS_FN = ${FLINKS_FN_GRID}
-    FLINKS_EO = ${FLINKS_EO_MILC}
-    FLINKS_HISQ = ${FLINKS_HISQ_GRID}
-  endif
+ifeq ($(strip ${HAVEQOP}),true)
+  FLINKS_FN     = ${FLINKS_FN_QOP}
+  FLINKS_EO     = ${FLINKS_EO_QOP}
+  FLINKS_HISQ   = ${FLINKS_HISQ_QOP}
 else
-  ifeq ($(strip ${HAVEQOP}),true)
-    FLINKS_FN     = ${FLINKS_FN_QOP}
-    FLINKS_EO     = ${FLINKS_EO_QOP}
-    FLINKS_HISQ   = ${FLINKS_HISQ_QOP}
+  ifeq ($(strip ${HAVE_FL_GPU}),true)
+    ifeq ($(strip ${HAVE_QUDA}),true)
+      FLINKS_FN = ${FLINKS_FN_QUDA}
+      FLINKS_EO = ${FLINKS_EO_MILC}
+      FLINKS_HISQ = ${FLINKS_HISQ_QUDA}
+    else ifeq ($(strip ${HAVE_GRID}),true)
+      FLINKS_FN = ${FLINKS_FN_GRID}
+      FLINKS_EO = ${FLINKS_EO_MILC}
+      FLINKS_HISQ = ${FLINKS_HISQ_GRID}
+    endif
   else
     FLINKS_FN = ${FLINKS_FN_MILC}
     FLINKS_EO = ${FLINKS_EO_MILC}
@@ -279,17 +279,12 @@ endif
 # Standard MILC
 
 # Choices here are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
-ifeq ($(strip ${HAVE_QUDA}),true)
-# When using QUDA, the back links are not used and just add unnecessary overhead
   DSLASH_FN_MILC = dslash_fn.o
-else
-  DSLASH_FN_MILC = dslash_fn_dblstore.o
-endif
+  DSLASH_FN_MILC_DBLSTORE = dslash_fn_dblstore.o
 
-# No other choice
+# No other choices
   DSLASH_EO = dslash_eo.o
-
-  DSLASH_CL =  dslash_w_space.o dslash_w3.o
+  DSLASH_CL_MILC_CPU =  dslash_w_space.o dslash_w3.o
 
 # Standard QOP
 
@@ -330,17 +325,24 @@ endif
   CONGRAD_FN_QOP = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o \
      d_congrad5_fn_qop_D.o d_congrad5_fn_qop_F.o ${CONGRAD_FN_BASE}
 
-ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
-  ifeq ($(strip ${HAVE_QUDA}),true)
-    CONGRAD_FN_MILC = ${CONGRAD_FN_QUDA}
-  else ifeq ($(strip ${HAVE_GRID}),true)
-    CONGRAD_FN_MILC = ${CONGRAD_FN_GRID}
-  endif
+ifeq ($(strip ${HAVEQOP}),true)
+  CONGRAD_FN = ${CONGRAD_FN_QOP}
+  DSLASH_FN = ${DSLASH_FN_QOP}
 else
-  ifeq ($(strip ${HAVE_QPHIX}),true)
-    CONGRAD_FN_MILC = ${CONGRAD_FN_QPHIX}
+  ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
+    ifeq ($(strip ${HAVE_QUDA}),true)
+      CONGRAD_FN = ${CONGRAD_FN_QUDA}
+      DSLASH_FN = ${DSLASH_FN_MILC}
+    else ifeq ($(strip ${HAVE_GRID}),true)
+      CONGRAD_FN = ${CONGRAD_FN_GRID}
+      DSLASH_FN = ${DSLASH_FN_MILC}
+    endif
+  else ifeq ($(strip ${HAVE_FN_CG_QPHIX}),true)
+    CONGRAD_FN = ${CONGRAD_FN_QPHIX}
+    DSLASH_FN = ${DSLASH_FN_MILC}
   else
-    CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
+    CONGRAD_FN = ${CONGRAD_FN_MILC_CPU}
+    DSLASH_FN = ${DSLASH_FN_MILC_DBLSTORE}
   endif
 endif
 
@@ -374,17 +376,19 @@ endif
   MULTI_INV_FN_QOP = ks_multicg.o ks_multicg_offset_qop.o \
     ks_multicg_offset_qop_D.o  ks_multicg_offset_qop_F.o
 
-ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
-  ifeq ($(strip ${HAVE_QUDA}),true)
-    MULTI_INV_FN_MILC = ${MULTI_INV_FN_QUDA}
-  else ifeq ($(strip ${HAVE_GRID}),true)
-    MULTI_INV_FN_MILC = ${MULTI_INV_FN_GRID}
-  endif
+ifeq ($(strip ${HAVEQOP}),true)
+  MULTI_INV_FN = ${MULTI_INV_FN_QOP}
 else
-  ifeq ($(strip ${HAVE_QPHIX}),true)
-    MULTI_INV_FN_MILC = ${MULTI_INV_FN_QPHIX}
+  ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
+    ifeq ($(strip ${HAVE_QUDA}),true)
+      MULTI_INV_FN = ${MULTI_INV_FN_QUDA}
+    else ifeq ($(strip ${HAVE_GRID}),true)
+      MULTI_INV_FN = ${MULTI_INV_FN_GRID}
+    endif
+  else ifeq ($(strip ${HAVE_QPHIX}),true)
+    MULTI_INV_FN = ${MULTI_INV_FN_QPHIX}
   else
-    MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_CPU}
+    MULTI_INV_FN = ${MULTI_INV_FN_MILC_CPU}
   endif
 endif
 
@@ -426,18 +430,18 @@ endif
 
 # Define ASQ_FORCE and HISQ_FORCE depending on compilation parameters
 
-ifeq ($(strip ${HAVE_FF_GPU}),true)
-  ifeq ($(strip ${HAVE_QUDA}),true)
-    ASQ_FORCE = ${ASQ_FORCE_QUDA}
-    HISQ_FORCE = ${HISQ_FORCE_QUDA}
-  else ifeq ($(strip ${HAVE_GRID}),true)
-    HISQ_FORCE = ${HISQ_FORCE_GRID}
-  endif
-else	     
-  ifeq ($(strip ${HAVEQOP}),true)
-    ASQ_FORCE = ${ASQ_FORCE_QOP}
-    HISQ_FORCE = ${HISQ_FORCE_QOP}
-  else
+ifeq ($(strip ${HAVEQOP}),true)
+  ASQ_FORCE = ${ASQ_FORCE_QOP}
+  HISQ_FORCE = ${HISQ_FORCE_QOP}
+else
+  ifeq ($(strip ${HAVE_FF_GPU}),true)
+    ifeq ($(strip ${HAVE_QUDA}),true)
+      ASQ_FORCE = ${ASQ_FORCE_QUDA}
+      HISQ_FORCE = ${HISQ_FORCE_QUDA}
+    else ifeq ($(strip ${HAVE_GRID}),true)
+      HISQ_FORCE = ${HISQ_FORCE_GRID}
+    endif
+  else 
     ASQ_FORCE = ${ASQ_FORCE_MILC}
     HISQ_FORCE = ${HISQ_FORCE_MILC}
   endif
@@ -456,6 +460,7 @@ endif
   CONGRAD_CL_BASE = d_cgilu_cl.o d_hopilu_cl.o d_mrilu_cl.o cl_solver_utilities.o \
       wilson_invert.o
 
+# QOP
   CONGRAD_CL_QOP = d_bicgilu_cl_qop.o  d_bicgilu_cl_qop_D.o d_bicgilu_cl_qop_F.o \
       ${CONGRAD_CL_BASE}
 
@@ -466,19 +471,21 @@ endif
   CONGRAD_CL_MILC_GPU = d_bicgilu_cl_gpu.o ${CONGRAD_CL_BASE}
 
 # QPHIXJ support
-#  CONGRAD_CL_MILC_QPHIXJ = d_bicgilu_cl_qphixj.o d_bicgilu_cl_qphixj_F.o \
-#      d_bicgilu_cl_qphixj_D.o ${CONGRAD_CL_BASE}
-
-# QPHIXJ support
   CONGRAD_CL_MILC_QPHIXJ = d_bicgilu_cl_qphixj.o qphixjClovInvert.o \
       d_bicgilu_cl_qphixj_F.o d_bicgilu_cl_qphixj_D.o ${CONGRAD_CL_BASE}
 
 ifeq ($(strip ${HAVE_CL_GPU}),true)
-  CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_GPU}
-else ifeq ($(strip ${HAVE_QPHIXJ}),true)
-  CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_QPHIXJ}
+  CONGRAD_CL = ${CONGRAD_CL_MILC_GPU}
+  DSLASH_CL = ${DSLASH_CL_MILC_CPU}
+else ifeq ($(strip ${HAVE_CL_CG_QPHIXJ}),true)
+  CONGRAD_CL = ${CONGRAD_CL_MILC_QPHIXJ}
+  DSLASH_CL = ${DSLASH_CL_MILC_CPU}
+else ifeq ($(strip ${HAVE_CL_CG_QOP}),true)
+  CONGRAD_CL = ${CONGRAD_CL_QOP}
+  DSLASH_CL = ${DSLASH_CL_MILC_CPU}
 else
-  CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_CPU}
+  CONGRAD_CL = ${CONGRAD_CL_MILC_CPU}
+  DSLASH_CL = ${DSLASH_CL_MILC_CPU}
 endif
 
 
@@ -492,8 +499,10 @@ endif
 
 # GPU support
 
-  GAUGE_FORCE_MILC_GPU = gauge_force_imp_gpu.o gauge_action_imp_gpu.o gauge_action_imp.o gauge_stuff.o ranmom.o
-  
+  GAUGE_FORCE_QUDA = gauge_force_imp_gpu.o gauge_action_imp_gpu.o gauge_action_imp.o gauge_stuff.o ranmom.o
+
+  GAUGE_FORCE_GRID = gridGaugeForce.o gridGaugeAction.o gauge_action_imp.o gauge_stuff.o ranmom.o
+
 # Standard QOP combinations
 
   GAUGE_FORCE_QOP = gauge_force_symzk1_qop.o gauge_action_imp.o gauge_stuff.o ranmom.o
@@ -504,32 +513,17 @@ endif
     gauge_force_symzk1_qphix_D.o gauge_force_symzk1_qphix_F.o
 
 ifeq ($(strip ${HAVE_GF_GPU}),true)
-  GAUGE_FORCE_MILC = ${GAUGE_FORCE_MILC_GPU}
-else
-  ifeq ($(strip ${HAVE_GF_QPHIX}),true)
-    GAUGE_FORCE_MILC = ${GAUGE_FORCE_QPHIX}
-  else
-    GAUGE_FORCE_MILC = ${GAUGE_FORCE_MILC_CPU}
+  ifeq ($(strip ${HAVE_QUDA}),true)
+    GAUGE_FORCE = ${GAUGE_FORCE_QUDA}
+  else ifeq ($(strip ${HAVE_GRID}),true)
+    GAUGE_FORCE = ${GAUGE_FORCE_GRID}
   endif
-endif
-
-######################################################################
-# QOP or MILC/GPU or QPHIX or GRID
-######################################################################
-
-ifeq ($(strip ${HAVEQOP}),true)
-# Interface to access QOP
-  CONGRAD_CL    = ${CONGRAD_CL_QOP}
-  DSLASH_FN     = ${DSLASH_FN_QOP}
-  CONGRAD_FN    = ${CONGRAD_FN_QOP}
-  MULTI_INV_FN  = ${MULTI_INV_FN_QOP}
-  GAUGE_FORCE   = ${GAUGE_FORCE_QOP}
+else ifeq ($(strip ${HAVE_GF_QOP}),true)
+  GAUGE_FORCE = ${GAUGE_FORCE_QOP}
+else ifeq ($(strip ${HAVE_GF_QPHIX}),true)
+  GAUGE_FORCE = ${GAUGE_FORCE_QPHIX}
 else
-  CONGRAD_CL    = ${CONGRAD_CL_MILC}
-  DSLASH_FN     = ${DSLASH_FN_MILC}
-  CONGRAD_FN    = ${CONGRAD_FN_MILC}
-  MULTI_INV_FN  = ${MULTI_INV_FN_MILC}
-  GAUGE_FORCE   = ${GAUGE_FORCE_MILC}
+  GAUGE_FORCE = ${GAUGE_FORCE_MILC_CPU}
 endif
 
 ######################################################################
