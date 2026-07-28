@@ -5,6 +5,7 @@
 */
 
 #include "generic_includes.h"
+#include "../include/openmp_defs.h"
 #include "../include/generic_qop.h"
 #include "../include/generic_qopqdp.h"
 
