@@ -311,6 +311,11 @@ su3_hmc_hisq::
 	"DEFINES += -DPHI_ALGORITH -DHMC_ALGORITHM" \
 	"EXTRA_OBJECTS += d_action.o update.o"
 
+su3_hmc_hasenbusch_tree_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_TREE_OPTIONS} \
+	"DEFINES += -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"EXTRA_OBJECTS += d_action.o update_hasenbusch_oneterm.o"
+
 su3_hmc1_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
 	"DEFINES += -DONEMASS -DPHI_ALGORITHM -DHMC_ALGORITHM" \
