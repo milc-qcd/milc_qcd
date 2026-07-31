@@ -526,6 +526,8 @@ void ks_meson_cont_mom(
 /* mat_invert.c */
 void ks_dirac_op( su3_vector *src, su3_vector *dst, Real mass, 
 		  int parity, imp_ferm_links_t *fn);
+void ks_dirac_op_site( field_offset src, field_offset dst, Real mass, 
+		  int parity, imp_ferm_links_t *fn);
 void ks_dirac_adj_op( su3_vector *src, su3_vector *dst, Real mass,
 		      int parity, imp_ferm_links_t *fn);
 void ks_dirac_adj_op_inplace( su3_vector *srcdst, Real mass,
