@@ -10,14 +10,15 @@
 */
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "../include/openmp_defs.h"
 Real ahmat_mag_sq(anti_hermitmat *pt);
 
 /*DEBUG*/
 double old_g, old_h, old_f, old_a;
 /*ENDDEBUG*/
 
-double d_action(){
-double hmom_action(),fermion_action();
+double d_action(Real fermion_action_const){
+double hmom_action(),fermion_action(Real fermion_action_const);
     double ssplaq,stplaq,g_action,h_action,f_action;
 
     d_plaquette(&ssplaq,&stplaq);
@@ -29,7 +30,7 @@ double hmom_action(),fermion_action();
     g_action = (beta/3.0)*imp_gauge_action();
     rephase(ON);
     h_action = hmom_action();
-    f_action = fermion_action();
+    f_action = fermion_action(fermion_action_const);
 
     node0_printf("ACTION: g,h,f = %e  %e  %e  %e\n",
     g_action, h_action, f_action, g_action+h_action+f_action );
@@ -46,43 +47,46 @@ old_a=g_action+h_action+f_action;
 }
 
 /* fermion contribution to the action */
-double fermion_action() {
-register int i;
-register site *s;
-register complex cc;
-double sum;
-    sum=0.0;
-    FOREVENSITES(i,s){
-	/* phi is defined on even sites only */
+double fermion_action(Real fermion_action_const) {
+  register int i;
+  register site *s;
+  double sum = 0.;;
+  FOREVENSITES_OMP(i,s,reduction(+:sum)){
+    register complex cc;
+    /* phi is defined on even sites only */
 #ifdef ONEMASS
-        cc = su3_dot( &(s->phi), &(s->xxx) );
-        sum += (double)cc.real;
+    cc = su3_dot( &(s->phi), &(s->xxx) );
+    sum += (double)cc.real;
 #else
-        cc = su3_dot( &(s->phi1), &(s->xxx1) );
-        sum += (double)cc.real;
-        cc = su3_dot( &(s->phi2), &(s->xxx2) );
-        sum += (double)cc.real;
+    cc = su3_dot( &(s->phi1), &(s->xxx1) );
+    sum += (double)cc.real;
+    cc = su3_dot( &(s->phi2), &(s->xxx2) );
+    sum += (double)cc.real;
+    /* Hasenbusch modification: an intert constant term */
+    if(fermion_action_const != 0.){
+      cc = su3_dot( &(s->phi1), &(s->phi1) );
+      sum += fermion_action_const * (double)cc.real;
+    } END_LOOP_OMP;
 #endif
-    }
-    g_doublesum( &sum );
-    return(sum);
+  }
+  g_doublesum( &sum );
+  return(sum);
 }
 
 /* gauge momentum contribution to the action */
 double hmom_action() {
-register int i,dir;
-register site *s;
-double sum;
-
-    sum=0.0;
-    FORALLSITES(i,s){
-	for(dir=XUP;dir<=TUP;dir++){
-            sum += (double)ahmat_mag_sq( &(s->mom[dir]) ) - 4.0;
-	    /* subtract 1/2 per d.o.f. to help numerical acc. in sum */
-	}
+  register int i,dir;
+  register site *s;
+  
+  double sum=0.0;
+  FORALLSITES_OMP(i,s,reduction(+:sum)){
+    for(dir=XUP;dir<=TUP;dir++){
+      sum += (double)ahmat_mag_sq( &(s->mom[dir]) ) - 4.0;
+      /* subtract 1/2 per d.o.f. to help numerical acc. in sum */
     }
-    g_doublesum( &sum );
-    return(sum);
+  } END_LOOP_OMP;
+  g_doublesum( &sum );
+  return(sum);
 }
 
 /* magnitude squared of an antihermition matrix */
