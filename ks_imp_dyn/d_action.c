@@ -51,7 +51,7 @@ double fermion_action(Real fermion_action_const) {
   register int i;
   register site *s;
   double sum = 0.;;
-  FOREVENSITES_OMP(i,s,reduction(+:sum)){
+  FORSOMEPARITY_OMP(i,s,EVEN,reduction(+:sum)){
     register complex cc;
     /* phi is defined on even sites only */
 #ifdef ONEMASS
