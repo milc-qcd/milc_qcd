@@ -460,7 +460,11 @@ void setup_layout(){
 #ifdef HAVE_GRID
   grid_coor_from_processor_rank(machine_coordinates, mynode());
 #else
+#ifdef HAVE_QMP
+  QMP_comm_get_logical_coordinates_from2(QMP_comm_get_default(), machine_coordinates, mynode());
+#else
   lex_coords(machine_coordinates, 4, nsquares, mynode());
+#endif
 #endif
 
   /* Number of sites on node */
@@ -546,10 +550,14 @@ size_t get_even_sites_on_node(int node){
   int k = node;
   
   /* mc = the machine coordinates for node k */
+#ifdef HAVE_GRID
+  grid_coor_from_processor_rank(mc, k);
+#else
 #ifdef HAVE_QMP
   QMP_comm_get_logical_coordinates_from2(QMP_comm_get_default(), mc, k);
 #else
   lex_coords(mc, 4, nsquares, k);
+#endif
 #endif
 
   /* meo = the parity of the machine coordinate */
@@ -661,7 +669,11 @@ int io_node(const int node){
 #ifdef HAVE_GRID
   grid_coor_from_processor_rank(io_node_coords, node);
 #else
+#ifdef HAVE_QMP
+  QMP_comm_get_logical_coordinates_from2(QMP_comm_get_default(), io_node_coords, node);
+#else
   lex_coords(io_node_coords, 4, nsquares, node);
+#endif
 #endif
 
   /* Round the PE coordinates down to get the io_node coordinate */
