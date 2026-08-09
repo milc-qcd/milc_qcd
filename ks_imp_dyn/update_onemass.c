@@ -24,8 +24,9 @@ int update()  {
   Real cg_time;	/* simulation time for last two CG's */
 #ifdef HMC_ALGORITHM
   Real old_cg_time,next_cg_time;	/* simulation time for last two CG's */
-  double startaction,endaction,d_action();
+  double startaction,endaction,d_action(Real fermion_action_const);
   Real xrandom;
+  Real cc = 0.;
 #endif
   imp_ferm_links_t* fn;
   
@@ -64,7 +65,7 @@ int update()  {
       destroy_fn_links(fn);
       cg_time = 0.0;
       
-      startaction=d_action();
+      startaction=d_action(0.);
       /* copy link field to old_link */
       gauge_field_copy( F_OFFSET(link[0]), F_OFFSET(old_link[0]));
     }
@@ -125,7 +126,7 @@ int update()  {
 		       EVEN, &final_rsq, fn );
   destroy_fn_links(fn);
   cg_time = steps*epsilon;
-  endaction=d_action();
+  endaction=d_action(0.);
   /* decide whether to accept, if not, copy old link field back */
   /* careful - must generate only one random number for whole lattice */
   if(this_node==0)xrandom = myrand(&node_prn);
