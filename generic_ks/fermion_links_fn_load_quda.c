@@ -14,6 +14,7 @@
 #include "generic_ks_includes.h"
 #include "../include/info.h"
 #include "../include/generic_quda.h"
+#include <string.h>
 
 void  
 load_fatlinks_gpu(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matrix *links)
@@ -65,6 +66,35 @@ load_fatlonglinks_gpu(info_t *info, su3_matrix *fatlinks, su3_matrix *longlinks,
 
   // qudaLoadUnitarizedLink(MILC_PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks, NULL);
   qudaLoadKSLink(MILC_PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks);
+
+  /* Release QUDA's device memory pool before the solver's loadGaugeQuda runs.
+
+     The HISQ link build leaves large blocks in QUDA's pool (three
+     extended gauge fields plus one unextended, freed to the cache rather than
+     to the driver). loadGaugeQuda then builds the gauge tower, and its small
+     per-dimension ghost arrays take those blocks WHOLE, whic results in some
+     device memory stranded within a live allocation where no later flush can
+     reach.
+
+     OFF BY DEFAULT. Enable at runtime by setting MILC_FLUSH_QUDA_POOL_AFTER_LINKS=1.
+     Note that there is a performance cost, and this should not be used in
+     gauge generation where the links are rebuilt on every MD step and
+     flushing the pool would discard the solver's cached working set
+     hundreds of times per trajectory.
+   
+     This is the LAST of the two computeKSLinkQuda calls a HISQ build makes (the
+     other is the aux U->V->W build in load_hisq_aux_links_gpu below, whose
+     blocks this call has already reused), so one flush here catches both. */
+  {
+    static int flush_quda_pool = -1;
+    if(flush_quda_pool < 0){
+      char *env = getenv("MILC_FLUSH_QUDA_POOL_AFTER_LINKS");
+      flush_quda_pool = (env != NULL && strcmp(env, "0") != 0);
+      if(flush_quda_pool)
+	node0_printf("load_fatlonglinks_gpu: flushing the QUDA device memory pool after the link build\n");
+    }
+    if(flush_quda_pool) flushPoolQuda(QUDA_MEMORY_DEVICE);
+  }
 
   /* Fatlinks */
   info->final_flop = 61632.*volume/numnodes();
