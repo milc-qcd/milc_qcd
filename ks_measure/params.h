@@ -35,6 +35,8 @@ typedef struct {
 
   /*  REPEATING BLOCK */
   int startflag;	/* what to do for beginning lattice */
+  int startfatflag;	/* what to do for beginning fat-link file */
+  int startlngflag;	/* what to do for beginning long-link file */
   int start_u1flag;	/* what to do for beginning u(1) lattice */
   Real u0;
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
@@ -48,6 +50,8 @@ typedef struct {
   char save_u1file[MAXFILENAME]; /* U(1) gauge file */
   char savefile[MAXFILENAME];
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
+  char inputfatfile[MAXFILENAME];  /* Fat links */
+  char inputlngfile[MAXFILENAME];  /* Long links */
 #if EIGMODE == EIGCG
   eigcg_params eigcgp; /* parameters for eigCG */
 #endif

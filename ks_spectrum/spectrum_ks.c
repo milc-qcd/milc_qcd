@@ -1182,8 +1182,6 @@ static void spectrum_ks_print_offdiag(int pair){
   /* Rescaling */
   double meson_scale = get_meson_scale_factor(param.qkpair[pair][0],  
 					      param.qkpair[pair][1]);
-  printf("meson_scale %d %d %g\n", param.qkpair[pair][0], param.qkpair[pair][1], meson_scale);
-
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);

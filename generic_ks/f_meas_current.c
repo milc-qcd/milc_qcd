@@ -26,7 +26,7 @@
 	       3 masses l s c Takes the difference j_l - j_s and computes j_c
 	       4 masses u d s c Takes the difference j_u - j_d and j_u - j_s and computes j_c
 	       5 masses u d l s c Does the same as 4 for the low modes (ignoring l), 
-	                          but for the high modes, computes j_u - j_l, j_l - j_s, and j_c
+	                          but for the high modes, computes j_u - j_l, j_l - j_s, j_s, and j_c
 */
 
 #define MASS_UDLSC /* Calculate densities with ud and ls mass differences */
@@ -35,8 +35,16 @@
 #include "../include/fn_links.h"
 #include "../include/io_scidac.h"
 #include "../include/imp_ferm_links.h"
+#include "../include/openmp_defs.h"
+#define LOOPEND
+#include "../include/loopend.h"
 #include <qio.h>
 #include <string.h>
+#ifdef HAVE_QUDA
+#include "../include/generic_quda.h"
+#else
+#include "../include/openmp_defs.h"
+#endif
 
 #define NMU 4
 #define NRECINFO 128
@@ -68,12 +76,12 @@ thin_source(su3_vector *src, int thinning, int ex, int ey, int ez, int et){
   site *s;
   int i;
 
-  FORALLSITES(i,s) {
+  FORALLSITES_OMP(i,s,) {
     if(s->x % thinning != ex || s->y % thinning != ey ||
        s->z % thinning != ez || s->t % thinning != et){
       clearvec(src+i);
     }
-  }
+  } END_LOOP_OMP;
 }
 
 /*****************************************************************************/
@@ -125,6 +133,12 @@ write_tslice_values(const char *tag, int jr, Real mass1, Real charge1,
     }
   }
 
+#if 0
+  // DEBUG
+  printf("JTMU0 %20.12f %20.12f %20.12f %20.12f\n", 
+	 jtmu[0], jtmu[1], jtmu[2], jtmu[3]);
+#endif
+
   /* Write the results for each time slice */
   for(int t = 0; t < param.nt; t++){
     if(jr < 0){
@@ -168,21 +182,50 @@ write_jdotA_value(const char *tag, int jr, Real mass1, Real charge1,
 
   double jdotA = 0.;
   int i;
-  FORALLFIELDSITES(i){
+  FORALLFIELDSITES_OMP(i, ){
     int mu;
     FORALLUPDIR(mu){
       jdotA += j_mu[4*i + mu] * u1_A[4*i + mu];
     }
-  }
+  } END_LOOP_OMP;
   g_doublesum(&jdotA);
   node0_printf("%.10g\n", jdotA);
-}
+} 
+
+#if 1
 
 /*****************************************************************************/
 /* Returns the dot product of two fermion vectors */
 static void
 dot_product(su3_vector *vec1, su3_vector *vec2, 
 	    double_complex *dot, int parity) {
+  int i;
+  complex cc ;
+  double re = 0.0, im = 0.0;
+
+  FORSOMEFIELDPARITY_OMP(i,parity, reduction(+:re,im)){
+    complex temp1,temp2;
+    CMULJ_(vec1[i].c[0],vec2[i].c[0],temp1) 
+    CMULJ_(vec1[i].c[1],vec2[i].c[1],temp2)
+    CSUM(temp1,temp2);
+    CMULJ_(vec1[i].c[2],vec2[i].c[2],temp2)
+    CSUM(temp1,temp2);
+    re += temp1.real ;
+    im += temp1.imag ;
+  } END_LOOP_OMP;
+
+  dot->real = re ; 
+  dot->imag = im ;
+  g_dcomplexsum(dot);
+}
+
+#else
+
+/*****************************************************************************/
+/* Returns the dot product of two fermion vectors */
+static void
+static dot_product(su3_vector *vec1, su3_vector *vec2, 
+		   double_complex *dot, int parity) {
   register double re,im ;
   register  int i;
   complex cc ;
@@ -192,11 +235,15 @@ dot_product(su3_vector *vec1, su3_vector *vec2,
     cc = su3_dot( &(vec1[i]), &(vec2[i]) );
     re += cc.real ;
     im += cc.imag ;
-  }
+  } END_LOOP;
   dot->real = re ; 
   dot->imag = im ;
   g_dcomplexsum(dot);
-}
+} END_LOOP;
+
+#endif
+
+#if 1
 
 /*****************************************************************************/
 /* Returns vec2 = vec2 - cc*vec1   cc is a double complex   */
@@ -210,17 +257,101 @@ complex_vec_mult_sub(double_complex *cc, su3_vector *vec1,
   sc.real= (Real)(cc->real) ; 
   sc.imag= (Real)(cc->imag) ;
 
-  FORSOMEFIELDPARITY(i,parity){
-    c_scalar_mult_sub_su3vec(&(vec2[i]), (&sc), &(vec1[i])) ;
+  FORSOMEFIELDPARITY_OMP(i,parity, ){
+
+    double sr,si,br,bi,cr,ci;
+
+    sr = cc->real; si = cc->imag;
+
+    for(int j=0;j<3;j++){
+	br=vec1[i].c[j].real; bi=vec1[i].c[j].imag;
+
+	cr = sr*br - si*bi;
+	ci = sr*bi + si*br;
+
+	vec2[i].c[j].real -= cr;
+	vec2[i].c[j].imag -= ci;
+    }
   }
+} END_LOOP_OMP;
+
+#else
+
+/*****************************************************************************/
+/* Returns vec2 = vec2 - cc*vec1   cc is a double complex   */
+static void
+complex_vec_mult_sub(double_complex *cc, su3_vector *vec1, 
+		     su3_vector *vec2, int parity){
+
+  register  int i;
+  complex sc ;
+  
+  sc.real= (Real)(cc->real) ; 
+  sc.imag= (Real)(cc->imag) ;
+
+  FORSOMEFIELDPARITY_OMP(i,parity, ){
+    c_scalar_mult_sub_su3vec(&(vec2[i]), (&sc), &(vec1[i])) ;
+  } END_LOOP_OMP;
 }
 
+#endif
+
 /************************************************************************/
-/*  Projects out the *vectors from the  vec. Num is the Number of vectors  *
+/*  Projects out the set of *vector from the  vec. Num is the number of vectors  *
  * and parity is the parity on which we work on.                           *
  * The vectors are assumed to be orthonormal.                              */
+   
+#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+
+/* This QUDA version uses the previously computed eigenvectors kept by QUDA */
+/* "vector" is ignored */
+
 static void
 project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
+  register int i ;
+  double_complex cc ;
+  double ptime = -dclock();
+
+  if(Num == 0)return;
+
+  QudaParity qparity;
+
+  switch(parity){
+  case EVEN: qparity = QUDA_EVEN_PARITY; break;
+  case ODD:  qparity = QUDA_ODD_PARITY; break;
+  default:
+    node0_printf("%s: ERROR. Bad parity value\n", __func__);
+    terminate(1);
+  }
+
+  int nvec = 1;
+
+  su3_vector *invecs[1], *outvecs[1];
+  invecs[0] = vec;
+  outvecs[0] = create_v_field();
+  
+  qudaProject(MILC_PRECISION, (void **)invecs, (void **)outvecs, nvec, Num, qparity);
+
+  copy_v_field(vec, outvecs[0]);
+  destroy_v_field(outvecs[0]);
+
+  ptime += dclock();
+#ifdef CGTIME
+  if(parity == EVEN){
+    node0_printf("Time to project out low modes from EVEN source %g sec\n", ptime);
+  } else {
+    node0_printf("Time to project out low modes from ODD source %g sec\n", ptime);
+  }
+#endif
+}
+
+#else
+
+/* This is the original CPU version, which requires vector to be supplied  */
+
+static void
+project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
+
   register int i ;
   double_complex cc ;
   double ptime = -dclock();
@@ -249,13 +380,32 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
 #endif
 }
 
+#endif
+
+#if 0 // unused (debugging) function
+/******************************************************************
+*									*
+*  void dumpvec( su3_vector *vec )					*
+*  print out a 3 element complex vector					*
+*/
+
+static void
+my_dumpvec( su3_vector *v ){
+  int j;
+  for(j=0;j<3;j++)printf("(%.12e,%.12e)\n",
+			 v->c[j].real,v->c[j].imag);
+}
+#endif
+
 /************************************************************************/
 static void
 collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
 			su3_vector *gr0){
   /* Create thinned sources of the specified parity */
   /* Result in gr */
-  
+
+  double dtime = -dclock();
+
   /* Iterate over displacements within a d^4 cube for this parity. */
   int ex, ey, ez, et;
   int is = 0;
@@ -267,15 +417,30 @@ collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
 #if 0
 	node0_printf("Source %d is %d %d %d %d\n", is, ex, ey, ez, et);
 #endif
-
+	
 	/* Apply source thinning */
 	copy_v_field( gr[is], gr0 );
 	thin_source( gr[is], d, ex, ey, ez, et );
 	
 	/* Project out (remove) the low mode part, based on the given eigenvectors */
 	int Nvecs = param.eigen_param.Nvecs;
-	if(Nvecs > 0)
+	if(Nvecs > 0){
 	  project_out(gr[is], eigVec, Nvecs, parity);
+	}
+#if 0
+	// DEBUG
+	int i;
+	FORSOMEFIELDPARITY(i, parity){
+	  if(lattice[i].t == 0){
+	    printf("GR[%d] %d %d %d %d %30.20f %30.20f %30.20f %30.20f %30.20f %30.20f\n", is,
+		   lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t,
+		   gr[is][i].c[0].real, gr[is][i].c[0].imag,
+		   gr[is][i].c[1].real, gr[is][i].c[1].imag,
+		   gr[is][i].c[2].real, gr[is][i].c[2].imag);
+	  }
+	} END_LOOP;
+#endif
+	
 #if 0
 	/* DEBUG */
 	/* Check the norm of the reduced source */
@@ -289,6 +454,9 @@ collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
 	  terminate(1);
 	}
       } /* ex, ey, ez, et */
+  
+  dtime += dclock();
+  node0_printf("Time to collect sources %g\n", dtime);
 }
 
 /************************************************************************/
@@ -376,7 +544,7 @@ block_current_stochastic( int nr, Real *j_mu_mass[], Real mass, int nsrc, int si
 	       lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu,
 	       j_mu_mass[ir][NMU*i + mu]);
 #endif
-      }
+      } END_LOOP;
     } /* is, mu */
   destroy_v_field(gr_mu);
 
@@ -459,7 +627,7 @@ block_current_stochastic_deltam( Real *j_mu01[], Real mass0, Real mass1,
 	       lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu,
 	       j_mu01[ir][NMU*i + mu]);
 #endif
-      }
+      } END_LOOP;
     } /* is, mu */
   destroy_v_field(gr_mu);
 
@@ -483,7 +651,7 @@ block_current_stochastic_delta_udus( Real **j_mu[], Real masses[],
 				     quark_invert_control qic[],
 				     su3_vector *gr[]){
   
-  char myname[] = "block_current_stochastic_delta_udls";
+  char myname[] = "block_current_stochastic_delta_udus";
 
   /* Offset for staggered phases in the current definition */
   int r_offset[4] = {0, 0, 0, 0};
@@ -521,13 +689,14 @@ block_current_stochastic_delta_udus( Real **j_mu[], Real masses[],
     Mu_inv_gr[is] = create_v_field();
   }
 
-  qic->parity = parity;
+  qic_ud->parity = parity;
+  qic_us->parity = parity;
   /* Mu_inv_gr = 1/[D^2 + 4*m_u^2] gr */
-  ks_congrad_block_field(nsrc, gr, Mu_inv_gr, qic, m_u, fn_us);
+  ks_congrad_block_field(nsrc, gr, Mu_inv_gr, qic_ud, m_u, fn_us);
   /* Mud_inv_gr = 1/[D^2 + 4*m_d^2] Mu_inv_gr */
-  ks_congrad_block_field(nsrc, Mu_inv_gr, Mud_inv_gr, qic, m_d, fn_ud);
+  ks_congrad_block_field(nsrc, Mu_inv_gr, Mud_inv_gr, qic_ud, m_d, fn_ud);
   /* Mus_inv_gr = 1/[D^2 + 4*m_s^2] Mu_inv_gr */
-  ks_congrad_block_field(nsrc, Mu_inv_gr, Mus_inv_gr, qic, m_s, fn_us);
+  ks_congrad_block_field(nsrc, Mu_inv_gr, Mus_inv_gr, qic_us, m_s, fn_us);
 
   for(int is = 0; is < nsrc; is++){
       destroy_v_field(Mu_inv_gr[is]);
@@ -567,7 +736,7 @@ block_current_stochastic_delta_udus( Real **j_mu[], Real masses[],
 	       lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu,
 	       j_mu_us[ir][NMU*i + mu], j_mu_ud[ir][NMU*i + mu]);
 #endif
-      }
+      } END_LOOP;
     } /* is, mu */
   destroy_v_field(gr_ud_mu);
   destroy_v_field(gr_us_mu);
@@ -633,24 +802,31 @@ block_current_stochastic_delta_udls( Real **j_mu[], Real masses[],
     Ml_inv_gr[is] = create_v_field();
   }
 
-  qic->parity = parity;
+  qic_ls->parity = parity;
+  int save_deflate = qic_ls->deflate;
+  if(parity == ODD)qic_ls->deflate = 0;  // No further deflation for odd parity contribution
+
   /* Ml_inv_gr = 1/[D^2 + 4*m_l^2] gr */
-  ks_congrad_block_field(nsrc, gr, Ml_inv_gr, qic, m_l, fn_ls);
+  ks_congrad_block_field(nsrc, gr, Ml_inv_gr, qic_ls, m_l, fn_ls);
   /* Mud_inv_gr = 1/[D^2 + 4*m_l^2] Ml_inv_gr */
   /* NOTE: we are approximating ud here */
-  ks_congrad_block_field(nsrc, Ml_inv_gr, Mud_inv_gr, qic, m_l, fn_ud);
+  ks_congrad_block_field(nsrc, Ml_inv_gr, Mud_inv_gr, qic_ls, m_l, fn_ud);
   /* Mls_inv_gr = 1/[D^2 + 4*m_s^2] Ml_inv_gr */
-  ks_congrad_block_field(nsrc, Ml_inv_gr, Mls_inv_gr, qic, m_s, fn_ls);
+  ks_congrad_block_field(nsrc, Ml_inv_gr, Mls_inv_gr, qic_ls, m_s, fn_ls);
+  qic_ls->deflate = save_deflate;
 
   for(int is = 0; is < nsrc; is++){
       destroy_v_field(Ml_inv_gr[is]);
   }
   
+  double onelinktime = -dclock();
   /* Might be better to use a block dslash here?? */
   for(int is = 0; is < nsrc; is++){
     dslash_fn_field( Mls_inv_gr[is], Mls_inv_gr[is], otherparity, fn_ls);
     dslash_fn_field( Mud_inv_gr[is], Mud_inv_gr[is], otherparity, fn_ud);
   }
+  onelinktime += dclock();
+  node0_printf("Time to do one-link dslash %e\n", onelinktime);
   
   /* For each source, apply current in various directions at the sink */
   su3_vector *gr_ls_mu = create_v_field();
@@ -680,7 +856,7 @@ block_current_stochastic_delta_udls( Real **j_mu[], Real masses[],
 	       lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu,
 	       j_mu_ls[ir][NMU*i + mu], j_mu_ud[ir][NMU*i + mu]);
 #endif
-      }
+      } END_LOOP;
     } /* is, mu */
   destroy_v_field(gr_ud_mu);
   destroy_v_field(gr_ls_mu);
@@ -955,17 +1131,21 @@ block_currents_diff_delta_udlsc(int n_masses, Real **j_mu[], Real masses[],
   Real m_c = masses[4];
   Real **j_mu_ud = j_mu[0];
   Real **j_mu_ls = j_mu[2];
+  Real **j_mu_s  = j_mu[3];
   Real **j_mu_c  = j_mu[4];
   imp_ferm_links_t *fn_ud = fn[0];
   imp_ferm_links_t *fn_ls = fn[2];
+  imp_ferm_links_t *fn_s  = fn[3];
   imp_ferm_links_t *fn_c  = fn[4];
   Real dm2_ud4 = 4*(m_d*m_d - m_u*m_u);
   Real dm2_ls4 = 4*(m_s*m_s - m_l*m_l);
   quark_invert_control *qic_sloppy_ud = &qic_sloppy[0];
   quark_invert_control *qic_sloppy_ls = &qic_sloppy[2];
+  quark_invert_control *qic_sloppy_s  = &qic_sloppy[3];
   quark_invert_control *qic_sloppy_c  = &qic_sloppy[4];
   quark_invert_control *qic_precise_ud = &qic_precise[0];
   quark_invert_control *qic_precise_ls = &qic_precise[2];
+  quark_invert_control *qic_precise_s  = &qic_precise[3];
   quark_invert_control *qic_precise_c  = &qic_precise[4];
 
   /* The sloppy high-mode solution on even sites */
@@ -986,6 +1166,10 @@ block_currents_diff_delta_udlsc(int n_masses, Real **j_mu[], Real masses[],
 				   nr, qic_sloppy_ls, gr_even);
 #endif
   
+  node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", m_s);
+  block_current_stochastic( nr, j_mu_s, m_s, nsrc, -1, EVEN,
+			    qic_sloppy_s, fn_s, gr_even);
+
   if(n_masses == 5){
     node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", m_c);
     block_current_stochastic( nr, j_mu_c, m_c, nsrc, -1, EVEN,
@@ -1010,6 +1194,11 @@ block_currents_diff_delta_udlsc(int n_masses, Real **j_mu[], Real masses[],
   block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls, nsrc, -1, ODD,
 				   nr, qic_sloppy_ls, gr_odd);
 #endif
+
+  node0_printf("Solving sloppily for all ODD displacements for mass %g\n", m_s);
+  block_current_stochastic( nr, j_mu_s, m_s, nsrc, -1, ODD,
+			    qic_sloppy_s, fn_s, gr_odd);
+  
   if(n_masses == 5){
     node0_printf("Solving sloppily for all ODD displacements for mass %g\n", m_c);
     block_current_stochastic( nr, j_mu_c, m_c, nsrc, -1, ODD,
@@ -1033,6 +1222,11 @@ block_currents_diff_delta_udlsc(int n_masses, Real **j_mu[], Real masses[],
   block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls, nsrc, +1, EVEN,
 				   nr, qic_precise_ls, gr_even);
 #endif
+
+  node0_printf("Solving precisely for all EVEN displacements for mass %g\n", m_s);
+  block_current_stochastic( nr, j_mu_s, m_s, nsrc, +1, EVEN,
+			    qic_precise_s, fn_s, gr_even);
+
   if(n_masses == 5){
     node0_printf("Solving precisely for all EVEN displacements for mass %g\n", m_c);
     block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, EVEN,
@@ -1056,6 +1250,11 @@ block_currents_diff_delta_udlsc(int n_masses, Real **j_mu[], Real masses[],
   block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls, nsrc, +1, ODD,
 				   nr, qic_precise_ls, gr_odd);
 #endif
+
+  node0_printf("Solving precisely for all ODD displacements for mass %g\n", m_s);
+  block_current_stochastic( nr, j_mu_s, m_s, nsrc, +1, ODD,
+			    qic_precise_s, fn_s, gr_odd);
+  
   if(n_masses == 5){
     node0_printf("Solving precisely for all ODD displacements for mass %g\n", m_c);
     block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, ODD,
@@ -1268,18 +1467,21 @@ block_currents_delta_udlsc( int n_masses, Real **j_mu[], Real masses[],
   Real m_c = masses[4];
   Real **j_mu_ud = j_mu[0];
   Real **j_mu_ls = j_mu[2];
+  Real **j_mu_s  = j_mu[3];
   Real **j_mu_c  = j_mu[4];
   imp_ferm_links_t *fn_ud = fn[0];
   imp_ferm_links_t *fn_ls = fn[2];
+  imp_ferm_links_t *fn_s  = fn[3];
   imp_ferm_links_t *fn_c  = fn[4];
   Real dm2_ud4 = 4*(m_d*m_d - m_u*m_u);
   Real dm2_ls4 = 4*(m_s*m_s - m_l*m_l);
   quark_invert_control *qic_ud = &qic[0];
   quark_invert_control *qic_ls = &qic[2];
+  quark_invert_control *qic_s  = &qic[3];
   quark_invert_control *qic_c  = &qic[4];
 
   /* Construct current density from the list of sources */
-
+  
 #ifdef OPT_UDLSC
   node0_printf("Solving sloppily for all EVEN displacements for mass diff %g %g and %g %g\n",
 	       m_u, m_d, m_l, m_s);
@@ -1295,6 +1497,11 @@ block_currents_delta_udlsc( int n_masses, Real **j_mu[], Real masses[],
   block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls, nsrc,
 				   +1, EVEN, nr, qic_ls, gr_even);
 #endif
+
+  node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", m_s);
+  block_current_stochastic( nr, j_mu_s, m_s, nsrc, +1, EVEN,
+			    qic_s, fn_s, gr_even);
+  
   if(n_masses == 5){
     node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", m_c);
     block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, EVEN,
@@ -1316,11 +1523,17 @@ block_currents_delta_udlsc( int n_masses, Real **j_mu[], Real masses[],
   block_current_stochastic_deltam( j_mu_ls, m_l, m_s, dm2_ls4, fn_ls, nsrc,
 				   +1, ODD, nr, qic_ls, gr_odd);
 #endif
+
+  node0_printf("Solving sloppily for all ODD displacements for mass %g\n", m_s);
+  block_current_stochastic( nr, j_mu_s, m_s, nsrc, +1, ODD,
+			    qic_s, fn_s, gr_odd);
+
   if(n_masses == 5){
     node0_printf("Solving sloppily for all ODD displacements for mass %g\n", m_c);
     block_current_stochastic( nr, j_mu_c, m_c, nsrc, +1, ODD,
 			      qic_c, fn_c, gr_odd);
   }
+
 }
 
 
@@ -1356,7 +1569,67 @@ block_currents_deltam( int n_masses, Real **j_mu[], Real masses[],
   }      
 }
 
+#ifdef HAVE_QUDA
+
 /*********************************************************************/
+/* Calculate exact low-mode current densities using QUDA.
+ *
+ * For nmass=1, this function emulates MILC's exact_current()
+ * For nmass=2, this function emulates MILC's exact_current_delta_ls()
+ * For nmass=3, this function emulates MILC's exact_current_delta_udus
+ *
+ * Both parity eigenvectors must be loaded into QUDA before calling this function.
+ */
+static void
+exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp_ferm_links_t *fn_mass){
+
+  char myname[] = "exact_current_quda";
+
+  if( nmass<1 || nmass>3 ) {
+    node0_printf("%s: wrong number of masses %d\n", myname, nmass);
+    terminate(1);
+  }
+
+  int refresh  = 0;
+  if (fn_mass != get_fn_last() || fresh_fn_links(fn_mass)){
+    cancel_quda_notification(fn_mass);
+    set_fn_last(fn_mass);
+    refresh = 1;
+    node0_printf("%s: fn, notify: Signal QUDA to refresh links\n", __func__);
+  }
+
+  QudaInvertArgs_t inv_args; // To set invertParams and gaugeParams in QUDA
+  inv_args.mixed_precision = 0;
+  inv_args.naik_epsilon = fn_mass->eps_naik;
+#if (FERM_ACTION==HISQ)
+  inv_args.tadpole = 1.0;
+#else
+  inv_args.tadpole = u0;
+#endif
+
+  QudaEigensolverArgs_t eig_args; // To tell QUDA how many eigenvectors to use
+
+#ifdef USE_EIG_GPU
+  // Here we use QUDA for the eigensolution or for reading is own eigenvector file
+  int quda_does_eigensolve = (param.ks_eigen_startflag == FRESH);
+#else
+  // Here, eigenvectors were loaded from file(s) by MILC or by a non-QUDA eigensolver
+  int quda_does_eigensolve = 0;
+#endif
+
+  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
+  eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
+  eig_args.n_ev = eig_args.n_conv;
+
+  su3_matrix* fatlink = get_fatlinks(fn_mass);
+  su3_matrix* longlink = get_lnglinks(fn_mass);
+
+  // Compute exact current via QUDA
+  qudaExactCurrent(MILC_PRECISION, MILC_PRECISION, fatlink, longlink, ape_links, nmass, masses, inv_args, eig_args, jlow_mu1, jlow_mu2, refresh);
+
+} // exact_current_quda
+
+#endif
 
 static void
 exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
@@ -1369,29 +1642,24 @@ exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
   su3_vector *gr_mu = create_v_field();
   int Nvecs = param.eigen_param.Nvecs;
   int i;
-
+  
   for(int n = 0; n < Nvecs; n++){
     dslash_fn_field(eigVec[n], gr0, ODD, fn_mass);
     for(int mu = 0; mu < NMU; mu++){
-      
       spin_taste_op_ape_fn(fn_mass, spin_taste[mu], r_offset, gr_mu, gr0);
       spin_taste_op_ape_fn(fn_mass, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
-      
       FOREVENFIELDSITES(i){
-	complex z;
-	z = su3_dot( eigVec[n] + i, gr_mu + i);
-	jlow_mu[NMU*i + mu] += -z.imag/(eigVal[n]+4.0*mass*mass);
+	      complex z;
+	      z = su3_dot( eigVec[n] + i, gr_mu + i);
+	      jlow_mu[NMU*i + mu] += -z.imag/(eigVal[n]+4.0*mass*mass);
       } /* i */
-      
       spin_taste_op_ape_fn(fn_mass, spin_taste[mu], r_offset, gr_mu, eigVec[n]);
       spin_taste_op_ape_fn(fn_mass, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
-      
       FORODDFIELDSITES(i){
-	complex z;
-	z = su3_dot( gr0 + i, gr_mu + i);
-	jlow_mu[NMU*i + mu] += z.imag/(eigVal[n]+4.0*mass*mass);
+	      complex z;
+	      z = su3_dot( gr0 + i, gr_mu + i);
+	      jlow_mu[NMU*i + mu] += z.imag/(eigVal[n]+4.0*mass*mass);
       } /* i */
-      
     } /* mu */
   } /* n */
 
@@ -1532,7 +1800,12 @@ exact_currents(int n_masses, Real *jlow_mu[], Real masses[],
   double dtime = -dclock();
 
   for(int j = 0; j < n_masses; j++){
+#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+    Real qmasses[1] = {masses[j]};
+    exact_current_quda(jlow_mu[j], NULL, 1, qmasses, fn_mass[j]);
+#else
     exact_current(jlow_mu[j], masses[j], fn_mass[j]);
+#endif
   } /* j */
 
 #if 0
@@ -1542,7 +1815,7 @@ exact_currents(int n_masses, Real *jlow_mu[], Real masses[],
       node0_printf("Exact low modes For mass %g\n", mass);
       FORALLFIELDSITES(i){
 	node0_printf("j_mu_low  %d %d %d %d %d %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, jlow_mu[j][NMU*i+mu]);
-      }
+      } 
     }
   }
 #endif
@@ -1572,8 +1845,37 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
   char myname[] = "exact_currents_deltam";
   double dtime = -dclock();
 
+#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+  Real quda_m[3] = {masses[0], masses[1], masses[3]};
+  Real quda_m1[1] = {masses[0]};
+  switch(n_masses){
+  case(1):
+    exact_current_quda(jlow_mu[0], NULL, 1, quda_m1, fn_mass[0]);
+    break;
+  case(2):
+    exact_current_quda(jlow_mu[0], NULL, 2, quda_m, fn_mass[0]);
+    break;
+  case(3):
+    quda_m1[0] = masses[2];
+    exact_current_quda(jlow_mu[0], NULL, 2, quda_m, fn_mass[0]);
+    exact_current_quda(jlow_mu[2], NULL, 1, quda_m1, fn_mass[2]);
+    break;
+  case(4):
+    exact_current_quda(jlow_mu[0], jlow_mu[2], 3, quda_m, fn_mass[0]);
+    break;
+  case(5):
+    exact_current_quda(jlow_mu[0], jlow_mu[2], 3, quda_m, fn_mass[0]);
+    quda_m1[0] = masses[3];
+    exact_current_quda(jlow_mu[3], NULL, 1, quda_m1, fn_mass[3]);
+    quda_m1[0] = masses[4];
+    exact_current_quda(jlow_mu[4], NULL, 1, quda_m1, fn_mass[4]);
+    break;
+  default:
+    node0_printf("%s: wrong number of masses %d\n", myname, n_masses);
+    terminate(1);
+  }
+#else
   Real m[5] = {masses[0], masses[1], 0., masses[2], masses[3]};
-  
   switch(n_masses){
   case(1):
     exact_current(jlow_mu[0], masses[0], fn_mass[0]);
@@ -1590,12 +1892,14 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
     break;
   case(5):
     exact_current_delta_udus(jlow_mu, masses, fn_mass);
+    exact_current(jlow_mu[3], masses[3], fn_mass[3]);
     exact_current(jlow_mu[4], masses[4], fn_mass[4]);
     break;
   default:
     node0_printf("%s: wrong number of masses %d\n", myname, n_masses);
     terminate(1);
   }
+#endif
   
 #if 0
   for(int mu = 0; mu < NMU; mu++){
@@ -1605,14 +1909,14 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
       node0_printf("j_mu_low  %d %d %d %d %d %g\n",
 		   lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t,
 		   mu, jlow_mu[0][NMU*i+mu]);
-    }
+    } 
     node0_printf("Exact low modes For mass %g minus mass %g\n", masses[0],
 		 masses[2]);
     FORALLFIELDSITES(i){
       node0_printf("j_mu_low  %d %d %d %d %d %g\n",
 		   lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t,
 		   mu, jlow_mu[2][NMU*i+mu]);
-    }
+    } 
   }
 #endif
 
@@ -1728,9 +2032,10 @@ write_jlow(int n_masses, Real masses[], Real charges[], Real *jlow_mu[]){
     write_tslice_values("LOW", -1, masses[0], charges[0], masses[2], charges[2], jlow_mu[2]);
     break;
     
-  case(5):  /* u - d,  l - s,  c */
+  case(5):  /* u - d,  u - s,  s, c */
     write_tslice_values("LOW", -1, masses[0], charges[0], masses[1], charges[1], jlow_mu[0]);
-    write_tslice_values("LOW", -1, masses[2], charges[2], masses[3], charges[3], jlow_mu[2]);
+    write_tslice_values("LOW", -1, masses[0], charges[0], masses[3], charges[3], jlow_mu[2]);
+    write_tslice_values("LOW", -1, masses[3], charges[3], 0., 0., jlow_mu[3]);
     write_tslice_values("LOW", -1, masses[4], charges[4], 0., 0., jlow_mu[4]);
     break;
   }
@@ -1886,7 +2191,7 @@ write_jhi(char tag[], int n_masses, int nr, int jrand, Real masses[],
 			  masses[2], charges[2], j_mu[2][ir]);
     break;
     
-  case(5):  /* u - d,  l - s,  c */
+  case(5):  /* u - d,  l - s,  s,  c */
     for(int ir = 0; ir < nr; ir++)
       write_tslice_values(tag, jrand+ir, masses[0], charges[0],
 			  masses[1], charges[1], j_mu[0][ir]);
@@ -1894,8 +2199,27 @@ write_jhi(char tag[], int n_masses, int nr, int jrand, Real masses[],
       write_tslice_values(tag, jrand+ir, masses[2], charges[2],
 			  masses[3], charges[3], j_mu[2][ir]);
     for(int ir = 0; ir < nr; ir++)
+      write_tslice_values(tag, jrand+ir, masses[3], charges[3], 0., 0., j_mu[3][ir]);
+    for(int ir = 0; ir < nr; ir++)
       write_tslice_values(tag, jrand+ir, masses[4], charges[4], 0., 0., j_mu[4][ir]);
+
+#if 0
+    // DEBUG
+    int i;
+    FORALLFIELDSITES(i){
+      if(lattice[i].t == 0){
+	for(int ir = 0; ir < nr; ir++){
+	  printf("JMU0[%d] %d %d %d %d %30.20f %30.20f %30.20f %30.20f\n", ir,
+		  lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t,
+		  j_mu[0][ir][4*i], j_mu[0][ir][4*i+1],
+		  j_mu[0][ir][4*i+2], j_mu[0][ir][4*i+3]);
+	}
+      }
+    }
+#endif
+    
     break;
+    
   }
 #else
   for(int j = 0; j < n_masses; j++)
@@ -2017,6 +2341,7 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
   /* Compute high-mode current density stochastically in blocks of size nr */
   for(int jrand = 0; jrand < nrand; jrand += nr){
 
+    double meastime = -dclock();
     /* Create sources in gr_even and gr_odd for block solves */
     collect_sources(gr_even, gr_odd, nr, d, evol);
     
@@ -2033,6 +2358,9 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
 #endif
     /* Reset j_mu */
     clear_jhi(n_masses, nr, j_mu);
+
+    meastime += dclock();
+    node0_printf("Time to do one measurement step %e\n", meastime); fflush(stdout);
     
   } /* jrand */
 
@@ -2106,6 +2434,7 @@ f_meas_current( int n_masses, int nrand, int thinning,
 
   /* Compute high-mode current density stochastically in blocks of size nr */
   for(int jrand = 0; jrand < nrand; jrand += nr){
+    double meastime = -dclock();
 
     /* Create sources in gr_even and gr_odd for block solves */
     collect_sources(gr_even, gr_odd, nr, d, evol);
@@ -2123,6 +2452,9 @@ f_meas_current( int n_masses, int nrand, int thinning,
 
     /* Reset j_mu */
     clear_jhi(n_masses, nr, j_mu);
+
+    meastime += dclock();
+    node0_printf("Time to do one measurement step %e\n", meastime); fflush(stdout);
   } /* jrand */
   
   /* Clean up */

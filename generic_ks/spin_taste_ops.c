@@ -447,11 +447,11 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
   short taste = gamma_hex(taste_index);
 
   int refresh  = 0;
-  if(refresh_links != NULL)
+  if(refresh_links != NULL && links != NULL)
     refresh = *refresh_links;
   
   qudaSpinTaste(MILC_PRECISION, quda_precision, links, (const void *const)src, dest, (int)spin, (int)taste, refresh);
-  if(refresh_links != NULL)
+  if(refresh_links != NULL && links != NULL)
     *refresh_links = 0;
 }
 

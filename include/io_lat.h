@@ -442,6 +442,7 @@ gauge_file *parallel_open(int order, const char *filename);
 fsu3_matrix *w_parallel_setup(gauge_file *gf, off_t *checksum_offset);
 gauge_file *w_parallel_i(const char *filename);
 gauge_file *w_checkpoint_i(const char *filename);
+FILE *open_scidac_detect_volume_format(const char *filename, int *volfmt);
 gauge_file *r_serial_i(const char *filename);
 void w_serial_f(gauge_file *gf);
 void r_serial_f(gauge_file *gf);

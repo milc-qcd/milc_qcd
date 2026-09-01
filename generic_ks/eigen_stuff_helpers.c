@@ -75,7 +75,6 @@ DdagD( su3_vector *res, su3_vector *src, int ds, msg_tag *t1[], msg_tag *t2[],
 #if 0
 /************************************************************************/
 /* Chebyshev polynomial                                                 */
-
 static double 
 poly( double am, double aM, int p, double x) {
   double delta = 0.5*(aM-am);
@@ -463,27 +462,39 @@ void check_eigres(double *resid, su3_vector *eigVec[], Real *eigVal,
 
   su3_vector *ttt;
   int i,j;
+  node0_printf("check_eigres: checking parity %d\n", parity);
   otherparity = opposite_parity(parity);
 
   /* compute residual and norm of eigenvectors */
   double *norm = (double *)malloc(Nvecs*sizeof(double));
+  double *dotprod = (double *)malloc(Nvecs*sizeof(double));
+  double *eigRQ = (double *)malloc(Nvecs*sizeof(double));
   ttt = create_v_field();
   for(i = 0; i < Nvecs; i++){
     double rsd = (double)0.0;
     double nrm  = (double)0.0;
+    double dot = (double)0.0;
     dslash_fn_field(eigVec[i], ttt, otherparity, fn);
     dslash_fn_field(ttt, ttt, parity, fn);
-    FORSOMEFIELDPARITY_OMP(j,parity, reduction(+:rsd,nrm)){
+    FORSOMEFIELDPARITY_OMP(j,parity, reduction(+:rsd,nrm,dot)){
+      dot += -su3_dot(eigVec[i]+j,ttt+j).real;
       scalar_mult_sum_su3_vector(ttt+j, eigVec[i]+j, eigVal[i]);
       rsd += magsq_su3vec(ttt+j);
       nrm += magsq_su3vec(eigVec[i]+j);
     } END_LOOP_OMP;
     resid[i] = rsd;
     norm[i] = nrm;
+    dotprod[i] = dot;
   }
   destroy_v_field(ttt);
   g_vecdoublesum(resid, Nvecs);
   g_vecdoublesum(norm, Nvecs);
+  g_vecdoublesum(dotprod, Nvecs);
+
+  /* Rayleigh quotient eigenvalue */
+  for(i = 0; i < Nvecs; i++){
+    eigRQ[i] = dotprod[i]/norm[i];
+  }
 
   /* Fix the normalization if needed */
   double tol = 1e-9;
@@ -515,8 +526,8 @@ void check_eigres(double *resid, su3_vector *eigVec[], Real *eigVal,
   for(i = 0; i < Nvecs; i++){
     resid[i] = sqrt(resid[i]/norm[i]);
     norm[i] = sqrt(norm[i]);
-    node0_printf("eigVal[%d] = %e ( resid = %e , |eigVec[%d]|-1 = %e )\n",
-		 i, eigVal[i], resid[i], i, norm[i]-1);
+    node0_printf("eigVal[%d] = %e eigRQ = %e ( resid = %e , |eigVec[%d]|-1 = %e )\n",
+		 i, eigVal[i], eigRQ[i], resid[i], i, norm[i]-1);
   }
   if(count_renorm > 0){
     node0_printf("check_eigres: NOTE: %d eigVec norms deviated from 1 by more than %g with max deviation %g.\n",
@@ -525,7 +536,7 @@ void check_eigres(double *resid, su3_vector *eigVec[], Real *eigVal,
   }
   
   node0_printf("End of eigensolutions\n");
-  free(norm);
+  free(norm); free(dotprod); free(eigRQ);
 }
 
 /**********************************************************************************/
@@ -585,7 +596,8 @@ void construct_eigen_other_parity(su3_vector *eigVec[], Real eigVal[],
     FORSOMEPARITY_OMP(i,s,otherparity,){
       clearvec(eigVec[j]+i);
     } END_LOOP_OMP;
-    dslash_field(eigVec[j], eigVec[j], otherparity, fn);
+    /* Use MILC dslash */
+    dslash_fn_field_cpu(eigVec[j], eigVec[j], otherparity, fn);
   }
 
   /* If we calculate the 2-norms all at once we do only one large

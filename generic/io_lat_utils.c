@@ -1705,6 +1705,103 @@ void w_serial_f(gauge_file *gf)
 
 /*---------------------------------------------------------------------------*/
 
+/* Convert dir1/dir2/file to dir1/dir2/file.vol according to
+   SciDAC PARTFILE file name format */
+
+static void partfile_name(char *newfilename, size_t nbytes,
+			  const char *filename, char *vol){
+
+  size_t n = strlen(filename) + strlen(vol) + 2;
+  if(n > nbytes){
+    printf("partfile_name: need %zu bytes and have only %zu\n", n, nbytes);
+    terminate(1);
+  }
+  strncpy(newfilename,filename,n);
+  /* Append "." and "vol" to "file" */
+  snprintf(newfilename, n, "%s.%s", filename, vol);
+}
+
+/*---------------------------------------------------------------------------*/
+
+/* Convert dir1/dir2/file to dir1/dir2/vol/file according to
+   SciDAC PARTFILE_DIR file name format */
+
+static void partfile_dir_name(char *newfilename, size_t nbytes,
+			      const char *filename, char *vol){
+  size_t n = strlen(filename) + strlen(vol) + 2;
+  if(n > nbytes){
+    printf("partfile_dir_name: need %zu bytes and have only %zu\n", n, nbytes);
+    terminate(1);
+  }
+  const char *dirname_end = strrchr(filename, '/');  /* Find last "/" */
+  size_t dirname_len = 0;
+  if (NULL != dirname_end)
+    dirname_len = dirname_end - filename + 1;  /* Byte location of last dirname */
+  strncpy(newfilename, filename, dirname_len);  /* Copy dirs in filename */
+  /* Append "vol", "/", and "file" */
+  snprintf(newfilename + dirname_len, n - dirname_len, "%s/%s",
+	   vol, filename + dirname_len);
+}
+
+/*---------------------------------------------------------------------------*/
+/* Open "filename".  It may be a SciDAC file, which could require path
+   modifications to open successfully. In that case detect the SciDAC
+   volume type.  Return value is the file pointer and the volume
+   format or a NULL pointer and QIO_UNKNOWN if open fails. */
+
+FILE *open_scidac_detect_volume_format(const char *filename, int* volfmt){
+
+  char myname[] = "r_try_open_scidac";
+  FILE* fp = NULL;
+
+  if(this_node!=0)return NULL;
+
+  fp = g_open(filename, "rb");
+  
+  if(fp != NULL){
+    *volfmt = QIO_SINGLEFILE;
+    return fp;
+  }
+  printf("%s: Node %d can't open file %s, error %d\n", myname,
+	 this_node,filename,errno);fflush(stdout);
+
+  /* Try SciDAC partition file format */
+  size_t nbytes = strlen(filename) + 9;
+  char editfilename[nbytes];
+  partfile_name(editfilename, nbytes, filename, "vol0000");
+  printf("%s: Trying SciDAC partition volume %s\n",myname, editfilename);
+  fp = g_open(editfilename, "rb");
+  
+  if(fp != NULL){
+    *volfmt = QIO_PARTFILE;
+    return fp;
+  }
+  printf("%s: Node %d can't open file %s, error %d\n",
+	 myname,this_node,editfilename,errno);fflush(stdout);
+
+  /* Try SciDAC partition directory format */
+  partfile_dir_name(editfilename, nbytes, filename, "vol0000");
+  printf("%s: Trying SciDAC partition directory volume %s\n",
+	 myname, editfilename);
+  fp = g_open(editfilename, "rb");
+	  
+  if(fp != NULL){
+    *volfmt = QIO_PARTFILE_DIR;
+    return fp;
+  }
+
+  /* Failed */
+  printf("%s: Node %d can't open file %s, error %d\n", myname,
+	 this_node,editfilename,errno);fflush(stdout);
+  *volfmt = QIO_UNKNOWN;
+  return NULL;
+}
+
+/*---------------------------------------------------------------------------*/
+
+/* Node 0 opens the file for reading.  With partition file formats,
+   later, QIO will open all the parts */
+
 gauge_file *r_serial_i(const char *filename)
 {
   /* Returns file descriptor for opened file */
@@ -1712,8 +1809,8 @@ gauge_file *r_serial_i(const char *filename)
   gauge_header *gh;
   gauge_file *gf;
   FILE *fp;
-  int byterevflag;
-  char editfilename[513];
+  int byterevflag = 0;
+  int volfmt;  /* Not used here */
 
   /* All nodes set up a gauge file and gauge header structure for reading */
 
@@ -1727,37 +1824,20 @@ gauge_file *r_serial_i(const char *filename)
 
   g_sync();
 
-  if(this_node==0)
-    {
-      fp = g_open(filename, "rb");
-      if(fp == NULL)
-	{
-	  /* If this is a partition format SciDAC file the node 0 name
-	     has an extension ".vol0000".  So try again. */
-	  printf("r_serial_i: Node %d can't open file %s, error %d\n",
-		 this_node,filename,errno);fflush(stdout);
-	  strncpy(editfilename,filename,504);
-	  editfilename[504] = '\0';  /* Just in case of truncation */
-	  strcat(editfilename,".vol0000");
-	  printf("r_serial_i: Trying SciDAC partition volume %s\n",editfilename);
-	  fp = g_open(editfilename, "rb");
-	  if(fp == NULL)
-	    {
-	      printf("r_serial_i: Node %d can't open file %s, error %d\n",
-		     this_node,editfilename,errno);fflush(stdout);terminate(1);
-	    }
-	  printf("r_serial_i: Open succeeded\n");
-	}
+  if(this_node != 0){
+    gf->fp = NULL;  /* Only node 0 is sniffing out this file */
+  } else {
+
+    gf->fp = open_scidac_detect_volume_format(filename, &volfmt);
+
+    if(gf->fp != NULL){
       
-      gf->fp = fp;
-
+      printf("r_serial_i: Open for sniffing succeeded\n");
+      
       byterevflag = read_gauge_hdr(gf,SERIAL);
-
     }
-
-  else gf->fp = NULL;  /* The other nodes don't know about this file */
-
-  /* Broadcast the byterevflag from node 0 to all nodes */
+  }
+  /* Node 0 broadcasts the byterevflag from node 0 to all nodes */
 
   broadcast_bytes((char *)&byterevflag,sizeof(byterevflag));
   gf->byterevflag = byterevflag;

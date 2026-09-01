@@ -78,7 +78,7 @@ shift_field(int dir, enum shift_dir fb, su3_vector *dest, const su3_vector *cons
   int quda_precision = MILC_PRECISION;
   int sym = 0;
 
-  node0_printf("Using GPU shift\n");
+  //node0_printf("Using GPU shift\n");
 
   switch(fb){
   case SHIFT_FORWARD:

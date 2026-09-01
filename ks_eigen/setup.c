@@ -321,7 +321,7 @@ int readin(int prompt) {
 #endif
   
   if(param.fixflag != NO_GAUGE_FIX){
-    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
   }
   if(status != 0) normal_exit(0);
 

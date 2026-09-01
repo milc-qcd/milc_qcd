@@ -180,7 +180,7 @@ void check_reunitarization_derivative( char *ansfilein, int ansflagin,
   /* If an answer file is given, read it for comparison */
   if(ansflagin == RELOAD_SERIAL){
     node0_printf("Reading the derivatives of the reunitarized links from %s\n", ansfilein);
-    restore_color_matrix_scidac_to_field(ansfilein, dWans, 4, MILC_PRECISION);
+    restore_color_matrix_scidac_to_field(ansfilein, dWans, 4, MILC_PRECISION, QIO_SERIAL);
     node0_printf("Checking the answer\n"); fflush(stdout);
     
     /* Check the answer */

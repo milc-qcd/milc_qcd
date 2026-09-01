@@ -241,7 +241,7 @@ start:
 		l_parity=ODD; l_otherparity=EVEN;
 		parity=EVEN;	/* so we won't loop endlessly */
 		iteration = 0;
-#ifdef CG_DEUBG
+#ifdef CG_DEBUG
 		node0_printf("instant goto start\n");
 #endif
 		goto start;

@@ -366,6 +366,8 @@ gauge_file *reload_lattice( int flag, const char *filename);
 int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename);
 int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename );
 int ask_ending_lattice( FILE *fp, int prompt, int *flag, char *filename );
+int ask_starting_fat_link_file( FILE *fp, int prompt, int *flag, char *filename );
+int ask_starting_lng_link_file( FILE *fp, int prompt, int *flag, char *filename );
 int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN);
 void coldlat(void);
 void funnylat(void);
