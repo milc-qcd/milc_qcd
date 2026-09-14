@@ -315,7 +315,7 @@ if(WANTGRID)
     set(HAVE_GRID ON)
     set(HAVE_GPU ON)
     target_link_libraries(add INTERFACE Grid::Grid)
-    target_compile_definitions(add INTERFACE HAVE_GRID)
+    target_compile_definitions(add INTERFACE HAVE_GRID GRID_PrecisionInt=${PRECISION})
 
     if(GPU_FN_CG)
         set(HAVE_FN_CG_GPU ON)
@@ -371,7 +371,7 @@ endif()
 include(template_combos.cmake)
 
 set(inlineopt
-    $<$<BOOL:${INLINE_C}>:INLINE>
+    $<$<BOOL:${INLINE_C}>:C_INLINE>
     $<$<BOOL:${INLINE_C_GLOBAL}>:C_GLOBAL_INLINE>
     $<$<BOOL:${INLINE_SSE}>:SSE_INLINE>
     $<$<BOOL:${INLINE_SSE_GLOBAL}>:SSE_GLOBAL_INLINE>
