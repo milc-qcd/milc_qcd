@@ -146,7 +146,7 @@ add_milc_executable(su3_hmc_eo_symzk1_p4 control.c
     GAUGE symanzik_1loop_action
     QUARK p4_action
     DEFINES EO PHI_ALGORITHM HMC_ALGORITHM
-    EXTRA_OBJECTS eo_objects eo_force gauge_force_milc
+    EXTRA_OBJECTS eo_objects eo_force gauge_force
     EXTRA_SOURCES ../generic_ks/d_congrad5_two_src.c d_action.c update.c
 )
 target_compile_options(su3_hmc_eo_symzk1_p4 PRIVATE ${ks_multicg_multiff_off} -UHAVE_QOP -UHAVE_QDP)
@@ -244,7 +244,7 @@ target_compile_options(su3_rmd1_hisq PRIVATE ${ks_multicg_off})
 add_milc_executable(su3_hmc_hisq control.c
     GAUGE symanzik_1loop_hisq_action
     QUARK hisq/hisq_u3_action
-    DEFINES ${hisq_options} HMC_ALGORITHM
+    DEFINES ${hisq_options} PHI_ALGORITHM HMC_ALGORITHM
     EXTRA_OBJECTS hisq_objects hisq_force gauge_force
     EXTRA_SOURCES d_action.c update.c
 )
@@ -262,8 +262,17 @@ target_compile_options(su3_hmc1_hisq PRIVATE ${ks_multicg_off})
 add_milc_executable(su3_hmc1_tree_hisq control.c
     GAUGE symanzik_tree_action
     QUARK hisq/hisq_u3_action
-    DEFINES ${hisq_tree_options}
+    DEFINES ${hisq_tree_options} ONEMASS PHI_ALGORITHM HMC_ALGORITHM
     EXTRA_OBJECTS hisq_objects hisq_force gauge_force
     EXTRA_SOURCES d_action.c update_onemass.c
 )
 target_compile_options(su3_hmc1_tree_hisq PRIVATE ${ks_multicg_off})
+
+add_milc_executable(su3_hmc_hasenbusch_tree_hisq control.c
+    GAUGE symanzik_tree_action
+    QUARK hisq/hisq_u3_action
+    DEFINES ${hisq_tree_options} PHI_ALGORITHM HMC_ALGORITHM
+    EXTRA_OBJECTS hisq_objects hisq_force gauge_force
+    EXTRA_SOURCES d_action.c update_hasenbusch_oneterm.c
+)
+target_compile_options(su3_hmc_hasenbusch_tree_hisq PRIVATE ${ks_multicg_off})

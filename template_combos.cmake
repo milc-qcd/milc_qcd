@@ -322,26 +322,22 @@ add_interface_library(flinks_hisq_qop
 # Generic actions are not supported in QOP, so we use MILC
 add_interface_library(flinks_eo_qop OBJECTS flinks_eo_milc)
 
-if(HAVE_FL_GPU)
-    if(HAVE_QUDA)
-        add_interface_library(flinks_fn OBJECTS flinks_fn_quda)
-        add_interface_library(flinks_eo OBJECTS flinks_eo_milc)
-        add_interface_library(flinks_hisq OBJECTS flinks_hisq_quda)
-    elseif(HAVE_GRID)
-        add_interface_library(flinks_fn OBJECTS flinks_fn_grid)
-        add_interface_library(flinks_eo OBJECTS flinks_eo_milc)
-        add_interface_library(flinks_hisq OBJECTS flinks_hisq_grid)
-    endif()
+if(HAVEQOP)
+    add_interface_library(flinks_fn OBJECTS flinks_fn_qop)
+    add_interface_library(flinks_eo OBJECTS flinks_eo_qop)
+    add_interface_library(flinks_hisq OBJECTS flinks_hisq_qop)
+elseif(HAVE_FL_GPU AND HAVE_QUDA)
+    add_interface_library(flinks_fn OBJECTS flinks_fn_quda)
+    add_interface_library(flinks_eo OBJECTS flinks_eo_milc)
+    add_interface_library(flinks_hisq OBJECTS flinks_hisq_quda)
+elseif(HAVE_FL_GPU AND HAVE_GRID)
+    add_interface_library(flinks_fn OBJECTS flinks_fn_grid)
+    add_interface_library(flinks_eo OBJECTS flinks_eo_milc)
+    add_interface_library(flinks_hisq OBJECTS flinks_hisq_grid)
 else()
-    if(HAVEQOP)
-        add_interface_library(flinks_fn OBJECTS flinks_fn_qop)
-        add_interface_library(flinks_eo OBJECTS flinks_eo_qop)
-        add_interface_library(flinks_hisq OBJECTS flinks_hisq_qop)
-    else()
-        add_interface_library(flinks_fn OBJECTS flinks_fn_milc)
-        add_interface_library(flinks_eo OBJECTS flinks_eo_milc)
-        add_interface_library(flinks_hisq OBJECTS flinks_hisq_milc)
-    endif()
+    add_interface_library(flinks_fn OBJECTS flinks_fn_milc)
+    add_interface_library(flinks_eo OBJECTS flinks_eo_milc)
+    add_interface_library(flinks_hisq OBJECTS flinks_hisq_milc)
 endif()
 
 ######################################################################
@@ -350,17 +346,8 @@ endif()
 
 # Standard MILC
 
-# Choices here are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
-if(HAVE_QUDA)
-    # When using QUDA, the back links are not used and just add unnecessary overhead
-    add_interface_library(dslash_fn_milc
-        generic_ks/dslash_fn.c
-    )
-else()
-    add_interface_library(dslash_fn_milc
-        generic_ks/dslash_fn_dblstore.c
-    )
-endif()
+add_interface_library(dslash_fn_milc generic_ks/dslash_fn.c)
+add_interface_library(dslash_fn_milc_dblstore generic_ks/dslash_fn_dblstore.c)
 
 # No other choice
 add_interface_library(dslash_eo
@@ -429,18 +416,21 @@ add_interface_library(congrad_fn_qop
     OBJECTS congrad_fn_base
 )
 
-if(HAVE_FN_CG_GPU)
-    if(HAVE_QUDA)
-        add_interface_library(congrad_fn_milc OBJECTS congrad_fn_quda)
-    elseif(HAVE_GRID)
-        add_interface_library(congrad_fn_milc OBJECTS congrad_fn_grid)
-    endif()
+if(HAVEQOP)
+    add_interface_library(congrad_fn OBJECTS congrad_fn_qop)
+    add_interface_library(dslash_fn OBJECTS dslash_fn_qop)
+elseif(HAVE_FN_CG_GPU AND HAVE_QUDA)
+    add_interface_library(congrad_fn OBJECTS congrad_fn_quda)
+    add_interface_library(dslash_fn OBJECTS dslash_fn_milc)
+elseif(HAVE_FN_CG_GPU AND HAVE_GRID)
+    add_interface_library(congrad_fn OBJECTS congrad_fn_grid)
+    add_interface_library(dslash_fn OBJECTS dslash_fn_milc)
+elseif(HAVE_FN_CG_QPHIX)
+    add_interface_library(congrad_fn OBJECTS congrad_fn_qphix)
+    add_interface_library(dslash_fn OBJECTS dslash_fn_milc)
 else()
-    if(HAVE_QPHIX)
-        add_interface_library(congrad_fn_milc OBJECTS congrad_fn_qphix)
-    else()
-        add_interface_library(congrad_fn_milc OBJECTS congrad_fn_milc_cpu)
-    endif()
+    add_interface_library(congrad_fn OBJECTS congrad_fn_milc_cpu)
+    add_interface_library(dslash_fn OBJECTS dslash_fn_milc_dblstore)
 endif()
 
 ######################################################################
@@ -487,18 +477,17 @@ add_interface_library(multi_inv_fn_qop
     generic_ks/ks_multicg_offset_qop_D.c generic_ks/ks_multicg_offset_qop_F.c
 )
 
-if(HAVE_FN_CG_GPU)
-    if(HAVE_QUDA)
-        add_interface_library(multi_inv_fn_milc OBJECTS multi_inv_fn_quda)
-    elseif(HAVE_GRID)
-        add_interface_library(multi_inv_fn_milc OBJECTS multi_inv_fn_grid)
-    endif()
+if(HAVEQOP)
+    add_interface_library(multi_inv_fn OBJECTS multi_inv_fn_qop)
+elseif(HAVE_FN_CG_GPU AND HAVE_QUDA)
+    add_interface_library(multi_inv_fn OBJECTS multi_inv_fn_quda)
+elseif(HAVE_FN_CG_GPU AND HAVE_GRID)
+    add_interface_library(multi_inv_fn OBJECTS multi_inv_fn_grid)
+elseif(HAVE_QPHIX)
+    # Match develop: multimass selection still uses package availability.
+    add_interface_library(multi_inv_fn OBJECTS multi_inv_fn_qphix)
 else()
-    if(HAVE_QPHIX)
-        add_interface_library(multi_inv_fn_milc OBJECTS multi_inv_fn_qphix)
-    else()
-        add_interface_library(multi_inv_fn_milc OBJECTS multi_inv_fn_milc_cpu)
-    endif()
+    add_interface_library(multi_inv_fn OBJECTS multi_inv_fn_milc_cpu)
 endif()
 
 ######################################################################
@@ -556,21 +545,17 @@ add_interface_library(hisq_force_grid
 
 # Define ASQ_FORCE and HISQ_FORCE depending on compilation parameters
 
-if(HAVE_FF_GPU)
-    if(HAVE_QUDA)
-        add_interface_library(asq_force OBJECTS asq_force_quda)
-        add_interface_library(hisq_force OBJECTS hisq_force_quda)
-    elseif(HAVE_GRID)
-        add_interface_library(hisq_force OBJECTS hisq_force_grid)
-    endif()
+if(HAVEQOP)
+    add_interface_library(asq_force OBJECTS asq_force_qop)
+    add_interface_library(hisq_force OBJECTS hisq_force_qop)
+elseif(HAVE_FF_GPU AND HAVE_QUDA)
+    add_interface_library(asq_force OBJECTS asq_force_quda)
+    add_interface_library(hisq_force OBJECTS hisq_force_quda)
+elseif(HAVE_FF_GPU AND HAVE_GRID)
+    add_interface_library(hisq_force OBJECTS hisq_force_grid)
 else()
-    if(HAVEQOP)
-        add_interface_library(asq_force OBJECTS asq_force_qop)
-        add_interface_library(hisq_force OBJECTS hisq_force_qop)
-    else()
-        add_interface_library(asq_force OBJECTS asq_force_milc)
-        add_interface_library(hisq_force OBJECTS hisq_force_milc)
-    endif()
+    add_interface_library(asq_force OBJECTS asq_force_milc)
+    add_interface_library(hisq_force OBJECTS hisq_force_milc)
 endif()
 
 ######################################################################
@@ -622,11 +607,13 @@ add_interface_library(congrad_cl_milc_qphixj
 )
 
 if(HAVE_CL_GPU)
-    add_interface_library(congrad_cl_milc OBJECTS congrad_cl_milc_gpu)
-elseif(HAVE_QPHIXJ)
-    add_interface_library(congrad_cl_milc OBJECTS congrad_cl_milc_qphixj)
+    add_interface_library(congrad_cl OBJECTS congrad_cl_milc_gpu)
+elseif(HAVE_CL_CG_QPHIXJ)
+    add_interface_library(congrad_cl OBJECTS congrad_cl_milc_qphixj)
+elseif(HAVE_CL_CG_QOP)
+    add_interface_library(congrad_cl OBJECTS congrad_cl_qop)
 else()
-    add_interface_library(congrad_cl_milc OBJECTS congrad_cl_milc_cpu)
+    add_interface_library(congrad_cl OBJECTS congrad_cl_milc_cpu)
 endif()
 
 ######################################################################
@@ -641,8 +628,13 @@ add_interface_library(gauge_force_milc_cpu
 
 # GPU support
 
-add_interface_library(gauge_force_milc_gpu
+add_interface_library(gauge_force_quda
     generic/gauge_force_imp_gpu.c generic/gauge_action_imp_gpu.c generic/gauge_action_imp.c generic/gauge_stuff.c generic/ranmom.c
+)
+
+add_interface_library(gauge_force_grid
+    generic/gridGaugeForce.cc generic/gridGaugeAction.cc
+    generic/gauge_action_imp.c generic/gauge_stuff.c generic/ranmom.c
 )
 
 # Standard QOP combinations
@@ -658,33 +650,16 @@ add_interface_library(gauge_force_qphix
     generic/gauge_force_symzk1_qphix_D.c generic/gauge_force_symzk1_qphix_F.c
 )
 
-if(HAVE_GF_GPU)
-    add_interface_library(gauge_force_milc OBJECTS gauge_force_milc_gpu)
-else()
-    if(HAVE_GF_QPHIX)
-        add_interface_library(gauge_force_milc OBJECTS gauge_force_qphix)
-    else()
-        add_interface_library(gauge_force_milc OBJECTS gauge_force_milc_cpu)
-    endif()
-endif()
-
-######################################################################
-# QOP or MILC/GPU or QPHIX or GRID
-######################################################################
-
-if(HAVEQOP)
-    # Interface to access QOP
-    add_interface_library(congrad_cl OBJECTS congrad_cl_qop)
-    add_interface_library(dslash_fn OBJECTS dslash_fn_qop)
-    add_interface_library(congrad_fn OBJECTS congrad_fn_qop)
-    add_interface_library(multi_inv_fn OBJECTS multi_inv_fn_qop)
+if(HAVE_GF_GPU AND HAVE_QUDA)
+    add_interface_library(gauge_force OBJECTS gauge_force_quda)
+elseif(HAVE_GF_GPU AND HAVE_GRID)
+    add_interface_library(gauge_force OBJECTS gauge_force_grid)
+elseif(HAVE_GF_QOP)
     add_interface_library(gauge_force OBJECTS gauge_force_qop)
+elseif(HAVE_GF_QPHIX)
+    add_interface_library(gauge_force OBJECTS gauge_force_qphix)
 else()
-    add_interface_library(congrad_cl OBJECTS congrad_cl_milc)
-    add_interface_library(dslash_fn OBJECTS dslash_fn_milc)
-    add_interface_library(congrad_fn OBJECTS congrad_fn_milc)
-    add_interface_library(multi_inv_fn OBJECTS multi_inv_fn_milc)
-    add_interface_library(gauge_force OBJECTS gauge_force_milc)
+    add_interface_library(gauge_force OBJECTS gauge_force_milc_cpu)
 endif()
 
 ######################################################################

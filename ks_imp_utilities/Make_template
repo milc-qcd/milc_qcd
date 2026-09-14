@@ -141,8 +141,7 @@ check_ks_invert_hisq::
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} \
-	check_ks_invert.o check_invert2.o \
-	control_ks_invert.o setup_ks_invert.o"
+	check_ks_invert.o check_invert2.o"
 
 make_links_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \

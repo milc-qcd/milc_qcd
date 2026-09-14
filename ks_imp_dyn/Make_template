@@ -212,7 +212,7 @@ su3_hmc_eo_symzk1_p4::
 	-UKS_MULTICG -UKS_MULTIFF -UHAVE_QOP -UHAVE_QDP" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
-	"EXTRA_OBJECTS= ${EO_OBJECTS} ${EO_FORCE} ${GAUGE_FORCE_MILC} d_congrad5_two_src.o \
+	"EXTRA_OBJECTS= ${EO_OBJECTS} ${EO_FORCE} ${GAUGE_FORCE} d_congrad5_two_src.o \
 	 d_action.o update.o"
 
 # The following stanzas illustrate how to create targets for alternative
@@ -308,7 +308,7 @@ su3_rmd1_hisq::
 
 su3_hmc_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
-	"DEFINES += -DPHI_ALGORITH -DHMC_ALGORITHM" \
+	"DEFINES += -DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"EXTRA_OBJECTS += d_action.o update.o"
 
 su3_hmc_hasenbusch_tree_hisq::

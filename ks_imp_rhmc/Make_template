@@ -382,24 +382,6 @@ test_su3_mat_op_unit_der::
         "EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
         ${GAUGE_FORCE} control_test_su3_mat_op.o"
 
-# paranoid test reunitarization
-test_su3_paranoid::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"GAUGE = symanzik_1loop_nf_action.h" \
-	"QUARK = hisq/hisq_u3_action.h" \
-        "DEFINES= -DFN  -DHISQ_REUNIT_ALLOW_SVD -DTEST_SU3_UNITARIZATION" \
-        "EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
-        ${GAUGE_FORCE} control_test_su3_paranoid.o"
-
-# paranoid test reunitarization derivative
-test_su3_paranoid_der::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"GAUGE = symanzik_1loop_nf_action.h" \
-	"QUARK = hisq/hisq_u3_action.h" \
-        "DEFINES= -DFN  -DHISQ_REUNIT_ALLOW_SVD -DTEST_SU3_UNITARIZATION_DERIVATIVE" \
-        "EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
-        ${GAUGE_FORCE} control_test_su3_paranoid.o"
-
 clean:
 	-/bin/rm -f *.o quark_action.h gauge_action.h
 
