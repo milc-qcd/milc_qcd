@@ -28,7 +28,7 @@ int update()  {
   int n;
   Real final_rsq;
 #ifdef HMC_ALGORITHM
-  double startaction,endaction,d_action();
+  double startaction,endaction,d_action(Real fermion_action_const);
   Real xrandom;
 #endif
   imp_ferm_links_t *fn, *fn_last;
@@ -76,7 +76,7 @@ int update()  {
 			   &final_rsq, fn_last);
       
       destroy_fn_links(fn_last);
-      startaction=d_action();
+      startaction=d_action(0.);
       /* copy link field to old_link */
       gauge_field_copy( F_OFFSET(link[0]), F_OFFSET(old_link[0]));
     }
@@ -178,7 +178,7 @@ int update()  {
 		       &final_rsq, fn_last);
   destroy_fn_links(fn);
   destroy_fn_links(fn_last);
-  endaction=d_action();
+  endaction=d_action(0.);
   /* decide whether to accept, if not, copy old link field back */
   /* careful - must generate only one random number for whole lattice */
   if(this_node==0)xrandom = myrand(&node_prn);

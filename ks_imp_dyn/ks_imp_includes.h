@@ -36,7 +36,7 @@ int update();
 void update_h( Real eps );
 void update_u( Real eps );
 double hmom_action( );
-double fermion_action( );
+double fermion_action(Real fermion_action_const);
 
 void hvy_pot1( field_offset links, int max_x, int max_t );
 void f_measure( field_offset phi_off, field_offset xxx_off, Real mass );

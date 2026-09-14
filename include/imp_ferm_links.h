@@ -526,11 +526,15 @@ void ks_meson_cont_mom(
 /* mat_invert.c */
 void ks_dirac_op( su3_vector *src, su3_vector *dst, Real mass, 
 		  int parity, imp_ferm_links_t *fn);
+void ks_dirac_op_site( field_offset src, field_offset dst, Real mass, 
+		  int parity, imp_ferm_links_t *fn);
 void ks_dirac_adj_op( su3_vector *src, su3_vector *dst, Real mass,
 		      int parity, imp_ferm_links_t *fn);
 void ks_dirac_adj_op_inplace( su3_vector *srcdst, Real mass,
 			      int parity, imp_ferm_links_t *fn);
 int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
+		   Real mass, int prec, imp_ferm_links_t *fn );
+int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec, imp_ferm_links_t *fn );
 int mat_invert_field(su3_vector *src, su3_vector *dst, 
 		     quark_invert_control *qic,
@@ -538,15 +542,16 @@ int mat_invert_field(su3_vector *src, su3_vector *dst,
 int mat_invert_cg_field(su3_vector *src, su3_vector *dst, 
 			quark_invert_control *qic,
 			Real mass, imp_ferm_links_t *fn );
+int mat_invert_cgz_field(su3_vector *src, su3_vector *dst, 
+			 quark_invert_control *qic,
+			 Real mass, imp_ferm_links_t *fn );
+int mat_invert_uml_field(su3_vector *src, su3_vector *dst, 
+			 quark_invert_control *qic,
+			 Real mass, imp_ferm_links_t *fn );
 int mat_invert_mg_field_gpu(su3_vector *src, su3_vector *dst, 
 			    quark_invert_control *qic,
 			    Real mass, imp_ferm_links_t *fn );
 void mat_invert_mg_cleanup(void);
-int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
-		   Real mass, int prec, imp_ferm_links_t *fn );
-int mat_invert_uml_field(su3_vector *src, su3_vector *dst, 
-			 quark_invert_control *qic,
-			 Real mass, imp_ferm_links_t *fn );
 int mat_invert_block_cgz(su3_vector **src, su3_vector **dst, 
 			 Real mass, int nsrc, quark_invert_control *qic,
 			 imp_ferm_links_t *fn);

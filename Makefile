@@ -409,6 +409,21 @@ WANTQIO ?= # true # or blank.  Implies HAVEQMP.
 
 WANTQMP ?= # true or blank.
 
+# Currently, we can't mix QOP and nonQOP components for FN actions
+ifeq ($(strip ${WANTQOP}),true)
+  WANT_FN_CG_QOP = true
+  WANT_FN_FL_QOP = true
+  WANT_FF_QOP = true
+endif
+
+# The gauge-force, eigensolver and clover inverter can be mixed with
+# nonQOP routines
+ifeq ($(strip ${WANTQOP}),true)
+  WANT_GF_QOP ?= true
+  WANT_EIG_QOP ?= true
+  WANT_CL_CG_QOP ?= true
+endif
+
 #----------------------------------------------------------------------
 # Usually required
 # QMP_MPI or QMP_SPI
@@ -443,6 +458,36 @@ QOP = ${QOPQDP}
 # LIBSCIDAC INCSCIDAC (The -L and -I compiler and linker lists)
 # SCIDAC_LIBRARIES SCIDAC_HEADERS  (Lists for make dependencies)
 # CSCIDAC (List of compiler macros for SciDAC modules)
+
+ifeq ($(strip ${WANT_FN_FL_QOP}),true)
+  HAVE_FN_FL_QOP = true
+  CQOP += -DUSE_FN_FL_QOP
+endif
+
+ifeq ($(strip ${WANT_FN_CG_QOP}),true)
+  HAVE_FN_CG_QOP = true
+  CQOP += -DUSE_FN_CG_QOP
+endif
+
+ifeq ($(strip ${WANT_GF_QOP}),true)
+  HAVE_GF_QOP = true
+  CQOP += -DUSE_GF_QOP
+endif
+
+ifeq ($(strip ${WANT_FF_QOP}),true)
+  HAVE_FF_QOP = true
+  CQOP += -DUSE_FF_QOP
+endif
+
+ifeq ($(strip ${WANT_EIG_QOP}),true)
+  HAVE_EIG_QOP = true
+  CQOP += -DUSE_EIG_QOP
+endif
+
+ifeq ($(strip ${WANT_CL_CG_QOP}),true)
+  HAVE_CL_CG_QOP = true
+  CQOP += -DUSE_CL_CG_QOP
+endif
 
 include ../Make_template_scidac
 
@@ -621,12 +666,13 @@ endif
 # 16. QPhiX Options
 
 WANTQPHIX ?= false
-WANT_FN_CG_QPHIX = true
-WANT_GF_QPHIX = true
 
 QPHIX_HOME = ../QPhiX_MILC/milc-qphix
 
 ifeq ($(strip ${WANTQPHIX}), true)
+
+  WANT_FN_CG_QPHIX ?= true
+  WANT_GF_QPHIX ?= true
 
   INCQPHIX = -I${QPHIX_HOME}
   PACKAGE_HEADERS += ${QPHIX_HOME}
@@ -806,6 +852,8 @@ QPHIXJ_SOALEN=4
 
 ifeq ($(strip ${WANTQPHIXJ}), true)
 
+  WANT_CL_CG_QPHIXJ ?= false
+
   HAVE_QPHIXJ = true
   CPHI += -DHAVE_QPHIXJ
 
@@ -836,6 +884,16 @@ ifeq ($(strip ${WANTQPHIXJ}), true)
 
   PACKAGE_HEADERS += ${QPHIXJ_HEADERS}
   PACKAGE_DEPS += QPhiX_JLab
+
+  ifeq ($(strip ${WANT_FN_CG_QPHIX}),true)
+    HAVE_FN_CG_QPHIX = true
+    CPHI += -DUSE_CG_QPHIX
+  endif
+
+  ifeq ($(strip ${WANT_CL_CG_QPHIXJ}),true)
+    HAVE_CL_CG_QPHIXJ = true
+    CPHI += -DUSE_CL_CG_QPHIXJ
+  endif
 
 endif
 
@@ -1217,6 +1275,8 @@ MAKELIBRARIES = Make_vanilla
 
 # Definitions of compiler macros -- don't change.
 
+# GPU plug-ins
+
 ifeq ($(strip ${WANT_CL_BCG_GPU}),true)
   HAVE_CL_GPU = true
   CGPU += -DUSE_CL_GPU
@@ -1276,6 +1336,8 @@ ifeq ($(strip ${WANT_GAUGEFIX_OVR_GPU}),true)
   HAVE_GAUGEFIX_OVR_GPU = true
   CGPU += -DUSE_GAUGEFIX_OVR_GPU
 endif
+
+#---------------------------------------------------------------------
 
 ifeq ($(strip ${WANT_MULTIGRID}),true)
   CGPU += -DMULTIGRID

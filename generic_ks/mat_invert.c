@@ -21,6 +21,21 @@ static const char *prec_label[2] = {"F", "D"};
 /*****************************************************************************/
 /* dst = M src. With parity selection */
 
+void ks_dirac_op_site( field_offset src, field_offset dst, Real mass, 
+		       int parity, imp_ferm_links_t *fn){
+    register int i;
+    register site *s;
+
+    dslash_fn_site( src, dst, parity, fn);
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,){
+      scalar_mult_add_su3_vector( (su3_vector *)F_PT(s,dst), (su3_vector *)F_PT(s,src),
+				  +2.0*mass, (su3_vector *)F_PT(s,dst));
+    } END_LOOP_OMP;
+}
+
+/*****************************************************************************/
+/* dst = M src. With parity selection */
+
 void ks_dirac_op( su3_vector *src, su3_vector *dst, Real mass, 
 		  int parity, imp_ferm_links_t *fn){
     register int i;

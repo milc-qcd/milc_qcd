@@ -122,25 +122,26 @@ void site_coords(int coords[4],site *s){
 #define make_create_raw4_from_site(P, T, RAWTYPE, MILC_SRCTYPE) \
 RAWTYPE ** \
 create_raw4_##P##_##T##_from_site(field_offset src, int milc_parity){ \
-  int coords[4]; \
-  int i,j,dir; \
+  int i; \
   site *s; \
   RAWTYPE **raw; \
-  MILC_SRCTYPE *tmp; \
   raw = create_raw4_##P##_##T (); \
   if(raw == NULL)return NULL; \
-  FORSOMEPARITY(i,s,milc_parity){ \
+  FORSOMEPARITY_OMP(i,s,milc_parity,){		\
+    int coords[4];				\
+    int dir;                                    \
+    MILC_SRCTYPE *tmp;				\
     site_coords(coords,s); \
     if(QOP_node_number_raw(coords) != this_node){ \
       printf("create_raw4_from_site: incompatible layout\n"); \
       return NULL; \
     } \
-    j = QOP_node_index_raw_##T(coords, milc2qop_parity(milc_parity)); \
+    int j = QOP_node_index_raw_##T(coords, milc2qop_parity(milc_parity)); \
     FORALLUPDIR(dir){ \
       tmp = (MILC_SRCTYPE *)F_PT(s, src); \
       copy_milc_to_##P##_##T(raw[dir] + j, &tmp[dir]); \
     } \
-  } \
+  } END_LOOP_OMP; 				\
   return raw; \
 }
 
@@ -149,25 +150,26 @@ create_raw4_##P##_##T##_from_site(field_offset src, int milc_parity){ \
 #define make_create_raw4_from_field(P, T, RAWTYPE, MILC_SRCTYPE) \
 RAWTYPE ** \
 create_raw4_##P##_##T##_from_field(const MILC_SRCTYPE * const src, int milc_parity){ \
-  int coords[4]; \
-  int i,j,dir; \
+  int i; \
   site *s; \
   RAWTYPE **raw = NULL; \
-  const MILC_SRCTYPE *tmp; \
   raw = create_raw4_##P##_##T (); \
   if(raw == NULL)return NULL; \
-  FORSOMEPARITY(i,s,milc_parity){ \
+  FORSOMEPARITY_OMP(i,s,milc_parity,){		\
+    int dir;                                    \
+    int coords[4];				\
+    const MILC_SRCTYPE *tmp;			\
     site_coords(coords,s); \
     if(QOP_node_number_raw(coords) != this_node){ \
       printf("create_raw4_from_field: incompatible layout\n"); \
       return NULL; \
     } \
-    j = QOP_node_index_raw_##T (coords, milc2qop_parity(milc_parity)); \
+    int j = QOP_node_index_raw_##T (coords, milc2qop_parity(milc_parity)); \
     FORALLUPDIR(dir){ \
       tmp = src + 4*i; \
       copy_milc_to_##P##_##T(raw[dir] + j, &tmp[dir]); \
     } \
-  } \
+  } END_LOOP_OMP; 				\
   return raw; \
 }
 
@@ -176,23 +178,23 @@ create_raw4_##P##_##T##_from_field(const MILC_SRCTYPE * const src, int milc_pari
 #define make_create_raw_from_site(P, T, RAWTYPE, MILC_SRCTYPE) \
 RAWTYPE * \
 create_raw_##P##_##T##_from_site(field_offset src, int milc_parity){ \
-  int coords[4]; \
-  int i,j; \
+  int i; \
   site *s; \
   RAWTYPE *raw; \
-  MILC_SRCTYPE *tmp; \
   raw = create_raw_##P##_##T(); \
   if(raw == NULL)return NULL; \
-  FORSOMEPARITY(i,s,milc_parity){ \
+  FORSOMEPARITY_OMP(i,s,milc_parity,){		\
+    int coords[4];				\
+    MILC_SRCTYPE *tmp;				\
     site_coords(coords,s); \
     if(QOP_node_number_raw(coords) != this_node){ \
       printf("create_raw_from_site: incompatible layout\n"); \
       return NULL; \
     } \
-    j = QOP_node_index_raw_##T (coords, milc2qop_parity(milc_parity)); \
+    int j = QOP_node_index_raw_##T (coords, milc2qop_parity(milc_parity)); \
     tmp = (MILC_SRCTYPE *)F_PT(s, src); \
     copy_milc_to_##P##_##T(raw + j, tmp); \
-  } \
+  } END_LOOP_OMP; 			  \
   return raw; \
 }
 
@@ -201,21 +203,21 @@ create_raw_##P##_##T##_from_site(field_offset src, int milc_parity){ \
 #define make_create_raw_from_field(P, T, RAWTYPE, MILC_SRCTYPE) \
 RAWTYPE * \
 create_raw_##P##_##T##_from_field(const MILC_SRCTYPE * const src, int milc_parity){ \
-  int coords[4]; \
-  int i,j; \
+  int i; \
   site *s; \
   RAWTYPE *raw; \
   raw = create_raw_##P##_##T(); \
   if(raw == NULL)return NULL; \
-  FORSOMEPARITY(i,s,milc_parity){ \
+  FORSOMEPARITY_OMP(i,s,milc_parity,){		\
+    int coords[4];				\
     site_coords(coords,s); \
     if(QOP_node_number_raw(coords) != this_node){ \
       printf("create_raw_from_field: incompatible layout\n"); \
       return NULL; \
     } \
-    j = QOP_node_index_raw_##T (coords, milc2qop_parity(milc_parity)); \
+    int j = QOP_node_index_raw_##T (coords, milc2qop_parity(milc_parity)); \
     copy_milc_to_##P##_##T(raw + j, src + i); \
-  } \
+  } END_LOOP_OMP; 			      \
   return raw; \
 }
 
@@ -285,80 +287,82 @@ create_##P##_##T##_from_field(const MILC_SRCTYPE * const src, int milc_parity){ 
 void \
 unload_raw4_##P##_##T##_to_site(field_offset dest, RAWTYPE *raw[], \
          int milc_parity){ \
-  int coords[4]; \
-  int i,j,dir; \
+  int i; \
   site *s; \
-  MILC_DSTTYPE *tmp; \
-  FORSOMEPARITY(i,s,milc_parity){ \
+  FORSOMEPARITY_OMP(i,s,milc_parity,){		\
+    int dir;                                    \
+    int coords[4];				\
+    MILC_DSTTYPE *tmp;				\
     site_coords(coords,s); \
     if(QOP_node_number_raw(coords) != this_node){ \
       printf("unload_raw4_to_site: incompatible layout\n"); \
       terminate(1); \
     } \
-    j = QOP_node_index_raw_##T(coords, milc2qop_parity(milc_parity)); \
+    int j = QOP_node_index_raw_##T(coords, milc2qop_parity(milc_parity)); \
     FORALLUPDIR(dir){ \
       tmp = (MILC_DSTTYPE *)F_PT(s, dest); \
       copy_##P##_##T##_to_milc(&tmp[dir], raw[dir] + j); \
     } \
-  } \
+  } END_LOOP_OMP;				\
 }
 
 #define make_unload_raw4_to_field(P, T, MILC_DSTTYPE, RAWTYPE) \
 void \
 unload_raw4_##P##_##T##_to_field(MILC_DSTTYPE *dest, RAWTYPE *raw[], \
          int milc_parity){ \
-  int coords[4]; \
-  int i,j,dir; \
+  int i; \
   site *s; \
-  MILC_DSTTYPE *tmp; \
-  FORSOMEPARITY(i,s,milc_parity){ \
+  FORSOMEPARITY_OMP(i,s,milc_parity,){		\
+    int dir;                                    \
+    int coords[4];				\
+    MILC_DSTTYPE *tmp;				\
     site_coords(coords,s); \
     if(QOP_node_number_raw(coords) != this_node){ \
       printf("unload_raw4_to_field: incompatible layout\n"); \
       terminate(1); \
     } \
-    j = QOP_node_index_raw_##T(coords, milc2qop_parity(milc_parity)); \
+    int j = QOP_node_index_raw_##T(coords, milc2qop_parity(milc_parity)); \
     FORALLUPDIR(dir){ \
       tmp = dest + 4*i; \
       copy_##P##_##T##_to_milc(&tmp[dir], raw[dir] + j); \
     } \
-  } \
+  } END_LOOP_OMP;				\
 }
 
 #define make_unload_raw_to_site(P, T, MILC_DSTTYPE, RAWTYPE) \
 void \
 unload_raw_##P##_##T##_to_site(field_offset dest, RAWTYPE *raw, \
        int milc_parity){ \
-  int coords[4]; \
-  int i,j; \
+  int i; \
   site *s; \
-  FORSOMEPARITY(i,s,milc_parity){ \
+  FORSOMEPARITY_OMP(i,s,milc_parity,){		\
+    int coords[4];		      \
     site_coords(coords,s); \
     if(QOP_node_number_raw(coords) != this_node){ \
       printf("unload_raw_to_site: incompatible layout\n"); \
       terminate(1); \
     } \
-    j = QOP_node_index_raw_##T(coords, milc2qop_parity(milc_parity)); \
+    int j = QOP_node_index_raw_##T(coords, milc2qop_parity(milc_parity)); \
     copy_##P##_##T##_to_milc((MILC_DSTTYPE *)F_PT(s,dest), raw + j); \
-  } \
+  } END_LOOP_OMP; 						     \
 }
 
 #define make_unload_raw_to_field(P, T, MILC_DSTTYPE, RAWTYPE) \
 void \
 unload_raw_##P##_##T##_to_field(MILC_DSTTYPE *dest, RAWTYPE *raw, \
        int milc_parity){ \
-  int coords[4]; \
-  int i,j; \
+  int i; \
   site *s; \
-  FORSOMEPARITY(i,s,milc_parity){ \
+  FORSOMEPARITY_OMP(i,s,milc_parity,){		\
+    int coords[4];				\
     site_coords(coords,s); \
     if(QOP_node_number_raw(coords) != this_node){ \
       printf("unload_raw_V_to_field: incompatible layout\n"); \
       terminate(1); \
     } \
-    j = QOP_node_index_raw_##T(coords, milc2qop_parity(milc_parity)); \
+    int j = QOP_node_index_raw_##T(coords, milc2qop_parity(milc_parity)); \
     copy_##P##_##T##_to_milc(dest + i, raw + j); \
-  } \
+  } END_LOOP_OMP;				 \
 }
 
 /* Map MILC gauge field in site structure to QOP through raw type */
@@ -535,22 +539,22 @@ unload_##P##_hisq_L_to_fields( MILC_DST_TYPE *fat, MILC_DST_TYPE *lng, TYPE* qop
 
 #define make_map_milc_clov_to_qop_raw(P, MILCFLOAT) \
 void map_milc_clov_to_qop_raw_##P(MILCFLOAT *raw_clov, clover *milc_clov ){\
-  int i,j,c;\
-  int coords[4]; \
+  int i;\
   site *s;\
-  MILCFLOAT *r;\
 \
-  FORALLSITES(i,s){\
+  FORALLSITES_OMP(i,s,){			\
 \
+    int coords[4];				\
+    MILCFLOAT *r;				\
     site_coords(coords,s);\
     if(QOP_node_number_raw(coords) != this_node){\
       printf("map_milc_clov_to_qop_raw: QOP layout is incompatible with MILC layout\n");\
       terminate(1);\
     }\
-    j = QOP_node_index_raw_D(coords, QOP_EVENODD);\
+    int j = QOP_node_index_raw_D(coords, QOP_EVENODD);\
     r = raw_clov + 72*j;\
 \
-    for(c = 0; c < 3; c++){\
+    for(int c = 0; c < 3; c++){\
       r[2*c]   = DI(milc_clov->clov_diag[i].di[0][c]);      /* c0 c0 */\
       r[2*c+1] = DI(milc_clov->clov_diag[i].di[0][c+3]);    /* c1 c1 */\
     }\
@@ -594,7 +598,7 @@ void map_milc_clov_to_qop_raw_##P(MILCFLOAT *raw_clov, clover *milc_clov ){\
 \
     r += 30;\
 \
-    for(c = 0; c < 3; c++){\
+    for(int c = 0; c < 3; c++){\
       r[2*c]   = DI(milc_clov->clov_diag[i].di[1][c]);      /* c2 c2 */\
       r[2*c+1] = DI(milc_clov->clov_diag[i].di[1][c+3]);    /* c3 c3 */\
     }\
@@ -637,7 +641,7 @@ void map_milc_clov_to_qop_raw_##P(MILCFLOAT *raw_clov, clover *milc_clov ){\
     r[29] = TR( milc_clov->clov[i].tr[1][12].imag);         /* 23 22 */\
 \
     r += 30;\
-  }\
+  } END_LOOP_OMP; 				\
 }
 
 /* map_milc_to_qop_all.c */
