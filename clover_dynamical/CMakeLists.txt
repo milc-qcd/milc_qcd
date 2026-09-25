@@ -126,7 +126,7 @@ add_milc_executable(su3_rmd_spectrum control.c
     EXTRA_SOURCES
     ../generic/gaugefix2.c
     t_props_cl.c
-    ../wilson_dynamical/w_spectrum.c
+    w_spectrum_cl.c
 )
 
 add_milc_executable(su3_hmc_screen control.c
