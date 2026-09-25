@@ -769,6 +769,14 @@ int readin(int prompt) {
         /* inversion type */
         param.qic[nprop].inv_type = param.inv_type[k];
 
+	/* Multigrid rebuild policy.  For multisource and multicolorsource
+	   sets the rebuild_type keyword was read once per set (above) into
+	   param.mg_rebuild_type[k]; copy it into the control block the
+	   inverter reads.  A multimass set re-reads the keyword per
+	   propagator below and overrides this.  A single set never reads it
+	   and keeps the zero-initialised default, FULLREBUILD. */
+	param.qic[nprop].mg_rebuild_type = param.mg_rebuild_type[k];
+
 	/* maximum no. of conjugate gradient iterations */
 	param.qic[nprop].max = max_cg_iterations;
 
@@ -824,6 +832,16 @@ int readin(int prompt) {
 	      }
 	    }
 	  }
+	}
+
+	/* Echo the rebuild policy that will actually reach the inverter, so
+	   an input can be checked in proofread mode.  The token is deliberately
+	   not the input keyword: every input line is echoed to the log too. */
+	IF_OK {
+	  if (param.inv_type[k] == MGTYPE)
+	    node0_printf("effective_mg_rebuild_type propagator %d %s\n", nprop,
+			 param.qic[nprop].mg_rebuild_type == THINREBUILD ? "THIN" :
+			 param.qic[nprop].mg_rebuild_type == CGREBUILD   ? "CG"   : "FULL");
 	}
 #else
   param.qic[nprop].mg_rebuild_type = CGREBUILD;
