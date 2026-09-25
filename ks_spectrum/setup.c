@@ -772,9 +772,8 @@ int readin(int prompt) {
 	/* Multigrid rebuild policy.  For multisource and multicolorsource
 	   sets the rebuild_type keyword was read once per set (above) into
 	   param.mg_rebuild_type[k]; copy it into the control block the
-	   inverter reads.  A multimass set re-reads the keyword per
-	   propagator below and overrides this.  A single set never reads it
-	   and keeps the zero-initialised default, FULLREBUILD. */
+	   inverter reads.  Multimass and single sets read the keyword per
+	   propagator below and override this. */
 	param.qic[nprop].mg_rebuild_type = param.mg_rebuild_type[k];
 
 	/* maximum no. of conjugate gradient iterations */
@@ -815,8 +814,14 @@ int readin(int prompt) {
 #ifdef MULTIGRID
   /* parameter within MG solve to specify how to refresh the coarse op */
 
+	/* Read per propagator for multimass AND single sets: both dispatch one
+	   solve per propagator, and a single set may change mass or Naik
+	   epsilon between propagators, which is exactly when the choice
+	   matters.  This is the grammar of the original implementation
+	   (298d66b7), which read the keyword here for every MG set type. */
 	IF_OK {
-	  if (param.inv_type[k] == MGTYPE && param.set_type[k] == MULTIMASS_SET) {
+	  if (param.inv_type[k] == MGTYPE &&
+	      (param.set_type[k] == MULTIMASS_SET || param.set_type[k] == SINGLES_SET)) {
 	    IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
 	    IF_OK {
 	      if(strcmp(savebuf,"FULL") == 0)
