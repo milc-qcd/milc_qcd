@@ -49,13 +49,15 @@ add_milc_executable(check_ks_invert control.c
     EXTRA_SOURCES check_invert2.c check_ks_invert.c
 )
 
-add_milc_executable(check_ks_invert_hisq control.c
-    GAUGE symanzik_1loop_action
-    QUARK hisq/hisq_u3_action
-    DEFINES FN HAVE_KS CHECK_INVERT
-    EXTRA_OBJECTS hisq_objects
-    EXTRA_SOURCES check_invert2.c check_ks_invert.c
-)
+# Disabled: missing control_ks_invert.c, setup_ks_invert.c.
+# add_milc_executable(check_ks_invert_hisq control.c
+#     GAUGE symanzik_1loop_action
+#     QUARK hisq/hisq_u3_action
+#     DEFINES FN HAVE_KS CHECK_INVERT
+#     EXTRA_OBJECTS hisq_objects
+#     EXTRA_SOURCES check_invert2.c check_ks_invert.c
+#     control_ks_invert.c setup_ks_invert.c
+# )
 
 set(hisq_link_opts
     FN
