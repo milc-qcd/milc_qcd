@@ -642,6 +642,17 @@ int mat_invert_mg_field_gpu(su3_vector *t_src, su3_vector *t_dest,
       mg_regen_time += dclock();
       node0_printf("%s: MG inverter setup complete. Time = %g\n", myname,
 		   mg_regen_time);
+
+      /* qudaMultigridCreate loaded these links and built the hierarchy from
+	 them at this mass, so the fresh-link signal (num_iters = -1, set
+	 above) has been consumed.  Left at -1 it makes qudaInvertMG
+	 invalidate the gauge field and run an MG update -- full or thin, per
+	 qic->mg_rebuild_type -- on this first solve, recomputing the hierarchy
+	 it just built.  A later link change does not enter this branch (the
+	 preconditioner exists) and still signals -1. */
+      num_iters = 0;
+      node0_printf("%s: fresh-link signal consumed by hierarchy creation; "
+		   "no first-solve MG update\n", myname);
     } else {
       node0_printf("%s: MG inverter already set up.  Skipping.\n", myname);
     }
@@ -1073,6 +1084,13 @@ int mat_invert_block_mg(su3_vector **src, su3_vector **dst,
 
       mg_regen_time += dclock();
       node0_printf("%s: MG inverter setup complete. Time = %g\n", myname, mg_regen_time);
+
+      /* See mat_invert_mg_field_gpu: the create consumed the fresh-link
+	 signal; clear it so this first block solve does not run a redundant
+	 MG update on the hierarchy just built. */
+      num_iters = 0;
+      node0_printf("%s: fresh-link signal consumed by hierarchy creation; "
+		   "no first-solve MG update\n", myname);
     } else {
       node0_printf("%s: MG inverter already set up.  Skipping.\n", myname);
     }
