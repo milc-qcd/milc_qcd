@@ -36,6 +36,7 @@ add_interface_library(libraries
 )
 
 add_milc_executable(su3_schr_rmd control.c
+    QUARK onelink_action
     DEFINES FN
     EXTRA_SOURCES
     update.c
@@ -43,6 +44,7 @@ add_milc_executable(su3_schr_rmd control.c
 target_compile_options(su3_schr_rmd PRIVATE -UD_FN_GATHER13)
 
 add_milc_executable(su3_schr_phi control.c
+    QUARK onelink_action
     DEFINES FN PHI_ALGORITHM
     EXTRA_SOURCES
     update.c
@@ -50,6 +52,7 @@ add_milc_executable(su3_schr_phi control.c
 target_compile_options(su3_schr_phi PRIVATE -UD_FN_GATHER13)
 
 add_milc_executable(su3_schr_hmc control.c
+    QUARK onelink_action
     DEFINES FN PHI_ALGORITHM HMC_ALGORITHM
     EXTRA_SOURCES
     d_action.c
@@ -58,6 +61,7 @@ add_milc_executable(su3_schr_hmc control.c
 target_compile_options(su3_schr_hmc PRIVATE -UD_FN_GATHER13)
 
 add_milc_executable(su3_schr_sw_phi control.c
+    QUARK onelink_action
     DEFINES FN PHI_ALGORITHM SEXT_WEIN
     EXTRA_SOURCES
     update_hgh.c
@@ -65,6 +69,7 @@ add_milc_executable(su3_schr_sw_phi control.c
 target_compile_options(su3_schr_sw_phi PRIVATE -UD_FN_GATHER13)
 
 add_milc_executable(su3_schr_sw_hmc control.c
+    QUARK onelink_action
     DEFINES FN PHI_ALGORITHM HMC_ALGORITHM SEXT_WEIN
     EXTRA_SOURCES
     d_action.c
@@ -73,6 +78,7 @@ add_milc_executable(su3_schr_sw_hmc control.c
 target_compile_options(su3_schr_sw_hmc PRIVATE -UD_FN_GATHER13)
 
 add_milc_executable(su3_schr_rmd_ph control.c
+    QUARK onelink_action
     DEFINES FN FERM_PHASES
     EXTRA_SOURCES
     update.c
@@ -80,6 +86,7 @@ add_milc_executable(su3_schr_rmd_ph control.c
 target_compile_options(su3_schr_rmd_ph PRIVATE -UD_FN_GATHER13)
 
 add_milc_executable(su3_schr_phi_ph control.c
+    QUARK onelink_action
     DEFINES FN FERM_PHASES PHI_ALGORITHM
     EXTRA_SOURCES
     update.c
@@ -87,6 +94,7 @@ add_milc_executable(su3_schr_phi_ph control.c
 target_compile_options(su3_schr_phi_ph PRIVATE -UD_FN_GATHER13)
 
 add_milc_executable(su3_schr_hmc_ph control.c
+    QUARK onelink_action
     DEFINES FN FERM_PHASES PHI_ALGORITHM HMC_ALGORITHM
     EXTRA_SOURCES
     d_action.c
@@ -95,6 +103,7 @@ add_milc_executable(su3_schr_hmc_ph control.c
 target_compile_options(su3_schr_hmc_ph PRIVATE -UD_FN_GATHER13)
 
 add_milc_executable(su3_schr_rw_rmd control.c
+    QUARK onelink_action
     DEFINES FN REWEIGH
     EXTRA_SOURCES
     update.c
@@ -102,6 +111,7 @@ add_milc_executable(su3_schr_rw_rmd control.c
 target_compile_options(su3_schr_rw_rmd PRIVATE -UD_FN_GATHER13)
 
 add_milc_executable(su3_schr_rw_phi control.c
+    QUARK onelink_action
     DEFINES FN REWEIGH PHI_ALGORITHM
     EXTRA_SOURCES
     update.c
@@ -109,6 +119,7 @@ add_milc_executable(su3_schr_rw_phi control.c
 target_compile_options(su3_schr_rw_phi PRIVATE -UD_FN_GATHER13)
 
 add_milc_executable(su3_schr_rw_hmc control.c
+    QUARK onelink_action
     DEFINES FN REWEIGH PHI_ALGORITHM HMC_ALGORITHM
     EXTRA_SOURCES
     d_action.c

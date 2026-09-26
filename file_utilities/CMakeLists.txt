@@ -53,6 +53,14 @@ add_interface_library(libraries
     m
 )
 
+add_interface_library(ilib
+    OBJECTS
+    scidac
+    add
+    m
+)
+
+
 add_milc_executable(check_gauge check_gauge.c
     DEFINES ONLY_GLUON_FILES
     EXTRA_OBJECTS g_objects
@@ -184,10 +192,14 @@ add_milc_executable(scidac_2v5 scidac_to_v5.c
     EXTRA_SOURCES gauge_info_scidac.c
 )
 
-add_milc_executable(crc32 crc32.c)
+add_executable(crc32 crc32.c)
+target_link_libraries(crc32 ilib)
 
-add_milc_executable(cksum cksum.c)
+add_executable(cksum cksum.c)
+target_link_libraries(cksum ilib)
 
-add_milc_executable(extract_gauge_v5 extract_gauge_v5.c)
+add_executable(extract_gauge_v5 extract_gauge_v5.c)
+target_link_libraries(extract_gauge_v5 ilib)
 
-add_milc_executable(get_qmp_node_number get_qmp_node_number.c)
+add_executable(get_qmp_node_number get_qmp_node_number.c)
+target_link_libraries(get_qmp_node_number ilib)
