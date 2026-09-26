@@ -66,9 +66,9 @@ double fermion_action(Real fermion_action_const) {
     if(fermion_action_const != 0.){
       cc = su3_dot( &(s->phi1), &(s->phi1) );
       sum += fermion_action_const * (double)cc.real;
-    } END_LOOP_OMP;
+    }
 #endif
-  }
+  } END_LOOP_OMP;
   g_doublesum( &sum );
   return(sum);
 }
@@ -79,7 +79,7 @@ double hmom_action() {
   register site *s;
   
   double sum=0.0;
-  FORALLSITES_OMP(i,s,reduction(+:sum)){
+  FORALLSITES_OMP(i,s,private(dir) reduction(+:sum)){
     for(dir=XUP;dir<=TUP;dir++){
       sum += (double)ahmat_mag_sq( &(s->mom[dir]) ) - 4.0;
       /* subtract 1/2 per d.o.f. to help numerical acc. in sum */

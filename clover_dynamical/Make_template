@@ -189,7 +189,7 @@ su3_hmc_bi_spectrum::
 su3_rmd_spectrum::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DLU -DSPECTRUM" \
-	"EXTRA_OBJECTS= gaugefix2.o  t_props_cl.o w_spectrum.o   "
+	"EXTRA_OBJECTS= gaugefix2.o  t_props_cl.o w_spectrum_cl.o   "
 
 su3_hmc_screen::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
