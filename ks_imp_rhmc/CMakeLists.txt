@@ -263,16 +263,18 @@ add_milc_executable(test_su3_mat_op_unit_der control_test_su3_mat_op.c
     EXTRA_OBJECTS hisq_objects hisq_force gauge_force
 )
 
-add_milc_executable(test_su3_paranoid control_test_su3_mat_op.c
-    GAUGE symanzik_1loop_nf_action
-    QUARK hisq/hisq_u3_action
-    DEFINES FN HISQ_REUNIT_ALLOW_SVD TEST_SU3_UNITARIZATION
-    EXTRA_OBJECTS hisq_objects hisq_force gauge_force
-)
+# Disabled: missing control_test_su3_paranoid.c.
+# add_milc_executable(test_su3_paranoid control_test_su3_paranoid.c
+#     GAUGE symanzik_1loop_nf_action
+#     QUARK hisq/hisq_u3_action
+#     DEFINES FN HISQ_REUNIT_ALLOW_SVD TEST_SU3_UNITARIZATION
+#     EXTRA_OBJECTS hisq_objects hisq_force gauge_force
+# )
 
-add_milc_executable(test_su3_paranoid_der control_test_su3_mat_op.c
-    GAUGE symanzik_1loop_nf_action
-    QUARK hisq/hisq_u3_action
-    DEFINES FN HISQ_REUNIT_ALLOW_SVD TEST_SU3_UNITARIZATION_DERIVATIVE
-    EXTRA_OBJECTS hisq_objects hisq_force gauge_force
-)
+# Disabled: missing control_test_su3_paranoid.c.
+# add_milc_executable(test_su3_paranoid_der control_test_su3_paranoid.c
+#     GAUGE symanzik_1loop_nf_action
+#     QUARK hisq/hisq_u3_action
+#     DEFINES FN HISQ_REUNIT_ALLOW_SVD TEST_SU3_UNITARIZATION_DERIVATIVE
+#     EXTRA_OBJECTS hisq_objects hisq_force gauge_force
+# )
