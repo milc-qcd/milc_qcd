@@ -609,12 +609,13 @@ ifeq ($(strip ${WANTQUDA}),true)
   WANT_SHIFT_GPU ?= #true
   WANT_SPIN_TASTE_GPU ?= #true
   WANT_GAUGEFIX_OVR_GPU ?= #true
+  WANT_CURRENT_GPU ?= #true
   WANT_MULTIGRID ?= false
 
-  # If QUDA CG is enabled, then eigensolve/deflation must be enabled
-  ifeq ($(strip ${WANT_FN_CG_GPU}),true)
-    WANT_EIG_GPU = true
-  endif
+#  # If QUDA CG is enabled, then eigensolve/deflation must be enabled
+#  ifeq ($(strip ${WANT_FN_CG_GPU}),true)
+#    WANT_EIG_GPU = true
+#  endif
 endif
 
 ifeq ($(strip ${WANTQUDA}),true)
@@ -1415,6 +1416,11 @@ ifeq ($(strip ${GAUSS_SMEAR_KS_TWOLINK}),true)
   OCFLAGS += -DGAUSS_SMEAR_KS_TWOLINK
 endif
 
+ifeq ($(strip ${WANT_CURRENT_GPU}),true)
+  USE_CURRENT_GPU = true
+  OCFLAGS += -DUSE_CURRENT_GPU
+endif
+
 # Make_template_combos defines convenience macros for interdependent
 # groups of compilation units.  They are used to specify build lists.
 
@@ -1430,11 +1436,12 @@ CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
 CXXFLAGS = ${OPT} ${OCXXFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
         ${CPREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DARCH} \
 	${DEFINES} ${ADDDEFINES} ${IMPI} ${INCADD}
+LDFLAGS += ${OPT}
 
 ILIB = ${LIBSCIDAC} ${LMPI} ${LIBADD}
 
 # Loader flag for command-line macro substitution
-+LDFLAGS_ADD ?=
++LDFLAGS_ADD ?= 
 +LDFLAGS += ${LDFLAGS_ADD}
 
 .PHONY: time check test_clean

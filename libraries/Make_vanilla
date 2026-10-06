@@ -45,6 +45,7 @@ else ifeq ($(strip ${COMPILER}),nvhpc)
 endif
 
 # Override
+CC = mpicc # ( cc89 gcc xlc gcc pgcc cl g++ )
 # CC = gcc # ( cc89 gcc xlc gcc pgcc cl g++ )
 
 #----------------------------------------------------------------------

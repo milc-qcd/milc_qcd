@@ -11,12 +11,16 @@ extern int gethostname (char *__name, size_t __len); // Should get this from uni
 #include "../include/generic_u1.h"
 #include "../include/io_u1lat.h"
 #endif
+#include "../include/io_scidac.h"
+#ifdef HAVE_QIO
+#include <qio.h>
+#endif
 
 /* Forward declarations */
 
-static int initial_set();
+static int initial_set(void);
 static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
-static void make_3n_gathers();
+static void make_3n_gathers(void);
 
 
 int setup()   {
@@ -180,6 +184,14 @@ int readin(int prompt) {
     IF_OK status += get_i(stdin, prompt, "ape_iter",
 			  &param.ape_iter);
 
+    /* Fat and long link files, if given.  Requires QIO */
+#ifdef HAVE_QIO
+    IF_OK status += ask_starting_fat_link_file(stdin, prompt, &param.startfatflag,
+	param.inputfatfile );
+    IF_OK status += ask_starting_lng_link_file(stdin, prompt, &param.startlngflag,
+	param.inputlngfile );
+#endif
+
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
     IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
     IF_OK status += get_s(stdin, prompt, "time_bc", savebuf);
@@ -197,13 +209,20 @@ int readin(int prompt) {
     IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
     /* The usual case. May be changed by I/O routines */
     param.eigen_param.parity = EVEN;
-
+    eigenvectors_offloaded = 0;
+    param.eigen_param.Nvecs_in = param.eigen_param.Nvecs;  /* Default value */
 
     IF_OK if(param.eigen_param.Nvecs > 0){
       
-#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
+#if ( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
       /* controls how often redeflation occurs during deflated inversions */
-      IF_OK status += get_f(stdin, prompt,"tol_restart", &param.eigen_param.tol_restart);
+      /* QUDA requires tol_restart to be double, but get_f writes a Real (float in single-precision
+         builds); read into a Real temp first to avoid a partial 4-byte write. */
+      IF_OK {
+        Real tol_restart_tmp = 0;
+        status += get_f(stdin, prompt,"tol_restart", &tol_restart_tmp);
+        param.eigen_param.tol_restart = tol_restart_tmp;
+      }
 #endif
 
       /* eigenvector input */
@@ -211,49 +230,26 @@ int readin(int prompt) {
 					    param.ks_eigen_startfile);
       
       /* Additional parameters for QUDA deflation */
-#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU))
+#if ( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
       if(param.ks_eigen_startflag == RELOAD_ASCII || 
 	 param.ks_eigen_startflag == RELOAD_SERIAL ||
 	 param.ks_eigen_startflag == RELOAD_PARALLEL ){
         /* allow file to have more eigenpairs than will be used for deflation */
         IF_OK status += get_i(stdin, prompt,"file_number_of_eigenpairs", &param.eigen_param.Nvecs_in);
+	IF_OK status += get_i(stdin, prompt, "eigensolver_prec", &param.eigen_param.eigPrec );
       }
 #endif
       /* eigenvector output */
       IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
 					  param.ks_eigen_savefile);
       
-      /* If we are reading in eigenpairs, we don't regenerate them */
-
-#if EIGMODE == EIGCG
-      /* for eigcg */
-
-      /* maximum number of eigenvectors */
-      param.eigcgp.Nvecs_max =  param.eigen_param.Nvecs;
-
-      /* If we are reading in eigenpairs, we don't regenerate them */
-
-      if(param.ks_eigen_startflag == FRESH){
-	
-	/* restart for Lanczos */
-	IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
-	
-	/* number of eigenvectors per inversion */
-	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigcgp.Nvecs);
-	
-	if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
-	  printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
-	  status++;
-	}
+#if ( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
+      if(param.ks_eigen_saveflag == SAVE_PARTFILE_SCIDAC){
+        param.eigen_param.partfile = 1;
       } else {
-	param.eigcgp.m = 0;
-	param.eigcgp.Nvecs = 0;
+	param.eigen_param.partfile = 0;
       }
-      
-      param.eigcgp.Nvecs_curr = 0;
-      param.eigcgp.H = NULL;
-
-#else // EIGMODE != EIGCG
+#endif
 
       /*------------------------------------------------------------*/
       /* Dirac eigenpair calculation                                */
@@ -262,11 +258,8 @@ int readin(int prompt) {
       if(param.ks_eigen_startflag == FRESH){
 	
 	status += read_ks_eigen_param(&param.eigen_param, status, prompt);
-
+	
       }
-
-#endif
-
     }
 
     /*------------------------------------------------------------*/
@@ -382,6 +375,18 @@ int readin(int prompt) {
 	IF_OK strcpy(param.charge_label[npbp_masses],"0.");
 	IF_OK param.ksp_pbp[npbp_masses].charge = 0.;
 #endif
+
+	/* Use deflation or not when available ? */
+	int deflate = 0;
+	IF_OK {
+	  if(param.eigen_param.Nvecs > 0){  /* Need eigenvectors to deflate */
+	    IF_OK status += get_s(stdin, prompt,"deflate", savebuf);
+	    IF_OK {
+	      if(strcmp(savebuf,"yes") == 0)deflate = 1;
+	    }
+	  }
+	}
+
 	/* error for staggered propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
 			      &error_for_propagator );
@@ -417,6 +422,9 @@ int readin(int prompt) {
 	/* precision */
 	param.qic_pbp[npbp_masses].prec = prec_pbp;
 
+	/* deflation */
+	param.qic_pbp[npbp_masses].deflate = deflate;
+
 	/* errors */
 	param.qic_pbp[npbp_masses].resid = error_for_propagator;
 	param.qic_pbp[npbp_masses].relresid = rel_error_for_propagator;
@@ -429,13 +437,6 @@ int readin(int prompt) {
 	param.qic_pbp[npbp_masses].min = 0;
 	param.qic_pbp[npbp_masses].start_flag = 0;
 	param.qic_pbp[npbp_masses].nsrc = 1;
-
-	/* Should we be deflating? */
-	param.qic_pbp[npbp_masses].deflate = 0;
-	IF_OK {
-	  /* Always deflate if we have eigenvectors */
-	  if(param.eigen_param.Nvecs > 0)param.qic_pbp[npbp_masses].deflate = 1;
-	}
 
 #ifdef CURRENT_DISC
       /* If we are taking the difference between a sloppy and a precise solve,
@@ -451,6 +452,9 @@ int readin(int prompt) {
 	  /* precision */
 	  param.qic_pbp_sloppy[npbp_masses].prec = prec_pbp_sloppy;
 	  
+	  /* deflation */
+	  param.qic_pbp_sloppy[npbp_masses].deflate = deflate;
+
 	  /* errors */
 	  param.qic_pbp_sloppy[npbp_masses].resid = error_for_propagator_sloppy;
 	  param.qic_pbp_sloppy[npbp_masses].relresid = rel_error_for_propagator_sloppy;
@@ -567,6 +571,49 @@ int readin(int prompt) {
   /* For compatibility. The first charge is always zero */
   fn_links = fn_links_charge[0];
 
+#ifdef HAVE_QIO
+
+  /* Load the fat and long links, if requested.  This is supported
+     only for Naik epsilon 0 and charge 0. Requires QIO */
+  /* Up to here the fat and long links have been generated from the
+     "thin-link" gauge field but we just overwrite them.
+
+     TODO: skip generating them if we are going to read them
+  */
+  imp_ferm_links_t *my_fn = get_fm_links(fn_links, 0);
+  su3_matrix *fat = get_fatlinks(my_fn);
+  su3_matrix *lng = get_lnglinks(my_fn);
+  if(param.startfatflag != FRESH && param.startfatflag != CONTINUE){
+
+    double rtime = -dclock();
+    if(param.startfatflag == RELOAD_PARALLEL)
+      restore_color_matrix_scidac_to_field(param.inputfatfile, fat, 4,
+					   MILC_PRECISION, QIO_PARALLEL);
+    else
+      restore_color_matrix_scidac_to_field(param.inputfatfile, fat, 4,
+					   MILC_PRECISION, QIO_SERIAL);
+    rtime += dclock();
+    node0_printf("Time to restore fat %e\n",rtime); fflush(stdout);
+  }
+  if(param.startlngflag != FRESH && param.startlngflag != CONTINUE){
+
+    double rtime = -dclock();
+    if(param.startlngflag == RELOAD_PARALLEL)
+      restore_color_matrix_scidac_to_field(param.inputlngfile, lng, 4,
+					   MILC_PRECISION, QIO_PARALLEL);
+    else
+      restore_color_matrix_scidac_to_field(param.inputlngfile, lng, 4,
+					   MILC_PRECISION, QIO_SERIAL);
+    rtime += dclock();
+    node0_printf("Time to restore lng %e\n",rtime); fflush(stdout);
+
+#ifdef DBLSTORE_FN
+    load_fn_backlinks(my_fn);
+#endif
+ }
+
+#endif  
+
   /* Construct APE smeared links, but without KS phases */
   rephase( OFF );
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
@@ -577,76 +624,6 @@ int readin(int prompt) {
   /* Put the KS phases into APE links to match what we did to the gauge field */
   ape_links_ks_phases = OFF;
   rephase_field_offset( ape_links, ON, &ape_links_ks_phases, param.coord_origin );
-
-#if EIGMODE == EIGCG
-  int Nvecs_max = param.eigcgp.Nvecs_max;
-  if(param.ks_eigen_startflag == FRESH)
-    //    Nvecs_tot = ((Nvecs_max - 1)/param.eigcgp.Nvecs)*param.eigcgp.Nvecs
-    //      + param.eigcgp.m;
-    Nvecs_tot = Nvecs_max + param.eigcgp.m - 1;
-  else
-    Nvecs_tot = Nvecs_max;
-
-  eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
-  eigVec = (su3_vector **)malloc(Nvecs_tot*sizeof(su3_vector *));
-  for(int i = 0; i < Nvecs_tot; i++){
-    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-    if(eigVec[i] == NULL){
-      printf("No room for eigenvector\n");
-      terminate(1);
-    }
-  }
-
-  /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
-  imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
-  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   &Nvecs_tot, eigVal, eigVec, fn, 1);
-  destroy_fn_links(fn);
-  if(status != 0) terminate(1);
-  //  if(param.fixflag != NO_GAUGE_FIX){
-  //    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
-  //  }
-
-  if(param.ks_eigen_startflag != FRESH){
-    param.eigcgp.Nvecs = 0;
-    param.eigcgp.Nvecs_curr = Nvecs_tot;
-    param.eigcgp.H = (double_complex *)malloc(Nvecs_max*Nvecs_max
-					      *sizeof(double_complex));
-    for(int i = 0; i < Nvecs_max; i++){
-      for(k = 0; k < i; k++)
-	param.eigcgp.H[k + Nvecs_max*i] = dcmplx((double)0.0, (double)0.0);
-      param.eigcgp.H[(Nvecs_max+1)*i] = dcmplx(eigVal[i], (double)0.0);
-    }
-  }
-#endif
-  
-#if EIGMODE != EIGCG
-  if(param.eigen_param.Nvecs > 0){
-    /* malloc for eigenpairs */
-    eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
-    eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
-    for(i=0; i < param.eigen_param.Nvecs; i++){
-      eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-      if(eigVec[i] == NULL){
-	printf("No room for eigenvector\n");
-	terminate(1);
-      }
-    }
-    
-    /* Do whatever is needed to get eigenpairs -- assumed charge 0 */
-    imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
-    status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			     &param.eigen_param.Nvecs, eigVal, eigVec, fn, 1);
-    destroy_fn_links(fn);
-    if(status != 0)terminate(1);
-#if 0
-    for(int j = 0; j < param.eigen_param.Nvecs; j++){
-      gauge_transform_v_field(eigVec[j], G);
-    }
-    destroy_m_field(G);
-#endif
-  }
-#endif
 
   ENDTIME("readin");
   fflush(stdout);

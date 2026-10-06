@@ -173,6 +173,11 @@ reload_ks_eigen_file(const char *eigfile, int serpar, int *Nvecs, Real *eigVal,
 	status = 1;
       }
     }
+
+    /* QUDA eigenvector files do not contain the eigenvalues
+     * so they need to be generated */
+    if(status == 0) reset_eigenvalues( eigVec, eigVal, *Nvecs, parity, fn);
+
   }
   close_ks_eigen_infile(infile);
   
@@ -257,6 +262,7 @@ int reload_ks_eigen(int flag, const char *eigfile, int *Nvecs, Real *eigVal,
       param.eigen_param.parity = ODD;
       status = reload_grid_ks_eigenpack_dir(eigfile, serpar, Nvecs, eigVal, eigVec, fn);
     } else {
+      param.eigen_param.parity = EVEN; // Assume non-Grid eigenvectors are EVEN
       status = reload_ks_eigen_file(eigfile, serpar, Nvecs, eigVal, eigVec, fn, EVEN);
     }
     break;
@@ -626,8 +632,8 @@ static void pack_map_layouts(int x, int y, int z, int t, int *args, int fb,
    full eigenvector.  The forward map is the inverse.
 */
 
-static void pack_grid_map_layouts(int x, int y, int z, int t, int *args, int fb,
-				  int *xp, int *yp, int *zp, int *tp){
+static void unpack_grid_map_layouts(int x, int y, int z, int t, int *args, int fb,
+				     int *xp, int *yp, int *zp, int *tp){
 
   int latdim[4] = {nx, ny, nz, nt};
   int coords[4] = {x, y, z, t};
@@ -709,6 +715,32 @@ void unpack_field(void *data, int size){
   
   pack_unpack_field(data, size, unpack_dir);
 }
+
+#if 0
+
+/* Not needed.  See note above */
+
+int unpack_grid_dir;
+int pack_grid_dir;
+static int pack_unpack_grid_initialized = 0;
+
+
+/* Make the packing map for Grid epacks */
+static void unpack_grid_make_gather(void){
+  node0_printf("Creating grid map\n");fflush(stdout);
+  unpack_grid_dir =  make_gather(unpack_grid_map_layouts, NULL, WANT_INVERSE,
+				 ALLOW_EVEN_ODD, SCRAMBLE_PARITY);
+  pack_grid_dir = unpack_grid_dir + 1;  /* Convention for the inverse map */
+  pack_unpack_grid_initialized = 1;
+}
+
+void unpack_grid_field(void *data, int size){
+  if(!pack_unpack_grid_initialized)
+    unpack_grid_make_gather();
+  pack_unpack_field(data, size, unpack_grid_dir);
+}
+
+#endif
 
 /*---------------------------------------------------------------*/
 /* Translate output flag to the appropriate input flag for restoring

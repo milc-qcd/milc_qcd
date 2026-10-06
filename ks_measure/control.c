@@ -82,10 +82,9 @@ int main(int argc, char *argv[])
 
 
     /**************************************************************/
-    /* Compute Dirac eigenpairs           */
-    if(param.eigen_param.Nvecs > 0){
+    /* Compute or reread eigenpairs */
 
-#if EIGMODE != EIGCG
+    if(param.eigen_param.Nvecs > 0){
 
       STARTTIME;
       
@@ -102,15 +101,39 @@ int main(int argc, char *argv[])
       
       Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
       
-      /* compute eigenpairs if requested */
+      /* Compute or reread eigenpairs if requested and check them */
+
+#if !( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
+
+      /* Allocate space on host for eigenpairs */
+      eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
+      eigVec = (dsu3_vector **)malloc(param.eigen_param.Nvecs*sizeof(dsu3_vector *));
+      for(int i=0; i < param.eigen_param.Nvecs; i++){
+	eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+	if(eigVec[i] == NULL){
+	  printf("No room for eigenvector\n");
+	  terminate(1);
+	}
+      }
+
+      /* Compute or read eigenpairs */
+
       if(param.ks_eigen_startflag == FRESH){
+
+	/* Compute eigenpairs and construct other-parity eigenvectors */
 	int total_R_iters;
 	total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
 	node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
 	construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
-      }
 
-      /* Check the eigenvectors */
+      } else {
+
+	/* Reload eigenvectors */
+	int status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+				     &param.eigen_param.Nvecs, eigVal, eigVec, fn, 1);
+	if(status != 0)terminate(1);
+
+      }      
 
       /* Calculate and print the residues and norms of the eigenvectors */
       resid = (double *)malloc(Nvecs_curr*sizeof(double));
@@ -119,32 +142,34 @@ int main(int argc, char *argv[])
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
       node0_printf("Odd site residuals\n");
       check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
-      
+
+      int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
+				 Nvecs_curr, eigVal, eigVec, resid, 1);
+      if(status != 0){
+	node0_printf("ERROR writing eigenvectors\n");
+      }
+#endif
+    
+#if ( defined(HAVE_QUDA) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
+      /* Compute or reread eigenpairs with QUDA or just load the above
+	 ones into QUDA.  Only needed when a QUDA consumer (deflated CG or
+	 exact current) will use a device-resident deflation space. */
+      /* Pass load_other_parity=1: exact current (qudaExactCurrent) requires
+	 BOTH parity deflation spaces resident. */
+      load_evecs_quda(fn, 1);
+
+#endif
+
       /* Unapply twisted boundary conditions on the fermion links and
 	 restore conventional KS phases and antiperiodic BC, if
 	 changed. */
       boundary_twist_fn(fn, OFF);
-      
-      /* print eigenvalues of iDslash */
-      node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
-      node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
-      for(int i=0;i<Nvecs_curr;i++){ 
-	if ( eigVal[i] > 0.0 ){
-	  node0_printf("eigenval(%i): %10g\n", i, 0.5*sqrt(eigVal[i]));
-	}
-	else{
-	  eigVal[i] = 0.0;
-	  node0_printf("eigenval(%i): %10g\n", i, 0.0);
-	}
-      }
-
       destroy_fn_links(fn);
 
       ENDTIME("calculate/reload Dirac eigenpairs"); fflush(stdout);
-      
-#endif
-    }
-    
+
+    } /* param.eigen_param.Nvecs > 0 */
+
     /**************************************************************/
     /* Compute chiral condensate and other observables            */
     
@@ -190,6 +215,7 @@ int main(int argc, char *argv[])
 	if(twist_status(fn_mass[j]) == OFF)boundary_twist_fn(fn_mass[j], ON);
       }
       
+
 #ifdef CURRENT_DISC
       if(param.truncate_diff[k])
 	f_meas_current_diff( num_pbp_masses, param.npbp_reps[k],
@@ -229,11 +255,6 @@ int main(int argc, char *argv[])
       /* Unapply twisted boundary conditions on the fermion links and
 	 restore conventional KS phases and antiperiodic BC, if
 	 changed. */
-#if 0 /* Not needed because we destroy their parents in the next lines */
-      for(int j = 0; j < num_pbp_masses; j++)
-	if(twist_status(fn_mass[j]) == ON)
-	   boundary_twist_fn(fn_mass[j], OFF);
-#endif
 
       for(int naik_index = 0; naik_index < MAX_NAIK; naik_index++)
 	if(fn_pt[naik_index] != NULL)
@@ -262,39 +283,15 @@ int main(int argc, char *argv[])
     }
 #endif
 
-#if EIGMODE == EIGCG
-
-    STARTTIME;
-
-    Nvecs_curr = param.eigcgp.Nvecs_curr;
-
-    imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
-    resid = (double *)malloc(Nvecs_curr*sizeof(double));
-
-    if(param.ks_eigen_startflag == FRESH)
-      calc_eigenpairs(eigVal, eigVec, &param.eigcgp, EVEN);
-
-    check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
-
-    destroy_fn_links(fn);
-    
-    if(param.eigcgp.H != NULL) free(param.eigcgp.H);
-
-    ENDTIME("compute eigenvectors");
-#endif
-
-    if(param.eigen_param.Nvecs > 0){
-      /* save eigenvectors if requested */
-      int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
-				 Nvecs_curr, eigVal, eigVec, resid, 1);
-      if(status != 0){
-	node0_printf("ERROR writing eigenvectors\n");
-      }
-      
-      /* Clean up eigen storage */
+    /* Free host eigenvector storage if MILC allocated it.
+       When QUDA owns the deflation space, these stayed NULL.
+       free(NULL) is a no-op, so this is safe and self-consistent */
+    if(eigVec != NULL){
       for(int i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
-      free(eigVal); free(eigVec); free(resid);
+      free(eigVec); eigVec = NULL;
     }
+    free(eigVal); eigVal = NULL;
+    free(resid);  resid  = NULL;
     
     node0_printf("RUNNING COMPLETED\n");
     endtime = dclock();
@@ -316,6 +313,8 @@ int main(int argc, char *argv[])
       fn_links_charge[j] = NULL;
     }
   } /* readin(prompt) */
+
+  free_lattice();
 
 #ifdef HAVE_QUDA
   finalize_quda();

@@ -92,7 +92,7 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 #define ks_congrad_parity ks_congrad_parity_gpu
 #define ks_congrad_block_parity ks_congrad_block_parity_gpu
 
-#elif USE_CG_QPHIX
+#elif defined(USE_CG_QPHIX)
 
 #define ks_congrad_parity ks_congrad_parity_qphix
 #define ks_congrad_block_parity ks_congrad_block_parity_qphix
@@ -141,6 +141,8 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity,
 
 void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
 		      imp_ferm_links_t *fn);
+void dslash_fn_field_cpu( su3_vector *src, su3_vector *dest, int parity,
+			  imp_ferm_links_t *fn);
 void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 			     int parity, msg_tag **tag, int start,
 			     imp_ferm_links_t *fn);
@@ -240,7 +242,7 @@ int ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken
 
 #ifdef USE_CG_GPU
 #define ks_multicg_offset_field ks_multicg_offset_field_gpu
-#elif USE_CG_QPHIX
+#elif defined(USE_CG_QPHIX)
 #define ks_multicg_offset_field ks_multicg_offset_field_qphix
 #else
 #define ks_multicg_offset_field ks_multicg_offset_field_cpu

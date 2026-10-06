@@ -177,10 +177,6 @@ endif
 ifeq ($(strip ${HAVE_EIG_GPU}),true)
   ifeq ($(strip ${HAVE_GRID}),true)
     EIGEN_OBJECTS += eigen_stuff_Grid.o gridStaggEigen.o
-  else ifeq ($(strip ${HAVE_QUDA}),true)
-    EIGEN_OBJECTS +=  eigen_stuff_QUDA.o
-  else
-    EIGEN_OBJECTS += must_specify_HAVE_QUDA_or_HAVE_GRID.o
   endif
 else
   ifeq ($(strip ${HAVE_PRIMME}),true)
@@ -195,6 +191,10 @@ else
     # Default solver
     EIGEN_OBJECTS += eigen_stuff_Ritz.o jacobi.o
   endif
+endif
+
+ifeq ($(strip ${HAVE_QUDA}),true)
+  EIGEN_OBJECTS +=  eigen_stuff_QUDA.o
 endif
 
 ######################################################################

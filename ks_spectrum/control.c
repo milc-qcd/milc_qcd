@@ -275,84 +275,16 @@ int main(int argc, char *argv[])
     
     ENDTIME("create fermion links");
 
-    imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
     
     /**************************************************************/
-    /* Set up eigenpairs, if requested */
+    /* Compute or reread eigenpairs if requested and check them */
 
-    STARTTIME;
-      
-#if EIGMODE == EIGCG
-    int Nvecs_max = param.eigcgp.Nvecs_max;
-    if(param.ks_eigen_startflag == FRESH)
-      Nvecs_tot = ((Nvecs_max - 1)/param.eigcgp.Nvecs)*param.eigcgp.Nvecs
-	+ param.eigcgp.m;
-    else
-      Nvecs_tot = Nvecs_max;
-    
-    Nvecs_alloc = Nvecs_tot;
-    eigVal = (double *)malloc(Nvecs_alloc*sizeof(double));
-    eigVec = (su3_vector **)malloc(Nvecs_alloc*sizeof(su3_vector *));
-    for(i = 0; i < Nvecs_alloc; i++)
-      eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-    
-    /* Do whatever is needed to get eigenpairs */
-    int status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile,
-				 &Nvecs_tot, eigVal, eigVec, fn, 1);
-    
-    if(param.fixflag != NO_GAUGE_FIX){
-      node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
-    }
-    if(status != 0) normal_exit(0);
-    
-    if(param.ks_eigen_startflag != FRESH){
-      param.eigcgp.Nvecs = 0;
-      param.eigcgp.Nvecs_curr = Nvecs_tot;
-      param.eigcgp.H = (double_complex *)malloc(Nvecs_max*Nvecs_max
-						*sizeof(double_complex));
-      for(i = 0; i < Nvecs_max; i++){
-	for(k = 0; k < i; k++)
-	  param.eigcgp.H[k + Nvecs_max*i] = dcmplx((double)0.0, (double)0.0);
-	param.eigcgp.H[(Nvecs_max+1)*i] = dcmplx(eigVal[i], (double)0.0);
-      }
-    }
-#endif
-    
-#if EIGMODE != EIGCG
-    /* If using QUDA for deflation, then eigenvectors are loaded directly by QUDA and not MILC */
-#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
     if(param.eigen_param.Nvecs > 0){
-      /* malloc for eigenpairs */
-      eigVal = (Real *)malloc(param.eigen_param.Nvecs*sizeof(double));
-      eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
-      for(i=0; i < param.eigen_param.Nvecs; i++){
-	eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-	if(eigVec[i] == NULL){
-	  printf("No room for eigenvector\n");
-	  terminate(1);
-	}
-      }
+
+      STARTTIME;
       
-      /* Do whatever is needed to get eigenpairs */
-      int status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-				   &param.eigen_param.Nvecs, eigVal, eigVec, fn, 1);
-      if(param.fixflag != NO_GAUGE_FIX){
-	node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
-      }
-    }
-#endif
-#endif
-    
-    /**************************************************************/
-    /* Compute Dirac eigenpairs           */
-    
-    Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
-      
-    if(param.eigen_param.Nvecs > 0){
-      
-#if EIGMODE != EIGCG
-      
-      param.eigen_param.parity = EVEN;  /* Required */
+      /* First set of fn links is always charge 0 and Naik epsilon 0 */
+      imp_ferm_links_t *fn = get_fm_links(fn_links, 0);
 
       /* Move KS phases and apply time boundary condition, based on the
 	 coordinate origin and time_bc */
@@ -362,61 +294,95 @@ int main(int argc, char *argv[])
       /* Apply the operation */
       boundary_twist_fn(fn, ON);
 
-      // If using QUDA deflated CG + asking for QUDA to do the eigensolve, then
-      // the eigensolver is called from within QUDA's CG solver...not from MILC
-#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) ) 
-      /* compute eigenpairs if requested */
+      Nvecs_curr = Nvecs_tot = param.eigen_param.Nvecs;
+      
+      /* Compute or reread eigenpairs if requested and check them */
+
+#if !( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
+
+      /* Eigenpairs are read or computed without QUDA */
+	 
+      /* Allocate space on host for eigenpairs */
+      eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
+      eigVec = (dsu3_vector **)malloc(param.eigen_param.Nvecs*sizeof(dsu3_vector *));
+      for(int i=0; i < param.eigen_param.Nvecs; i++){
+	eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+	if(eigVec[i] == NULL){
+	  printf("No room for eigenvector\n");
+	  terminate(1);
+	}
+      }
+      
+      /* Compute or read eigenpairs */
+
       if(param.ks_eigen_startflag == FRESH){
+
+	/* Compute eigenpairs and construct other-parity eigenvectors */
 	int total_R_iters;
 	total_R_iters=ks_eigensolve(eigVec, eigVal, &param.eigen_param, 1);
+	node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
 	construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
-	node0_printf("total Rayleigh iters = %d\n", total_R_iters);
-	
+
+      } else {
+
+	/* Reload eigenvectors */
+	int status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+				     &param.eigen_param.Nvecs, eigVal, eigVec, fn, 1);
+	if(status != 0)terminate(1);
+
+      }      
+
+      /* Calculate and print the residues and norms of the eigenvectors */
+      resid = (double *)malloc(Nvecs_curr*sizeof(double));
+      construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
+      node0_printf("Even site residuals\n");
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
+      node0_printf("Odd site residuals\n");
+      check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
+
+      /* save eigenvectors if requested */
+      int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
+				 Nvecs_curr, eigVal, eigVec, resid, 1);
+      if(status != 0){
+	node0_printf("ERROR writing eigenvectors\n");
+      }
+#endif
+     
+#if ( defined(HAVE_QUDA) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
+      /* Prime QUDA with only the file-parity deflation space
+	 (load_other_parity=0).  The deflated CG solver reconstructs the
+	 opposite parity on demand (FROM_OTHER_PARITY) only if a solve of that
+	 parity occurs, so an even-parity workflow holds only the even deflation
+	 space resident.
+
+	 NOTE: the QUDA path assumes the file-parity eigenvectors are EVEN
+	 (see load_evecs_quda); */
+
+      QIO_verbose(QIO_VERB_DEBUG);
+      load_evecs_quda(fn, 0);
+#endif
+
+      /* Unapply twisted boundary conditions on the fermion links and
+	 restore conventional KS phases and antiperiodic BC, if
+	 changed. */
+      boundary_twist_fn(fn, OFF);
+      destroy_fn_links(fn);
+     
+      ENDTIME("calculate/reload Dirac eigenpairs");
+
+      if(param.fixflag != NO_GAUGE_FIX){
+	node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
+      }
+      
 #if 0 /* If needed for debugging */
       /* (The ks_eigensolve routine uses the random number generator to
 	 initialize the eigenvector search, so, if you want to compare
 	 first results with and without deflation, you need to
 	 re-initialize here.) */
-	initialize_site_prn_from_seed(iseed);
+      initialize_site_prn_from_seed(iseed);
 #endif
-      }
-#endif
-      /* Check the eigenvectors */
 
-      /* If using QUDA for deflation, then eigenvectors are loaded directly by QUDA and not checked by MILC */
-#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
-      /* Calculate and print the residues and norms of the eigenvectors */
-      resid = (double *)malloc(Nvecs_curr*sizeof(double));
-      node0_printf("Even site residuals\n");
-      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
-      construct_eigen_other_parity(eigVec, eigVal, &param.eigen_param, fn);
-      node0_printf("Odd site residuals\n");
-      check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
-#endif
-      /* Unapply twisted boundary conditions on the fermion links and
-	 restore conventional KS phases and antiperiodic BC, if
-	 changed. */
-      boundary_twist_fn(fn, OFF);
-     
-      /* If using QUDA for deflation, then eigenvalues are printed by QUDA */
-#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) ) 
-      /* print eigenvalues of iDslash */
-      node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
-      node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
-      for(i=0;i<Nvecs_curr;i++){ 
-	if ( eigVal[i] > 0.0 ){
-	  node0_printf("eigenval(%i): %10g\n", i, 0.5*sqrt(eigVal[i]));
-	}
-	else{
-	  eigVal[i] = 0.0;
-	  node0_printf("eigenval(%i): %10g\n", i, 0.0);
-	}
-      }
-#endif
-#endif
-    }
-    
-    ENDTIME("calculate Dirac eigenpairs");
+    } /* param.eigen_param.Nvecs > 0 */
 
     /**************************************************************/
     /* Compute chiral condensate and related quantities           */
@@ -448,7 +414,6 @@ int main(int argc, char *argv[])
       u1phase_off();
       invalidate_fermion_links(fn_links);
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i].prec);
-      fn = get_fm_links(fn_links, 0);
 #endif
     }
 
@@ -946,48 +911,6 @@ int main(int argc, char *argv[])
 #endif
     ENDTIME("tie baryon correlators");
     
-#if EIGMODE == EIGCG
-
-    Nvecs_curr = param.eigcgp.Nvecs_curr;
-      
-    if(param.eigcgp.Nvecs_max > 0){
-      STARTTIME;
-      
-      resid = (double *)malloc(Nvecs_curr*sizeof(double));
-      
-      if(param.ks_eigen_startflag == FRESH)
-	calc_eigenpairs(eigVal, eigVec, &param.eigcgp, EVEN);
-      
-      check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
-      
-      if(param.eigcgp.H != NULL) free(param.eigcgp.H);
-      
-      ENDTIME("compute eigenvectors");
-    }
-#endif
-
-    if(param.eigen_param.Nvecs > 0){
-
-      /* If using QUDA for deflation, then eigenvectors are loaded and saved directly by QUDA and not MILC */
-#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) )
-      STARTTIME;
-      
-      /* save eigenvectors if requested */
-      int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
-				 Nvecs_curr, eigVal, eigVec, resid, 1);
-      if(status != 0){
-	node0_printf("ERROR writing eigenvectors\n");
-      }
-      
-      /* Clean up eigen storage */
-      for(i = 0; i < Nvecs_alloc; i++) free(eigVec[i]);
-      free(eigVal); free(eigVec); free(resid);
-
-      ENDTIME("save eigenvectors (if requested)");
-
-#endif
-    }
-
     /* Clean up quark sources, both base and modified */
     for(i = 0; i < param.num_base_source + param.num_modified_source; i++)
       clear_qs(&param.src_qs[i]);
@@ -1166,6 +1089,16 @@ int main(int argc, char *argv[])
     //node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
 #endif 
 
+    /* Free host eigenvector storage if MILC allocated it.
+       When QUDA owns the deflation space, these stayed NULL.
+       free(NULL) is a no-op, so this is safe and self-consistent */
+    if(eigVec != NULL){
+      for(int i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
+      free(eigVec); eigVec = NULL;
+    }
+    free(eigVal); eigVal = NULL;
+    free(resid);  resid  = NULL;
+    
     node0_printf("RUNNING COMPLETED\n");
     endtime=dclock();
     
@@ -1195,7 +1128,6 @@ int main(int argc, char *argv[])
   } /* readin(prompt) */
   
   free_lattice();
-
 #ifdef HAVE_QUDA
   finalize_quda();
 #endif

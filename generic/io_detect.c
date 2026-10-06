@@ -18,25 +18,17 @@
 #endif
 #include <string.h>
 
+/* Detect file type */
 int io_detect(const char *filename, file_table ft[], int ntypes){
   FILE *fp;
   int i, status, words;
   u_int32type magic_no;
   u_int32type revmagic_no;
-  char editfilename[513];
 
   /* Node 0 reads and checks */
   if(this_node == 0){
-    fp = g_open(filename,"rb");
-    if(fp == NULL){
-      /* Special provision for partition or multifile format.  Try
-	 adding the extension to the filename */
-      strncpy(editfilename,filename,504);
-      editfilename[504] = '\0';  /* Just in case of truncation */
-      strcat(editfilename,".vol0000");
-      fp = g_open(editfilename,"rb");
-    }
-
+    int volfmt; /* Not used here */
+    fp = open_scidac_detect_volume_format(filename, &volfmt);
     if(fp == NULL)status = -2;
     else
       {
@@ -71,7 +63,7 @@ int io_detect(const char *filename, file_table ft[], int ntypes){
 
 #ifndef ONLY_GLUON_FILES
 /********************************************************************/
-/* Open a staggered propagator file and discover its format */
+/* Open a staggered propagator file and discover its record organization */
 
 #ifdef HAVE_QIO
 int io_detect_ks_usqcd(const char *filename){
@@ -226,7 +218,7 @@ int io_detect_fm(const char *filename){
 #endif
 
 /*---------------------------------------------------------------*/
-/* Sniff out the file type */
+/* Sniff out the file type based on magic number */
 
 #define N_BROAD_FILE_TYPES 6
 static file_table broad_file_types[N_BROAD_FILE_TYPES] =

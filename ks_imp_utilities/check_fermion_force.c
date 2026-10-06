@@ -199,7 +199,7 @@ void check_fermion_force( char phifile[MAX_MASS][MAXFILENAME], int phiflag,
 
   /* If the answer file is given, read it for comparison */
   if(ansflag == RELOAD_SERIAL){
-    restore_color_matrix_scidac_to_field(ansfile, ansmom, 4, MILC_PRECISION);
+    restore_color_matrix_scidac_to_field(ansfile, ansmom, 4, MILC_PRECISION, QIO_SERIAL);
     node0_printf("Checking the answer\n"); fflush(stdout);
   }
 

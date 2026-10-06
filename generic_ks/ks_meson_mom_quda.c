@@ -337,10 +337,14 @@ void ks_meson_cont_mom(
 
 	su3_vector *q = create_v_field();
 	spin_taste_op_ape_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
+	printf("%s(%d): Calling qudaContractFT\n", myname, this_node); fflush(stdout);
 	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
+	printf("%s(%d): Done with qudaContractFT\n", myname, this_node); fflush(stdout);
 	/* Apply forward sink spin-taste operator to src2 */
 	spin_taste_op_ape_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
+	printf("%s(%d): Calling qudaContractFT\n", myname, this_node); fflush(stdout);
 	qudaContractFT(MILC_PRECISION, &cont_args, src1, q, dmeson_q);
+	printf("%s(%d): Done with qudaContractFT\n", myname, this_node); fflush(stdout);
 	destroy_v_field(q);
 	for(int j = 0; j < nt*num_corr_mom[g]; ++j){
 	  CMULREAL(meson_q[j], 0.5, meson_q[j]);
@@ -349,23 +353,35 @@ void ks_meson_cont_mom(
 	/* Apply forward sink spin-taste operator to src2 */
 	su3_vector *q = create_v_field();
 	spin_taste_op_ape_fn(fn_src2, forward_index(spin_taste), r0, q, src2);
+	printf("%s(%d): Calling qudaContractFT\n", myname, this_node); fflush(stdout);
 	qudaContractFT(MILC_PRECISION, &cont_args, src1, q, dmeson_q );
+	printf("%s(%d): Done with qudaContractFT\n", myname, this_node); fflush(stdout);
 	destroy_v_field(q);
       } else if(is_rhosbfn_index(spin_taste) || is_rhosbape_index(spin_taste)){
 	/* Apply backward sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
 	spin_taste_op_ape_fn(fn_src1, backward_index(spin_taste), r0, q, src1);
+	printf("%s(%d): Calling qudaContractFT\n", myname, this_node); fflush(stdout);
 	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
+	printf("%s(%d): Done with qudaContractFT\n", myname, this_node); fflush(stdout);
 	destroy_v_field(q);
       } else {
 	/* Apply sink spin-taste operator to src1 */
 	su3_vector *q = create_v_field();
+	printf("%s(%d): Calling spin_taste_op_ape_fn\n", myname, this_node); fflush(stdout);
 	spin_taste_op_ape_fn(fn_src1, spin_taste, r0, q, src1);
+	printf("%s(%d): Done with spin_taste_op_ape_fn\n", myname, this_node); fflush(stdout);
+	printf("%s(%d): Calling qudaContractFT\n", myname, this_node); fflush(stdout);
 	qudaContractFT(MILC_PRECISION, &cont_args, q, src2, dmeson_q);
+	printf("%s(%d): Done with qudaContractFT\n", myname, this_node); fflush(stdout);
+	printf("%s(%d): Calling destroy_v_field\n", myname, this_node); fflush(stdout);
 	destroy_v_field(q);
+	printf("%s(%d): Done with destroy_v_field\n", myname, this_node); fflush(stdout);
        }
+      printf("%s(%d): Calling update_props\n", myname, this_node); fflush(stdout);
       flops += update_props(prop, meson_q, nt, num_corr_mom[g], meson_phase,
 			    meson_factor, corr_table[g], corr_index);
+      printf("%s(%d): Done with update_props\n", myname, this_node); fflush(stdout);
 
       destroy_meson_q(meson_q);
     }  /**** end of the loop over the spin-taste table ******/
@@ -383,5 +399,5 @@ void ks_meson_cont_mom(
 	       dtime,flops,mflops);fflush(stdout);
 #endif
   
-} /* end of ks_meson_mom_gpu function  */
+} /* end of ks_meson_mom function  */
 

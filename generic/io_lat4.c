@@ -1272,6 +1272,7 @@ static gauge_file *r_parallel_i(const char *filename)
     {
       printf("r_parallel_i: Node %d can't open file %s, error %d\n",
 	     this_node,filename,errno);fflush(stdout);terminate(1);
+      printf("If this is a partfile, use 'reload_serial'\n");
     }
 
   gf->fp = fp;

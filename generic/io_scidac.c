@@ -223,9 +223,9 @@ save_scidac(su3_matrix *field, const char *filename, int volfmt, int serpar, int
   QIO_Writer *outfile = NULL;
   int status = QIO_SUCCESS;
   gauge_file *gf;
-  char *info;
+  char *info = NULL;
   QIO_String *filexml;
-  QIO_String *recxml;
+  QIO_String *recxml = NULL;
   char default_file_xml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>MILC ILDG archival gauge configuration</title>";
 
   QIO_verbose(QIO_VERB_OFF);
@@ -656,7 +656,7 @@ void restore_color_matrix_scidac_to_site(const char *filename,
 
 /* Read color matrices in SciDAC format to a field */
 void restore_color_matrix_scidac_to_field(const char *filename, 
-		  su3_matrix *dest, int count, int prec){
+    su3_matrix *dest, int count, int prec, int serpar){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
@@ -674,7 +674,7 @@ void restore_color_matrix_scidac_to_field(const char *filename,
   build_qio_filesystem(&fs);
 
   /* Open file for reading */
-  infile = open_scidac_input(filename, &layout, &fs, QIO_SERIAL);
+  infile = open_scidac_input(filename, &layout, &fs, serpar);
   if(infile == NULL)terminate(1);
 
   /* Check the record type (double or single precision) */
