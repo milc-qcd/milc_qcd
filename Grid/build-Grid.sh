@@ -11,7 +11,7 @@ PK_CXX=$3
 #GIT_BRANCH=develop
 #GIT_REPO=https://github.com/clarkedavida/Grid
 GIT_REPO=https://github.com/milc-qcd/Grid
-GIT_BRANCH=feature/LMI-master
+GIT_BRANCH=feature/LMI-develop
 
 if [ -z ${PK_CXX} ]
 then
@@ -230,6 +230,8 @@ then
          --disable-fermion-reps \
          --disable-zmobius \
 	 --with-lime=${CLIME} \
+	 --with-mpfr=${MPFR} \
+	 --with-gmp=${GMP} \
 	 --enable-shm=nvlink \
          --enable-accelerator=sycl   \
  	 --enable-accelerator-aware-mpi=yes \
@@ -251,9 +253,7 @@ then
 #	 CXXCPP="/soft/packaging/spack-builds/linux-opensuse_leap15-x86_64/gcc-10.2.0/gcc-10.2.0-yudlyezca7twgd5o3wkkraur7wdbngdn/bin/cpp" \
 
 	 #	 CXXFLAGS="-cxx=dpcpp -fsycl-unnamed-lambda -fsycl -no-fma -std=c++17" \
-
 	 #	     --enable-comms=mpi          \
-#	     --with-lime=${HOME}/scidac/install/qio-gcc \
 
         status=$?
         echo "Configure exit status $status"
