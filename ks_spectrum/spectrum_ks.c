@@ -1244,7 +1244,6 @@ static void spectrum_ks_print_baryon(int triplet){
       for(t=0; t<nt; t++){
         tp = (t + param.r_offset_b[triplet][3]) % nt;
         prop = baryon_prop[b][tp];
-        g_complexsum( &prop );
         // CDIVREAL(prop, space_vol, prop);
         /* Fix sign for antiperiodic bc */
         if( (((t+param.r_offset_b[triplet][3])/nt
