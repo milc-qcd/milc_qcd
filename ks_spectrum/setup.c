@@ -769,6 +769,13 @@ int readin(int prompt) {
         /* inversion type */
         param.qic[nprop].inv_type = param.inv_type[k];
 
+	/* Multigrid rebuild policy.  For multisource and multicolorsource
+	   sets the rebuild_type keyword was read once per set (above) into
+	   param.mg_rebuild_type[k]; copy it into the control block the
+	   inverter reads.  Multimass and single sets read the keyword per
+	   propagator below and override this. */
+	param.qic[nprop].mg_rebuild_type = param.mg_rebuild_type[k];
+
 	/* maximum no. of conjugate gradient iterations */
 	param.qic[nprop].max = max_cg_iterations;
 
@@ -807,8 +814,14 @@ int readin(int prompt) {
 #ifdef MULTIGRID
   /* parameter within MG solve to specify how to refresh the coarse op */
 
+	/* Read per propagator for multimass AND single sets: both dispatch one
+	   solve per propagator, and a single set may change mass or Naik
+	   epsilon between propagators, which is exactly when the choice
+	   matters.  This is the grammar of the original implementation
+	   (298d66b7), which read the keyword here for every MG set type. */
 	IF_OK {
-	  if (param.inv_type[k] == MGTYPE && param.set_type[k] == MULTIMASS_SET) {
+	  if (param.inv_type[k] == MGTYPE &&
+	      (param.set_type[k] == MULTIMASS_SET || param.set_type[k] == SINGLES_SET)) {
 	    IF_OK status += get_s(stdin, prompt, "rebuild_type", savebuf);
 	    IF_OK {
 	      if(strcmp(savebuf,"FULL") == 0)
@@ -824,6 +837,16 @@ int readin(int prompt) {
 	      }
 	    }
 	  }
+	}
+
+	/* Echo the rebuild policy that will actually reach the inverter, so
+	   an input can be checked in proofread mode.  The token is deliberately
+	   not the input keyword: every input line is echoed to the log too. */
+	IF_OK {
+	  if (param.inv_type[k] == MGTYPE)
+	    node0_printf("effective_mg_rebuild_type propagator %d %s\n", nprop,
+			 param.qic[nprop].mg_rebuild_type == THINREBUILD ? "THIN" :
+			 param.qic[nprop].mg_rebuild_type == CGREBUILD   ? "CG"   : "FULL");
 	}
 #else
   param.qic[nprop].mg_rebuild_type = CGREBUILD;
