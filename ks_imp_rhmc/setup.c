@@ -469,6 +469,7 @@ readin(int prompt)
 	param.qic_pbp[i].start_flag = 0;
 	param.qic_pbp[i].nsrc = 1;
 	param.qic_pbp[i].max = param.qic_pbp[0].max;
+	param.qic_pbp[i].max_inner = param.qic_pbp[0].max_inner;
 	param.qic_pbp[i].nrestart = param.qic_pbp[0].nrestart;
 	param.qic_pbp[i].max_inner = param.qic_pbp[0].max_inner;
 	param.qic_pbp[i].prec = param.prec_pbp;
