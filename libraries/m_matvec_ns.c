@@ -12,7 +12,7 @@
 #ifndef FAST
 /* su3_matrix times su3_vector multiply and subtract from another su3_vector */
 /* c  <-  A*b-c */
-void mult_su3_mat_vec_nsum( su3_matrix *a, su3_vector *b, su3_vector *c ){
+void mult_su3_mat_vec_nsum( const su3_matrix *a, const su3_vector *b, su3_vector *c ){
 register int i,j;
 register complex x,y;
     for(i=0;i<3;i++){
@@ -28,7 +28,7 @@ register complex x,y;
 
 #else
 #ifdef NATIVEDOUBLE
-void mult_su3_mat_vec_nsum( su3_matrix *a, su3_vector *b, su3_vector *c ){
+void mult_su3_mat_vec_nsum( const su3_matrix *a, const su3_vector *b, su3_vector *c ){
 
   register double c0r,c0i,c1r,c1i,c2r,c2i;
   register double br,bi,a0,a1,a2;
@@ -119,7 +119,7 @@ void mult_su3_mat_vec_nsum( su3_matrix *a, su3_vector *b, su3_vector *c ){
 }
 
 #else
-void mult_su3_mat_vec_nsum( su3_matrix *a, su3_vector *b, su3_vector *c ){
+void mult_su3_mat_vec_nsum( const su3_matrix *a, const su3_vector *b, su3_vector *c ){
 int i;
 register Real t,ar,ai,br,bi,cr,ci;
     for(i=0;i<3;i++){

@@ -51,10 +51,10 @@
 #define ROTATE_RIGHT(c) if ((c) & 01) (c) = ((c) >>1) + 0x8000; else (c) >>= 1;
 
 
-int32type bsd_sum (char *data,int32type total_bytes)
+u_int32type bsd_sum (const char *data, u_int32type total_bytes)
 {
-  register  int32type checksum = 0; /* The checksum mod 2^16. */
-  int32type i ;
+  register  u_int32type checksum = 0; /* The checksum mod 2^16. */
+  u_int32type i ;
 
   for( i= 0 ; i < total_bytes ; ++i)
   {
@@ -63,6 +63,6 @@ int32type bsd_sum (char *data,int32type total_bytes)
     checksum &= 0xffff;	/* Keep it within bounds. */
   }
 
-  return (int32type) checksum   ;
+  return (u_int32type) checksum   ;
 }
 

@@ -6,7 +6,7 @@
 #include <math.h>
 #include "../include/complex.h"
 
-complex csqrt( complex *z ){
+complex csqrt( const complex *z ){
 complex c;
 Real theta,r;
     r = sqrt(hypot(z->real,z->imag));

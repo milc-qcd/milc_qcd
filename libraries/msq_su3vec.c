@@ -9,7 +9,7 @@
 #include "../include/su3.h"
 
 #ifndef FAST
-Real magsq_su3vec( su3_vector *a ){
+Real magsq_su3vec( const su3_vector *a ){
 register Real sum;
 register int i;
     for(i=0,sum=0.0;i<3;i++)sum += a->c[i].real*a->c[i].real
@@ -19,7 +19,7 @@ register int i;
 
 #else
 #ifdef NATIVEDOUBLE /* IBM RS6000 version */
-Real magsq_su3vec(su3_vector *a){
+Real magsq_su3vec(const su3_vector *a){
 
   register double ar,ai,sum;
 
@@ -35,7 +35,7 @@ Real magsq_su3vec(su3_vector *a){
   return((Real)sum);
 }
 #else
-Real magsq_su3vec( su3_vector *a ){
+Real magsq_su3vec( const su3_vector *a ){
 register Real temp,sum;
     sum=0.0;
     temp = a->c[0].real*a->c[0].real; sum += temp;

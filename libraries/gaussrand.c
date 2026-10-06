@@ -95,7 +95,7 @@ complex complex_gaussian_rand_no( double_prn *prn_pt ){
       v1=2.0*myrand(prn_pt)-1.0;
       v2=2.0*myrand(prn_pt)-1.0;
       r=v1*v1+v2*v2;
-    } while (r >= 1.0);
+    } while (r >= 1.0 || r == 0.0);
     fac=sqrt( -log((double)r)/(double)r);
     result.real = v2*fac;
     result.imag = v1*fac;

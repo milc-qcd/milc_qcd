@@ -5,7 +5,7 @@
 #SBATCH -t 00:30:00
 #SBATCH -N 1
 #SBATCH -C gpu
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=32
 #SBATCH --gpus-per-task=1
 #SBATCH --ntasks-per-node=4
 #SBATCH --gpu-bind=none
@@ -21,17 +21,23 @@ export LD_LIBRARY_PATH=`pwd`/build/usqcd/lib:$LD_LIBRARY_PATH
 export QUDA_RESOURCE_PATH=tunecache
 mkdir -p tunecache
 
-export SRUN_CPUS_PER_TASK=16
-export OMP_NUM_THREADS=16
-export SLURM_CPU_BIND="cores"
-export OMP_PROC_BIND="spread, spread, spread"
-export CRAY_ACCEL_TARGET=nvidia80
-
+## QUDA settings
 export QUDA_ENABLE_GDR=1
+export QUDA_PROFILE_OUTPUT_BASE=profile_64
+export GPUDIRECT=" -gpudirect "
 export QUDA_MILC_HISQ_RECONSTRUCT=13
 export QUDA_MILC_HISQ_RECONSTRUCT_SLOPPY=9
+
+## MPI settings
 export MPICH_ENV_DISPLAY=1
 export MPICH_GPU_SUPPORT_ENABLED=1
+export MPICH_OFI_NIC_VERBOSE=2
+
+## OMP settings
+export OMP_NUM_THREADS=16
+export OMP_PROC_BIND=spread
+
+export CRAY_ACCEL_TARGET=nvidia80
 
 # Print environment information
 module list
@@ -64,7 +70,7 @@ echo "MPI tasks = " $SLURM_NTASKS >> $output
 echo "nthreads = $OMP_NUM_THREADS"  >> $output
 
 # Run
-srun -N $SLURM_NNODES -n $SLURM_NTASKS $executable $input $output
+srun -N $SLURM_NNODES -n $SLURM_NTASKS ./bind.sh $executable $input $output
 
 # Finish up
 echo "All done!"

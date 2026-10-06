@@ -7,7 +7,7 @@
 #include "../include/complex.h"
 #include "../include/su3.h"
 
-Real su3_rdot( su3_vector *a, su3_vector *b ){
+Real su3_rdot( const su3_vector *a, const su3_vector *b ){
 
 #ifndef NATIVEDOUBLE
 register Real temp1,temp2;

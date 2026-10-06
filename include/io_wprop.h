@@ -209,25 +209,25 @@ typedef struct {
 
 /**********************************************************************/
 /* Declarations for I/O routines in io_source_w_fm.c */
-void r_source_w_fm_to_site(char *filename, field_offset dest_site,
+void r_source_w_fm_to_site(const char *filename, field_offset dest_site,
 			   int spin, int color, int x0, int y0, int z0, int t0);
-void r_source_w_fm_to_field(char *filename, wilson_vector *dest_field,
+void r_source_w_fm_to_field(const char *filename, wilson_vector *dest_field,
 			    int spin, int color, int x0, int y0, int z0, int t0);
 
 /* Declarations for I/O routines in io_prop_w.c */
 
-w_prop_file *r_ascii_w_i(char *filename);
+w_prop_file *r_ascii_w_i(const char *filename);
 int r_ascii_w(w_prop_file *wpf, int spin, int color, field_offset src);
 void r_ascii_w_f(w_prop_file *wpf);
 
-w_prop_file *r_serial_w_i(char *filename);
+w_prop_file *r_serial_w_i(const char *filename);
 int r_serial_w_to_site(w_prop_file *wpf, int spin, int color, 
 		       field_offset dest_site);
 int r_serial_w_to_field(w_prop_file *wpf, int spin, int color, 
 			wilson_vector *dest_field);
 void r_serial_w_f(w_prop_file *wpf);
 
-w_prop_file *r_parallel_w_i(char *filename);
+w_prop_file *r_parallel_w_i(const char *filename);
 void r_parallel_w_o(w_prop_file *wpf);
 int r_parallel_w_to_site(w_prop_file *wpf, int spin, int color, 
 			 field_offset dest_site);
@@ -236,7 +236,7 @@ int r_parallel_w_to_field(w_prop_file *wpf, int spin, int color,
 void r_parallel_w_c(w_prop_file *wpf);
 void r_parallel_w_f(w_prop_file *wpf);
 
-w_prop_file *r_multidump_w_i(char *filename);
+w_prop_file *r_multidump_w_i(const char *filename);
 void r_multidump_w_o(w_prop_file *wpf);
 int r_multidump_w_to_site(w_prop_file *wpf, int spin, int color, 
 			  field_offset dest_site);
@@ -245,24 +245,24 @@ int r_multidump_w_to_field(w_prop_file *wpf, int spin, int color,
 void r_multidump_w_c(w_prop_file *wpf);
 void r_multidump_w_f(w_prop_file *wpf);
 
-w_prop_file *setup_input_w_prop_file(char *filename);
+w_prop_file *setup_input_w_prop_file(const char *filename);
 w_prop_file *setup_output_w_prop_file(void);
 void clear_input_w_prop_file(w_prop_file *wpf);
 void clear_output_w_prop_file(w_prop_file *wpf);
 
-w_prop_file *w_ascii_w_i(char *filename);
+w_prop_file *w_ascii_w_i(const char *filename);
 void w_ascii_w(w_prop_file *wpf, int spin, int color, 
 			 wilson_vector *src);
 void w_ascii_w_f(w_prop_file *wpf);
 
-w_prop_file *w_serial_w_i(char *filename);
+w_prop_file *w_serial_w_i(const char *filename);
 void w_serial_w_from_site(w_prop_file *wpf, int spin, int color, 
 			  field_offset src_site);
 void w_serial_w_from_field(w_prop_file *wpf, int spin, int color, 
 			   wilson_vector *src_field);
 void w_serial_w_f(w_prop_file *wpf);
 
-w_prop_file *w_parallel_w_i(char *filename);
+w_prop_file *w_parallel_w_i(const char *filename);
 void w_parallel_w_o(w_prop_file *wpf);
 void w_parallel_w_from_site(w_prop_file *wpf, int spin, int color, 
 			    field_offset src_site);
@@ -271,7 +271,7 @@ void w_parallel_w_from_field(w_prop_file *wpf, int spin, int color,
 void w_parallel_w_c(w_prop_file *wpf);
 void w_parallel_w_f(w_prop_file *wpf);
 
-w_prop_file *w_checkpoint_w_i(char *filename);
+w_prop_file *w_checkpoint_w_i(const char *filename);
 void w_checkpoint_w_o(w_prop_file *wpf);
 void w_checkpoint_w_from_site(w_prop_file *wpf, int spin, int color, 
 			      field_offset src_site);
@@ -280,7 +280,7 @@ void w_checkpoint_w_from_field(w_prop_file *wpf, int spin, int color,
 void w_checkpoint_w_c(w_prop_file *wpf);
 void w_checkpoint_w_f(w_prop_file *wpf);
 
-w_prop_file *w_multidump_w_i(char *filename);
+w_prop_file *w_multidump_w_i(const char *filename);
 void w_multidump_w_o(w_prop_file *wpf);
 void w_multidump_w_from_site(w_prop_file *wpf, int spin, int color, 
 			     field_offset src_site);
@@ -290,18 +290,18 @@ void w_multidump_w_c(w_prop_file *wpf);
 void w_multidump_w_f(w_prop_file *wpf);
 
 int write_w_prop_info_item( FILE *fpout,    /* ascii file pointer */
-		       char *keyword,   /* keyword */
-		       char *fmt,       /* output format -
+		       const char *keyword,   /* keyword */
+		       const char *fmt,       /* output format -
 					      must use s, d, f, or e */
 		       const char *src,       /* address of starting data */
 		       int count,       /* number of data items if > 1 */
 		       int stride);     /* byte stride of data if
                                            count > 1 */
-int sprint_w_prop_info_item( 
+int sprint_w_prop_info_item(
   char *string,    /* character string */
-  size_t nstring,     /* string length */			    
-  char *keyword,   /* keyword */
-  char *fmt,       /* output format -
+  size_t nstring,     /* string length */
+  const char *keyword,   /* keyword */
+  const char *fmt,       /* output format -
 		      must use s, d, e, f, or g */
   const char *src,       /* address of starting data
 		      floating point data must be
@@ -317,26 +317,26 @@ void write_appl_w_prop_info(FILE *fp);
 /* Prototypes for io_helpers_w.c */
 
 void interpret_usqcd_w_save_flag(int *volfmt, int *serpar, int flag);
-int read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[]);
-w_prop_file *r_open_wprop(int flag, char *filename);
-w_prop_file *w_open_wprop(int flag, char *filename, int source_type);
+int read_lat_dim_wprop(const char *filename, int file_type, int *ndim, int dims[]);
+w_prop_file *r_open_wprop(int flag, const char *filename);
+w_prop_file *w_open_wprop(int flag, const char *filename, int source_type);
 int reload_wprop_sc_to_field( int flag, w_prop_file *wpf, 
 			      quark_source *wqs, int spin, int color, 
 			      wilson_vector *src, wilson_vector *dest, int timing);
 int save_wprop_sc_from_field( int flag, w_prop_file *wpf, quark_source *wqs,
 			      int spin, int color, wilson_vector *src,
-			      wilson_vector *prop, char *recinfo, int timing);
+			      wilson_vector *prop, const char *recinfo, int timing);
 int reload_wprop_c_to_field( int flag, w_prop_file *wpf, 
 			     quark_source *wqs, int spin, int color,
 			     spin_wilson_vector *source,
 			     spin_wilson_vector *dest, int timing);
-int reload_wprop_to_field( int flag, char *filename, quark_source *wqs,
+int reload_wprop_to_field( int flag, const char *filename, quark_source *wqs,
 			   wilson_propagator *dest, int timing);
-int reload_wprop_to_wp_field( int flag, char *filename, quark_source *wqs,
+int reload_wprop_to_wp_field( int flag, const char *filename, quark_source *wqs,
 			      wilson_prop_field *source, wilson_prop_field *dest, int timing);
-int save_wprop_from_field( int flag, char *filename, quark_source *wqs,
-			   wilson_propagator *src, char *recxml, int timing);
-int save_wprop_from_wp_field( int flag, char *filename, char *recxml,
+int save_wprop_from_field( int flag, const char *filename, quark_source *wqs,
+			   wilson_propagator *src, const char *recxml, int timing);
+int save_wprop_from_wp_field( int flag, const char *filename, const char *recxml,
 			      quark_source *wqs, wilson_prop_field *source,
 			      wilson_prop_field *prop,  int timing);
 int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
@@ -345,10 +345,10 @@ int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
 int save_wprop_sc_from_site( int flag, w_prop_file *wpf, 
 			     quark_source *wqs, int spin, int color, 
 			     field_offset src, int timing);
-int reload_wprop_to_site( int flag, char *filename, quark_source *wqs,
+int reload_wprop_to_site( int flag, const char *filename, quark_source *wqs,
 			  field_offset dest, int timing);
-int save_wprop_from_site( int flag, char *filename, quark_source *wqs,
-			  field_offset src, char *recxml, int timing);
+int save_wprop_from_site( int flag, const char *filename, quark_source *wqs,
+			  field_offset src, const char *recxml, int timing);
 void r_close_wprop(int flag, w_prop_file *wpf);
 void w_close_wprop(int flag, w_prop_file *wpf);
 int ask_starting_wprop( FILE *fp, int prompt, int *flag, char *filename );
@@ -358,18 +358,18 @@ int ask_ending_wprop_or_wsource(FILE *fp, int prompt, int *flag, int *type,
 int convert_outflag_to_inflag_wprop(int out_flag);
 
 /* Prototpyes for io_prop_w_fm.c */
-w_prop_file *r_serial_w_fm_i(char *filename);
-w_prop_file *r_serial_w_fm_sc_i(char *filename);
+w_prop_file *r_serial_w_fm_i(const char *filename);
+w_prop_file *r_serial_w_fm_sc_i(const char *filename);
 void r_serial_w_fm(w_prop_file *wpf, field_offset dest_site, 
 		   wilson_propagator *dest_field);
 void r_serial_w_fm_to_field(w_prop_file *wpf, wilson_propagator *dest_field);
 void r_serial_w_fm_to_site(w_prop_file *wpf, field_offset dest_site);
 void r_serial_w_fm_f(w_prop_file *wpf);
-void r_prop_w_fm_to_site(char *filename, field_offset dest);
-void r_prop_w_fm_to_field(char *filename, wilson_propagator *dest);
+void r_prop_w_fm_to_site(const char *filename, field_offset dest);
+void r_prop_w_fm_to_field(const char *filename, wilson_propagator *dest);
 
-w_prop_file *w_serial_w_fm_i(char *filename);
-w_prop_file *w_serial_w_fm_sc_i(char *filename);
+w_prop_file *w_serial_w_fm_i(const char *filename);
+w_prop_file *w_serial_w_fm_sc_i(const char *filename);
 void w_serial_w_fm_from_field(w_prop_file *wpf, wilson_propagator *src_field);
 void w_serial_w_fm_from_site(w_prop_file *wpf, field_offset src_site);
 void w_serial_w_fm_f(w_prop_file *wpf);

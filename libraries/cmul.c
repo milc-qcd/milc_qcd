@@ -5,7 +5,7 @@
 #include "../include/config.h"
 #include "../include/complex.h"
 
-complex cmul( complex *a, complex *b ) {
+complex cmul( const complex *a, const complex *b ) {
     complex c;
     c.real = (*a).real * (*b).real - (*a).imag * (*b).imag;
     c.imag = (*a).imag * (*b).real + (*a).real * (*b).imag;

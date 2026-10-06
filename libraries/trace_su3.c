@@ -8,7 +8,7 @@
 #include "../include/su3.h"
 
 /* Complex trace of an SU3 matrix */
-complex trace_su3( su3_matrix *a ) {
+complex trace_su3( const su3_matrix *a ) {
 register complex t1,t2;
     CADD(a->e[0][0],a->e[1][1],t1);
     CADD(t1,a->e[2][2],t2);

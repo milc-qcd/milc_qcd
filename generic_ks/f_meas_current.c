@@ -87,19 +87,19 @@ thin_source(su3_vector *src, int thinning, int ex, int ey, int ez, int et){
 /*****************************************************************************/
 /*Write current record for the accumulated average over random sources */
 static void
-write_tslice_values_begin(char *tag){
+write_tslice_values_begin(const char *tag){
   node0_printf("BEGIN JTMU%s\n", tag);
 }
 
 /*****************************************************************************/
 static void
-write_tslice_values_end(char *tag){
+write_tslice_values_end(const char *tag){
   node0_printf("END JTMU%s\n", tag);
 }
 
 /*****************************************************************************/
 static void
-write_tslice_values(char *tag, int jr, Real mass1, Real charge1,
+write_tslice_values(const char *tag, int jr, Real mass1, Real charge1,
 		    Real mass2, Real charge2, Real *j_mu ){
   double *jtmu = (double *)malloc(sizeof(double)*4*param.nt);
 
@@ -160,7 +160,7 @@ write_tslice_values(char *tag, int jr, Real mass1, Real charge1,
 /* Calculate and write the result for random source jr with the listed
    masses */
 static void
-write_jdotA_value(char *tag, int jr, Real mass1, Real charge1,
+write_jdotA_value(const char *tag, int jr, Real mass1, Real charge1,
 		  Real mass2, Real charge2, Real *j_mu, Real *u1_A ){
 
   if(jr < 0){
@@ -352,7 +352,6 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
 static void
 project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
 
-  // node0_printf("Entered project_out with parity %d\n", parity);
   register int i ;
   double_complex cc ;
   double ptime = -dclock();
@@ -383,6 +382,7 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
 
 #endif
 
+#if 0 // unused (debugging) function
 /******************************************************************
 *									*
 *  void dumpvec( su3_vector *vec )					*
@@ -395,6 +395,7 @@ my_dumpvec( su3_vector *v ){
   for(j=0;j<3;j++)printf("(%.12e,%.12e)\n",
 			 v->c[j].real,v->c[j].imag);
 }
+#endif
 
 /************************************************************************/
 static void
@@ -650,7 +651,7 @@ block_current_stochastic_delta_udus( Real **j_mu[], Real masses[],
 				     quark_invert_control qic[],
 				     su3_vector *gr[]){
   
-  char myname[] = "block_current_stochastic_delta_udls";
+  char myname[] = "block_current_stochastic_delta_udus";
 
   /* Offset for staggered phases in the current definition */
   int r_offset[4] = {0, 0, 0, 0};
@@ -688,13 +689,14 @@ block_current_stochastic_delta_udus( Real **j_mu[], Real masses[],
     Mu_inv_gr[is] = create_v_field();
   }
 
-  qic->parity = parity;
+  qic_ud->parity = parity;
+  qic_us->parity = parity;
   /* Mu_inv_gr = 1/[D^2 + 4*m_u^2] gr */
-  ks_congrad_block_field(nsrc, gr, Mu_inv_gr, qic, m_u, fn_us);
+  ks_congrad_block_field(nsrc, gr, Mu_inv_gr, qic_ud, m_u, fn_us);
   /* Mud_inv_gr = 1/[D^2 + 4*m_d^2] Mu_inv_gr */
-  ks_congrad_block_field(nsrc, Mu_inv_gr, Mud_inv_gr, qic, m_d, fn_ud);
+  ks_congrad_block_field(nsrc, Mu_inv_gr, Mud_inv_gr, qic_ud, m_d, fn_ud);
   /* Mus_inv_gr = 1/[D^2 + 4*m_s^2] Mu_inv_gr */
-  ks_congrad_block_field(nsrc, Mu_inv_gr, Mus_inv_gr, qic, m_s, fn_us);
+  ks_congrad_block_field(nsrc, Mu_inv_gr, Mus_inv_gr, qic_us, m_s, fn_us);
 
   for(int is = 0; is < nsrc; is++){
       destroy_v_field(Mu_inv_gr[is]);
@@ -800,14 +802,18 @@ block_current_stochastic_delta_udls( Real **j_mu[], Real masses[],
     Ml_inv_gr[is] = create_v_field();
   }
 
-  qic->parity = parity;
+  qic_ls->parity = parity;
+  int save_deflate = qic_ls->deflate;
+  if(parity == ODD)qic_ls->deflate = 0;  // No further deflation for odd parity contribution
+
   /* Ml_inv_gr = 1/[D^2 + 4*m_l^2] gr */
-  ks_congrad_block_field(nsrc, gr, Ml_inv_gr, qic, m_l, fn_ls);
+  ks_congrad_block_field(nsrc, gr, Ml_inv_gr, qic_ls, m_l, fn_ls);
   /* Mud_inv_gr = 1/[D^2 + 4*m_l^2] Ml_inv_gr */
   /* NOTE: we are approximating ud here */
-  ks_congrad_block_field(nsrc, Ml_inv_gr, Mud_inv_gr, qic, m_l, fn_ud);
+  ks_congrad_block_field(nsrc, Ml_inv_gr, Mud_inv_gr, qic_ls, m_l, fn_ud);
   /* Mls_inv_gr = 1/[D^2 + 4*m_s^2] Ml_inv_gr */
-  ks_congrad_block_field(nsrc, Ml_inv_gr, Mls_inv_gr, qic, m_s, fn_ls);
+  ks_congrad_block_field(nsrc, Ml_inv_gr, Mls_inv_gr, qic_ls, m_s, fn_ls);
+  qic_ls->deflate = save_deflate;
 
   for(int is = 0; is < nsrc; is++){
       destroy_v_field(Ml_inv_gr[is]);
@@ -1578,7 +1584,6 @@ static void
 exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp_ferm_links_t *fn_mass){
 
   char myname[] = "exact_current_quda";
-  node0_printf("Computing exact current with QUDA\n");
 
   if( nmass<1 || nmass>3 ) {
     node0_printf("%s: wrong number of masses %d\n", myname, nmass);
@@ -1621,7 +1626,6 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
 
   // Compute exact current via QUDA
   qudaExactCurrent(MILC_PRECISION, MILC_PRECISION, fatlink, longlink, ape_links, nmass, masses, inv_args, eig_args, jlow_mu1, jlow_mu2, refresh);
-  node0_printf("Done with qudaExactCurrent\n"); fflush(stdout);
 
 } // exact_current_quda
 
@@ -1922,6 +1926,7 @@ exact_currents_deltam(int n_masses, Real *jlow_mu[], Real masses[],
 #endif
 }
 
+#if 0
 /*********************************************************************/
 static void
 check_eigen(int Nvecs){
@@ -1934,6 +1939,8 @@ check_eigen(int Nvecs){
 	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
     }
 }
+
+#endif
 
 /*********************************************************************/
 /* Create fields for low- and high-mode current densities */

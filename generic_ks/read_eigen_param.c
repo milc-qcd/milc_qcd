@@ -35,7 +35,7 @@ int read_ks_eigen_param(ks_eigen_param *eigen_param, int status, int prompt){
 #elif defined(HAVE_QUDA) && defined(USE_CG_GPU) && !defined(USE_EIG_GPU)
   /* FIXME: Should be able to use any eigensolver */
   node0_printf("ERROR: When using QUDA for CG and wanting FRESH eigenvectors, only the QUDA eigensolver is allowed!\n");
-  node0_printf("ERROR: Recompile with WANT_QUDA=true, WANT_CG_GPU=true, and WANT_EIG_GPU=true\n");
+  node0_printf("ERROR: Recompile with WANTQUDA=true, WANT_FN_CG_GPU=true, and WANT_EIG_GPU=true\n");
   terminate(1);
 
 #elif defined(HAVE_QUDA) && defined(USE_EIG_GPU)

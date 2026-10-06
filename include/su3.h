@@ -328,21 +328,21 @@
 *
 */
 
-Real realtrace_su3(  su3_matrix *a, su3_matrix *b );
-complex trace_su3(  su3_matrix *a );
-complex complextrace_su3( su3_matrix *a, su3_matrix *b );
-complex det_su3( su3_matrix *a );
-void sub_su3_matrix( su3_matrix *a, su3_matrix *b, su3_matrix *c );
-void scalar_mult_su3_matrix( su3_matrix *src, Real scalar, su3_matrix *dest);
-void scalar_mult_sub_su3_matrix( su3_matrix *src1, su3_matrix *src2,
+Real realtrace_su3(  const su3_matrix *a, const su3_matrix *b );
+complex trace_su3(  const su3_matrix *a );
+complex complextrace_su3( const su3_matrix *a, const su3_matrix *b );
+complex det_su3( const su3_matrix *a );
+void sub_su3_matrix( const su3_matrix *a, const su3_matrix *b, su3_matrix *c );
+void scalar_mult_su3_matrix( const su3_matrix *src, Real scalar, su3_matrix *dest);
+void scalar_mult_sub_su3_matrix( const su3_matrix *src1, const su3_matrix *src2,
 	Real scalar, su3_matrix *dest);
-void c_scalar_mult_su3mat( su3_matrix *src, complex *scalar,
+void c_scalar_mult_su3mat( const su3_matrix *src, const complex *scalar,
 	su3_matrix *dest);
-void c_scalar_mult_add_su3mat( su3_matrix *src1, su3_matrix *src2,
-	complex *scalar, su3_matrix *dest);
-void c_scalar_mult_sub_su3mat( su3_matrix *src1, su3_matrix *src2,
-	complex *scalar, su3_matrix *dest);
-void su3_adjoint( su3_matrix *a, su3_matrix *b );
+void c_scalar_mult_add_su3mat( const su3_matrix *src1, const su3_matrix *src2,
+	const complex *scalar, su3_matrix *dest);
+void c_scalar_mult_sub_su3mat( const su3_matrix *src1, const su3_matrix *src2,
+	const complex *scalar, su3_matrix *dest);
+void su3_adjoint( const su3_matrix *a, su3_matrix *b );
 void make_anti_hermitian( su3_matrix *m3, anti_hermitmat *ah3 );
 void random_anti_hermitian( anti_hermitmat *mat_antihermit, double_prn *prn_pt );
 void uncompress_anti_hermitian( const anti_hermitmat * const mat_anti, su3_matrix *mat );
@@ -353,15 +353,15 @@ void dumpmat( su3_matrix *m );
 void dumptensor4( su3_tensor4 *m );
 void eigen_su3_UdU( su3_matrix *U, Real *g0, Real *g1, Real *g2);
 
-complex su3_dot( su3_vector *a, su3_vector *b );
+complex su3_dot( const su3_vector *a, const su3_vector *b );
 void su3vec_copy( su3_vector *a, su3_vector *b );
 void dumpvec( su3_vector *v );
 void clearvec( su3_vector *v );
 
-void mult_su3_mat_vec_sum(  su3_matrix *a, su3_vector *b, su3_vector *c );
-void mult_su3_mat_vec_nsum( su3_matrix *a, su3_vector *b, su3_vector *c );
-void mult_adj_su3_mat_vec_sum( su3_matrix *a, su3_vector *b, su3_vector *c );
-void mult_adj_su3_mat_vec_nsum( su3_matrix *a, su3_vector *b, su3_vector *c );
+void mult_su3_mat_vec_sum(  const su3_matrix *a, const su3_vector *b, su3_vector *c );
+void mult_su3_mat_vec_nsum( const su3_matrix *a, const su3_vector *b, su3_vector *c );
+void mult_adj_su3_mat_vec_sum( const su3_matrix *a, const su3_vector *b, su3_vector *c );
+void mult_adj_su3_mat_vec_nsum( const su3_matrix *a, const su3_vector *b, su3_vector *c );
 
 void scalar_mult_su3_vector(  const su3_vector *const src, Real scalar, 
 	su3_vector *dest);
@@ -614,11 +614,11 @@ void byterevn64(u_int32type w[], int n);
 /* Use standard prototypes if macros are not defined */
 
 #ifndef add_su3_matrix
-void add_su3_matrix( su3_matrix *a, su3_matrix *b, su3_matrix *c );
+void add_su3_matrix( const su3_matrix *a, const su3_matrix *b, su3_matrix *c );
 #endif
 
 #ifndef add_su3_vector
-void add_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
+void add_su3_vector( const su3_vector *a, const su3_vector *b, su3_vector *c );
 #endif
 
 #ifndef grow_add_four_wvecs
@@ -628,19 +628,19 @@ void grow_add_four_wvecs( wilson_vector *a, half_wilson_vector *b1,
 #endif
 
 #ifndef magsq_su3vec
-Real magsq_su3vec( su3_vector *a );
+Real magsq_su3vec( const su3_vector *a );
 #endif
 
-#ifndef mult_su3_nn 
-void mult_su3_nn ( su3_matrix *a, su3_matrix *b, su3_matrix *c );
+#ifndef mult_su3_nn
+void mult_su3_nn ( const su3_matrix *a, const su3_matrix *b, su3_matrix *c );
 #endif
 
-#ifndef mult_su3_na 
-void mult_su3_na ( su3_matrix *a, su3_matrix *b, su3_matrix *c );
+#ifndef mult_su3_na
+void mult_su3_na ( const su3_matrix *a, const su3_matrix *b, su3_matrix *c );
 #endif
 
-#ifndef mult_su3_an 
-void mult_su3_an ( su3_matrix *a, su3_matrix *b, su3_matrix *c );
+#ifndef mult_su3_an
+void mult_su3_an ( const su3_matrix *a, const su3_matrix *b, su3_matrix *c );
 #endif
 
 #ifndef mult_su3_mat_vec
@@ -652,12 +652,12 @@ void mult_adj_su3_mat_vec( const su3_matrix * const a, const su3_vector * const 
 #endif
 
 #ifndef mult_adj_su3_mat_vec_4dir
-void mult_adj_su3_mat_vec_4dir( su3_matrix *a, su3_vector *b, su3_vector *c );
+void mult_adj_su3_mat_vec_4dir( const su3_matrix *a, const su3_vector *b, su3_vector *c );
 #endif
 
 #ifndef mult_adj_su3_mat_4vec
-void mult_adj_su3_mat_4vec( su3_matrix *mat, su3_vector *src,
-			    su3_vector *dest0, su3_vector *dest1, 
+void mult_adj_su3_mat_4vec( const su3_matrix *mat, const su3_vector *src,
+			    su3_vector *dest0, su3_vector *dest1,
 			    su3_vector *dest2, su3_vector *dest3  ) ;
 #endif
 
@@ -684,12 +684,12 @@ void scalar_mult_add_hwvec_proj( su3_matrix * const a,
 #endif
 
 #ifndef scalar_mult_add_su3_matrix
-void scalar_mult_add_su3_matrix( su3_matrix *src1, su3_matrix *src2,
+void scalar_mult_add_su3_matrix( const su3_matrix *src1, const su3_matrix *src2,
 	Real scalar, su3_matrix *dest);
 #endif
 
 #ifndef scalar_mult_add_su3_vector
-void scalar_mult_add_su3_vector( su3_vector *src1, su3_vector *src2,
+void scalar_mult_add_su3_vector( const su3_vector *src1, const su3_vector *src2,
 	Real scalar, su3_vector *dest);
 #endif
 
@@ -698,7 +698,7 @@ void su3_projector( su3_vector *a, su3_vector *b, su3_matrix *c );
 #endif
 
 #ifndef su3_rdot
-Real su3_rdot( su3_vector *a, su3_vector *b );
+Real su3_rdot( const su3_vector *a, const su3_vector *b );
 #endif
 
 #ifndef sub_four_su3_vecs
@@ -707,11 +707,11 @@ void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 #endif
 
 #ifndef sub_su3_matrix
-void sub_su3_matrix( su3_matrix *a, su3_matrix *b, su3_matrix *c );
+void sub_su3_matrix( const su3_matrix *a, const su3_matrix *b, su3_matrix *c );
 #endif
 
 #ifndef sub_su3_vector
-void sub_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
+void sub_su3_vector( const su3_vector *a, const su3_vector *b, su3_vector *c );
 #endif
 
 #ifndef wp_shrink_4dir

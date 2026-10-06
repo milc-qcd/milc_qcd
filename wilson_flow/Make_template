@@ -32,9 +32,14 @@ MY_OBJECTS= \
   control.o \
   gauge_info.o \
   staple.o \
-  integrate.o \
   fmunu.o \
   setup.o
+
+ifeq ($(strip ${HAVE_QUDA}),true)
+  MY_OBJECTS += integrate_quda.o
+else
+  MY_OBJECTS += integrate.o
+endif
 
 G_OBJECTS = \
   check_unitarity.o \
@@ -60,6 +65,10 @@ G_OBJECTS = \
 
 ifeq ($(strip ${HAVEQIO}),true)
   G_OBJECTS += file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
+endif
+
+ifeq ($(strip ${HAVE_QUDA}),true)
+  G_OBJECTS += milc_to_quda_utilities.o
 endif
 
 # Objects depending on architecture and software package

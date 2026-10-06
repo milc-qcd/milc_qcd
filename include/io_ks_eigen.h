@@ -44,7 +44,7 @@ typedef gauge_check ks_eigen_check;
 typedef struct {
   FILE *fp;                    /* File pointer */
   ks_eigen_header *header;     /* Pointer to header for file */
-  char            *filename;   /* Pointer to file name string */
+  const char      *filename;   /* Pointer to file name string */
   int             byterevflag; /* Byte reverse flag - used only for reading */
   int             parallel;    /* 1 if file was opened in parallel
 				  0 if serial */
@@ -93,33 +93,33 @@ extern char *ks_eigen_info_keyword[];
 void swrite_ks_eigen_hdr(FILE *fp, ks_eigen_header *kseigh);
 int read_ks_eigen_hdr(ks_eigen_file *kseigf, int parallel);
 
-int write_ks_eigen_info_item(FILE *fpout, char *keyword, char *fmt, char *src, int count,
+int write_ks_eigen_info_item(FILE *fpout, const char *keyword, const char *fmt, const char *src, int count,
 			     int stride);
 void write_ks_eigen_info_file(ks_eigen_file *kseigf);
 
-ks_eigen_file *create_input_ks_eigen_file_handle(char *filename);
+ks_eigen_file *create_input_ks_eigen_file_handle(const char *filename);
 ks_eigen_file *create_output_ks_eigen_file_handle(void);
 void destroy_ks_eigen_file_handle(ks_eigen_file *kseigf);
 
 /**********************************************************************/
 
 /* procedures for specific types of I/O */
-ks_eigen_file *w_serial_ks_eigen_i(char *filename, int parity);
+ks_eigen_file *w_serial_ks_eigen_i(const char *filename, int parity);
 void w_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal,
 		       su3_vector **eigVec, double *resid);
 void w_serial_ks_eigen_f(ks_eigen_file *kseigf);
 
-ks_eigen_file *r_serial_ks_eigen_i(char *filename);
+ks_eigen_file *r_serial_ks_eigen_i(const char *filename);
 int r_serial_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal,
 		      su3_vector **eigVec);
 void r_serial_ks_eigen_f(ks_eigen_file *kseigf);
 
-ks_eigen_file *w_ascii_ks_eigen_i(char *filename, int parity);
+ks_eigen_file *w_ascii_ks_eigen_i(const char *filename, int parity);
 void w_ascii_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal,
 		      su3_vector **eigVec, double *resid);
 void w_ascii_ks_eigen_f(ks_eigen_file *kseigf);
 
-ks_eigen_file *r_ascii_ks_eigen_i(char *filename);
+ks_eigen_file *r_ascii_ks_eigen_i(const char *filename);
 int r_ascii_ks_eigen(ks_eigen_file *kseigf, int Nvecs, Real *eigVal,
 		     su3_vector **eigVec);
 void r_ascii_ks_eigen_f(ks_eigen_file *kseigf);
@@ -127,18 +127,18 @@ void r_ascii_ks_eigen_f(ks_eigen_file *kseigf);
 /**********************************************************************/
 
 /* Prototype for io_grid_ks_eigen.c */
-void read_grid_eigenvector_data(su3_vector *eigVec, int typesize, char* file, off_t offset,
+void read_grid_eigenvector_data(su3_vector *eigVec, int typesize, const char *file, off_t offset,
 				uint32_t *suma, uint32_t *sumb);
 
 /* Prototypes for io_helpers_ks_eigen.c */
-ks_eigen_file *r_open_ks_eigen(int flag, char *filename);
-ks_eigen_file *w_open_ks_eigen(int flag, char *filename, int parity);
+ks_eigen_file *r_open_ks_eigen(int flag, const char *filename);
+ks_eigen_file *w_open_ks_eigen(int flag, const char *filename, int parity);
 
 void r_close_ks_eigen(int flag, ks_eigen_file *kseigf);
 void w_close_ks_eigen(int flag, ks_eigen_file *kseigf);
-int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, Real *eigVal,
+int reload_ks_eigen(int flag, const char *eigfile, int *Nvecs, Real *eigVal,
 		    su3_vector **eigVec, imp_ferm_links_t *fn, int timing);
-int save_ks_eigen(int flag, char *savefile, int Nvecs, Real *eigVal, 
+int save_ks_eigen(int flag, const char *savefile, int Nvecs, Real *eigVal,
 		  su3_vector **eigVec, double *resid, int timing);
 
 int convert_outflag_to_inflag_ks_eigen(int out_flag);

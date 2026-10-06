@@ -94,7 +94,7 @@ gamma_matrix_t gamma_mat(enum gammatype i);
 void gamma_adj(gamma_matrix_t *dest, gamma_matrix_t *src);
 void gamma_transp(gamma_matrix_t *dest, gamma_matrix_t *src);
 void gamma_conj(gamma_matrix_t *dest, gamma_matrix_t *src);
-int gamma_index(char *label);
+int gamma_index(const char *label);
 char *gamma_label(enum gammatype index);
 short gamma_hex(enum gammatype index);
 

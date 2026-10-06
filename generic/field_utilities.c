@@ -32,7 +32,10 @@ void print_timing(double dtime, const char *str){
 /*--------------------------------------------------------------------*/
 #define make_clear_field(ABBREV, T) \
 void clear_##ABBREV##_field(T *x){ \
-  memset(x,'\0',sites_on_node*sizeof(T)); \
+  size_t i; \
+  FORALLFIELDSITES_OMP(i,) { \
+    memset(x+i, '\0', sizeof(T)); \
+  } END_LOOP_OMP \
 }
 
 #define make_create_field(ABBREV, T) \
@@ -49,7 +52,10 @@ T* create_##ABBREV##_field(void){ \
 
 #define make_copy_field(ABBREV, T) \
 void copy_##ABBREV##_field(T *dst, const T * const src){ \
-  memcpy(dst, src, sites_on_node*sizeof(T)); \
+  size_t i; \
+  FORALLFIELDSITES_OMP(i,) { \
+    memcpy(dst+i, src+i, sizeof(T)); \
+  } END_LOOP_OMP \
 }
 
 #define make_destroy_field(ABBREV, T) \
@@ -68,7 +74,10 @@ void destroy_##ABBREV##_field(T *x){ \
 
 #define make_clear_array_field(ABBREV, T) \
 void clear_##ABBREV##_array_field(T *x, int n){	 \
-  memset(x,'\0',sites_on_node*sizeof(T)*n); \
+  size_t i; \
+  FORALLFIELDSITES_OMP(i,) { \
+    memset(x+i*n, '\0', sizeof(T)*n); \
+  } END_LOOP_OMP \
 }
 
 #define make_create_array_field(ABBREV, T) \
@@ -85,7 +94,10 @@ T* create_##ABBREV##_array_field(int n){ \
 
 #define make_copy_array_field(ABBREV, T) \
 void copy_##ABBREV##_array_field(T *dst, T *src, int n){	\
-  memcpy(dst, src, sites_on_node*sizeof(T)*n); \
+  size_t i; \
+  FORALLFIELDSITES_OMP(i,) { \
+    memcpy(dst+i*n, src+i*n, sizeof(T)*n); \
+  } END_LOOP_OMP \
 }
 
 #define make_destroy_array_field(ABBREV, T) \

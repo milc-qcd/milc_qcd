@@ -41,7 +41,7 @@ static const char *baryon_type_string[MAX_BARYON_TYPE]  = {
 /*------------------------------------------------------------------*/
 /* Map a label to the baryon-type index */
 
-int baryon_type_index(char *label){
+int baryon_type_index(const char *label){
   int i;
   for(i = 0; i < MAX_BARYON_TYPE; i++){
     if(strcmp(label,baryon_type_string[i]) == 0)return i;

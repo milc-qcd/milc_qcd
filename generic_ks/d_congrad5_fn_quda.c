@@ -42,11 +42,6 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   char myname[] = "ks_congrad_block_parity_gpu";
 
-  //  node0_printf("Entered %s\n", myname);
-
-  if(1){
-    //  if(nsrc <= 1){ // DEBUG.  Sole for each source separately
-
   QudaInvertArgs_t inv_args;
   int i;
   double dtimec = -dclock();
@@ -91,12 +86,10 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 	     (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
       fflush(stdout);}
 #endif
-    
     return 0;
   }
   
   /* Initialize QUDA parameters */
-
   initialize_quda();
 
   if(qic->parity == EVEN){
@@ -142,30 +135,26 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 
   /* Load eig_args structure with default values */
   QudaEigensolverArgs_t eig_args;
-
-#ifdef USE_EIG_GPU
-    
-  // Here we use QUDA for the eigensolution or for reading its own eigenvector file
-    
-  int quda_does_eigensolve = (param.ks_eigen_startflag == FRESH);
   
+#ifdef USE_EIG_GPU
+  // Here we use QUDA for the eigensolution or for reading its own eigenvector file
+  int quda_does_eigensolve = (param.ks_eigen_startflag == FRESH);
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
   strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
   eig_args.n_ev = eig_args.n_conv;
-
- #else
-  
+#else
   // Here, eigenvectors were loaded from file(s) by MILC or by a non-QUDA eigensolver
-  
   int quda_does_eigensolve = 0;
-  
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
-  
 #endif
       
   // Adjustments to default eig_args
-  eig_args.tol_restart = param.eigen_param.tol_restart; 
+#ifdef USE_EIG_GPU
+  /* tol_restart is read from the input file only when QUDA owns the eigensolve
+     (USE_EIG_GPU); otherwise keep the default from load_quda_default_eig_args(). */
+  eig_args.tol_restart = param.eigen_param.tol_restart;
+#endif
   eig_args.n_ev_deflate = ( qic->deflate ) ? param.eigen_param.Nvecs : 0;
   // QUDA currently doesn't support deflation with the relative residual stopping condition 
   if(qic->relresid > 0.) eig_args.n_ev_deflate = 0;
@@ -179,9 +168,11 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
   } else {
     node0_printf("Solving for %d source(s) with deflation for parity %d\n", nsrc, parity);
   }
-  
-  print_quda_eig_args(&eig_args); // For debugging
-  
+ 
+#ifdef CG_DEBUG 
+  print_quda_eig_args(&eig_args);
+#endif
+
   qudaInvertMsrcDeflatable(MILC_PRECISION,
 			   quda_precision,
 			   mass,
@@ -197,7 +188,7 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 			   &relative_residual,
 			   &num_iters,
 			   nsrc);
-  
+
   // MILC's convention impled from d_congrad5_fn_milc.c is that final_rsq, final_relrsq, and final_iters
   // are based on the values from the last solve, which qudaInvertMsrc respects.
   qic->final_rsq = residual * residual;
@@ -220,30 +211,16 @@ int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_des
 	   (double)(nflop*nsrc*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
 #endif
-  
-#if 0
+#ifdef CG_DEBUG
   for(int j = 0; j < nsrc; j++){
     node0_printf("Calling check_invert_field2 for case %d\n", j); fflush(stdout);
     check_invert_field2(t_src[j], t_dest[j], mass, 2e-5, fn, qic->parity);
   }
 #endif
-  
   // On the other hand, MILC expects the returned value to be the aggregate number of iterations
   // performed by each solve if it was performed sequentially. This can be approximated by
   // the number of iterations for a single solve times the number of sources.
   return num_iters * nsrc;
-  
-  } else {
-
-  /* Debug: Solve separately, rather than batch */
-  int num_iters = 0;
-  for(int i = 0; i < nsrc; i++){
-    num_iters += ks_congrad_parity_gpu(t_src[i], t_dest[i], qic, mass, fn);
-    report_status(qic);
-  }
-  return num_iters;
-
-  }
 }
 
 /********************************************************************/

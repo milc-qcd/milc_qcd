@@ -123,7 +123,7 @@ interpret_usqcd_w_reload_flag(int flag)
 /* read the lattice dimensions from a binary Wilson prop file */
 
 int 
-read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[])
+read_lat_dim_wprop(const char *filename, int file_type, int *ndim, int dims[])
 {
   w_prop_file *wpf;
   int i;
@@ -149,7 +149,7 @@ read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[])
 /* Open Wilson propagator file for reading one source spin-color at a time */
 
 w_prop_file *
-r_open_wprop(int flag, char *filename)
+r_open_wprop(int flag, const char *filename)
 {
   w_prop_file *wpf = NULL;
   int file_type;
@@ -214,7 +214,7 @@ r_open_wprop(int flag, char *filename)
    source spin and color at a time. */
 
 w_prop_file *
-w_open_wprop(int flag, char *filename, int source_type)
+w_open_wprop(int flag, const char *filename, int source_type)
 {
   w_prop_file *wpf = NULL;
   wilson_propagator *wp;
@@ -426,12 +426,12 @@ reload_wprop_sc_to_field( int flag, w_prop_file *wpf,
 /* save a propagator one source color and spin at a time */
 /* recinfo is for USQCD formats */
 int 
-save_wprop_sc_from_field( int flag, w_prop_file *wpf, 
+save_wprop_sc_from_field( int flag, w_prop_file *wpf,
 			  quark_source *wqs,
 			  int spin, int color,
 			  wilson_vector *src,
-			  wilson_vector *prop, 
-			  char *recinfo, int timing)
+			  wilson_vector *prop,
+			  const char *recinfo, int timing)
 {
   double dtime = 0;
   int status;
@@ -576,7 +576,7 @@ reload_wprop_c_to_field( int flag, w_prop_file *wpf,
 
 */
 int 
-reload_wprop_to_wp_field( int flag, char *filename, quark_source *wqs,
+reload_wprop_to_wp_field( int flag, const char *filename, quark_source *wqs,
 			  wilson_prop_field *source, wilson_prop_field *dest, int timing)
 {
 
@@ -637,7 +637,7 @@ reload_wprop_to_wp_field( int flag, char *filename, quark_source *wqs,
    SAVE_MULTFILE_SCIDAC
 */
 int 
-save_wprop_from_wp_field( int flag, char *filename, char *recxml,
+save_wprop_from_wp_field( int flag, const char *filename, const char *recxml,
 			  quark_source *wqs, wilson_prop_field *source,
 			  wilson_prop_field *prop,  int timing)
 {
@@ -775,7 +775,7 @@ save_wprop_sc_from_site( int flag, w_prop_file *wpf, quark_source *wqs,
 
 */
 int 
-reload_wprop_to_site( int flag, char *filename, quark_source *wqs,
+reload_wprop_to_site( int flag, const char *filename, quark_source *wqs,
 		      field_offset dest, int timing )
 {
   int i,status;
@@ -844,8 +844,8 @@ reload_wprop_to_site( int flag, char *filename, quark_source *wqs,
    SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_MULTIDUMP, SAVE_CHECKPOINT
 */
 int 
-save_wprop_from_site( int flag, char *filename, quark_source *wqs,
-		      field_offset src, char *recxml, int timing)
+save_wprop_from_site( int flag, const char *filename, quark_source *wqs,
+		      field_offset src, const char *recxml, int timing)
 {
   int spin, color;
   int source_type;

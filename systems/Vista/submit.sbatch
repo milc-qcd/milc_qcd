@@ -15,7 +15,6 @@ module load cuda
 
 # Path to QUDA libraries: Change as needed
 export LD_LIBRARY_PATH=`pwd`/build/usqcd/lib:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/home1/apps/nvidia/Linux_aarch64/24.9/math_libs/lib64:$LD_LIBRARY_PATH
 
 # QUDA Tuning Directory: Change location as needed
 export QUDA_RESOURCE_PATH=tunecache

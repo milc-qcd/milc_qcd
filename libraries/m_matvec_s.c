@@ -11,7 +11,7 @@
 #ifndef FAST
 /* su3_matrix times su3_vector multiply and add to another su3_vector */
 /* c  <-  A*b+c */
-void mult_su3_mat_vec_sum( su3_matrix *a, su3_vector *b, su3_vector *c ){
+void mult_su3_mat_vec_sum( const su3_matrix *a, const su3_vector *b, su3_vector *c ){
 register int i,j;
 register complex x,y;
     for(i=0;i<3;i++){
@@ -27,7 +27,7 @@ register complex x,y;
 
 #else
 #ifdef NATIVEDOUBLE   /* RS6000 version */
-void mult_su3_mat_vec_sum(a,b,c) su3_matrix *a; su3_vector *b,*c; {
+void mult_su3_mat_vec_sum( const su3_matrix *a, const su3_vector *b, su3_vector *c ){
 
   register double c0r,c0i,c1r,c1i,c2r,c2i;
   register double br,bi,a0,a1,a2;
@@ -117,7 +117,7 @@ void mult_su3_mat_vec_sum(a,b,c) su3_matrix *a; su3_vector *b,*c; {
 
 }
 #else
-void mult_su3_mat_vec_sum( su3_matrix *a, su3_vector *b, su3_vector *c ){
+void mult_su3_mat_vec_sum( const su3_matrix *a, const su3_vector *b, su3_vector *c ){
 int i;
 register Real t,ar,ai,br,bi,cr,ci;
     for(i=0;i<3;i++){

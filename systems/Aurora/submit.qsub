@@ -1,0 +1,95 @@
+#!/bin/bash
+#PBS -A XXXXXXX
+#PBS -l select=1
+#PBS -N JobName
+#PBS -l walltime=00:30:00
+#PBS -l filesystems=flare
+#PBS -q debug
+#PBS -j oe
+
+# Setup environment
+module reset
+
+# default lmods
+export LMOD_SYSTEM_DEFAULT_MODULES="prepend-deps/default:append-deps/default"
+
+cd $PBS_O_WORKDIR
+
+# Path to QUDA libraries: Change as needed
+export LD_LIBRARY_PATH=`pwd`/build/usqcd/lib:$LD_LIBRARY_PATH
+
+export OMP_PROC_BIND=spread
+export OMP_NUM_THREADS=8
+unset OMP_PLACES
+
+# Set QUDA environment variables
+export QUDA_ENABLE_GDR=1
+export QUDA_ENABLE_MPS=1
+export QUDA_ENABLE_P2P=0
+export QUDA_MILC_HISQ_RECONSTRUCT=13
+export QUDA_MILC_HISQ_RECONSTRUCT_SLOPPY=9
+export QUDA_RESOURCE_PATH=tunecache
+mkdir -p tunecache
+
+export MPIR_CVAR_CH4_OFI_ENABLE_GPU_PIPELINE=1
+export MPIR_CVAR_CH4_OFI_GPU_PIPELINE_THRESHOLD=0
+export MPIR_CVAR_CH4_OFI_GPU_PIPELINE_BUFFER_SZ=33554432
+export MPIR_CVAR_CH4_OFI_GPU_PIPELINE_NUM_BUFFERS_PER_CHUNK=256
+export MPIR_CVAR_CH4_OFI_GPU_PIPELINE_MAX_NUM_BUFFERS=256
+export MPIR_CVAR_CH4_OFI_GPU_PIPELINE_D2H_ENGINE_TYPE=0
+
+export EnableImplicitScaling=0
+export DPCPP_CPU_NUM_CUS=48
+unset SYCL_DEVICE_FILTER
+export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
+export MKL_VERBOSE=2
+echo "EnableImplicitScaling: $EnableImplicitScaling"
+echo "ZE_AFFINITY_MASK: $ZE_AFFINITY_MASK"
+echo "SYCL_DEVICE_FILTER: $SYCL_DEVICE_FILTER"
+echo "ONEAPI_DEVICE_SELECTOR: $ONEAPI_DEVICE_SELECTOR"
+
+NNODES=`wc -l < $PBS_NODEFILE`
+NRANKS_PER_NODE=12 # Match number of GPUs per node
+NDEPTH=16 # Number of hardware threads per rank, spacing between MPI ranks on a node
+NTHREADS=$OMP_NUM_THREADS # Number of OMP threads per rank, given to OMP_NUM_THREADS
+NTOTRANKS=$(( NNODES * NRANKS_PER_NODE ))
+echo "NUM_NODES=${NNODES}  TOTAL_RANKS=${NTOTRANKS}  RANKS_PER_NODE=${NRANKS_PER_NODE}  THREADS_PER_RANK=${OMP_NUM_THREADS}"
+echo "OMP_PROC_BIND=$OMP_PROC_BIND OMP_PLACES=$OMP_PLACES"
+
+# Input and output for MILC: Update as needed
+output=sample.out
+input=sample.in
+
+# Symlink to executable: Change path to MILC as needed
+ln -s `pwd`/milc_qcd/milc_qcd/ks_spectrum/ks_spectrum_hisq ks_spectrum_hisq
+executable='./ks_spectrum_hisq'
+
+# Print environment information
+shortjobid=$( cut -d '.' -f 1 <<< $PBS_JOBID )
+pwd
+module list
+echo Jobid: $PBS_JOBID
+echo Short Jobid: $shortjobid
+echo Running on host `hostname`
+echo Running on nodes `cat $PBS_NODEFILE`
+echo $LD_LIBRARY_PATH
+printenv |grep QUDA
+echo "ldd $executable"
+ldd $executable
+echo "START_RUN: `date`" >> $output
+echo "EXECUTABLE =  $executable" >> $output
+echo "PBS_JOBID = $PBS_JOBID" >> $output
+export APP="$executable $input $output"
+echo ${APP} >> ${output}
+echo "MPI tasks = " $NTOTRANKS "on" $NNODES " nodes" >> $output
+echo "nthreads = $OMP_NUM_THREADS"  >> $output
+
+cmd="mpiexec -np ${NTOTRANKS} --ppn ${NRANKS_PER_NODE} --depth=${NDEPTH} --cpu-bind depth -envall /soft/tools/mpi_wrapper_utils/gpu_tile_compact.sh ${APP}"
+
+echo "COMMAND: $cmd" >> $output
+$cmd
+echo "FINISH_RUN: `date`" >> $output
+
+# Print run info
+qstat -f $PBS_JOBID
+

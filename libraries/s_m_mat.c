@@ -8,7 +8,7 @@
 #include "../include/su3.h"
 
 /* b <- s*a, matrices */
-void scalar_mult_su3_matrix( su3_matrix *a, Real s, su3_matrix *b ){
+void scalar_mult_su3_matrix( const su3_matrix *a, Real s, su3_matrix *b ){
 
 #ifndef FAST
 register int i,j;

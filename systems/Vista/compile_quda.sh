@@ -4,7 +4,7 @@
 #	bash compile_quda.sh
 
 module reset
-
+module load nvidia/26.1 # Default, currently nvidia/24.7 (cuda 12.5), is apparently too old for QUDA
 echo "module list:"
 module list
 
@@ -37,7 +37,6 @@ cmake ../quda -DCMAKE_BUILD_TYPE=RELEASE \
 	-DQUDA_GPU_ARCH=sm_90 -DQUDA_DIRAC_DEFAULT_OFF=ON -DQUDA_DIRAC_STAGGERED=ON \
 	-DQUDA_DOWNLOAD_USQCD=ON -DQUDA_QMP=ON -DQUDA_QIO=ON \
 	-DQUDA_MULTIGRID=OFF \
-	-DQUDA_SMEAR_GAUSS_TWOLINK=ON \
 	-DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpiCC \
 
 make -j 32 >& make_quda.log

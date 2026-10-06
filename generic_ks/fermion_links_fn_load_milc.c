@@ -192,7 +192,7 @@ printf("\n");**/
           scalar_mult_add_su3_matrix( fat1,
 	    &staple[i], -q_paths[ipath].coeff, fat1 );
 		/* minus sign in coeff. because we used backward path*/
-	  “z,	}
+	  }
         END_LOOP_OMP
     } /* ipath */
   } /* loop over directions */

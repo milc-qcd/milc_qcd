@@ -16,7 +16,7 @@ void c_scale_wilson_vector2(wilson_vector *m , complex *scale);
 void copy_site_wilson_vector(field_offset src, field_offset dest) ;
 void flip_source_re(field_offset quark_prop);
 int load_momentum_from_disk(int mom_in[][3], char filename[], int max_mom);
-int load_momentum(int prompt, char *label, int *no_mom, int mom_in[][3], int max_mom);
+int load_momentum(int prompt, const char *label, int *no_mom, int mom_in[][3], int max_mom);
 void load_smearing(field_offset where_smear, char filename[]);
 void mult_gamma(int phase, gamma_matrix *g1, gamma_matrix *g2, gamma_matrix *g3);
 void make_gammas(gamma_matrix *gamma);

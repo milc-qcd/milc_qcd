@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
       
       /* Compute or reread eigenpairs if requested and check them */
 
-#if ! ( defined(HAVE_QUDA) && defined(USE_CURRENT_GPU) && defined(USE_EIG_GPU) )
+#if !( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
 
       /* Allocate space on host for eigenpairs */
       eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
@@ -150,10 +150,13 @@ int main(int argc, char *argv[])
       }
 #endif
     
-#ifdef HAVE_QUDA
+#if ( defined(HAVE_QUDA) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
       /* Compute or reread eigenpairs with QUDA or just load the above
-	 ones into QUDA. */
-      load_evecs_quda(fn);
+	 ones into QUDA.  Only needed when a QUDA consumer (deflated CG or
+	 exact current) will use a device-resident deflation space. */
+      /* Pass load_other_parity=1: exact current (qudaExactCurrent) requires
+	 BOTH parity deflation spaces resident. */
+      load_evecs_quda(fn, 1);
 
 #endif
 
@@ -280,17 +283,15 @@ int main(int argc, char *argv[])
     }
 #endif
 
-#if ! ( defined(HAVE_QUDA) && defined(USE_CURRENT_GPU) && defined(USE_EIG_GPU) )
-
-    // MILC has allocated the eigenvectors, so free them
-    
-    if(param.eigen_param.Nvecs > 0){
-      /* Clean up eigen storage */
+    /* Free host eigenvector storage if MILC allocated it.
+       When QUDA owns the deflation space, these stayed NULL.
+       free(NULL) is a no-op, so this is safe and self-consistent */
+    if(eigVec != NULL){
       for(int i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
-      free(eigVal); free(eigVec); free(resid);
+      free(eigVec); eigVec = NULL;
     }
-
-#endif
+    free(eigVal); eigVal = NULL;
+    free(resid);  resid  = NULL;
     
     node0_printf("RUNNING COMPLETED\n");
     endtime = dclock();

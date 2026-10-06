@@ -12,7 +12,6 @@
 
 # Setup environment
 module reset
-module load gcc-native/12.3
 
 # Path to QUDA libraries: Change as needed
 export LD_LIBRARY_PATH=`pwd`/build/usqcd/lib:$LD_LIBRARY_PATH

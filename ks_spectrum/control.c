@@ -86,8 +86,6 @@ int main(int argc, char *argv[])
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
-  printf("(%d) Calling g_sync\n", this_node);
-  fflush(stdout);
   g_sync();
 
   starttime=dclock();
@@ -300,7 +298,7 @@ int main(int argc, char *argv[])
       
       /* Compute or reread eigenpairs if requested and check them */
 
-#if !( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
+#if !( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
 
       /* Eigenpairs are read or computed without QUDA */
 	 
@@ -348,16 +346,20 @@ int main(int argc, char *argv[])
       if(status != 0){
 	node0_printf("ERROR writing eigenvectors\n");
       }
-
-      ENDTIME("save eigenvectors (if requested)");
 #endif
      
-#ifdef HAVE_QUDA 
-      /* Compute or reread eigenpairs with QUDA or just load the above
-	 ones into QUDA. */
+#if ( defined(HAVE_QUDA) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
+      /* Prime QUDA with only the file-parity deflation space
+	 (load_other_parity=0).  The deflated CG solver reconstructs the
+	 opposite parity on demand (FROM_OTHER_PARITY) only if a solve of that
+	 parity occurs, so an even-parity workflow holds only the even deflation
+	 space resident.
+
+	 NOTE: the QUDA path assumes the file-parity eigenvectors are EVEN
+	 (see load_evecs_quda); */
 
       QIO_verbose(QIO_VERB_DEBUG);
-      load_evecs_quda(fn);
+      load_evecs_quda(fn, 0);
 #endif
 
       /* Unapply twisted boundary conditions on the fermion links and
@@ -366,10 +368,10 @@ int main(int argc, char *argv[])
       boundary_twist_fn(fn, OFF);
       destroy_fn_links(fn);
      
-      ENDTIME("calculate/reload Dirac eigenpairs"); fflush(stdout);
+      ENDTIME("calculate/reload Dirac eigenpairs");
 
       if(param.fixflag != NO_GAUGE_FIX){
-	node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+	node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors\n");
       }
       
 #if 0 /* If needed for debugging */
@@ -380,8 +382,6 @@ int main(int argc, char *argv[])
       initialize_site_prn_from_seed(iseed);
 #endif
 
-      ENDTIME("calculate Dirac eigenpairs");
-    
     } /* param.eigen_param.Nvecs > 0 */
 
     /**************************************************************/
@@ -414,7 +414,6 @@ int main(int argc, char *argv[])
       u1phase_off();
       invalidate_fermion_links(fn_links);
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i].prec);
-      fn = get_fm_links(fn_links, 0);
 #endif
     }
 
@@ -1090,17 +1089,15 @@ int main(int argc, char *argv[])
     //node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
 #endif 
 
-#if ! ( defined(HAVE_QUDA) && defined(USE_CURRENT_GPU) && defined(USE_EIG_GPU) )
-
-    // MILC has allocated the eigenvectors, so free them
-    
-    if(param.eigen_param.Nvecs > 0){
-      /* Clean up eigen storage */
+    /* Free host eigenvector storage if MILC allocated it.
+       When QUDA owns the deflation space, these stayed NULL.
+       free(NULL) is a no-op, so this is safe and self-consistent */
+    if(eigVec != NULL){
       for(int i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
-      free(eigVal); free(eigVec); free(resid);
+      free(eigVec); eigVec = NULL;
     }
-
-#endif
+    free(eigVal); eigVal = NULL;
+    free(resid);  resid  = NULL;
     
     node0_printf("RUNNING COMPLETED\n");
     endtime=dclock();
@@ -1131,9 +1128,6 @@ int main(int argc, char *argv[])
   } /* readin(prompt) */
   
   free_lattice();
-
-  printf("(%d) Calling finalize_quda\n", this_node);
-  fflush(stdout);
 #ifdef HAVE_QUDA
   finalize_quda();
 #endif
@@ -1146,8 +1140,6 @@ int main(int argc, char *argv[])
   finalize_grid();
 #endif
 
-  printf("(%d) Calling normal_exit\n", this_node);
-  fflush(stdout);
   normal_exit(0);
   return 0;
 }

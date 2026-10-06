@@ -490,8 +490,8 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
 
 /* Convert dir to corresponding gamma index */
 
-static enum gammatype 
-dir2gi(int dir, char *myname){
+static enum gammatype
+dir2gi(int dir, const char *myname){
 
   enum gammatype gi = GT;
 
@@ -506,8 +506,8 @@ dir2gi(int dir, char *myname){
   return gi;
 }
 
-static enum gammatype 
-dir2gi0(int dir, char *myname){
+static enum gammatype
+dir2gi0(int dir, const char *myname){
 
   enum gammatype gi0 = GT;
 
@@ -524,8 +524,8 @@ dir2gi0(int dir, char *myname){
 
 #ifndef NO_GAUGE_FIELD
 
-static enum gammatype 
-dir2g5i(int dir, char *myname){
+static enum gammatype
+dir2g5i(int dir, const char *myname){
 
   enum gammatype g5i =GT;
   
@@ -541,8 +541,8 @@ dir2g5i(int dir, char *myname){
   return g5i;
 }
 
-static enum gammatype 
-dir2gij(int dir, char *myname){
+static enum gammatype
+dir2gij(int dir, const char *myname){
 
   enum gammatype gij = GT;
   
@@ -1133,7 +1133,7 @@ gamma_gamma_string(int index){
 /* Look up the operator label in the table */
 
 static int
-compatibility_style(char *label){
+compatibility_style(const char *label){
   int i;
 
   for(i = 0; i < MAX_SPIN_TASTE; i++){
@@ -1157,12 +1157,15 @@ compatibility_style(char *label){
 /* Parse the label using the gamma matrix table                     */
 
 static int
-gamma_gamma_style(char *label){
+gamma_gamma_style(const char *label){
 
+  char lbuf[64];
   char *hyphen;
   int gamma_spin_index, gamma_taste_index;
 
-  hyphen = strstr(label, "-");
+  strncpy(lbuf, label, sizeof(lbuf) - 1);
+  lbuf[sizeof(lbuf) - 1] = '\0';
+  hyphen = strstr(lbuf, "-");
  
   if(hyphen == NULL){
     printf(" Can't parse the spin_taste label\n");
@@ -1173,7 +1176,7 @@ gamma_gamma_style(char *label){
   *hyphen = '\0';
 
   /* Look up gammas */
-  gamma_spin_index = gamma_index(label);
+  gamma_spin_index = gamma_index(lbuf);
   gamma_taste_index = gamma_index(hyphen+1);
 
   /* Restore hyphen */
@@ -1199,8 +1202,8 @@ gamma_gamma_style(char *label){
 }
 
 /*------------------------------------------------------------------*/
-int 
-spin_taste_index(char *label){
+int
+spin_taste_index(const char *label){
 
   if(label[0] != 'G')
     return compatibility_style(label);

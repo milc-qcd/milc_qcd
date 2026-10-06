@@ -19,13 +19,24 @@ wwnorm=`echo $vol3 | awk '{print 4./(3*$1**3)}'`
 
 reload_gauge_cmd="reload_serial ${inlat}"
 
-for ((i=0; i<${fpi_nmasses}; i++)); do
+for ((i=0; i<${fpi_nlight}; i++)); do
 case ${action} in
 hisq)
-  naik_cmd[$i]="naik_term_epsilon ${naik_term_epsilon[i]}"
+  naik_cmd_light[$i]="naik_term_epsilon 0."
 ;;
 asqtad)
-  naik_cmd[$i]=""
+  naik_cmd_light[$i]=""
+;;
+esac
+done
+
+for ((i=0; i<${fpi_nheavy}; i++)); do
+case ${action} in
+hisq)
+  naik_cmd_heavy[$i]="naik_term_epsilon ${naik_term_epsilon_heavy[i]}"
+;;
+asqtad)
+  naik_cmd_heavy[$i]=""
 ;;
 esac
 done
@@ -101,17 +112,20 @@ number_of_modified_sources 0
 EOF
 
 ######################################################################
-# Definition of propagators for two sets
+# Definition of propagators for four sets
+
+fpi_nmasses=$[${fpi_nlight}+${fpi_nheavy}]
 
 cat  <<EOF
 
 # Description of propagators
 
-number_of_sets 2
+number_of_sets 4
 
-# Parameters for set 0
+# Parameters for set 0 (light, random wall)
 
 set_type multimass
+inv_type CG
 max_cg_iterations ${max_cg_iterations}
 max_cg_restarts 5
 check yes
@@ -120,20 +134,20 @@ precision ${precision}
 
 source 0
 
-number_of_propagators ${fpi_nmasses}
+number_of_propagators ${fpi_nlight}
 EOF
 
 # Propagators for random wall source
 
-for ((m=0; m<${fpi_nmasses}; m++)); do
+for ((m=0; m<${fpi_nlight}; m++)); do
 
 cat  <<EOF
 
 # propagator ${m}
 
-mass ${fpi_mass[$m]}
-${naik_cmd[$m]}
-error_for_propagator ${error_for_propagator[$m]}
+mass ${fpi_mass_light[$m]}
+${naik_cmd_light[$m]}
+error_for_propagator ${error_for_propagator_light[$m]}
 rel_error_for_propagator 0
 
 fresh_ksprop
@@ -145,9 +159,47 @@ done
 
 cat  <<EOF
 
-# Parameters for set 1
+# Parameters for set 1 (heavy, random wall)
+
+set_type single
+inv_type CG
+max_cg_iterations ${max_cg_iterations}
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision ${precision}
+
+source 0
+
+number_of_propagators ${fpi_nheavy}
+EOF
+
+# Propagators for random wall source
+
+for ((m=0; m<${fpi_nheavy}; m++)); do
+
+cat  <<EOF
+
+# propagator $[${fpi_nlight}+${m}]
+
+mass ${fpi_mass_heavy[$m]}
+${naik_cmd_heavy[$m]}
+error_for_propagator ${error_for_propagator_heavy[$m]}
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+EOF
+
+done
+
+cat  <<EOF
+
+# Parameters for set 2 (light, EO wall)
 
 set_type multimass
+inv_type CG
 max_cg_iterations ${max_cg_iterations}
 max_cg_restarts 5
 check yes
@@ -156,20 +208,57 @@ precision ${precision}
 
 source 1
 
-number_of_propagators ${fpi_nmasses}
+number_of_propagators ${fpi_nlight}
 EOF
 
 # Propagators for evenodd wall source
 
-for ((m=0; m<${fpi_nmasses}; m++)); do
+for ((m=0; m<${fpi_nlight}; m++)); do
 
 cat  <<EOF
 
 # propagator $[${fpi_nmasses}+${m}]
 
-mass ${fpi_mass[$m]}
-${naik_cmd[$m]}
-error_for_propagator ${error_for_propagator[$m]}
+mass ${fpi_mass_light[$m]}
+${naik_cmd_light[$m]}
+error_for_propagator ${error_for_propagator_light[$m]}
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+EOF
+
+done
+
+cat  <<EOF
+
+# Parameters for set 3 (heavy, EO wall)
+
+set_type single
+inv_type CG
+max_cg_iterations ${max_cg_iterations}
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+precision ${precision}
+
+source 1
+
+number_of_propagators ${fpi_nheavy}
+EOF
+
+# Propagators for evenodd wall source
+
+for ((m=0; m<${fpi_nheavy}; m++)); do
+
+cat  <<EOF
+
+# propagator $[${fpi_nmasses}+${fpi_nlight}+${m}]
+
+mass ${fpi_mass_heavy[$m]}
+${naik_cmd_heavy[$m]}
+error_for_propagator ${error_for_propagator_heavy[$m]}
 rel_error_for_propagator 0
 
 fresh_ksprop

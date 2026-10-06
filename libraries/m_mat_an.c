@@ -9,7 +9,7 @@
 #include "../include/su3.h"
 
 #ifndef FAST
-void mult_su3_an( su3_matrix *a, su3_matrix *b, su3_matrix *c ){
+void mult_su3_an( const su3_matrix *a, const su3_matrix *b, su3_matrix *c ){
 register int i,j,k;
 register complex x,y;
     for(i=0;i<3;i++)for(j=0;j<3;j++){
@@ -25,7 +25,7 @@ register complex x,y;
 /* "Hand coded" routines, clearer coding is up above */
 #else
 
-void mult_su3_an( su3_matrix *a, su3_matrix *b, su3_matrix *c ){
+void mult_su3_an( const su3_matrix *a, const su3_matrix *b, su3_matrix *c ){
   int j;
 
 #ifdef NATIVEDOUBLE

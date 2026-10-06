@@ -288,13 +288,13 @@ w_prop_file *w_serial_w_fm_generic_i(char *filename, int elements_per_site)
 } /* w_serial_w_fm_generic_i */
 
 /*---------------------------------------------------------------------------*/
-w_prop_file *w_serial_w_fm_i(char *filename)
+w_prop_file *w_serial_w_fm_i(const char *filename)
 {
   return w_serial_w_fm_generic_i(filename, 288);
 }
 
 /*---------------------------------------------------------------------------*/
-w_prop_file *w_serial_w_fm_sc_i(char *filename)
+w_prop_file *w_serial_w_fm_sc_i(const char *filename)
 {
   return w_serial_w_fm_generic_i(filename, 24);
 }
@@ -702,7 +702,7 @@ void w_serial_w_fm_f(w_prop_file *wpf)
 
 /*---------------------------------------------------------------------------*/
 
-w_prop_file *r_serial_w_fm_i(char *filename)
+w_prop_file *r_serial_w_fm_i(const char *filename)
 {
   /* Returns file descriptor for opened file */
 
@@ -1157,14 +1157,14 @@ void r_prop_w_fm(char *filename, field_offset dest_site,
 
 /*--------------------------------------------------------------------*/
 /* Open, read, close */
-void r_prop_w_fm_to_site(char *filename, field_offset dest_site)
+void r_prop_w_fm_to_site(const char *filename, field_offset dest_site)
 {
   r_prop_w_fm(filename, dest_site, NULL);
 }
 
 /*--------------------------------------------------------------------*/
 /* Open, read, close */
-void r_prop_w_fm_to_field(char *filename, wilson_propagator *dest_field)
+void r_prop_w_fm_to_field(const char *filename, wilson_propagator *dest_field)
 {
   r_prop_w_fm(filename, (field_offset)(-1), dest_field);
 }

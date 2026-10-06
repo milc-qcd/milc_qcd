@@ -9,7 +9,7 @@
 #include "../include/su3.h"
 
 #ifndef FAST
-void mult_adj_su3_mat_vec_sum( su3_matrix *a, su3_vector *b, su3_vector *c ){
+void mult_adj_su3_mat_vec_sum( const su3_matrix *a, const su3_vector *b, su3_vector *c ){
 register int i,j;
 register complex x,y,z;
     for(i=0;i<3;i++){
@@ -25,7 +25,7 @@ register complex x,y,z;
 }
 
 #else
-void mult_adj_su3_mat_vec_sum( su3_matrix *a, su3_vector *b, su3_vector *c ){
+void mult_adj_su3_mat_vec_sum( const su3_matrix *a, const su3_vector *b, su3_vector *c ){
 
 #ifdef NATIVEDOUBLE
   register double c0r,c0i,c1r,c1i,c2r,c2i;

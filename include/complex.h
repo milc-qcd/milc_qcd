@@ -65,25 +65,25 @@
 
 /* Generic Precision Function Prototypes for Complex Numbers */
 complex cmplx(  Real x, Real y );
-complex cadd( complex *a, complex *b );
-complex cmul( complex *a, complex *b );
-complex csub( complex *a, complex *b );
-complex cdiv( complex *a, complex *b );
-complex conjg( complex *a );
-complex cexp( complex *a );       
-complex clog( complex *a );        
-complex csqrt( complex *z );        
+complex cadd( const complex *a, const complex *b );
+complex cmul( const complex *a, const complex *b );
+complex csub( const complex *a, const complex *b );
+complex cdiv( const complex *a, const complex *b );
+complex conjg( const complex *a );
+complex cexp( const complex *a );
+complex clog( const complex *a );
+complex csqrt( const complex *z );
 complex ce_itheta( Real theta );    
 
 double_complex dcmplx( double x, double y );
-double_complex dcadd( double_complex *a, double_complex *b );
-double_complex dcmul( double_complex *a, double_complex *b );
-double_complex dcsub( double_complex *a, double_complex *b );
-double_complex dcdiv( double_complex *a, double_complex *b );
-double_complex dconjg(  double_complex *a );
-double_complex dcexp(  double_complex *a ); 
-double_complex dclog(  double_complex *a );  
-double_complex dcsqrt( double_complex *z );  
+double_complex dcadd( const double_complex *a, const double_complex *b );
+double_complex dcmul( const double_complex *a, const double_complex *b );
+double_complex dcsub( const double_complex *a, const double_complex *b );
+double_complex dcdiv( const double_complex *a, const double_complex *b );
+double_complex dconjg( const double_complex *a );
+double_complex dcexp( const double_complex *a );
+double_complex dclog( const double_complex *a );
+double_complex dcsqrt( const double_complex *z );
 double_complex dce_itheta( double theta );   
 
 /* Macros for Complex Numbers */

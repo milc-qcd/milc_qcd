@@ -9,8 +9,8 @@
 #include "../include/complex.h"
 #include "../include/su3.h"
 
-void c_scalar_mult_add_su3mat( su3_matrix *m1, su3_matrix *m2,
-	complex *phase, su3_matrix *m3){
+void c_scalar_mult_add_su3mat( const su3_matrix *m1, const su3_matrix *m2,
+	const complex *phase, su3_matrix *m3){
 
 #ifndef NATIVEDOUBLE
 register int i,j;

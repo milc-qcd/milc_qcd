@@ -214,9 +214,15 @@ int readin(int prompt) {
 
     IF_OK if(param.eigen_param.Nvecs > 0){
       
-#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU) )
+#if ( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
       /* controls how often redeflation occurs during deflated inversions */
-      IF_OK status += get_f(stdin, prompt,"tol_restart", &param.eigen_param.tol_restart);
+      /* QUDA requires tol_restart to be double, but get_f writes a Real (float in single-precision
+         builds); read into a Real temp first to avoid a partial 4-byte write. */
+      IF_OK {
+        Real tol_restart_tmp = 0;
+        status += get_f(stdin, prompt,"tol_restart", &tol_restart_tmp);
+        param.eigen_param.tol_restart = tol_restart_tmp;
+      }
 #endif
 
       /* eigenvector input */
@@ -224,7 +230,7 @@ int readin(int prompt) {
 					    param.ks_eigen_startfile);
       
       /* Additional parameters for QUDA deflation */
-#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU))
+#if ( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
       if(param.ks_eigen_startflag == RELOAD_ASCII || 
 	 param.ks_eigen_startflag == RELOAD_SERIAL ||
 	 param.ks_eigen_startflag == RELOAD_PARALLEL ){
@@ -237,7 +243,7 @@ int readin(int prompt) {
       IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
 					  param.ks_eigen_savefile);
       
-#if ( defined(USE_CG_GPU) && defined(HAVE_QUDA) && defined(USE_EIG_GPU))
+#if ( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
       if(param.ks_eigen_saveflag == SAVE_PARTFILE_SCIDAC){
         param.eigen_param.partfile = 1;
       } else {
@@ -596,7 +602,7 @@ int readin(int prompt) {
       restore_color_matrix_scidac_to_field(param.inputlngfile, lng, 4,
 					   MILC_PRECISION, QIO_PARALLEL);
     else
-      restore_color_matrix_scidac_to_field(param.inputfatfile, fat, 4,
+      restore_color_matrix_scidac_to_field(param.inputlngfile, lng, 4,
 					   MILC_PRECISION, QIO_SERIAL);
     rtime += dclock();
     node0_printf("Time to restore lng %e\n",rtime); fflush(stdout);

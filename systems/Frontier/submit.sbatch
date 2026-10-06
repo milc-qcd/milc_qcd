@@ -2,16 +2,15 @@
 #SBATCH -A XXXXXXX 		# Change to your account
 #SBATCH -J JobName
 #SBATCH -q debug
-#SBATCH -t 00:30:00
+#SBATCH -t 00:10:00
 #SBATCH -N 1
 #SBATCH -C nvme
 #SBATCH --cpus-per-task=7
 #SBATCH --ntasks-per-node=8
 
 module reset
-module load PrgEnv-amd amd/5.3.0 rocm/5.3.0
+module load PrgEnv-amd amd/7.1.1 rocm/7.1.1
 module load craype-accel-amd-gfx90a
-module load libfabric/1.15.2.0
 
 # Path to QUDA libraries: Change as needed
 export LD_LIBRARY_PATH=`pwd`/build/usqcd/lib:$LD_LIBRARY_PATH
@@ -19,6 +18,12 @@ export LD_LIBRARY_PATH=`pwd`/build/usqcd/lib:$LD_LIBRARY_PATH
 # QUDA Tuning Directory: Change location as needed
 export QUDA_RESOURCE_PATH=tunecache
 mkdir -p tunecache
+
+# WARNING: QUDA P2P is currently broken on Frontier due to IPC bug(s) in ROCm:
+#   - rocm/6.x with QUDA P2P --> silent incorrectness in Dslash halo exchanges
+#   - rocm/7.x with QUDA P2P --> hard crash with qudaStreamWaitEvent_ error
+# Until those bugs are fixed, QUDA should be run with P2P disabled
+export QUDA_ENABLE_P2P=0
 
 export QUDA_ENABLE_GDR=1
 export QUDA_MILC_HISQ_RECONSTRUCT=13

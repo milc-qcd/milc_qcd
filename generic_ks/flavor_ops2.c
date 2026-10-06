@@ -804,8 +804,8 @@ local_operator(int index){
 /*------------------------------------------------------------------*/
 /* Map a label to the spin-taste index */
 
-int 
-spin_taste_index(char *label){
+int
+spin_taste_index(const char *label){
   int i;
   for(i = 0; i < MAX_SPIN_TASTE; i++){
     if(strcmp(label,spin_taste_string[i]) == 0)break;

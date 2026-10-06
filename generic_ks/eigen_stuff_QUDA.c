@@ -23,7 +23,11 @@
 *  this function handles:
 *   1. Using QUDA either to calculate eigenvectors or to read and write them
 *   2. Using MILC to arrange eigensolutions by other means and/or read and write them
-*  In both cases both parities of eigenvectors are loaded into QUDA
+*  In both cases the file-parity deflation space is loaded into QUDA.  The
+*  opposite parity is reconstructed here only when load_other_parity != 0;
+*  otherwise QUDA builds it on demand (FROM_OTHER_PARITY) if a solve of that
+*  parity occurs.  Note the QUDA (USE_EIG_GPU) path assumes the file parity is
+*  EVEN.
 *
 *  This function is useful if QUDA deflation spaces are to be used for,
 *  e.g., subsequent calls to qudaProject or qudaExactCurrent. The
@@ -36,8 +40,85 @@
 * 
 */
 
+#ifdef STAGE_EIG_TMP
+
+#include <libgen.h>
+#include "../include/io_scidac_ks.h"
+
+/* Stage this rank's  eigenvector partfile to /tmp */
+static int
+stage_eigenfile_on_tmp(char **cpy_eigfile){
+
+  int status = 0;
+
+  /* Make our partfile name */
+  /* Append ".volnnnn" */
+  size_t n_new = strlen(*cpy_eigfile) + 12;
+  /* For example $path/eig -> $path/eig.vol0012 */
+  char *new_cpy_eigfile = (char *)malloc(n_new);
+  snprintf(new_cpy_eigfile,n_new,"%s.vol%04d",*cpy_eigfile,this_node);
+
+  /* Does our file exist? */
+  FILE *fp = fopen(new_cpy_eigfile, "r");
+  if(fp != NULL){
+    status = 1;
+    fclose(fp);
+  }
+
+  /* Poll all ranks to check that all files are in place */
+  g_intsum(&status);
+
+  /* We stage only partfiles */
+  if(status != 0){
+
+    if(status != number_of_nodes){
+      node0_printf("ERROR: Some partfiles for %s are missing\n", *cpy_eigfile);
+      terminate(1);
+    }
+
+    /* Get the basename of the eigenvector file without the vol extension */
+    /* For example, $path/eig -> eig */
+    char *base_cpy_eigfile = basename(*cpy_eigfile);
+
+    /* Get the name of the file on /tmp without a vol extension */
+    /* Replace cpy_eigfile with the resulting name */
+    size_t n_cpy = strlen(base_cpy_eigfile) + 6;
+    free(*cpy_eigfile);
+    *cpy_eigfile = (char *)malloc(n_cpy);
+    /* For example eig -> /tmp/eig */
+    snprintf(*cpy_eigfile,n_cpy,"/tmp/%s",base_cpy_eigfile);
+
+    /* Construct the copy command */
+    size_t n_cmd = n_new + 16;
+    char *cmd = (char *)malloc(n_cmd);
+    /* For example, "/bin/cp $path/eig.vol0012 /tmp/" */
+    snprintf(cmd,n_cmd,"/bin/cp %s /tmp/",new_cpy_eigfile);
+    free(new_cpy_eigfile);
+
+    /* Copy the file to /tmp via a system call */
+    double dtime = -dclock();
+
+    status = system(cmd);
+
+    g_intsum(&status);
+    dtime += dclock();
+    node0_printf("Time to stage eigenvectors to /tmp: %g sec\n",dtime);
+    fflush(stdout);
+    if(status != 0){
+      node0_printf("Error copying file with command %s\n", cmd); fflush(stdout);
+      return status;
+    }
+    free(cmd);
+
+  }
+
+  return status;
+}
+    
+#endif  
+
 void
-load_evecs_quda(imp_ferm_links_t *fn_mass){
+load_evecs_quda(imp_ferm_links_t *fn_mass, int load_other_parity){
 
   char myname[] = "load_evecs_quda";
   node0_printf("Loading deflation spaces into QUDA\n");
@@ -66,6 +147,28 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   
 #ifdef USE_EIG_GPU
 
+  /* Copy the eigenvector file name for possible modification */
+  char *eigfile = param.ks_eigen_startfile;
+  size_t n_cpy = strlen(eigfile)+1;
+  char *cpy_eigfile = malloc(n_cpy);
+  strncpy(cpy_eigfile, eigfile, n_cpy);
+
+  /* Provision for staging the eigenvector part files on local /tmp
+     and then reading from there */
+
+#ifdef STAGE_EIG_TMP
+
+  if(param.ks_eigen_startflag != FRESH){
+    int status = stage_eigenfile_on_tmp(&cpy_eigfile);
+    if(status != 0){
+      printf("Error staging the eigenvector file. Quitting.\n");
+      terminate(1);
+    }
+  }
+
+#endif
+
+
   /**
    * Here we use QUDA for the eigensolution or for reading is own eigenvector file
    *
@@ -81,19 +184,22 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
 
   int quda_does_eigensolve = (param.ks_eigen_startflag == FRESH);
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
-  strcpy( eig_args.vec_infile, param.ks_eigen_startfile );
+  strcpy( eig_args.vec_infile, cpy_eigfile );
   // Number of eigenvectors QUDA should expect
   eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
   eig_args.n_ev = eig_args.n_conv;
 
-  print_quda_eig_args(&eig_args); // For debugging
+#ifdef EIG_DEBUG
+  print_quda_eig_args(&eig_args);
+#endif
 
   // Compute or read EVEN eigenvectors in QUDA
   dtime = -dclock();
   inv_args.evenodd = QUDA_EVEN_PARITY;
   qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_COMPUTE);
   dtime += dclock();
-  node0_printf( "Time to load deflation space = %g s\n", dtime );
+  node0_printf( "Time to load deflation space = %g s\n", dtime ); fflush(stdout);
+  free(cpy_eigfile);
 
 #else
 
@@ -110,14 +216,15 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
   inv_args.evenodd = (param.eigen_param.parity == EVEN) ? QUDA_EVEN_PARITY : QUDA_ODD_PARITY;
 
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
-  // QUDA requires that this be set equal to the gauge precision
+  // QUDA requires that prec_eigensolver match the field precision here, since the
+  // vectors are supplied from MILC's host eigVec array in MILC_PRECISION.
   eig_args.prec_eigensolver = (quda_precision == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
   
   // Load one parity eigenvectors from MILC into QUDA
   dtime = -dclock();
   qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, (void **)eigVec, QUDA_MILC_EIG_LOAD);
   dtime += dclock();
-  node0_printf( "Time to load deflation space = %g s\n", dtime );
+  node0_printf( "Time to load deflation space = %g s\n", dtime ); fflush(stdout);
     
 #endif
 
@@ -129,12 +236,18 @@ load_evecs_quda(imp_ferm_links_t *fn_mass){
    * This requires that the other parity eigenvectors are already loaded into QUDA.
   **/
 
-  // Reconstruct other parity eigenvectors in QUDA
-  dtime = -dclock();
-  inv_args.evenodd = (inv_args.evenodd == QUDA_EVEN_PARITY) ? QUDA_ODD_PARITY : QUDA_EVEN_PARITY;
-  qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
-  dtime += dclock();
-  node0_printf( "Time to reconstruct other parity eigenvectors = %g s\n", dtime );
+  // Reconstruct other parity eigenvectors in QUDA.
+  // ks_measure passes load_other_parity=1 because exact current requires both
+  // parities resident.  ks_spectrum passes 0: the deflated CG solver
+  // reconstructs the other parity on demand (FROM_OTHER_PARITY) only if a solve
+  // of that parity occurs, so a single-parity workflow holds just one space.
+  if(load_other_parity){
+    dtime = -dclock();
+    inv_args.evenodd = (inv_args.evenodd == QUDA_EVEN_PARITY) ? QUDA_ODD_PARITY : QUDA_EVEN_PARITY;
+    qudaLoadDeflationSpace(MILC_PRECISION, quda_precision, fatlink, longlink, 0.0, inv_args, eig_args, NULL, QUDA_MILC_EIG_FROM_OTHER_PARITY);
+    dtime += dclock();
+    node0_printf( "Time to reconstruct other parity eigenvectors = %g s\n", dtime ); fflush(stdout);
+  }
 
 } // load_evecs_quda
 
@@ -371,7 +484,10 @@ int ks_eigensolve_QUDA( su3_vector ** eigVec,
 
   strcpy( qep.vec_infile, "" );
   strcpy( qep.vec_outfile, "" );
-  qep.save_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+  /* Save eigenvectors at the precision they were computed/held
+     (eigensolver_prec), not the compiled MILC precision: eigensolver_prec 2
+     -> double, otherwise single (half maps to single, which cannot be saved). */
+  qep.save_prec = (precEigensolver == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
   qep.io_parity_inflate = QUDA_BOOLEAN_FALSE;
   /**************************************************/  
 
