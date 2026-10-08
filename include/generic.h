@@ -530,6 +530,7 @@ void wp_sink_op(quark_source_sink_op *qss_op, wilson_prop_field *wp );
 int get_wv_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op);
 int get_v_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op);
 int get_qss_eps_naik(Real *eps_naik, quark_source_sink_op *qss_op);
+int qss_op_uses_gauge_links(quark_source_sink_op *qss_op);
 void print_field_op_info(FILE *fp, char prefix[],
 			 quark_source_sink_op *qss_op);
 void print_field_op_info_list(FILE *fp, const char prefix[], 

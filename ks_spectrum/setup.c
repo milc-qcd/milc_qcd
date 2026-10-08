@@ -163,6 +163,135 @@ static int initial_set(void){
 }
 
 /* read in parameters and coupling constants	*/
+/*--------------------------------------------------------------------*/
+/* Consistency of the fermion-flow quarks.
+   The flowed gauge field lives only in QUDA, so every MILC-side operator
+   that reads gauge links would use the UNFLOWED links on a flowed quark.
+   Reject, before any work is done:
+   - a link-using sink operator on a flowed quark (only flowed_spin_taste
+     supplies the flowed links);
+   - a link-using correlator sink on a meson with a flowed quark;
+   - a GB baryon octet containing a flowed quark;
+   - a flow chain QUDA cannot follow: a restart flow, or a flowed_spin_taste,
+     must act on the quark of the flow directly before it (only other
+     flowed_spin_taste quarks may come between), a restart flow must start
+     at that flow's end time, and a fresh flow must start at t=0 from an
+     unflowed quark;
+   - flow_steps < 1 or step_size == 0. */
+
+static int check_fermion_flow_usage(void){
+  int status = 0;
+  int j, k, ipair;
+  static int flowed[MAX_QK];       /* quark holds a fermion-flowed field */
+  static double tflow[MAX_QK];     /* and its flow time */
+  int last_flowed_qk = -1;  /* quark of the flow whose gauge field QUDA holds */
+  double t_device = 0.;     /* flow time of that gauge field */
+
+  for(j = 0; j < param.num_qk; j++){
+    quark_source_sink_op *op = &param.snk_qs_op[j];
+    int p = param.prop_for_qk[j];
+
+    flowed[j] = 0;
+    tflow[j] = 0.;
+    if(param.parent_type[j] == QUARK_TYPE){
+      flowed[j] = flowed[p];
+      tflow[j] = tflow[p];
+    } else if(param.parent_type[j] == COMBO_TYPE){
+      for(k = 0; k < param.num_combo[j]; k++){
+	int c = param.combo_qk_index[j][k];
+	if(k > 0 && (flowed[c] != flowed[j] || tflow[c] != tflow[j])){
+	  printf("ERROR IN INPUT: quark %d combines quarks at different flow times\n", j);
+	  status++;
+	}
+	flowed[j] = flowed[c];
+	tflow[j] = tflow[c];
+      }
+    }
+
+    if(param.parent_type[j] == COMBO_TYPE){
+      last_flowed_qk = -1;
+    } else if(op->type == FERMION_FLOW){
+      double t0 = op->start_time;
+      if(op->flow_steps < 1){
+	printf("ERROR IN INPUT: quark %d: fermion_flow needs flow_steps >= 1, got %d\n", j, op->flow_steps);
+	status++;
+      }
+      if(op->step_size == 0.){
+	printf("ERROR IN INPUT: quark %d: fermion_flow step_size must be nonzero\n", j);
+	status++;
+      }
+      if(op->restart){
+	/* QUDA continues from the gauge field it holds */
+	if(param.parent_type[j] != QUARK_TYPE || p != last_flowed_qk){
+	  printf("ERROR IN INPUT: quark %d: a restart fermion_flow must act on the quark of the flow directly before it\n", j);
+	  status++;
+	} else if(fabs(t0 - t_device) > 1e-6*(1. + fabs(t_device))){
+	  printf("ERROR IN INPUT: quark %d: restart fermion_flow start_time %g does not match the flow time %g of quark %d\n",
+		 j, t0, t_device, p);
+	  status++;
+	}
+      } else {
+	/* QUDA starts from the unflowed gauge field */
+	if(flowed[j]){
+	  printf("ERROR IN INPUT: quark %d: a fermion_flow with restart 0 acts on a quark already flowed to t=%g\n", j, tflow[j]);
+	  status++;
+	}
+	if(t0 != 0.){
+	  printf("ERROR IN INPUT: quark %d: a fermion_flow with restart 0 must have start_time 0\n", j);
+	  status++;
+	}
+      }
+      flowed[j] = 1;
+      tflow[j] = t0 + op->flow_steps*op->step_size;
+      last_flowed_qk = j;
+      t_device = tflow[j];
+    } else if(op->type == FLOWED_SPIN_TASTE){
+      /* Uses the flowed gauge field QUDA holds; the chain is unchanged */
+      if(param.parent_type[j] != QUARK_TYPE || p != last_flowed_qk){
+	printf("ERROR IN INPUT: quark %d: flowed_spin_taste must act on the quark of the flow directly before it\n", j);
+	status++;
+      }
+    } else {
+      if(flowed[j] && qss_op_uses_gauge_links(op)){
+	printf("ERROR IN INPUT: quark %d: operator %s reads gauge links, which would be the unflowed links on this flowed quark (t=%g)\n",
+	       j, op->descrp, tflow[j]);
+	status++;
+      }
+      last_flowed_qk = -1;
+    }
+  }
+
+  for(ipair = 0; ipair < param.num_pair; ipair++){
+    int q0 = param.qkpair[ipair][0], q1 = param.qkpair[ipair][1];
+    if(!flowed[q0] && !flowed[q1])continue;
+    for(k = 0; k < param.num_corr_m[ipair]; k++){
+      int st = param.spin_taste_snk[ipair][k];
+      if(spin_taste_needs_links(st)){
+	printf("ERROR IN INPUT: meson %d (quarks %d %d): sink %s reads gauge links, which would be the unflowed links on a flowed quark; use flowed_spin_taste and a local sink\n",
+	       ipair, q0, q1, spin_taste_label(st));
+	status++;
+      }
+    }
+  }
+
+#ifdef GB_BARYON
+  {
+    int ioct, iqk;
+    for(ioct = 0; ioct < param.num_oct; ioct++)
+      for(iqk = 0; iqk < 8; iqk++){
+	int q = param.qk_oct[ioct][iqk];
+	if(q >= 0 && flowed[q]){
+	  printf("ERROR IN INPUT: octet %d: GB baryons read gauge links, which would be the unflowed links on flowed quark %d\n",
+		 ioct, q);
+	  status++;
+	}
+      }
+  }
+#endif
+
+  return status;
+}
+
 int readin(int prompt) {
   /* read in parameters for su3 monte carlo	*/
   /* argument "prompt" is 1 if prompts are to be given for input	*/
@@ -472,10 +601,13 @@ int readin(int prompt) {
 
       /* Get source operator attributes */
       IF_OK status += get_v_field_op( stdin, prompt, &param.src_qs_op[is]);
-      /* flowed_spin_taste needs the flow of its quark, so it is a sink op only */
+      /* Fermion flow acts on quarks only (it is applied by the quark sink ops),
+	 and flowed_spin_taste needs the flow of its quark */
       IF_OK {
-	if(param.src_qs_op[is].type == FLOWED_SPIN_TASTE){
-	  printf("ERROR: flowed_spin_taste is not supported as a source operator\n");
+	if(param.src_qs_op[is].type == FLOWED_SPIN_TASTE ||
+	   param.src_qs_op[is].type == FERMION_FLOW){
+	  printf("ERROR IN INPUT: %s is not supported as a source operator\n",
+		 param.src_qs_op[is].type == FERMION_FLOW ? "fermion_flow" : "flowed_spin_taste");
 	  status++;
 	}
       }
@@ -1663,6 +1795,9 @@ int readin(int prompt) {
 		      } /* Correlators for this baryon */
 		    } /* gb baryons */
 		#endif /* GB_BARYON */
+
+    /* Fermion-flow consistency */
+    IF_OK status += check_fermion_flow_usage();
 
     /* End of input fields */
     if( status > 0)param.stopflag=1; else param.stopflag=0;

@@ -26,6 +26,7 @@ void mult_rho0_field( int fdir,  int r0[], const su3_vector *const src, su3_vect
 void spin_taste_op(int index, int r0[], su3_vector *dest, const su3_vector *const src);
 void spin_taste_op_with_links(int index, int r0[], su3_vector *dest, const su3_vector *const src,
 			      const su3_matrix *const links, int *refresh_links);
+int spin_taste_needs_links(int index);
 
 int spin_taste_index(const char *label);
 const char *spin_taste_label(int index);

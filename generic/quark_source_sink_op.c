@@ -244,6 +244,33 @@ void insert_qss_op(quark_source *qs, quark_source_sink_op *qss_op){
   op->op = qss_op;
 } /* insert_qss_op */
 
+/* 1 if the operator reads gauge links (APE, thin, or FN), 0 if it is local.
+   Used to reject link-using operators on fermion-flowed quarks, whose
+   links would be the unflowed ones.  Unknown operators count as using
+   links.  FERMION_FLOW and FLOWED_SPIN_TASTE are judged by the caller. */
+int qss_op_uses_gauge_links(quark_source_sink_op *qss_op){
+  switch(qss_op->type){
+  case IDENTITY:
+  case MOMENTUM:
+  case MODULATION_FILE:
+  case PROJECT_T_SLICE:
+  case SAVE_VECTOR_SRC:
+  case COMPLEX_FIELD_FILE:
+  case COMPLEX_FIELD_FM_FILE:
+  case GAUSSIAN:
+  case WAVEFUNCTION_FILE:
+    return 0;
+#ifdef HAVE_KS
+  case SPIN_TASTE:
+  case SPIN_TASTE_EXTEND:
+  case EXT_SRC_KS:
+    return spin_taste_needs_links(qss_op->spin_taste);
+#endif
+  default:
+    return 1;
+  }
+}
+
 /* Accessor for Naik epsilon parameter in embedded KS inverse and hopping operator */
 /* Returns 0 if a Naik epsilon is not used for this operator */
 int get_qss_eps_naik(Real *eps_naik, quark_source_sink_op *qss_op){

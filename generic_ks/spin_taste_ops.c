@@ -1436,6 +1436,36 @@ spin_taste_op(int index, int r0[], su3_vector *dest, const su3_vector *const src
   }
 }
 
+/*------------------------------------------------------------------*/
+/* 1 if the spin-taste operator needs a gauge connection (APE or FN
+   links), 0 if it is local.  A gamma/gamma operator is local when its
+   hypercube offset spin^taste is zero.                             */
+int
+spin_taste_needs_links(int index){
+
+  if(is_gamma_gamma_index(index)){
+    short spin = gamma_hex(decode_gamma_spin_index(index));
+    short taste = gamma_hex(decode_gamma_taste_index(index));
+    return (spin ^ taste) != 0;
+  }
+
+  switch(index){
+  case pion5:
+  case pion05:
+  case rhox:
+  case rhoy:
+  case rhoz:
+  case rhoi:
+  case rhox0:
+  case rhoy0:
+  case rhoz0:
+  case rhoi0:
+    return 0;
+  default:
+    return 1;
+  }
+}
+
 #ifndef NO_GAUGE_FIELD
 /*------------------------------------------------------------------*/
 /* Spin-taste operator with a caller-supplied gauge connection in
