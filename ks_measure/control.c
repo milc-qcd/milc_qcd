@@ -106,8 +106,8 @@ int main(int argc, char *argv[])
 #if !( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
 
       /* Allocate space on host for eigenpairs */
-      eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
-      eigVec = (dsu3_vector **)malloc(param.eigen_param.Nvecs*sizeof(dsu3_vector *));
+      eigVal = (Real *)malloc(param.eigen_param.Nvecs*sizeof(Real));
+      eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
       for(int i=0; i < param.eigen_param.Nvecs; i++){
 	eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 	if(eigVec[i] == NULL){
