@@ -211,10 +211,6 @@ if(WANTQUDA)
     target_link_libraries(add INTERFACE QUDA::quda)
     target_compile_definitions(add INTERFACE HAVE_QUDA SET_QUDA_${QUDA_VERBOSITY})
 
-    if(GPU_FN_CG)
-        set(GPU_EIG ON)
-    endif()
-
     if(GPU_CL_BCG)
         set(HAVE_CL_GPU ON)
         target_compile_definitions(add INTERFACE USE_CL_GPU)
