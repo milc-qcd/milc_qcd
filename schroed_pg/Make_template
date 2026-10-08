@@ -62,6 +62,9 @@ OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_PG_OBJECTS} ${G_SCHROED_OBJECTS} \
 P = $(strip ${PRECISION})
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
 
+# The libraries are built by libmake, so localmake must wait for it under make -j
+${QCDLIB}: libmake ;
+
 # Default rule for C compilation
 .c.o:
 	${CC} -c ${CFLAGS} $<
