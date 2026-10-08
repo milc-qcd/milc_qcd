@@ -472,6 +472,13 @@ int readin(int prompt) {
 
       /* Get source operator attributes */
       IF_OK status += get_v_field_op( stdin, prompt, &param.src_qs_op[is]);
+      /* flowed_spin_taste needs the flow of its quark, so it is a sink op only */
+      IF_OK {
+	if(param.src_qs_op[is].type == FLOWED_SPIN_TASTE){
+	  printf("ERROR: flowed_spin_taste is not supported as a source operator\n");
+	  status++;
+	}
+      }
       /* Enforce a uniform boundary condition */
       set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
       /* NOTE: The KS built-in bc is antiperiodic. */

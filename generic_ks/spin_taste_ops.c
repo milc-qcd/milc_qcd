@@ -1436,6 +1436,26 @@ spin_taste_op(int index, int r0[], su3_vector *dest, const su3_vector *const src
   }
 }
 
+#ifndef NO_GAUGE_FIELD
+/*------------------------------------------------------------------*/
+/* Spin-taste operator with a caller-supplied gauge connection in
+   place of the APE links.  As for the APE links, the KS phases (and
+   the boundary sign) referred to r0 MUST BE in the links.  FN
+   operators are not supported.                                     */
+void
+spin_taste_op_with_links(int index, int r0[], su3_vector *dest, const su3_vector *const src,
+			 const su3_matrix *const links, int *refresh_links){
+
+  if(is_gamma_gamma_index(index)){
+    enum gammatype spin_index = decode_gamma_spin_index(index);
+    enum gammatype taste_index = decode_gamma_taste_index(index);
+    general_spin_taste_op(spin_index, taste_index, r0, dest, src, links, refresh_links);
+  }
+  else
+    spin_taste_op_links(index, r0, dest, src, links, refresh_links);
+}
+#endif
+
 
 #ifdef NO_GAUGE_FIELD
 

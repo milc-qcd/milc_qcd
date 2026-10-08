@@ -750,7 +750,8 @@ static int requires_gauge_field(int op_type){
     op_type == ROTATE_3D  ||
     op_type == SPIN_TASTE ||
     op_type == SPIN_TASTE_EXTEND ||
-    op_type == FERMION_FLOW;
+    op_type == FERMION_FLOW ||
+    op_type == FLOWED_SPIN_TASTE;
 }
 #endif
 
@@ -1740,6 +1741,53 @@ static void hop_vec(su3_vector *src, ks_param *ksp, int dhop, int mu)
 
 
 #ifdef HAVE_QUDA
+/* Host copy of the gauge field at the flow time of the most recent
+   fermion flow, downloaded from QUDA on demand.  No KS phases, periodic
+   in time (as loaded).  Consumed by FLOWED_SPIN_TASTE so that sink
+   operators on flowed quarks use the flowed gauge connection.  */
+static su3_matrix *flowed_links = NULL;
+static int flowed_links_current = 0;  /* 1 if flowed_links holds the latest flow */
+static int fermion_flow_done = 0;     /* 1 once a fermion flow has been done */
+
+/* QUDA parameters for the thin gauge field used by the fermion flow */
+static void set_flow_gauge_param(QudaGaugeParam *qgp){
+  *qgp = newQudaGaugeParam();
+  const int * nsquares = get_logical_dimensions();
+  qgp->struct_size = sizeof(QudaGaugeParam);
+  qgp->type = QUDA_SU3_LINKS;
+  qgp->X[0] = nx / nsquares[0];
+  qgp->X[1] = ny / nsquares[1];
+  qgp->X[2] = nz / nsquares[2];
+  qgp->X[3] = nt / nsquares[3];
+  qgp->cpu_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+  qgp->cuda_prec = qgp->cpu_prec;
+  qgp->cuda_prec_sloppy = qgp->cuda_prec;
+  qgp->cuda_prec_precondition = qgp->cuda_prec;
+  qgp->cuda_prec_eigensolver = qgp->cuda_prec;
+  qgp->cuda_prec_refinement_sloppy = qgp->cuda_prec;
+  qgp->reconstruct = QUDA_RECONSTRUCT_NO;
+  qgp->reconstruct_sloppy = QUDA_RECONSTRUCT_NO;
+  qgp->reconstruct_precondition = QUDA_RECONSTRUCT_NO;
+  qgp->reconstruct_eigensolver = QUDA_RECONSTRUCT_NO;
+  qgp->reconstruct_refinement_sloppy = QUDA_RECONSTRUCT_NO;
+  qgp->gauge_order = QUDA_MILC_GAUGE_ORDER;
+  qgp->anisotropy = 1.0;
+  qgp->t_boundary = QUDA_PERIODIC_T;
+  qgp->gauge_fix = QUDA_GAUGE_FIXED_NO;
+  qgp->staggered_phase_type = QUDA_STAGGERED_PHASE_NO; // ???i
+  int pad_size = 0;
+  int x_face_size = qgp->X[1] * qgp->X[2] * qgp->X[3] / 2;
+  int y_face_size = qgp->X[0] * qgp->X[2] * qgp->X[3] / 2;
+  int z_face_size = qgp->X[0] * qgp->X[1] * qgp->X[3] / 2;
+  int t_face_size = qgp->X[0] * qgp->X[1] * qgp->X[2] / 2;
+#define MAX(a,b) ( (a)>(b) ? (a) : (b) )
+  pad_size = MAX(x_face_size, y_face_size);
+  pad_size = MAX(pad_size, z_face_size);
+  pad_size = MAX(pad_size, t_face_size);
+  qgp->ga_pad = pad_size;
+  qgp->mom_ga_pad = 0;
+}
+
 void apply_fermion_flow_v(su3_vector **srcs, quark_source_sink_op *qss_op, int nsrcs){
 
   double dtimec = -dclock();
@@ -1759,41 +1807,8 @@ void apply_fermion_flow_v(su3_vector **srcs, quark_source_sink_op *qss_op, int n
     rephase( ON );
 
     /* Setup QUDA gauge parameters */
-    QudaGaugeParam qgp = newQudaGaugeParam();
-    const int * nsquares = get_logical_dimensions();
-    qgp.struct_size = sizeof(QudaGaugeParam);
-    qgp.type = QUDA_SU3_LINKS;
-    qgp.X[0] = nx / nsquares[0];
-    qgp.X[1] = ny / nsquares[1];
-    qgp.X[2] = nz / nsquares[2];
-    qgp.X[3] = nt / nsquares[3];
-    qgp.cpu_prec = (MILC_PRECISION==2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-    qgp.cuda_prec = qgp.cpu_prec;
-    qgp.cuda_prec_sloppy = qgp.cuda_prec;
-    qgp.cuda_prec_precondition = qgp.cuda_prec;
-    qgp.cuda_prec_eigensolver = qgp.cuda_prec;
-    qgp.cuda_prec_refinement_sloppy = qgp.cuda_prec;
-    qgp.reconstruct = QUDA_RECONSTRUCT_NO;
-    qgp.reconstruct_sloppy = QUDA_RECONSTRUCT_NO;
-    qgp.reconstruct_precondition = QUDA_RECONSTRUCT_NO;
-    qgp.reconstruct_eigensolver = QUDA_RECONSTRUCT_NO;
-    qgp.reconstruct_refinement_sloppy = QUDA_RECONSTRUCT_NO;
-    qgp.gauge_order = QUDA_MILC_GAUGE_ORDER;
-    qgp.anisotropy = 1.0;
-    qgp.t_boundary = QUDA_PERIODIC_T;
-    qgp.gauge_fix = QUDA_GAUGE_FIXED_NO;
-    qgp.staggered_phase_type = QUDA_STAGGERED_PHASE_NO; // ???i
-    int pad_size = 0;
-    int x_face_size = qgp.X[1] * qgp.X[2] * qgp.X[3] / 2;
-    int y_face_size = qgp.X[0] * qgp.X[2] * qgp.X[3] / 2;
-    int z_face_size = qgp.X[0] * qgp.X[1] * qgp.X[3] / 2;
-    int t_face_size = qgp.X[0] * qgp.X[1] * qgp.X[2] / 2;
-#define MAX(a,b) ( (a)>(b) ? (a) : (b) )
-    pad_size = MAX(x_face_size, y_face_size);
-    pad_size = MAX(pad_size, z_face_size);
-    pad_size = MAX(pad_size, t_face_size);
-    qgp.ga_pad = pad_size;
-    qgp.mom_ga_pad = 0;
+    QudaGaugeParam qgp;
+    set_flow_gauge_param(&qgp);
 
     /* Load gauge field in QUDA */
     loadGaugeQuda( (void*) links, &qgp );
@@ -1950,6 +1965,11 @@ void apply_fermion_flow_v(su3_vector **srcs, quark_source_sink_op *qss_op, int n
   /* Perform fermion flow */
   performGFlowQuda((void **)srcs, (void **)srcs, &invParams, &smearParams, obsParams, nsrcs);
 
+  /* The flowed gauge field is now on the device only (QUDA's smeared links).
+     FLOWED_SPIN_TASTE downloads it if needed. */
+  fermion_flow_done = 1;
+  flowed_links_current = 0;
+
   /* Clean up */
   free(obsParams);
 
@@ -1959,9 +1979,57 @@ void apply_fermion_flow_v(su3_vector **srcs, quark_source_sink_op *qss_op, int n
     fflush(stdout);
   }
 }
+
+/* Spin-taste operator using the gauge field from the most recent fermion
+   flow in place of the APE links.  The caller (ks_spectrum control) must
+   ensure that src was flowed by that same flow and that nothing has
+   touched QUDA since. */
+static void apply_flowed_spin_taste(su3_vector *src, quark_source_sink_op *qss_op){
+
+  if(!fermion_flow_done){
+    node0_printf("apply_flowed_spin_taste: ERROR: no fermion flow has been done\n");
+    terminate(1);
+  }
+
+  /* Download the flowed gauge field once per flow.  This relies on QUDA's
+     smeared links being untouched since the flow, which ks_spectrum
+     control.c enforces by requiring this op to follow its flow directly. */
+  if(!flowed_links_current){
+    QudaGaugeParam qgp;
+    set_flow_gauge_param(&qgp);
+    qgp.type = QUDA_SMEARED_LINKS;
+    if(flowed_links == NULL) flowed_links = create_G();
+    saveGaugeQuda( (void*) flowed_links, &qgp );
+    flowed_links_current = 1;
+  }
+
+  /* Prepare the links as the APE links are prepared in ks_spectrum control.c:
+     antiperiodic bc (if requested) and KS phases referred to the origin */
+  su3_matrix *links = create_G();
+  copy_G(links, flowed_links);
+  if(qss_op->bp[3] == 0)apply_apbc( links, qss_op->r_offset[3] );
+  int links_ks_phases = OFF;
+  rephase_field_offset( links, ON, &links_ks_phases, qss_op->r_offset );
+
+  su3_vector *dst = create_v_field();
+  int refresh_links = 1;
+  spin_taste_op_with_links(qss_op->spin_taste, qss_op->r_offset, dst, src, links, &refresh_links);
+  copy_v_field(src, dst);
+  destroy_v_field(dst);
+  destroy_G(links);
+
+  /* The GPU shift paths keep the last link field they were given.
+     Force a reload of the APE links on their next use. */
+  refresh_ape_links = 1;
+}
 #else
 void apply_fermion_flow_v(su3_vector **srcs, quark_source_sink_op *qss_op, int nsrcs){
   node0_printf("ERROR: Fermion flow requires QUDA!\n");
+  terminate(1);
+}
+
+static void apply_flowed_spin_taste(su3_vector *src, quark_source_sink_op *qss_op){
+  node0_printf("ERROR: flowed_spin_taste requires QUDA!\n");
   terminate(1);
 }
 #endif /* ifdef HAVE_QUDA */
@@ -2036,6 +2104,9 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
 
   else if(op_type == SPIN_TASTE_EXTEND)
     apply_spin_taste_extend(src, qss_op);
+
+  else if(op_type == FLOWED_SPIN_TASTE)
+    apply_flowed_spin_taste(src, qss_op);
 
   else if(op_type == HOPPING)
     hop_vec(src, &qss_op->ksp, qss_op->dhop, qss_op->dir1);
@@ -2263,6 +2334,7 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     printf("'ext_src_ks', ");
     printf("'ext_src_dirac', ");
     printf("'fermion_flow', ");
+    printf("'flowed_spin_taste', ");
     printf("\n     ");
     printf(", for field op\n");
   }
@@ -2406,6 +2478,10 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
   else if(strcmp("fermion_flow",savebuf) == 0 ){
     *source_type = FERMION_FLOW;
     strcpy(descrp,"fermion_flow");
+  }
+  else if(strcmp("flowed_spin_taste",savebuf) == 0 ){
+    *source_type = FLOWED_SPIN_TASTE;
+    strcpy(descrp,"flowed_spin_taste");
   }
   else{
     printf("%s: ERROR IN INPUT: field operation command %s is invalid\n",myname,
@@ -2675,7 +2751,7 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_i(fp, prompt, "stride", &stride);
   }
 #ifdef HAVE_KS
-  else if( op_type == SPIN_TASTE){
+  else if( op_type == SPIN_TASTE || op_type == FLOWED_SPIN_TASTE){
     char spin_taste_label[8];
     /* Parameters for spin-taste */
     IF_OK status += get_s(fp, prompt, "spin_taste", spin_taste_label);
@@ -2995,7 +3071,7 @@ static int print_single_op_info(FILE *fp, const char prefix[],
     fprintf(fp,"%s%g\n", make_tag(prefix, "d1"), qss_op->d1);
   }
 #ifdef HAVE_KS
-  else if ( op_type == SPIN_TASTE ){
+  else if ( op_type == SPIN_TASTE || op_type == FLOWED_SPIN_TASTE ){
     fprintf(fp,",\n");
     fprintf(fp,"%s%s\n", make_tag(prefix, "spin_taste"), 
 	    spin_taste_label(qss_op->spin_taste));

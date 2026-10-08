@@ -83,7 +83,8 @@ enum source_type {
   VECTOR_FIELD_FM_FILE, 
   VECTOR_FIELD_STORE,
   VECTOR_PROPAGATOR_FILE,
-  FERMION_FLOW
+  FERMION_FLOW,
+  FLOWED_SPIN_TASTE
 } ;
 
 enum subset_type {

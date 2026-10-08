@@ -624,10 +624,26 @@ int main(int argc, char *argv[])
     oldiq0 = -1;
     oldiq1 = -1;
 #endif
+    int last_flowed_qk = -1;
     for(j=0; j<param.num_qk; j++){
       STARTTIME;
       i = param.prop_for_qk[j];
       
+      /* flowed_spin_taste uses the gauge field the most recent fermion flow
+	 left in QUDA, so it must act on the quark produced by that flow and
+	 follow it directly (other flowed_spin_taste quarks of the same flow
+	 may come between).  Any other quark may change QUDA's smeared links. */
+      if(param.snk_qs_op[j].type == FLOWED_SPIN_TASTE){
+	if(param.parent_type[j] != QUARK_TYPE || i != last_flowed_qk){
+	  node0_printf("ERROR: quark %d: flowed_spin_taste must act on the quark of the flow directly before it\n", j);
+	  terminate(1);
+	}
+      }
+      else if(param.snk_qs_op[j].type == FERMION_FLOW)
+	last_flowed_qk = j;
+      else
+	last_flowed_qk = -1;
+
       if(param.parent_type[j] == PROP_TYPE){
 #ifdef KS_LEAN
 	/* Restore clover prop[i] from file. */
