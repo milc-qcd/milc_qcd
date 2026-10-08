@@ -1705,6 +1705,7 @@ void w_serial_f(gauge_file *gf)
 
 /*---------------------------------------------------------------------------*/
 
+#ifdef HAVE_QIO
 /* Convert dir1/dir2/file to dir1/dir2/file.vol according to
    SciDAC PARTFILE file name format */
 
@@ -1742,6 +1743,7 @@ static void partfile_dir_name(char *newfilename, size_t nbytes,
   snprintf(newfilename + dirname_len, n - dirname_len, "%s/%s",
 	   vol, filename + dirname_len);
 }
+#endif
 
 /*---------------------------------------------------------------------------*/
 /* Open "filename".  It may be a SciDAC file, which could require path
@@ -1757,7 +1759,16 @@ FILE *open_scidac_detect_volume_format(const char *filename, int* volfmt){
   if(this_node!=0)return NULL;
 
   fp = g_open(filename, "rb");
-  
+
+#ifndef HAVE_QIO
+  /* Without QIO there is no SciDAC volume format to detect. */
+  *volfmt = 0;
+  if(fp == NULL){
+    printf("%s: Node %d can't open file %s, error %d\n", myname,
+	   this_node,filename,errno);fflush(stdout);
+  }
+  return fp;
+#else
   if(fp != NULL){
     *volfmt = QIO_SINGLEFILE;
     return fp;
@@ -1795,6 +1806,7 @@ FILE *open_scidac_detect_volume_format(const char *filename, int* volfmt){
 	 this_node,editfilename,errno);fflush(stdout);
   *volfmt = QIO_UNKNOWN;
   return NULL;
+#endif
 }
 
 /*---------------------------------------------------------------------------*/
