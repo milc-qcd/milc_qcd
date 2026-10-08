@@ -358,7 +358,9 @@ int main(int argc, char *argv[])
 	 NOTE: the QUDA path assumes the file-parity eigenvectors are EVEN
 	 (see load_evecs_quda); */
 
+#ifdef HAVE_QIO
       QIO_verbose(QIO_VERB_DEBUG);
+#endif
       load_evecs_quda(fn, 0);
 #endif
 
