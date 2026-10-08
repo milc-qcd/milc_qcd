@@ -102,7 +102,12 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
      * This lets, e.g., a double-precision build with eigensolver_prec 1 store
      * a single-precision deflation space in single-precision files.
   **/
+#ifdef USE_EIG_GPU
   eig_args->save_prec = (param.eigen_param.eigPrec == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+#else
+  /* Without USE_EIG_GPU, ks_eigen_param has no eigPrec: QUDA holds MILC's own precision */
+  eig_args->save_prec = (MILC_PRECISION == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+#endif
   eig_args->partfile = QUDA_BOOLEAN_FALSE;
   eig_args->io_parity_inflate = QUDA_BOOLEAN_FALSE;
   eig_args->use_norm_op = QUDA_BOOLEAN_FALSE;
@@ -126,6 +131,7 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
   /* Precision at which QUDA holds/applies the deflation space, from the
      input-file parameter eigensolver_prec.  Applied whether QUDA computes
      the eigenvectors or loads them from file. */
+#ifdef USE_EIG_GPU
   if(param.eigen_param.eigPrec == 2) {
     eig_args->prec_eigensolver = QUDA_DOUBLE_PRECISION;
   } else if(param.eigen_param.eigPrec == 1) {
@@ -137,6 +143,11 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
     terminate(2);
   }
 
+#else
+  eig_args->prec_eigensolver = (MILC_PRECISION == 2) ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+#endif
+
+#ifdef USE_EIG_GPU
   if(quda_does_eigensolve){
     
     // In this case QUDA does the eigensolve and we need the proper eig_args
@@ -169,6 +180,7 @@ void load_quda_default_eig_args(QudaEigensolverArgs_t *eig_args, int quda_does_e
     eig_args->require_convergence = QUDA_BOOLEAN_TRUE;
     strcpy( eig_args->vec_infile, param.ks_eigen_startfile );
   }
+#endif
 } // load_quda_default_eig_args
 
 void print_quda_eig_args(QudaEigensolverArgs_t *eig_args){
