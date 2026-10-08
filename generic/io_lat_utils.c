@@ -1847,6 +1847,9 @@ gauge_file *r_serial_i(const char *filename)
       printf("r_serial_i: Open for sniffing succeeded\n");
       
       byterevflag = read_gauge_hdr(gf,SERIAL);
+    } else {
+      /* The open helper has reported the failure */
+      terminate(1);
     }
   }
   /* Node 0 broadcasts the byterevflag from node 0 to all nodes */
