@@ -66,6 +66,9 @@ OBJECTS = \
 P = $(strip ${PRECISION})
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
 
+# The libraries are built by libmake, so localmake must wait for it under make -j
+${QCDLIB}: libmake ;
+
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
 
 # Default rule for C compilation
@@ -96,7 +99,8 @@ ${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
 # Directories where we store the improved action headers
 QUARKIMP = ../generic_ks/imp_actions
 
-quark_action.h: ${QUARKIMP}/${QUARK}
+# ${LASTMAKE} removes this header and runs make clean, so depend on it to copy afresh
+quark_action.h: ${QUARKIMP}/${QUARK} ${LASTMAKE}
 	@echo Copying quark_action.h from ${QUARKIMP}/${QUARK}
 	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
 

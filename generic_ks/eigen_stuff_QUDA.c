@@ -128,6 +128,11 @@ load_evecs_quda(imp_ferm_links_t *fn_mass, int load_other_parity){
   /* Initialize QUDA parameters */
   initialize_quda();
   
+  /* Each call starts a new deflation space for the current links: drop any
+     space, and the zero-mass eigenvalues, QUDA preserved from an earlier call.
+     QUDA restores a preserved space without checking that the links changed. */
+  qudaCleanUpDeflationSpace();
+  
   QudaInvertArgs_t inv_args;
   inv_args.mixed_precision = 0;
   inv_args.naik_epsilon = fn_mass->eps_naik;

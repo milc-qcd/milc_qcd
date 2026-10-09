@@ -92,6 +92,9 @@ OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_W_OBJECTS} ${LAYOUT} \
 P = $(strip ${PRECISION})
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
 
+# The libraries are built by libmake, so localmake must wait for it under make -j
+${QCDLIB}: libmake ;
+
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
 
 # Default rule for C compilation
@@ -126,7 +129,8 @@ gauge_stuff.o: gauge_action.h
 # Directory where we store the improved action headers
 GAUGEIMP = ../generic/imp_actions
 
-gauge_action.h:
+# ${LASTMAKE} removes this header and runs make clean, so depend on it to copy afresh
+gauge_action.h: ${LASTMAKE}
 	/bin/cp ${GAUGEIMP}/${GAUGE} gauge_action.h
 
 ########################################################

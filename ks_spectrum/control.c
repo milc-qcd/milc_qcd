@@ -303,8 +303,8 @@ int main(int argc, char *argv[])
       /* Eigenpairs are read or computed without QUDA */
 	 
       /* Allocate space on host for eigenpairs */
-      eigVal = (double *)malloc(param.eigen_param.Nvecs*sizeof(double));
-      eigVec = (dsu3_vector **)malloc(param.eigen_param.Nvecs*sizeof(dsu3_vector *));
+      eigVal = (Real *)malloc(param.eigen_param.Nvecs*sizeof(Real));
+      eigVec = (su3_vector **)malloc(param.eigen_param.Nvecs*sizeof(su3_vector *));
       for(int i=0; i < param.eigen_param.Nvecs; i++){
 	eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 	if(eigVec[i] == NULL){
@@ -358,7 +358,9 @@ int main(int argc, char *argv[])
 	 NOTE: the QUDA path assumes the file-parity eigenvectors are EVEN
 	 (see load_evecs_quda); */
 
+#ifdef HAVE_QIO
       QIO_verbose(QIO_VERB_DEBUG);
+#endif
       load_evecs_quda(fn, 0);
 #endif
 
