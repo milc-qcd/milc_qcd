@@ -358,6 +358,11 @@ project_out(su3_vector *vec, su3_vector *vector[], int Num, int parity){
 
   if(Num == 0)return;
 
+#if ( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && !defined(USE_CURRENT_GPU) ) )
+  node0_printf("ERROR: Compilation with QUDA's EIG_GPU requires CURRENT_GPU\n");
+  terminate(1)
+#endif
+      
   int nzero = 0;
   for(i=Num-1;i>-1;i--){
     dot_product(vector[i], vec, &cc, parity) ;
