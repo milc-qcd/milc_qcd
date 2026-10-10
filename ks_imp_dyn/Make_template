@@ -68,6 +68,9 @@ OBJECTS = \
 P = $(strip ${PRECISION})
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
 
+# The libraries are built by libmake, so localmake must wait for it under make -j
+${QCDLIB}: libmake ;
+
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
 
 # Default rule for C compilation
@@ -97,10 +100,12 @@ ${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
 QUARKIMP = ../generic_ks/imp_actions
 GAUGEIMP = ../generic/imp_actions
 
-quark_action.h: ${QUARKIMP}/${QUARK}
+# ${LASTMAKE} removes this header and runs make clean, so depend on it to copy afresh
+quark_action.h: ${QUARKIMP}/${QUARK} ${LASTMAKE}
 	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
 
-gauge_action.h: ${GAUGEIMP}/${GAUGE}
+# ${LASTMAKE} removes this header and runs make clean, so depend on it to copy afresh
+gauge_action.h: ${GAUGEIMP}/${GAUGE} ${LASTMAKE}
 	/bin/cp ${GAUGEIMP}/${GAUGE} gauge_action.h
 
 

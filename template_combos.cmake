@@ -206,14 +206,6 @@ if(HAVE_EIG_GPU)
         append_interface_library(eigen_objects
             generic_ks/eigen_stuff_Grid.c generic_ks/gridStaggEigen.cc
         )
-    elseif(HAVE_QUDA)
-        append_interface_library(eigen_objects
-            generic_ks/eigen_stuff_QUDA.c
-        )
-    else()
-        append_interface_library(eigen_objects
-            generic_ks/must_specify_HAVE_QUDA_or_HAVE_GRID.c
-        )
     endif()
 else()
     if(HAVE_PRIMME)
@@ -238,6 +230,12 @@ else()
             generic_ks/eigen_stuff_Ritz.c generic_ks/jacobi.c
         )
     endif()
+endif()
+
+if(HAVE_QUDA)
+    append_interface_library(eigen_objects
+        generic_ks/eigen_stuff_QUDA.c
+    )
 endif()
 
 ######################################################################

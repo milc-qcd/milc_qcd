@@ -109,6 +109,9 @@ OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_WILSON_OBJECTS} \
 P = $(strip ${PRECISION})
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
 
+# The libraries are built by libmake, so localmake must wait for it under make -j
+${QCDLIB}: libmake ;
+
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a
 
@@ -144,7 +147,8 @@ ${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
 QUARKIMP = ../generic_ks/imp_actions
 QUARK = onelink_action.h
 
-quark_action.h: ${QUARKIMP}/${QUARK}
+# ${LASTMAKE} removes this header and runs make clean, so depend on it to copy afresh
+quark_action.h: ${QUARKIMP}/${QUARK} ${LASTMAKE}
 	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
 
 ########################################################
