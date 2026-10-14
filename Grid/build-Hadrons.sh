@@ -67,12 +67,12 @@ then
 
     avx2)
 
-       source ${TOPDIR}/env.sh
+#       source ${TOPDIR}/env.sh
        ${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
             --with-grid=${GRIDINSTALLDIR} \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="-std=c++17 -mavx2" \
+            CXXFLAGS="-std=c++17" \
 
        status=$?
              ;;
@@ -157,7 +157,7 @@ then
 fi
 
 echo "Building in ${BUILDDIR}"
-${MAKE} -k -j16
+${MAKE} -k -j4
 
 echo "Installing in ${INSTALLDIR}"
 ${MAKE} install

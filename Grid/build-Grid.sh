@@ -70,13 +70,13 @@ then
 	    --disable-fermion-reps       \
 	    --disable-gparity            \
 	    --disable-zmobius \
-	    --with-lime=${HOME}/scidac/install/qio-single \
-	    --with-fftw=${HOME}/fftw/build-gcc \
-            --with-mpfr=${HOME}/mpfr \
+	    --with-lime=/Users/carleton/Applications/scidac/install/qio-single \
+	    --with-fftw=/opt/homebrew/opt/fftw \
+            --with-openssl=/opt/homebrew/opt/openssl@3.6 \
             CXX="${PK_CXX}" \
             CXXFLAGS="-std=gnu++17 -O0 -g -Wno-psabi" \
 
-#            --with-openssl=/global/common/cori/software/openssl/1.1.0a/hsw \
+#            --with-mpfr=${HOME}/mpfr \
 # 	    --with-hdf5=/opt/cray/pe/hdf5/1.10.0/INTEL/15.0 \
 
        status=$?
@@ -89,20 +89,22 @@ then
 
 	${SRCDIR}/configure \
             --prefix=${INSTALLDIR} \
-            --enable-mkl=yes \
+            --enable-mkl=no \
             --enable-simd=GEN \
             --enable-shm=shmnone \
             --enable-comms=mpi3-auto \
 	    --disable-fermion-reps       \
 	    --disable-gparity            \
 	    --disable-zmobius \
-	    --with-lime=${HOME}/frontier/quda/install/qio \
-	    --with-hdf5=${HDF5_ROOT} \
-            --with-mpfr=/opt/cray/pe/gcc/mpfr/3.1.4/ \
-	    --with-openssl=${HOME}/frontier/openssl/install/ \
+	    --with-lime=/Users/carleton/Applications/scidac/install/qio-single \
+	    --with-fftw=/opt/homebrew/opt/fftw \
+	    --with-hdf5=/opt/homebrew/opt/hdf5 \
+            --with-openssl=/opt/homebrew/opt/openssl@3.6 \
             CXX="${PK_CXX}" CC="${PK_CC}" \
-            CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -fPIC -fopenmp -std=c++17 -O0 -g -Wno-psabi -mavx2" \
+            CXXFLAGS="${MPI_CFLAGS} -I${ROCM_PATH}/include -fPIC -std=c++17 -O0 -g -Wno-psabi" \
 	    LDFLAGS="-L/lib64 -fopenmp -L${ROCM_PATH}/lib ${MPI_LDFLAGS}" \
+
+	    #       --with-mpfr=/opt/cray/pe/gcc/mpfr/3.1.4/ \
 
        status=$?
              ;;
