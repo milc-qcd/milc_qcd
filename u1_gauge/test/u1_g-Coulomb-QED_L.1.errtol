@@ -1,0 +1,7 @@
+u1-ploop = ( 0.0002 0.0002 ) with charge 0.0002
+u1-(s,t)plaq = ( 0.0002 0.0002 ) with charge 0.0002
+u1-(s,t)link = ( 0.0002 0.0002 ) with charge 0.0002
+
+
+get_f(0): EOF on input.
+RUNNING COMPLETED

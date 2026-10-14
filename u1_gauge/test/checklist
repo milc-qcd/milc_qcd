@@ -5,6 +5,10 @@ exec u1_g                 1      -         -          u1-ploop RUNNING
      extra-output      u1_g.1.ascii 2007 EOF
 exec u1_g-Feynman-QED_L   1      -         -          u1-ploop RUNNING
      extra-output      u1_g-Feynman-QED_L.1.ascii 2007 EOF
+exec u1_g-Coulomb-QED_L   1      -         -          u1-ploop RUNNING
+     extra-output      u1_g-Coulomb-QED_L.1.ascii 2007 EOF
+exec u1_g-Coulomb-QED_TL   1      -         -          u1-ploop RUNNING
+     extra-output      u1_g-Coulomb-QED_TL.1.ascii 2007 EOF
 exec u1_g-Lorenz-QED_L   1      -         -          u1-ploop RUNNING
      extra-output      u1_g-u1_g-Lorenz-QED_L.1.ascii 2007 EOF
 exec u1_g_convert         1      -         -          CHECK conversion CHECK conversion
