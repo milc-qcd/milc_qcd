@@ -748,7 +748,7 @@ static void momgauge(complex *u1gf)
     } else if(zero_mode_scheme == U1_QED_TL){
       /* QED_TL condition */
       if(lkssq == 0.0){
-	u1gf[TUP] = cmplx(0.0, 0.0);
+	u1gf[4*i+TUP] = cmplx(0.0, 0.0);
 	int dir;
 	/* Spatial components are zero only if lk[TUP] is zero */
 	if(lk[TUP] == 0.0){

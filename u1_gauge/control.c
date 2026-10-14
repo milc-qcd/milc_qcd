@@ -70,7 +70,8 @@ int main(int argc,char *argv[])
   node0_printf("Time = %e seconds\n",dtime);
   fflush(stdout);
 
-  return(0);
+  normal_exit(0);
+  return 0;
 
 } /* end of main() */
 
