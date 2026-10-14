@@ -239,10 +239,12 @@ gauge_file *save_u1_ascii(char *filename)
   for(t=0;t<nt;t++)for(z=0;z<nz;z++)
   for(y=0;y<ny;y++)for(x=0;x<nx;x++){
       newnode=node_number(x,y,z,t);
-      if(newnode!=currentnode)
+      if(newnode!=currentnode)		/* switch to another node */
         {
+        /* tell newnode it's OK to send */
         if(this_node==0 && newnode!=0) send_field((char *)lbuf,4,newnode);
         if(this_node==newnode && newnode!=0) get_field((char *)lbuf,4,0);
+        currentnode=newnode;
         }
       if(this_node==0)
         {
