@@ -17,10 +17,8 @@ int main(int argc,char *argv[])
 
   complex plp;
   double dtime;
-  Real splq,tplq,vnorm;
-  int prompt,key[4],slc[4];
-  register int i,dir;
-  register site *s;
+  Real splq,tplq;
+  int prompt;
 
   /* Setting up of lattice & neighbors */
   initialize_machine(&argc,&argv);
@@ -34,35 +32,20 @@ int main(int argc,char *argv[])
 
   prompt=setup();
 
-  /* Initialize fft */
-  key[XUP]=1; key[YUP]=1;
-  key[ZUP]=1; key[TUP]=1;
-  slc[XUP]=0; slc[YUP]=0;
-  slc[ZUP]=0; slc[TUP]=0;
-  setup_restrict_fourier(key,slc);
-  vnorm=(Real)sqrt((double)volume);
+  /* Prepare the U(1) field generator.  The momentum table and the FFT
+     setup do not change from one configuration to the next, so this is
+     done only once. */
+  initialize_u1_gauge_field(GAUGE, SCHEME);
+  node0_printf("Momentum table prepared!\n"); fflush(stdout);
 
   /* Main procedure */
   node0_printf("Starting U(1) gauge config generation run ...\n");
   while(readin(prompt)==0){
 
-	/* Generating gauge config in mom space
-	   under coulomb and global gaugefixing */
+	/* Generate the U(1) vector potential.  We own the storage for
+	   u1_A; see setup() */
 
-	u1gf = (complex *)malloc(sites_on_node*4*sizeof(complex));
-	momgauge(u1gf);
-
-	/* FFT mom space gauge config to coord space */
-
-	restrict_fourier_field(u1gf, 4*sizeof(complex), BACKWARDS);
-
-	FORALLSITES(i,s){
-	  FORALLUPDIR(dir){
-	    u1_A[4*i+dir] = u1gf[4*i+dir].real/vnorm;
-	  }
-	}
-
-	free(u1gf);
+	generate_u1_gauge_field(u1_A);
 
 	/* save lattices */
 	save_u1_lattice(save_u1flag,save_u1file);
@@ -77,6 +60,9 @@ int main(int argc,char *argv[])
 	node0_printf("u1-(s,t)link = ( %e, %e ) with charge %f\n", sLink, tLink, echarge);
 
   } /* while-ends */
+
+  finalize_u1_gauge_field();
+  destroy_u1_A_field(u1_A);
 
   /* Mark time */
   dtime += dclock();

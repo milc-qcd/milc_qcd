@@ -28,11 +28,18 @@
 
 #include "lattice.h"
 
+/* Compile-time defaults for this application.  The field generator in
+   generic_u1/u1_gauge_field.c takes these as run-time arguments, so an
+   external caller need not define them. */
+#ifndef GAUGE
+#define GAUGE U1_COULOMB
+#endif
+#ifndef SCHEME
+#define SCHEME U1_QED_L
+#endif
+
 int setup(void);
 int readin(int prompt);
-void momgauge(complex *u1gf);
-void show_momgauge_opts(void);
-Real sqr(Real val);
 
 /* ************************************************************ */
 

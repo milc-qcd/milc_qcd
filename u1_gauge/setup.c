@@ -10,7 +10,6 @@
 /* 1. setup()							*/
 /* 2. initial_set()						*/
 /* 3. readin()							*/
-/* 4. set_mom_table()						*/
 /*								*/
 /* Last updated on 10.30.07					*/
 /*								*/
@@ -25,7 +24,6 @@
 params par_buf;
 
 /* Forward declarations */
-static void set_mom_table(void);
 static int initial_set(void);
 
 /* setup: setting up lattice */
@@ -53,10 +51,6 @@ int setup(void)
   make_nn_gathers();
   node0_printf("Made nn_gathers!\n"); fflush(stdout);
 
-  /* set up momentum table */
-  set_mom_table();
-  node0_printf("Momentum table prepared!\n"); fflush(stdout);
-
   node0_printf("Finished setup!\n"); fflush(stdout);
   return(prompt);
 
@@ -75,7 +69,7 @@ static int initial_set(void)
     printf("stored as A(mu,x), convert to U(mu,x) to couple to fermions.\n");
     printf("Machine = %s, with %d nodes!\n",machine_type(),numnodes());
     node0_printf("Options selected...\n");
-    show_momgauge_opts();
+    show_u1_gauge_field_opts(GAUGE, SCHEME);
     show_generic_opts();
     time_stamp("Start");
     status=get_prompt(stdin,&prompt);
@@ -153,83 +147,4 @@ int readin(int prompt)
   return(0);
 } /* end of readin() */
 
-/*------------------------------------------------------------------*/
-/* Added to support MPP gauge field generation that gives the same
-   random field as the original single-process field generation
-   code.  This is the single-process node_index function. */
-
-static size_t scalar_node_index(const int coords[], int dim, int size[])
-{
-  int d;
-  size_t rank = coords[dim-1];
-  int sum = coords[dim-1];
-
-  for(d = dim-2; d >= 0; d--){
-    rank = rank * size[d] + coords[d];
-    sum += coords[d];
-  }
-
-  if(sum % 2 == 0)return rank/2;
-  else return (rank + sites_on_node)/2;
-
-}
-
 /* ************************************************************	*/
-
-/* setup momentum table */
-static void set_mom_table(void)
-{
-
-  int x,y,z,t;
-  int i,dir;
-  size_t j,k;
-  int dimn[4] = {nx, ny, nz, nt};
-  site *s;
-
-  /* initialization */
-  junk_id=-9999;
-  
-  latin=(int *)malloc(sites_on_node*sizeof(int));
-
-  FORALLSITES(i,s){
-    latin[i] = junk_id;
-  }
-
-  /* This algorithm is needed to achieve backward compatibility with
-     the single-process code */
-
-  for(x=0;x<nx;x++)for(y=0;y<ny;y++)for(z=0;z<nz;z++)for(t=0;t<nt;t++){
-	  int st[4] = { x, y, z, t };
-	  int stin[4];
-	  
-	  /* The parity-inverted coordinate */
-	  FORALLUPDIR(dir){
-	    stin[dir] = (dimn[dir] - st[dir]) % dimn[dir];
-	  }
-	    
-	  /* If the current node has the inverse j, set latin */
-	  j = scalar_node_index(stin, 4, dimn);
-	  k = scalar_node_index(st, 4, dimn);
-	  if(j <= k){
-	    if(node_number(stin[XUP], stin[YUP], stin[ZUP], stin[TUP]) == this_node){
-	      latin[j]=k;
-	    }
-	  }
-	}
-
-  // DEBUG
-  //  FORALLSITES(i,s){
-  //    printf("%d -> %d , %d %d %d %d\n",i, latin[i], s->x, s->y ,s->z, s->t);
-  //  }
-
-} /* end of set_mom_table() */
-
-Real sqr(Real val)
-{
-
-  return(val*val);
-
-} /* end of sqr() */
-
-/* ************************************************************	*/
-

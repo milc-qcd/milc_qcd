@@ -56,6 +56,8 @@ int main(int argc,char *argv[])
 
   } /* while-ends */
 
+  destroy_u1_A_field(u1_A);
+
   node0_printf("RUNNING COMPLETED\n");
   node0_printf("Time = %e seconds\n",dtime);
 

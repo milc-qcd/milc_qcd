@@ -45,11 +45,9 @@ EXTERN site *lattice;
 /* Global Lattice Parameters */
 EXTERN int nx,ny,nz,nt; 	/* lattice dimensions */
 EXTERN size_t volume;		/* nx*ny*nz*nt */
-EXTERN int *latin;		/* lattice site index */
 
 EXTERN Real echarge;            /* electron charge == e */
 EXTERN Real *u1_A;              /* global u1 field (vector potential) */
-EXTERN complex *u1gf;           /* temporary global u1 field (complex vector potential) */
 EXTERN Real g_splaq,g_tplaq;	/* global plaquette measures */
 
 EXTERN double g_ssplaq,g_stplaq;	/* global plaquette measures */
@@ -71,7 +69,6 @@ EXTERN gauge_file *save_u1lat_p;
 
 EXTERN uint32_t iseed;		/* random number seed */
 EXTERN double_prn node_prn;	/* nodes' random number structure */
-EXTERN int junk_id;		/* junk number, for checking */
 
 /* pointers for accessing and gathering fields */
 #define N_POINTERS 8
