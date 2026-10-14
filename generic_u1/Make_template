@@ -10,6 +10,7 @@
 
 G_U1_ALL = \
   io_u1lat.o \
+  u1_gauge_field.o \
   u1link.o \
   u1plaq.o \
   u1pot.o
@@ -24,7 +25,9 @@ G_U1_HEADERS = \
   ../include/comdefs.h \
   ../include/generic.h \
   ../include/dirs.h \
-  ../include/check_malloc.h
+  ../include/check_malloc.h \
+  ../include/generic_u1.h \
+  ../include/random.h
 
 G_U1_ALL_DEPEND = \
   ../generic_u1/generic_u1_includes.h \
@@ -36,6 +39,8 @@ G_U1_ALL_DEPEND = \
 ${G_U1_ALL} : ${G_U1_ALL_DEPEND}
 
 io_u1lat.o: ../generic_u1/io_u1lat.c
+	${CC} -c ${CFLAGS} $<
+u1_gauge_field.o: ../generic_u1/u1_gauge_field.c
 	${CC} -c ${CFLAGS} $<
 u1avlink.o: ../generic_u1/u1avlink.c
 	${CC} -c ${CFLAGS} $<
