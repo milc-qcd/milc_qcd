@@ -4,8 +4,6 @@ Some key points:
 
 * This application generates photon fields $A_\mu$, which can later be converted to U(1) link variables $U_\mu=e^{ieA_\mu}$
 
-* This application only supports scalar running (i.e. no MPI). Fortunately, it has a small memory footprint and is very fast compared to SU(3) gauge generation
-
 * Must be linked with FFTW library
 
 A typical build command is:
