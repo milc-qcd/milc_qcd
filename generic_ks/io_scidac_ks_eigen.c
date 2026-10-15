@@ -812,7 +812,7 @@ read_quda_ks_eigenvectors(QIO_Reader *infile, su3_vector *eigVec[], Real *eigVal
   int i;
   FORALLFIELDSITES_OMP(i,){
     for(int j = 0; j < *Nvecs; j++){
-      eigVec[j][i] = eigVecs[*Nvecs*i+j];
+      eigVec[j][i] = eigVecs[datacount*i+j];
     }
   } END_LOOP_OMP;
 
