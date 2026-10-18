@@ -33,6 +33,7 @@
 #define OPT_UDLSC  /* If defined, approximate the u-d difference using a sequential propagator based on ml instead of mu or md */
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/fn_links.h"
+#include "../include/fermion_links.h"
 #include "../include/io_scidac.h"
 #include "../include/imp_ferm_links.h"
 #include "../include/openmp_defs.h"
@@ -48,6 +49,22 @@
 
 #define NMU 4
 #define NRECINFO 128
+
+/*****************************************************************************/
+/* Everything needed to build the U(1)-modified fermion links for a set of
+   U(1) fields.  The caller owns the fields themselves: in use case (a)
+   they come from generate_u1_gauge_field(), in use case (b) they are
+   read in.  Either way they are plain vector potentials, indexed
+   u1_A[iU1][4*i+dir], as create_u1_A_field() allocates them. */
+
+typedef struct {
+  int nU1;           /* Number of U(1) vector potentials */
+  Real **u1_A;       /* [nU1] fields, each 4*sites_on_node Reals */
+  Real charge;       /* Quark charge, in units of e */
+  int n_naiks;       /* Naik epsilon table, as for create_fermion_links_from_site */
+  double *eps_naik;
+  int i_naik;        /* Which Naik epsilon fn_mass corresponds to */
+} u1_field_info_t;
 
 /*****************************************************************************/
 /* Create spin-taste indices for current */
@@ -553,6 +570,156 @@ block_current_stochastic( int nr, Real *j_mu_mass[], Real mass, int nsrc, int si
   free(M_inv_gr);
 
 } /* block_current_stochastic */
+      
+/************************************************************************/
+/* Calculate the stochastic difference contribution Tr(delta Dslash
+   M^{-1}) caused by introducing a U(1) field, for a given quark mass
+   and source parity, using a list of thinned stochastic estimators.
+   The calculation is repeated for each of the U(1) fields described
+   by u1info.  nsrc sources in gr.  Results in j_mass[iU1][ir][i].
+
+   For each U(1) field we build the fermion links fn_U1 from the thin
+   links in the site structure multiplied by the U(1) phase
+   exp(i*charge*A_mu(x)), form the difference fn_diff = fn_U1 - fn_mass,
+   and apply dslash with the difference links.  Then complete the Tr.
+
+   Dslash is linear in the links, so
+
+       Dslash(fn_U1) - Dslash(fn_mass) = Dslash(fn_U1 - fn_mass) ,
+
+   and differencing the links rather than the two dslash results avoids
+   the cancellation that would otherwise dominate the rounding error.
+*/
+
+static void
+block_current_stochastic_multiU1( int nr, Real **j_mass[], Real mass, int nsrc,
+				  int sign, int parity, quark_invert_control *qic, 
+				  imp_ferm_links_t *fn_mass, su3_vector *gr[],
+				  u1_field_info_t *u1info){
+  
+  char myname[] = "block_current_stochastic_multiU1";
+
+  int otherparity = ODD;  /* Initialized to humor the compiler */
+
+  /* Offset for staggered phases in the current definition */
+  int r_offset[4] = {0, 0, 0, 0};
+
+  int nU1 = u1info->nU1;
+
+  /* M_inv_gr is reused for every U(1) field, so the dslash is done out
+     of place, into dM_inv_gr */
+  su3_vector **MdagM_inv_gr  = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  su3_vector **M_inv_gr  = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  for(int is = 0; is < nsrc; is++){
+    MdagM_inv_gr[is]  = create_v_field();
+    M_inv_gr[is]  = create_v_field();
+  }
+
+  switch(parity){
+  case(EVEN): otherparity=ODD; break;
+  case(ODD):  otherparity=EVEN; break;
+  case(EVENANDODD):
+    node0_printf("%s: EVENANDODD won't work with this algorighmn");
+    terminate(1);
+  }
+
+  /* Calculate (M^\daggerM)^{-1} gr on "parity" sites */
+  qic->parity = parity;
+  ks_congrad_block_field(nsrc, gr, MdagM_inv_gr, qic, mass, fn_mass);
+  /* Calculate M^{-1} gr on "otherparity" sites */
+  for(int is = 0; is < nsrc; is++)
+    dslash_fn_field(MdagM_inv_gr[is], M_inv_gr[is] , otherparity, fn_mass);
+
+  /* Workspace for the difference links, reused for every U(1) field */
+  imp_ferm_links_t *fn_diff = create_fn_links();
+
+  su3_vector *dM_inv_gr = create_v_field();
+
+  for(int iU1 = 0; iU1 < nU1; iU1++){
+
+    /* Fermion links for the thin links times this U(1) field.  The
+       thin links in the site structure are not disturbed. */
+    fermion_links_t *fl_U1 =
+      create_fermion_links_from_site_u1(MILC_PRECISION, u1info->n_naiks,
+					u1info->eps_naik, u1info->charge,
+					u1info->u1_A[iU1]);
+    imp_ferm_links_t *fn_U1 = get_fm_links(fl_U1, u1info->i_naik);
+
+    /* The two sets of links have to differ by nothing but the U(1)
+       phase, or their difference is not what we want.  scalar_mult_add_fn
+       only warns about a phase mismatch, because an existing HISQ caller
+       can reach it legitimately, so check it properly here. */
+    if(fn_U1->eps_naik != fn_mass->eps_naik){
+      node0_printf("%s: Naik epsilon mismatch: %g with U(1), %g without\n",
+		   myname, fn_U1->eps_naik, fn_mass->eps_naik);
+      terminate(1);
+    }
+    if(fn_U1->phase == NULL || fn_mass->phase == NULL){
+      node0_printf("%s: missing link phase info\n", myname);
+      terminate(1);
+    }
+    if(fn_U1->phase->twist_in != fn_mass->phase->twist_in){
+      node0_printf("%s: boundary twist is %s with U(1) and %s without.  "
+		   "The U(1) links are built fresh and untwisted, so twist "
+		   "them to match before taking the difference.\n", myname,
+		   fn_U1->phase->twist_in ? "on" : "off",
+		   fn_mass->phase->twist_in ? "on" : "off");
+      terminate(1);
+    }
+    for(int dir = XUP; dir <= TUP; dir++)
+      if(fn_U1->phase->bdry_phase[dir] != fn_mass->phase->bdry_phase[dir] ||
+	 fn_U1->phase->r0[dir] != fn_mass->phase->r0[dir]){
+	node0_printf("%s: link phase conventions differ in direction %d\n",
+		     myname, dir);
+	terminate(1);
+      }
+
+    /* fn_diff = fn_U1 - fn_mass.  scalar_mult_add_fn checks that the
+       two sets of links carry the same phase conventions and copies
+       them to fn_diff. */
+    scalar_mult_add_fn(fn_U1, fn_mass, -1., fn_diff);
+
+    /* Rebuild the back links of the difference if this build uses them */
+    if(get_fatbacklinks(fn_mass) != NULL)
+      load_fn_backlinks(fn_diff);
+
+    /* dM_inv_gr = [ Dslash(fn_U1) - Dslash(fn_mass) ] M_inv_gr */
+    /* Using the CPU version avoids wasteful host-device transfers */
+    for(int is = 0; is < nsrc; is++){
+      dslash_fn_field_cpu( M_inv_gr[is], dM_inv_gr, parity, fn_diff);
+  
+      /* For each source, close the trace */
+      /* J = -imag[gr * M_inv_gr] */
+      /* If sign = +1, add the result.  If sign = -1, subtract it */
+      int evol = nsrc/nr;  /* Number of thinned source sites */
+      int ir = is/evol;    /* Random source block index */
+      int i;
+      FORSOMEFIELDPARITY(i, parity){
+	complex cc = su3_dot( gr[is]+i, dM_inv_gr+i );
+	j_mass[iU1][ir][i] += -sign*cc.imag;
+#if 0
+	printf("j U1[%d] src[%d] %d %d %d %d %d %g\n", iU1, is,
+	       lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t,
+	       j_mass[iU1][ir][i]);
+#endif
+      } END_LOOP;
+    } /* is */
+
+    destroy_fermion_links_from_site(fl_U1);
+
+  } /* iU1 */
+
+  destroy_v_field(dM_inv_gr);
+  destroy_fn_links(fn_diff);
+
+  for(int is = 0; is < nsrc; is++){
+    destroy_v_field(M_inv_gr[is]);
+    destroy_v_field(MdagM_inv_gr[is]);
+  }
+  free(M_inv_gr);
+  free(MdagM_inv_gr);
+
+} /* block_current_stochastic_multiU1 */
       
 /************************************************************************/
 /* Calculate the difference in current densities for a given pair of quark masses
