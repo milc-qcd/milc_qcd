@@ -462,6 +462,72 @@ add_fn(fn_links_t *fn_A, fn_links_t *fn_B, fn_links_t *fn_C){
   END_LOOP_OMP;
 }
 
+/*-------------------------------------------------------------------*/
+/* A linear combination of two sets of links is meaningful only if both
+   sets carry the same phase conventions: the same boundary twist, the
+   same twist phases and the same effective lattice origin.  Check
+   that, and give the result the first operand's conventions.
+
+   This warns rather than terminating.  get_hisq_links_t_fn() combines
+   fn0 with fn_deps, and fn0 is handed out to callers who may already
+   have twisted it in place (see ks_measure/control.c, where links are
+   fetched and twisted one mass at a time), so the mismatch can be
+   reached by existing code.  That combination looks wrong, but it
+   predates this check and is not ours to change here.
+
+   The Naik epsilon is treated differently: a combination may
+   legitimately have an epsilon of its own (again get_hisq_links_t_fn,
+   which builds fn0 + eps*fn_deps and then sets fn->eps_naik itself),
+   so we only carry the first operand's value over as a default for the
+   caller to override.  A caller that needs the two epsilons to agree
+   should check that for itself. */
+
+static void
+combine_fn_phases(fn_links_t *fn_A, fn_links_t *fn_B, fn_links_t *fn_C,
+		  char *myname){
+
+  link_phase_info_t *pA, *pB;
+  int dir;
+
+  if(fn_A == NULL || fn_B == NULL || fn_C == NULL){
+    printf("%s(%d): null fn links\n", myname, this_node);
+    terminate(1);
+  }
+
+  pA = fn_A->phase;
+  pB = fn_B->phase;
+
+  if(pA == NULL || pB == NULL){
+    node0_printf("WARNING %s: missing link phase info.  "
+		 "The result carries no phase information.\n", myname);
+    return;
+  }
+
+  if(pA->twist_in != pB->twist_in)
+    node0_printf("WARNING %s: boundary twist is %s in one operand and %s in "
+		 "the other.  The combination is not consistent.\n", myname,
+		 pA->twist_in ? "on" : "off", pB->twist_in ? "on" : "off");
+
+  FORALLUPDIR(dir){
+    if(pA->bdry_phase[dir] != pB->bdry_phase[dir])
+      node0_printf("WARNING %s: boundary phases differ in direction %d: "
+		   "%g vs %g\n", myname, dir,
+		   pA->bdry_phase[dir], pB->bdry_phase[dir]);
+    if(pA->r0[dir] != pB->r0[dir])
+      node0_printf("WARNING %s: lattice origins differ in direction %d: "
+		   "%d vs %d\n", myname, dir, pA->r0[dir], pB->r0[dir]);
+  }
+
+  if(fn_C->phase != NULL)
+    copy_link_phase_info(fn_C->phase, pA);
+
+  fn_C->eps_naik = fn_A->eps_naik;
+
+  /* The result is a new set of links */
+  fn_C->notify_quda_new_links = 1;
+}
+
+/*-------------------------------------------------------------------*/
 void 
 scalar_mult_add_fn(fn_links_t *fn_A, fn_links_t *fn_B, Real s, fn_links_t *fn_C) {
   int i, dir;
@@ -479,6 +545,8 @@ scalar_mult_add_fn(fn_links_t *fn_A, fn_links_t *fn_B, Real s, fn_links_t *fn_C)
   su3_matrix *lngC = get_lnglinks(fn_C);
   su3_matrix *fatbackC = get_fatbacklinks(fn_C);
   su3_matrix *lngbackC = get_lngbacklinks(fn_C);
+
+  combine_fn_phases(fn_A, fn_B, fn_C, "scalar_mult_add_fn");
 
   FORALLFIELDSITES_OMP(i,private(dir)) {
     for(dir=XUP;dir<=TUP;dir++) {
