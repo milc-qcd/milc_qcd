@@ -225,6 +225,12 @@ void fermion_force_multi_hisq_quda(info_t* info, int prec, Real eps, Real *resid
 /* fermion_links_from_site.c */
 
 fermion_links_t *create_fermion_links_from_site(int prec, int n_naiks, double *eps_naik);
+fermion_links_t *create_fermion_links_from_site_u1(int prec, int n_naiks,
+						  double *eps_naik,
+						  Real charge, Real *u1_A);
+void restore_fermion_links_from_site_u1(fermion_links_t *fl, int prec,
+					Real charge, Real *u1_A);
+void destroy_fermion_links_from_site(fermion_links_t *fl);
 void restore_fermion_links_from_site(fermion_links_t *fl, int prec);
 
 /* fermion_links_hisq_load_grid_P.c */
