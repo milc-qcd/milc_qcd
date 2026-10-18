@@ -9,7 +9,7 @@
 #include <string.h>
 #include "params.h"
 #include <unistd.h>
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
 #include "../include/io_u1lat.h"
 #endif
 
@@ -45,7 +45,7 @@ int setup()   {
   initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
   u1_A = create_u1_A_field();
 #endif
   FORALLUPDIR(dir){
@@ -215,7 +215,7 @@ int readin(int prompt) {
 			     param.savefile );
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
 				  param.stringLFN );
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
     /* what kind of starting U(1) lattice to use, read filename */
     IF_OK status+=ask_starting_u1_lattice(stdin,prompt,
 					  &param.start_u1flag, param.start_u1file );
@@ -342,7 +342,7 @@ int readin(int prompt) {
 #else
 	param.ksp_pbp[i].naik_term_epsilon = 0.0;
 #endif
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
 	IF_OK status += get_f(stdin, prompt, "charge", &param.charge_pbp[i]);
 #endif
 	param.qic_pbp[i].min = 0;
@@ -637,7 +637,7 @@ int readin(int prompt) {
 #endif
       }
 
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
       /* Charge, if U(1) */
       IF_OK status += get_s(stdin, prompt, "charge", param.charge_label[k]);
       IF_OK param.charge[k] = atof(param.charge_label[k]);

@@ -9,7 +9,7 @@
 #include <quda_milc_interface.h>
 #include "../include/generic_quda.h"
 #endif
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
 #include "../include/io_u1lat.h"
 #include "../include/generic_u1.h"
 #endif
@@ -77,7 +77,7 @@ int main( int argc, char **argv ){
       rephase( ON );
     }
 
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
     if( param.save_u1flag != FORGET ){
       save_u1_lattice( param.save_u1flag, param.save_u1file );
     }
@@ -142,7 +142,7 @@ int main( int argc, char **argv ){
 	node0_printf("eigenval(%i): %10g\n",i,chirality) ;
       } 
 
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
     /* Unapply the U(1) field phases */
     u1phase_off();
     invalidate_fermion_links(fn_links);

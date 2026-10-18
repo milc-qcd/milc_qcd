@@ -30,7 +30,7 @@
 #include "../include/generic_quda.h"
 #include <quda_milc_interface.h>
 #endif
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
 #include "../include/io_u1lat.h"
 #endif
 
@@ -217,6 +217,20 @@ int main(int argc, char *argv[])
       
 
 #ifdef CURRENT_DISC
+
+#ifdef QED_SEA
+      if(param.truncate_diff[k])
+	f_meas_sea_current_diff( num_pbp_masses, param.npbp_reps[k],
+				 param.thinning[k],
+				 &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+				 masses, charges, fn_mass, u1_A,
+				 &param.pbp_filenames[i0] );
+      else
+	f_meas_sea_current( num_pbp_masses, param.npbp_reps[k],
+			    param.thinning[k],
+			    &param.qic_pbp[i0], masses, charges,
+			    fn_mass, u1_A, &param.pbp_filenames[i0] );
+#else
       if(param.truncate_diff[k])
 	f_meas_current_diff( num_pbp_masses, param.npbp_reps[k],
 			     param.thinning[k],
@@ -228,6 +242,8 @@ int main(int argc, char *argv[])
 			param.thinning[k],
 			&param.qic_pbp[i0], masses, charges,
 			fn_mass, u1_A, &param.pbp_filenames[i0] );
+#endif
+
 #else
       // THESE NEED FIXING NOW
       if(num_pbp_masses == 1)
@@ -277,7 +293,7 @@ int main(int argc, char *argv[])
       ENDTIME("save lattice");
     }
 
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
     if( param.save_u1flag != FORGET ){
       save_u1_lattice( param.save_u1flag, param.save_u1file );
     }

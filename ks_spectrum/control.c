@@ -43,7 +43,7 @@
 #include <quda_milc_interface.h>
 #include "../include/generic_quda.h"
 #endif
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
 #include "../include/io_u1lat.h"
 #endif
 
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
     phases_in = OFF;
     rephase( ON );
 
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
     /* Read the U(1) gauge field, if wanted */
     start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
 #endif
@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
       rephase( ON );
     }
 
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
     if( param.save_u1flag != FORGET ){
       save_u1_lattice( param.save_u1flag, param.save_u1file );
     }
@@ -392,7 +392,7 @@ int main(int argc, char *argv[])
     /* Make fermion links if not already done */
     
     for(i = 0; i < param.num_pbp_masses; i++){
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
       u1phase_on(param.charge_pbp[i], u1_A);
       invalidate_fermion_links(fn_links);
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i].prec);
@@ -409,7 +409,7 @@ int main(int argc, char *argv[])
       		      fn_links, naik_index, 
 		      param.ksp_pbp[i].naik_term_epsilon);
 #endif
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
       /* Unapply the U(1) field phases */
       u1phase_off();
       invalidate_fermion_links(fn_links);
@@ -547,7 +547,7 @@ int main(int argc, char *argv[])
 	node0_printf("Mass= %g source %s ",
 		     (double)param.ksp[i].mass,
 		     param.src_qs[is].descrp);
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
 	node0_printf("Q %g ",param.charge[k]);
 #endif
 	node0_printf("residue= %g rel= %g\n",

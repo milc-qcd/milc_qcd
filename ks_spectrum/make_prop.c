@@ -187,7 +187,7 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
 
   /* Construct fermion links for the solver */
 
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
   /* Apply U(1) phases if we are using it */
   u1phase_on(charge, u1_A);
   invalidate_fermion_links(fn_links);
@@ -362,7 +362,7 @@ int solve_ksprop(enum set_type set_type, enum inv_type inv_type,
   /* If we are reusing the input propagators and not recomputing, we are done */
   save_ksprops(num_prop, saveflag, savefile, my_ksqs, source, ksprop);
 
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
   /* Unapply the U(1) field phases */
   u1phase_off();
   invalidate_fermion_links(fn_links);

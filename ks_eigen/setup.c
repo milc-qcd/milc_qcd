@@ -24,7 +24,7 @@
 #include "params.h"
 #include <unistd.h>
 extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
 #include "../include/io_u1lat.h"
 #include "../include/generic_u1.h"
 #endif
@@ -52,7 +52,7 @@ int setup()   {
   initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
   u1_A = create_u1_A_field();
 #endif
   FORALLUPDIR(dir){
@@ -204,7 +204,7 @@ int readin(int prompt) {
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
 				  param.stringLFN );
 
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
     /* what kind of starting U(1) lattice to use, read filename */
     IF_OK status+=ask_starting_u1_lattice(stdin,prompt,
 					  &param.start_u1flag, param.start_u1file );
@@ -225,7 +225,7 @@ int readin(int prompt) {
       }
     }
     
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
       /* Charge, if U(1) */
       IF_OK status += get_s(stdin, prompt, "charge", param.charge_label);
       IF_OK param.charge = atof(param.charge_label);
@@ -284,7 +284,7 @@ int readin(int prompt) {
   phases_in = OFF;
   rephase( ON );
 
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
   /* Read the U(1) gauge field, if wanted */
   start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
 #endif

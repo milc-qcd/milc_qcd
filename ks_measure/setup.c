@@ -7,7 +7,7 @@
 #include <unistd.h>
 extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #include "params.h"
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
 #include "../include/generic_u1.h"
 #include "../include/io_u1lat.h"
 #endif
@@ -37,7 +37,7 @@ int setup()   {
   initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
   u1_A = create_u1_A_field();
 #endif
   /* set up nearest neighbor gathers */
@@ -168,7 +168,7 @@ int readin(int prompt) {
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
 				  param.stringLFN );
 
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
     /* what kind of starting U(1) lattice to use, read filename */
     IF_OK status+=ask_starting_u1_lattice(stdin,prompt,
 					  &param.start_u1flag, param.start_u1file );
@@ -368,7 +368,7 @@ int readin(int prompt) {
 #else
 	IF_OK param.ksp_pbp[npbp_masses].naik_term_epsilon = 0.0;
 #endif
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
 	IF_OK status += get_s(stdin, prompt,"charge", param.charge_label[npbp_masses] );
 	IF_OK param.ksp_pbp[npbp_masses].charge = atof(param.charge_label[npbp_masses]);
 #else
@@ -554,13 +554,13 @@ int readin(int prompt) {
   /* Create an array of fermion links structures for all unique Naik epsilon values and charges */
   fn_links_charge = (fermion_links_t **)malloc(sizeof(fermion_links_t *) * n_charges);
   for(int i = 0; i < n_charges; i++){
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
     reload_u1_lattice(param.start_u1flag, param.start_u1file);
     if(charge[i] != 0)u1phase_on(charge[i], u1_A);
 #endif
     /* Create a set of fermion links for all eps_naik */
     fn_links_charge[i] = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
     if(charge[i] != 0)u1phase_off();
 #endif
   }

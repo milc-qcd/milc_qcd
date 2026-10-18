@@ -692,7 +692,7 @@ static FILE* open_fnal_meson_file(int pair){
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"antiquark_epsilon:            %g\n", param.ksp[ip0].naik_term_epsilon);
 #endif
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"antiquark_charge:             \"%s\"\n", param.charge_label[is0]);
 #endif
 
@@ -716,7 +716,7 @@ static FILE* open_fnal_meson_file(int pair){
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark_epsilon:                %g\n",param.ksp[ip1].naik_term_epsilon);
 #endif
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"quark_charge:                 \"%s\"\n", param.charge_label[is1]);
 #endif
   fprintf(fp,"...\n");
@@ -772,7 +772,7 @@ static FILE* open_fnal_baryon_file(int triplet){
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark0_epsilon:              %g\n",param.ksp[ip0].naik_term_epsilon);
 #endif
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"quark0_charge:               \"%s\"\n", param.charge_label[is0]);
 #endif
 
@@ -790,7 +790,7 @@ static FILE* open_fnal_baryon_file(int triplet){
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark1_epsilon:              %g\n",param.ksp[ip1].naik_term_epsilon);
 #endif
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"quark1_charge:               \"%s\"\n", param.charge_label[is1]);
 #endif
 
@@ -808,7 +808,7 @@ static FILE* open_fnal_baryon_file(int triplet){
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark2_epsilon:              %g\n",param.ksp[ip2].naik_term_epsilon);
 #endif
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"quark2_charge:               \"%s\"\n", param.charge_label[is2]);
 #endif
 
@@ -888,11 +888,11 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
 
   /* Mass labels */
   fprintf(fp,"_m%s", param.mass_label[ip0]);
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"_q%s", param.charge_label[is0]);
 #endif
   fprintf(fp,"_m%s", param.mass_label[ip1]);
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"_q%s", param.charge_label[is1]);
 #endif
   fprintf(fp, "_%s\n", param.mom_label[pair][m]);
@@ -921,7 +921,7 @@ print_start_meson_prop(int pair, int m){
   printf("%g ", param.ksp[ip0].mass);
   printf("%g ", param.ksp[ip1].mass);
   printf("\n");
-#ifdef U1_FIELD
+#ifdef U1_VALENCE
   printf("CHARGES: ");
   printf("%g ", param.charge[is0]);
   printf("%g ", param.charge[is1]);
@@ -984,15 +984,15 @@ static void print_start_fnal_baryon_prop(FILE *fp, int triplet, int b)
 
   /* Mass labels */
   fprintf(fp,"_m%s", param.mass_label[ip0]);
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"_q%s", param.charge_label[is0]);
 #endif
   fprintf(fp,"_m%s", param.mass_label[ip1]);
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"_q%s", param.charge_label[is1]);
 #endif
   fprintf(fp,"_m%s", param.mass_label[ip2]);
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"_q%s", param.charge_label[is2]);
 #endif
   fprintf(fp, "\n");
@@ -1408,7 +1408,7 @@ static FILE* open_fnal_gb_baryon_file(int triplet){
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark0_epsilon:              %g\n",param.ksp[ip0].naik_term_epsilon);
 #endif
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"quark0_charge:               \"%s\"\n", param.charge_label[is0]);
 #endif
 
@@ -1426,7 +1426,7 @@ static FILE* open_fnal_gb_baryon_file(int triplet){
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark1_epsilon:              %g\n",param.ksp[ip1].naik_term_epsilon);
 #endif
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"quark1_charge:               \"%s\"\n", param.charge_label[is1]);
 #endif
 
@@ -1444,7 +1444,7 @@ static FILE* open_fnal_gb_baryon_file(int triplet){
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark2_epsilon:              %g\n",param.ksp[ip2].naik_term_epsilon);
 #endif
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"quark2_charge:               \"%s\"\n", param.charge_label[is2]);
 #endif
 
@@ -1562,15 +1562,15 @@ static void print_start_fnal_gb_baryon_prop(FILE *fp, int triplet, int b)
 
   /* Mass labels */
   fprintf(fp,"_m%s", param.mass_label[ip0]);
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"_q%s", param.charge_label[is0]);
 #endif
   fprintf(fp,"_m%s", param.mass_label[ip1]);
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"_q%s", param.charge_label[is1]);
 #endif
   fprintf(fp,"_m%s", param.mass_label[ip2]);
-#if U1_FIELD
+#if U1_VALENCE
   fprintf(fp,"_q%s", param.charge_label[is2]);
 #endif
   fprintf(fp, "\n");
