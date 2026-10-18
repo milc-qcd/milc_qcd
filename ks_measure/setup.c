@@ -533,11 +533,6 @@ int readin(int prompt) {
   /* By defailt KS and BC phases are in the gauge links */
   rephase( ON );
 
-#ifdef U1_FIELD
-  /* Read the U(1) gauge field, if wanted */
-  start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
-#endif
-
   /* Set options for fermion links */
   
 #ifdef DBLSTORE_FN
@@ -560,6 +555,7 @@ int readin(int prompt) {
   fn_links_charge = (fermion_links_t **)malloc(sizeof(fermion_links_t *) * n_charges);
   for(int i = 0; i < n_charges; i++){
 #ifdef U1_FIELD
+    reload_u1_lattice(param.start_u1flag, param.start_u1file);
     if(charge[i] != 0)u1phase_on(charge[i], u1_A);
 #endif
     /* Create a set of fermion links for all eps_naik */
