@@ -91,6 +91,7 @@ double dclock(void);
 void time_stamp(const char *msg);
 void get_utc_datetime(char *time_string);
 void make_nn_gathers(void);
+void free_nn_gathers(void);
 void sort_eight_gathers(int index);
 #define sort_eight_neighborlists sort_eight_gathers
 
