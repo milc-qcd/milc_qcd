@@ -1876,7 +1876,11 @@ void apply_fermion_flow_v(su3_vector **srcs, quark_source_sink_op *qss_op, int n
        staggered  - naive-staggered -DdagD smoother
        hisq       - full HISQ -DdagD. Staggered smoother built on HISQ fat + Naik
                     (long) links
-       hisq_trunc - HISQ -DdagD with the Naik (long) term dropped (fat links only). */
+       hisq_trunc - HISQ -DdagD with the Naik (long) term dropped (fat links only).
+     Only laplace4d/laplace3d are Luescher's Laplacian flow (arXiv:1302.5246).
+     The staggered and HISQ -DdagD generators use D = sum_mu D_mu, so D^2 keeps
+     the mu != nu cross terms: they agree with the Laplacian only in the free
+     field, and their continuum limit is Dslash^2 = Laplacian + 1/2 sigma.F. */
   if(      strcmp("laplace4d",  qss_op->fermion_flow_op)==0 )
     smearParams.fermion_flow_type = QUDA_FERMION_FLOW_LAPLACE_4D;
   else if( strcmp("laplace3d",  qss_op->fermion_flow_op)==0 )
