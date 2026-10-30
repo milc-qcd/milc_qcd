@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+
 /* Non-SciDAC file formats are deprecated. These non-QIO procedures are kept temporarily */
 
 #ifndef HAVE_QIO
@@ -128,6 +129,122 @@ void w_close_ks_eigen(int flag, ks_eigen_file *kseigf){
 /* QIO version */
 
 #include "../include/io_scidac_ks.h"
+
+/**************************************************************/
+void
+initialize_local_eigenpairs(void){
+  eigVal = NULL;
+  eigVec = NULL;
+}
+
+/**************************************************************/
+void
+destroy_local_eigenpairs(void){
+  if(eigVec != NULL){
+    for(int i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
+    free(eigVec);
+    eigVec = NULL;
+  }
+  if(eigVal != NULL){
+    free(eigVal);
+    eigVal = NULL;
+  }
+}
+
+/**************************************************************/
+/* Compute or reread eigenpairs */
+void
+restore_eigenvectors_from_file(imp_ferm_links_t *fn, ks_eigen_param *eigen_param,
+			       int startflag, char startfile[],
+			       int saveflag, char savefile[]){
+  
+  /* Move KS phases and apply time boundary condition, based on the
+     coordinate origin and time_bc */
+  Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+  /* Set values in the structure fn */
+  set_boundary_twist_fn(fn, bdry_phase, param.coord_origin);
+  /* Be sure the boundary twist is in, if needed */
+  if(twist_status(fn) == OFF)boundary_twist_fn(fn, ON);
+      
+#if !( defined(HAVE_QUDA) && defined(USE_EIG_GPU) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
+  
+  /* MILC handles the eigenvectors */
+  
+  /* Allocate space on host for eigenpairs if QUDA is not handling them */
+  if(eigVal == NULL){
+    eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
+    if(eigVal == NULL){
+      printf("No room for eigenvalues\n");
+      terminate(1);
+    }
+  }
+  if(eigVec == NULL){
+    eigVec = (dsu3_vector **)malloc(Nvecs_tot*sizeof(dsu3_vector *));
+    for(int i=0; i < Nvecs_tot; i++){
+      eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+      if(eigVec[i] == NULL){
+	printf("No room for eigenvector\n");
+	terminate(1);
+      }
+    }
+  }
+
+  /* Compute or read eigenpairs */
+  
+  if(startflag == FRESH){
+    
+    /* Compute eigenpairs and construct other-parity eigenvectors */
+    int total_R_iters;
+    total_R_iters=ks_eigensolve(eigVec, eigVal, eigen_param, 1);
+    node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
+    construct_eigen_other_parity(eigVec, eigVal, eigen_param, fn);
+    
+  } else {
+
+    /* Reload eigenvectors */
+
+    eigen_param->Nvecs = Nvecs_tot;  /* Reset to requested number */
+    int status = reload_ks_eigen(startflag, startfile, &eigen_param->Nvecs, eigVal, eigVec, fn, 1);
+    if(status != 0)terminate(1);
+    
+  }      
+
+  int Nvecs_curr = eigen_param->Nvecs;
+  
+  /* Calculate and print the residues and norms of the eigenvectors */
+  double *resid = (double *)malloc(Nvecs_curr*sizeof(double));
+  construct_eigen_other_parity(eigVec, eigVal, eigen_param, fn);
+  node0_printf("Even site residuals\n");
+  check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn );
+  node0_printf("Odd site residuals\n");
+  check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn );
+  
+  if(saveflag != FORGET){
+    int status = save_ks_eigen(saveflag, savefile,
+			       Nvecs_curr, eigVal, eigVec, resid, 1);
+    if(status != 0){
+      node0_printf("ERROR writing eigenvectors\n");
+    }
+  }
+
+  free(resid);  resid  = NULL;
+
+#endif
+
+#if ( defined(HAVE_QUDA) && ( defined(USE_CG_GPU) || defined(USE_CURRENT_GPU) ) )
+
+  /* QUDA handles the eigenvectors */
+
+  /* Compute or reread eigenpairs with QUDA or just load the above
+     ones into QUDA.  Only needed when a QUDA consumer (deflated CG or
+     exact current) will use a device-resident deflation space. */
+  /* Pass load_other_parity=1: exact current (qudaExactCurrent) requires
+     BOTH parity deflation spaces resident. */
+  load_evecs_quda(fn, 1);
+  
+#endif
+  
+}
 
 /*---------------------------------------------------------------*/
 

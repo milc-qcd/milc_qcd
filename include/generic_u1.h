@@ -10,12 +10,29 @@
 
 #include "../include/complex.h"
 
+/*****************************************************************************/
+/* Everything needed to build the U(1)-modified fermion links for a set of
+   U(1) fields.  The caller owns the fields themselves: in use case (a)
+   they come from generate_u1_gauge_field(), in use case (b) they are
+   read in.  Either way they are plain vector potentials, indexed
+   u1_A[iU1][4*i+dir], as create_u1_A_field() allocates them. */
+
+typedef struct {
+  int nU1;           /* Number of U(1) vector potentials */
+  Real **u1_A;       /* [nU1] fields, each 4*sites_on_node Reals */
+  int n_naiks;       /* Naik epsilon table, as for create_fermion_links_from_site */
+  double *eps_naik;
+  int i_naik;        /* Which Naik epsilon fn_mass corresponds to */
+} u1_field_info_t;
+
 /* u1avlink.c */
 void u1avlink(double *sLink, double *tLink, double charge);
 
 /* u1link.c */
 Real *create_u1_A_field(void);
+Real **create_u1_A_field_array(int nU1_A);
 void destroy_u1_A_field(Real *A);
+void destroy_u1_A_field_array(int nU1_A, Real **A);
 void u1phase_on(Real charge, Real *A);
 void u1phase_off(void);
 
@@ -54,6 +71,7 @@ typedef enum {
 
 void initialize_u1_gauge_field(u1_gauge_fix_t gauge, u1_zero_mode_t scheme);
 void generate_u1_gauge_field(Real *u1_A);
+void generate_u1_gauge_field_array(int nU1_A, Real *u1_A_array[]);
 void finalize_u1_gauge_field(void);
 void show_u1_gauge_field_opts(u1_gauge_fix_t gauge, u1_zero_mode_t scheme);
 

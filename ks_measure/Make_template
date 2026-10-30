@@ -19,8 +19,8 @@
 #	ks_measure_hisq_mu_eos	        " plus nonzero chemical potential (HISQ)
 #       ks_measure_eigcg_hisq	        Measurements with eigcg-generated eigenpairs
 #	ks_measure_current_hisq         Disconnected vector current measurements
-#	ks_measure_current_hisq_u1      Disconn with photon (experimental)
-#	ks_measure_current_hisq_u1_loop Disconn with photon (experimental)
+#	ks_measure_current_hisq_u1_valence Disconn with photon (experimental)
+#	ks_measure_current_hisq_u1_sea  Disconn with photon (experimental)
 #	ks_measure_current_eigcg_hisq   Disconn but with eigcg eigenvectors (experimental)
 
 MYINCLUDEDIR = .
@@ -54,6 +54,7 @@ MY_OBJECTS =         \
 
 G_U1_OBJECTS =       \
   io_u1lat.o         \
+  u1_gauge_field.o   \
   u1link.o           \
   u1plaq.o
 
@@ -247,15 +248,14 @@ ks_measure_hisq_mu_eos::
 
 # HISQ + U(1)
 
-ks_measure_current_hisq_u1::
+ks_measure_current_hisq_u1_valence::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC -DU1_FIELD" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC -DU1_VALENCE" \
 	"EXTRA_OBJECTS += f_meas_current.o ${G_U1_OBJECTS}"
 
-ks_measure_current_hisq_u1_loop::
+ks_measure_current_hisq_u1_sea::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC -DU1_FIELD" \
-	"DEFINES += -DQED_LOOP" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC -DU1_SEA" \
 	"EXTRA_OBJECTS += f_meas_current.o ${G_U1_OBJECTS}"
 
 clean:

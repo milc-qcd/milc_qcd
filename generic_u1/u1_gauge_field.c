@@ -893,3 +893,12 @@ void finalize_u1_gauge_field(void){
 } /* end of finalize_u1_gauge_field() */
 
 /* ************************************************************	*/
+
+/* Generate an array of U(1) vector potential fields */
+
+void generate_u1_gauge_field_array(int nU1_A, Real *u1_A_array[]){
+  for(int iU1_A = 0; iU1_A < nU1_A; iU1_A++)
+    generate_u1_gauge_field(u1_A_array[iU1_A]);
+}
+
+/* ************************************************************	*/

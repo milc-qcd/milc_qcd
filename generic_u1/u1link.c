@@ -25,6 +25,23 @@ void destroy_u1_A_field(Real *A){
     free(A);
 }
 
+/* ************************ */
+Real **create_u1_A_field_array(int nU1_A){
+  Real **A;
+  A = (Real **)malloc(sizeof(Real *)*nU1_A);
+  for(int iU1_A = 0; iU1_A < nU1_A; iU1_A++)
+    A[iU1_A] = create_u1_A_field();
+  return A;
+}
+
+void destroy_u1_A_field_array(int nU1_A, Real **A){
+  if(A != NULL)
+    for(int iU1_A = 0; iU1_A < nU1_A; iU1_A++)
+      destroy_u1_A_field(A[iU1_A]);
+
+  free(A);
+}
+
 #ifndef NO_GAUGE_FIELD
 static su3_matrix **tlink;
 

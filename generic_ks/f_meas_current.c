@@ -7,14 +7,14 @@
 
 /* Measure the fermionic observable:
 
-    J_mu
+    J_mu and J_sea
     
-    Write the result to a file as a real four-vector field 
-
     Entry points
 
-    f_meas_current_diff
-    f_meas_current
+    f_meas_sea_current_diff
+    f_meas_sea_current
+    f_meas_valence_current_diff
+    f_meas_valence_current
 
     Quantities measured depend on OPT_UDLSC, MASS_UDLSC  and the n_masses 
    
@@ -46,25 +46,12 @@
 #else
 #include "../include/openmp_defs.h"
 #endif
+#if defined(U1_VALENCE) || defined(U1_SEA)
+#include "../include/generic_u1.h"
+#endif
 
 #define NMU 4
 #define NRECINFO 128
-
-/*****************************************************************************/
-/* Everything needed to build the U(1)-modified fermion links for a set of
-   U(1) fields.  The caller owns the fields themselves: in use case (a)
-   they come from generate_u1_gauge_field(), in use case (b) they are
-   read in.  Either way they are plain vector potentials, indexed
-   u1_A[iU1][4*i+dir], as create_u1_A_field() allocates them. */
-
-typedef struct {
-  int nU1;           /* Number of U(1) vector potentials */
-  Real **u1_A;       /* [nU1] fields, each 4*sites_on_node Reals */
-  Real charge;       /* Quark charge, in units of e */
-  int n_naiks;       /* Naik epsilon table, as for create_fermion_links_from_site */
-  double *eps_naik;
-  int i_naik;        /* Which Naik epsilon fn_mass corresponds to */
-} u1_field_info_t;
 
 /*****************************************************************************/
 /* Create spin-taste indices for current */
@@ -112,6 +99,26 @@ write_tslice_values_begin(const char *tag){
 static void
 write_tslice_values_end(const char *tag){
   node0_printf("END JTMU%s\n", tag);
+}
+
+/*****************************************************************************/
+/*Write current record for the accumulated average over random sources */
+static void
+write_sea_values_begin(const char *tag){
+  node0_printf("BEGIN JSEA%s\n", tag);
+}
+
+/*****************************************************************************/
+/*Write current record for the accumulated average over random sources */
+static void
+write_sea_values_group(const char *tag, Real mass, Real charge){
+  node0_printf("JSEA%s MASS %g CHARGE %g\n", tag, mass, charge);
+}
+
+/*****************************************************************************/
+static void
+write_sea_values_end(const char *tag){
+  node0_printf("END JSEA%s\n", tag);
 }
 
 /*****************************************************************************/
@@ -171,6 +178,26 @@ write_tslice_values(const char *tag, int jr, Real mass1, Real charge1,
   }
 
   free(jtmu);
+}
+
+/*****************************************************************************/
+static void
+write_sea_values(const char *tag, int jr, int jU1_A, Real j_sea ){
+
+  /* Write the values for j_sea summed over the whole lattice */
+  Real j_sea_out = j_sea;
+  g_doublesum(&j_sea_out);
+  /* Negative random index jr signals exact low mode */
+  if(jr < 0){
+    node0_printf("JSEA%s U1 %d %.10f\n", tag, jU1_A, j_sea_out);
+  } else {
+    node0_printf("JSEA%s RN %d U1 %d %.10f\n", tag, jr, jU1_A, j_sea_out);
+  }
+  
+#if 0
+  // DEBUG
+  printf("JSEA0 %20.12f\n", jsea);
+#endif
 }
 
 /*****************************************************************************/
@@ -417,7 +444,7 @@ my_dumpvec( su3_vector *v ){
 /************************************************************************/
 static void
 collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
-			su3_vector *gr0){
+			su3_vector *gr0[]){
   /* Create thinned sources of the specified parity */
   /* Result in gr */
 
@@ -436,7 +463,7 @@ collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
 #endif
 	
 	/* Apply source thinning */
-	copy_v_field( gr[is], gr0 );
+	copy_v_field( gr[is], gr0[is] );
 	thin_source( gr[is], d, ex, ey, ez, et );
 	
 	/* Project out (remove) the low mode part, based on the given eigenvectors */
@@ -477,30 +504,38 @@ collect_evenodd_sources(su3_vector *gr[], int ns, int parity, int thinning,
 }
 
 /************************************************************************/
-/* Collect diluted random sources for mrhs */
+/* Collect undiluted random sources for mrhs solves */
+
+static su3_vector **
+create_source_array(int nr){
+  su3_vector **gr0 = (su3_vector **)malloc(nr*sizeof(su3_vector *));
+  for(int jr = 0; jr < nr; jr++)
+    gr0[jr] = create_v_field();
+  return gr0;
+}
 
 static void
-collect_sources(su3_vector *gr_even[], su3_vector *gr_odd[], int nr,
-		int thinning, int evol){
-
-  su3_vector *gr0 = create_v_field();
+fill_sources(su3_vector *gr0[], int nr){
 
   for(int jr = 0; jr < nr; jr++){
     
 #ifndef Z2RSOURCE
-    grsource_plain_field( gr0, EVENANDODD );
+    grsource_plain_field( gr0[jr], EVENANDODD );
 #else
-    z2rsource_plain_field( gr0, EVENANDODD );
+    z2rsource_plain_field( gr0[jr], EVENANDODD );
 #endif
-    //    node0_printf("EVEN sources\n");
-    collect_evenodd_sources(gr_even + jr*evol, evol, EVEN, thinning, gr0);
-    //    node0_printf("ODD sources\n");
-    collect_evenodd_sources(gr_odd  + jr*evol, evol, ODD,  thinning, gr0);
+
   } /* jr */
-
-  destroy_v_field(gr0);
 }
-
+ 
+static void
+destroy_source_array(su3_vector *gr0[], int nr){
+  if(gr0 == NULL)return;
+  for(int jr = 0; jr < nr; jr++)
+    if(gr0[jr] != NULL)destroy_v_field(gr0[jr]);
+  free(gr0);
+}
+ 
 /************************************************************************/
 /* Calculate current densities for a given quark mass and source
    parity using a list of thinned stochastic estimators */
@@ -570,7 +605,166 @@ block_current_stochastic( int nr, Real *j_mu_mass[], Real mass, int nsrc, int si
   free(M_inv_gr);
 
 } /* block_current_stochastic */
+
+#ifdef U1_SEA
+
+/************************************************************************/
+static int
+check_fn_match(imp_ferm_links_t *fn_U1, imp_ferm_links_t *fn_mass){
+
+  /* The two sets of links have to differ by nothing but the U(1)
+     phase, or their difference is not what we want.  scalar_mult_add_fn
+     only warns about a phase mismatch, because an existing HISQ caller
+     can reach it legitimately, so check it properly here. */
+
+  char myname[] = "check_fn_match";
+
+  if(fn_U1->eps_naik != fn_mass->eps_naik){
+    node0_printf("%s: Naik epsilon mismatch: %g with U(1), %g without\n",
+		 myname, fn_U1->eps_naik, fn_mass->eps_naik);
+    return 1;
+  }
+  if(fn_U1->phase == NULL || fn_mass->phase == NULL){
+    node0_printf("%s: missing link phase info\n", myname);
+    return 1;
+  }
+  if(fn_U1->phase->twist_in != fn_mass->phase->twist_in){
+    node0_printf("%s: boundary twist is %s with U(1) and %s without.  "
+		 "The U(1) links are built fresh and untwisted, so twist "
+		 "them to match before taking the difference.\n", myname,
+		 fn_U1->phase->twist_in ? "on" : "off",
+		 fn_mass->phase->twist_in ? "on" : "off");
+    return 1;
+  }
+  for(int dir = XUP; dir <= TUP; dir++)
+    if(fn_U1->phase->bdry_phase[dir] != fn_mass->phase->bdry_phase[dir] ||
+       fn_U1->phase->r0[dir] != fn_mass->phase->r0[dir]){
+      node0_printf("%s: link phase conventions differ in direction %d\n",
+		   myname, dir);
+      return 1;
+    }
+
+  return 0;
+}
+
+/************************************************************************/
+static imp_ferm_links_t *
+create_dslash_diff(Real *u1_A_tmp, Real charge, imp_ferm_links_t *fn_mass){
+
+  /* Dummy values.  No support for nonzero Naik epsilon here. */
+  int n_naiks = 0;
+  double eps_naik[1] = { 0. };
       
+  /* Fermion links for the thin links times this U(1) field.  The
+     thin links in the site structure are not disturbed. */
+  fermion_links_t *fl_U1 =
+    create_fermion_links_from_site_u1(MILC_PRECISION, n_naiks, eps_naik, charge, u1_A_tmp);
+  imp_ferm_links_t *fn_U1 = get_fm_links(fl_U1, 0);
+
+  /* Apply boundary phase if requested */
+  Real bdry_phase[4] = {0.,0.,0.,param.time_bc};
+  set_boundary_twist_fn(fn_U1, bdry_phase, param.coord_origin);
+  if(twist_status(fn_U1) == OFF)boundary_twist_fn(fn_U1, ON);
+  
+  if(check_fn_match(fn_U1, fn_mass))
+    terminate(1);
+  
+  /* fn_diff = fn_U1 - fn_mass.  scalar_mult_add_fn checks that the
+     two sets of links carry the same phase conventions and copies
+     them to fn_diff. */
+  
+  /* Workspace for the difference links, reused for every U(1) field */
+  imp_ferm_links_t *fn_diff = create_fn_links();
+  
+  scalar_mult_add_fn(fn_U1, fn_mass, -1., fn_diff);
+  
+  /* Rebuild the back links of the difference if this build uses them */
+  /* Might not want back links because we have only a few Dslashes here */
+  if(get_fatbacklinks(fn_mass) != NULL)
+    load_fn_backlinks(fn_diff);
+
+  destroy_fermion_links_from_site(fl_U1);
+  return fn_diff;
+}
+
+/************************************************************************/
+static void
+block_current_stochastic_U1( int nr, Real j_sea[], Real charge, int nsrc,
+			     int sign, int parity, 
+			     quark_invert_control *qic,
+			     su3_vector **M_inv_gr, su3_vector *dM_inv_gr,
+			     imp_ferm_links_t *fn_mass, Real *u1_A_tmp, su3_vector *gr[])
+{
+  /* Dummy values.  No support for nonzero Naik epsilon here. */
+  int n_naiks = 0;
+  double eps_naik[1] = { 0. };
+
+  imp_ferm_links_t *fn_diff = create_dslash_diff(u1_A_tmp, charge, fn_mass);
+      
+  /* dM_inv_gr = [ Dslash(fn_U1) - Dslash(fn_mass) ] M_inv_gr */
+  /* Using the CPU version avoids wasteful host-device transfers */
+  for(int is = 0; is < nsrc; is++){
+    dslash_fn_field_cpu( M_inv_gr[is], dM_inv_gr, parity, fn_diff);
+    
+    /* For each source, close the trace */
+    /* J = -imag[gr * M_inv_gr] */
+    /* If sign = +1, add the result.  If sign = -1, subtract it */
+    int evol = nsrc/nr;  /* Number of thinned source sites */
+    int ir = is/evol;    /* Random source block index */
+    int i;
+    FORSOMEFIELDPARITY(i, parity){
+      complex cc = su3_dot( gr[is]+i, dM_inv_gr+i );
+      j_sea[ir] += -sign*cc.real;
+#if 0
+      printf("j_sea src[%d] %d %d %d %d %d %g\n", is,
+	     lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t,
+	     j_sea[ir]);
+#endif
+    } END_LOOP;
+  } /* is */
+
+  destroy_fn_links(fn_diff);
+
+} /* block_current_stochastic_U1 */
+
+#endif /* U1_SEA */
+
+/*********************************************************************/
+/* Create fields for high-mode sea-quark delta D, one for each
+   block of nr random sources and mass */
+static void
+clear_j_sea(int nr, Real j_sea[]){
+  for(int ir = 0; ir < nr; ir++) j_sea[ir] = 0.;
+}
+
+/*********************************************************************/
+/* Create fields for high-mode sea-quark delta D, one for each
+   block of nr random sources and mass */
+static Real *
+create_j_sea(int nr){
+  Real *j_sea = (Real *)malloc(nr*sizeof(Real));
+  clear_j_sea(nr, j_sea);
+  return j_sea;
+}
+
+/*********************************************************************/
+/* Create fields for high-mode sea-quark delta D, one for each
+   block of nr random sources and mass */
+static void
+combine_j_sea(int nr, Real c,
+	      Real j_seaA[], Real j_seaB[], Real j_sea[]){
+  for(int ir = 0; ir < nr; ir++)
+    j_sea[ir] = j_seaA[ir] + c*j_seaB[ir];
+}
+
+/*********************************************************************/
+static void
+destroy_j_sea(Real j_sea[]){
+ free(j_sea);
+}
+
+#ifdef U1_SEA
+
 /************************************************************************/
 /* Calculate the stochastic difference contribution Tr(delta Dslash
    M^{-1}) caused by introducing a U(1) field, for a given quark mass
@@ -592,134 +786,48 @@ block_current_stochastic( int nr, Real *j_mu_mass[], Real mass, int nsrc, int si
 */
 
 static void
-block_current_stochastic_multiU1( int nr, Real **j_mass[], Real mass, int nsrc,
-				  int sign, int parity, quark_invert_control *qic, 
-				  imp_ferm_links_t *fn_mass, su3_vector *gr[],
-				  u1_field_info_t *u1info){
+block_current_stochastic_multiU1( int nr, int nU1_A_array, Real *jE_sea[], Real *jO_sea[],
+				  Real charge, int nsrc,
+				  int sign, int parity, 
+				  quark_invert_control *qic, 
+				  imp_ferm_links_t *fn_mass,
+				  su3_vector *M_inv_gr[],
+				  Real *u1_A_array[], su3_vector *gr[]){
   
   char myname[] = "block_current_stochastic_multiU1";
 
-  int otherparity = ODD;  /* Initialized to humor the compiler */
-
   /* Offset for staggered phases in the current definition */
   int r_offset[4] = {0, 0, 0, 0};
-
-  int nU1 = u1info->nU1;
-
-  /* M_inv_gr is reused for every U(1) field, so the dslash is done out
-     of place, into dM_inv_gr */
-  su3_vector **MdagM_inv_gr  = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
-  su3_vector **M_inv_gr  = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
-  for(int is = 0; is < nsrc; is++){
-    MdagM_inv_gr[is]  = create_v_field();
-    M_inv_gr[is]  = create_v_field();
-  }
-
-  switch(parity){
-  case(EVEN): otherparity=ODD; break;
-  case(ODD):  otherparity=EVEN; break;
-  case(EVENANDODD):
-    node0_printf("%s: EVENANDODD won't work with this algorighmn");
-    terminate(1);
-  }
-
-  /* Calculate (M^\daggerM)^{-1} gr on "parity" sites */
-  qic->parity = parity;
-  ks_congrad_block_field(nsrc, gr, MdagM_inv_gr, qic, mass, fn_mass);
-  /* Calculate M^{-1} gr on "otherparity" sites */
-  for(int is = 0; is < nsrc; is++)
-    dslash_fn_field(MdagM_inv_gr[is], M_inv_gr[is] , otherparity, fn_mass);
-
-  /* Workspace for the difference links, reused for every U(1) field */
-  imp_ferm_links_t *fn_diff = create_fn_links();
-
   su3_vector *dM_inv_gr = create_v_field();
+  Real *j_sea = create_j_sea(nr);
 
-  for(int iU1 = 0; iU1 < nU1; iU1++){
+  for(int iU1_A = 0; iU1_A < nU1_A_array; iU1_A++){
 
-    /* Fermion links for the thin links times this U(1) field.  The
-       thin links in the site structure are not disturbed. */
-    fermion_links_t *fl_U1 =
-      create_fermion_links_from_site_u1(MILC_PRECISION, u1info->n_naiks,
-					u1info->eps_naik, u1info->charge,
-					u1info->u1_A[iU1]);
-    imp_ferm_links_t *fn_U1 = get_fm_links(fl_U1, u1info->i_naik);
+    /* Call with "charge" */
+    clear_j_sea(nr, j_sea);
+    block_current_stochastic_U1(nr, j_sea, charge, nsrc, sign, parity, qic,
+				M_inv_gr, dM_inv_gr, fn_mass, u1_A_array[iU1_A], gr);
 
-    /* The two sets of links have to differ by nothing but the U(1)
-       phase, or their difference is not what we want.  scalar_mult_add_fn
-       only warns about a phase mismatch, because an existing HISQ caller
-       can reach it legitimately, so check it properly here. */
-    if(fn_U1->eps_naik != fn_mass->eps_naik){
-      node0_printf("%s: Naik epsilon mismatch: %g with U(1), %g without\n",
-		   myname, fn_U1->eps_naik, fn_mass->eps_naik);
-      terminate(1);
-    }
-    if(fn_U1->phase == NULL || fn_mass->phase == NULL){
-      node0_printf("%s: missing link phase info\n", myname);
-      terminate(1);
-    }
-    if(fn_U1->phase->twist_in != fn_mass->phase->twist_in){
-      node0_printf("%s: boundary twist is %s with U(1) and %s without.  "
-		   "The U(1) links are built fresh and untwisted, so twist "
-		   "them to match before taking the difference.\n", myname,
-		   fn_U1->phase->twist_in ? "on" : "off",
-		   fn_mass->phase->twist_in ? "on" : "off");
-      terminate(1);
-    }
-    for(int dir = XUP; dir <= TUP; dir++)
-      if(fn_U1->phase->bdry_phase[dir] != fn_mass->phase->bdry_phase[dir] ||
-	 fn_U1->phase->r0[dir] != fn_mass->phase->r0[dir]){
-	node0_printf("%s: link phase conventions differ in direction %d\n",
-		     myname, dir);
-	terminate(1);
-      }
+    combine_j_sea(nr, +0.5, jE_sea[iU1_A], j_sea, jE_sea[iU1_A]);
+    combine_j_sea(nr, +0.5, jO_sea[iU1_A], j_sea, jO_sea[iU1_A]);
 
-    /* fn_diff = fn_U1 - fn_mass.  scalar_mult_add_fn checks that the
-       two sets of links carry the same phase conventions and copies
-       them to fn_diff. */
-    scalar_mult_add_fn(fn_U1, fn_mass, -1., fn_diff);
+    /* Call with opposite charge */
+    clear_j_sea(nr, j_sea);
+    block_current_stochastic_U1(nr, j_sea, -charge, nsrc, sign, parity, qic,
+				M_inv_gr, dM_inv_gr, fn_mass, u1_A_array[iU1_A], gr);
 
-    /* Rebuild the back links of the difference if this build uses them */
-    if(get_fatbacklinks(fn_mass) != NULL)
-      load_fn_backlinks(fn_diff);
+    /* Complete with even charge and odd charge combinations */
+    combine_j_sea(nr, +0.5, jE_sea[iU1_A], j_sea, jE_sea[iU1_A]);
+    combine_j_sea(nr, -0.5, jO_sea[iU1_A], j_sea, jO_sea[iU1_A]);
 
-    /* dM_inv_gr = [ Dslash(fn_U1) - Dslash(fn_mass) ] M_inv_gr */
-    /* Using the CPU version avoids wasteful host-device transfers */
-    for(int is = 0; is < nsrc; is++){
-      dslash_fn_field_cpu( M_inv_gr[is], dM_inv_gr, parity, fn_diff);
-  
-      /* For each source, close the trace */
-      /* J = -imag[gr * M_inv_gr] */
-      /* If sign = +1, add the result.  If sign = -1, subtract it */
-      int evol = nsrc/nr;  /* Number of thinned source sites */
-      int ir = is/evol;    /* Random source block index */
-      int i;
-      FORSOMEFIELDPARITY(i, parity){
-	complex cc = su3_dot( gr[is]+i, dM_inv_gr+i );
-	j_mass[iU1][ir][i] += -sign*cc.imag;
-#if 0
-	printf("j U1[%d] src[%d] %d %d %d %d %d %g\n", iU1, is,
-	       lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t,
-	       j_mass[iU1][ir][i]);
-#endif
-      } END_LOOP;
-    } /* is */
+  } /* iU1_A */
 
-    destroy_fermion_links_from_site(fl_U1);
-
-  } /* iU1 */
-
+  destroy_j_sea(j_sea);
   destroy_v_field(dM_inv_gr);
-  destroy_fn_links(fn_diff);
-
-  for(int is = 0; is < nsrc; is++){
-    destroy_v_field(M_inv_gr[is]);
-    destroy_v_field(MdagM_inv_gr[is]);
-  }
-  free(M_inv_gr);
-  free(MdagM_inv_gr);
 
 } /* block_current_stochastic_multiU1 */
+
+#endif
       
 /************************************************************************/
 /* Calculate the difference in current densities for a given pair of quark masses
@@ -1042,17 +1150,31 @@ block_current_stochastic_delta_udls( Real **j_mu[], Real masses[],
 
 static void
 block_current_diff(int n_masses, Real **j_mu[], Real masses[],
+		   int eigstartflags[], char *eigstartfiles[],
+		   ks_eigen_param *eigen_param,
 		   imp_ferm_links_t *fn_mass[], 
 		   quark_invert_control *qic_precise,
 		   quark_invert_control *qic_sloppy,
-		   int nsrc, int nr, su3_vector *gr_even[], su3_vector *gr_odd[]){
+		   int nsrc, int nr, int thinning, su3_vector *gr_even[],
+		   su3_vector *gr_odd[], su3_vector *gr0[]){
 
   char myname[] = "block_current_diff";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   /* Construct current density from the list of sources */
   for(int j = 0; j < n_masses; j++){
-    
+
+    /* Load the appropriate eigenpairs. No provision for saving here. */
+    if(eigstartflags != NULL && eigstartfiles != NULL)
+      restore_eigenvectors_from_file(fn_mass[j], eigen_param,
+				     eigstartflags[j], eigstartfiles[j], FORGET, NULL);
+
+    int evol = nsrc/nr;  /* Number of thinned source sites */
+    for(int jr = 0; jr < nr; jr++){
+      collect_evenodd_sources(gr_even + jr*evol, evol, EVEN, thinning, gr0 + jr);
+      collect_evenodd_sources(gr_odd  + jr*evol, evol, ODD,  thinning, gr0 + jr);
+    }
+
     /* First, the sloppy high-mode solution */
     node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", masses[j]);
     
@@ -1075,6 +1197,103 @@ block_current_diff(int n_masses, Real **j_mu[], Real masses[],
   } /* j */
   
 } /* block_current_diff */
+
+#ifdef U1_SEA
+
+/************************************************************************/
+
+/* Calculate the TSM sea quark difference between fine and sloppy
+   solves separately for all masses */
+
+static void
+compute_jhi_sea_diff(int n_masses, Real **jE_sea[], Real **jO_sea[],
+		     Real masses[], Real charges[], imp_ferm_links_t *fn_mass,
+		     quark_invert_control *qic_precise,
+		     quark_invert_control *qic_sloppy,
+		     int nsrc, int nr, int nU1_A_array, Real *u1_A_array[],
+		     su3_vector *gr_even[], su3_vector *gr_odd[]){
+
+  char myname[] = "compute_jhi_sea_diff";
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
+
+  /* M_inv_gr is reused for every U(1) field, so the dslash is done out
+     of place, into dM_inv_gr */
+  su3_vector **MdagM_inv_gr  = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  su3_vector **M_inv_gr  = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  for(int is = 0; is < nsrc; is++){
+    MdagM_inv_gr[is]  = create_v_field();
+    M_inv_gr[is]  = create_v_field();
+  }
+
+  /* Construct current density from the list of sources */
+  for(int j = 0; j < n_masses; j++){
+    Real mass = masses[j];
+    
+    /* First, the sloppy high-mode solution */
+    quark_invert_control *qic = qic_sloppy + j;
+
+    /* Calculate (M^\daggerM)^{-1} gr for both parities */
+    qic->parity = EVEN;
+    ks_congrad_block_field(nsrc, gr_even, MdagM_inv_gr, qic, mass, fn_mass);
+    qic->parity = ODD;
+    ks_congrad_block_field(nsrc, gr_odd, MdagM_inv_gr, qic, mass, fn_mass);
+    /* Calculate M^{-1} gr for both parities */
+    for(int is = 0; is < nsrc; is++){
+      dslash_fn_field(MdagM_inv_gr[is], M_inv_gr[is] , EVENANDODD, fn_mass);
+    }
+
+    node0_printf("Solving sloppily for all EVEN displacements for mass %g\n", masses[j]);
+    block_current_stochastic_multiU1( nr, nU1_A_array, jE_sea[j], jO_sea[j],
+				      charges[j], nsrc,
+				      -1, EVEN, qic_sloppy + j, fn_mass,
+				      M_inv_gr, u1_A_array, gr_even);
+
+    //      node0_printf("jE_sea[%d][0] = %g jO_sea[%d][0] = %g\n",j,jE_sea[j][0],j,jO_sea[j][0]);
+
+    node0_printf("Solving sloppily for all ODD displacements for mass %g\n", masses[j]);
+    block_current_stochastic_multiU1( nr, nU1_A_array, jE_sea[j], jO_sea[j],
+				      charges[j], nsrc,
+				      -1, ODD, qic_sloppy + j, fn_mass,
+				      M_inv_gr, u1_A_array, gr_odd);
+    
+
+    /* Next, continue to a "precise" solution from the same sources */
+
+    /* Calculate (M^\daggerM)^{-1} gr for both parities */
+    qic = qic_precise + j;
+    qic->parity = EVEN;
+    ks_congrad_block_field(nsrc, gr_even, MdagM_inv_gr, qic, mass, fn_mass);
+    qic->parity = ODD;
+    /* Calculate M^{-1} gr for both parities */
+    ks_congrad_block_field(nsrc, gr_odd, MdagM_inv_gr, qic, mass, fn_mass);
+
+    for(int is = 0; is < nsrc; is++){
+      dslash_fn_field(MdagM_inv_gr[is], M_inv_gr[is] , EVENANDODD, fn_mass);
+    }
+
+    node0_printf("Solving precisely for all EVEN displacements for mass %g\n", masses[j]);
+    block_current_stochastic_multiU1( nr, nU1_A_array, jE_sea[j], jO_sea[j],
+				      charges[j], nsrc,
+				      +1, EVEN, qic_precise + j, fn_mass,
+				      M_inv_gr, u1_A_array, gr_even);
+    
+    node0_printf("Solving precisely for all ODD displacements for mass %g\n", masses[j]);
+    block_current_stochastic_multiU1( nr, nU1_A_array, jE_sea[j], jO_sea[j],
+				      charges[j], nsrc,
+				      +1, ODD, qic_precise + j, fn_mass,
+				      M_inv_gr, u1_A_array, gr_odd);
+  } /* j */
+  
+  for(int is = 0; is < nsrc; is++){
+    destroy_v_field(M_inv_gr[is]);
+    destroy_v_field(MdagM_inv_gr[is]);
+  }
+  free(M_inv_gr);
+  free(MdagM_inv_gr);
+
+} /* compute_jhi_sea_diff */
+
+#endif
 
 /************************************************************************/
 /* Calculate the current density difference between fine and sloppy
@@ -1440,10 +1659,17 @@ block_currents_diff_deltam(int n_masses, Real **j_mu[], Real masses[],
 			   imp_ferm_links_t *fn_mass[], 
 			   quark_invert_control *qic_precise,
 			   quark_invert_control *qic_sloppy, int nsrc,
-			   int nr, su3_vector **gr_even, su3_vector **gr_odd){
+			   int nr, int thinning, su3_vector **gr_even,
+			   su3_vector **gr_odd, su3_vector *gr0[]){
 
   char myname[] = "block_currents_diff_deltam";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
+
+  int evol = nsrc/nr;  /* Number of thinned source sites */
+  for(int jr = 0; jr < nr; jr++){
+    collect_evenodd_sources(gr_even + jr*evol, evol, EVEN, thinning, gr0 + jr);
+    collect_evenodd_sources(gr_odd  + jr*evol, evol, ODD,  thinning, gr0 + jr);
+  }
 
   if(n_masses <= 3){
     /* Take the difference between the first two masses, but not the third */
@@ -1469,14 +1695,29 @@ block_currents_diff_deltam(int n_masses, Real **j_mu[], Real masses[],
 
 static void 
 block_current( int n_masses, Real **j_mu[], Real masses[],
+	       int eigstartflags[], char *eigstartfiles[],
+	       ks_eigen_param *eigen_param,
 	       imp_ferm_links_t *fn_mass[], quark_invert_control *qic,
-	       int nsrc, int nr, su3_vector *gr_even[], su3_vector *gr_odd[]){
+	       int nsrc, int nr, int thinning, su3_vector *gr_even[],
+	       su3_vector *gr_odd[], su3_vector *gr0[]){
 
   char myname[] = "block_current";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   /* Construct current density from the list of sources */
   for(int j = 0; j < n_masses; j++){
+
+    /* Load the appropriate eigenpairs. No provision for saving here. */
+    if(eigstartflags != NULL && eigstartfiles != NULL)
+      restore_eigenvectors_from_file(fn_mass[j], eigen_param,
+				     eigstartflags[j], eigstartfiles[j], FORGET, NULL);
+
+    int evol = nsrc/nr;  /* Number of thinned source sites */
+    for(int jr = 0; jr < nr; jr++){
+      collect_evenodd_sources(gr_even + jr*evol, evol, EVEN, thinning, gr0 + jr);
+      collect_evenodd_sources(gr_odd  + jr*evol, evol, ODD,  thinning, gr0 + jr);
+    }
+
     node0_printf("Solving for all EVEN displacements for mass %g\n", masses[j]);
     block_current_stochastic( nr, j_mu[j], masses[j], nsrc, +1, EVEN,
 			      qic + j, fn_mass[j], gr_even);
@@ -1719,11 +1960,18 @@ block_currents_delta_udlsc( int n_masses, Real **j_mu[], Real masses[],
 static void 
 block_currents_deltam( int n_masses, Real **j_mu[], Real masses[], 
 		       imp_ferm_links_t *fn[], quark_invert_control qic[],
-		       int nsrc, int nr, su3_vector *gr_even[], su3_vector *gr_odd[]){
+		       int nsrc, int nr, int thinning, su3_vector *gr_even[],
+		       su3_vector *gr_odd[], su3_vector *gr0[]){
 
   char myname[] = "block_currents_deltam";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
+  int evol = nsrc/nr;  /* Number of thinned source sites */
+  for(int jr = 0; jr < nr; jr++){
+    collect_evenodd_sources(gr_even + jr*evol, evol, EVEN, thinning, gr0 + jr);
+    collect_evenodd_sources(gr_odd  + jr*evol, evol, ODD,  thinning, gr0 + jr);
+  }
+  
   if(n_masses <= 3){
     block_currents_delta_lsc(n_masses, j_mu, masses, fn, nsrc, nr,
 			     qic, gr_even, gr_odd);
@@ -1798,6 +2046,8 @@ exact_current_quda(Real *jlow_mu1, Real *jlow_mu2, int nmass, Real masses[], imp
 
 #endif
 
+/*********************************************************************/
+
 static void
 exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
 
@@ -1834,8 +2084,76 @@ exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
   destroy_v_field(gr0); gr0 = NULL;
 }
 
-/*********************************************************************/
+#ifdef HAVE_QUDA
 
+/*********************************************************************/
+/* Calculate exact low-mode sea-quark loop using QUDA.
+ *
+ * For nmass=1, this function emulates MILC's exact_current()
+ * For nmass=2, this function emulates MILC's exact_current_delta_ls()
+ * For nmass=3, this function emulates MILC's exact_current_delta_udus
+ *
+ * Both parity eigenvectors must be loaded into QUDA before calling this function.
+ */
+static void
+exact_current_sea_quda(Real *jlow_sea, Real mass, imp_ferm_links_t *fn_diff, imp_ferm_links_t *fn_mass){
+
+  char myname[] = "exact_current_sea_quda";
+
+  QudaEigensolverArgs_t eig_args; // To tell QUDA how many eigenvectors to use
+
+#ifdef USE_EIG_GPU
+  // Here we use QUDA for the eigensolution or for reading is own eigenvector file
+  int quda_does_eigensolve = (param.ks_eigen_startflag == FRESH);
+#else
+  // Here, eigenvectors were loaded from file(s) by MILC or by a non-QUDA eigensolver
+  int quda_does_eigensolve = 0;
+#endif
+
+  load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
+  eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
+  eig_args.n_ev = eig_args.n_conv;
+
+  su3_matrix* dfatlink = get_fatlinks(fn_diff);
+  su3_matrix* dlonglink = get_lnglinks(fn_diff);
+
+  su3_matrix* fatlink = get_fatlinks(fn_mass);
+  su3_matrix* longlink = get_lnglinks(fn_mass);
+
+  // Compute exact current via QUDA
+  qudaExactSeaLoop(MILC_PRECISION, MILC_PRECISION, dfatlink, dlonglink, fatlink, longlink,
+		   eig_args, jlow_sea);
+
+} // exact_current_quda
+
+#endif
+
+/*********************************************************************/
+static void
+exact_current_sea(Real *jlow_sea, Real mass, imp_ferm_links_t *fn_diff, imp_ferm_links_t *fn_mass){
+
+  /* Compute exact sea-quark loop for a single mass */
+
+  su3_vector *dslashV = create_v_field();
+  su3_vector *ddslashV = create_v_field();
+  int Nvecs = param.eigen_param.Nvecs;
+  
+  for(int n = 0; n < Nvecs; n++){
+     dslash_fn_field(eigVec[n], dslashV, ODD, fn_mass);
+     dslash_fn_field(dslashV, ddslashV, EVEN, fn_diff);
+     int i;
+     FOREVENFIELDSITES(i){
+       complex z;
+       z = su3_dot( eigVec[n] + i, ddslashV + i);
+       *jlow_sea += -2*z.real/(eigVal[n]+4.0*mass*mass);
+     }
+  } /* n */
+  
+  destroy_v_field(dslashV);
+  destroy_v_field(ddslashV);
+}
+
+/*********************************************************************/
 static void
 exact_current_delta_ls(Real *jlow_mu[], Real masses[],
 		       imp_ferm_links_t *fn[]){
@@ -1957,6 +2275,8 @@ exact_current_delta_udus(Real *jlow_mu[], Real masses[], imp_ferm_links_t *fn[])
 
 static void
 exact_currents(int n_masses, Real *jlow_mu[], Real masses[],
+	       int eigstartflags[], char *eigstartfiles[],
+	       ks_eigen_param *eigen_param,
 	       imp_ferm_links_t *fn_mass[]){
 
   /* Compute exact low-mode current density for all masses 
@@ -1967,11 +2287,21 @@ exact_currents(int n_masses, Real *jlow_mu[], Real masses[],
   double dtime = -dclock();
 
   for(int j = 0; j < n_masses; j++){
+
+    /* Load the appropriate eigenpairs. No provision for saving here. */
+    if(eigstartflags != NULL && eigstartfiles != NULL)
+      restore_eigenvectors_from_file(fn_mass[j], eigen_param,
+				     eigstartflags[j], eigstartfiles[j], FORGET, NULL);
+    
 #if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+
     Real qmasses[1] = {masses[j]};
     exact_current_quda(jlow_mu[j], NULL, 1, qmasses, fn_mass[j]);
+
 #else
+
     exact_current(jlow_mu[j], masses[j], fn_mass[j]);
+
 #endif
   } /* j */
 
@@ -1991,6 +2321,31 @@ exact_currents(int n_masses, Real *jlow_mu[], Real masses[],
 #ifdef CGTIME
   node0_printf("Time for exact low modes %g sec\n", dtime);
 #endif
+}
+
+/*********************************************************************/
+
+static void
+exact_currents_sea(Real mass, Real *jlow_sea, imp_ferm_links_t *fn_diff,
+		   imp_ferm_links_t *fn_mass){
+
+  /* Compute exact low-mode sea-quark loop with the insertion of the
+     dslash difference operator */
+    
+#if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
+
+  exact_current_sea_quda(jlow_sea, mass, fn_diff, fn_mass);
+
+#else
+
+  exact_current_sea(jlow_sea, mass, fn_diff, fn_mass);
+
+#endif
+
+#if 0
+  node0_printf("Exact low mode for mass %g jlow_sea = %g\n", mass, jlow_sea);
+#endif
+
 }
 
 /*********************************************************************/
@@ -2130,6 +2485,32 @@ destroy_jlow(int Nvecs, int n_masses, Real *jlow_mu[]){
 }
 
 /*********************************************************************/
+/* Create fields for low-mode current densities */
+static void
+clear_jlow_sea(int n_masses, int nU1_A, Real *jlow_sea[]){
+  for(int j = 0; j < n_masses; j++)
+    for(int iU1_A = 0; iU1_A < nU1_A; iU1_A++)
+      jlow_sea[j][iU1_A] = 0.;
+}
+
+/*********************************************************************/
+/* Create fields for low-mode current densities */
+static void
+create_jlow_sea(int n_masses, int nU1_A, Real *jlow_sea[]){
+  for(int j = 0; j < n_masses; j++){
+    jlow_sea[j] = (Real *)malloc(nU1_A*sizeof(Real));
+  }
+  clear_jlow_sea(n_masses, nU1_A, jlow_sea);
+}
+
+/*********************************************************************/
+static void
+destroy_jlow_sea(int n_masses, Real *jlow_sea[]){
+  for(int j = 0; j < n_masses; j++)
+    free(jlow_sea[j]);
+}
+
+/*********************************************************************/
 /* Create fields for high-mode current densities, one for each
    block of nr random sources and mass */
 static void
@@ -2152,24 +2533,104 @@ destroy_jhi(int n_masses, int nr, Real **j_mu[]){
 }
 
 /*********************************************************************/
+/* Create fields for high-mode sea-quark delta D, one for each
+   block of nr random sources and mass */
+static void
+clear_jhi_sea(int n_masses, int nU1_A, int nr, Real **j_sea[]){
+  for(int j = 0; j < n_masses; j++){
+    for(int iU1_A = 0; iU1_A < nU1_A; iU1_A++)
+      for(int ir = 0; ir < nr; ir++)
+	j_sea[j][iU1_A][ir] = 0.;
+  }
+}
+
+/*********************************************************************/
+/* Create fields for high-mode sea-quark delta D, one for each
+   block of nr random sources and mass */
+static void
+create_jhi_sea(int n_masses, int nU1_A, int nr, Real **j_sea[]){
+  for(int j = 0; j < n_masses; j++){
+    j_sea[j] = (Real **)malloc(nU1_A*sizeof(Real *));
+    for(int iU1_A = 0; iU1_A < nU1_A; iU1_A++)
+      j_sea[j][iU1_A] = (Real *)malloc(nr*sizeof(Real));
+  }
+  clear_jhi_sea(n_masses, nU1_A, nr, j_sea);
+}
+
+/*********************************************************************/
+static void
+destroy_jhi_sea(int n_masses, int nU1_A, Real **j_sea[]){
+  for(int j = 0; j < n_masses; j++){
+    for(int iU1_A = 0; iU1_A < nU1_A; iU1_A++)
+      free(j_sea[j][iU1_A]);
+  }
+}
+
+/*********************************************************************/
 /* Compute exact low-mode current density if we have eigenvectors to do it */
 static void
 compute_jlow(int Nvecs, int n_masses, Real *jlow_mu[], Real masses[],
-			 imp_ferm_links_t *fn_mass[]){
-#ifdef MASS_UDLSC
+	     int eigstartflags[], char *eigstartfiles[],
+	     ks_eigen_param *eigen_param, imp_ferm_links_t *fn_mass[]){
+#if defined(MASS_UDLSC) && !defined(U1_VALENCE)
   if(Nvecs > 0){
     if(n_masses <= 1){
-      exact_currents(n_masses, jlow_mu, masses, fn_mass);
+      exact_currents(n_masses, jlow_mu, masses, NULL, NULL, NULL, fn_mass);
     } else {
       exact_currents_deltam(n_masses, jlow_mu, masses, fn_mass);
     }
   }
 #else
   if(Nvecs > 0){
-    exact_currents(n_masses, jlow_mu, masses, fn_mass);
+    exact_currents(n_masses, jlow_mu, masses, eigstartflags,
+		   eigstartfiles, eigen_param, fn_mass);
   }
 #endif
 }
+
+#ifdef U1_SEA
+
+/*********************************************************************/
+/* Compute exact low-mode sea-quark loop */
+static void
+compute_jlow_sea(int n_masses, Real *jElow_sea[], Real *jOlow_sea[],
+		 Real masses[], Real charges[], int nU1_A_array, Real *u1_A_array[],
+		 imp_ferm_links_t *fn_mass){
+
+  double dtime = -dclock();
+
+  for(int j = 0; j < n_masses; j++)
+    for(int iU1_A = 0; iU1_A < nU1_A_array; iU1_A++){
+
+      /* Create Dslash difference operator */
+
+      /* Calculate for both signs of the charge and take even and odd combinations */
+
+      imp_ferm_links_t *fn_diff = create_dslash_diff(u1_A_array[iU1_A], charges[j], fn_mass);
+      Real jlow_sea = 0.;
+      exact_currents_sea(masses[j], &jlow_sea, fn_diff, fn_mass);
+      jElow_sea[j][iU1_A] += 0.5*jlow_sea;
+      jOlow_sea[j][iU1_A] += 0.5*jlow_sea;
+      destroy_fn_links(fn_diff);
+
+      fn_diff = create_dslash_diff(u1_A_array[iU1_A], -charges[j], fn_mass);
+      jlow_sea = 0.;
+      exact_currents_sea(masses[j], &jlow_sea, fn_diff, fn_mass);
+      jElow_sea[j][iU1_A] += 0.5*jlow_sea;
+      jOlow_sea[j][iU1_A] -= 0.5*jlow_sea;
+
+      destroy_fn_links(fn_diff);
+    }
+
+  dtime += dclock();
+
+#ifdef CGTIME
+  node0_printf("Time for exact low modes %g sec\n", dtime);
+#endif
+
+}
+
+#endif
 
 /**********************************************************************************/
 /* Print the exact low mode contribution to the current density */
@@ -2212,6 +2673,23 @@ write_jlow(int n_masses, Real masses[], Real charges[], Real *jlow_mu[]){
 #endif
 
   write_tslice_values_end("LOW");
+}
+
+/**********************************************************************************/
+/* Print the exact low mode contribution to the current density */
+static void
+write_jlow_sea(char tag[], int n_masses, int nU1_A, 
+	       Real masses[], Real charges[], Real *jlow_sea[]){
+  
+  write_sea_values_begin(tag);
+
+  for(int j = 0; j < n_masses; j++){
+    write_sea_values_group(tag, masses[j], charges[j]);
+    for(int iU1_A = 0; iU1_A < nU1_A; iU1_A++)
+      write_sea_values(tag, -1, iU1_A, jlow_sea[j][iU1_A]);
+  }
+
+  write_sea_values_end(tag);
 }
 
 /***********************************************************************************/
@@ -2282,42 +2760,136 @@ destroy_gr(int nsrc, su3_vector **gr){
 }
 
 /*********************************************************************/
+static Real **
+create_U1_A(int nU1_A){
+  Real **u1_A = (Real **)malloc(nU1_A*sizeof(Real *));
+  for(int iU1_A = 0; iU1_A < nU1_A; iU1_A++)
+    u1_A[iU1_A] = create_r_field();
+  return u1_A;
+}
+
+/*********************************************************************/
+static void
+destroy_U1_A(int nU1_A, Real **u1_A){
+  for(int iU1_A = 0; iU1_A < nU1_A; iU1_A++)
+    destroy_r_field(u1_A[iU1_A]);
+  free(u1_A);
+}
+
+/*********************************************************************/
 /* Do block solve for high-mode densities */
 static void
-compute_jhi(int n_masses, Real **j_mu[], Real masses[], imp_ferm_links_t *fn_mass[],
-	    quark_invert_control *qic, int nsrc, int nr, su3_vector **gr_even, su3_vector **gr_odd){    
-#ifdef MASS_UDLSC
+compute_jhi(int n_masses, Real **j_mu[], Real masses[],
+	    int eigstartflags[], char *eigstartfiles[],
+	    ks_eigen_param *eigen_param,
+	    imp_ferm_links_t *fn_mass[],
+	    quark_invert_control *qic, int nsrc, int nr, int thinning,
+	    su3_vector **gr_even, su3_vector **gr_odd, su3_vector *gr0[]){    
+#if defined(MASS_UDLSC) && !defined(U1_VALENCE)
   if(n_masses <= 1){
-    block_current( n_masses, j_mu, masses, fn_mass, qic, nsrc, nr, gr_even, gr_odd);
+    block_current( n_masses, j_mu, masses, NULL, NULL, NULL,
+		   fn_mass, qic, nsrc, nr, thinning, gr_even, gr_odd, gr0);
   } else {
     block_currents_deltam( n_masses, j_mu, masses, fn_mass, qic,
-			   nsrc, nr, gr_even, gr_odd);
+			   nsrc, nr, thinning, gr_even, gr_odd, gr0);
   }
 #else
-  block_current( n_masses, j_mu, masses, fn_mass, qic, nsrc, nr, gr_even, gr_odd);
+  block_current( n_masses, j_mu, masses, eigstartflags, eigstartfiles, eigen_param,
+		 fn_mass, qic, nsrc, nr, thinning, gr_even, gr_odd, gr0);
 #endif
 }
+
+#ifdef U1_SEA
+
+/************************************************************************/
+
+/* Calculate the TSM sea quark difference between fine and sloppy
+   solves separately for all masses */
+
+static void
+compute_jhi_sea(int n_masses, Real **jE_sea[], Real **jO_sea[],
+		Real masses[], Real charges[], imp_ferm_links_t *fn_mass,
+		quark_invert_control *qic_set,
+		int nsrc, int nr, int nU1_A_array, Real *u1_A_array[],
+		su3_vector *gr_even[], su3_vector *gr_odd[]){
+
+  char myname[] = "compute_jhi_sea";
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
+
+  /* M_inv_gr is reused for every U(1) field, so the dslash is done out
+     of place, into dM_inv_gr */
+  su3_vector **MdagM_inv_gr  = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  su3_vector **M_inv_gr  = (su3_vector **)malloc(nsrc*sizeof(su3_vector *));
+  for(int is = 0; is < nsrc; is++){
+    MdagM_inv_gr[is]  = create_v_field();
+    M_inv_gr[is]  = create_v_field();
+  }
+
+  /* Construct current density from the list of sources */
+  for(int j = 0; j < n_masses; j++){
+    Real mass = masses[j];
+    quark_invert_control *qic = qic_set + j;
+
+    /* Calculate (M^\daggerM)^{-1} gr for both parities */
+    qic->parity = EVEN;
+    ks_congrad_block_field(nsrc, gr_even, MdagM_inv_gr, qic, mass, fn_mass);
+    qic->parity = ODD;
+    ks_congrad_block_field(nsrc, gr_odd, MdagM_inv_gr, qic, mass, fn_mass);
+    /* Calculate M^{-1} gr for both parities */
+    for(int is = 0; is < nsrc; is++){
+      dslash_fn_field(MdagM_inv_gr[is], M_inv_gr[is] , EVENANDODD, fn_mass);
+    }
+
+    /* The high-mode solution */
+    node0_printf("Solving for all EVEN displacements for mass %g\n", masses[j]);
+    block_current_stochastic_multiU1( nr, nU1_A_array, jE_sea[j], jO_sea[j],
+				      charges[j], nsrc,
+				      +1, EVEN, qic + j, fn_mass,
+				      M_inv_gr, u1_A_array, gr_even);
+
+    //      node0_printf("jE_sea[%d][0] = %g jO_sea[%d][0] = %g\n",j,jE_sea[j][0],j,jO_sea[j][0]);
+
+    node0_printf("Solving for all ODD displacements for mass %g\n", masses[j]);
+    block_current_stochastic_multiU1( nr, nU1_A_array, jE_sea[j], jO_sea[j],
+				      charges[j], nsrc,
+				      +1, ODD, qic + j, fn_mass,
+				      M_inv_gr, u1_A_array, gr_odd);
+  } /* j */
+  
+  for(int is = 0; is < nsrc; is++){
+    destroy_v_field(M_inv_gr[is]);
+    destroy_v_field(MdagM_inv_gr[is]);
+  }
+  free(M_inv_gr);
+  free(MdagM_inv_gr);
+
+} /* compute_jhi_sea */
+
+#endif
 
 /*********************************************************************/
 /* Do block solve for the TSM difference in high-mode densities */
 static void
-compute_jhi_diff(int n_masses, Real **j_mu[], Real masses[], imp_ferm_links_t *fn_mass[],
+compute_jhi_diff(int n_masses, Real **j_mu[], Real masses[],
+		 int eigstartflags[], char *eigstartfiles[], ks_eigen_param *eigen_param,
+		 imp_ferm_links_t *fn_mass[],
 		 quark_invert_control *qic_precise, quark_invert_control *qic_sloppy,
-		 int nsrc, int nr, su3_vector **gr_even,	su3_vector **gr_odd){
-#ifdef MASS_UDLSC
+		 int nsrc, int nr, int thinning, su3_vector **gr_even, su3_vector **gr_odd, su3_vector *gr0[]){
+#if defined(MASS_UDLSC) && !defined(U1_VALENCE)
   if(n_masses <= 1){
-    block_current_diff(n_masses, j_mu, masses, fn_mass, 
-		       qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+    block_current_diff(n_masses, j_mu, masses, NULL, NULL, NULL, fn_mass, 
+		       qic_precise, qic_sloppy, nsrc, nr, thinning, gr_even, gr_odd, gr0);
   } else {
     block_currents_diff_deltam(n_masses, j_mu, masses, fn_mass, 
-			       qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+			       qic_precise, qic_sloppy, nsrc, nr, thinning, gr_even, gr_odd, gr0);
   }
 #else
-  block_current_diff(n_masses, j_mu, masses, fn_mass, 
-		     qic_precise, qic_sloppy, nsrc, nr, gr_even, gr_odd);
+  block_current_diff(n_masses, j_mu, masses,  eigstartflags, eigstartfiles, eigen_param, fn_mass, 
+		     qic_precise, qic_sloppy, nsrc, nr, thinning, gr_even, gr_odd, gr0);
 #endif
   
-} 
+}
+
 /*********************************************************************/
 /* Write the high-mode result for this block of nr sources and clear j_mu */
 static void
@@ -2397,6 +2969,40 @@ write_jhi(char tag[], int n_masses, int nr, int jrand, Real masses[],
   write_tslice_values_end(tag);
 }
 
+#ifdef U1_SEA
+
+/*********************************************************************/
+/* Write the high-mode result for this block of nr sources and clear j_mu */
+static void
+write_jhi_sea(char tag[], int n_masses, int nr, int nU1_A, int jrand,
+	      Real masses[], Real charges[], Real **j_sea[]){
+  
+#if 0
+  // DEBUG
+  int i;
+  FORALLFIELDSITES(i){
+    if(lattice[i].t == 0){
+      for(int ir = 0; ir < nr; ir++){
+	printf("JSEA0[%d] %d %d %d %d %30.20f\n", ir,
+	       lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, j_mu[0][ir][i]);
+      }
+    }
+  }
+#endif
+  
+  write_sea_values_begin(tag);
+  
+  for(int j = 0; j < n_masses; j++){
+    write_sea_values_group(tag, masses[j], charges[j]);
+      for(int iU1_A = 0; iU1_A < nU1_A; iU1_A++)
+	for(int ir = 0; ir < nr; ir++)
+	write_sea_values(tag, jrand+ir, iU1_A, j_sea[j][iU1_A][ir]);
+  }
+  
+  write_sea_values_end(tag);
+}
+
+#endif
 /*********************************************************************/
 /* Print the high-mode contribution to the QED current loop for this
    block of nr sources */
@@ -2477,14 +3083,16 @@ clear_jhi(int n_masses, int nr, Real **j_mu[]){
 /************************************************************************/
 
 void 
-f_meas_current_diff( int n_masses, int nrand, int thinning,
-		     quark_invert_control *qic_precise,
-		     quark_invert_control *qic_sloppy,
-		     Real masses[], Real charges[],
-		     imp_ferm_links_t *fn_mass[], 
-		     Real *u1_A, char filenames[][MAXFILENAME]){
+f_meas_valence_current_diff( int n_masses, int nrand, int thinning,
+			     quark_invert_control *qic_precise,
+			     quark_invert_control *qic_sloppy,
+			     Real masses[], Real charges[],
+			     int eigstartflags[], char *eigstartfiles[],
+			     ks_eigen_param *eigen_param,
+			     imp_ferm_links_t *fn_mass[], 
+			     Real *u1_A, char filenames[][MAXFILENAME]){
   
-  char myname[] = "f_meas_current_diff";
+  char myname[] = "f_meas_valence_current_diff";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   int nr = 2;  /* Number of random sources to include in multi-rhs */
@@ -2506,22 +3114,25 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
   su3_vector **gr_odd = create_gr(nsrc);
 
   /* Compute high-mode current density stochastically in blocks of size nr */
+
+  /* Create sources in gr0. gr_even and gr_odd are filled in later */
+  su3_vector **gr0 = create_source_array(nr);
+
   for(int jrand = 0; jrand < nrand; jrand += nr){
 
     double meastime = -dclock();
-    /* Create sources in gr_even and gr_odd for block solves */
-    collect_sources(gr_even, gr_odd, nr, d, evol);
     
+    /* Create sources in gr0. gr_even and gr_odd are filled in later */
+    fill_sources(gr0, nr);
+
     /* Do block solve for the difference in high-mode densities for nr sources */
-    compute_jhi_diff(n_masses, j_mu, masses, fn_mass, qic_precise, qic_sloppy,
-		     nsrc, nr, gr_even, gr_odd);
+    compute_jhi_diff(n_masses, j_mu, masses, eigstartflags, eigstartfiles, eigen_param,
+		     fn_mass, qic_precise, qic_sloppy,
+		     nsrc, nr, thinning, gr_even, gr_odd, gr0);
    
 #ifdef CURRENT_DISC
-    /* Write the high-mode result for this block of nr sources */
+    /* Write the high-mode result for this block of nr sources and clear j_mu */
     write_jhi("DIFF", n_masses, nr, jrand, masses, charges, j_mu);
-#endif
-#ifdef QED_LOOP
-    write_jhidotA("DIFF", n_masses, nr, jrand, masses, charges, j_mu, u1_A);
 #endif
     /* Reset j_mu */
     clear_jhi(n_masses, nr, j_mu);
@@ -2533,12 +3144,13 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
 
   /* Clean up */
   destroy_jhi(n_masses, nr, j_mu);
+  destroy_source_array(gr0, nr);
   destroy_gr(nsrc, gr_odd);
   destroy_gr(nsrc, gr_even);
 
   fflush(stdout);
   
-} /* f_meas_current_diff */
+} /* f_meas_valence_current_diff */
 
 /*********************************************************************/
 /* Entry point for multiple masses with iterated single-mass inverter.
@@ -2547,13 +3159,15 @@ f_meas_current_diff( int n_masses, int nrand, int thinning,
 /*********************************************************************/
 
 void 
-f_meas_current( int n_masses, int nrand, int thinning,
-		quark_invert_control *qic, 
-		Real masses[], Real charges[],
-		imp_ferm_links_t *fn_mass[], 
-		Real *u1_A, char filenames[][MAXFILENAME]){
+f_meas_valence_current( int n_masses, int nrand, int thinning,
+			quark_invert_control *qic, 
+			Real masses[], Real charges[],
+			int eigstartflags[], char *eigstartfiles[],
+			ks_eigen_param *eigen_param,
+			imp_ferm_links_t *fn_mass[], 
+			Real *u1_A, char filenames[][MAXFILENAME]){
 
-  char myname[] = "f_meas_current";
+  char myname[] = "f_meas_valence_current";
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   int i;
@@ -2577,15 +3191,11 @@ f_meas_current( int n_masses, int nrand, int thinning,
   create_jhi(n_masses, nr, j_mu);
 
   /* Compute exact low-mode current density if we have eigenvectors to do it */
-  compute_jlow(Nvecs, n_masses, jlow_mu, masses, fn_mass);
+  compute_jlow(Nvecs, n_masses, jlow_mu, masses, eigstartflags, eigstartfiles, eigen_param, fn_mass);
 
   /* Print the exact low mode contribution to the current density */
 #ifdef CURRENT_DISC
   if(Nvecs > 0) write_jlow(n_masses, masses, charges, jlow_mu);
-#endif
-  /* Print the exact low mode contribution to <j * A> */
-#ifdef QED_LOOP
-  if(Nvecs > 0) write_jlowdotA(n_masses, masses, charges, jlow_mu, u1_A);
 #endif
 
   clear_jlow(n_masses, jlow_mu);
@@ -2600,22 +3210,25 @@ f_meas_current( int n_masses, int nrand, int thinning,
   su3_vector **gr_odd = create_gr(nsrc);
 
   /* Compute high-mode current density stochastically in blocks of size nr */
+
+  /* Create sources in gr0. gr_even and gr_odd are filled in later */
+  su3_vector **gr0 = create_source_array(nr);
+
   for(int jrand = 0; jrand < nrand; jrand += nr){
+
     double meastime = -dclock();
 
-    /* Create sources in gr_even and gr_odd for block solves */
-    collect_sources(gr_even, gr_odd, nr, d, evol);
+    /* Create sources in gr0. gr_even and gr_odd are filled in later */
+    fill_sources(gr0, nr);
 
     /* Do block solve for high-mode densities for nr sources */
-    compute_jhi(n_masses, j_mu, masses, fn_mass, qic, nsrc, nr, gr_even, gr_odd);
+    compute_jhi(n_masses, j_mu, masses, eigstartflags, eigstartfiles, eigen_param,
+		fn_mass, qic, nsrc, nr, thinning, gr_even, gr_odd, gr0);
     
 #ifdef CURRENT_DISC
     /* Write the high-mode result for this block of nr sources and clear j_mu */
     write_jhi("HI", n_masses, nr, jrand, masses, charges, j_mu);
 #endif
-#ifdef QED_LOOP
-    write_jhidotA("HI", n_masses, nr, jrand, masses, charges, j_mu, u1_A);
-#endif    
 
     /* Reset j_mu */
     clear_jhi(n_masses, nr, j_mu);
@@ -2627,10 +3240,241 @@ f_meas_current( int n_masses, int nrand, int thinning,
   /* Clean up */
   destroy_jhi(n_masses, nr, j_mu);
   destroy_jlow(Nvecs, n_masses, jlow_mu);
+  destroy_source_array(gr0, nr);
   destroy_gr(nsrc, gr_odd);
   destroy_gr(nsrc, gr_even);
 
   fflush(stdout);
   
-} /* f_meas_current */
+} /* f_meas_valence_current */
 
+#ifdef U1_SEA
+
+/************************************************************************/
+/* Entry point for multiple masses with deflation and iterated
+   single-mass inverter.  This variant does two solves from the same
+   source -- sloppy and precise -- and calculates the average of the
+   difference between the resulting current densities.  Designed for
+   use with deflation or eigcg.  The optional set of accurate low-mode
+   eigenpairs are in the globals eigVal and eigVec. */
+/************************************************************************/
+
+void 
+f_meas_sea_current_diff( int n_masses, int nrand, int thinning,
+			 quark_invert_control *qic_precise,
+			 quark_invert_control *qic_sloppy,
+			 Real masses[], Real charges[],
+			 int nU1_A, Real *u1_A_array[],
+			 imp_ferm_links_t *fn_mass,
+			 char filenames[][MAXFILENAME]){
+  
+  char myname[] = "f_meas_sea_current_diff";
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
+
+  int nr = 2;  /* Max number of random sources to include in multi-rhs */
+  if(nrand < nr)
+    nr = nrand;
+
+  int nU1_A_array = nU1_A;
+  if(nU1_A == 0){
+    nU1_A_array = 1;
+  }
+
+  /* Allocate storage for high-mode sea-quark loops, one for each
+     block of nr random sources, mass, and U(1) field */
+  Real **jE_sea[n_masses], **jO_sea[n_masses];
+  create_jhi_sea(n_masses, nU1_A_array, nr, jE_sea);
+  create_jhi_sea(n_masses, nU1_A_array, nr, jO_sea);
+
+  /* Block solver parameters */
+  int d = thinning;
+  int evol = d*d*d*d/2;
+  int nsrc = evol*nr;
+  
+  /* Allocate source arrays */
+  su3_vector **gr_even = create_gr(nsrc);
+  su3_vector **gr_odd = create_gr(nsrc);
+  su3_vector **gr0 = create_source_array(nr);
+  
+  /* Compute high-mode sea-loop term stochastically in blocks of size nr */
+  
+  for(int jrand = 0; jrand < nrand; jrand += nr){
+    
+    double meastime = -dclock();
+    
+    /* Create sources in gr_even and gr_odd for block solves */
+    fill_sources(gr0, nr);
+    for(int jr = 0; jr < nr; jr++){
+      collect_evenodd_sources(gr_even + jr*evol, evol, EVEN, thinning, gr0 + jr);
+      collect_evenodd_sources(gr_odd  + jr*evol, evol, ODD,  thinning, gr0 + jr);
+    }
+    
+    /* Do block solve for the difference in high-mode densities for nr sources */
+    compute_jhi_sea_diff(n_masses, jE_sea, jO_sea, masses, charges, fn_mass,
+			 qic_precise, qic_sloppy, nsrc, nr, nU1_A_array, u1_A_array,
+			 gr_even, gr_odd);
+      
+
+#ifdef CURRENT_DISC
+    /* Write the high-mode result for this block of nr sources and nU1_A U(1) fields  */
+    if(nU1_A == 0){
+      write_jhi_sea("DIFFa", n_masses, nr, 1, jrand, masses, charges, jO_sea);
+    } else {
+      write_jhi_sea("DIFFb", n_masses, nr, nU1_A_array, jrand, masses, charges, jE_sea);
+      write_jhi_sea("DIFFc", n_masses, nr, nU1_A_array, jrand, masses, charges, jO_sea);
+    }
+#endif
+      
+    /* Reset j_sea */
+    clear_jhi_sea(n_masses, nU1_A_array, nr, jE_sea);
+    clear_jhi_sea(n_masses, nU1_A_array, nr, jO_sea);
+    
+    meastime += dclock();
+    node0_printf("Time to do one measurement step %e\n", meastime); fflush(stdout);
+    
+  } /* jrand */
+  
+  /* Clean up */
+  destroy_jhi_sea(n_masses, nU1_A_array, jE_sea);
+  destroy_jhi_sea(n_masses, nU1_A_array, jO_sea);
+  destroy_source_array(gr0, nr);
+  destroy_gr(nsrc, gr_odd);
+  destroy_gr(nsrc, gr_even);
+  
+  fflush(stdout);
+  
+} /* f_meas_sea_current_diff */
+
+/*********************************************************************/
+/* Entry point for multiple masses with iterated single-mass inverter.
+   Designed for use with deflation or eigcg.
+   Does deflation, so requires a set of accurate low-mode eigenpairs */
+/*********************************************************************/
+
+void 
+f_meas_sea_current( int n_masses, int nrand, int thinning,
+		    quark_invert_control *qic, 
+		    Real masses[], Real charges[],
+		    int nU1_A, Real *u1_A_array[],
+		    imp_ferm_links_t *fn_mass, 
+		    char filenames[][MAXFILENAME]){
+  
+  char myname[] = "f_meas_sea_current";
+  //  node0_printf("Entered %s\n", myname); fflush(stdout);
+
+  int Nvecs = param.eigen_param.Nvecs;
+
+  int nr = 2;  /* Max number of random sources to include in multi-rhs */
+  if(nrand < nr)
+    nr = nrand;
+
+  /* Check orthonormality of a few eigenvectors (debugging) */
+#if 0
+  check_eigen(Nvecs);
+#endif
+
+
+  int nU1_A_array = nU1_A;
+  if(nU1_A == 0){
+    nU1_A_array = 1;
+  }
+
+  /* Allocate storage for high-mode sea-quark loops, one for each
+     block of nr random sources, mass, and U(1) field */
+  Real **jE_sea[n_masses], **jO_sea[n_masses];
+  create_jhi_sea(n_masses, nU1_A_array, nr, jE_sea);
+  create_jhi_sea(n_masses, nU1_A_array, nr, jO_sea);
+
+  /* Allocate storage for low-mode sea-quark loops, one for each mass and U(1) field */
+  Real *jElow_sea[n_masses], *jOlow_sea[n_masses];
+  if(Nvecs > 0){
+    create_jlow_sea(n_masses, nU1_A_array, jElow_sea);
+    create_jlow_sea(n_masses, nU1_A_array, jOlow_sea);
+  }
+
+  /* Block solver parameters */
+  int d = thinning;
+  int evol = d*d*d*d/2;
+  int nsrc = evol*nr;
+  
+  /* Allocate source arrays */
+  su3_vector **gr_even = create_gr(nsrc);
+  su3_vector **gr_odd = create_gr(nsrc);
+  su3_vector **gr0 = create_source_array(nr);
+  
+  /* Loop over U1 fields for low-mode contributions */
+  
+  /* Compute exact low-mode sea-quark loop if we have eigenvectors to do it */
+  if(Nvecs > 0){
+    
+    compute_jlow_sea(n_masses, jElow_sea, jOlow_sea, masses, charges,
+		     nU1_A_array, u1_A_array, fn_mass);
+      
+    /* Print the exact low mode contribution to the current density */
+#ifdef CURRENT_DISC
+    if(nU1_A == 0){
+      write_jlow_sea("LOWa", n_masses, 1, masses, charges, jOlow_sea);
+    } else {
+      for(int jU1_A = 0; jU1_A < nU1_A_array; jU1_A++){
+	write_jlow_sea("LOWb", n_masses, nU1_A_array, masses, charges, jElow_sea);
+	write_jlow_sea("LOWc", n_masses, nU1_A_array, masses, charges, jOlow_sea);
+      }
+    }
+#endif
+    clear_jlow_sea(n_masses, nU1_A_array, jElow_sea);
+    clear_jlow_sea(n_masses, nU1_A_array, jOlow_sea);
+  }
+
+  /* Compute high-mode sea-loop term stochastically in blocks of size nr */
+  
+  for(int jrand = 0; jrand < nrand; jrand += nr){
+
+    double meastime = -dclock();
+    
+    /* Create sources in gr_even and gr_odd for block solves */
+    fill_sources(gr0, nr);
+    for(int jr = 0; jr < nr; jr++){
+      collect_evenodd_sources(gr_even + jr*evol, evol, EVEN, thinning, gr0 + jr);
+      collect_evenodd_sources(gr_odd  + jr*evol, evol, ODD,  thinning, gr0 + jr);
+    }
+    
+    /* Do block solve for high-mode densities for nr sources */
+    compute_jhi_sea(n_masses, jE_sea, jO_sea, masses, charges, fn_mass,
+		    qic, nsrc, nr, nU1_A_array, u1_A_array,
+		    gr_even, gr_odd);
+      
+#ifdef CURRENT_DISC
+      /* Write the high-mode result for this block of nr sources and nU1_A U(1) fields  */
+      if(nU1_A == 0){
+	write_jhi_sea("HIa", n_masses, nr, 1, jrand, masses, charges, jO_sea);
+      } else {
+	write_jhi_sea("HIb", n_masses, nr, nU1_A_array, jrand, masses, charges, jE_sea);
+	write_jhi_sea("HIc", n_masses, nr, nU1_A_array, jrand, masses, charges, jO_sea);
+      }
+#endif
+      
+    /* Reset j_sea */
+    clear_jhi_sea(n_masses, nU1_A_array, nr, jE_sea);
+    clear_jhi_sea(n_masses, nU1_A_array, nr, jO_sea);
+      
+    meastime += dclock();
+    node0_printf("Time to do one measurement step %e\n", meastime); fflush(stdout);
+      
+  } /* jrand */
+
+  /* Clean up */
+  destroy_jhi_sea(n_masses, nU1_A_array, jE_sea);
+  destroy_jhi_sea(n_masses, nU1_A_array, jO_sea);
+  destroy_source_array(gr0, nr);
+  destroy_gr(nsrc, gr_odd);
+  destroy_gr(nsrc, gr_even);
+  if(Nvecs > 0){
+    destroy_jlow_sea(n_masses, jElow_sea);
+    destroy_jlow_sea(n_masses, jOlow_sea);
+  }
+  
+  fflush(stdout);
+  
+} /* f_meas_sea_current */
+
+#endif

@@ -20,6 +20,7 @@
 #define RELOAD_PARALLEL                  18
 #define RELOAD_MPIIO                     19
 #define WARM                             20
+#define GENERATE                         21
 #define FORGET                           40
 #define SAVE_ASCII                       41
 #define SAVE_SERIAL                      42

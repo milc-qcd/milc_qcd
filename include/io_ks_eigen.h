@@ -131,6 +131,10 @@ void read_grid_eigenvector_data(su3_vector *eigVec, int typesize, const char *fi
 				uint32_t *suma, uint32_t *sumb);
 
 /* Prototypes for io_helpers_ks_eigen.c */
+void initialize_local_eigenpairs(void);
+void destroy_local_eigenpairs(void);
+void restore_eigenvectors_from_file(imp_ferm_links_t *fn, ks_eigen_param *eigen_param,
+				    int startflag, char startfile[], int endflag, char endfile[]);
 ks_eigen_file *r_open_ks_eigen(int flag, const char *filename);
 ks_eigen_file *w_open_ks_eigen(int flag, const char *filename, int parity);
 

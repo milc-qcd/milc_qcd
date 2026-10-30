@@ -7,7 +7,7 @@
 #include <unistd.h>
 extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #include "params.h"
-#ifdef U1_VALENCE
+#if defined(U1_VALENCE) || defined(U1_SEA)
 #include "../include/generic_u1.h"
 #include "../include/io_u1lat.h"
 #endif
@@ -21,7 +21,8 @@ extern int gethostname (char *__name, size_t __len); // Should get this from uni
 static int initial_set(void);
 static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 static void make_3n_gathers(void);
-
+static void replace_fn_links_from_file(fermion_links_t *fermion_links, int startfatflag, char inputfatfile[],
+				       int startlngflag, char inputlngfile[]);
 
 int setup()   {
   int prompt;
@@ -37,9 +38,7 @@ int setup()   {
   initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
-#ifdef U1_VALENCE
-  u1_A = create_u1_A_field();
-#endif
+  initialize_local_eigenpairs();
   /* set up nearest neighbor gathers */
   make_nn_gathers();
   /* set up 3rd nearest neighbor pointers and comlink structures
@@ -168,7 +167,7 @@ int readin(int prompt) {
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
 				  param.stringLFN );
 
-#ifdef U1_VALENCE
+#if defined(U1_VALENCE) || defined(U1_SEA)
     /* what kind of starting U(1) lattice to use, read filename */
     IF_OK status+=ask_starting_u1_lattice(stdin,prompt,
 					  &param.start_u1flag, param.start_u1file );
@@ -185,11 +184,16 @@ int readin(int prompt) {
 			  &param.ape_iter);
 
     /* Fat and long link files, if given.  Requires QIO */
+    /* These links are assumed to contain no U(1) field, so chargeless */
 #ifdef HAVE_QIO
     IF_OK status += ask_starting_fat_link_file(stdin, prompt, &param.startfatflag,
 	param.inputfatfile );
     IF_OK status += ask_starting_lng_link_file(stdin, prompt, &param.startlngflag,
 	param.inputlngfile );
+    if(param.startfatflag != FRESH && param.startfatflag != CONTINUE)
+      node0_printf("Will replace fat links for charge 0. from %s\n", param.inputfatfile);
+    if(param.startlngflag != FRESH && param.startlngflag != CONTINUE)
+      node0_printf("Will replace long links for charge 0. from %s\n", param.inputlngfile);
 #endif
 
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
@@ -207,8 +211,9 @@ int readin(int prompt) {
     
     /* number of eigenpairs */
     IF_OK status += get_i(stdin, prompt,"max_number_of_eigenpairs", &param.eigen_param.Nvecs);
-    /* The usual case. May be changed by I/O routines */
-    param.eigen_param.parity = EVEN;
+    
+    param.eigen_param.parity = EVEN;     /* The usual case. May be changed by I/O routines */
+    Nvecs_tot = param.eigen_param.Nvecs;
     eigenvectors_offloaded = 0;
     param.eigen_param.Nvecs_in = param.eigen_param.Nvecs;  /* Default value */
 
@@ -283,6 +288,18 @@ int readin(int prompt) {
 
       /* Number of stochastic sources */
       IF_OK status += get_i(stdin, prompt, "npbp_reps", &param.npbp_reps[k] );
+
+      param.nU1A_generate[k] = 0;
+#ifdef U1_SEA
+      if(param.start_u1flag == GENERATE){
+	/* Number of U1 fields to generate */
+	IF_OK status += get_i(stdin, prompt, "nU1A_generate", &param.nU1A_generate[k] );
+	if(&param.nU1A_generate[k] == 0){
+	  printf("ERROR: Asked to 'generate' zero fields\n");
+	  status++;
+	}
+      }
+#endif      
 
 #ifdef CURRENT_DISC
       /* For some applications.  Random source count between writes */
@@ -365,10 +382,18 @@ int readin(int prompt) {
 #if ( FERM_ACTION == HISQ )
 	IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 			      &param.ksp_pbp[npbp_masses].naik_term_epsilon );
+#if defined(U1_SEA) || defined(U1_VALENCE)
+	if(param.ksp_pbp[npbp_masses].naik_term_epsilon != 0){
+	  node0_printf("ERROR: Nonzero Naik epsilons are currently not supported for U1 sea or U1 valence calculations\n");
+	  fflush(stdout);
+	  terminate(1);
+	}
+#endif
 #else
 	IF_OK param.ksp_pbp[npbp_masses].naik_term_epsilon = 0.0;
 #endif
-#ifdef U1_VALENCE
+	
+#if defined(U1_VALENCE) || defined(U1_SEA)
 	IF_OK status += get_s(stdin, prompt,"charge", param.charge_label[npbp_masses] );
 	IF_OK param.ksp_pbp[npbp_masses].charge = atof(param.charge_label[npbp_masses]);
 #else
@@ -392,7 +417,7 @@ int readin(int prompt) {
 			      &error_for_propagator );
 	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
 			      &rel_error_for_propagator );
-	
+
 #ifdef CURRENT_DISC
 	if(param.truncate_diff[k]){
 	  /* error for staggered propagator conjugate gradient */
@@ -402,11 +427,27 @@ int readin(int prompt) {
 				&rel_error_for_propagator_sloppy );
 	}
 
-#if 0 	/* Deprecate saving the entire site-wise density  */
-	IF_OK status += get_s(stdin, prompt, "save_file", param.pbp_filenames[npbp_masses] );
+#ifdef U1_VALENCE
+	
+	/* Input fat and long links if given.  Requires QIO*/
+	IF_OK status += ask_starting_fat_link_file(stdin, prompt,
+						   &param.startfatQflag[npbp_masses],
+						   param.inputfatQfile[npbp_masses] );
+	IF_OK status += ask_starting_lng_link_file(stdin, prompt,
+						   &param.startlngQflag[npbp_masses],
+						   param.inputlngQfile[npbp_masses] );
+#ifndef HAVE_QIO
+	if(param.startfatQflag[npbp_masses] != FRESH || param.startlngQflag[npbp_masses] != FRESH){
+	  node0_printf("ERROR: Must have QIO to read fat and long link files.\n");
+	  status++;
+	}
+#endif
+	/* eigenvector input */
+	/* We assume the eigen_param structure is the same as the charge 0 eigen_param */
+	IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startQflag[npbp_masses],
+					      param.ks_eigen_startQfile[npbp_masses]);
 #endif
 #endif
-
 	/* The set to which this pbp_mass belongs */
 	IF_OK param.set[npbp_masses] = k;
 
@@ -511,6 +552,34 @@ int readin(int prompt) {
       fill_charge(charge, &n_charges, param.ksp_pbp[i].charge);
   }
 
+#ifdef U1_VALENCE
+  /* Construct hash table associating charge index with reload file */
+  /* Collect list of file names to replace the fat and long links if requested */
+  /* Note that if there are multiple files for a given charge, we use only the first
+     one to appear */
+  for(int j = 0; j < n_charges; j++){
+    param.inputfatQfile_for_charge[j] = NULL;
+    param.inputlngQfile_for_charge[j] = NULL;
+  }
+
+  for(int i = 0; i < npbp_masses; i++){
+    if(param.startfatQflag[i] != FRESH){
+      int j = param.ksp_pbp[i].charge_index;
+      if(param.inputfatQfile_for_charge[j] == NULL){
+	param.inputfatQfile_for_charge[j] = param.inputfatQfile[i];
+	param.startfatQflag_for_charge[j] = param.startfatQflag[i];
+      }
+    }
+    if(param.startlngQflag[i] != FRESH){
+      int j = param.ksp_pbp[i].charge_index;
+      if(param.inputlngQfile_for_charge[j] == NULL){
+	param.inputlngQfile_for_charge[j] = param.inputlngQfile[i];
+	param.startlngQflag_for_charge[j] = param.startlngQflag[i];
+      }
+    }
+  }
+#endif
+  
   /* Keep the current lattice or load a new one */
   if( param.startflag == CONTINUE ){
     rephase( OFF );
@@ -550,64 +619,54 @@ int readin(int prompt) {
 #if FERM_ACTION == HISQ && defined(DM_DEPS)
   fermion_links_want_deps(1);
 #endif
-  
-  /* Create an array of fermion links structures for all unique Naik epsilon values and charges */
-  fn_links_charge = (fermion_links_t **)malloc(sizeof(fermion_links_t *) * n_charges);
-  for(int i = 0; i < n_charges; i++){
-#ifdef U1_VALENCE
+
+  u1_A = NULL;
+#if defined(U1_VALENCE)
+  u1_A = create_u1_A_field();
+  /* Read in a U(1) field if requested */
     reload_u1_lattice(param.start_u1flag, param.start_u1file);
-    if(charge[i] != 0)u1phase_on(charge[i], u1_A);
 #endif
+
+  /* Create an array of fermion links structures for all unique Naik epsilon values and charges */
+  fn_links_charge = (fermion_links_t **)malloc(n_charges*sizeof(fermion_links_t *));
+  /* Create non-charged links */
+  fn_links_charge[0] = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
+
+  /* For the sea-quark loops, we do not create links for the other charges at this time */
+  for(int j = 1; j < n_charges; j++){
     /* Create a set of fermion links for all eps_naik */
-    fn_links_charge[i] = create_fermion_links_from_site(MILC_PRECISION, n_naiks, eps_naik);
+    /* Maybe skip generating them if read from a file? But then we have only the FN links and can't do Naik*/
+#ifdef U1_SEA
+    fn_links_charge[j] = NULL;
+#else
+    fn_links_charge[j] = create_fermion_links_from_site_u1(MILC_PRECISION, n_naiks, eps_naik,
+							   charge[j], u1_A);
+#endif
+#ifdef HAVE_QIO
+  /* Load the fat and long links for any charge, if requested.  This
+     is supported only for Naik epsilon 0 and charge 0. Requires
+     QIO */
+
 #ifdef U1_VALENCE
-    if(charge[i] != 0)u1phase_off();
+    replace_fn_links_from_file(fn_links_charge[j],
+			       param.startfatQflag_for_charge[j], param.inputfatQfile_for_charge[j],
+			       param.startlngQflag_for_charge[j], param.inputlngQfile_for_charge[j]);
+#endif
 #endif
   }
-  /* For compatibility. The first charge is always zero */
+  
+  /* The first charge is always zero */
   fn_links = fn_links_charge[0];
 
 #ifdef HAVE_QIO
 
-  /* Load the fat and long links, if requested.  This is supported
-     only for Naik epsilon 0 and charge 0. Requires QIO */
-  /* Up to here the fat and long links have been generated from the
-     "thin-link" gauge field but we just overwrite them.
-
-     TODO: skip generating them if we are going to read them
+  /* Load the fat and long links for charge zero, if requested.  This
+     is supported only for Naik epsilon 0 and charge 0. Requires
+     QIO.
   */
-  imp_ferm_links_t *my_fn = get_fm_links(fn_links, 0);
-  su3_matrix *fat = get_fatlinks(my_fn);
-  su3_matrix *lng = get_lnglinks(my_fn);
-  if(param.startfatflag != FRESH && param.startfatflag != CONTINUE){
 
-    double rtime = -dclock();
-    if(param.startfatflag == RELOAD_PARALLEL)
-      restore_color_matrix_scidac_to_field(param.inputfatfile, fat, 4,
-					   MILC_PRECISION, QIO_PARALLEL);
-    else
-      restore_color_matrix_scidac_to_field(param.inputfatfile, fat, 4,
-					   MILC_PRECISION, QIO_SERIAL);
-    rtime += dclock();
-    node0_printf("Time to restore fat %e\n",rtime); fflush(stdout);
-  }
-  if(param.startlngflag != FRESH && param.startlngflag != CONTINUE){
-
-    double rtime = -dclock();
-    if(param.startlngflag == RELOAD_PARALLEL)
-      restore_color_matrix_scidac_to_field(param.inputlngfile, lng, 4,
-					   MILC_PRECISION, QIO_PARALLEL);
-    else
-      restore_color_matrix_scidac_to_field(param.inputlngfile, lng, 4,
-					   MILC_PRECISION, QIO_SERIAL);
-    rtime += dclock();
-    node0_printf("Time to restore lng %e\n",rtime); fflush(stdout);
-
-#ifdef DBLSTORE_FN
-    load_fn_backlinks(my_fn);
-#endif
- }
-
+  replace_fn_links_from_file(fn_links, param.startfatflag, param.inputfatfile,
+			     param.startlngflag, param.inputlngfile);
 #endif  
 
   /* Construct APE smeared links, but without KS phases */
@@ -672,3 +731,55 @@ third_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
   default: printf("third_neighb: bad direction\n"); exit(1);
   }
 }
+
+static void
+replace_fn_links_from_file(fermion_links_t *fermion_links, int startfatflag, char inputfatfile[],
+			   int startlngflag, char inputlngfile[]){
+
+  char myname[] = "replace_fn_links_from_file";
+  
+  /* Load the fat and long links, if requested.  This is supported
+     only for Naik epsilon 0 and charge 0. Requires QIO 
+  */
+
+  if(fermion_links == NULL){
+    node0_printf("(%s) ERROR: Unexpected null links\n", myname);
+    terminate(1);
+  }
+
+  imp_ferm_links_t *my_fn = get_fm_links(fermion_links, 0);
+  su3_matrix *fat = get_fatlinks(my_fn);
+  su3_matrix *lng = get_lnglinks(my_fn);
+
+  if(startfatflag != FRESH && startfatflag != CONTINUE && inputfatfile != NULL){
+    
+    double rtime = -dclock();
+    if(startfatflag == RELOAD_PARALLEL)
+      restore_color_matrix_scidac_to_field(inputfatfile, fat, 4,
+					   MILC_PRECISION, QIO_PARALLEL);
+    else
+      restore_color_matrix_scidac_to_field(inputfatfile, fat, 4,
+					   MILC_PRECISION, QIO_SERIAL);
+    rtime += dclock();
+    node0_printf("Time to restore fat file %s %e\n",inputfatfile,rtime); fflush(stdout);
+    
+  }
+    
+  if(startlngflag != FRESH && startlngflag != CONTINUE && inputlngfile != NULL){
+    
+    double rtime = -dclock();
+    if(startlngflag == RELOAD_PARALLEL)
+      restore_color_matrix_scidac_to_field(inputlngfile, lng, 4,
+					   MILC_PRECISION, QIO_PARALLEL);
+    else
+      restore_color_matrix_scidac_to_field(inputlngfile, lng, 4,
+					   MILC_PRECISION, QIO_SERIAL);
+    rtime += dclock();
+    node0_printf("Time to restore lng file %s %e\n",inputlngfile,rtime); fflush(stdout);
+  }
+
+#ifdef DBLSTORE_FN
+  load_fn_backlinks(my_fn);
+#endif
+}
+

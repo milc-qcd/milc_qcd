@@ -133,10 +133,11 @@ EXTERN fermion_links_t   **fn_links_charge;
 EXTERN fermion_links_t    *fn_links;
 
 EXTERN Real *u1_A;
+EXTERN Real **u1_A_array;       /* generated U(1) fields for sea-quark loops */
 EXTERN Real g_splaq,g_tplaq;	/* global U(1) plaquette measures */
 
 /* For eigenpair calculation */
-EXTERN int Nvecs_tot;
+EXTERN int Nvecs_tot;  /* Requested number of eigenvectors */
 EXTERN int Nvecs_alloc;
 EXTERN double *eigVal; /* eigenvalues of M^adj M */
 EXTERN dsu3_vector **eigVec; /* eigenvectors */

@@ -313,18 +313,37 @@ void f_meas_imp( int npbp_reps, int prec,
 		 int naik_term_epsilon_index, fermion_links_t *fl);
 
 /* f_meas_current.c */
-void f_meas_current( int n_masses, int nrand, int thinning,
-		     quark_invert_control *qic, 
-		     Real masses[], Real charges[],
-		     imp_ferm_links_t *fn_mass[], 
-		     Real *u1_A, char filenames[][MAXFILENAME]);
+void f_meas_valence_current( int n_masses, int nrand, int thinning,
+			     quark_invert_control *qic, 
+			     Real masses[], Real charges[],
+			     int startflags[], char *startfiles[],
+			     ks_eigen_param *eigen_param,
+			     imp_ferm_links_t *fn_mass[], 
+			     Real *u1_A, char filenames[][MAXFILENAME]);
 
-void f_meas_current_diff( int n_masses, int nrand, int thinning,
-			  quark_invert_control *qic_precise,
-			  quark_invert_control *qic_sloppy,
-			  Real masses[], Real charges[],
-			  imp_ferm_links_t *fn_mass[], 
-			  Real *u1_A, char filenames[][MAXFILENAME]);
+void f_meas_valence_current_diff( int n_masses, int nrand, int thinning,
+				  quark_invert_control *qic_precise,
+				  quark_invert_control *qic_sloppy,
+				  Real masses[], Real charges[],
+				  int startflags[], char *startfiles[],
+				  ks_eigen_param *eigen_param,
+				  imp_ferm_links_t *fn_mass[], 
+				  Real *u1_A, char filenames[][MAXFILENAME]);
+
+void f_meas_sea_current_diff( int n_masses, int nrand, int thinning,
+			      quark_invert_control *qic_precise,
+			      quark_invert_control *qic_sloppy,
+			      Real masses[], Real charges[],
+			      int nU1_A, Real *u1_A[],
+			      imp_ferm_links_t *fn_mass,
+			      char filenames[][MAXFILENAME]);
+
+void f_meas_sea_current( int n_masses, int nrand, int thinning,
+			 quark_invert_control *qic, 
+			 Real masses[], Real charges[],
+			 int nU1_A, Real *u1_A[],
+			 imp_ferm_links_t *fn_mass, 
+			 char filenames[][MAXFILENAME]);
 
 /* eigen_stuff_QUDA.c */
 void load_evecs_quda( imp_ferm_links_t *fn_mass, int load_other_parity);

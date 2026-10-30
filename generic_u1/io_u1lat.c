@@ -410,12 +410,12 @@ int ask_starting_u1_lattice(FILE *fp,
 {
   
   int status;
-  char *savebuf;
+  const char *savebuf;
   char myname[] = "ask_starting_u1_lattice";
   
   if(prompt==1)
     {
-      printf("enter: 'fresh_u1', 'continue_u1' or 'reload_u1_ascii'\n");
+      printf("enter: 'fresh_u1', 'continue_u1', 'generate_u1', or 'reload_u1_ascii'\n");
       printf(" or 'reload_u1_serial' or 'reload_u1_parallel\n");
     }
 
@@ -428,6 +428,8 @@ int ask_starting_u1_lattice(FILE *fp,
     *flag=FRESH;
   else if(strcmp("continue_u1",savebuf)==0)
     *flag=CONTINUE;
+  else if(strcmp("generate_u1",savebuf)==0)
+    *flag=GENERATE;
   else if(strcmp("reload_u1_ascii",savebuf)==0)
     *flag=RELOAD_ASCII;
   else if(strcmp("reload_u1_serial",savebuf)==0)
@@ -442,7 +444,7 @@ int ask_starting_u1_lattice(FILE *fp,
     }
   
   /*read name of file and load it */
-  if(*flag!=FRESH && *flag!=CONTINUE)
+  if(*flag!=FRESH && *flag!=CONTINUE && *flag!=GENERATE)
     {
       if(prompt==1) printf("enter file containing lattice:\n");
       status=fscanf(fp,"%s",filename);
@@ -474,6 +476,9 @@ gauge_file *reload_u1_lattice(int flag, char *filename)
   case CONTINUE:
     gf=NULL;
     break;
+  case GENERATE:
+    gf=NULL;
+    break;
   case RELOAD_ASCII:
     gf=restore_u1_ascii(filename);
     break;
@@ -489,7 +494,7 @@ gauge_file *reload_u1_lattice(int flag, char *filename)
   }
   dtime+=dclock();
   
-  if(flag!=FRESH && flag!=CONTINUE)
+  if(flag!=FRESH && flag!=CONTINUE && flag!=GENERATE)
     node0_printf("Time to reload gauge configuration = %e\n",dtime);
   u1plaq(&g_splaq,&g_tplaq,1.);
 
@@ -1160,7 +1165,7 @@ static void r_u1_serial(gauge_file *gf)
 
   FILE *fp;
   gauge_header *gh;
-  char *filename;
+  const char *filename;
   int byterevflag;
 
   off_t offset = 0 ;        /* File stream pointer */
