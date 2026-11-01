@@ -47,6 +47,7 @@
 #include "generic_u1_includes.h"
 #include "../include/io_u1lat.h"
 #include "../include/generic_u1.h"
+#include "../include/file_types.h"
 #include <string.h>
 #include <errno.h>
 #include <time.h>
@@ -1667,6 +1668,10 @@ gauge_file *r_u1_serial_i(char *filename)
 
   broadcast_bytes((char *)gh,sizeof(gauge_header));
 
+  /* No further processing here if this is a SciDAC file */
+  if(gh->magic_number == LIME_MAGIC_NO)
+    return gf;
+
   /* Read site list and broadcast to all nodes */
 
   read_site_list(SERIAL,gf);
@@ -1787,6 +1792,15 @@ int read_u1_gauge_hdr(gauge_file *gf, int parallel)
 	terminate(1);
       }
     }
+  else if(tmp == LIME_MAGIC_NO || btmp == LIME_MAGIC_NO)
+    {
+      /* LIME format suggests a SciDAC file */
+      byterevflag = 0;
+      gh->magic_number = LIME_MAGIC_NO;
+      /* We do not read any further here:  Set flag and return */
+      printf("%s: Reading as a SciDAC formatted file\n",myname);
+      return 0;
+    }
   else
     {
 	  /* End of the road. */
@@ -1802,8 +1816,8 @@ int read_u1_gauge_hdr(gauge_file *gf, int parallel)
   /* Read and process header information */
   /* Get lattice dimensions */
 
-      if(psread_byteorder(byterevflag,parallel,fp,gh->dims,sizeof(gh->dims),
-			  myname,"dimensions")!=0)terminate(1);
+  if(psread_byteorder(byterevflag,parallel,fp,gh->dims,sizeof(gh->dims),
+		      myname,"dimensions")!=0)terminate(1);
 
   /* Check lattice dimensions for consistency */
 
