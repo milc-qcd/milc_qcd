@@ -190,10 +190,13 @@ int readin(int prompt) {
 	param.inputfatfile );
     IF_OK status += ask_starting_lng_link_file(stdin, prompt, &param.startlngflag,
 	param.inputlngfile );
-    if(param.startfatflag != FRESH && param.startfatflag != CONTINUE)
-      node0_printf("Will replace fat links for charge 0. from %s\n", param.inputfatfile);
-    if(param.startlngflag != FRESH && param.startlngflag != CONTINUE)
-      node0_printf("Will replace long links for charge 0. from %s\n", param.inputlngfile);
+    IF_OK {
+      if(param.startfatflag != FRESH && param.startfatflag != CONTINUE)
+	node0_printf("Will replace fat links for charge 0. from %s\n", param.inputfatfile);
+      if(param.startlngflag != FRESH && param.startlngflag != CONTINUE)
+	node0_printf("Will replace long links for charge 0. from %s\n", param.inputlngfile);
+    }
+      
 #endif
 
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
@@ -294,7 +297,7 @@ int readin(int prompt) {
       if(param.start_u1flag == GENERATE){
 	/* Number of U1 fields to generate */
 	IF_OK status += get_i(stdin, prompt, "nU1A_generate", &param.nU1A_generate[k] );
-	if(&param.nU1A_generate[k] == 0){
+	if(param.nU1A_generate[k] == 0){
 	  printf("ERROR: Asked to 'generate' zero fields\n");
 	  status++;
 	}
@@ -310,6 +313,24 @@ int readin(int prompt) {
 	  status++;
 	}
       }
+#ifdef U1_SEA
+      /* For the sea-quark loops there are three choices */
+      char savebuf[128];
+      IF_OK status += get_s(stdin, prompt, "set_type", savebuf);
+      IF_OK {
+	/* T1 term with no bias correction (low mode + sloppy high mode) */
+	if(strcmp(savebuf,"T1") == 0)param.truncate_diff[k] = 0;
+	/* T1 term with bias correction (precise minus sloppy high mode) */
+	else if(strcmp(savebuf,"T1diff") == 0)param.truncate_diff[k] = 1;
+	/* T2 term without TSM */
+	else if(strcmp(savebuf,"T2") == 0)param.truncate_diff[k] = 2;
+	else {
+	  printf("Unrecognized response %s\n",savebuf);
+	  printf("Choices are 'T1', 'T1diff', and 'T2'\n");
+	  status++;
+	}
+      }
+#else
       /* For truncated solver Take difference of sloppy and precise?*/
       char savebuf[128];
       IF_OK status += get_s(stdin, prompt, "take_truncate_diff", savebuf);
@@ -322,6 +343,7 @@ int readin(int prompt) {
 	  status++;
 	}
       }
+#endif
 #endif
 
       /* The following parameters are common to the set and will be copied
@@ -341,7 +363,7 @@ int readin(int prompt) {
 #ifdef CURRENT_DISC
       /* If we are taking the difference between a sloppy and a precise solve,
 	 get the sloppy solve parameters */
-      if(param.truncate_diff[k]){
+      if(param.truncate_diff[k] == 1){
 	Real error_for_propagator_sloppy, rel_error_for_propagator_sloppy;
 
 	/* The following parameters are common to the set and will be copied
@@ -419,7 +441,7 @@ int readin(int prompt) {
 			      &rel_error_for_propagator );
 
 #ifdef CURRENT_DISC
-	if(param.truncate_diff[k]){
+	if(param.truncate_diff[k] == 1){
 	  /* error for staggered propagator conjugate gradient */
 	  IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy", 
 				&error_for_propagator_sloppy );
@@ -443,9 +465,11 @@ int readin(int prompt) {
 	}
 #endif
 	/* eigenvector input */
-	/* We assume the eigen_param structure is the same as the charge 0 eigen_param */
-	IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startQflag[npbp_masses],
-					      param.ks_eigen_startQfile[npbp_masses]);
+	if(param.eigen_param.Nvecs > 0){
+	  /* We assume the eigen_param structure is the same as the charge 0 eigen_param */
+	  IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startQflag[npbp_masses],
+						param.ks_eigen_startQfile[npbp_masses]);
+	}
 #endif
 #endif
 	/* The set to which this pbp_mass belongs */
@@ -482,7 +506,7 @@ int readin(int prompt) {
 #ifdef CURRENT_DISC
       /* If we are taking the difference between a sloppy and a precise solve,
 	 get the sloppy solve parameters */
-	if(param.truncate_diff[k]){
+	if(param.truncate_diff[k] == 1){
 	  
 	  /* maximum no. of conjugate gradient iterations */
 	  param.qic_pbp_sloppy[npbp_masses].max = max_cg_iterations_sloppy;
@@ -624,7 +648,9 @@ int readin(int prompt) {
 #if defined(U1_VALENCE)
   u1_A = create_u1_A_field();
   /* Read in a U(1) field if requested */
-    reload_u1_lattice(param.start_u1flag, param.start_u1file);
+  if(param.start_u1flag != FRESH && param.start_u1flag != CONTINUE && param.start_u1flag != GENERATE)
+    node0_printf("Reloading U(1) file %s\n",param.start_u1file); fflush(stdout);
+  reload_u1_lattice(param.start_u1flag, param.start_u1file);
 #endif
 
   /* Create an array of fermion links structures for all unique Naik epsilon values and charges */
