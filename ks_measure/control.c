@@ -142,52 +142,69 @@ int main(int argc, char *argv[])
       }
 #endif
       for(int j = 0; j < num_pbp_masses; j++){
-	eigstartfiles[j] = param.ks_eigen_startQfile[i0+j];
-	eigstartflags[j] = param.ks_eigen_startQflag[i0+j];
+	if(param.eigen_param.Nvecs > 0){
+#ifdef U1_VALENCE
+	  eigstartfiles[j] = param.ks_eigen_startQfile[i0+j];
+	  eigstartflags[j] = param.ks_eigen_startQflag[i0+j];
+#else
+	  eigstartfiles[j] = NULL;
+	  eigstartflags[j] = FRESH;
+#endif
+	} else {
+	  eigstartfiles[j] = NULL;
+	  eigstartflags[j] = FRESH;
+	}
 	masses[j] = param.ksp_pbp[i0+j].mass;
 	charges[j] = param.ksp_pbp[i0+j].charge;
       }
-      
 
+      
 #ifdef CURRENT_DISC
 
 #ifdef U1_SEA
 
-      /* Read one U(1) field from a file or Generate 
+      /* Read one U(1) field from a file or generate 
 	 an array of U(1) fields if requested */
 
       int nU1_A = param.nU1A_generate[k];
 
-      if(param.start_u1flag != GENERATE){
+      if(param.start_u1flag == RELOAD_ASCII ||
+	 param.start_u1flag == RELOAD_SERIAL ||
+	 param.start_u1flag == RELOAD_PARALLEL){
 	u1_A_array = create_u1_A_field_array(1);
 	/* reload_u1_lattice reads into u1_A. The pointer assignment
 	   makes it go into the u1_A_array[0] implicitly */
 	u1_A = u1_A_array[0];
 	reload_u1_lattice(param.start_u1flag, param.start_u1file);
 	nU1_A = 0;
-      } else {
+      } else if(param.start_u1flag == GENERATE){
 	/* Define gauge and scheme */
 	initialize_u1_gauge_field(U1_COULOMB, U1_QED_L);
 	u1_A_array = create_u1_A_field_array(nU1_A);
 	generate_u1_gauge_field_array(nU1_A, u1_A_array);
       }
 
-      /* (Re)read a U(1) field if requested */
-      if(param.start_u1flag != GENERATE){
-	nU1_A = 0;
-      }
-
       /* We support only zero Naik epsilon here, so fn_mass[0]  */
-      if(param.truncate_diff[k])
-	f_meas_sea_current_diff( num_pbp_masses, param.npbp_reps[k],
-				 param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
-				 masses, charges, nU1_A, u1_A_array, fn_mass[0], 
-				 &param.pbp_filenames[i0] );
-      else
+      if(param.truncate_diff[k] == 0)
 	f_meas_sea_current( num_pbp_masses, param.npbp_reps[k],
 			    param.thinning[k], &param.qic_pbp[i0],
 			    masses, charges, nU1_A, u1_A_array, fn_mass[0],
 			    &param.pbp_filenames[i0] );
+      else if(param.truncate_diff[k] == 1)
+	f_meas_sea_current_diff( num_pbp_masses, param.npbp_reps[k],
+				 param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+				 masses, charges, nU1_A, u1_A_array, fn_mass[0], 
+				 &param.pbp_filenames[i0] );
+      else if(param.truncate_diff[k] == 2)
+	f_meas_sea_current_T2( num_pbp_masses, param.npbp_reps[k],
+			       param.thinning[k], &param.qic_pbp[i0],
+			       masses, charges, nU1_A, u1_A_array, fn_mass[0],
+			       &param.pbp_filenames[i0] );
+      else {
+	node0_printf("main: ERROR: Truncate diff flag %d unrecognized\n",
+		     param.truncate_diff[k]);
+	terminate(1);
+      }
 #else
 
       if(param.truncate_diff[k])
