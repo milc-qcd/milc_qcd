@@ -345,6 +345,13 @@ void f_meas_sea_current( int n_masses, int nrand, int thinning,
 			 imp_ferm_links_t *fn_mass, 
 			 char filenames[][MAXFILENAME]);
 
+void f_meas_sea_current_T2( int n_masses, int nrand, int thinning,
+			    quark_invert_control *qic, 
+			    Real masses[], Real charges[],
+			    int nU1_A, Real *u1_A[],
+			    imp_ferm_links_t *fn_mass, 
+			    char filenames[][MAXFILENAME]);
+
 /* eigen_stuff_QUDA.c */
 void load_evecs_quda( imp_ferm_links_t *fn_mass, int load_other_parity);
 
