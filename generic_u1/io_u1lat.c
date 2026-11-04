@@ -416,8 +416,8 @@ int ask_starting_u1_lattice(FILE *fp,
   
   if(prompt==1)
     {
-      printf("enter: 'fresh_u1', 'continue_u1', 'generate_u1', or 'reload_u1_ascii'\n");
-      printf(" or 'reload_u1_serial' or 'reload_u1_parallel\n");
+      printf("enter: 'fresh_u1', 'continue_u1', 'generate_u1', or 'reload_ascii_u1'\n");
+      printf(" or 'reload_serial_u1' or 'reload_parallel_u1\n");
     }
 
   savebuf = get_next_tag(fp, "read u1 lattice command", myname);
@@ -431,11 +431,11 @@ int ask_starting_u1_lattice(FILE *fp,
     *flag=CONTINUE;
   else if(strcmp("generate_u1",savebuf)==0)
     *flag=GENERATE;
-  else if(strcmp("reload_u1_ascii",savebuf)==0)
+  else if(strcmp("reload_ascii_u1",savebuf)==0)
     *flag=RELOAD_ASCII;
-  else if(strcmp("reload_u1_serial",savebuf)==0)
+  else if(strcmp("reload_serial_u1",savebuf)==0)
     *flag=RELOAD_SERIAL;
-  else if(strcmp("reload_u1_parallel",savebuf)==0)
+  else if(strcmp("reload_parallel_u1",savebuf)==0)
     *flag=RELOAD_PARALLEL;
   else
     {
@@ -1667,10 +1667,6 @@ gauge_file *r_u1_serial_i(char *filename)
   /* Node 0 broadcasts the header structure to all nodes */
 
   broadcast_bytes((char *)gh,sizeof(gauge_header));
-
-  /* No further processing here if this is a SciDAC file */
-  if(gh->magic_number == LIME_MAGIC_NO)
-    return gf;
 
   /* Read site list and broadcast to all nodes */
 
