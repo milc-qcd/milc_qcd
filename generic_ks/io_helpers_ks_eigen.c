@@ -376,9 +376,11 @@ int reload_ks_eigen(int flag, const char *eigfile, int *Nvecs, Real *eigVal,
     struct stat sb;
     stat(eigfile, &sb);
     if (S_ISDIR(sb.st_mode)) {
+      /* We assume the Grid eigenpack is multifile, so eigenvectors are in a directory */
       param.eigen_param.parity = ODD;
       status = reload_grid_ks_eigenpack_dir(eigfile, serpar, Nvecs, eigVal, eigVec, fn);
     } else {
+      /* Non-Grid eigenvectors */
       param.eigen_param.parity = EVEN; // Assume non-Grid eigenvectors are EVEN
       status = reload_ks_eigen_file(eigfile, serpar, Nvecs, eigVal, eigVec, fn, EVEN);
     }
