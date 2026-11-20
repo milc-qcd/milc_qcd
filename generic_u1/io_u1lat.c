@@ -175,10 +175,27 @@ gauge_file *save_u1_lattice(int flag,char *filename)
   }
   dtime+=dclock();
 
-  if(flag!=FORGET){
-    node0_printf("Saved lattice to ascii file %s!\n",gf->filename);
+  switch(flag){
+  case FORGET:
+    break;
+  case SAVE_ASCII:
+    node0_printf("Saved lattice to ascii file %s!\n",filename);
     node0_printf("Time to save = %e\n",dtime);
+    break;
+  case SAVE_SERIAL:
+  case SAVE_PARALLEL:
+    node0_printf("Saved lattice to old MILC format file %s!\n",filename);
+    node0_printf("Time to save = %e\n",dtime);
+    break;
+#ifdef HAVE_QIO
+  case SAVE_SERIAL_SCIDAC:
+  case SAVE_PARALLEL_SCIDAC:
+    node0_printf("Saved lattice to SciDAC file %s!\n",filename);
+    node0_printf("Time to save = %e\n",dtime);
+    break;
+#endif
   }
+  
 #if (MILC_PRECISION==1)
   node0_printf("\nCHECK U(1) PLAQ: %e %e\n\n",g_splaq,g_tplaq);
 #else
