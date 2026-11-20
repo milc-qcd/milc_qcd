@@ -64,6 +64,7 @@ typedef enum {
 #define U1_GENERAL          0  /* Gauge and scheme selected at run time */
 #define U1_MILC_ORIGINAL    1  /* Legacy MILC code.  Known to be incorrect */
 #define U1_HATTON_REVISION  2  /* Dan Hatton's revision */
+#define U1_PURE_GAUGE       3  /* Pure gauge field */
 
 #ifndef GAUGE_METHOD
 #define GAUGE_METHOD U1_GENERAL
