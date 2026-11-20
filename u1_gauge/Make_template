@@ -179,6 +179,11 @@ u1_g_convert::
 	"EXTRA_OBJECTS= control_convert.o" \
 	"DEFINES = -DNO_GAUGE_FIELD"
 
+u1_g_pure_gauge::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"EXTRA_OBJECTS= control.o" \
+	"DEFINES = -DNO_GAUGE_FIELD -DGAUGE_METHOD=U1_PURE_GAUGE"
+
 clean:
 	-/bin/rm -f *.o
 
