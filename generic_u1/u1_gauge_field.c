@@ -598,6 +598,86 @@ static void momgauge(complex *u1gf)
 } /* end of momgauge() */
 
 
+#elif GAUGE_METHOD == U1_PURE_GAUGE
+
+/* ************************************************************	*/
+/* Random pure gauge field */
+
+/* In momentum space we want A_mu(k) = k_mu a(k) where a(k) is stochastic */
+
+static void momgauge(complex *u1gf)
+{
+
+  Real lk[4];
+  Real lkssq,lksq;
+  register site *s;
+  register int i,dir;
+
+  /* initialize */
+  FORALLSITES(i,s){
+      FORALLUPDIR(dir){
+	  u1gf[4*i+dir]=cmplx(0.0,0.0);
+	 }
+    }
+
+  FORALLSITES(i,s){
+    Real mom[4] = { 2.*PI*s->x/nx, 2.*PI*s->y/ny, 2.*PI*s->z/nz, 2.*PI*s->t/nt };
+    
+    int hp = (mom_status[i] == U1_MOM_SELF) ? 1 : 2;
+    
+    /* lattice mom: kx,ky,kz,kt and squares */
+    lksq = 0.0;
+    for(dir=XUP;dir<=TUP;dir++){
+      lk[dir]=2.0*(Real)sin((double)(mom[dir])/2.0);
+      lksq+=sqr(lk[dir]);
+    }
+
+    if(lksq == 0.0){
+      /* No constant mode */
+      FORALLUPDIR(dir){
+	u1gf[4*i+dir]=cmplx(0.0,0.0);
+      }
+      continue;
+    }
+
+    /* Skip the repeated components */
+    if(mom_status[i]==U1_MOM_SKIP)continue;
+    
+    /* Start with a random complex scalar */
+    complex cc2 = complex_gaussian_rand_no(&(s->site_prn));
+    complex cc;
+    CMUL_I(cc2, cc);
+    FORALLUPDIR(dir){
+      CMULREAL(cc, lk[dir]*sqrt(2.0/hp), u1gf[4*i+dir]);
+    }
+    
+    /* Insert e^{iak/2} factors */
+    complex phase[4] = {ce_itheta(mom[0]/2.),ce_itheta(mom[1]/2.),ce_itheta(mom[2]/2.),ce_itheta(mom[3]/2.)};
+    int dir;
+    FORALLUPDIR(dir){
+      complex cc;
+      CMUL(phase[dir],u1gf[4*i+dir], cc);
+      u1gf[4*i+dir] = cc;
+    }
+  } /* FORALLSITES-ends */
+  
+  /* Adjust u1gf so we return FT of Re A(k) */
+  /* (Assumes BACKWARDS FT is e^{+ikx}) */
+  FORALLSITES(i,s){
+    if(mom_status[i]==U1_MOM_SELF){
+      int dir;
+      FORALLUPDIR(dir){
+	u1gf[4*i+dir].imag=0.0;
+      }
+    } else {
+      int dir;
+      FORALLUPDIR(dir){
+	CMULREAL(u1gf[4*i+dir],2.0,u1gf[4*i+dir]);
+      }
+    }
+  }
+} /* end of momgauge() */
+
 #else
 
 /* ************************************************************	*/
