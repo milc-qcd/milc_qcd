@@ -54,7 +54,7 @@
 #define NRECINFO 128
 
 /* Debugging */
-#ifdef FIXEDSOURCE
+#ifdef UNITSOURCE
 #define NRMAX 3
 #else
 #define NRMAX 2
@@ -534,7 +534,7 @@ fill_sources(su3_vector *gr0[], int nr){
     
 #if defined(Z2RSOURCE)
     z2rsource_plain_field( gr0[jr], EVENANDODD );
-#elif defined(FIXEDSOURCE)
+#elif defined(UNITSOURCE)
     /* For debugging. Should be run with nr = 3 */
     int i;
     int j = jr % 3;
@@ -3356,9 +3356,9 @@ f_meas_valence_current_diff( int n_masses, int nrand, int thinning,
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   /* Debug */
-#ifdef FIXEDSOURCE
+#ifdef UNITSOURCE
   if(nrand != 3){
-    node0_printf("%s: FIXEDSOURCE requires npbp_reps = 3\n", myname);
+    node0_printf("%s: UNITSOURCE requires npbp_reps = 3\n", myname);
     terminate(1);
   }
 #endif
@@ -3439,9 +3439,9 @@ f_meas_valence_current( int n_masses, int nrand, int thinning,
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   /* Debug */
-#ifdef FIXEDSOURCE
+#ifdef UNITSOURCE
   if(nrand != 3){
-    node0_printf("%s: FIXEDSOURCE requires npbp_reps = 3\n", myname);
+    node0_printf("%s: UNITSOURCE requires npbp_reps = 3\n", myname);
     terminate(1);
   }
 #endif
@@ -3548,9 +3548,9 @@ f_meas_sea_current_diff( int n_masses, int nrand, int thinning,
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   /* Debug */
-#ifdef FIXEDSOURCE
+#ifdef UNITSOURCE
   if(nrand != 3){
-    node0_printf("%s: FIXEDSOURCE requires npbp_reps = 3\n", myname);
+    node0_printf("%s: UNITSOURCE requires npbp_reps = 3\n", myname);
     terminate(1);
   }
 #endif
@@ -3648,9 +3648,9 @@ f_meas_sea_current( int n_masses, int nrand, int thinning,
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   /* Debug */
-#ifdef FIXEDSOURCE
+#ifdef UNITSOURCE
   if(nrand != 3){
-    node0_printf("%s: FIXEDSOURCE requires npbp_reps = 3\n", myname);
+    node0_printf("%s: UNITSOURCE requires npbp_reps = 3\n", myname);
     terminate(1);
   }
 #endif
@@ -3708,7 +3708,7 @@ f_meas_sea_current( int n_masses, int nrand, int thinning,
     } else {
       for(int jU1_A = 0; jU1_A < nU1_A_array; jU1_A++){
 	write_jlow_sea("LOWb", n_masses, nU1_A_array, masses, charges, jElow_sea);
-	write_jlow_sea("LOWd", n_masses, nU1_A_array, masses, charges, jOlow_sea);
+	write_jlow_sea("LOWad", n_masses, nU1_A_array, masses, charges, jOlow_sea);
       }
     }
 #endif
@@ -3787,9 +3787,9 @@ f_meas_sea_current_T2( int n_masses, int nrand, int thinning,
   //  node0_printf("Entered %s\n", myname); fflush(stdout);
 
   /* Debug */
-#ifdef FIXEDSOURCE
+#ifdef UNITSOURCE
   if(nrand != 3){
-    node0_printf("%s: FIXEDSOURCE requires npbp_reps = 3\n", myname);
+    node0_printf("%s: UNITSOURCE requires npbp_reps = 3\n", myname);
     terminate(1);
   }
 #endif
