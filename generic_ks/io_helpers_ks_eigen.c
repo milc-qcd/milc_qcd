@@ -20,6 +20,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#ifdef HAVE_QUDA
+#include "../include/generic_quda.h"
+#endif
 
 
 /* Non-SciDAC file formats are deprecated. These non-QIO procedures are kept temporarily */
@@ -241,7 +244,55 @@ restore_eigenvectors_from_file(imp_ferm_links_t *fn, ks_eigen_param *eigen_param
   /* Pass load_other_parity=1: exact current (qudaExactCurrent) requires
      BOTH parity deflation spaces resident. */
   load_evecs_quda(fn, 1);
-  
+
+#if defined(USE_EIG_GPU) && !defined(USE_CURRENT_GPU)
+
+  /* The CPU exact-current and exact-sea-loop routines need the
+     eigenpairs on the host, but here QUDA holds them.  Copy QUDA's
+     even-parity deflation space back to eigVec/eigVal.  MILC stores
+     even sites first, so the even-parity copy fills the first half of
+     each eigVec[i].  The eigenvalues are those of the massless
+     operator.  The odd halves are then constructed as in the CPU path
+     above, since the CPU project_out needs them for odd-parity
+     sources. */
+
+  /* QUDA copies at the precision of its stored eigenvectors, but
+     eigVec is always double */
+  if(eigen_param->eigPrec != 2){
+    node0_printf("restore_eigenvectors_from_file: eigensolver_prec must be 2 to copy QUDA eigenvectors to the host (got %d)\n",
+		 eigen_param->eigPrec);
+    terminate(1);
+  }
+
+  if(eigVal == NULL){
+    eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
+    if(eigVal == NULL){
+      printf("No room for eigenvalues\n");
+      terminate(1);
+    }
+  }
+  if(eigVec == NULL){
+    eigVec = (dsu3_vector **)malloc(Nvecs_tot*sizeof(dsu3_vector *));
+    if(eigVec == NULL){
+      printf("No room for eigenvector pointers\n");
+      terminate(1);
+    }
+    for(int i=0; i < Nvecs_tot; i++){
+      eigVec[i] = (dsu3_vector *)calloc(sites_on_node, sizeof(dsu3_vector));
+      if(eigVec[i] == NULL){
+	printf("No room for eigenvector\n");
+	terminate(1);
+      }
+    }
+  }
+
+  qudaGetDeflationSpace((void **)eigVec, eigVal, QUDA_EVEN_PARITY, eigen_param->Nvecs);
+  node0_printf("Copied %d even-parity eigenpairs from QUDA to the host\n", eigen_param->Nvecs);
+  eigen_param->parity = EVEN;
+  construct_eigen_other_parity((su3_vector **)eigVec, (Real *)eigVal, eigen_param, fn);
+
+#endif
+
 #endif
   
 }

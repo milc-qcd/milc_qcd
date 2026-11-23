@@ -544,6 +544,8 @@ int readin(int prompt) {
 
   broadcast_bytes((char *)&param,sizeof(param));
   u0 = param.u0;
+  /* Nvecs_tot is set above only on node 0; set it on all nodes */
+  Nvecs_tot = param.eigen_param.Nvecs;
   if( param.stopflag != 0 )return param.stopflag;
 
   if(prompt==2)return 0;

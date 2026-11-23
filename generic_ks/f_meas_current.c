@@ -2249,16 +2249,28 @@ exact_current(Real *jlow_mu, Real mass, imp_ferm_links_t *fn_mass){
 /*********************************************************************/
 /* Calculate exact low-mode sea-quark loop using QUDA.
  *
- * For nmass=1, this function emulates MILC's exact_current()
- * For nmass=2, this function emulates MILC's exact_current_delta_ls()
- * For nmass=3, this function emulates MILC's exact_current_delta_udus
+ * Emulates MILC's exact_sea_loop():
+ *   jlow_sea += sum_n -2 Re <v_n | Ddiff D v_n> / (lambda_n + 4 mass^2)
+ * where D is the Dslash of fn_mass and Ddiff the Dslash of fn_diff.
  *
- * Both parity eigenvectors must be loaded into QUDA before calling this function.
+ * The even-parity eigenvectors must be loaded into QUDA before calling
+ * this function.  QUDA returns the global sum split equally over the
+ * nodes, so the usual g_doublesum in write_sea_values gives the total.
  */
 static void
-exact_current_sea_quda(Real *jlow_sea, Real mass, imp_ferm_links_t *fn_diff, imp_ferm_links_t *fn_mass){
+exact_sea_loop_quda(Real *jlow_sea, Real mass, imp_ferm_links_t *fn_diff, imp_ferm_links_t *fn_mass){
 
-  char myname[] = "exact_current_sea_quda";
+  char myname[] = "exact_sea_loop_quda";
+
+  QudaInvertArgs_t inv_args; // Tadpole factor and Naik epsilon for the link parameters
+  inv_args.mixed_precision = 0;
+  inv_args.naik_epsilon = fn_mass->eps_naik;
+  inv_args.max_iter = 0;
+#if (FERM_ACTION==HISQ)
+  inv_args.tadpole = 1.0;
+#else
+  inv_args.tadpole = u0;
+#endif
 
   QudaEigensolverArgs_t eig_args; // To tell QUDA how many eigenvectors to use
 
@@ -2271,7 +2283,8 @@ exact_current_sea_quda(Real *jlow_sea, Real mass, imp_ferm_links_t *fn_diff, imp
 #endif
 
   load_quda_default_eig_args(&eig_args, quda_does_eigensolve);
-  eig_args.n_conv = (param.eigen_param.Nvecs_in > param.eigen_param.Nvecs) ? param.eigen_param.Nvecs_in : param.eigen_param.Nvecs;
+  /* Use the same number of eigenvectors as the CPU version */
+  eig_args.n_conv = param.eigen_param.Nvecs;
   eig_args.n_ev = eig_args.n_conv;
 
   su3_matrix* dfatlink = get_fatlinks(fn_diff);
@@ -2280,17 +2293,22 @@ exact_current_sea_quda(Real *jlow_sea, Real mass, imp_ferm_links_t *fn_diff, imp
   su3_matrix* fatlink = get_fatlinks(fn_mass);
   su3_matrix* longlink = get_lnglinks(fn_mass);
 
-  // Compute exact current via QUDA
-  qudaExactSeaLoop(MILC_PRECISION, MILC_PRECISION, dfatlink, dlonglink, fatlink, longlink,
-		   eig_args, jlow_sea);
+  if(dfatlink == NULL || dlonglink == NULL || fatlink == NULL || longlink == NULL){
+    node0_printf("%s: missing fat or long links\n", myname);
+    terminate(1);
+  }
 
-} // exact_current_quda
+  // Compute exact sea-quark loop via QUDA
+  qudaExactSeaLoop(MILC_PRECISION, MILC_PRECISION, dfatlink, dlonglink, fatlink, longlink,
+		   (double)mass, inv_args, eig_args, jlow_sea);
+
+} // exact_sea_loop_quda
 
 #endif
 
 /*********************************************************************/
 static void
-exact_current_sea(Real *jlow_sea, Real mass, imp_ferm_links_t *fn_diff, imp_ferm_links_t *fn_mass){
+exact_sea_loop(Real *jlow_sea, Real mass, imp_ferm_links_t *fn_diff, imp_ferm_links_t *fn_mass){
 
   /* Compute exact sea-quark loop for a single mass */
 
@@ -2488,7 +2506,7 @@ exact_currents(int n_masses, Real *jlow_mu[], Real masses[],
 /*********************************************************************/
 
 static void
-exact_currents_sea(Real mass, Real *jlow_sea, imp_ferm_links_t *fn_diff,
+exact_sea_loops(Real mass, Real *jlow_sea, imp_ferm_links_t *fn_diff,
 		   imp_ferm_links_t *fn_mass){
 
   /* Compute exact low-mode sea-quark loop with the insertion of the
@@ -2496,11 +2514,11 @@ exact_currents_sea(Real mass, Real *jlow_sea, imp_ferm_links_t *fn_diff,
     
 #if defined(HAVE_QUDA) && defined(USE_CURRENT_GPU)
 
-  exact_current_sea_quda(jlow_sea, mass, fn_diff, fn_mass);
+  exact_sea_loop_quda(jlow_sea, mass, fn_diff, fn_mass);
 
 #else
 
-  exact_current_sea(jlow_sea, mass, fn_diff, fn_mass);
+  exact_sea_loop(jlow_sea, mass, fn_diff, fn_mass);
 
 #endif
 
@@ -2771,14 +2789,14 @@ compute_jlow_sea(int n_masses, Real *jElow_sea[], Real *jOlow_sea[],
 
       imp_ferm_links_t *fn_diff = create_dslash_diff(u1_A_array[iU1_A], charges[j], fn_mass);
       Real jlow_sea = 0.;
-      exact_currents_sea(masses[j], &jlow_sea, fn_diff, fn_mass);
+      exact_sea_loops(masses[j], &jlow_sea, fn_diff, fn_mass);
       jElow_sea[j][iU1_A] += 0.5*jlow_sea;
       jOlow_sea[j][iU1_A] += 0.5*jlow_sea;
       destroy_fn_links(fn_diff);
 
       fn_diff = create_dslash_diff(u1_A_array[iU1_A], -charges[j], fn_mass);
       jlow_sea = 0.;
-      exact_currents_sea(masses[j], &jlow_sea, fn_diff, fn_mass);
+      exact_sea_loops(masses[j], &jlow_sea, fn_diff, fn_mass);
       jElow_sea[j][iU1_A] += 0.5*jlow_sea;
       jOlow_sea[j][iU1_A] -= 0.5*jlow_sea;
 
