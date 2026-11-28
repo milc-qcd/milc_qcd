@@ -64,6 +64,8 @@
                            XUP,XDOWN,YUP,YDOWN... to XUP,YUP,...XDOWN,YDOWN...
    make_nn_gathers()     makes all necessary lists for communications with
                            nodes containing neighbor sites.
+   free_nn_gathers()     frees all necessary lists for communications with
+                           nodes containing neighbor sites.
    make_gather()         calculates and stores necessary communications lists
                            for a given gather mapping
    declare_gather_site()      creates a message tag that defines specific details
@@ -671,6 +673,20 @@ make_nn_gathers(void)
   /* Sort into the order we want for nearest neighbor gathers,
      so you can use XUP, XDOWN, etc. as argument in calling them. */
   sort_eight_gathers( 0 );
+}
+
+void free_nn_gathers(void)
+{
+  if (gather_array != NULL) {
+    for (int i = 0; i < gather_array_len; i++) {
+      if (gather_array[i].neighbor != NULL) {
+        free(gather_array[i].neighbor);
+        gather_array[i].neighbor = NULL;
+      }
+    }
+    free(gather_array);
+    gather_array = NULL;
+  }
 }
 
 

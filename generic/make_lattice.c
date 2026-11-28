@@ -15,7 +15,8 @@
 #include "../include/generic_quda.h"
 #endif
 
-void make_lattice(){
+void make_lattice(void)
+{
   register int i;		/* scratch */
   short x,y,z,t;		/* coordinates */
   /* allocate space for lattice, fill in parity, coordinates and index */
@@ -57,16 +58,21 @@ void make_lattice(){
 
 }
 
-void free_lattice()
+void free_lattice(void)
 {
-  int i;
+  for(int i=0;i<N_POINTERS;i++) {
+    if (gen_pt[i] != NULL) {
+      free(gen_pt[i]);
+      gen_pt[i] = NULL;
+    }
+  }
 
-  for(i=0;i<N_POINTERS;i++)
-    free(gen_pt[i]);
-
+  if (lattice != NULL) {
 #ifdef HAVE_QUDA
-  qudaFreePinned(lattice);
+    qudaFreePinned(lattice);
 #else
-  free(lattice);
+    free(lattice);
 #endif
+    lattice = NULL;
+  }
 }

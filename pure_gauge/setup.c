@@ -171,8 +171,11 @@ char savebuf[128];
     /* Node 0 broadcasts parameter buffer to all other nodes */
     broadcast_bytes((char *)&par_buf,sizeof(par_buf));
 
-    if( par_buf.stopflag != 0 )
+    if (par_buf.stopflag != 0) {
+      free_nn_gathers();
+      free_lattice();
       normal_exit(0);
+    }
 
     warms = par_buf.warms;
     trajecs = par_buf.trajecs;

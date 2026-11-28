@@ -67,6 +67,8 @@
                            XUP,XDOWN,YUP,YDOWN... to XUP,YUP,...XDOWN,YDOWN...
    make_nn_gathers()     makes all necessary lists for communications with
                            nodes containing neighbor sites.
+   free_nn_gathers()     frees all necessary lists for communications with
+                           nodes containing neighbor sites.
    make_gather()         calculates and stores necessary communications lists
                            for a given gather mapping
    declare_gather_site()      creates a message tag that defines specific details
@@ -619,6 +621,11 @@ reset_machine_rank(int peRank){
 void
 normal_exit(int status)
 {
+  if (id_array != NULL) {
+	  free(id_array);
+	  id_array = NULL;
+  }
+
   time_stamp("exit");
   // g_sync();
   MPI_Barrier( MPI_COMM_WORLD );  // wait for all lattices to finish?
@@ -1191,6 +1198,19 @@ make_nn_gathers(void)
   sort_eight_gathers( 0 );
 }
 
+void free_nn_gathers(void)
+{
+  if (gather_array != NULL) {
+    for (int i = 0; i < gather_array_len; i++) {
+      if (gather_array[i].neighbor != NULL) {
+        free(gather_array[i].neighbor);
+        gather_array[i].neighbor = NULL;
+      }
+    }
+    free(gather_array);
+    gather_array = NULL;
+  }
+}
 
 /**********************************************************************
  *                  FUNCTIONS USED TO MAKE GATHERS                    *
